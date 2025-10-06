@@ -68,13 +68,18 @@ describe('ThemeBuilderDialog', () => {
     logoImageBlock: null,
     menuButtonIcon: null,
     menuStepBlock: null,
+    socialNodeX: null,
+    socialNodeY: null,
     journeyTheme: {
       __typename: 'JourneyTheme',
       id: 'theme-id',
       headerFont: FontFamily.Montserrat,
       bodyFont: FontFamily.Inter,
       labelFont: FontFamily.Nunito
-    }
+    },
+    journeyCustomizationDescription: null,
+    journeyCustomizationFields: [],
+    fromTemplateId: null
   }
 
   const mockJourneyWithoutTheme: JourneyFields = {
@@ -320,10 +325,17 @@ describe('ThemeBuilderDialog', () => {
       </SnackbarProvider>
     )
 
+    const spy = jest.spyOn(require('notistack'), 'enqueueSnackbar')
     fireEvent.click(screen.getByText('Confirm'))
-    await waitFor(() => {
-      expect(screen.queryByText('Failed to create theme')).toBeInTheDocument()
-    })
+    await waitFor(() =>
+      expect(spy).toHaveBeenCalledWith(
+        'Failed to create theme',
+        expect.objectContaining({
+          variant: 'error',
+          preventDuplicate: true
+        })
+      )
+    )
   })
 
   it('should disable confirm button while loading', async () => {

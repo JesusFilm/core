@@ -114,141 +114,140 @@ export function TemplateGalleryCard({
         }
       }}
     >
-      <NextLink href={journeyIdPath} passHref legacyBehavior prefetch>
-        <Box
-          component="a"
-          tabIndex={-1}
-          data-testid="templateGalleryCard"
+      <Box
+        component={NextLink}
+        href={journeyIdPath}
+        tabIndex={-1}
+        data-testid="templateGalleryCard"
+        sx={{
+          height: 'inherit',
+          color: 'inherit',
+          textDecoration: 'none'
+        }}
+      >
+        {journey != null ? (
+          <Stack
+            justifyContent="center"
+            alignItems="center"
+            sx={{
+              position: 'relative',
+              aspectRatio: 1,
+              overflow: 'hidden',
+              borderRadius: 2,
+              alignItems: 'center',
+              backgroundColor: 'background.default'
+            }}
+          >
+            {journey?.primaryImageBlock?.src != null ? (
+              <>
+                <HoverLayer className="hoverImageEffects" />
+                <Image
+                  rel={priority === true ? 'preload' : undefined}
+                  priority={priority}
+                  className="MuiImageBackground-root"
+                  src={journey?.primaryImageBlock?.src}
+                  alt={journey?.primaryImageBlock.alt}
+                  fill
+                  // needed to render appropriate image file size for better LCP score see: https://nextjs.org/docs/pages/api-reference/components/image#sizes
+                  sizes={`(max-width: ${
+                    theme.breakpoints.values.md - 0.5
+                  }px) 130px, (max-width: ${
+                    theme.breakpoints.values.xl - 0.5
+                  }px) 180px, 280px`}
+                  style={{
+                    objectFit: 'cover'
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <HoverLayer className="hoverImageEffects" />
+                <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
+              </>
+            )}
+          </Stack>
+        ) : (
+          <Skeleton
+            variant="rectangular"
+            sx={{
+              width: { xs: 130, md: 180, xl: 240 },
+              height: { xs: 130, md: 180, xl: 240 },
+              borderColor: 'divider',
+              borderRadius: 2,
+              backgroundColor: 'background.default'
+            }}
+          />
+        )}
+        <Stack
           sx={{
-            height: 'inherit',
-            color: 'inherit',
-            textDecoration: 'none'
+            px: 0,
+            py: 3
           }}
         >
           {journey != null ? (
-            <Stack
-              justifyContent="center"
-              alignItems="center"
-              sx={{
-                position: 'relative',
-                aspectRatio: 1,
-                overflow: 'hidden',
-                borderRadius: 2,
-                alignItems: 'center',
-                backgroundColor: 'background.default'
-              }}
-            >
-              {journey?.primaryImageBlock?.src != null ? (
-                <>
-                  <HoverLayer className="hoverImageEffects" />
-                  <Image
-                    rel={priority === true ? 'preload' : undefined}
-                    priority={priority}
-                    className="MuiImageBackground-root"
-                    src={journey?.primaryImageBlock?.src}
-                    alt={journey?.primaryImageBlock.alt}
-                    fill
-                    // needed to render appropriate image file size for better LCP score see: https://nextjs.org/docs/pages/api-reference/components/image#sizes
-                    sizes={`(max-width: ${
-                      theme.breakpoints.values.md - 0.5
-                    }px) 130px, (max-width: ${
-                      theme.breakpoints.values.xl - 0.5
-                    }px) 180px, 280px`}
-                    style={{
-                      objectFit: 'cover'
-                    }}
-                  />
-                </>
-              ) : (
-                <>
-                  <HoverLayer className="hoverImageEffects" />
-                  <InsertPhotoRoundedIcon className="MuiImageBackground-root" />
-                </>
-              )}
-            </Stack>
-          ) : (
-            <Skeleton
-              variant="rectangular"
-              sx={{
-                width: { xs: 130, md: 180, xl: 240 },
-                height: { xs: 130, md: 180, xl: 240 },
-                borderColor: 'divider',
-                borderRadius: 2,
-                backgroundColor: 'background.default'
-              }}
-            />
-          )}
-          <Stack
-            sx={{
-              px: 0,
-              py: 3
-            }}
-          >
-            {journey != null ? (
-              <>
+            <>
+              <Typography
+                variant="overline2"
+                sx={{
+                  whiteSpace: 'noWrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  color: (theme) => theme.palette.grey[700]
+                }}
+              >
+                {t('{{ date }} ● {{ displayLanguage }}', {
+                  date,
+                  displayLanguage
+                })}
+              </Typography>
+              <Box
+                sx={{
+                  display: { xs: 'none', md: '-webkit-box' },
+                  height: '66px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: 3
+                }}
+              >
                 <Typography
-                  variant="overline2"
+                  variant="subtitle2"
                   sx={{
-                    whiteSpace: 'noWrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    color: (theme) => theme.palette.grey[700]
+                    my: 1
                   }}
                 >
-                  {t('{{ date }} ● {{ displayLanguage }}', {
-                    date,
-                    displayLanguage
-                  })}
+                  {journey.title}
                 </Typography>
-                <Box
-                  sx={{
-                    display: { xs: 'none', md: '-webkit-box' },
-                    height: '66px',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    WebkitBoxOrient: 'vertical',
-                    WebkitLineClamp: 3
-                  }}
-                >
-                  <Typography
-                    variant="subtitle2"
-                    sx={{
-                      my: 1
-                    }}
-                  >
-                    {journey.title}
-                  </Typography>
-                </Box>
-                <Box
-                  sx={{
-                    display: { xs: '-webkit-box', md: 'none' },
-                    height: '63px',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    WebkitBoxOrient: 'vertical',
-                    WebkitLineClamp: 3
-                  }}
-                >
-                  <Typography
-                    variant="subtitle3"
-                    sx={{
-                      my: 1
-                    }}
-                  >
-                    {journey.title}
-                  </Typography>
-                </Box>
-              </>
-            ) : (
-              <Box>
-                <Skeleton variant="text" sx={{ width: '100%' }} />
-                <Skeleton variant="text" sx={{ width: '100%' }} />
-                <Skeleton variant="text" sx={{ width: '60%' }} />
               </Box>
-            )}
-          </Stack>
-        </Box>
-      </NextLink>
+              <Box
+                sx={{
+                  display: { xs: '-webkit-box', md: 'none' },
+                  height: '63px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: 3
+                }}
+              >
+                <Typography
+                  variant="subtitle3"
+                  sx={{
+                    my: 1
+                  }}
+                >
+                  {journey.title}
+                </Typography>
+              </Box>
+            </>
+          ) : (
+            <Box>
+              <Skeleton variant="text" sx={{ width: '100%' }} />
+              <Skeleton variant="text" sx={{ width: '100%' }} />
+              <Skeleton variant="text" sx={{ width: '60%' }} />
+            </Box>
+          )}
+        </Stack>
+      </Box>
     </Card>
   )
 }

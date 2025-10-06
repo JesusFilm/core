@@ -1,2 +1,3 @@
 import './video'
-import './inputs'
+import './videoBlockCreate.mutation'
+import './videoBlockUpdate.mutation'

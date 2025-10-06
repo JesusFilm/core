@@ -13,7 +13,6 @@ const LanguageSwitchDialogStory: Meta<typeof LanguageSwitchDialog> = {
 }
 
 const defaultInitialState = {
-  siteLanguage: 'en',
   audioLanguage: '529',
   subtitleLanguage: '529',
   subtitleOn: false,

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain, VideoOrigin, ArclightApiKey } from ".prisma/api-media-client/index.js";
+import type { Prisma, CloudflareImage, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain, VideoOrigin, Playlist, PlaylistItem, ArclightApiKey } from ".prisma/api-media-client/index.js";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
@@ -226,8 +226,8 @@ export default interface PrismaTypes {
         Where: Prisma.VideoVariantWhereInput;
         Create: {};
         Update: {};
-        RelationName: "downloads" | "videoEdition" | "video" | "asset" | "muxVideo";
-        ListRelations: "downloads";
+        RelationName: "downloads" | "videoEdition" | "video" | "asset" | "muxVideo" | "playlistItems";
+        ListRelations: "downloads" | "playlistItems";
         Relations: {
             downloads: {
                 Shape: VideoVariantDownload[];
@@ -253,6 +253,11 @@ export default interface PrismaTypes {
                 Shape: MuxVideo | null;
                 Name: "MuxVideo";
                 Nullable: true;
+            };
+            playlistItems: {
+                Shape: PlaylistItem[];
+                Name: "PlaylistItem";
+                Nullable: false;
             };
         };
     };
@@ -704,6 +709,51 @@ export default interface PrismaTypes {
             videos: {
                 Shape: Video[];
                 Name: "Video";
+                Nullable: false;
+            };
+        };
+    };
+    Playlist: {
+        Name: "Playlist";
+        Shape: Playlist;
+        Include: Prisma.PlaylistInclude;
+        Select: Prisma.PlaylistSelect;
+        OrderBy: Prisma.PlaylistOrderByWithRelationInput;
+        WhereUnique: Prisma.PlaylistWhereUniqueInput;
+        Where: Prisma.PlaylistWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "items";
+        ListRelations: "items";
+        Relations: {
+            items: {
+                Shape: PlaylistItem[];
+                Name: "PlaylistItem";
+                Nullable: false;
+            };
+        };
+    };
+    PlaylistItem: {
+        Name: "PlaylistItem";
+        Shape: PlaylistItem;
+        Include: Prisma.PlaylistItemInclude;
+        Select: Prisma.PlaylistItemSelect;
+        OrderBy: Prisma.PlaylistItemOrderByWithRelationInput;
+        WhereUnique: Prisma.PlaylistItemWhereUniqueInput;
+        Where: Prisma.PlaylistItemWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "videoVariant" | "playlist";
+        ListRelations: never;
+        Relations: {
+            videoVariant: {
+                Shape: VideoVariant;
+                Name: "VideoVariant";
+                Nullable: false;
+            };
+            playlist: {
+                Shape: Playlist;
+                Name: "Playlist";
                 Nullable: false;
             };
         };

@@ -17,6 +17,11 @@ export enum ThemeName {
     base = "base"
 }
 
+export enum ContactActionType {
+    call = "call",
+    text = "text"
+}
+
 export enum ButtonVariant {
     text = "text",
     contained = "contained",
@@ -152,7 +157,8 @@ export enum VideoBlockObjectFit {
 export enum ButtonAction {
     NavigateToBlockAction = "NavigateToBlockAction",
     LinkAction = "LinkAction",
-    EmailAction = "EmailAction"
+    EmailAction = "EmailAction",
+    PhoneAction = "PhoneAction"
 }
 
 export enum MessagePlatform {
@@ -268,34 +274,6 @@ export enum VisitorStatus {
     robotFace = "robotFace",
     redExclamationMark = "redExclamationMark",
     redQuestionMark = "redQuestionMark"
-}
-
-export class NavigateToBlockActionInput {
-    gtmEventName?: Nullable<string>;
-    blockId: string;
-}
-
-export class LinkActionInput {
-    gtmEventName?: Nullable<string>;
-    url: string;
-    target?: Nullable<string>;
-    customizable?: Nullable<boolean>;
-    parentStepId?: Nullable<string>;
-}
-
-export class EmailActionInput {
-    gtmEventName?: Nullable<string>;
-    email: string;
-    customizable?: Nullable<boolean>;
-    parentStepId?: Nullable<string>;
-}
-
-export class BlockUpdateActionInput {
-    gtmEventName?: Nullable<string>;
-    email?: Nullable<string>;
-    url?: Nullable<string>;
-    target?: Nullable<string>;
-    blockId?: Nullable<string>;
 }
 
 export class BlocksFilter {
@@ -480,6 +458,7 @@ export class TextResponseBlockUpdateInput {
     placeholder?: Nullable<string>;
     required?: Nullable<boolean>;
     hint?: Nullable<string>;
+    hideLabel?: Nullable<boolean>;
     minRows?: Nullable<number>;
     routeId?: Nullable<string>;
     type?: Nullable<TextResponseType>;
@@ -510,39 +489,6 @@ export class TypographyBlockUpdateInput {
     settings?: Nullable<TypographyBlockSettingsInput>;
 }
 
-export class VideoBlockCreateInput {
-    id?: Nullable<string>;
-    journeyId: string;
-    parentBlockId: string;
-    startAt?: Nullable<number>;
-    endAt?: Nullable<number>;
-    duration?: Nullable<number>;
-    description?: Nullable<string>;
-    muted?: Nullable<boolean>;
-    autoplay?: Nullable<boolean>;
-    videoId?: Nullable<string>;
-    videoVariantLanguageId?: Nullable<string>;
-    source?: Nullable<VideoBlockSource>;
-    posterBlockId?: Nullable<string>;
-    fullsize?: Nullable<boolean>;
-    isCover?: Nullable<boolean>;
-    objectFit?: Nullable<VideoBlockObjectFit>;
-}
-
-export class VideoBlockUpdateInput {
-    startAt?: Nullable<number>;
-    endAt?: Nullable<number>;
-    muted?: Nullable<boolean>;
-    autoplay?: Nullable<boolean>;
-    duration?: Nullable<number>;
-    videoId?: Nullable<string>;
-    videoVariantLanguageId?: Nullable<string>;
-    source?: Nullable<VideoBlockSource>;
-    posterBlockId?: Nullable<string>;
-    fullsize?: Nullable<boolean>;
-    objectFit?: Nullable<VideoBlockObjectFit>;
-}
-
 export class ChatButtonCreateInput {
     link?: Nullable<string>;
     platform?: Nullable<MessagePlatform>;
@@ -564,16 +510,6 @@ export class CustomDomainCreateInput {
 export class CustomDomainUpdateInput {
     journeyCollectionId?: Nullable<string>;
     routeAllTeamJourneys?: Nullable<boolean>;
-}
-
-export class ButtonClickEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-    action?: Nullable<ButtonAction>;
-    actionValue?: Nullable<string>;
 }
 
 export class ChatOpenEventCreateInput {
@@ -734,6 +670,7 @@ export class JourneysFilter {
     languageIds?: Nullable<string[]>;
     limit?: Nullable<number>;
     orderByRecent?: Nullable<boolean>;
+    fromTemplateId?: Nullable<string>;
 }
 
 export class JourneysQueryOptions {
@@ -987,18 +924,148 @@ export class EmailAction implements Action {
     parentStepId?: Nullable<string>;
 }
 
+export class PhoneAction implements Action {
+    __typename?: 'PhoneAction';
+    parentBlockId: string;
+    parentBlock: Block;
+    gtmEventName?: Nullable<string>;
+    phone: string;
+    countryCode: string;
+    contactAction: ContactActionType;
+}
+
+export class Journey {
+    __typename?: 'Journey';
+    blocks?: Nullable<Block[]>;
+    primaryImageBlock?: Nullable<ImageBlock>;
+    creatorImageBlock?: Nullable<ImageBlock>;
+    logoImageBlock?: Nullable<ImageBlock>;
+    menuStepBlock?: Nullable<StepBlock>;
+    chatButtons: ChatButton[];
+    id: string;
+    title: string;
+    language: Language;
+    languageId: string;
+    themeMode: ThemeMode;
+    themeName: ThemeName;
+    description?: Nullable<string>;
+    creatorDescription?: Nullable<string>;
+    slug: string;
+    archivedAt?: Nullable<DateTime>;
+    deletedAt?: Nullable<DateTime>;
+    publishedAt?: Nullable<DateTime>;
+    trashedAt?: Nullable<DateTime>;
+    featuredAt?: Nullable<DateTime>;
+    updatedAt: DateTime;
+    createdAt: DateTime;
+    status: JourneyStatus;
+    seoTitle?: Nullable<string>;
+    seoDescription?: Nullable<string>;
+    template?: Nullable<boolean>;
+    host?: Nullable<Host>;
+    team?: Nullable<Team>;
+    strategySlug?: Nullable<string>;
+    tags: Tag[];
+    journeyCollections: JourneyCollection[];
+    plausibleToken?: Nullable<string>;
+    website?: Nullable<boolean>;
+    showShareButton?: Nullable<boolean>;
+    showLikeButton?: Nullable<boolean>;
+    showDislikeButton?: Nullable<boolean>;
+    displayTitle?: Nullable<string>;
+    showHosts?: Nullable<boolean>;
+    showChatButtons?: Nullable<boolean>;
+    showReactionButtons?: Nullable<boolean>;
+    showLogo?: Nullable<boolean>;
+    showMenu?: Nullable<boolean>;
+    showDisplayTitle?: Nullable<boolean>;
+    menuButtonIcon?: Nullable<JourneyMenuButtonIcon>;
+    socialNodeX?: Nullable<number>;
+    socialNodeY?: Nullable<number>;
+    fromTemplateId?: Nullable<string>;
+    showAssistant?: Nullable<boolean>;
+    journeyCustomizationDescription?: Nullable<string>;
+    journeyCustomizationFields: JourneyCustomizationField[];
+    journeyTheme?: Nullable<JourneyTheme>;
+    userJourneys?: Nullable<UserJourney[]>;
+}
+
+export abstract class IQuery {
+    __typename?: 'IQuery';
+
+    abstract blocks(where?: Nullable<BlocksFilter>): Block[] | Promise<Block[]>;
+
+    abstract block(id: string): Block | Promise<Block>;
+
+    abstract customDomain(id: string): CustomDomain | Promise<CustomDomain>;
+
+    abstract customDomains(teamId: string): CustomDomain[] | Promise<CustomDomain[]>;
+
+    abstract hosts(teamId: string): Host[] | Promise<Host[]>;
+
+    abstract integrations(teamId: string): Integration[] | Promise<Integration[]>;
+
+    abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
+
+    abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
+
+    abstract adminJourney(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;
+
+    abstract journeys(where?: Nullable<JourneysFilter>, options?: Nullable<JourneysQueryOptions>): Journey[] | Promise<Journey[]>;
+
+    abstract journey(id: string, idType?: Nullable<IdType>, options?: Nullable<JourneysQueryOptions>): Journey | Promise<Journey>;
+
+    abstract journeyCollection(id: string): JourneyCollection | Promise<JourneyCollection>;
+
+    abstract journeyCollections(teamId: string): Nullable<JourneyCollection>[] | Promise<Nullable<JourneyCollection>[]>;
+
+    abstract journeyEventsConnection(journeyId: string, filter?: Nullable<JourneyEventsFilter>, first?: Nullable<number>, after?: Nullable<string>): JourneyEventsConnection | Promise<JourneyEventsConnection>;
+
+    abstract journeyEventsCount(journeyId: string, filter?: Nullable<JourneyEventsFilter>): number | Promise<number>;
+
+    abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
+
+    abstract journeyTheme(journeyId: string): Nullable<JourneyTheme> | Promise<Nullable<JourneyTheme>>;
+
+    abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
+
+    abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
+
+    abstract journeysEmailPreference(email: string): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
+
+    abstract journeysPlausibleStatsRealtimeVisitors(id: string, idType?: Nullable<IdType>): number | Promise<number>;
+
+    abstract journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsAggregateResponse | Promise<PlausibleStatsAggregateResponse>;
+
+    abstract journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
+
+    abstract journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
+
+    abstract qrCode(id: string): QrCode | Promise<QrCode>;
+
+    abstract qrCodes(where: QrCodesFilter): QrCode[] | Promise<QrCode[]>;
+
+    abstract teams(): Team[] | Promise<Team[]>;
+
+    abstract team(id: string): Team | Promise<Team>;
+
+    abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
+
+    abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
+
+    abstract userTeams(teamId: string, where?: Nullable<UserTeamFilterInput>): UserTeam[] | Promise<UserTeam[]>;
+
+    abstract userTeam(id: string): UserTeam | Promise<UserTeam>;
+
+    abstract userTeamInvites(teamId: string): UserTeamInvite[] | Promise<UserTeamInvite[]>;
+
+    abstract visitorsConnection(teamId?: Nullable<string>, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
+
+    abstract visitor(id: string): Visitor | Promise<Visitor>;
+}
+
 export abstract class IMutation {
     __typename?: 'IMutation';
-
-    abstract blockDeleteAction(id: string, journeyId?: Nullable<string>): Block | Promise<Block>;
-
-    abstract blockUpdateNavigateToBlockAction(id: string, input: NavigateToBlockActionInput, journeyId?: Nullable<string>): NavigateToBlockAction | Promise<NavigateToBlockAction>;
-
-    abstract blockUpdateLinkAction(id: string, input: LinkActionInput, journeyId?: Nullable<string>): LinkAction | Promise<LinkAction>;
-
-    abstract blockUpdateEmailAction(id: string, input: EmailActionInput, journeyId?: Nullable<string>): EmailAction | Promise<EmailAction>;
-
-    abstract blockUpdateAction(id: string, input?: Nullable<BlockUpdateActionInput>): Action | Promise<Action>;
 
     abstract blockDelete(id: string, journeyId?: Nullable<string>, parentBlockId?: Nullable<string>): Block[] | Promise<Block[]>;
 
@@ -1054,10 +1121,6 @@ export abstract class IMutation {
 
     abstract typographyBlockUpdate(id: string, input: TypographyBlockUpdateInput, journeyId?: Nullable<string>): TypographyBlock | Promise<TypographyBlock>;
 
-    abstract videoBlockCreate(input: VideoBlockCreateInput): VideoBlock | Promise<VideoBlock>;
-
-    abstract videoBlockUpdate(id: string, input: VideoBlockUpdateInput, journeyId?: Nullable<string>): VideoBlock | Promise<VideoBlock>;
-
     abstract chatButtonCreate(journeyId: string, input?: Nullable<ChatButtonCreateInput>): ChatButton | Promise<ChatButton>;
 
     abstract chatButtonUpdate(id: string, journeyId: string, input: ChatButtonUpdateInput): ChatButton | Promise<ChatButton>;
@@ -1071,8 +1134,6 @@ export abstract class IMutation {
     abstract customDomainDelete(id: string): CustomDomain | Promise<CustomDomain>;
 
     abstract customDomainCheck(id: string): CustomDomainCheck | Promise<CustomDomainCheck>;
-
-    abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 
     abstract chatOpenEventCreate(input: ChatOpenEventCreateInput): ChatOpenEvent | Promise<ChatOpenEvent>;
 
@@ -1203,135 +1264,6 @@ export abstract class IMutation {
     abstract visitorUpdateForCurrentUser(input: VisitorUpdateInput): Visitor | Promise<Visitor>;
 }
 
-export class Journey {
-    __typename?: 'Journey';
-    blocks?: Nullable<Block[]>;
-    primaryImageBlock?: Nullable<ImageBlock>;
-    creatorImageBlock?: Nullable<ImageBlock>;
-    logoImageBlock?: Nullable<ImageBlock>;
-    menuStepBlock?: Nullable<StepBlock>;
-    chatButtons: ChatButton[];
-    id: string;
-    title: string;
-    language: Language;
-    languageId: string;
-    themeMode: ThemeMode;
-    themeName: ThemeName;
-    description?: Nullable<string>;
-    creatorDescription?: Nullable<string>;
-    slug: string;
-    archivedAt?: Nullable<DateTime>;
-    deletedAt?: Nullable<DateTime>;
-    publishedAt?: Nullable<DateTime>;
-    trashedAt?: Nullable<DateTime>;
-    featuredAt?: Nullable<DateTime>;
-    updatedAt: DateTime;
-    createdAt: DateTime;
-    status: JourneyStatus;
-    seoTitle?: Nullable<string>;
-    seoDescription?: Nullable<string>;
-    template?: Nullable<boolean>;
-    host?: Nullable<Host>;
-    team?: Nullable<Team>;
-    strategySlug?: Nullable<string>;
-    tags: Tag[];
-    journeyCollections: JourneyCollection[];
-    plausibleToken?: Nullable<string>;
-    website?: Nullable<boolean>;
-    showShareButton?: Nullable<boolean>;
-    showLikeButton?: Nullable<boolean>;
-    showDislikeButton?: Nullable<boolean>;
-    displayTitle?: Nullable<string>;
-    showHosts?: Nullable<boolean>;
-    showChatButtons?: Nullable<boolean>;
-    showReactionButtons?: Nullable<boolean>;
-    showLogo?: Nullable<boolean>;
-    showMenu?: Nullable<boolean>;
-    showDisplayTitle?: Nullable<boolean>;
-    menuButtonIcon?: Nullable<JourneyMenuButtonIcon>;
-    socialNodeX?: Nullable<number>;
-    socialNodeY?: Nullable<number>;
-    fromTemplateId?: Nullable<string>;
-    journeyCustomizationDescription?: Nullable<string>;
-    journeyCustomizationFields: JourneyCustomizationField[];
-    journeyTheme?: Nullable<JourneyTheme>;
-    userJourneys?: Nullable<UserJourney[]>;
-}
-
-export abstract class IQuery {
-    __typename?: 'IQuery';
-
-    abstract blocks(where?: Nullable<BlocksFilter>): Block[] | Promise<Block[]>;
-
-    abstract block(id: string): Block | Promise<Block>;
-
-    abstract customDomain(id: string): CustomDomain | Promise<CustomDomain>;
-
-    abstract customDomains(teamId: string): CustomDomain[] | Promise<CustomDomain[]>;
-
-    abstract hosts(teamId: string): Host[] | Promise<Host[]>;
-
-    abstract integrations(teamId: string): Integration[] | Promise<Integration[]>;
-
-    abstract adminJourneys(status?: Nullable<JourneyStatus[]>, template?: Nullable<boolean>, teamId?: Nullable<string>, useLastActiveTeamId?: Nullable<boolean>): Journey[] | Promise<Journey[]>;
-
-    abstract adminJourneysReport(reportType: JourneysReportType): Nullable<PowerBiEmbed> | Promise<Nullable<PowerBiEmbed>>;
-
-    abstract adminJourney(id: string, idType?: Nullable<IdType>): Journey | Promise<Journey>;
-
-    abstract journeys(where?: Nullable<JourneysFilter>, options?: Nullable<JourneysQueryOptions>): Journey[] | Promise<Journey[]>;
-
-    abstract journey(id: string, idType?: Nullable<IdType>, options?: Nullable<JourneysQueryOptions>): Journey | Promise<Journey>;
-
-    abstract journeyCollection(id: string): JourneyCollection | Promise<JourneyCollection>;
-
-    abstract journeyCollections(teamId: string): Nullable<JourneyCollection>[] | Promise<Nullable<JourneyCollection>[]>;
-
-    abstract journeyEventsConnection(journeyId: string, filter?: Nullable<JourneyEventsFilter>, first?: Nullable<number>, after?: Nullable<string>): JourneyEventsConnection | Promise<JourneyEventsConnection>;
-
-    abstract journeyEventsCount(journeyId: string, filter?: Nullable<JourneyEventsFilter>): number | Promise<number>;
-
-    abstract getJourneyProfile(): Nullable<JourneyProfile> | Promise<Nullable<JourneyProfile>>;
-
-    abstract journeyTheme(journeyId: string): Nullable<JourneyTheme> | Promise<Nullable<JourneyTheme>>;
-
-    abstract journeyVisitorsConnection(filter: JourneyVisitorFilter, first?: Nullable<number>, after?: Nullable<string>, sort?: Nullable<JourneyVisitorSort>): JourneyVisitorsConnection | Promise<JourneyVisitorsConnection>;
-
-    abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
-
-    abstract journeysEmailPreference(email: string): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
-
-    abstract journeysPlausibleStatsRealtimeVisitors(id: string, idType?: Nullable<IdType>): number | Promise<number>;
-
-    abstract journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsAggregateResponse | Promise<PlausibleStatsAggregateResponse>;
-
-    abstract journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
-
-    abstract journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
-
-    abstract qrCode(id: string): QrCode | Promise<QrCode>;
-
-    abstract qrCodes(where: QrCodesFilter): QrCode[] | Promise<QrCode[]>;
-
-    abstract teams(): Team[] | Promise<Team[]>;
-
-    abstract team(id: string): Team | Promise<Team>;
-
-    abstract userInvites(journeyId: string): Nullable<UserInvite[]> | Promise<Nullable<UserInvite[]>>;
-
-    abstract getUserRole(): Nullable<UserRole> | Promise<Nullable<UserRole>>;
-
-    abstract userTeams(teamId: string, where?: Nullable<UserTeamFilterInput>): UserTeam[] | Promise<UserTeam[]>;
-
-    abstract userTeam(id: string): UserTeam | Promise<UserTeam>;
-
-    abstract userTeamInvites(teamId: string): UserTeamInvite[] | Promise<UserTeamInvite[]>;
-
-    abstract visitorsConnection(teamId?: Nullable<string>, first?: Nullable<number>, after?: Nullable<string>): VisitorsConnection | Promise<VisitorsConnection>;
-
-    abstract visitor(id: string): Visitor | Promise<Visitor>;
-}
-
 export class ButtonBlockSettings {
     __typename?: 'ButtonBlockSettings';
     alignment?: Nullable<ButtonAlignment>;
@@ -1419,6 +1351,25 @@ export class ImageBlock implements Block {
     focalLeft?: Nullable<number>;
 }
 
+export class MultiselectBlock implements Block {
+    __typename?: 'MultiselectBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    max?: Nullable<number>;
+    min?: Nullable<number>;
+}
+
+export class MultiselectOptionBlock implements Block {
+    __typename?: 'MultiselectOptionBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    label: string;
+}
+
 export class RadioOptionBlock implements Block {
     __typename?: 'RadioOptionBlock';
     id: string;
@@ -1482,6 +1433,7 @@ export class TextResponseBlock implements Block {
     placeholder?: Nullable<string>;
     required?: Nullable<boolean>;
     hint?: Nullable<string>;
+    hideLabel?: Nullable<boolean>;
     minRows?: Nullable<number>;
     type?: Nullable<TextResponseType>;
     routeId?: Nullable<string>;

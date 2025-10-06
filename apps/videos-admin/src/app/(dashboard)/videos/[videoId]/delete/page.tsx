@@ -1,7 +1,7 @@
 'use client'
 
 import { useMutation, useSuspenseQuery } from '@apollo/client'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
@@ -9,12 +9,6 @@ import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
-
-interface DeleteVideoPageProps {
-  params: {
-    videoId: string
-  }
-}
 
 const GET_VIDEO_FOR_DELETE = graphql(`
   query GetVideoForDelete($id: ID!, $languageId: ID!) {
@@ -38,10 +32,9 @@ const DELETE_VIDEO = graphql(`
   }
 `)
 
-export default function DeleteVideoPage({
-  params: { videoId }
-}: DeleteVideoPageProps): ReactElement {
+export default function DeleteVideoPage(): ReactElement {
   const router = useRouter()
+  const { videoId } = useParams<{ videoId: string }>()
   const { enqueueSnackbar } = useSnackbar()
   const { data } = useSuspenseQuery(GET_VIDEO_FOR_DELETE, {
     variables: { id: videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }

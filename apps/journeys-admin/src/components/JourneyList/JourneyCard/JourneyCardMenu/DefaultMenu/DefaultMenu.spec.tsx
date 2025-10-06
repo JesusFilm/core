@@ -23,6 +23,22 @@ import { GET_JOURNEY_WITH_USER_ROLES } from './DefaultMenu'
 
 import { DefaultMenu } from '.'
 
+const makeJourneyMock = (id: string) => ({
+  request: {
+    query: GET_JOURNEY_WITH_USER_ROLES,
+    variables: { id }
+  },
+  result: {
+    data: {
+      adminJourney: {
+        __typename: 'Journey',
+        id,
+        userJourneys: []
+      }
+    }
+  }
+})
+
 const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -186,7 +202,14 @@ const teamMockForNonManager = {
 describe('DefaultMenu', () => {
   it('should render menu for journey', async () => {
     const { getByRole } = render(
-      <MockedProvider mocks={[teamWithManagerMock]}>
+      <MockedProvider
+        mocks={[
+          teamWithManagerMock,
+          currentUserMock,
+          userRoleNonPublisherMock,
+          makeJourneyMock('journey-id')
+        ]}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <DefaultMenu
@@ -222,7 +245,14 @@ describe('DefaultMenu', () => {
 
   it('should render menu for templates', async () => {
     const { queryByRole, getByRole } = render(
-      <MockedProvider mocks={[teamWithManagerMock, userRolePublisherMock]}>
+      <MockedProvider
+        mocks={[
+          teamWithManagerMock,
+          userRolePublisherMock,
+          currentUserMock,
+          makeJourneyMock('template-id')
+        ]}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <DefaultMenu
@@ -265,7 +295,13 @@ describe('DefaultMenu', () => {
     const handleCloseMenu = jest.fn()
 
     const { getByRole } = render(
-      <MockedProvider>
+      <MockedProvider
+        mocks={[
+          teamWithManagerMock,
+          currentUserMock,
+          makeJourneyMock('journey-id')
+        ]}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <DefaultMenu

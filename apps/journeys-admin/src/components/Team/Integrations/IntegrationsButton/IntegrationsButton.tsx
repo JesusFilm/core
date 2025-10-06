@@ -47,61 +47,61 @@ export function IntegrationsButton({
   const { title, src } = getIntegrationContent()
 
   return (
-    <NextLink href={url} passHref legacyBehavior>
-      <Stack
-        justifyContent="center"
-        alignItems="center"
+    <Stack
+      component={NextLink}
+      href={url}
+      justifyContent="center"
+      alignItems="center"
+      sx={{
+        p: 4,
+        width: 150,
+        height: 180,
+        borderRadius: 2,
+        '&:hover': {
+          cursor: 'pointer',
+          backgroundColor: (theme) => theme.palette.grey[100]
+        }
+      }}
+      data-testid={`${type != null ? type : 'Add'}-IntegrationsButton`}
+    >
+      <Box
         sx={{
-          p: 4,
-          width: 150,
-          height: 180,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: 110,
+          width: 110,
+          border: (theme) => `1px solid ${theme.palette.grey[300]}`,
           borderRadius: 2,
-          '&:hover': {
-            cursor: 'pointer',
-            backgroundColor: (theme) => theme.palette.grey[100]
-          }
+          position: 'relative',
+          overflow: 'hidden',
+          mb: 3
         }}
-        data-testid={`${type != null ? type : 'Add'}-IntegrationsButton`}
       >
-        <Box
+        {showAddButton ? (
+          <Plus1Icon />
+        ) : src != null ? (
+          <Image src={src} alt={title ?? ''} height={65} width={65} />
+        ) : (
+          <InsertPhotoRoundedIcon />
+        )}
+      </Box>
+      {title != null || showAddButton ? (
+        <Typography
+          variant="body1"
           sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: 110,
-            width: 110,
-            border: (theme) => `1px solid ${theme.palette.grey[300]}`,
-            borderRadius: 2,
-            position: 'relative',
+            width: '100%',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
             overflow: 'hidden',
-            mb: 3
+            textAlign: 'center'
           }}
         >
-          {showAddButton ? (
-            <Plus1Icon />
-          ) : src != null ? (
-            <Image src={src} alt={title ?? ''} height={65} width={65} />
-          ) : (
-            <InsertPhotoRoundedIcon />
-          )}
-        </Box>
-        {title != null || showAddButton ? (
-          <Typography
-            variant="body1"
-            sx={{
-              width: '100%',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textAlign: 'center'
-            }}
-          >
-            {showAddButton ? t('Add Integration') : title}
-          </Typography>
-        ) : (
-          <Skeleton variant="text" width="80%" />
-        )}
-      </Stack>
-    </NextLink>
+          {showAddButton ? t('Add Integration') : title}
+        </Typography>
+      ) : (
+        <Skeleton variant="text" width="80%" />
+      )}
+    </Stack>
   )
 }

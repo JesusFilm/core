@@ -1,6 +1,5 @@
 import { sendGTMEvent } from '@next/third-parties/google'
 import dynamic from 'next/dynamic'
-import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -24,8 +23,6 @@ export const QuizButton = ({
   buttonText,
   contentId
 }: QuizButtonProps): ReactElement => {
-  const { t } = useTranslation('apps-watch')
-
   const [quizModalOpen, setQuizModalOpen] = useState<boolean | null>(null)
 
   function handleClick() {
@@ -40,20 +37,20 @@ export const QuizButton = ({
 
   return (
     <>
-      <div className="px-6 lg:px-8 pt-12 mx-auto w-full sm:w-auto lg:w-1/2 xl:w-1/2 2xl:w-2xl">
+      <div className="mx-auto w-full px-6 pt-12 sm:w-auto lg:w-1/2 lg:px-8 xl:w-1/2 2xl:w-2xl">
         <button
           onClick={handleClick}
-          className="relative w-full overflow-hidden bg-gradient-to-tr from-yellow-500 via-amber-500 to-red-700 bg-blend-multiply animate-mesh-gradient hover:animate-mesh-gradient-fast rounded-lg shadow-lg group hover:bg-orange-500"
+          className="animate-mesh-gradient hover:animate-mesh-gradient-fast group relative w-full overflow-hidden rounded-lg bg-gradient-to-tr from-yellow-500 via-amber-500 to-red-700 bg-blend-multiply shadow-lg hover:bg-orange-500"
           aria-label="Open faith quiz"
           tabIndex={0}
         >
-          <div className="flex justify-between items-center cursor-pointer p-4 xl:p-6">
-            <div className="absolute inset-0 bg-[url(./assets/overlay.svg)] bg-repeat mix-blend-multiply opacity-50"></div>
-            <div className="relative z-1 flex w-full items-center font-semibold leading-[1.2] md:text-xl xl:text-2xl">
-              <span className="flex-none uppercase font-extrabold text-xs border-2 tracking-wider border-white rounded-lg px-2 py-1 mr-4">
+          <div className="flex cursor-pointer items-center justify-between p-4 xl:p-6">
+            <div className="absolute inset-0 bg-[url(./assets/overlay.svg)] bg-repeat opacity-50 mix-blend-multiply"></div>
+            <div className="relative z-1 flex w-full items-center leading-[1.2] font-semibold md:text-xl xl:text-2xl">
+              <span className="mr-4 flex-none rounded-lg border-2 border-white px-2 py-1 text-xs font-extrabold tracking-wider uppercase">
                 {'Quiz'}
               </span>
-              <div className="text-center flex-auto">{buttonText}</div>
+              <div className="flex-auto text-center">{buttonText}</div>
             </div>
             <span className="transition">
               <svg fill="none" height="24" width="24" stroke="currentColor">

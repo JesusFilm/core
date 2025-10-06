@@ -18,7 +18,11 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
-import { PlaybackEvent, playbackReducer } from '../utils/playbackReducer'
+import {
+  PlaybackEvent,
+  type PlaybackState,
+  playbackReducer
+} from '../utils/playbackReducer'
 import VideoJsPlayer from '../utils/videoJsTypes'
 import { VideoStats } from '../VideoStats'
 
@@ -57,7 +61,7 @@ export function VideoControls({
     muted: initialMuted,
     playing: false,
     action: 'play'
-  })
+  } as PlaybackState)
 
   // Explicit fullscreen state since player.fullscreen state lags when video paused
   const [fullscreen, setFullscreen] = useState(

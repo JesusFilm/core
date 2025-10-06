@@ -1,7 +1,16 @@
-import { useCallback } from 'react'
+import { useRouter } from 'next/router'
 
 import { setCookie } from '../../cookieHandler'
 import { useWatch } from '../WatchContext'
+
+interface UseLanguageActionsHook {
+  updateAudioLanguage: (
+    language: { id: string; slug: string },
+    reload?: boolean
+  ) => void
+  updateSubtitleLanguage: (language: { id: string }) => void
+  updateSubtitlesOn: (subtitleOn: boolean) => void
+}
 
 /**
  * Hook that provides action dispatchers with side effects
@@ -12,96 +21,55 @@ import { useWatch } from '../WatchContext'
  * @example
  * ```typescript
  * function LanguageSelector() {
- *   const { updateSiteLanguage, updateAudioLanguage } = useLanguageActions()
+ *   const { updateAudioLanguage } = useLanguageActions()
  *
- *   const handleLanguageChange = (language: string) => {
- *     updateSiteLanguage(language) // Handles state + cookies + reload
+ *   const handleLanguageChange = (language: Language) => {
+ *     updateAudioLanguage(language) // Handles state + cookies + reload
  *   }
  * }
  * ```
  */
-export function useLanguageActions() {
-  const { state, dispatch } = useWatch()
+export function useLanguageActions(): UseLanguageActionsHook {
+  const { dispatch } = useWatch()
+  const router = useRouter()
 
-  const updateSiteLanguage = useCallback(
-    (language: string) => {
-      // Dispatch the pure action first
-      dispatch({
-        type: 'UpdateSiteLanguage',
-        language
+  function updateAudioLanguage(
+    language: { id: string; slug: string },
+    reload: boolean = true
+  ) {
+    dispatch({
+      type: 'SetLanguagePreferences',
+      audioLanguageId: language.id
+    })
+    setCookie('AUDIO_LANGUAGE', language.id)
+    updateSubtitleLanguage(language)
+
+    if (reload) {
+      const [pathname, query] = router.asPath.split('?')
+      const segments = pathname.split('/')
+      segments[segments.length - 1] = `${language.slug}.html`
+      const newPath = segments.join('/')
+      void router.push({
+        pathname: newPath,
+        query
       })
+    }
+  }
 
-      // Handle side effects after dispatch
-      const selectedLangObj = state.allLanguages?.find(
-        (lang) => lang.bcp47 === language
-      )
-      const newAudioLanguage = selectedLangObj?.id ?? state.audioLanguage
-      const newSubtitleLanguage = selectedLangObj?.id ?? state.subtitleLanguage
+  function updateSubtitleLanguage(language: { id: string }) {
+    dispatch({
+      type: 'SetLanguagePreferences',
+      subtitleLanguageId: language.id
+    })
+    setCookie('SUBTITLE_LANGUAGE', language.id)
+  }
 
-      // Set all affected cookies
-      setCookie('NEXT_LOCALE', language)
-      setCookie('AUDIO_LANGUAGE', newAudioLanguage)
-      setCookie('SUBTITLE_LANGUAGE', newSubtitleLanguage)
-
-      // Trigger page reload
-      if (state.router) {
-        setTimeout(() => state.router?.reload(), 0)
-      }
-    },
-    [state.allLanguages, state.audioLanguage, state.router, dispatch]
-  )
-
-  const updateAudioLanguage = useCallback(
-    (languageId: string) => {
-      // Dispatch the pure action first
-      dispatch({
-        type: 'UpdateAudioLanguage',
-        languageId
-      })
-
-      // Handle side effects after dispatch
-      setCookie('AUDIO_LANGUAGE', languageId)
-      setCookie('SUBTITLE_LANGUAGE', languageId)
-
-      // Trigger page reload
-      if (state.router) {
-        setTimeout(() => state.router?.reload(), 0)
-      }
-    },
-    [state.router, dispatch]
-  )
-
-  const updateSubtitleLanguage = useCallback(
-    (languageId: string) => {
-      // Dispatch the pure action first
-      dispatch({
-        type: 'UpdateSubtitleLanguage',
-        languageId
-      })
-
-      // Handle side effects after dispatch (no reload needed)
-      setCookie('SUBTITLE_LANGUAGE', languageId)
-    },
-    [dispatch]
-  )
-
-  const updateSubtitlesOn = useCallback(
-    (enabled: boolean) => {
-      // Dispatch the pure action first
-      dispatch({
-        type: 'UpdateSubtitlesOn',
-        enabled
-      })
-
-      // Handle side effects after dispatch (no reload needed)
-      setCookie('SUBTITLES_ON', enabled.toString())
-    },
-    [dispatch]
-  )
+  function updateSubtitlesOn(subtitleOn: boolean) {
+    dispatch({ type: 'SetLanguagePreferences', subtitleOn })
+    setCookie('SUBTITLES_ON', subtitleOn.toString())
+  }
 
   return {
-    dispatch, // For actions that don't need side effects
-    updateSiteLanguage,
     updateAudioLanguage,
     updateSubtitleLanguage,
     updateSubtitlesOn

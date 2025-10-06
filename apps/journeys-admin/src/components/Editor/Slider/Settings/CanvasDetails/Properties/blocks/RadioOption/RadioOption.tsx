@@ -68,7 +68,7 @@ export function RadioOption(props: TreeBlock<RadioOptionBlock>): ReactElement {
         disabled={disabled}
         value={
           (selectedBlock as TreeBlock<RadioOptionBlock>)
-            ?.pollOptionImageBlockId ?? t('No image')
+            ?.pollOptionImageBlockId ?? t('No Image')
         }
       >
         <RadioOptionImage radioOptionBlock={{ ...props }} />

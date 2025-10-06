@@ -23,7 +23,7 @@ import VideoJsPlayer from '../utils/videoJsTypes'
 import 'videojs-mux'
 
 interface InitAndPlayProps {
-  videoRef: RefObject<HTMLVideoElement>
+  videoRef: RefObject<HTMLVideoElement | null>
   player?: VideoJsPlayer
   setPlayer: Dispatch<SetStateAction<VideoJsPlayer | undefined>>
   triggerTimes: number[]

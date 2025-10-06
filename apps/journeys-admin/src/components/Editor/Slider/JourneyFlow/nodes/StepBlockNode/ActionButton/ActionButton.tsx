@@ -11,6 +11,7 @@ import { BlockFields as Block } from '../../../../../../../../__generated__/Bloc
 import { useUpdateEdge } from '../../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../../BaseNode'
 import { ACTION_BUTTON_HEIGHT } from '../libs/sizes'
+import { useGetValueFromJourneyCustomizationString } from '@core/journeys/ui/useGetValueFromJourneyCustomizationString'
 
 interface BlockUIProperties {
   title: string
@@ -35,7 +36,8 @@ export function ActionButton({
   const updateEdge = useUpdateEdge()
 
   function getTitle(block, defaultTitle): string {
-    if (block.label != null && block.label !== '') return block.label
+    if (block.label != null && block.label !== '')
+      return useGetValueFromJourneyCustomizationString(block.label)
     if (block.__typename === 'VideoBlock')
       return block.video?.title?.[0]?.value ?? block.title ?? t('Video')
     return defaultTitle
