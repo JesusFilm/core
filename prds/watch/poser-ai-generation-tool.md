@@ -154,22 +154,22 @@ libs/watch/media/ (if needed)
 
 ## 11. Implementation phases & checklists
 ### Phase A – Discovery & scaffolding
-- [ ] Audit existing uploader utilities & media services.
+- [x] Audit existing uploader utilities & media services.
   - `apps/journeys-admin` exposes an `UploadCard` abstraction that wraps `react-dropzone`, but it is tightly coupled to Apollo mutations and Admin-only theming. For Watch we should extract only the reusable pieces (drop handling + preview rendering) into a lightweight hook (`useFileDropzone`) rather than pulling the full component. Reuse of `react-dropzone` is viable because the dependency already exists in the workspace.
   - Media helpers in `libs/journeys/api-media` offer slug-based thumbnail lookups via `getVideoVariant`. They target legacy endpoints that remain compatible with the Watch frontend. We can wrap this logic in a new helper (`getCanonicalThumbnail`) that normalizes the response to `{ url, width, height, alt }`.
-- [ ] Confirm required env vars/endpoints for slug thumbnail fetch.
-  - The media service relies on `process.env.WATCH_API_BASE_URL` with `/journeys/video-variant/:slug` routes. Document this requirement in `docs/ENV.md` during the implementation phase and provide mock URLs for local development (e.g., `http://localhost:4000`).
+- [x] Confirm required env vars/endpoints for slug thumbnail fetch.
+  - The media service relies on `process.env.WATCH_API_BASE_URL` with `/journeys/video-variant/:slug` routes. Document this requirement in `apps/docs/docs/02-getting-started/02-environment-variables.mdx` during the implementation phase and provide mock URLs for local development (e.g., `http://localhost:4000`).
   - No additional secrets are necessary because the endpoint is public; ensure we gate calls with a slug allowlist to prevent SSRF.
-- [ ] Extend `@core/shared/ai` library with image generation module.
-  - Add `image-generation/` folder with Gemini adapter and tool-visuals-specific types.
+- [x] Extend `@core/shared/ai` library with image generation module.
+  - Added `image-generation/` folder with Gemini adapter and tool-visuals-specific types.
   - Structure: `src/image-generation/index.ts`, `src/image-generation/gemini.ts`, `src/image-generation/types.ts`, and `src/image-generation/tool-visuals-targets.ts`.
-  - **Client-side BYO key support:** Create separate adapter from existing server-side Gemini integration.
-  - **API key parameter:** Modify `gemini.ts` to accept `apiKey?: string` parameter for dynamic key support.
-  - **Model selection:** Use `gemini-2.5-flash-image-preview` with conditional API key: `google(modelName, apiKey ? { apiKey } : undefined)`.
-  - **Backward compatibility:** Keep existing `@core/shared/ai` functions unchanged for server-side usage.
-- [ ] Scaffold Pages Router route structure with placeholder components + responsive grid.
-  - Directory: `apps/watch/pages/watch/tools/visuals`. Create `index.tsx` that composes three client components (`OriginalPanel`, `SettingsPanel`, `ResultsPanel`) inside a responsive CSS grid (`grid-cols-1 md:grid-cols-[minmax(0,1fr)] lg:grid-cols-[320px_minmax(0,360px)_minmax(0,1fr)]`).
-  - Introduce placeholder content with TODO comments describing responsibilities so future phases can replace them incrementally. Ensure loading and error boundaries are handled via component-level Suspense and error boundaries.
+  - **Client-side BYO key support:** Created separate adapter from existing server-side Gemini integration.
+  - **API key parameter:** Modified `gemini.ts` to accept `apiKey?: string` parameter for dynamic key support.
+  - **Model selection:** Using `gemini-2.5-flash-image-preview` with conditional API key: `google(modelName, apiKey ? { apiKey } : undefined)`.
+  - **Backward compatibility:** Kept existing `@core/shared/ai` functions unchanged for server-side usage.
+- [x] Scaffold Pages Router route structure with placeholder components + responsive grid.
+  - Created directory: `apps/watch/pages/watch/tools/visuals`. Created `index.tsx` that composes three client components (`PanelOriginal`, `PanelSettings`, `PanelResults`) inside a responsive CSS grid (`grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,360px)_minmax(0,1fr)]`).
+  - Introduced placeholder content with TODO comments describing responsibilities so future phases can replace them incrementally. Implemented component-level error boundaries and proper TypeScript interfaces.
 
 ### Phase B – Intake workflow
 - [ ] Implement dropzone/paste using shared uploader or new abstraction.
