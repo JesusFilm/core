@@ -1,20 +1,39 @@
 import { LangfuseSpanProcessor, ShouldExportSpan } from '@langfuse/otel'
-import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node'
+import { registerOTel } from '@vercel/otel'
 
 import { langfuseEnvironment } from './src/lib/ai/langfuse/server'
 
 process.env.LANGFUSE_TRACING_ENVIRONMENT = langfuseEnvironment
 
+// Only export AI-related spans to Langfuse (HTTP/Next.js already in Datadog)
 const shouldExportSpan: ShouldExportSpan = ({ otelSpan }) => {
-  return otelSpan.instrumentationScope.name !== 'next.js'
+  const scopeName = otelSpan.instrumentationScope.name
+  const spanName = otelSpan.name
+
+  // Export AI SDK spans (they use 'ai' as scope name, not 'ai.')
+  // Export Langfuse-related spans
+  // Export custom AI operation spans
+  return (
+    scopeName === 'ai' ||
+    scopeName.startsWith('ai.') ||
+    scopeName.includes('langfuse') ||
+    spanName.includes('ai.') ||
+    spanName.includes('generateText') ||
+    spanName.includes('streamText')
+  )
 }
 
-export const langfuseSpanProcessor = new LangfuseSpanProcessor({
+const langfuseSpanProcessor = new LangfuseSpanProcessor({
   shouldExportSpan
 })
 
-const tracerProvider = new NodeTracerProvider({
+// Register Vercel OTel with Langfuse processor for AI tracing
+registerOTel({
+  serviceName: 'journeys-ai',
   spanProcessors: [langfuseSpanProcessor]
 })
 
-tracerProvider.register()
+// Export flush function for serverless environments
+export const flush = async () => {
+  await langfuseSpanProcessor.forceFlush()
+}

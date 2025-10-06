@@ -4,108 +4,103 @@ import {
   updateActiveObservation,
   updateActiveTrace
 } from '@langfuse/tracing'
-import { trace } from '@opentelemetry/api'
 import { generateText } from 'ai'
 import { NextRequest, NextResponse, after } from 'next/server'
 
-import { langfuseSpanProcessor } from '../../../../instrumentation'
+import { flush } from '../../../../instrumentation'
 import { getPrompt } from '../../../../src/lib/ai/langfuse/promptHelper'
+
+const traceName = "ai-context-generation"
 
 export type BlockContextInput = {
   blockId: string
   contextText: string
 }
 
-async function fetchBlockContext(
-  blockId: string,
-  contextText: string
-): Promise<string> {
-  const otelTracer = trace.getTracer('journey-context-generator')
-  const startTime = Date.now()
+// Wrap individual block context generation with Langfuse observation for granular tracing
+const fetchBlockContext = observe(
+  async (blockId: string, contextText: string): Promise<string> => {
+    const startTime = Date.now()
 
-  return otelTracer.startActiveSpan(
-    `ai-context-generation-${blockId}`,
-    async (span) => {
-      try {
-        span.setAttributes({
-          'block.id': blockId,
-          'block.context_length': contextText.length,
-          'ai.model': 'openai/gpt/4o',
-          'operation.type': 'ai-context-generation',
-          'operation.category': 'block-processing'
-        })
-
-        const prompt = await getPrompt('context-prompt', {
+    try {
+      // Set input metadata for this specific block operation
+      updateActiveObservation({
+        input: {
           blockId,
-          contextText
-        })
+          contextLength: contextText.length
+        },
+        metadata: {
+          blockId,
+          model: 'openai/gpt/4o'
+        }
+      })
 
-        // Set input for this observation
-        updateActiveObservation({
-          input: {
+      const prompt = await getPrompt('context-prompt', {
+        blockId,
+        contextText
+      })
+
+      const apologist = createOpenAICompatible({
+        name: 'apologist',
+        apiKey: process.env.APOLOGIST_API_KEY,
+        baseURL: `${process.env.APOLOGIST_API_URL}`
+      })
+
+      const { text, usage } = await generateText({
+        model: apologist('openai/gpt/4o'),
+        prompt: prompt,
+        experimental_telemetry: {
+          isEnabled: true,
+          metadata: {
             blockId,
-            contextText,
-            prompt
+            contextLength: contextText.length
           }
-        })
+        }
+      })
 
-        const apologist = createOpenAICompatible({
-          name: 'apologist',
-          apiKey: process.env.APOLOGIST_API_KEY,
-          baseURL: `${process.env.APOLOGIST_API_URL}`
-        })
+      // Remove markdown code block formatting if present
+      const result = text.replace(/^```json\s*/, '').replace(/\s*```$/, '')
+      const duration = Date.now() - startTime
 
-        const { text } = await generateText({
-          model: apologist('openai/gpt/4o'),
-          prompt: prompt
-        })
+      // Set output metadata with timing and usage
+      updateActiveObservation({
+        output: {
+          blockId,
+          resultLength: result.length,
+          success: true
+        },
+        metadata: {
+          durationMs: duration,
+          ...(usage && { usage })
+        }
+      })
 
-        // Remove markdown code block formatting if present
-        const result = text.replace(/^```json\s*/, '').replace(/\s*```$/, '')
+      return result
+    } catch (error) {
+      const duration = Date.now() - startTime
 
-        const duration = Date.now() - startTime
+      // Set error output
+      updateActiveObservation({
+        output: {
+          blockId,
+          error: error instanceof Error ? error.message : 'Unknown error',
+          success: false
+        },
+        metadata: {
+          durationMs: duration
+        }
+      })
 
-        span.setAttributes({
-          'ai.response_length': result.length,
-          'ai.success': true
-        })
-
-        // Set output for this observation
-        updateActiveObservation({
-          output: {
-            blockId,
-            result,
-            duration,
-            success: true
-          }
-        })
-
-        return result
-      } catch (error) {
-        const duration = Date.now() - startTime
-
-        span.setAttributes({
-          'ai.success': false,
-          'ai.error': error instanceof Error ? error.message : 'Unknown error'
-        })
-
-        // Set output for failed observation
-        updateActiveObservation({
-          output: {
-            blockId,
-            error: error instanceof Error ? error.message : 'Unknown error',
-            duration,
-            success: false
-          }
-        })
-
-        throw error
-      } finally {
-        span.end()
-      }
+      console.error(`Failed to generate context for block ${blockId}:`, error)
+      throw error
     }
-  )
-}
+  },
+  {
+    name: 'generate-block-context',
+    captureInput: false, // We manually set input via updateActiveObservation
+    captureOutput: false // We manually set output via updateActiveObservation
+  }
+)
 
 /**
  * Creates a fallback block context when AI processing fails.
@@ -176,128 +171,115 @@ function processFailedResult(
 }
 
 const handler = async (req: NextRequest) => {
-  const tracer = trace.getTracer('journey-context-api')
+  const startTime = Date.now()
 
-  return tracer.startActiveSpan('parallel-context-processing', async (span) => {
-    try {
-      // Process each blockContext in parallel
-      const { blockContexts } = await req.json()
+  try {
+    // Process each blockContext in parallel
+    const { blockContexts } = await req.json()
 
-      // Set trace name and input
-      updateActiveTrace({
-        name: 'ai-context-generation',
-        input: {
-          blockContexts: blockContexts.map((bc) => ({
-            blockId: bc.blockId,
-            contextText: bc.contextText,
-            contextLength: bc.contextText.length
-          }))
+    // Set trace input for Langfuse (name comes from observe() wrapper)
+    updateActiveTrace({
+      name: traceName,
+      input: {
+        totalBlocks: blockContexts.length,
+        blockContexts: blockContexts.map((bc) => ({
+          blockId: bc.blockId,
+          contextLength: bc.contextText.length
+        }))
+      },
+      metadata: {
+        operationType: 'parallel-batch-processing',
+        batchSize: blockContexts.length
+      }
+    })
+
+    // Filter out block contexts with empty contextText
+    const validBlockContexts = blockContexts.filter(
+      (bc) => bc.contextText.trim() !== ''
+    )
+
+    // Each fetchBlockContext call is wrapped in observe() and will appear as a child span
+    const promises = validBlockContexts.map((bc) =>
+      fetchBlockContext(bc.blockId, bc.contextText)
+    )
+    const settledResults = await Promise.allSettled(promises)
+    const processingTime = Date.now() - startTime
+
+    // Process results with graceful fallback handling
+    const processedResults = settledResults.map((result, index) => {
+      const { blockId, contextText } = validBlockContexts[index]
+
+      return result.status === 'fulfilled'
+        ? processSuccessfulResult(result.value, blockId, contextText)
+        : processFailedResult(result.reason, blockId, contextText)
+    })
+
+    // Combine results in the original order
+    const results = blockContexts.map((bc) => {
+      if (bc.contextText.trim() === '') {
+        // Return fallback for empty context blocks
+        return createFallbackBlockContext(bc.blockId, bc.contextText)
+      } else {
+        // Find the corresponding processed result
+        const validIndex = validBlockContexts.findIndex(
+          (validBc) => validBc.blockId === bc.blockId
+        )
+        return processedResults[validIndex]
+      }
+    })
+
+    const successCount = results.filter((r) => r.suggestions.length > 0).length
+    const fallbackCount = results.length - successCount
+
+    // Set trace output for Langfuse with detailed metrics
+    updateActiveTrace({
+      name: traceName,
+      output: {
+        summary: {
+          totalBlocks: results.length,
+          successCount,
+          fallbackCount,
+          processingTimeMs: processingTime
         }
-      })
-
-      span.setAttributes({
-        'request.block_count': blockContexts.length,
-        'request.total_context_length': blockContexts.reduce(
-          (sum, bc) => sum + bc.contextText.length,
-          0
-        ),
-        'operation.type': 'parallel-context-processing',
-        'operation.category': 'orchestration'
-      })
-
-      const startTime = Date.now()
-
-      // Filter out block contexts with empty contextText
-      const validBlockContexts = blockContexts.filter(
-        (bc) => bc.contextText.trim() !== ''
-      )
-      const emptyContextBlocks = blockContexts.filter(
-        (bc) => bc.contextText.trim() === ''
-      )
-
-      const promises = validBlockContexts.map((bc) =>
-        fetchBlockContext(bc.blockId, bc.contextText)
-      )
-      const settledResults = await Promise.allSettled(promises)
-      const processingTime = Date.now() - startTime
-
-      span.setAttributes({
-        'processing.duration_ms': processingTime,
-        'processing.parallel_operations': validBlockContexts.length,
-        'processing.skipped_empty_contexts': emptyContextBlocks.length
-      })
-
-      // Process results with graceful fallback handling
-      const processedResults = settledResults.map((result, index) => {
-        const { blockId, contextText } = validBlockContexts[index]
-
-        return result.status === 'fulfilled'
-          ? processSuccessfulResult(result.value, blockId, contextText)
-          : processFailedResult(result.reason, blockId, contextText)
-      })
-
-      // Combine results in the original order
-      const results = blockContexts.map((bc) => {
-        if (bc.contextText.trim() === '') {
-          // Return fallback for empty context blocks
-          return createFallbackBlockContext(bc.blockId, bc.contextText)
-        } else {
-          // Find the corresponding processed result
-          const validIndex = validBlockContexts.findIndex(
-            (validBc) => validBc.blockId === bc.blockId
-          )
-          return processedResults[validIndex]
+      },
+      metadata: {
+        performance: {
+          totalDurationMs: processingTime,
+          parallelOperations: validBlockContexts.length,
+          skippedEmptyContexts: blockContexts.length - validBlockContexts.length
         }
-      })
+      }
+    })
 
-      const successCount = results.filter(
-        (r) => r.suggestions.length > 0
-      ).length
-      const fallbackCount = results.length - successCount
+    // Important in serverless environments: schedule flush after request is finished
+    after(async () => await flush())
 
-      span.setAttributes({
-        'response.success_count': successCount,
-        'response.fallback_count': fallbackCount,
-        'response.total_results': results.length
-      })
+    return NextResponse.json({
+      blockContexts: results
+    })
+  } catch (error) {
+    const duration = Date.now() - startTime
 
-      // Set trace output
-      updateActiveTrace({
-        output: {
-          blockContexts: results,
-          summary: {
-            totalBlocks: results.length,
-            successCount,
-            fallbackCount,
-            processingTimeMs: processingTime
-          }
-        }
-      })
+    updateActiveTrace({
+      name: traceName,
+      output: {
+        error: error instanceof Error ? error.message : 'Unknown error'
+      },
+      metadata: {
+        durationMs: duration,
+        failed: true
+      }
+    })
 
-      // Important in serverless environments: schedule flush after request is finished
-      after(async () => await langfuseSpanProcessor.forceFlush())
-
-      return NextResponse.json({
-        blockContexts: results
-      })
-    } catch (error) {
-      span.setAttributes({
-        'error.occurred': true,
-        'error.message':
-          error instanceof Error ? error.message : 'Unknown error'
-      })
-      console.error('Error analyzing blocks:', error)
-      return NextResponse.json(
-        { error: 'Failed to analyze blocks' },
-        { status: 500 }
-      )
-    } finally {
-      span.end()
-    }
-  })
+    console.error('Error analyzing blocks:', error)
+    return NextResponse.json(
+      { error: 'Failed to analyze blocks' },
+      { status: 500 }
+    )
+  }
 }
 
 export const POST = observe(handler, {
-  name: 'ai-context-generation',
+  name: traceName,
   endOnExit: false
 })
