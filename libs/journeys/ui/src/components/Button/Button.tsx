@@ -168,7 +168,10 @@ export function Button({
         stepId: activeBlock?.id,
         label: heading,
         value: resolvedLabel,
-        action: action?.__typename as ButtonAction | undefined,
+        action:
+          action?.__typename != null
+            ? (action.__typename as ButtonAction)
+            : undefined,
         actionValue
       }
       void buttonClickEventCreate({
