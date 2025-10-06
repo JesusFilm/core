@@ -167,7 +167,6 @@ export function HeroVideo({
       const videoSource = currentMuxInsert ? currentMuxInsert.urls.hls : variant?.hls
       const videoId = currentMuxInsert ? currentMuxInsert.id : variant?.id
 
-
       if (!videoRef.current || !videoSource) {
         return
       }

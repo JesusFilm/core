@@ -5,12 +5,12 @@ import type { ReactNode } from 'react'
 import { GET_COLLECTION_COUNTS, GET_SHORT_FILMS } from './queries'
 import { useCarouselVideos } from './useCarouselVideos'
 import {
-  getPlaylistConfig,
+  filterOutBlacklistedVideos,
   getDeterministicOffset,
+  getPlaylistConfig,
   getRandomFromMultipleCollections,
-  isVideoAlreadyPlayed,
   isPoolExhausted,
-  filterOutBlacklistedVideos
+  isVideoAlreadyPlayed
 } from './utils'
 
 // Mock utils

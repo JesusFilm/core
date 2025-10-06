@@ -85,6 +85,17 @@ this guide again.
 
 You can skip ahead to step 2 in [4. Starting Projects](/docs/getting-started/running-projects/projects-on-local-machine) guide if getting started without a backend.
 
+## Watch App Environment Variables
+
+### Visuals AI Generation Tool
+
+The `/watch/tools/visuals` route requires the following environment variable:
+
+- `WATCH_API_BASE_URL`: Base URL for the Watch API (e.g., `http://localhost:4000` for local development, or production API endpoint)
+  - Used for slug-based thumbnail lookups via `/journeys/video-variant/:slug` routes
+  - This endpoint is public and doesn't require authentication
+  - For local development, ensure the API is running on the specified port
+
 ### Common Issues
 
 #### I changed to stg_dev environment variables but now I want to go back
