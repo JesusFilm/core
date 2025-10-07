@@ -338,10 +338,10 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                     isDownloadable: variant?.downloadable ?? false,
                     downloadSizes: {
                       approximateSmallDownloadSizeInBytes:
-                        variant?.downloads.find((d) => d.quality === 'low')
+                        variant?.downloads?.find((d) => d.quality === 'low')
                           ?.size ?? 0,
                       approximateLargeDownloadSizeInBytes:
-                        variant?.downloads.find((d) => d.quality === 'high')
+                        variant?.downloads?.find((d) => d.quality === 'high')
                           ?.size ?? 0
                     },
                     bibleCitations: bibleCitations.map((citation) => ({
@@ -427,11 +427,11 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                           isDownloadable: variant?.downloadable ?? false,
                           downloadSizes: {
                             approximateSmallDownloadSizeInBytes:
-                              variant?.downloads.find(
+                              variant?.downloads?.find(
                                 (d) => d.quality === 'low'
                               )?.size ?? 0,
                             approximateLargeDownloadSizeInBytes:
-                              variant?.downloads.find(
+                              variant?.downloads?.find(
                                 (d) => d.quality === 'high'
                               )?.size ?? 0
                           },
