@@ -66,9 +66,37 @@ describe('ChatAction', () => {
   })
 
   it('updates action chat url', async () => {
-    const result = jest.fn().mockReturnValue(blockActionChatUpdateMock.result)
+    const result = jest.fn(() => ({
+      data: {
+        blockUpdateChatAction: {
+          __typename: 'ChatAction',
+          parentBlockId: 'button2.id',
+          gtmEventName: null,
+          chatUrl: 'https://chat.example.com',
+          customizable: false,
+          parentStepId: 'step.id'
+        }
+      }
+    }))
     render(
-      <MockedProvider mocks={[{ ...blockActionChatUpdateMock, result }]}>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BLOCK_ACTION_CHAT_UPDATE,
+              variables: {
+                id: 'button2.id',
+                input: {
+                  chatUrl: 'https://chat.example.com',
+                  customizable: false,
+                  parentStepId: 'step.id'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
         <EditorProvider initialState={{ selectedBlock, selectedStep }}>
           <ChatAction />
         </EditorProvider>
@@ -104,9 +132,37 @@ describe('ChatAction', () => {
   })
 
   it('accepts links without protocol as a URL', async () => {
-    const result = jest.fn().mockReturnValue(blockActionChatUpdateMock.result)
+    const result = jest.fn(() => ({
+      data: {
+        blockUpdateChatAction: {
+          __typename: 'ChatAction',
+          parentBlockId: 'button2.id',
+          gtmEventName: null,
+          chatUrl: 'https://chat.example.com',
+          customizable: false,
+          parentStepId: 'step.id'
+        }
+      }
+    }))
     render(
-      <MockedProvider mocks={[{ ...blockActionChatUpdateMock, result }]}>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BLOCK_ACTION_CHAT_UPDATE,
+              variables: {
+                id: 'button2.id',
+                input: {
+                  chatUrl: 'https://chat.example.com',
+                  customizable: false,
+                  parentStepId: 'step.id'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
         <EditorProvider initialState={{ selectedBlock, selectedStep }}>
           <ChatAction />
         </EditorProvider>
@@ -170,9 +226,37 @@ describe('ChatAction', () => {
   })
 
   it('should submit when enter is pressed', async () => {
-    const result = jest.fn().mockReturnValue(blockActionChatUpdateMock.result)
+    const result = jest.fn(() => ({
+      data: {
+        blockUpdateChatAction: {
+          __typename: 'ChatAction',
+          parentBlockId: 'button2.id',
+          gtmEventName: null,
+          chatUrl: 'https://chat.example.com',
+          customizable: false,
+          parentStepId: 'step.id'
+        }
+      }
+    }))
     render(
-      <MockedProvider mocks={[{ ...blockActionChatUpdateMock, result }]}>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BLOCK_ACTION_CHAT_UPDATE,
+              variables: {
+                id: 'button2.id',
+                input: {
+                  chatUrl: 'https://chat.example.com',
+                  customizable: false,
+                  parentStepId: 'step.id'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
         <EditorProvider initialState={{ selectedBlock, selectedStep }}>
           <ChatAction />
         </EditorProvider>

@@ -84,7 +84,7 @@ export function generateActionTargetKey(action: Action): string {
       return `email:${action.email}`
     case 'ChatAction':
       return `chat:${action.chatUrl}`
-    // TODO: fix this
+    // TODO: fix this when phone action is implemented
     case 'PhoneAction':
       return `phone:${action.parentBlockId}`
     default:

@@ -161,7 +161,7 @@ function getLinkClicks(journeyEvents: PlausibleEvent[]): {
     const { event, target, events } = plausibleEvent
     if (
       target != null &&
-      (target.includes('link') || target.includes('chat'))
+      (target.includes('link:') || target.includes('chat:'))
     ) {
       const isChatLink = messagePlatforms.find(({ url }) =>
         target.includes(url)
