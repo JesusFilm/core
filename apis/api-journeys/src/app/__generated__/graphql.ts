@@ -512,16 +512,6 @@ export class CustomDomainUpdateInput {
     routeAllTeamJourneys?: Nullable<boolean>;
 }
 
-export class ButtonClickEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-    action?: Nullable<ButtonAction>;
-    actionValue?: Nullable<string>;
-}
-
 export class ChatOpenEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -789,6 +779,7 @@ export class JourneyVisitorFilter {
     journeyId: string;
     hasChatStarted?: Nullable<boolean>;
     hasPollAnswers?: Nullable<boolean>;
+    hasMultiselectSubmission?: Nullable<boolean>;
     hasTextResponse?: Nullable<boolean>;
     hasIcon?: Nullable<boolean>;
     hideInactive?: Nullable<boolean>;
@@ -1144,8 +1135,6 @@ export abstract class IMutation {
     abstract customDomainDelete(id: string): CustomDomain | Promise<CustomDomain>;
 
     abstract customDomainCheck(id: string): CustomDomainCheck | Promise<CustomDomainCheck>;
-
-    abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
 
     abstract chatOpenEventCreate(input: ChatOpenEventCreateInput): ChatOpenEvent | Promise<ChatOpenEvent>;
 
@@ -1564,6 +1553,15 @@ export class ChatOpenEvent implements Event {
     messagePlatform?: Nullable<MessagePlatform>;
 }
 
+export class MultiselectSubmissionEvent implements Event {
+    __typename?: 'MultiselectSubmissionEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+}
+
 export class JourneyViewEvent implements Event {
     __typename?: 'JourneyViewEvent';
     id: string;
@@ -1869,6 +1867,7 @@ export class JourneyVisitor {
     lastTextResponse?: Nullable<string>;
     lastRadioQuestion?: Nullable<string>;
     lastRadioOptionSubmission?: Nullable<string>;
+    lastMultiselectSubmission?: Nullable<string>;
     events: Event[];
     visitor: Visitor;
 }
