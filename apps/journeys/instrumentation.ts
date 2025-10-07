@@ -27,13 +27,12 @@ const langfuseSpanProcessor = new LangfuseSpanProcessor({
   shouldExportSpan
 })
 
-// Register Vercel OTel with Langfuse processor for AI tracing
 registerOTel({
   serviceName: 'journeys-ai',
   spanProcessors: [langfuseSpanProcessor]
 })
 
-// Export flush function for serverless environments
+// Flush function for serverless environments
 export const flush = async () => {
   await langfuseSpanProcessor.forceFlush()
 }

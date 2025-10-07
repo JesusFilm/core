@@ -17,14 +17,13 @@ export type BlockContextInput = {
   contextText: string
 }
 
-// Factory function to create observed block context function with dynamic trace name
 const createFetchBlockContext = (blockId: string) =>
   observe(
     async (contextText: string): Promise<string> => {
       const startTime = Date.now()
 
       try {
-        // Set input metadata for this specific block operation
+        // Set trace input metadata
         updateActiveObservation({
           input: {
             blockId,
@@ -63,7 +62,7 @@ const createFetchBlockContext = (blockId: string) =>
         const result = text.replace(/^```json\s*/, '').replace(/\s*```$/, '')
         const duration = Date.now() - startTime
 
-        // Set output metadata with timing and usage
+        // Set trace output metadata
         updateActiveObservation({
           output: {
             blockId,
@@ -80,7 +79,7 @@ const createFetchBlockContext = (blockId: string) =>
       } catch (error) {
         const duration = Date.now() - startTime
 
-        // Set error output
+        // Set trace error output metadata
         updateActiveObservation({
           output: {
             blockId,
@@ -98,8 +97,8 @@ const createFetchBlockContext = (blockId: string) =>
     },
     {
       name: `${traceName}-${blockId}`,
-      captureInput: false, // We manually set input via updateActiveObservation
-      captureOutput: false // We manually set output via updateActiveObservation
+      captureInput: false,
+      captureOutput: false
     }
   )
 
@@ -175,7 +174,6 @@ const handler = async (req: NextRequest) => {
   const startTime = Date.now()
 
   try {
-    // Process each blockContext in parallel
     const { blockContexts } = await req.json()
 
     // Set trace input for Langfuse (name comes from observe() wrapper)
@@ -203,6 +201,9 @@ const handler = async (req: NextRequest) => {
     const promises = validBlockContexts.map((bc) =>
       createFetchBlockContext(bc.blockId)(bc.contextText)
     )
+
+    // Process each blockContext in parallel
+    // Completes once the slowest request finishes
     const settledResults = await Promise.allSettled(promises)
     const processingTime = Date.now() - startTime
 
@@ -232,7 +233,7 @@ const handler = async (req: NextRequest) => {
     const successCount = results.filter((r) => r.suggestions.length > 0).length
     const fallbackCount = results.length - successCount
 
-    // Set trace output for Langfuse with detailed metrics
+    // Set trace output and metadata
     updateActiveTrace({
       name: traceName,
       output: {
