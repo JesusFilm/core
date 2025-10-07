@@ -277,7 +277,7 @@
   "Your label here": "Your label here",
   "Show label": "Show label",
   "Hide label": "Hide label",
-  "This label can be hidden from users, but it will always be included in analytics.\u200b": "This label can be hidden from users, but it will always be included in analytics.\u200b",
+  "This label can be hidden from users, but it will still appear in analytics and show as helper text if the field is required.": "This label can be hidden from users, but it will still appear in analytics and show as helper text if the field is required.",
   "One Row": "One Row",
   "Two Rows": "Two Rows",
   "Three Rows": "Three Rows",
