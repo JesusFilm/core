@@ -8,6 +8,11 @@ import {
   Image as ImageIcon,
   Info,
   Instagram,
+  MessageCircle,
+  MessageSquare,
+  Camera,
+  Send,
+  Layers,
   X,
   Palette,
   Paperclip,
@@ -81,6 +86,7 @@ Be thorough and accurate in your analysis.`
 
 export default function NewPage() {
   const [currentStep, setCurrentStep] = useState(1)
+  const [selectedFormat, setSelectedFormat] = useState<string>('')
   const [selectedOutputs, setSelectedOutputs] = useState<Record<string, string[]>>({})
   const [openaiApiKey, setOpenaiApiKey] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -242,6 +248,10 @@ export default function NewPage() {
         return { ...prev, [category]: categoryOutputs.filter(o => o !== optionName) }
       }
     })
+  }
+
+  const handleFormatChange = (format: string) => {
+    setSelectedFormat(format)
   }
 
 // Removed - using proper conversation history instead
@@ -1058,6 +1068,208 @@ When refining or improving content, consider:
                     className="hidden"
                   />
 
+                  {/* Content Type Selector */}
+                  <div className="mt-6">
+                    <div className="flex items-center gap-4 mb-4">
+                      <label className="text-lg font-semibold">In what format?</label>
+                      <span className="text-sm text-muted-foreground">Expected output format from this task</span>
+                    </div>
+                    <div className="grid grid-cols-6 gap-4 mb-8">
+                      {/* Mixed */}
+                      <div className={`p-4 border rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
+                        selectedFormat === 'Mixed'
+                          ? 'bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-600 border-indigo-500'
+                          : 'bg-transparent border-gray-300 hover:bg-gradient-to-br hover:from-indigo-500 hover:via-purple-600 hover:to-pink-600'
+                      }`} onClick={() => handleFormatChange('Mixed')}>
+                        <div className="p-3">
+                          <Layers className={`w-8 h-8 ${selectedFormat === 'Mixed' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`} />
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className={`font-medium text-sm text-center ${selectedFormat === 'Mixed' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`}>Mixed</span>
+                        </div>
+                      </div>
+
+                      {/* Images */}
+                      <div className={`p-4 border rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
+                        selectedFormat === 'Images'
+                          ? 'bg-gradient-to-br from-purple-500 via-pink-600 to-red-600 border-purple-500'
+                          : 'bg-transparent border-gray-300 hover:bg-gradient-to-br hover:from-purple-500 hover:via-pink-600 hover:to-red-600'
+                      }`} onClick={() => handleFormatChange('Images')}>
+                        <div className="p-3">
+                          <ImageIcon className={`w-8 h-8 ${selectedFormat === 'Images' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`} />
+                        </div>
+                        <span className={`font-medium text-sm text-center ${selectedFormat === 'Images' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`}>Images</span>
+                      </div>
+
+                      {/* Videos */}
+                      <div className={`p-4 border rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
+                        selectedFormat === 'Videos'
+                          ? 'bg-gradient-to-br from-blue-500 via-cyan-600 to-teal-600 border-blue-500'
+                          : 'bg-transparent border-gray-300 hover:bg-gradient-to-br hover:from-blue-500 hover:via-cyan-600 hover:to-teal-600'
+                      }`} onClick={() => handleFormatChange('Videos')}>
+                        <div className="p-3">
+                          <Video className={`w-8 h-8 ${selectedFormat === 'Videos' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`} />
+                        </div>
+                        <span className={`font-medium text-sm text-center ${selectedFormat === 'Videos' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`}>Videos</span>
+                      </div>
+
+                      {/* Text */}
+                      <div className={`p-4 border rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
+                        selectedFormat === 'Text'
+                          ? 'bg-gradient-to-br from-emerald-500 via-green-600 to-lime-600 border-emerald-500'
+                          : 'bg-transparent border-gray-300 hover:bg-gradient-to-br hover:from-emerald-500 hover:via-green-600 hover:to-lime-600'
+                      }`} onClick={() => handleFormatChange('Text')}>
+                        <div className="p-3">
+                          <MessageCircle className={`w-8 h-8 ${selectedFormat === 'Text' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`} />
+                        </div>
+                        <span className={`font-medium text-sm text-center ${selectedFormat === 'Text' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`}>Text</span>
+                      </div>
+
+                      {/* Web */}
+                      <div className={`p-4 border rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
+                        selectedFormat === 'Web'
+                          ? 'bg-gradient-to-br from-orange-500 via-yellow-600 to-amber-600 border-orange-500'
+                          : 'bg-transparent border-gray-300 hover:bg-gradient-to-br hover:from-orange-500 hover:via-yellow-600 hover:to-amber-600'
+                      }`} onClick={() => handleFormatChange('Web')}>
+                        <div className="p-3">
+                          <Globe className={`w-8 h-8 ${selectedFormat === 'Web' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`} />
+                        </div>
+                        <span className={`font-medium text-sm text-center ${selectedFormat === 'Web' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`}>Web</span>
+                      </div>
+
+                      {/* Print */}
+                      <div className={`p-4 border rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
+                        selectedFormat === 'Print'
+                          ? 'bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-600 border-rose-500'
+                          : 'bg-transparent border-gray-300 hover:bg-gradient-to-br hover:from-rose-500 hover:via-pink-600 hover:to-fuchsia-600'
+                      }`} onClick={() => handleFormatChange('Print')}>
+                        <div className="p-3">
+                          <Printer className={`w-8 h-8 ${selectedFormat === 'Print' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`} />
+                        </div>
+                        <span className={`font-medium text-sm text-center ${selectedFormat === 'Print' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`}>Print</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Output Format Grid Selector */}
+                  <div className="mt-6">
+                    <div className="flex items-center gap-4 mb-4">
+                      <label className="text-lg font-semibold">Where will you share?</label>
+                      <span className="text-sm text-muted-foreground">Expected output format from this task</span>
+                    </div>
+                    <div className="grid grid-cols-6 gap-4">
+                      {/* Facebook */}
+                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-blue-500 hover:via-indigo-600 hover:to-purple-700 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('Facebook', 'Facebook', !selectedOutputs['Facebook']?.includes('Facebook'))}>
+                        <div className="p-3">
+                          <Facebook className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">Facebook</span>
+                          <span className="text-xs text-gray-500 group-hover:text-white/80">3.07B users</span>
+                        </div>
+                      </div>
+
+                      {/* YouTube */}
+                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-red-500 hover:via-orange-600 hover:to-yellow-600 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('YouTube', 'YouTube', !selectedOutputs['YouTube']?.includes('YouTube'))}>
+                        <div className="p-3">
+                          <Youtube className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">YouTube</span>
+                          <span className="text-xs text-gray-500 group-hover:text-white/80">2.5B users</span>
+                        </div>
+                      </div>
+
+                      {/* Instagram */}
+                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-pink-500 hover:via-rose-600 hover:to-purple-700 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('Instagram', 'Instagram', !selectedOutputs['Instagram']?.includes('Instagram'))}>
+                        <div className="p-3">
+                          <Instagram className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">Instagram</span>
+                          <span className="text-xs text-gray-500 group-hover:text-white/80">2.0B users</span>
+                        </div>
+                      </div>
+
+                      {/* WhatsApp */}
+                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-green-500 hover:via-emerald-500 hover:to-teal-600 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('WhatsApp', 'WhatsApp', !selectedOutputs['WhatsApp']?.includes('WhatsApp'))}>
+                        <div className="p-3">
+                          <MessageCircle className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">WhatsApp</span>
+                          <span className="text-xs text-gray-500 group-hover:text-white/80">2.0B users</span>
+                        </div>
+                      </div>
+
+                      {/* TikTok */}
+                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-black hover:via-gray-800 hover:to-black transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('TikTok', 'TikTok', !selectedOutputs['TikTok']?.includes('TikTok'))}>
+                        <div className="p-3">
+                          <Video className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">TikTok</span>
+                          <span className="text-xs text-gray-500 group-hover:text-white/80">1.6B users</span>
+                        </div>
+                      </div>
+
+                      {/* WeChat */}
+                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-lime-400 hover:via-green-500 hover:to-emerald-600 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('WeChat', 'WeChat', !selectedOutputs['WeChat']?.includes('WeChat'))}>
+                        <div className="p-3">
+                          <MessageSquare className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">WeChat</span>
+                          <span className="text-xs text-gray-500 group-hover:text-white/80">1.3-1.4B users</span>
+                        </div>
+                      </div>
+
+                      {/* Telegram */}
+                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-cyan-400 hover:via-blue-500 hover:to-indigo-600 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('Telegram', 'Telegram', !selectedOutputs['Telegram']?.includes('Telegram'))}>
+                        <div className="p-3">
+                          <Send className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">Telegram</span>
+                          <span className="text-xs text-gray-500 group-hover:text-white/80">0.9-1.0B+ users</span>
+                        </div>
+                      </div>
+
+                      {/* Snapchat */}
+                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-yellow-400 hover:via-orange-500 hover:to-red-500 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('Snapchat', 'Snapchat', !selectedOutputs['Snapchat']?.includes('Snapchat'))}>
+                        <div className="p-3">
+                          <Camera className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">Snapchat</span>
+                          <span className="text-xs text-gray-500 group-hover:text-white/80">0.8-0.9B users</span>
+                        </div>
+                      </div>
+
+                      {/* Twitter */}
+                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-slate-500 hover:via-gray-600 hover:to-zinc-700 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('Twitter', 'Twitter', !selectedOutputs['Twitter']?.includes('Twitter'))}>
+                        <div className="p-3">
+                          <X className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">Twitter</span>
+                          <span className="text-xs text-gray-500 group-hover:text-white/80">0.5-0.6B+ users</span>
+                        </div>
+                      </div>
+
+                      {/* LinkedIn */}
+                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-blue-600 hover:via-cyan-600 hover:to-teal-600 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('LinkedIn', 'LinkedIn', !selectedOutputs['LinkedIn']?.includes('LinkedIn'))}>
+                        <div className="p-3">
+                          <Users className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">LinkedIn</span>
+                          <span className="text-xs text-gray-500 group-hover:text-white/80">1B+ users</span>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
 
                   {aiResponse && (
                     <div>
