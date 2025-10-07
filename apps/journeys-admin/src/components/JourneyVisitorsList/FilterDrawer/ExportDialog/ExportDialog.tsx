@@ -82,13 +82,20 @@ export function ExportDialog({
         await exportJourneyEvents({ journeyId, filter })
       } else if (exportBy === 'Contact Data') {
         const filter = {
+          typenames: contactData.filter(
+            (data) => data !== 'name' && data !== 'email' && data !== 'phone'
+          ),
           ...(startDate && { periodRangeStart: startDate.toISOString() }),
           ...(endDate && { periodRangeEnd: endDate.toISOString() })
         }
         await exportJourneyContacts({
           journeyId,
           filter,
-          contactDataFields: contactData
+          select: {
+            name: contactData.includes('name'),
+            email: contactData.includes('email'),
+            phone: contactData.includes('phone')
+          }
         })
       }
       onClose()
@@ -185,7 +192,10 @@ export function ExportDialog({
           <Typography variant="subtitle2" gutterBottom>
             {t('Select contact data:')}
           </Typography>
-          <ContactDataForm setContactData={setContactData} />
+          <ContactDataForm
+            setSelectedFields={setContactData}
+            selectedFields={contactData}
+          />
         </Box>
       )}
     </Dialog>
