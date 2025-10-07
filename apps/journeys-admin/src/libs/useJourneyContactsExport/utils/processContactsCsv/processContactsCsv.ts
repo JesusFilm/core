@@ -9,6 +9,8 @@ export function downloadCsv(csvContent: string, filename: string = 'data') {
   a.setAttribute('download', `[${today}] ${filename}.csv`)
   document.body.appendChild(a)
   a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(url)
+  setTimeout(() => {
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }, 0)
 }

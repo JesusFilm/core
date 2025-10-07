@@ -1,3 +1,4 @@
+import { waitFor } from '@testing-library/react'
 import { format } from 'date-fns'
 
 import { downloadCsv } from '.'
@@ -51,7 +52,7 @@ describe('downloadCsv', () => {
     mockCreateElement.mockReturnValue(mockLinkElement)
   })
 
-  it('should create and download CSV file with default filename', () => {
+  it('should create and download CSV file with default filename', async () => {
     const csvContent = 'Name,Email\nJohn Doe,john@example.com'
 
     downloadCsv(csvContent)
@@ -64,7 +65,9 @@ describe('downloadCsv', () => {
     )
     expect(mockAppendChild).toHaveBeenCalledWith(mockLinkElement)
     expect(mockClick).toHaveBeenCalled()
-    expect(mockRemoveChild).toHaveBeenCalledWith(mockLinkElement)
+    await waitFor(() => {
+      expect(mockRemoveChild).toHaveBeenCalledWith(mockLinkElement)
+    })
     expect(mockRevokeObjectURL).toHaveBeenCalledWith('blob:url')
   })
 
