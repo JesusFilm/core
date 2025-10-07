@@ -30,7 +30,7 @@ export function VideoCard({
     <NextLink
       href={href}
       scroll={false}
-      className="block no-underline text-inherit"
+      className="block text-inherit no-underline"
       style={{ pointerEvents: video != null ? 'auto' : 'none' }}
       aria-label="VideoCard"
       data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}
@@ -41,10 +41,10 @@ export function VideoCard({
           data-testid={`VideoCardButton-${video.slug}`}
           name={last(video.title)?.value}
           disabled={video == null}
-          className="rounded-lg w-full relative text-left border-none bg-transparent p-0 cursor-pointer disabled:cursor-default"
+          className="relative w-full cursor-pointer rounded-lg border-none bg-transparent p-0 text-left disabled:cursor-default"
         >
           <div
-            className="relative max-w-[200px] h-60 flex flex-col justify-end w-full rounded-xl cursor-pointer bg-black"
+            className="relative flex h-60 w-full max-w-[200px] cursor-pointer flex-col justify-end rounded-xl bg-black"
             tabIndex={0}
             role="button"
             data-testid={`CarouselItem-${video.slug}`}
@@ -53,7 +53,7 @@ export function VideoCard({
             onMouseLeave={() => setIsHovered(false)}
           >
             {/* Image Layer */}
-            <div className="absolute left-0 right-0 top-0 bottom-0 rounded-lg overflow-hidden">
+            <div className="absolute top-0 right-0 bottom-0 left-0 overflow-hidden rounded-lg">
               <Image
                 fill
                 src={video.images[0].mobileCinematicHigh ?? ''}
@@ -71,7 +71,7 @@ export function VideoCard({
 
             {/* Active/Hover Border Layer */}
             <div
-              className={`absolute left-0 right-0 top-0 bottom-0 rounded-lg overflow-visible transition-all duration-100 ease-in-out pointer-events-none ${
+              className={`pointer-events-none absolute top-0 right-0 bottom-0 left-0 overflow-visible rounded-lg transition-all duration-100 ease-in-out ${
                 active || isHovered ? 'shadow-[inset_0_0_0_4px_#fff]' : ''
               }`}
               data-testid="ActiveLayer"
@@ -79,7 +79,7 @@ export function VideoCard({
 
             {/* Play Button with Fade */}
             <button
-              className={`absolute top-1/2 right-1/2 transform translate-x-1/2 -translate-y-1/2 w-20 h-20 flex items-center justify-center text-white bg-red-500 bg-opacity-50 rounded-full transition-all duration-300 cursor-pointer z-2 ${
+              className={`bg-opacity-50 absolute top-1/2 right-1/2 z-2 flex h-20 w-20 translate-x-1/2 -translate-y-1/2 transform cursor-pointer items-center justify-center rounded-full bg-red-500 text-white transition-all duration-300 ${
                 !active && isHovered ? 'opacity-100' : 'opacity-0'
               }`}
               style={{
@@ -90,7 +90,7 @@ export function VideoCard({
             </button>
 
             {/* Content */}
-            <div className="p-4 font-sans z-1">
+            <div className="z-1 p-4 font-sans">
               <span
                 className="font-apercu text-xs font-medium tracking-widest uppercase opacity-50"
                 data-testid="CarouselItemCategory"
@@ -98,7 +98,7 @@ export function VideoCard({
                 {label}
               </span>
               <h3
-                className="font-apercu text-base font-bold leading-tight opacity-70 overflow-hidden"
+                className="font-apercu overflow-hidden text-base leading-tight font-bold opacity-70"
                 style={{
                   display: '-webkit-box',
                   WebkitLineClamp: 3,
