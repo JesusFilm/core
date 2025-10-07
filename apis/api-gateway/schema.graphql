@@ -1432,26 +1432,6 @@ type RadioQuestionSubmissionEvent implements Event @join__type(graph: API_JOURNE
   value: String
 }
 
-type MultiselectSubmissionEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
-  id: ID!
-  """
-  ID of the journey that the multiselect block belongs to
-  """
-  journeyId: ID!
-  """
-  time event was created
-  """
-  createdAt: DateTime!
-  """
-  stepName of the parent stepBlock
-  """
-  label: String
-  """
-  comma separated selected option labels
-  """
-  value: String
-}
-
 type SignUpSubmissionEvent implements Event @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Event")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Event")  {
   id: ID!
   """
