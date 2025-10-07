@@ -207,14 +207,21 @@ builder.queryField('journeyVisitorExport', (t) => {
         select: t.arg({ type: JourneyVisitorExportSelect, required: false })
       },
       resolve: async (_, { journeyId, filter, select }, context) => {
-        // authorize user to manage journey
         const journey = await prisma.journey.findUnique({
           where: {
             id: journeyId
           },
           include: {
             team: { include: { userTeams: true } },
-            userJourneys: true
+            userJourneys: true,
+            blocks: {
+              select: {
+                id: true
+              },
+              orderBy: {
+                updatedAt: 'asc'
+              }
+            }
           }
         })
 
@@ -255,26 +262,27 @@ builder.queryField('journeyVisitorExport', (t) => {
         // Get unique blockId_label combinations for headers using Prisma
         const blockHeadersResult = await prisma.event.findMany({
           where: eventWhere,
-          include: {
-            block: {
-              select: {
-                updatedAt: true
-              }
-            }
-          },
-          orderBy: {
-            block: {
-              updatedAt: 'asc'
-            }
+          select: {
+            blockId: true,
+            label: true
           },
           distinct: ['blockId', 'label']
         })
 
+        // TODO: sort blockIds based on order the block appears in the journey
+        const blockIds = journey.blocks.map((block) => block.id)
+
         // Build headers: visitor info + dynamic block columns
-        const blockHeaders = blockHeadersResult.map((item) => ({
-          key: `${item.blockId!}-${item.label!}`,
-          header: item.label!
-        }))
+        const blockHeaders = blockHeadersResult
+          .sort(
+            (a, b) =>
+              blockIds.findIndex((blockId) => blockId === a.blockId) -
+              blockIds.findIndex((blockId) => blockId === b.blockId)
+          )
+          .map((item) => ({
+            key: `${item.blockId!}-${item.label!}`,
+            header: item.label!
+          }))
 
         const columns = [
           { key: 'id' },
