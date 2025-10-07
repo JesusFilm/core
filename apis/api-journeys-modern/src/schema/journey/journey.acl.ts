@@ -89,7 +89,11 @@ export function journeyAcl(
   }
 
   // Non-publishers cannot manage templates
-  if (action === Action.Manage && 'template' in journey) {
+  if (
+    action === Action.Manage &&
+    'template' in journey &&
+    journey.template === true
+  ) {
     return false
   }
 

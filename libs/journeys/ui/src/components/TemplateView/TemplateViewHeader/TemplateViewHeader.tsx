@@ -151,7 +151,10 @@ export function TemplateViewHeader({
               marginTop: 'auto'
             }}
           >
-            <TemplateActionButton signedIn={authUser?.id != null} />
+            <TemplateActionButton
+              signedIn={authUser?.id != null}
+              openTeamDialogOnSignIn
+            />
             <PreviewTemplateButton slug={journey?.slug} />
             {journey != null && isPublisher === true && (
               <TemplateEditButton journeyId={journey.id} />

@@ -780,6 +780,7 @@ export class JourneyVisitorFilter {
     journeyId: string;
     hasChatStarted?: Nullable<boolean>;
     hasPollAnswers?: Nullable<boolean>;
+    hasMultiselectSubmission?: Nullable<boolean>;
     hasTextResponse?: Nullable<boolean>;
     hasIcon?: Nullable<boolean>;
     hideInactive?: Nullable<boolean>;
@@ -1564,6 +1565,15 @@ export class ChatOpenEvent implements Event {
     messagePlatform?: Nullable<MessagePlatform>;
 }
 
+export class MultiselectSubmissionEvent implements Event {
+    __typename?: 'MultiselectSubmissionEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
+}
+
 export class JourneyViewEvent implements Event {
     __typename?: 'JourneyViewEvent';
     id: string;
@@ -1869,6 +1879,7 @@ export class JourneyVisitor {
     lastTextResponse?: Nullable<string>;
     lastRadioQuestion?: Nullable<string>;
     lastRadioOptionSubmission?: Nullable<string>;
+    lastMultiselectSubmission?: Nullable<string>;
     events: Event[];
     visitor: Visitor;
 }
