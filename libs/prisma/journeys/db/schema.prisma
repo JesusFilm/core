@@ -147,6 +147,7 @@ model Event {
   visitor                 Visitor           @relation(fields: [visitorId], references: [id], onDelete: Cascade)
   journeyVisitor          JourneyVisitor?   @relation(fields: [journeyId, visitorId], references: [journeyId, visitorId])
   journey                 Journey?          @relation(fields: [journeyId], references: [id])
+  block                   Block?            @relation(fields: [blockId], references: [id])
 
   @@index(journeyId)
   @@index(visitorId)
@@ -576,6 +577,7 @@ model Block {
   min                        Int?
   max                        Int?
   settings                   Json                 @default("{ }") // block settings
+  events                     Event[]
 
   @@unique([slug, journeyId])
   @@index(journeyId)

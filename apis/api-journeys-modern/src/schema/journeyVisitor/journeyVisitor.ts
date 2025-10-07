@@ -149,7 +149,11 @@ async function* getJourneyVisitors(
           where: eventWhere,
           select: {
             blockId: true,
+            label: true,
             value: true
+          },
+          orderBy: {
+            createdAt: 'asc'
           }
         }
       }
@@ -170,11 +174,12 @@ async function* getJourneyVisitors(
       }
 
       journeyVisitor.events.forEach((event) => {
-        if (event.blockId) {
-          if (row[event.blockId]) {
-            row[event.blockId] += `;${event.value!}`
+        if (event.blockId && event.label) {
+          const key = `${event.blockId}-${event.label}`
+          if (row[key]) {
+            row[key] += `; ${event.value!}`
           } else {
-            row[event.blockId] = event.value!
+            row[key] = event.value!
           }
         }
       })
@@ -250,16 +255,24 @@ builder.queryField('journeyVisitorExport', (t) => {
         // Get unique blockId_label combinations for headers using Prisma
         const blockHeadersResult = await prisma.event.findMany({
           where: eventWhere,
-          select: {
-            blockId: true,
-            label: true
+          include: {
+            block: {
+              select: {
+                updatedAt: true
+              }
+            }
+          },
+          orderBy: {
+            block: {
+              updatedAt: 'asc'
+            }
           },
           distinct: ['blockId', 'label']
         })
 
         // Build headers: visitor info + dynamic block columns
         const blockHeaders = blockHeadersResult.map((item) => ({
-          key: item.blockId!,
+          key: `${item.blockId!}-${item.label!}`,
           header: item.label!
         }))
 

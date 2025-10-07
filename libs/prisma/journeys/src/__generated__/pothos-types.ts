@@ -31,7 +31,7 @@ export default interface PrismaTypes {
         Where: Prisma.EventWhereInput;
         Create: {};
         Update: {};
-        RelationName: "visitor" | "journeyVisitor" | "journey";
+        RelationName: "visitor" | "journeyVisitor" | "journey" | "block";
         ListRelations: never;
         Relations: {
             visitor: {
@@ -47,6 +47,11 @@ export default interface PrismaTypes {
             journey: {
                 Shape: Journey | null;
                 Name: "Journey";
+                Nullable: true;
+            };
+            block: {
+                Shape: Block | null;
+                Name: "Block";
                 Nullable: true;
             };
         };
@@ -479,8 +484,8 @@ export default interface PrismaTypes {
         Where: Prisma.BlockWhereInput;
         Create: {};
         Update: {};
-        RelationName: "action" | "journey" | "posterBlock" | "posterBlockParent" | "coverBlock" | "coverBlockParent" | "pollOptionImageBlock" | "pollOptionImageBlockParent" | "primaryImageBlockParent" | "creatorImageBlockParent" | "nextBlock" | "nextBlockParents" | "parentBlock" | "childBlocks" | "targetActions" | "menuStepBlockParent" | "logoImageBlockParent";
-        ListRelations: "nextBlockParents" | "childBlocks" | "targetActions";
+        RelationName: "action" | "journey" | "posterBlock" | "posterBlockParent" | "coverBlock" | "coverBlockParent" | "pollOptionImageBlock" | "pollOptionImageBlockParent" | "primaryImageBlockParent" | "creatorImageBlockParent" | "nextBlock" | "nextBlockParents" | "parentBlock" | "childBlocks" | "targetActions" | "menuStepBlockParent" | "logoImageBlockParent" | "events";
+        ListRelations: "nextBlockParents" | "childBlocks" | "targetActions" | "events";
         Relations: {
             action: {
                 Shape: Action | null;
@@ -566,6 +571,11 @@ export default interface PrismaTypes {
                 Shape: Journey | null;
                 Name: "Journey";
                 Nullable: true;
+            };
+            events: {
+                Shape: Event[];
+                Name: "Event";
+                Nullable: false;
             };
         };
     };
