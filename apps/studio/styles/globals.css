@@ -4,24 +4,24 @@
   --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
-  --color-background: var(--color-stone-900);
-  --color-foreground: var(--color-stone-50);
-  --color-card: var(--color-stone-900);
-  --color-card-foreground: var(--color-stone-50);
-  --color-popover: var(--color-stone-900);
-  --color-popover-foreground: var(--color-stone-50);
+  --color-background: var(--color-stone-50);
+  --color-foreground: var(--color-stone-900);
+  --color-card: var(--color-white);
+  --color-card-foreground: var(--color-stone-900);
+  --color-popover: var(--color-white);
+  --color-popover-foreground: var(--color-stone-900);
   --color-primary: #cb333b;
-  --color-primary-foreground: var(--color-red-50);
-  --color-secondary: var(--color-stone-700);
-  --color-secondary-foreground: var(--color-stone-50);
-  --color-muted: hsl(0 0% 100% / 0.08);
-  --color-muted-foreground: var(--color-stone-400);
+  --color-primary-foreground: var(--color-white);
+  --color-secondary: var(--color-stone-100);
+  --color-secondary-foreground: var(--color-stone-900);
+  --color-muted: var(--color-stone-100);
+  --color-muted-foreground: var(--color-stone-500);
   --color-accent: #cb333b;
-  --color-accent-foreground: var(--color-stone-50);
-  --color-destructive: var(--color-red-600);
-  --color-destructive-foreground: var(--color-red-50);
-  --color-border: var(--color-stone-800);
-  --color-input: var(--color-stone-800);
+  --color-accent-foreground: var(--color-white);
+  --color-destructive: var(--color-red-500);
+  --color-destructive-foreground: var(--color-white);
+  --color-border: var(--color-stone-200);
+  --color-input: var(--color-stone-200);
   --color-ring: var(--color-primary);
 
   --radius-xs: 0.375rem;
@@ -46,7 +46,7 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    color-scheme: dark;
+    color-scheme: light;
   }
 }
 

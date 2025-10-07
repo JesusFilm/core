@@ -24,5 +24,5 @@ function StudioApp({ Component, pageProps }: AppProps) {
     </>
   )
 }
-
 export default StudioApp
+

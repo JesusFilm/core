@@ -16,6 +16,9 @@ const nextConfig = {
   },
   eslint: {
     ignoreDuringBuilds: process.env.CI === 'true'
+  },
+  images: {
+    domains: ['images.unsplash.com']
   }
 }
 
