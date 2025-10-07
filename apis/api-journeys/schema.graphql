@@ -1512,6 +1512,24 @@ type ChatOpenEvent implements Event
   messagePlatform: MessagePlatform
 }
 
+type MultiselectSubmissionEvent implements Event
+  @shareable
+{
+  id: ID!
+
+  """ID of the journey that the multiselect block belongs to"""
+  journeyId: ID!
+
+  """time event was created"""
+  createdAt: DateTime!
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """comma separated selected option labels"""
+  value: String
+}
+
 interface Event {
   id: ID!
   journeyId: ID!
