@@ -7,5 +7,6 @@ export const MULTISELECT_QUESTION_FIELDS = gql`
     parentOrder
     min
     max
+    displayResults
   }
 `

@@ -5,4 +5,5 @@ type MultiselectBlock implements Block @shareable {
   parentOrder: Int
   max: Int
   min: Int
+  displayResults: Boolean @shareable
 }

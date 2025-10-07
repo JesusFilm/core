@@ -1,4 +1,5 @@
 import { GraphQLError } from 'graphql'
+import omit from 'lodash/omit'
 
 import { prisma } from '@core/prisma/journeys/client'
 
@@ -86,7 +87,14 @@ builder.mutationField('multiselectBlockUpdate', (t) =>
       }
 
       return await update(id, {
-        ...input
+        ...omit(input, 'settings'),
+        settings:
+          input.settings == null
+            ? undefined
+            : {
+                ...((block.settings as object) ?? {}),
+                ...input.settings
+              }
       })
     }
   })

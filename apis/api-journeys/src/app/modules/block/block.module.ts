@@ -11,6 +11,7 @@ import { ButtonBlockResolver } from './button/button.resolver'
 import { CardBlockResolver } from './card/card.resolver'
 import { IconBlockResolver } from './icon/icon.resolver'
 import { ImageBlockResolver } from './image/image.resolver'
+import { MultiselectBlockResolver } from './multiselect/multiselect.resolver'
 import { RadioOptionBlockResolver } from './radioOption/radioOption.resolver'
 import { RadioQuestionBlockResolver } from './radioQuestion/radioQuestion.resolver'
 import { SignUpBlockResolver } from './signUp/signUp.resolver'
@@ -33,6 +34,7 @@ import { VideoTriggerResolver } from './videoTrigger/videoTrigger.resolver'
     PrismaService,
     RadioOptionBlockResolver,
     RadioQuestionBlockResolver,
+    MultiselectBlockResolver,
     SignUpBlockResolver,
     SpacerBlockResolver,
     StepBlockResolver,
