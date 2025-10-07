@@ -100,6 +100,7 @@ export function ChatAction({ ref }: ChatActionProps): ReactElement {
           label={t('Paste chat URL here...')}
           initialValue={chatAction?.chatUrl}
           validationSchema={chatActionSchema}
+          helperText={t('e.g. WhatsApp, Messenger, Telegram')}
           onSubmit={handleSubmit}
           startIcon={
             <InputAdornment position="start">
