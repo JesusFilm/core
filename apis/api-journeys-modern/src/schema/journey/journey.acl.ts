@@ -108,6 +108,9 @@ export function journeyAcl(
       return manage(journey, user)
     case Action.Manage:
       return manage(journey, user)
+    case Action.Export:
+      // extract is used instead of export because it is a reserved word
+      return extract(journey, user)
     default:
       return false
   }
@@ -166,6 +169,21 @@ function update(journey: Partial<Journey>, user: User): boolean {
   const hasJourneyUpdateAccess =
     userJourney?.role === UserJourneyRole.owner ||
     userJourney?.role === UserJourneyRole.editor
+  const hasTeamUpdateAccess =
+    userTeam?.role === UserTeamRole.manager ||
+    userTeam?.role === UserTeamRole.member
+  return hasJourneyUpdateAccess || hasTeamUpdateAccess
+}
+
+// team managers/members and journeys owners can extract the journey
+function extract(journey: Partial<Journey>, user: User): boolean {
+  const userJourney = journey?.userJourneys?.find(
+    (userJourney) => userJourney.userId === user.id
+  )
+  const userTeam = journey?.team?.userTeams.find(
+    (userTeam) => userTeam.userId === user.id
+  )
+  const hasJourneyUpdateAccess = userJourney?.role === UserJourneyRole.owner
   const hasTeamUpdateAccess =
     userTeam?.role === UserTeamRole.manager ||
     userTeam?.role === UserTeamRole.member
