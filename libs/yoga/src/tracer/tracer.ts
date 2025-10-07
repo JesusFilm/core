@@ -2,7 +2,7 @@ import { trace } from '@opentelemetry/api'
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc'
 import { registerInstrumentations } from '@opentelemetry/instrumentation'
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http'
-import { Resource } from '@opentelemetry/resources'
+import { resourceFromAttributes } from '@opentelemetry/resources'
 import { SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base'
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node'
 import {
@@ -28,20 +28,21 @@ const attributes = envAttributes
     return acc
   }, {})
 
-export const provider = new NodeTracerProvider({
-  resource: new Resource({
-    [ATTR_SERVICE_NAME]: process.env.SERVICE_NAME,
-    [ATTR_SERVICE_VERSION]: attributes['service.version'] ?? '0.0.1'
-  })
+const resource = resourceFromAttributes({
+  [ATTR_SERVICE_NAME]: process.env.SERVICE_NAME,
+  [ATTR_SERVICE_VERSION]: attributes['service.version'] ?? '0.0.1'
 })
 
-provider.addSpanProcessor(
-  new SimpleSpanProcessor(
-    new OTLPTraceExporter({
-      url: 'http://0.0.0.0:4317'
-    })
-  )
-)
+export const provider = new NodeTracerProvider({
+  resource,
+  spanProcessors: [
+    new SimpleSpanProcessor(
+      new OTLPTraceExporter({
+        url: 'http://0.0.0.0:4317'
+      })
+    )
+  ]
+})
 
 provider.register()
 

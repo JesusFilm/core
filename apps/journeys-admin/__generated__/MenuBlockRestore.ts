@@ -9,8 +9,8 @@ import { JourneyUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ButtonAlign
 // GraphQL mutation operation: MenuBlockRestore
 // ====================================================
 
-export interface MenuBlockRestore_stepRestore_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+export interface MenuBlockRestore_stepRestore_MultiselectBlock {
+  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -34,6 +34,8 @@ export interface MenuBlockRestore_stepRestore_ButtonBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface MenuBlockRestore_stepRestore_ButtonBlock_action_EmailAction {
@@ -41,6 +43,8 @@ export interface MenuBlockRestore_stepRestore_ButtonBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type MenuBlockRestore_stepRestore_ButtonBlock_action = MenuBlockRestore_stepRestore_ButtonBlock_action_PhoneAction | MenuBlockRestore_stepRestore_ButtonBlock_action_NavigateToBlockAction | MenuBlockRestore_stepRestore_ButtonBlock_action_LinkAction | MenuBlockRestore_stepRestore_ButtonBlock_action_EmailAction;
@@ -153,6 +157,8 @@ export interface MenuBlockRestore_stepRestore_RadioOptionBlock_action_LinkAction
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface MenuBlockRestore_stepRestore_RadioOptionBlock_action_EmailAction {
@@ -160,6 +166,8 @@ export interface MenuBlockRestore_stepRestore_RadioOptionBlock_action_EmailActio
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type MenuBlockRestore_stepRestore_RadioOptionBlock_action = MenuBlockRestore_stepRestore_RadioOptionBlock_action_PhoneAction | MenuBlockRestore_stepRestore_RadioOptionBlock_action_NavigateToBlockAction | MenuBlockRestore_stepRestore_RadioOptionBlock_action_LinkAction | MenuBlockRestore_stepRestore_RadioOptionBlock_action_EmailAction;
@@ -205,6 +213,8 @@ export interface MenuBlockRestore_stepRestore_SignUpBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface MenuBlockRestore_stepRestore_SignUpBlock_action_EmailAction {
@@ -212,6 +222,8 @@ export interface MenuBlockRestore_stepRestore_SignUpBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type MenuBlockRestore_stepRestore_SignUpBlock_action = MenuBlockRestore_stepRestore_SignUpBlock_action_PhoneAction | MenuBlockRestore_stepRestore_SignUpBlock_action_NavigateToBlockAction | MenuBlockRestore_stepRestore_SignUpBlock_action_LinkAction | MenuBlockRestore_stepRestore_SignUpBlock_action_EmailAction;
@@ -373,6 +385,8 @@ export interface MenuBlockRestore_stepRestore_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface MenuBlockRestore_stepRestore_VideoBlock_action_EmailAction {
@@ -380,6 +394,8 @@ export interface MenuBlockRestore_stepRestore_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type MenuBlockRestore_stepRestore_VideoBlock_action = MenuBlockRestore_stepRestore_VideoBlock_action_PhoneAction | MenuBlockRestore_stepRestore_VideoBlock_action_NavigateToBlockAction | MenuBlockRestore_stepRestore_VideoBlock_action_LinkAction | MenuBlockRestore_stepRestore_VideoBlock_action_EmailAction;
@@ -477,6 +493,8 @@ export interface MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_Li
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_EmailAction {
@@ -484,6 +502,8 @@ export interface MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_Em
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction = MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_PhoneAction | MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_LinkAction | MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_EmailAction;
@@ -501,7 +521,7 @@ export interface MenuBlockRestore_stepRestore_VideoTriggerBlock {
   triggerAction: MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type MenuBlockRestore_stepRestore = MenuBlockRestore_stepRestore_GridContainerBlock | MenuBlockRestore_stepRestore_ButtonBlock | MenuBlockRestore_stepRestore_CardBlock | MenuBlockRestore_stepRestore_IconBlock | MenuBlockRestore_stepRestore_ImageBlock | MenuBlockRestore_stepRestore_RadioOptionBlock | MenuBlockRestore_stepRestore_RadioQuestionBlock | MenuBlockRestore_stepRestore_SignUpBlock | MenuBlockRestore_stepRestore_SpacerBlock | MenuBlockRestore_stepRestore_StepBlock | MenuBlockRestore_stepRestore_TextResponseBlock | MenuBlockRestore_stepRestore_TypographyBlock | MenuBlockRestore_stepRestore_VideoBlock | MenuBlockRestore_stepRestore_VideoTriggerBlock;
+export type MenuBlockRestore_stepRestore = MenuBlockRestore_stepRestore_MultiselectBlock | MenuBlockRestore_stepRestore_ButtonBlock | MenuBlockRestore_stepRestore_CardBlock | MenuBlockRestore_stepRestore_IconBlock | MenuBlockRestore_stepRestore_ImageBlock | MenuBlockRestore_stepRestore_RadioOptionBlock | MenuBlockRestore_stepRestore_RadioQuestionBlock | MenuBlockRestore_stepRestore_SignUpBlock | MenuBlockRestore_stepRestore_SpacerBlock | MenuBlockRestore_stepRestore_StepBlock | MenuBlockRestore_stepRestore_TextResponseBlock | MenuBlockRestore_stepRestore_TypographyBlock | MenuBlockRestore_stepRestore_VideoBlock | MenuBlockRestore_stepRestore_VideoTriggerBlock;
 
 export interface MenuBlockRestore_journeyUpdate_menuStepBlock {
   __typename: "StepBlock";

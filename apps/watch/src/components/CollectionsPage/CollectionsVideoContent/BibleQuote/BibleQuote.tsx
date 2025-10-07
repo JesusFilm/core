@@ -23,7 +23,7 @@ export function BibleQuote({
 }: BibleQuoteProps): ReactElement {
   return (
     <div
-      className="relative beveled h-[400px] flex flex-col justify-end w-full rounded-lg overflow-hidden shadow-2xl shadow-stone-950/70"
+      className="beveled relative flex h-[400px] w-full flex-col justify-end overflow-hidden rounded-lg shadow-2xl shadow-stone-950/70"
       style={{ backgroundColor: bgColor }}
     >
       <Image
@@ -31,9 +31,9 @@ export function BibleQuote({
         width={400}
         src={imageUrl}
         alt="Bible quote"
-        className="absolute top-0 w-full h-[260px] object-cover overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_50%,transparent_100%)] [mask-size:cover]"
+        className="absolute top-0 h-[260px] w-full overflow-hidden [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_50%,transparent_100%)] [mask-size:cover] object-cover"
       />
-      <div className="p-8 z-1">{children}</div>
+      <div className="z-1 p-8">{children}</div>
     </div>
   )
 }

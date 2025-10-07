@@ -86,7 +86,12 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  journeyTheme: null
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const teamResult = jest.fn(() => ({
@@ -269,7 +274,7 @@ describe('CreateJourneyButton', () => {
     journeyDuplicateMock.result.mockClear()
   })
 
-  it('should open team dialog if url query set to createNew', async () => {
+  it('should not open team dialog if url query set to createNew and openTeamDialogOnSignIn is not set', async () => {
     mockUseRouter.mockReturnValue({
       query: { createNew: 'true' }
     } as unknown as NextRouter)
@@ -293,7 +298,35 @@ describe('CreateJourneyButton', () => {
     )
 
     await waitFor(() =>
-      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+      expect(screen.queryByTestId('CopyToTeamDialog')).not.toBeInTheDocument()
+    )
+  })
+
+  it('should open team dialog if url query set to createNew and openTeamDialogOnSignIn is true', async () => {
+    mockUseRouter.mockReturnValue({
+      query: { createNew: 'true' }
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          },
+          getLanguagesMock
+        ]}
+      >
+        <SnackbarProvider>
+          <CreateJourneyButton signedIn openTeamDialogOnSignIn={true} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.queryByTestId('CopyToTeamDialog')).toBeInTheDocument()
     )
   })
 
@@ -302,7 +335,7 @@ describe('CreateJourneyButton', () => {
       query: { createNew: false }
     } as unknown as NextRouter)
 
-    const { getByRole } = render(
+    render(
       <MockedProvider
         mocks={[
           {
@@ -322,7 +355,7 @@ describe('CreateJourneyButton', () => {
       </MockedProvider>
     )
 
-    fireEvent.click(getByRole('button', { name: 'Use This Template' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
 
     await waitFor(() =>
       expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
@@ -452,10 +485,12 @@ describe('CreateJourneyButton', () => {
     })
 
     it('should open account check dialog and redirect to sign in page when login is clicked', async () => {
-      const { getByRole } = render(createJourneyButton)
+      render(createJourneyButton)
 
-      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(getByRole('button', { name: 'Login with my account' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Login with my account' })
+      )
 
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
@@ -474,10 +509,12 @@ describe('CreateJourneyButton', () => {
     })
 
     it('should open account check dialog and redirect to sign in page when create account is clicked', async () => {
-      const { getByRole } = render(createJourneyButton)
+      render(createJourneyButton)
 
-      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(getByRole('button', { name: 'Create a new account' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Create a new account' })
+      )
 
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
@@ -517,10 +554,12 @@ describe('CreateJourneyButton', () => {
     })
 
     it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
-      const { getByRole } = render(createJourneyButton)
+      render(createJourneyButton)
 
-      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(getByRole('button', { name: 'Login with my account' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Login with my account' })
+      )
 
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
@@ -539,10 +578,12 @@ describe('CreateJourneyButton', () => {
     })
 
     it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
-      const { getByRole } = render(createJourneyButton)
+      render(createJourneyButton)
 
-      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(getByRole('button', { name: 'Create a new account' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Create a new account' })
+      )
 
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
@@ -582,10 +623,12 @@ describe('CreateJourneyButton', () => {
     })
 
     it('should open account check dialog and still redirect to sign in page when login is clicked', async () => {
-      const { getByRole } = render(createJourneyButton)
+      render(createJourneyButton)
 
-      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(getByRole('button', { name: 'Login with my account' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Login with my account' })
+      )
 
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
@@ -604,10 +647,12 @@ describe('CreateJourneyButton', () => {
     })
 
     it('should open account check dialog and still redirect to sign in page when create account is clicked', async () => {
-      const { getByRole } = render(createJourneyButton)
+      render(createJourneyButton)
 
-      fireEvent.click(getByRole('button', { name: 'Use This Template' }))
-      fireEvent.click(getByRole('button', { name: 'Create a new account' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Use This Template' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Create a new account' })
+      )
 
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(

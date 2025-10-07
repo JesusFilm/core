@@ -165,7 +165,8 @@ export function JourneyDetailsDialog({
               onClose={handleClose(resetForm)}
               dialogAction={{
                 onSubmit: handleSubmit,
-                closeLabel: t('Cancel')
+                closeLabel: t('Cancel'),
+                submitLabel: t('Save')
               }}
               testId="JourneyDetailsDialog"
               fullscreen={!smUp}

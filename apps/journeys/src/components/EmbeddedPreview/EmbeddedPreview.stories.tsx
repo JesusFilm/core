@@ -97,7 +97,12 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  journeyTheme: null
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const Template: StoryObj<typeof EmbeddedPreview> = {

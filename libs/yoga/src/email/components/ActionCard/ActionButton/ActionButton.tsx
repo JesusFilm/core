@@ -12,7 +12,7 @@ export function ActionButton({
 }: ActionButtonProps): ReactElement {
   return (
     <Button
-      className="bg-[#26262D] rounded-lg text-white text-[16px] font-semibold no-underline text-center px-5 py-3"
+      className="rounded-lg bg-[#26262D] px-5 py-3 text-center text-[16px] font-semibold text-white no-underline"
       style={{
         font: '16px "Open Sans", sans-serif'
       }}

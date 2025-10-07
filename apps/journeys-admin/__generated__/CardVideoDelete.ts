@@ -10,7 +10,7 @@ import { VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 // ====================================================
 
 export interface CardVideoDelete_video_ImageBlock {
-  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
 }
 
 export interface CardVideoDelete_video_VideoBlock_mediaVideo_Video_title {
@@ -82,6 +82,8 @@ export interface CardVideoDelete_video_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardVideoDelete_video_VideoBlock_action_EmailAction {
@@ -89,6 +91,8 @@ export interface CardVideoDelete_video_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardVideoDelete_video_VideoBlock_action = CardVideoDelete_video_VideoBlock_action_PhoneAction | CardVideoDelete_video_VideoBlock_action_NavigateToBlockAction | CardVideoDelete_video_VideoBlock_action_LinkAction | CardVideoDelete_video_VideoBlock_action_EmailAction;

@@ -145,7 +145,7 @@ model Event {
   journeyVisitorVisitorId String?
   updatedAt               DateTime          @default(now()) @updatedAt
   visitor                 Visitor           @relation(fields: [visitorId], references: [id], onDelete: Cascade)
-  journeyVisitor          JourneyVisitor?   @relation(fields: [journeyVisitorJourneyId, journeyVisitorVisitorId], references: [journeyId, visitorId])
+  journeyVisitor          JourneyVisitor?   @relation(fields: [journeyId, visitorId], references: [journeyId, visitorId])
   journey                 Journey?          @relation(fields: [journeyId], references: [id])
 
   @@index(journeyId)
@@ -219,6 +219,7 @@ model JourneyVisitor {
   lastTextResponse          String?
   lastRadioQuestion         String?
   lastRadioOptionSubmission String?
+  lastMultiselectSubmission String?
   activityCount             Int              @default(0)
   updatedAt                 DateTime         @default(now()) @updatedAt
   journey                   Journey          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
@@ -232,6 +233,7 @@ model JourneyVisitor {
   @@index(lastChatStartedAt)
   @@index(lastRadioQuestion)
   @@index(lastTextResponse)
+  @@index(lastMultiselectSubmission)
   @@index(activityCount(sort: Desc))
   @@index(duration(sort: Desc))
 }
@@ -419,6 +421,7 @@ model Journey {
   showLogo                        Boolean?                    @default(false)
   showMenu                        Boolean?                    @default(false)
   showDisplayTitle                Boolean?                    @default(true)
+  showAssistant                   Boolean?
   logoImageBlockId                String?                     @unique
   logoImageBlock                  Block?                      @relation("LogoImageBlock", fields: [logoImageBlockId], references: [id], onDelete: SetNull)
   menuStepBlockId                 String?                     @unique
@@ -522,6 +525,7 @@ model Block {
   nextBlockId                String?
   locked                     Boolean?
   hint                       String?
+  hideLabel                  Boolean?             @default(false)
   minRows                    Int?
   content                    String?
   align                      String?
@@ -569,6 +573,8 @@ model Block {
   menuStepBlockParent        Journey?             @relation("MenuStepBlock")
   logoImageBlockParent       Journey?             @relation("LogoImageBlock")
   slug                       String?
+  min                        Int?
+  max                        Int?
   settings                   Json                 @default("{ }") // block settings
 
   @@unique([slug, journeyId])
@@ -587,6 +593,7 @@ model Action {
   email         String?
   phone         String?
   countryCode   String?
+  contactAction String?  @default("call")
   customizable  Boolean?
   parentStepId  String?
   updatedAt     DateTime @default(now()) @updatedAt

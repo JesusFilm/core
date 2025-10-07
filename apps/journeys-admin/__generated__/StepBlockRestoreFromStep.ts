@@ -9,8 +9,8 @@ import { StepBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ButtonAli
 // GraphQL mutation operation: StepBlockRestoreFromStep
 // ====================================================
 
-export interface StepBlockRestoreFromStep_blockRestore_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+export interface StepBlockRestoreFromStep_blockRestore_MultiselectBlock {
+  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -34,6 +34,8 @@ export interface StepBlockRestoreFromStep_blockRestore_ButtonBlock_action_LinkAc
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromStep_blockRestore_ButtonBlock_action_EmailAction {
@@ -41,6 +43,8 @@ export interface StepBlockRestoreFromStep_blockRestore_ButtonBlock_action_EmailA
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type StepBlockRestoreFromStep_blockRestore_ButtonBlock_action = StepBlockRestoreFromStep_blockRestore_ButtonBlock_action_PhoneAction | StepBlockRestoreFromStep_blockRestore_ButtonBlock_action_NavigateToBlockAction | StepBlockRestoreFromStep_blockRestore_ButtonBlock_action_LinkAction | StepBlockRestoreFromStep_blockRestore_ButtonBlock_action_EmailAction;
@@ -153,6 +157,8 @@ export interface StepBlockRestoreFromStep_blockRestore_RadioOptionBlock_action_L
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromStep_blockRestore_RadioOptionBlock_action_EmailAction {
@@ -160,6 +166,8 @@ export interface StepBlockRestoreFromStep_blockRestore_RadioOptionBlock_action_E
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type StepBlockRestoreFromStep_blockRestore_RadioOptionBlock_action = StepBlockRestoreFromStep_blockRestore_RadioOptionBlock_action_PhoneAction | StepBlockRestoreFromStep_blockRestore_RadioOptionBlock_action_NavigateToBlockAction | StepBlockRestoreFromStep_blockRestore_RadioOptionBlock_action_LinkAction | StepBlockRestoreFromStep_blockRestore_RadioOptionBlock_action_EmailAction;
@@ -205,6 +213,8 @@ export interface StepBlockRestoreFromStep_blockRestore_SignUpBlock_action_LinkAc
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromStep_blockRestore_SignUpBlock_action_EmailAction {
@@ -212,6 +222,8 @@ export interface StepBlockRestoreFromStep_blockRestore_SignUpBlock_action_EmailA
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type StepBlockRestoreFromStep_blockRestore_SignUpBlock_action = StepBlockRestoreFromStep_blockRestore_SignUpBlock_action_PhoneAction | StepBlockRestoreFromStep_blockRestore_SignUpBlock_action_NavigateToBlockAction | StepBlockRestoreFromStep_blockRestore_SignUpBlock_action_LinkAction | StepBlockRestoreFromStep_blockRestore_SignUpBlock_action_EmailAction;
@@ -373,6 +385,8 @@ export interface StepBlockRestoreFromStep_blockRestore_VideoBlock_action_LinkAct
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromStep_blockRestore_VideoBlock_action_EmailAction {
@@ -380,6 +394,8 @@ export interface StepBlockRestoreFromStep_blockRestore_VideoBlock_action_EmailAc
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type StepBlockRestoreFromStep_blockRestore_VideoBlock_action = StepBlockRestoreFromStep_blockRestore_VideoBlock_action_PhoneAction | StepBlockRestoreFromStep_blockRestore_VideoBlock_action_NavigateToBlockAction | StepBlockRestoreFromStep_blockRestore_VideoBlock_action_LinkAction | StepBlockRestoreFromStep_blockRestore_VideoBlock_action_EmailAction;
@@ -477,6 +493,8 @@ export interface StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock_trigger
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock_triggerAction_EmailAction {
@@ -484,6 +502,8 @@ export interface StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock_trigger
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock_triggerAction = StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock_triggerAction_PhoneAction | StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock_triggerAction_LinkAction | StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock_triggerAction_EmailAction;
@@ -501,7 +521,7 @@ export interface StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock {
   triggerAction: StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type StepBlockRestoreFromStep_blockRestore = StepBlockRestoreFromStep_blockRestore_GridContainerBlock | StepBlockRestoreFromStep_blockRestore_ButtonBlock | StepBlockRestoreFromStep_blockRestore_CardBlock | StepBlockRestoreFromStep_blockRestore_IconBlock | StepBlockRestoreFromStep_blockRestore_ImageBlock | StepBlockRestoreFromStep_blockRestore_RadioOptionBlock | StepBlockRestoreFromStep_blockRestore_RadioQuestionBlock | StepBlockRestoreFromStep_blockRestore_SignUpBlock | StepBlockRestoreFromStep_blockRestore_SpacerBlock | StepBlockRestoreFromStep_blockRestore_StepBlock | StepBlockRestoreFromStep_blockRestore_TextResponseBlock | StepBlockRestoreFromStep_blockRestore_TypographyBlock | StepBlockRestoreFromStep_blockRestore_VideoBlock | StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock;
+export type StepBlockRestoreFromStep_blockRestore = StepBlockRestoreFromStep_blockRestore_MultiselectBlock | StepBlockRestoreFromStep_blockRestore_ButtonBlock | StepBlockRestoreFromStep_blockRestore_CardBlock | StepBlockRestoreFromStep_blockRestore_IconBlock | StepBlockRestoreFromStep_blockRestore_ImageBlock | StepBlockRestoreFromStep_blockRestore_RadioOptionBlock | StepBlockRestoreFromStep_blockRestore_RadioQuestionBlock | StepBlockRestoreFromStep_blockRestore_SignUpBlock | StepBlockRestoreFromStep_blockRestore_SpacerBlock | StepBlockRestoreFromStep_blockRestore_StepBlock | StepBlockRestoreFromStep_blockRestore_TextResponseBlock | StepBlockRestoreFromStep_blockRestore_TypographyBlock | StepBlockRestoreFromStep_blockRestore_VideoBlock | StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock;
 
 export interface StepBlockRestoreFromStep_stepBlockUpdate {
   __typename: "StepBlock";
