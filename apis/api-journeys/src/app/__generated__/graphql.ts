@@ -933,6 +933,7 @@ export class PhoneAction implements Action {
     phone: string;
     countryCode: string;
     contactAction: ContactActionType;
+    customizable?: Nullable<boolean>;
 }
 
 export class Journey {

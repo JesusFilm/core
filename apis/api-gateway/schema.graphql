@@ -581,6 +581,7 @@ type PhoneAction implements Action @join__type(graph: API_JOURNEYS)  @join__type
   phone: String!
   countryCode: String!
   contactAction: ContactActionType!
+  customizable: Boolean
 }
 
 type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {

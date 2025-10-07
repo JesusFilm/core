@@ -21,6 +21,7 @@ export const PhoneActionRef = builder.prismaObject('Action', {
       type: ContactActionType,
       nullable: false,
       resolve: (action: any) => action.contactAction ?? 'call'
-    })
+    }),
+    customizable: t.exposeBoolean('customizable', { nullable: true })
   })
 })
