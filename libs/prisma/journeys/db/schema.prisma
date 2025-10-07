@@ -145,9 +145,8 @@ model Event {
   journeyVisitorVisitorId String?
   updatedAt               DateTime          @default(now()) @updatedAt
   visitor                 Visitor           @relation(fields: [visitorId], references: [id], onDelete: Cascade)
-  journeyVisitor          JourneyVisitor?   @relation(fields: [journeyId, visitorId], references: [journeyId, visitorId])
+  journeyVisitor          JourneyVisitor?   @relation(fields: [journeyVisitorJourneyId, journeyVisitorVisitorId], references: [journeyId, visitorId])
   journey                 Journey?          @relation(fields: [journeyId], references: [id])
-  block                   Block?            @relation(fields: [blockId], references: [id])
 
   @@index(journeyId)
   @@index(visitorId)
@@ -220,7 +219,6 @@ model JourneyVisitor {
   lastTextResponse          String?
   lastRadioQuestion         String?
   lastRadioOptionSubmission String?
-  lastMultiselectSubmission String?
   activityCount             Int              @default(0)
   updatedAt                 DateTime         @default(now()) @updatedAt
   journey                   Journey          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
@@ -234,7 +232,6 @@ model JourneyVisitor {
   @@index(lastChatStartedAt)
   @@index(lastRadioQuestion)
   @@index(lastTextResponse)
-  @@index(lastMultiselectSubmission)
   @@index(activityCount(sort: Desc))
   @@index(duration(sort: Desc))
 }
@@ -577,7 +574,6 @@ model Block {
   min                        Int?
   max                        Int?
   settings                   Json                 @default("{ }") // block settings
-  events                     Event[]
 
   @@unique([slug, journeyId])
   @@index(journeyId)
