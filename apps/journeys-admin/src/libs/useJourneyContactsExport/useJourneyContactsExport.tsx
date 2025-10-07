@@ -1,171 +1,72 @@
-import { gql, useLazyQuery } from '@apollo/client'
-import isNil from 'lodash/isNil'
-import omitBy from 'lodash/omitBy'
+import { useLazyQuery } from '@apollo/client'
+import { graphql, VariablesOf } from '@core/shared/gql'
 import { useTranslation } from 'next-i18next'
-import { useState } from 'react'
 
-import { processContactsCsv } from './utils/processContactsCsv/processContactsCsv'
+import { downloadCsv } from './utils/processContactsCsv/processContactsCsv'
 
-export const GET_JOURNEY_CONTACTS = gql`
-  query GetJourneyContacts(
+export const GET_JOURNEY_VISITOR_EXPORT = graphql(`
+  query GetJourneyVisitorExport(
     $journeyId: ID!
     $filter: JourneyEventsFilter
-    $first: Int
-    $after: String
+    $select: JourneyVisitorExportSelect
   ) {
-    journeyEventsConnection(
+    csv: journeyVisitorExport(
       journeyId: $journeyId
       filter: $filter
-      first: $first
-      after: $after
-    ) {
-      edges {
-        cursor
-        node {
-          visitorId
-          visitorName
-          visitorEmail
-          visitorPhone
-          createdAt
-        }
-      }
-      pageInfo {
-        endCursor
-        hasNextPage
-        hasPreviousPage
-        startCursor
-      }
-    }
+      select: $select
+    )
   }
-`
-
-export interface JourneyContact {
-  visitorId: string
-  visitorName?: string | null
-  visitorEmail?: string | null
-  visitorPhone?: string | null
-}
-
-export interface JourneyContactsFilter {
-  periodRangeStart?: string
-  periodRangeEnd?: string
-}
+`)
 
 export interface ExportJourneyContactsParams {
   journeyId: string
-  filter: JourneyContactsFilter
-  contactDataFields: string[]
+  filter: VariablesOf<typeof GET_JOURNEY_VISITOR_EXPORT>['filter']
+  select: VariablesOf<typeof GET_JOURNEY_VISITOR_EXPORT>['select']
 }
 
 export function useJourneyContactsExport(): {
   exportJourneyContacts: (params: ExportJourneyContactsParams) => Promise<void>
   downloading: boolean
-  progress: number
 } {
   const { t } = useTranslation('apps-journeys-admin')
-  const [getJourneyContacts] = useLazyQuery(GET_JOURNEY_CONTACTS)
-
-  const [downloading, setDownloading] = useState(false)
-  const [progress, setProgress] = useState(0)
+  const [getJourneyVisitorExport, { loading: downloading }] = useLazyQuery(
+    GET_JOURNEY_VISITOR_EXPORT,
+    {
+      fetchPolicy: 'network-only',
+      nextFetchPolicy: 'no-cache'
+    }
+  )
 
   async function exportJourneyContacts({
     journeyId,
     filter,
-    contactDataFields
+    select
   }: ExportJourneyContactsParams): Promise<void> {
-    const events: any[] = []
-    let cursor: string | null = null
-    let hasNextPage = false
-
-    const filterArg = {
-      ...omitBy(
-        {
-          periodRangeStart: filter?.periodRangeStart,
-          periodRangeEnd: filter?.periodRangeEnd
-        },
-        isNil
-      )
-    }
-
     try {
-      setDownloading(true)
-      setProgress(0)
-
-      do {
-        const { data, error } = await getJourneyContacts({
-          variables: {
-            journeyId,
-            filter: filterArg,
-            first: 20000,
-            after: cursor
-          }
-        })
-
-        if (error) {
-          console.error('GraphQL error:', error)
-          throw new Error(
-            t('GraphQL error: {{error}}', { error: error.message })
-          )
-        }
-
-        if (data?.journeyEventsConnection == null) {
-          console.error('No journeyEventsConnection in response')
-          throw new Error(t('No journey events connection found in response'))
-        }
-
-        const edges = data?.journeyEventsConnection.edges ?? []
-        events.push(...edges)
-
-        setProgress((p) => Math.min(p + 10, 90))
-
-        cursor = data?.journeyEventsConnection.pageInfo.endCursor
-        hasNextPage = data?.journeyEventsConnection.pageInfo.hasNextPage
-      } while (hasNextPage)
-
-      // Extract unique contacts from events
-      const contactMap = new Map<string, JourneyContact>()
-
-      events.forEach((edge) => {
-        const node = edge.node
-        const visitorId = node.visitorId
-
-        // Only add if we don't have this visitor yet, or if this event has more complete data
-        if (!contactMap.has(visitorId)) {
-          contactMap.set(visitorId, {
-            visitorId: node.visitorId,
-            visitorName: node.visitorName ?? null,
-            visitorEmail: node.visitorEmail ?? null,
-            visitorPhone: node.visitorPhone ?? null
-          })
-        } else {
-          // Update existing contact with any new data
-          const existing = contactMap.get(visitorId)!
-          contactMap.set(visitorId, {
-            visitorId: node.visitorId,
-            visitorName: existing.visitorName ?? node.visitorName ?? null,
-            visitorEmail: existing.visitorEmail ?? node.visitorEmail ?? null,
-            visitorPhone: existing.visitorPhone ?? node.visitorPhone ?? null
-          })
+      const { data, error } = await getJourneyVisitorExport({
+        variables: {
+          journeyId,
+          filter,
+          select
         }
       })
 
-      const contacts = Array.from(contactMap.values())
+      if (error) {
+        console.error('GraphQL error:', error)
+        throw new Error(t('GraphQL error: {{error}}', { error: error.message }))
+      }
 
-      setProgress(100)
-
-      // Use journeyId as fallback since journeySlug is not available from events query
-      const journeySlug = journeyId
-      processContactsCsv(contacts, journeySlug, t, contactDataFields)
+      if (data?.csv != null) {
+        downloadCsv(data.csv, `${journeyId}_contacts`)
+      }
     } catch (error) {
       console.error('Contacts export error:', error)
       if (error instanceof Error) {
         throw error
       }
       throw new Error(t('Failed to retrieve contacts for export.'))
-    } finally {
-      setDownloading(false)
     }
   }
 
-  return { exportJourneyContacts, downloading, progress }
+  return { exportJourneyContacts, downloading }
 }
