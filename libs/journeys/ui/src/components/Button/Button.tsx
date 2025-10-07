@@ -25,6 +25,7 @@ import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 
@@ -40,7 +41,6 @@ import {
 import { findMessagePlatform } from './utils/findMessagePlatform'
 import { getActionLabel } from './utils/getActionLabel'
 import { getLinkActionGoal } from './utils/getLinkActionGoal'
-import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 export const BUTTON_CLICK_EVENT_CREATE = gql`
   mutation ButtonClickEventCreate($input: ButtonClickEventCreateInput!) {
@@ -128,13 +128,15 @@ export function Button({
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
-  const startIcon = children.find((block) => block.id === startIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const isIconBlock = (block: TreeBlock<any>): block is TreeBlock<IconFields> =>
+    block.__typename === 'IconBlock'
 
-  const endIcon = children.find((block) => block.id === endIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const startIcon = children.find(
+    (block) => block.id === startIconId && isIconBlock(block)
+  )
+  const endIcon = children.find(
+    (block) => block.id === endIconId && isIconBlock(block)
+  )
 
   const messagePlatform = useMemo(() => findMessagePlatform(action), [action])
   const actionValue = useMemo(
@@ -168,7 +170,13 @@ export function Button({
         stepId: activeBlock?.id,
         label: heading,
         value: resolvedLabel,
-        action: action?.__typename as ButtonAction | undefined,
+        action:
+          action?.__typename &&
+          Object.values(ButtonAction).includes(
+            action.__typename as ButtonAction
+          )
+            ? (action.__typename as ButtonAction)
+            : null,
         actionValue
       }
       void buttonClickEventCreate({
@@ -308,8 +316,16 @@ export function Button({
         variant={buttonVariant ?? ButtonVariant.contained}
         color={buttonColor ?? undefined}
         size={size ?? undefined}
-        startIcon={startIcon != null ? <Icon {...startIcon} /> : undefined}
-        endIcon={endIcon != null ? <Icon {...endIcon} /> : undefined}
+        startIcon={
+          startIcon != null && isIconBlock(startIcon) ? (
+            <Icon {...startIcon} />
+          ) : undefined
+        }
+        endIcon={
+          endIcon != null && isIconBlock(endIcon) ? (
+            <Icon {...endIcon} />
+          ) : undefined
+        }
         onClick={handleClick}
         sx={{
           outline: '2px solid',

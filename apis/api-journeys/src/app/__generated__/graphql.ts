@@ -512,16 +512,6 @@ export class CustomDomainUpdateInput {
     routeAllTeamJourneys?: Nullable<boolean>;
 }
 
-export class ButtonClickEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    label?: Nullable<string>;
-    value?: Nullable<string>;
-    action?: Nullable<ButtonAction>;
-    actionValue?: Nullable<string>;
-}
-
 export class ChatOpenEventCreateInput {
     id?: Nullable<string>;
     blockId: string;
@@ -789,6 +779,7 @@ export class JourneyVisitorFilter {
     journeyId: string;
     hasChatStarted?: Nullable<boolean>;
     hasPollAnswers?: Nullable<boolean>;
+    hasMultiselectSubmission?: Nullable<boolean>;
     hasTextResponse?: Nullable<boolean>;
     hasIcon?: Nullable<boolean>;
     hideInactive?: Nullable<boolean>;
@@ -1145,8 +1136,6 @@ export abstract class IMutation {
 
     abstract customDomainCheck(id: string): CustomDomainCheck | Promise<CustomDomainCheck>;
 
-    abstract buttonClickEventCreate(input: ButtonClickEventCreateInput): ButtonClickEvent | Promise<ButtonClickEvent>;
-
     abstract chatOpenEventCreate(input: ChatOpenEventCreateInput): ChatOpenEvent | Promise<ChatOpenEvent>;
 
     abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): Nullable<JourneyViewEvent> | Promise<Nullable<JourneyViewEvent>>;
@@ -1363,6 +1352,25 @@ export class ImageBlock implements Block {
     focalLeft?: Nullable<number>;
 }
 
+export class MultiselectBlock implements Block {
+    __typename?: 'MultiselectBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    max?: Nullable<number>;
+    min?: Nullable<number>;
+}
+
+export class MultiselectOptionBlock implements Block {
+    __typename?: 'MultiselectOptionBlock';
+    id: string;
+    journeyId: string;
+    parentBlockId?: Nullable<string>;
+    parentOrder?: Nullable<number>;
+    label: string;
+}
+
 export class RadioOptionBlock implements Block {
     __typename?: 'RadioOptionBlock';
     id: string;
@@ -1543,6 +1551,15 @@ export class ChatOpenEvent implements Event {
     label?: Nullable<string>;
     value?: Nullable<string>;
     messagePlatform?: Nullable<MessagePlatform>;
+}
+
+export class MultiselectSubmissionEvent implements Event {
+    __typename?: 'MultiselectSubmissionEvent';
+    id: string;
+    journeyId: string;
+    createdAt: DateTime;
+    label?: Nullable<string>;
+    value?: Nullable<string>;
 }
 
 export class JourneyViewEvent implements Event {
@@ -1850,6 +1867,7 @@ export class JourneyVisitor {
     lastTextResponse?: Nullable<string>;
     lastRadioQuestion?: Nullable<string>;
     lastRadioOptionSubmission?: Nullable<string>;
+    lastMultiselectSubmission?: Nullable<string>;
     events: Event[];
     visitor: Visitor;
 }
