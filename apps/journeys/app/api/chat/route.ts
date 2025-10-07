@@ -4,7 +4,6 @@ import {
   updateActiveObservation,
   updateActiveTrace
 } from '@langfuse/tracing'
-import { trace } from '@opentelemetry/api'
 import {
   ModelMessage,
   UIMessage,
@@ -16,8 +15,10 @@ import { NextRequest, after } from 'next/server'
 
 import { InteractionType } from '@core/journeys/ui/AiChat/InteractionStarter'
 
-import { langfuseSpanProcessor } from '../../../instrumentation'
+import { flush } from '../../../instrumentation'
 import { getPrompt } from '../../../src/lib/ai/langfuse/promptHelper'
+
+const traceName = 'ai-assistant-chat'
 
 function getPromptType(interactionType?: InteractionType): string {
   switch (interactionType) {
@@ -74,7 +75,7 @@ const handler = async (req: NextRequest) => {
   })
 
   updateActiveTrace({
-    name: 'ai-assistant-chat',
+    name: traceName,
     sessionId: sessionId,
     userId: userId,
     input: inputText,
@@ -95,33 +96,50 @@ const handler = async (req: NextRequest) => {
     language
   })
 
+  // Build telemetry metadata without undefined values
+  const telemetryMetadata: Record<string, string | boolean> = {
+    hasContext: !!contextText
+  }
+  if (interactionType) telemetryMetadata.interactionType = interactionType
+  if (journeyId) telemetryMetadata.journeyId = journeyId
+  if (userId) telemetryMetadata.userId = userId
+  if (sessionId) telemetryMetadata.sessionId = sessionId
+
   const result = streamText({
     model: apologist('openai/gpt/4o'),
     messages: modelMessages,
     system: systemPrompt,
     experimental_telemetry: {
-      isEnabled: true
+      isEnabled: true,
+      metadata: telemetryMetadata
     },
-    onFinish: ({ text }) => {
+    onFinish: ({ text, usage }) => {
       updateActiveObservation({
-        output: text
+        output: text,
+        metadata: {
+          textLength: text.length,
+          messageCount: modelMessages.length,
+          ...(usage && { usage })
+        }
       })
       updateActiveTrace({
-        output: text
+        name: traceName,
+        output: text,
+        metadata: {
+          textLength: text.length,
+          ...(usage && { usage })
+        }
       })
-
-      // End span manually after stream has finished
-      trace.getActiveSpan()?.end()
     }
   })
 
   // Important in serverless environments: schedule flush after request is finished
-  after(async () => await langfuseSpanProcessor.forceFlush())
+  after(async () => await flush())
 
   return result.toUIMessageStreamResponse()
 }
 
 export const POST = observe(handler, {
-  name: 'chat-message',
+  name: traceName,
   endOnExit: false // end observation _after_ stream has finished
 })
