@@ -74,12 +74,12 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  socialNodeX: null,
-  socialNodeY: null,
   journeyTheme: null,
   journeyCustomizationDescription: null,
   journeyCustomizationFields: [],
-  fromTemplateId: null
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const Template: StoryObj<ComponentProps<typeof HostAvatars>> = {
