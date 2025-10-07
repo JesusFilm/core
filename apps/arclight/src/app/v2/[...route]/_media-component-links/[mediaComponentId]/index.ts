@@ -136,8 +136,14 @@ const GET_VIDEO_CHILDREN = graphql(`
 
 export const mediaComponentLinksWithId = new OpenAPIHono()
 
+// Type definitions for getPrimaryVariant
+type VideoData = ResultOf<typeof GET_VIDEO_CHILDREN>
+type Video = NonNullable<VideoData['video']>
+type VideoVariant = Video['children'][number]['variants'][number]
+
 // Helper function to get the primary variant (first variant)
-const getPrimaryVariant = (variants: any[]) => variants?.[0] || null
+const getPrimaryVariant = (variants: VideoVariant[]): VideoVariant | null =>
+  variants?.[0] || null
 
 const ParamsSchema = z.object({
   mediaComponentId: z.string()
