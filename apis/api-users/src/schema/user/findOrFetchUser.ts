@@ -23,41 +23,9 @@ export async function findOrFetchUser(
       userId
     }
   })
-  if (existingUser != null && existingUser.emailVerified == null) {
-    if (ctxCurrentUser?.email != null && existingUser?.email == null) {
-      const user = await prisma.user.update({
-        where: {
-          id: userId
-        },
-        data: {
-          email: ctxCurrentUser.email,
-          firstName: ctxCurrentUser.firstName,
-          lastName: ctxCurrentUser.lastName,
-          imageUrl: ctxCurrentUser.imageUrl,
-          emailVerified: false
-        }
-      })
-      if (user.email != null && !user.emailVerified)
-        void verifyUser(userId, user.email, redirect)
-      return user
-    }
 
-    const user = await prisma.user.update({
-      where: {
-        id: userId
-      },
-      data: {
-        emailVerified: false
-      }
-    })
-    return user
-  }
-
-  if (
-    ctxCurrentUser?.email != null &&
-    existingUser?.email == null &&
-    existingUser?.emailVerified === false
-  ) {
+  // if a user converts from a guest user to a registered user, we need to update the user and sent verification email
+  if (ctxCurrentUser?.email != null && existingUser?.email == null) {
     const user = await prisma.user.update({
       where: {
         id: userId
@@ -75,22 +43,26 @@ export async function findOrFetchUser(
     return user
   }
 
+  if (existingUser != null && existingUser.emailVerified == null) {
+    const user = await prisma.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        emailVerified: false
+      }
+    })
+    return user
+  }
+
   if (existingUser != null && existingUser.emailVerified != null)
     return existingUser
 
-  // create new user using JWT payload
-  let firstName = ctxCurrentUser?.firstName
-  const lastName = ctxCurrentUser?.lastName
-
-  // Ensure firstName is never empty for database constraint
-  if (!firstName?.trim()) {
-    firstName = 'Unknown User'
-  }
-
   const data = {
     userId,
-    firstName,
-    lastName,
+    firstName:
+      ctxCurrentUser?.firstName ?? ctxCurrentUser?.lastName ?? 'Unknown User',
+    lastName: ctxCurrentUser?.lastName != null ? ctxCurrentUser.lastName : null,
     email: ctxCurrentUser?.email,
     imageUrl: ctxCurrentUser?.imageUrl,
     emailVerified: ctxCurrentUser?.emailVerified

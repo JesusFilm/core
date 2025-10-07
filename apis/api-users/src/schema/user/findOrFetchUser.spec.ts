@@ -58,9 +58,9 @@ describe('findOrFetchUser', () => {
     })
   })
 
-  it('should create new user', async () => {
+  it('should update user when converting from guest to registered', async () => {
     prismaMock.user.findUnique.mockResolvedValueOnce(null)
-    prismaMock.user.create.mockResolvedValueOnce(user)
+    prismaMock.user.update.mockResolvedValueOnce(user)
     const data = await findOrFetchUser(
       {},
       'userId',
@@ -68,14 +68,14 @@ describe('findOrFetchUser', () => {
       mockCtxCurrentUser
     )
     expect(data).toEqual(user)
-    expect(prismaMock.user.create).toHaveBeenCalledWith({
+    expect(prismaMock.user.update).toHaveBeenCalledWith({
+      where: { id: 'userId' },
       data: {
         email: 'amin@email.com',
-        emailVerified: false,
         firstName: 'Amin',
-        imageUrl: 'https://bit.ly/3Gth4',
         lastName: 'One',
-        userId: 'userId'
+        imageUrl: 'https://bit.ly/3Gth4',
+        emailVerified: false
       }
     })
     expect(verifyUser).toHaveBeenCalledWith(
@@ -83,6 +83,24 @@ describe('findOrFetchUser', () => {
       'amin@email.com',
       undefined
     )
+  })
+
+  it('should create new user when no context user provided', async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce(null)
+    prismaMock.user.create.mockResolvedValueOnce(user)
+    const data = await findOrFetchUser({}, 'userId', undefined, undefined)
+    expect(data).toEqual(user)
+    expect(prismaMock.user.create).toHaveBeenCalledWith({
+      data: {
+        email: undefined,
+        emailVerified: undefined,
+        firstName: 'Unknown User',
+        imageUrl: undefined,
+        lastName: null,
+        userId: 'userId'
+      }
+    })
+    expect(verifyUser).not.toHaveBeenCalled()
   })
 
   it('should send verification email to user if existing user email gets updated', async () => {
