@@ -96,7 +96,8 @@ const nextConfig = {
     '@mui/x-data-grid',
     '@mui/x-date-pickers',
     '@mui/x-tree-view',
-    '@mui/x-charts'
+    '@mui/x-charts',
+    'streamdown'
   ],
   outputFileTracingExcludes: {
     '*': [

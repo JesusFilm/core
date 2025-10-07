@@ -223,8 +223,37 @@ describe('Button', () => {
       const useFormikContextMock = useFormikContext as jest.Mock
       useFormikContextMock.mockReturnValue(formikContextMock)
 
+      const result = jest.fn(() => ({
+        data: {
+          buttonClickEventCreate: {
+            id: 'uuid',
+            __typename: 'ButtonClickEvent',
+            action: null,
+            actionValue: undefined
+          }
+        }
+      }))
+
+      const mockButtonClickEventLocal = {
+        request: {
+          query: BUTTON_CLICK_EVENT_CREATE,
+          variables: {
+            input: {
+              id: 'uuid',
+              blockId: 'button',
+              stepId: 'step.id',
+              label: 'stepName',
+              value: 'Submit Form',
+              action: null,
+              actionValue: undefined
+            }
+          }
+        },
+        result
+      }
+
       render(
-        <MockedProvider mocks={[mockButtonClickEvent]}>
+        <MockedProvider mocks={[mockButtonClickEventLocal]}>
           <Button {...submitButtonMock} />
         </MockedProvider>
       )
@@ -235,7 +264,7 @@ describe('Button', () => {
 
       await waitFor(() => {
         expect(validateFormMock).toHaveBeenCalled()
-        expect(mockButtonClickEvent.result).toHaveBeenCalled()
+        expect(result).not.toHaveBeenCalled()
         expect(handleSubmitMock).not.toHaveBeenCalled()
       })
     })
@@ -293,8 +322,37 @@ describe('Button', () => {
       const useFormikContextMock = useFormikContext as jest.Mock
       useFormikContextMock.mockReturnValue(formikContextMock)
 
+      const result = jest.fn(() => ({
+        data: {
+          buttonClickEventCreate: {
+            id: 'uuid',
+            __typename: 'ButtonClickEvent',
+            action: undefined,
+            actionValue: undefined
+          }
+        }
+      }))
+
+      const mockButtonClickEventLocal = {
+        request: {
+          query: BUTTON_CLICK_EVENT_CREATE,
+          variables: {
+            input: {
+              id: 'uuid',
+              blockId: 'button',
+              stepId: 'step.id',
+              label: 'stepName',
+              value: 'Submit Form',
+              action: null,
+              actionValue: undefined
+            }
+          }
+        },
+        result
+      }
+
       render(
-        <MockedProvider mocks={[mockButtonClickEvent]}>
+        <MockedProvider mocks={[mockButtonClickEventLocal]}>
           <JourneyProvider>
             <Button {...submitButtonMock} />
           </JourneyProvider>
@@ -306,7 +364,7 @@ describe('Button', () => {
 
       await waitFor(() => {
         expect(validateFormMock).toHaveBeenCalled()
-        expect(mockButtonClickEvent.result).toHaveBeenCalled()
+        expect(result).toHaveBeenCalled()
         expect(handleAction).toHaveBeenCalled()
       })
     })
@@ -441,7 +499,7 @@ describe('Button', () => {
                   stepId: 'step.id',
                   label: 'Step {{number}}',
                   value: block.label,
-                  action: undefined,
+                  action: null,
                   actionValue: undefined
                 }
               }
@@ -451,7 +509,7 @@ describe('Button', () => {
                 buttonClickEventCreate: {
                   __typename: 'ButtonClickEvent',
                   id: 'uuid',
-                  action: undefined,
+                  action: null,
                   actionValue: undefined
                 }
               }

@@ -44,6 +44,13 @@ export function hasChatWidget({
   )
 }
 
+export function hasAiChatButton({
+  journey,
+  variant = 'default'
+}: JourneyInfoProps): boolean {
+  return variant !== 'admin' && journey?.showAssistant === true
+}
+
 export function getTitle({ journey }: JourneyInfoProps): string | null {
   if (journey?.displayTitle == null) {
     return journey?.seoTitle ?? null
@@ -83,7 +90,8 @@ export function getFooterMobileSpacing({
       hasHost ||
       hasChatWidget({ journey, variant }) ||
       title != null ||
-      reactions
+      reactions ||
+      hasAiChatButton({ journey, variant })
 
     if (hasTopRow && hasBottomRow) {
       return FULL_HEIGHT
@@ -107,7 +115,8 @@ export function getFooterMobileHeight({
       hasHostAvatar({ journey, variant }) ||
       hasHostDetails({ journey }) ||
       hasChatWidget({ journey, variant }) ||
-      getTitle({ journey }) != null
+      getTitle({ journey }) != null ||
+      hasAiChatButton({ journey, variant })
 
     if (hasBottomRow) {
       return HALF_HEIGHT

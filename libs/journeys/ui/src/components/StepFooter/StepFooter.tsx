@@ -6,9 +6,11 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+import { AiChatButton } from '../AiChatButton'
 import {
   getFooterMobileHeight,
   getTitle,
+  hasAiChatButton,
   hasChatWidget,
   hasCombinedFooter,
   hasHostAvatar,
@@ -37,6 +39,7 @@ export function StepFooter({
   const hostDetails = hasHostDetails({ journey })
   const chat = hasChatWidget({ journey, variant })
   const title = getTitle({ journey })
+  const aiChat = hasAiChatButton({ journey, variant })
 
   const footerMobileHeight = getFooterMobileHeight({ journey, variant })
   const combinedFooter = hasCombinedFooter({ journey, variant })
@@ -139,12 +142,7 @@ export function StepFooter({
               </Box>
             </Stack>
           )}
-
-          {chat && (
-            <Box>
-              <ChatButtons />
-            </Box>
-          )}
+          <Box>{chat ? <ChatButtons /> : aiChat ? <AiChatButton /> : null}</Box>
         </Stack>
       </Stack>
     </Box>
