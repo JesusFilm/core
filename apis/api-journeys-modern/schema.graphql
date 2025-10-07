@@ -46,7 +46,6 @@ enum ButtonAction {
   LinkAction
   EmailAction
   PhoneAction
-  ChatAction
 }
 
 enum ButtonAlignment {
