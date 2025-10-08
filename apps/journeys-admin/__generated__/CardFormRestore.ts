@@ -293,6 +293,7 @@ export interface CardFormRestore_image_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardFormRestore_image_TypographyBlock_settings {
@@ -812,6 +813,7 @@ export interface CardFormRestore_subtitle_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardFormRestore_subtitle_TypographyBlock_settings {
@@ -1331,6 +1333,7 @@ export interface CardFormRestore_title_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardFormRestore_title_TypographyBlock_settings {
@@ -1850,6 +1853,7 @@ export interface CardFormRestore_textResponse_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardFormRestore_textResponse_TypographyBlock_settings {
@@ -2369,6 +2373,7 @@ export interface CardFormRestore_button_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardFormRestore_button_TypographyBlock_settings {
@@ -2888,6 +2893,7 @@ export interface CardFormRestore_startIcon_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardFormRestore_startIcon_TypographyBlock_settings {
@@ -3407,6 +3413,7 @@ export interface CardFormRestore_endIcon_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardFormRestore_endIcon_TypographyBlock_settings {
@@ -3926,6 +3933,7 @@ export interface CardFormRestore_body_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardFormRestore_body_TypographyBlock_settings {

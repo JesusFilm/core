@@ -293,6 +293,7 @@ export interface CardIntroRestore_subtitle_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardIntroRestore_subtitle_TypographyBlock_settings {
@@ -812,6 +813,7 @@ export interface CardIntroRestore_title_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardIntroRestore_title_TypographyBlock_settings {
@@ -1331,6 +1333,7 @@ export interface CardIntroRestore_body_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardIntroRestore_body_TypographyBlock_settings {
@@ -1850,6 +1853,7 @@ export interface CardIntroRestore_button_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardIntroRestore_button_TypographyBlock_settings {
@@ -2369,6 +2373,7 @@ export interface CardIntroRestore_startIcon_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardIntroRestore_startIcon_TypographyBlock_settings {
@@ -2888,6 +2893,7 @@ export interface CardIntroRestore_endIcon_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardIntroRestore_endIcon_TypographyBlock_settings {
@@ -3407,6 +3413,7 @@ export interface CardIntroRestore_video_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardIntroRestore_video_TypographyBlock_settings {

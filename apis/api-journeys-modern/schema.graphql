@@ -46,7 +46,6 @@ enum ButtonAction {
   LinkAction
   EmailAction
   PhoneAction
-  ChatAction
 }
 
 enum ButtonAlignment {
@@ -923,6 +922,7 @@ type JourneyVisitor
   lastTextResponse: String
   lastRadioQuestion: String
   lastRadioOptionSubmission: String
+  lastMultiselectSubmission: String
   countryCode: String
   messagePlatform: MessagePlatform
   notes: String
@@ -930,10 +930,18 @@ type JourneyVisitor
   events: [Event!]!
 }
 
+input JourneyVisitorExportSelect {
+  name: Boolean
+  email: Boolean
+  phone: Boolean
+  createdAt: Boolean
+}
+
 input JourneyVisitorFilter {
   journeyId: String!
   hasChatStarted: Boolean
   hasPollAnswers: Boolean
+  hasMultiselectSubmission: Boolean
   hasTextResponse: Boolean
   hasIcon: Boolean
   hideInactive: Boolean
@@ -1158,7 +1166,8 @@ type Mutation {
   blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID): LinkAction! @override(from: "api-journeys")
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction! @override(from: "api-journeys")
   blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID): PhoneAction! @override(from: "api-journeys")
-  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent! @override(from: "api-journeys")
+  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
+  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @override(from: "api-journeys")
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent! @override(from: "api-journeys")
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
@@ -1320,6 +1329,11 @@ type Query {
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
   journeySimpleGet(id: ID!): Json
+
+  """
+  Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
+  """
+  journeyVisitorExport(journeyId: ID!, filter: JourneyEventsFilter, select: JourneyVisitorExportSelect): String
 }
 
 type RadioOptionBlock implements Block

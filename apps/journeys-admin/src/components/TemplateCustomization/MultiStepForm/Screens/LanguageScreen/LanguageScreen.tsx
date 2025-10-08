@@ -20,8 +20,6 @@ import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
-import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
-
 interface LanguageScreenProps {
   handleNext: () => void
   handleScreenNavigation: (screen: CustomizationScreen) => void
