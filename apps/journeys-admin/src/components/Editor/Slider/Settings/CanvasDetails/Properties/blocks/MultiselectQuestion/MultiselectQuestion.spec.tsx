@@ -131,7 +131,7 @@ describe('MultiselectQuestion Properties', () => {
         'To edit multiselect content, choose each option individually'
       )
     ).toBeInTheDocument()
-    expect(screen.getByText('Selection Limit')).toBeInTheDocument()
+    expect(screen.getByText('Set Selection Limit')).toBeInTheDocument()
   })
 
   it('changes label and range and commits on blur', async () => {
@@ -160,5 +160,78 @@ describe('MultiselectQuestion Properties', () => {
     fireEvent.blur(maxInput)
 
     await waitFor(() => expect(mockUpdateBoth.result).toHaveBeenCalled())
+  })
+
+  it('enabling selection limit sets max to number of options', async () => {
+    const selectedBlockDisabled: TreeBlock<MultiselectBlock> = {
+      __typename: 'MultiselectBlock',
+      id: 'multiselect.id',
+      parentBlockId: 'step.id',
+      parentOrder: 0,
+      min: null,
+      max: null,
+      children: [
+        {
+          __typename: 'MultiselectOptionBlock',
+          id: 'option1.id',
+          parentBlockId: 'multiselect.id',
+          parentOrder: 0,
+          label: 'Option 1',
+          children: []
+        },
+        {
+          __typename: 'MultiselectOptionBlock',
+          id: 'option2.id',
+          parentBlockId: 'multiselect.id',
+          parentOrder: 1,
+          label: 'Option 2',
+          children: []
+        }
+      ]
+    }
+
+    const mockEnableSetsDefaults: MockedResponse = {
+      request: {
+        query: MULTISELECT_BLOCK_UPDATE,
+        variables: {
+          id: selectedBlockDisabled.id,
+          input: { min: 0, max: 2 }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          multiselectBlockUpdate: {
+            __typename: 'MultiselectBlock',
+            id: selectedBlockDisabled.id,
+            parentBlockId: selectedBlockDisabled.parentBlockId,
+            parentOrder: selectedBlockDisabled.parentOrder,
+            min: 0,
+            max: 2
+          }
+        }
+      }))
+    }
+
+    render(
+      <MockedProvider mocks={[mockEnableSetsDefaults]}>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{ selectedBlock: selectedBlockDisabled }}
+          >
+            <MultiselectQuestion {...selectedBlockDisabled} />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const toggle = screen.getByRole('checkbox', {
+      name: 'Set Selection Limit'
+    })
+    // enable
+    fireEvent.click(toggle)
+
+    await waitFor(() =>
+      expect(mockEnableSetsDefaults.result as jest.Mock).toHaveBeenCalled()
+    )
   })
 })
