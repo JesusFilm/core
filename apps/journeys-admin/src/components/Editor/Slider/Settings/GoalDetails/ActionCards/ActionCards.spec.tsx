@@ -63,7 +63,9 @@ describe('ActionCards', () => {
                       __typename: 'LinkAction',
                       parentBlockId: 'RadioOption1',
                       gtmEventName: 'poll',
-                      url: 'https://www.google.com/'
+                      url: 'https://www.google.com/',
+                      customizable: false,
+                      parentStepId: null
                     },
                     pollOptionImageBlockId: null
                   },

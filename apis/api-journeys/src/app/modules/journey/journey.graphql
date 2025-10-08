@@ -71,7 +71,7 @@ type Journey @key(fields: "id") @shareable {
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
-  guestJourney: Boolean
+  showAssistant: Boolean
 }
 
 enum IdType {

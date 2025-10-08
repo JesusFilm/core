@@ -10,7 +10,8 @@ export enum Action {
   Read = 'read',
   Update = 'update',
   Delete = 'delete',
-  Manage = 'manage'
+  Manage = 'manage',
+  Export = 'export'
 }
 
 export enum Subject {
@@ -40,8 +41,8 @@ export function ability(
 
 export function subject(
   subject: SubjectKey,
-  object: SubjectObjectTypes[SubjectKey]
-): { subject: SubjectKey; object: SubjectObjectTypes[SubjectKey] } {
+  object: Partial<SubjectObjectTypes[SubjectKey]>
+): { subject: SubjectKey; object: Partial<SubjectObjectTypes[SubjectKey]> } {
   return { subject, object }
 }
 

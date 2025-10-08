@@ -1,6 +1,8 @@
 import { builder } from '../../builder'
 import { ActionInterface } from '../action'
 
+import { ContactActionType } from './enums/contactActionType'
+
 export const PhoneActionRef = builder.prismaObject('Action', {
   variant: 'PhoneAction',
   shareable: true,
@@ -9,7 +11,16 @@ export const PhoneActionRef = builder.prismaObject('Action', {
   fields: (t) => ({
     phone: t.string({
       nullable: false,
-      resolve: (action) => action.phone || ''
+      resolve: ({ phone }) => phone ?? ''
+    }),
+    countryCode: t.string({
+      nullable: false,
+      resolve: ({ countryCode }) => countryCode ?? ''
+    }),
+    contactAction: t.field({
+      type: ContactActionType,
+      nullable: false,
+      resolve: (action: any) => action.contactAction ?? 'call'
     })
   })
 })

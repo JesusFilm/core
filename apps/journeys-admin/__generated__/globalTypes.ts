@@ -293,10 +293,10 @@ export interface BlockUpdateActionInput {
   gtmEventName?: string | null;
   email?: string | null;
   url?: string | null;
-  target?: string | null;
-  blockId?: string | null;
   phone?: string | null;
   countryCode?: string | null;
+  target?: string | null;
+  blockId?: string | null;
 }
 
 export interface ButtonBlockCreateInput {
@@ -473,6 +473,12 @@ export interface JourneyCollectionUpdateInput {
   journeyIds?: string[] | null;
 }
 
+export interface JourneyCustomizationFieldInput {
+  id: string;
+  key: string;
+  value?: string | null;
+}
+
 export interface JourneyEventsExportLogInput {
   journeyId: string;
   eventsFilter: EventType[];
@@ -552,6 +558,7 @@ export interface JourneyVisitorFilter {
   journeyId: string;
   hasChatStarted?: boolean | null;
   hasPollAnswers?: boolean | null;
+  hasMultiselectSubmission?: boolean | null;
   hasTextResponse?: boolean | null;
   hasIcon?: boolean | null;
   hideInactive?: boolean | null;
@@ -733,6 +740,7 @@ export interface TextResponseBlockUpdateInput {
   placeholder?: string | null;
   required?: boolean | null;
   hint?: string | null;
+  hideLabel?: boolean | null;
   minRows?: number | null;
   routeId?: string | null;
   type?: TextResponseType | null;
@@ -791,33 +799,39 @@ export interface VideoBlockCreateInput {
   id?: string | null;
   journeyId: string;
   parentBlockId: string;
-  startAt?: number | null;
-  endAt?: number | null;
-  duration?: number | null;
-  description?: string | null;
-  muted?: boolean | null;
-  autoplay?: boolean | null;
   videoId?: string | null;
   videoVariantLanguageId?: string | null;
   source?: VideoBlockSource | null;
-  posterBlockId?: string | null;
-  fullsize?: boolean | null;
   isCover?: boolean | null;
+  title?: string | null;
+  description?: string | null;
+  image?: string | null;
+  duration?: number | null;
   objectFit?: VideoBlockObjectFit | null;
+  startAt?: number | null;
+  endAt?: number | null;
+  muted?: boolean | null;
+  autoplay?: boolean | null;
+  fullsize?: boolean | null;
+  posterBlockId?: string | null;
 }
 
 export interface VideoBlockUpdateInput {
+  parentBlockId?: string | null;
+  videoId?: string | null;
+  videoVariantLanguageId?: string | null;
+  posterBlockId?: string | null;
+  title?: string | null;
+  description?: string | null;
+  image?: string | null;
+  duration?: number | null;
+  objectFit?: VideoBlockObjectFit | null;
   startAt?: number | null;
   endAt?: number | null;
   muted?: boolean | null;
   autoplay?: boolean | null;
-  duration?: number | null;
-  videoId?: string | null;
-  videoVariantLanguageId?: string | null;
-  source?: VideoBlockSource | null;
-  posterBlockId?: string | null;
   fullsize?: boolean | null;
-  objectFit?: VideoBlockObjectFit | null;
+  source?: VideoBlockSource | null;
 }
 
 export interface VideoCollapseEventCreateInput {

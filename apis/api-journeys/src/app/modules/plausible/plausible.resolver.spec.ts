@@ -76,7 +76,7 @@ describe('PlausibleResolver', () => {
     socialNodeY: null,
     fromTemplateId: null,
     journeyCustomizationDescription: null,
-    guestJourney: null
+    showAssistant: null
   }
 
   const journeyWithUserTeam = {

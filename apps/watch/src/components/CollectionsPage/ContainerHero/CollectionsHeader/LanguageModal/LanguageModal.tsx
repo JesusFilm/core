@@ -52,14 +52,14 @@ export function LanguageModal({
         }
       }}
     >
-      <div className="w-full h-[100vh] flex justify-center items-center px-1 sm:px-2 overflow-hidden bg-black/80 backdrop-blur-lg">
+      <div className="flex h-[100vh] w-full items-center justify-center overflow-hidden bg-black/80 px-1 backdrop-blur-lg sm:px-2">
         <div className="w-full max-w-md rounded-lg p-6">
           <div className="grid grid-cols-1 gap-4 font-sans">
             {languages.map((language) => (
               <a
                 href={`/watch/easter/${language.urlName}`}
                 key={language.code}
-                className="inline-block text-center gap-2 px-4 py-4 text-md text-white font-semibold uppercase tracking-wider rounded-lg bg-stone-800/50 hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
+                className="text-md inline-block cursor-pointer gap-2 rounded-lg bg-stone-800/50 px-4 py-4 text-center font-semibold tracking-wider text-white uppercase transition-colors duration-200 hover:bg-red-500 hover:text-white"
                 data-testid={`language-button-${language.code}`}
               >
                 {language.name}
@@ -68,7 +68,7 @@ export function LanguageModal({
 
             <a
               href={`/contact`}
-              className="mt-6 inline-block text-center gap-2 px-4 py-4 text-md text-white font-semibold tracking-wider rounded-lg bg-stone-800/10 hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
+              className="text-md mt-6 inline-block cursor-pointer gap-2 rounded-lg bg-stone-800/10 px-4 py-4 text-center font-semibold tracking-wider text-white transition-colors duration-200 hover:bg-red-500 hover:text-white"
               data-testid={`language-button-support`}
             >
               <EmailIcon sx={{ fontSize: 20, marginRight: 2 }} />{' '}

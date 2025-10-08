@@ -77,7 +77,7 @@ describe('JourneyCustomizationFieldResolver', () => {
     socialNodeY: null,
     fromTemplateId: null,
     journeyCustomizationDescription: null,
-    guestJourney: null
+    showAssistant: null
   }
 
   const mockTeam: Team = {

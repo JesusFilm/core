@@ -78,6 +78,8 @@ export interface VideoFields_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface VideoFields_action_EmailAction {
@@ -85,6 +87,8 @@ export interface VideoFields_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type VideoFields_action = VideoFields_action_PhoneAction | VideoFields_action_NavigateToBlockAction | VideoFields_action_LinkAction | VideoFields_action_EmailAction;

@@ -263,6 +263,7 @@ describe('HostResolver', () => {
       socialNodeY: null,
       fromTemplateId: null,
       journeyCustomizationDescription: null,
+      showAssistant: null,
       guestJourney: null
     }
 

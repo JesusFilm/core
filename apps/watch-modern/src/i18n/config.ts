@@ -9,6 +9,7 @@ export const locales = [
   'ja-JP', // Japanese
   'ko-KR', // Korean
   'ru-RU', // Russian
+  'tl-PH', // Tagalog
   'tr-TR', // Turkish
   'zh', // Chinese
   'zh-Hans-CN' // Chinese, Simplified

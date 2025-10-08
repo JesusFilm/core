@@ -32,7 +32,7 @@ test.describe('Feature film', () => {
     await page.waitForURL('**/jesus.html/**', { timeout: 60000 })
 
     // Wait for navigation and verify URL with longer timeout
-    await expect(page).toHaveURL('/watch/jesus.html/english.html?r=0', {
+    await expect(page).toHaveURL('/watch/jesus.html/english.html', {
       timeout: 60000
     })
 
@@ -42,9 +42,14 @@ test.describe('Feature film', () => {
     // Wait for the JESUS page content to load (look for elements that indicate we're on the JESUS page)
     await page.waitForSelector('h1:has-text("JESUS")', { timeout: 60000 })
 
-    // Wait for Birth of Jesus chapter to be available - try multiple selectors
-    const birthOfJesusButton = page.locator(
-      '[data-testid="VideoCardButton-birth-of-jesus"]'
+    // Wait for video carousel to load
+    await page.waitForSelector('[data-testid="VideoCarousel"]', {
+      timeout: 60000
+    })
+
+    // Wait for Birth of Jesus chapter to be available
+    const birthOfJesusButton = page.getByTestId(
+      'VideoCardButton-birth-of-jesus'
     )
     await birthOfJesusButton.waitFor({ timeout: 60000 })
 
@@ -63,7 +68,7 @@ test.describe('Feature film', () => {
 
     // Verify URL changed to Birth of Jesus chapter
     await expect(page).toHaveURL(
-      '/watch/jesus.html/birth-of-jesus/english.html?r=0',
+      '/watch/jesus.html/birth-of-jesus/english.html',
       { timeout: 60000 }
     )
   })

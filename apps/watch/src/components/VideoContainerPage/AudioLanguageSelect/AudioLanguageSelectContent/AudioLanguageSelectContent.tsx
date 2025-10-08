@@ -19,30 +19,20 @@ export function AudioLanguageSelectContent() {
   )
 
   return (
-    <SelectContent className="bg-white border border-gray-200 shadow-lg z-[9999]">
+    <SelectContent className="z-[9999] border border-gray-200 bg-white shadow-lg">
       {filteredLanguages?.map((option: Language) => (
         <NextLink
           key={option.id}
           href={`/watch${
             variant?.slug != null ? `/${variant.slug.split('/')[0]}.html/` : '/'
-          }${option.slug}.html?r=0`}
-          className={`
-            block
-            hover:bg-gray-100
-            focus:bg-gray-100
-            data-[highlighted]:bg-gray-100
-            data-[state=checked]:bg-blue-50
-            data-[state=checked]:text-blue-900
-            cursor-pointer
-            p-2
-            rounded
-          `}
+          }${option.slug}.html`}
+          className={`block cursor-pointer rounded p-2 hover:bg-gray-100 focus:bg-gray-100 data-[highlighted]:bg-gray-100 data-[state=checked]:bg-blue-50 data-[state=checked]:text-blue-900`}
           role="option"
           aria-label={option.displayName}
         >
-          <div className="flex items-center gap-1 justify-between w-full">
+          <div className="flex w-full items-center justify-between gap-1">
             <span
-              className="text-sm text-black font-sans"
+              className="font-sans text-sm text-black"
               data-testid="AudioLanguageSelectDisplayLanguageName"
             >
               {option.displayName}
@@ -50,7 +40,7 @@ export function AudioLanguageSelectContent() {
             {option.nativeName &&
               option.nativeName.value !== option.displayName && (
                 <span
-                  className="text-xs text-gray-600 font-sans"
+                  className="font-sans text-xs text-gray-600"
                   data-testid="AudioLanguageSelectNativeLanguageName"
                 >
                   {option.nativeName.value}
