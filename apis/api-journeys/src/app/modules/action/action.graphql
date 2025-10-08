@@ -43,4 +43,5 @@ type PhoneAction implements Action @shareable {
   countryCode: String!
   contactAction: ContactActionType!
   customizable: Boolean
+  parentStepId: String
 }
