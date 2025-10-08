@@ -253,7 +253,7 @@ describe('multiselectBlockUpdate', () => {
     })
   })
 
-  it('nullifies min/max when equal to child count on update', async () => {
+  it('preserves min/max when equal to child count on update', async () => {
     const {
       fetchBlockWithJourneyAcl
     } = require('../../../lib/auth/fetchBlockWithJourneyAcl')
@@ -271,8 +271,8 @@ describe('multiselectBlockUpdate', () => {
           typename: 'MultiselectBlock',
           journeyId: 'journeyId',
           parentBlockId: 'parentId',
-          min: null,
-          max: null
+          min: 4,
+          max: 4
         })
       },
       journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
@@ -294,14 +294,14 @@ describe('multiselectBlockUpdate', () => {
     )
     expect(tx.block.update).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({ min: null, max: null })
+        data: expect.objectContaining({ min: 4, max: 4 })
       })
     )
     expect(result).toEqual({
       data: {
         multiselectBlockUpdate: expect.objectContaining({
-          min: null,
-          max: null
+          min: 4,
+          max: 4
         })
       }
     })
