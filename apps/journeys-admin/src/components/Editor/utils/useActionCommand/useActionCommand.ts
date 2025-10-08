@@ -95,7 +95,9 @@ export function useActionCommand(): {
                 block,
                 action.phone,
                 action.countryCode,
-                action.contactAction
+                action.contactAction,
+                action.customizable,
+                action.parentStepId
               )
               break
             case 'NavigateToBlockAction':

@@ -48,6 +48,8 @@ export interface CardQuoteRestore_image_ButtonBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_image_ButtonBlock_action = CardQuoteRestore_image_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_image_ButtonBlock_action_LinkAction | CardQuoteRestore_image_ButtonBlock_action_EmailAction | CardQuoteRestore_image_ButtonBlock_action_PhoneAction;
@@ -174,6 +176,8 @@ export interface CardQuoteRestore_image_RadioOptionBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_image_RadioOptionBlock_action = CardQuoteRestore_image_RadioOptionBlock_action_NavigateToBlockAction | CardQuoteRestore_image_RadioOptionBlock_action_LinkAction | CardQuoteRestore_image_RadioOptionBlock_action_EmailAction | CardQuoteRestore_image_RadioOptionBlock_action_PhoneAction;
@@ -233,6 +237,8 @@ export interface CardQuoteRestore_image_SignUpBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_image_SignUpBlock_action = CardQuoteRestore_image_SignUpBlock_action_NavigateToBlockAction | CardQuoteRestore_image_SignUpBlock_action_LinkAction | CardQuoteRestore_image_SignUpBlock_action_EmailAction | CardQuoteRestore_image_SignUpBlock_action_PhoneAction;
@@ -399,6 +405,8 @@ export interface CardQuoteRestore_image_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_image_VideoBlock_action = CardQuoteRestore_image_VideoBlock_action_NavigateToBlockAction | CardQuoteRestore_image_VideoBlock_action_LinkAction | CardQuoteRestore_image_VideoBlock_action_EmailAction | CardQuoteRestore_image_VideoBlock_action_PhoneAction;
@@ -510,6 +518,8 @@ export interface CardQuoteRestore_image_VideoTriggerBlock_triggerAction_PhoneAct
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_image_VideoTriggerBlock_triggerAction = CardQuoteRestore_image_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardQuoteRestore_image_VideoTriggerBlock_triggerAction_LinkAction | CardQuoteRestore_image_VideoTriggerBlock_triggerAction_EmailAction | CardQuoteRestore_image_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -568,6 +578,8 @@ export interface CardQuoteRestore_subtitle_ButtonBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_subtitle_ButtonBlock_action = CardQuoteRestore_subtitle_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_subtitle_ButtonBlock_action_LinkAction | CardQuoteRestore_subtitle_ButtonBlock_action_EmailAction | CardQuoteRestore_subtitle_ButtonBlock_action_PhoneAction;
@@ -694,6 +706,8 @@ export interface CardQuoteRestore_subtitle_RadioOptionBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_subtitle_RadioOptionBlock_action = CardQuoteRestore_subtitle_RadioOptionBlock_action_NavigateToBlockAction | CardQuoteRestore_subtitle_RadioOptionBlock_action_LinkAction | CardQuoteRestore_subtitle_RadioOptionBlock_action_EmailAction | CardQuoteRestore_subtitle_RadioOptionBlock_action_PhoneAction;
@@ -753,6 +767,8 @@ export interface CardQuoteRestore_subtitle_SignUpBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_subtitle_SignUpBlock_action = CardQuoteRestore_subtitle_SignUpBlock_action_NavigateToBlockAction | CardQuoteRestore_subtitle_SignUpBlock_action_LinkAction | CardQuoteRestore_subtitle_SignUpBlock_action_EmailAction | CardQuoteRestore_subtitle_SignUpBlock_action_PhoneAction;
@@ -919,6 +935,8 @@ export interface CardQuoteRestore_subtitle_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_subtitle_VideoBlock_action = CardQuoteRestore_subtitle_VideoBlock_action_NavigateToBlockAction | CardQuoteRestore_subtitle_VideoBlock_action_LinkAction | CardQuoteRestore_subtitle_VideoBlock_action_EmailAction | CardQuoteRestore_subtitle_VideoBlock_action_PhoneAction;
@@ -1030,6 +1048,8 @@ export interface CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_Phone
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction = CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_LinkAction | CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_EmailAction | CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -1088,6 +1108,8 @@ export interface CardQuoteRestore_title_ButtonBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_title_ButtonBlock_action = CardQuoteRestore_title_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_title_ButtonBlock_action_LinkAction | CardQuoteRestore_title_ButtonBlock_action_EmailAction | CardQuoteRestore_title_ButtonBlock_action_PhoneAction;
@@ -1214,6 +1236,8 @@ export interface CardQuoteRestore_title_RadioOptionBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_title_RadioOptionBlock_action = CardQuoteRestore_title_RadioOptionBlock_action_NavigateToBlockAction | CardQuoteRestore_title_RadioOptionBlock_action_LinkAction | CardQuoteRestore_title_RadioOptionBlock_action_EmailAction | CardQuoteRestore_title_RadioOptionBlock_action_PhoneAction;
@@ -1273,6 +1297,8 @@ export interface CardQuoteRestore_title_SignUpBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_title_SignUpBlock_action = CardQuoteRestore_title_SignUpBlock_action_NavigateToBlockAction | CardQuoteRestore_title_SignUpBlock_action_LinkAction | CardQuoteRestore_title_SignUpBlock_action_EmailAction | CardQuoteRestore_title_SignUpBlock_action_PhoneAction;
@@ -1439,6 +1465,8 @@ export interface CardQuoteRestore_title_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_title_VideoBlock_action = CardQuoteRestore_title_VideoBlock_action_NavigateToBlockAction | CardQuoteRestore_title_VideoBlock_action_LinkAction | CardQuoteRestore_title_VideoBlock_action_EmailAction | CardQuoteRestore_title_VideoBlock_action_PhoneAction;
@@ -1550,6 +1578,8 @@ export interface CardQuoteRestore_title_VideoTriggerBlock_triggerAction_PhoneAct
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_title_VideoTriggerBlock_triggerAction = CardQuoteRestore_title_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardQuoteRestore_title_VideoTriggerBlock_triggerAction_LinkAction | CardQuoteRestore_title_VideoTriggerBlock_triggerAction_EmailAction | CardQuoteRestore_title_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -1608,6 +1638,8 @@ export interface CardQuoteRestore_body_ButtonBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_body_ButtonBlock_action = CardQuoteRestore_body_ButtonBlock_action_NavigateToBlockAction | CardQuoteRestore_body_ButtonBlock_action_LinkAction | CardQuoteRestore_body_ButtonBlock_action_EmailAction | CardQuoteRestore_body_ButtonBlock_action_PhoneAction;
@@ -1734,6 +1766,8 @@ export interface CardQuoteRestore_body_RadioOptionBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_body_RadioOptionBlock_action = CardQuoteRestore_body_RadioOptionBlock_action_NavigateToBlockAction | CardQuoteRestore_body_RadioOptionBlock_action_LinkAction | CardQuoteRestore_body_RadioOptionBlock_action_EmailAction | CardQuoteRestore_body_RadioOptionBlock_action_PhoneAction;
@@ -1793,6 +1827,8 @@ export interface CardQuoteRestore_body_SignUpBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_body_SignUpBlock_action = CardQuoteRestore_body_SignUpBlock_action_NavigateToBlockAction | CardQuoteRestore_body_SignUpBlock_action_LinkAction | CardQuoteRestore_body_SignUpBlock_action_EmailAction | CardQuoteRestore_body_SignUpBlock_action_PhoneAction;
@@ -1959,6 +1995,8 @@ export interface CardQuoteRestore_body_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_body_VideoBlock_action = CardQuoteRestore_body_VideoBlock_action_NavigateToBlockAction | CardQuoteRestore_body_VideoBlock_action_LinkAction | CardQuoteRestore_body_VideoBlock_action_EmailAction | CardQuoteRestore_body_VideoBlock_action_PhoneAction;
@@ -2070,6 +2108,8 @@ export interface CardQuoteRestore_body_VideoTriggerBlock_triggerAction_PhoneActi
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardQuoteRestore_body_VideoTriggerBlock_triggerAction = CardQuoteRestore_body_VideoTriggerBlock_triggerAction_NavigateToBlockAction | CardQuoteRestore_body_VideoTriggerBlock_triggerAction_LinkAction | CardQuoteRestore_body_VideoTriggerBlock_triggerAction_EmailAction | CardQuoteRestore_body_VideoTriggerBlock_triggerAction_PhoneAction;

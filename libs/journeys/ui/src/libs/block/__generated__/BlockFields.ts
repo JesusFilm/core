@@ -48,6 +48,8 @@ export interface BlockFields_ButtonBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type BlockFields_ButtonBlock_action = BlockFields_ButtonBlock_action_NavigateToBlockAction | BlockFields_ButtonBlock_action_LinkAction | BlockFields_ButtonBlock_action_EmailAction | BlockFields_ButtonBlock_action_PhoneAction;
@@ -174,6 +176,8 @@ export interface BlockFields_RadioOptionBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type BlockFields_RadioOptionBlock_action = BlockFields_RadioOptionBlock_action_NavigateToBlockAction | BlockFields_RadioOptionBlock_action_LinkAction | BlockFields_RadioOptionBlock_action_EmailAction | BlockFields_RadioOptionBlock_action_PhoneAction;
@@ -233,6 +237,8 @@ export interface BlockFields_SignUpBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type BlockFields_SignUpBlock_action = BlockFields_SignUpBlock_action_NavigateToBlockAction | BlockFields_SignUpBlock_action_LinkAction | BlockFields_SignUpBlock_action_EmailAction | BlockFields_SignUpBlock_action_PhoneAction;
@@ -399,6 +405,8 @@ export interface BlockFields_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type BlockFields_VideoBlock_action = BlockFields_VideoBlock_action_NavigateToBlockAction | BlockFields_VideoBlock_action_LinkAction | BlockFields_VideoBlock_action_EmailAction | BlockFields_VideoBlock_action_PhoneAction;
@@ -510,6 +518,8 @@ export interface BlockFields_VideoTriggerBlock_triggerAction_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type BlockFields_VideoTriggerBlock_triggerAction = BlockFields_VideoTriggerBlock_triggerAction_NavigateToBlockAction | BlockFields_VideoTriggerBlock_triggerAction_LinkAction | BlockFields_VideoTriggerBlock_triggerAction_EmailAction | BlockFields_VideoTriggerBlock_triggerAction_PhoneAction;

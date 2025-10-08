@@ -48,6 +48,8 @@ export interface BlockRestore_blockRestore_ButtonBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type BlockRestore_blockRestore_ButtonBlock_action = BlockRestore_blockRestore_ButtonBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_ButtonBlock_action_LinkAction | BlockRestore_blockRestore_ButtonBlock_action_EmailAction | BlockRestore_blockRestore_ButtonBlock_action_PhoneAction;
@@ -174,6 +176,8 @@ export interface BlockRestore_blockRestore_RadioOptionBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type BlockRestore_blockRestore_RadioOptionBlock_action = BlockRestore_blockRestore_RadioOptionBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_RadioOptionBlock_action_LinkAction | BlockRestore_blockRestore_RadioOptionBlock_action_EmailAction | BlockRestore_blockRestore_RadioOptionBlock_action_PhoneAction;
@@ -233,6 +237,8 @@ export interface BlockRestore_blockRestore_SignUpBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type BlockRestore_blockRestore_SignUpBlock_action = BlockRestore_blockRestore_SignUpBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_SignUpBlock_action_LinkAction | BlockRestore_blockRestore_SignUpBlock_action_EmailAction | BlockRestore_blockRestore_SignUpBlock_action_PhoneAction;
@@ -409,6 +415,8 @@ export interface BlockRestore_blockRestore_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type BlockRestore_blockRestore_VideoBlock_action = BlockRestore_blockRestore_VideoBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_VideoBlock_action_LinkAction | BlockRestore_blockRestore_VideoBlock_action_EmailAction | BlockRestore_blockRestore_VideoBlock_action_PhoneAction;
@@ -520,6 +528,8 @@ export interface BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_Phone
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type BlockRestore_blockRestore_VideoTriggerBlock_triggerAction = BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_LinkAction | BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_EmailAction | BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_PhoneAction;
