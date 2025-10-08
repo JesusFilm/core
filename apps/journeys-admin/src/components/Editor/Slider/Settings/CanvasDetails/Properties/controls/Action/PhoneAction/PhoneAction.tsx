@@ -239,7 +239,9 @@ export function PhoneAction(): ReactElement {
             gtmEventName: '',
             phone: fullPhoneNumber,
             countryCode: selectedCountryForAction.countryCode,
-            contactAction: phoneAction?.contactAction ?? ContactActionType.call
+            contactAction: phoneAction?.contactAction ?? ContactActionType.call,
+            customizable: phoneAction?.customizable ?? false,
+            parentStepId: selectedStep.id
           },
           undoAction: selectedBlock.action,
           editorFocus: {
@@ -291,7 +293,9 @@ export function PhoneAction(): ReactElement {
           gtmEventName: '',
           phone: phoneAction.phone,
           countryCode: phoneAction.countryCode ?? 'US',
-          contactAction
+          contactAction,
+          customizable: phoneAction.customizable ?? false,
+          parentStepId: selectedStep.id
         },
         undoAction: selectedBlock.action,
         editorFocus: {

@@ -124,7 +124,9 @@ export function Action(): ReactElement {
         {isEmail && <EmailAction ref={emailActionRef} />}
         {isPhone && <PhoneAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
-        {(isLink || isEmail) && journey?.template && <CustomizationToggle />}
+        {(isLink || isEmail || isPhone) && journey?.template && (
+          <CustomizationToggle />
+        )}
       </Stack>
     </>
   )

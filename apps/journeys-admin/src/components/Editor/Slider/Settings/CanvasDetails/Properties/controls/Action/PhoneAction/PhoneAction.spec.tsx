@@ -43,8 +43,20 @@ describe('PhoneAction', () => {
       gtmEventName: 'gtmEventName',
       phone: '+1234567890',
       countryCode: 'US',
-      contactAction: ContactActionType.call
+      contactAction: ContactActionType.call,
+      customizable: false
     },
+    children: [],
+    settings: null
+  }
+
+  const selectedStep: TreeBlock = {
+    __typename: 'StepBlock',
+    id: 'step1.id',
+    parentBlockId: null,
+    parentOrder: 0,
+    locked: false,
+    slug: 'step-1',
     children: [],
     settings: null
   }
@@ -52,7 +64,7 @@ describe('PhoneAction', () => {
   it('displays the country code and phone number', async () => {
     render(
       <MockedProvider>
-        <EditorProvider initialState={{ selectedBlock }}>
+        <EditorProvider initialState={{ selectedBlock, selectedStep }}>
           <PhoneAction />
         </EditorProvider>
       </MockedProvider>
@@ -67,7 +79,7 @@ describe('PhoneAction', () => {
     const result = jest.fn().mockReturnValue(blockActionPhoneUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...blockActionPhoneUpdateMock, result }]}>
-        <EditorProvider initialState={{ selectedBlock }}>
+        <EditorProvider initialState={{ selectedBlock, selectedStep }}>
           <PhoneAction />
         </EditorProvider>
       </MockedProvider>
@@ -234,7 +246,7 @@ describe('PhoneAction', () => {
     const result = jest.fn().mockReturnValue(contactActionUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...contactActionUpdateMock, result }]}>
-        <EditorProvider initialState={{ selectedBlock }}>
+        <EditorProvider initialState={{ selectedBlock, selectedStep }}>
           <PhoneAction />
         </EditorProvider>
       </MockedProvider>
@@ -282,7 +294,7 @@ describe('PhoneAction', () => {
   it('should enable radio buttons when phone number is set', async () => {
     render(
       <MockedProvider>
-        <EditorProvider initialState={{ selectedBlock }}>
+        <EditorProvider initialState={{ selectedBlock, selectedStep }}>
           <PhoneAction />
         </EditorProvider>
       </MockedProvider>
