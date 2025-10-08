@@ -1226,6 +1226,7 @@ type PhoneAction implements Action
   countryCode: String!
   contactAction: ContactActionType!
   customizable: Boolean
+  parentStepId: String
 }
 
 input PhoneActionInput {

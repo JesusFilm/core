@@ -934,6 +934,7 @@ export class PhoneAction implements Action {
     countryCode: string;
     contactAction: ContactActionType;
     customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
 }
 
 export class Journey {
