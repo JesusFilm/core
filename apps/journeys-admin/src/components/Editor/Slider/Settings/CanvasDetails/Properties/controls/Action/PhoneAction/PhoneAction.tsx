@@ -153,7 +153,7 @@ export function PhoneAction(): ReactElement {
                 ''
               )
               const fullPhoneNumber = `+${countryCodeDigits}${value}`
-              return /^\+[1-9]\d{2,14}$/.test(fullPhoneNumber)
+              return /^\+[1-9]\d+$/.test(fullPhoneNumber)
             }
           )
           .test(

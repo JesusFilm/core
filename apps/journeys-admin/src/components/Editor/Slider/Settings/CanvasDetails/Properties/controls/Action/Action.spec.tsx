@@ -242,26 +242,22 @@ describe('Action', () => {
       </MockedProvider>
     )
 
-    // starts at email as default so we have to assert URL first
     fireEvent.mouseDown(getByRole('combobox'))
     await waitFor(() =>
       expect(getByRole('option', { name: 'URL/Website' })).toBeInTheDocument()
     )
     await userEvent.click(getByRole('option', { name: 'URL/Website' }))
 
-    // Wait for the component to re-render and then focus the input
     await waitFor(() =>
       expect(getByRole('textbox', { name: 'Paste URL here...' })).toHaveFocus()
     )
 
-    // then switch to email
     fireEvent.mouseDown(getByRole('combobox'))
     await waitFor(() =>
       expect(getByRole('option', { name: 'Email' })).toBeInTheDocument()
     )
     await userEvent.click(getByRole('option', { name: 'Email' }))
 
-    // Wait for the component to re-render and then focus the input
     await waitFor(() =>
       expect(
         getByRole('textbox', { name: 'Paste Email here...' })

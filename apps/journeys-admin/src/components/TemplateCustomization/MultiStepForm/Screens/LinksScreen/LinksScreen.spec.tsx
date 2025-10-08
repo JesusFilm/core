@@ -288,12 +288,14 @@ describe('LinksScreen', () => {
 
     // Change URL field
     const urlGroup = screen.getByLabelText('Edit Primary')
-    const urlInput = within(urlGroup).getByRole('textbox')
+    const urlInput = within(urlGroup).getByRole('textbox') as HTMLInputElement
     fireEvent.change(urlInput, { target: { value: 'https://changed.com' } })
 
     // Change Email field
     const emailGroup = screen.getByLabelText('Edit Email Link')
-    const emailInput = within(emailGroup).getByRole('textbox')
+    const emailInput = within(emailGroup).getByRole(
+      'textbox'
+    ) as HTMLInputElement
     fireEvent.change(emailInput, { target: { value: 'changed@example.com' } })
 
     // TODO: uncomment this when chat buttons are added to duplicate api

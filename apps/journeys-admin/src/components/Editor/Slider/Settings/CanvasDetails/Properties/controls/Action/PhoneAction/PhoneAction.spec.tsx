@@ -111,7 +111,7 @@ describe('PhoneAction', () => {
     fireEvent.blur(screen.getByRole('textbox', { name: 'Phone Number' }))
     await waitFor(() =>
       expect(
-        screen.getByText('Phone number must be under 15 digits.')
+        screen.getByText('Phone number must use valid digits.')
       ).toBeInTheDocument()
     )
   })

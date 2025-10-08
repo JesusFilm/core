@@ -86,7 +86,7 @@ describe('LinksForm', () => {
 
     const input = within(screen.getByLabelText('Edit URL Link')).getByRole(
       'textbox'
-    )
+    ) as HTMLInputElement
     fireEvent.change(input, { target: { value: 'example.com' } })
     expect(setFieldValue).toHaveBeenCalledWith('url-1', 'https://example.com')
   })
@@ -256,7 +256,7 @@ describe('LinksForm', () => {
 
     const input = within(screen.getByLabelText('Edit URL Link')).getByRole(
       'textbox'
-    )
+    ) as HTMLInputElement
     fireEvent.change(input, { target: { value: 'example.com' } })
     expect(setFieldValue).toHaveBeenCalledWith('url-1', 'https://example.com')
   })

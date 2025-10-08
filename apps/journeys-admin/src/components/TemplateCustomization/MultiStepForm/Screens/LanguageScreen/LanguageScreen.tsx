@@ -14,6 +14,7 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
+import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
