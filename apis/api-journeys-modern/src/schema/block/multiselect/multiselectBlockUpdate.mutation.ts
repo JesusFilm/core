@@ -79,9 +79,10 @@ builder.mutationField('multiselectBlockUpdate', (t) =>
           )
         }
         // Normalize values relative to optionCount
+        // Keep explicit constraints when equal to option count
         if (optionCount > 0) {
-          if (min != null && (min === optionCount || min < 1)) input.min = null
-          if (max != null && max >= optionCount) input.max = null
+          if (min != null && min < 1) input.min = null
+          if (max != null && max > optionCount) input.max = null
         }
       }
 
