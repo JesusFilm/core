@@ -1,10 +1,11 @@
-import { gql, QueryHookOptions, QueryResult, useQuery } from '@apollo/client'
+import { QueryHookOptions, QueryResult, gql, useQuery } from '@apollo/client'
+import { useMemo } from 'react'
+
 import {
-  GetParentJourneysFromTemplateIdVariables,
   GetParentJourneysFromTemplateId,
+  GetParentJourneysFromTemplateIdVariables,
   GetParentJourneysFromTemplateId_journeys_language as Language
 } from '../../../__generated__/GetParentJourneysFromTemplateId'
-import { useMemo } from 'react'
 
 export const GET_PARENT_JOURNEYS_FROM_TEMPLATE_ID = gql`
   query GetParentJourneysFromTemplateId($where: JourneysFilter) {

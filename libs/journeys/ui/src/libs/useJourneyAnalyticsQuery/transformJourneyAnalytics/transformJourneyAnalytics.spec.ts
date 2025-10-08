@@ -306,4 +306,199 @@ describe('transformJourneyAnalytics', () => {
 
     expect(transformJourneyAnalytics('journeyId', data)).toEqual(result)
   })
+
+  it('should count phone action button clicks as chats started', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 10,
+          timeOnPage: 10
+        }
+      ],
+      journeyStepsActions: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"chatButtonClick","blockId":"button1.id","target":"phone:+1234567890"}',
+          visitors: 3
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"chatButtonClick","blockId":"button2.id","target":"link:https://m.me/test"}',
+          visitors: 2
+        }
+      ],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"chatButtonClick","blockId":"button1.id","target":""}',
+          visitors: 3
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"chatButtonClick","blockId":"button2.id","target":""}',
+          visitors: 2
+        }
+      ],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 10
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    // Should count both phone action and chat link clicks as chats started
+    expect(result?.chatsStarted).toBe(5) // 3 phone actions + 2 chat links
+    expect(result?.linksVisited).toBe(0)
+  })
+
+  it('should count video complete events with phone actions as chats started', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 10,
+          timeOnPage: 10
+        }
+      ],
+      journeyStepsActions: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoComplete","blockId":"video1.id","target":"phone:+1234567890"}',
+          visitors: 4
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoComplete","blockId":"video2.id","target":"step2.id"}',
+          visitors: 2
+        }
+      ],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoComplete","blockId":"video1.id","target":""}',
+          visitors: 4
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoComplete","blockId":"video2.id","target":""}',
+          visitors: 2
+        }
+      ],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 10
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    // Should count video complete with phone action as chats started
+    expect(result?.chatsStarted).toBe(4) // Only the phone action video
+    expect(result?.linksVisited).toBe(0)
+  })
+
+  it('should count mixed phone action events as chats started', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 10,
+          timeOnPage: 10
+        }
+      ],
+      journeyStepsActions: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"chatButtonClick","blockId":"button1.id","target":"phone:+1234567890"}',
+          visitors: 2
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoComplete","blockId":"video1.id","target":"phone:+9876543210"}',
+          visitors: 3
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"footerChatButtonClick","blockId":"footer1.id","target":"link:https://m.me/test"}',
+          visitors: 1
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"buttonClick","blockId":"button2.id","target":"link:https://google.com"}',
+          visitors: 2
+        }
+      ],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"chatButtonClick","blockId":"button1.id","target":""}',
+          visitors: 2
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoComplete","blockId":"video1.id","target":""}',
+          visitors: 3
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"footerChatButtonClick","blockId":"footer1.id","target":""}',
+          visitors: 1
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"buttonClick","blockId":"button2.id","target":""}',
+          visitors: 2
+        }
+      ],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 10
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    // Should count all phone actions and chat buttons as chats started
+    expect(result?.chatsStarted).toBe(6) // 2 phone button + 3 phone video + 1 footer chat
+    expect(result?.linksVisited).toBe(2) // Only the regular link
+  })
 })

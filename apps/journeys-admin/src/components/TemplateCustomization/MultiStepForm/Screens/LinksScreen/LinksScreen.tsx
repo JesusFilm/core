@@ -20,7 +20,6 @@ import { useBlockActionEmailUpdateMutation } from '../../../../../libs/useBlockA
 import { useBlockActionLinkUpdateMutation } from '../../../../../libs/useBlockActionLinkUpdateMutation'
 import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/ChatOption/Details/Details'
 import { getJourneyLinks } from '../../../utils/getJourneyLinks'
-
 import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'

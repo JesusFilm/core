@@ -3,17 +3,11 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { SignUpBlockCreateInput, IconBlockCreateInput, SignUpBlockUpdateInput, IconName, IconSize, IconColor } from "./globalTypes";
+import { SignUpBlockCreateInput, IconBlockCreateInput, SignUpBlockUpdateInput, ContactActionType, IconName, IconSize, IconColor } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: SignUpBlockCreate
 // ====================================================
-
-export interface SignUpBlockCreate_signUpBlockCreate_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
 
 export interface SignUpBlockCreate_signUpBlockCreate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -40,7 +34,16 @@ export interface SignUpBlockCreate_signUpBlockCreate_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type SignUpBlockCreate_signUpBlockCreate_action = SignUpBlockCreate_signUpBlockCreate_action_PhoneAction | SignUpBlockCreate_signUpBlockCreate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockCreate_action_LinkAction | SignUpBlockCreate_signUpBlockCreate_action_EmailAction;
+export interface SignUpBlockCreate_signUpBlockCreate_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type SignUpBlockCreate_signUpBlockCreate_action = SignUpBlockCreate_signUpBlockCreate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockCreate_action_LinkAction | SignUpBlockCreate_signUpBlockCreate_action_EmailAction | SignUpBlockCreate_signUpBlockCreate_action_PhoneAction;
 
 export interface SignUpBlockCreate_signUpBlockCreate {
   __typename: "SignUpBlock";
@@ -60,12 +63,6 @@ export interface SignUpBlockCreate_submitIcon {
   iconName: IconName | null;
   iconSize: IconSize | null;
   iconColor: IconColor | null;
-}
-
-export interface SignUpBlockCreate_signUpBlockUpdate_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
 }
 
 export interface SignUpBlockCreate_signUpBlockUpdate_action_NavigateToBlockAction {
@@ -93,7 +90,16 @@ export interface SignUpBlockCreate_signUpBlockUpdate_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type SignUpBlockCreate_signUpBlockUpdate_action = SignUpBlockCreate_signUpBlockUpdate_action_PhoneAction | SignUpBlockCreate_signUpBlockUpdate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockUpdate_action_LinkAction | SignUpBlockCreate_signUpBlockUpdate_action_EmailAction;
+export interface SignUpBlockCreate_signUpBlockUpdate_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type SignUpBlockCreate_signUpBlockUpdate_action = SignUpBlockCreate_signUpBlockUpdate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockUpdate_action_LinkAction | SignUpBlockCreate_signUpBlockUpdate_action_EmailAction | SignUpBlockCreate_signUpBlockUpdate_action_PhoneAction;
 
 export interface SignUpBlockCreate_signUpBlockUpdate {
   __typename: "SignUpBlock";
