@@ -266,6 +266,7 @@
   "Edit the option label directly on the canvas.": "Edit the option label directly on the canvas.",
   "To edit multiselect content, choose each option individually": "To edit multiselect content, choose each option individually",
   "Selection Limit": "Selection Limit",
+  "Set Selection Limit": "Set Selection Limit",
   "Maximum number of selections allowed.": "Maximum number of selections allowed.",
   "Min selections": "Min selections",
   "Max selections": "Max selections",

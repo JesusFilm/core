@@ -5,6 +5,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Tooltip from '@mui/material/Tooltip'
 import InfoOutlined from '@mui/icons-material/InfoOutlined'
+import Switch from '@mui/material/Switch'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 
@@ -49,6 +50,9 @@ export function MultiselectQuestion({
   const [localMin, setLocalMin] = useState<number | ''>(min ?? 0)
   const [localMax, setLocalMax] = useState<number | ''>(
     max ?? (optionCount > 0 ? optionCount : 0)
+  )
+  const [limitEnabled, setLimitEnabled] = useState<boolean>(
+    min != null || max != null
   )
 
   useEffect(() => {
@@ -111,6 +115,7 @@ export function MultiselectQuestion({
       nextMin = localMax
     }
     setLocalMin(nextMin)
+    if (!limitEnabled) setLimitEnabled(true)
     commitUpdate({ min: nextMin })
   }
 
@@ -125,6 +130,7 @@ export function MultiselectQuestion({
       nextMax = localMin
     }
     setLocalMax(nextMax)
+    if (!limitEnabled) setLimitEnabled(true)
     commitUpdate({ max: nextMax })
   }
 
@@ -184,7 +190,9 @@ export function MultiselectQuestion({
 
       <Box sx={{ p: 4, display: 'grid', gap: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2 }}>
-          <Typography variant="subtitle2">{t('Selection Limit')}</Typography>
+          <Typography variant="subtitle2">
+            {t('Set Selection Limit')}
+          </Typography>
           <Tooltip
             title={t('Maximum number of selections allowed.')}
             placement="top"
@@ -198,75 +206,103 @@ export function MultiselectQuestion({
               <InfoOutlined fontSize="small" color="action" />
             </Box>
           </Tooltip>
-        </Box>
-        <Box sx={{ px: 2 }}>
-          <Slider
-            value={(() => {
-              const optionMax = optionCount > 0 ? optionCount : 0
-              const minValue = typeof localMin === 'number' ? localMin : 0
-              const maxValue =
-                typeof localMax === 'number' ? localMax : optionMax
-              const clampedMin = Math.max(0, Math.min(minValue, optionMax))
-              const clampedMax = Math.max(0, Math.min(maxValue, optionMax))
-              const orderedMin = Math.min(clampedMin, clampedMax)
-              const orderedMax = Math.max(clampedMin, clampedMax)
-              return [orderedMin, orderedMax]
-            })()}
-            min={0}
-            max={optionCount > 0 ? optionCount : 0}
-            disabled={(optionCount ?? 0) === 0}
-            onChange={handleRangeChange}
-            onChangeCommitted={handleRangeCommit}
-            valueLabelDisplay="auto"
-            getAriaLabel={(index) =>
-              index === 0 ? t('Min selections') : t('Max selections')
-            }
-            getAriaValueText={(value) => `${value}`}
-            aria-label={t('Selections range')}
-          />
-        </Box>
-        <Box
-          sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4 }}
-        >
-          <TextField
-            type="number"
-            value={localMin}
-            onChange={(e) => handleMinChange(e.target.value)}
-            onBlur={handleBlurCommit}
-            slotProps={{
-              input: {
-                inputProps: {
-                  '-moz-appearance': 'textfield',
-                  min: 0,
-                  max:
-                    typeof localMax === 'number'
-                      ? localMax
-                      : optionCount > 0
-                        ? optionCount
-                        : 0,
-                  'aria-label': t('Min selections')
-                }
+          <Switch
+            color="primary"
+            checked={limitEnabled}
+            onChange={(_e, checked) => {
+              setLimitEnabled(checked)
+              if (!checked) {
+                // When disabled, hide controls and clear limits
+                setLocalMin('')
+                setLocalMax('')
+                commitUpdate({ min: null, max: null })
+              } else {
+                // When enabled, set sensible defaults if missing
+                const optionMax = optionCount > 0 ? optionCount : 0
+                const defaultMin = typeof localMin === 'number' ? localMin : 0
+                const defaultMax =
+                  typeof localMax === 'number' ? localMax : optionMax
+                setLocalMin(defaultMin)
+                setLocalMax(defaultMax)
+                commitUpdate({ min: defaultMin, max: defaultMax })
               }
             }}
-          />
-          <Box />
-          <TextField
-            type="number"
-            value={localMax}
-            onChange={(e) => handleMaxChange(e.target.value)}
-            onBlur={handleBlurCommit}
-            slotProps={{
-              input: {
-                inputProps: {
-                  '-moz-appearance': 'textfield',
-                  min: typeof localMin === 'number' ? localMin : 0,
-                  max: optionCount > 0 ? optionCount : 0,
-                  'aria-label': t('Max selections')
-                }
-              }
-            }}
+            inputProps={{ 'aria-label': t('Set Selection Limit') }}
+            sx={{ ml: 'auto' }}
           />
         </Box>
+        {limitEnabled && (
+          <Box sx={{ px: 2 }}>
+            <Slider
+              value={(() => {
+                const optionMax = optionCount > 0 ? optionCount : 0
+                const minValue = typeof localMin === 'number' ? localMin : 0
+                const maxValue =
+                  typeof localMax === 'number' ? localMax : optionMax
+                const clampedMin = Math.max(0, Math.min(minValue, optionMax))
+                const clampedMax = Math.max(0, Math.min(maxValue, optionMax))
+                const orderedMin = Math.min(clampedMin, clampedMax)
+                const orderedMax = Math.max(clampedMin, clampedMax)
+                return [orderedMin, orderedMax]
+              })()}
+              min={0}
+              max={optionCount > 0 ? optionCount : 0}
+              disabled={(optionCount ?? 0) === 0}
+              onChange={handleRangeChange}
+              onChangeCommitted={handleRangeCommit}
+              valueLabelDisplay="auto"
+              getAriaLabel={(index) =>
+                index === 0 ? t('Min selections') : t('Max selections')
+              }
+              getAriaValueText={(value) => `${value}`}
+              aria-label={t('Selections range')}
+            />
+          </Box>
+        )}
+        {limitEnabled && (
+          <Box
+            sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4 }}
+          >
+            <TextField
+              type="number"
+              value={localMin}
+              onChange={(e) => handleMinChange(e.target.value)}
+              onBlur={handleBlurCommit}
+              slotProps={{
+                input: {
+                  inputProps: {
+                    '-moz-appearance': 'textfield',
+                    min: 0,
+                    max:
+                      typeof localMax === 'number'
+                        ? localMax
+                        : optionCount > 0
+                          ? optionCount
+                          : 0,
+                    'aria-label': t('Min selections')
+                  }
+                }
+              }}
+            />
+            <Box />
+            <TextField
+              type="number"
+              value={localMax}
+              onChange={(e) => handleMaxChange(e.target.value)}
+              onBlur={handleBlurCommit}
+              slotProps={{
+                input: {
+                  inputProps: {
+                    '-moz-appearance': 'textfield',
+                    min: typeof localMin === 'number' ? localMin : 0,
+                    max: optionCount > 0 ? optionCount : 0,
+                    'aria-label': t('Max selections')
+                  }
+                }
+              }}
+            />
+          </Box>
+        )}
       </Box>
     </Box>
   )
