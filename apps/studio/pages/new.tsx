@@ -1,5 +1,4 @@
 import {
-  ArrowUp,
   Crown,
   Facebook,
   FileText,
@@ -29,11 +28,6 @@ import {
 import Head from 'next/head'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation } from 'swiper/modules'
-
-import 'swiper/css'
-import 'swiper/css/navigation'
 
 import { Accordion } from '../src/components/ui/accordion'
 import { Button } from '../src/components/ui/button'
@@ -58,28 +52,139 @@ const steps = [
   { id: 3, title: 'Output', description: 'Select output formats' }
 ]
 
+// Predefined content ideas JSON
+const CONTENT_IDEAS = {
+  devotional: [
+    "Break into a carousel of 3–5 slides: hook, main thought, scripture, reflection question.",
+    "Create a daily SMS/email drip series.",
+    "Turn into a 30–60 sec explainer video with calm background music.",
+    "Extract a \"key line\" and design a quote card for Instagram or WhatsApp.",
+    "Generate small group study questions: \"How does this truth apply today?\"",
+    "Create a timeline graphic (e.g. \"Now → Eternity\")."
+  ],
+  bible: [
+    "Comic-style panel summarizing the story for kids/teens.",
+    "Line-art illustration suitable for coloring sheets (family/kids ministry).",
+    "Turn into motion graphics animation of the scene with subtitles.",
+    "Before/after infographic (e.g. Saul → Paul transformation).",
+    "Add to a Bible trivia quiz for outreach."
+  ],
+  church_service_slide: [
+    "Convert into a reel/short for quick online recap.",
+    "Adapt slide points into a Twitter/X thread or LinkedIn post.",
+    "Build a carousel \"Sunday recap\" to share midweek.",
+    "Export scripture from slide as a WhatsApp sticker pack.",
+    "Turn a full deck into a mini e-booklet/PDF for attendees who missed it."
+  ],
+  sermon_notes: [
+    "Summarize into a 1-page \"sermon in a sentence\" visual.",
+    "Create a YouTube short with preacher's key phrase overlayed on b-roll.",
+    "Design discussion guide handouts for small groups.",
+    "Generate a podcast script or narration from notes.",
+    "Pull quotes for social graphics (\"Mic drop moments\")."
+  ],
+  scripture_verse: [
+    "Create verse wallpapers (phone/desktop lock screens).",
+    "Design a looped verse video with background music.",
+    "Convert into a verse-of-the-day story post.",
+    "Turn into printable cards/bookmarks.",
+    "Add verse to nature photography background for Pinterest."
+  ],
+  worship_image: [
+    "Make a motion lyric video snippet for TikTok/Reels.",
+    "Overlay a worship quote/testimony onto the image.",
+    "Create event promo graphics for upcoming services.",
+    "Build a Spotify-style album cover design for worship playlists.",
+    "Generate a behind-the-scenes story series (\"What worship means to us\")."
+  ],
+  religious_artwork: [
+    "Share as art appreciation posts with scripture tie-ins.",
+    "Turn into timelapse \"art with scripture narration\" video.",
+    "Create color-reduced versions for printables/posters.",
+    "Overlay questions/reflection prompts (\"What does this say to you about God?\").",
+    "Design museum-style info cards for social carousels."
+  ],
+  nature_spiritual: [
+    "Pair with a Psalm or creation verse for an image post.",
+    "Create guided reflection videos (voice + slow zoom pan).",
+    "Turn into prayer prompts for daily quiet times.",
+    "Use as backgrounds for scripture quote animations.",
+    "Generate seasonal devotionals (spring renewal, autumn harvest, etc.)."
+  ],
+  community_event: [
+    "Build a highlight reel video.",
+    "Make a photo collage carousel.",
+    "Create invite templates for next events.",
+    "Turn testimonies into short social video clips.",
+    "Add captions for Facebook/Instagram albums with scripture themes."
+  ],
+  ministry_activity: [
+    "Create before/after impact posts (problem → outreach → result).",
+    "Develop volunteer recruitment carousels.",
+    "Produce a case study story for donor updates.",
+    "Build mini-doc style video with photos + voiceover.",
+    "Generate quote cards from participants' testimonies."
+  ],
+  personal_message: [
+    "Suggest gentle pivot questions to shift talk toward eternity (\"What gives you hope when life feels incomplete?\").",
+    "Generate short scripture replies contextualized for tone.",
+    "Draft bridging sentences that tie personal issues to gospel truths.",
+    "Offer two-line testimonies (relatable, not preachy).",
+    "Turn into a follow-up prayer text."
+  ],
+  comment: [
+    "Create polite, reflective response templates.",
+    "Suggest verse-based rebuttals (tone-matched: gentle, firm, encouraging).",
+    "Generate comment-to-DM pivot messages.",
+    "Build shareable reply graphics if discussion is public.",
+    "Create FAQ-style blog posts based on recurring comments."
+  ],
+  email: [
+    "Rewrite into a devotional email series.",
+    "Create a newsletter \"mini-sermon\" section.",
+    "Repurpose into a blog entry.",
+    "Adapt into print bulletin inserts.",
+    "Generate a short prayer chain message."
+  ],
+  news_article: [
+    "Summarize with a biblical worldview lens.",
+    "Build a \"Christian response explainer video.\"",
+    "Create discussion questions for small groups.",
+    "Turn headline into a graphic with scripture overlay.",
+    "Produce a \"What this shows about eternity\" reflection thread."
+  ],
+  other: [
+    "Auto-suggest closest match from above, or…",
+    "Turn raw content into general outreach formats: meme, short reflection, prayer prompt, or verse tie-in."
+  ]
+}
+
 // Removed - now using proper conversation history instead of RAG
 
-const IMAGE_ANALYSIS_PROMPT = `You are an expert at analyzing religious and spiritual content images for Jesus Film Project. Analyze this image and provide a detailed response in the following JSON format:
+const IMAGE_ANALYSIS_PROMPT = `You are an expert at analyzing content images from religious and spiritual point of view for our digital ai tool that helps the user create content for social media and private gospel sharing usign images, text or video.  Analyze this image and provide a detailed response in the following JSON format:
 
 {
-  "contentType": "One of: devotional_picture, bible_picture, church_service_slide, scripture_verse, worship_image, religious_artwork, nature_spiritual, community_event, ministry_activity, other",
+  "contentType": "One of: devotional, bible, church_service_slide, sermon_notes, scripture_verse, worship_image, religious_artwork, nature_spiritual, community_event, ministry_activity, personal_message, comment, email, news_article, other",
   "extractedText": "Any text visible in the image - perform OCR and extract all readable text exactly as it appears",
-  "bibleCharacters": "If there are identifiable people who appear to be biblical characters, list them with confidence levels. Format: 'character_name (confidence%)'. If no biblical characters, return empty array.",
   "detailedDescription": "If there's no text, provide a detailed description of the image including: composition, colors, mood, setting, any people/objects/symbols, artistic style, and spiritual/religious elements",
   "confidence": "Overall confidence in the analysis (high/medium/low)"
 }
 
 Content type definitions:
-- devotional_picture: Images designed for daily devotionals, quiet time, spiritual reflection
-- bible_picture: Illustrations or photos depicting bible stories, characters, or scenes
+- devotional: Images designed for daily devotionals, quiet time, spiritual reflection
+- bible: Illustrations or photos depicting bible stories, characters, or scenes
 - church_service_slide: PowerPoint slides or presentation slides used in church services
+- sermon_notes: Notes or outlines from sermons, preaching materials, study guides
 - scripture_verse: Images containing bible verses, often with decorative backgrounds
 - worship_image: Images related to worship, praise, music ministry
 - religious_artwork: Paintings, drawings, or artistic representations with religious themes
 - nature_spiritual: Nature scenes used for spiritual purposes or contemplation
 - community_event: Photos of church events, gatherings, fellowship activities
 - ministry_activity: Images showing ministry work, outreach, service projects
+- personal_message: Screenshot of a private conversation that users needs help with to lean it to gospel and bible truth
+- comment: Comments on social media, discussions, or feedback
+- email: Email communications, newsletters, or correspondence
+- news_article: Some intereste based on current events artivle that user uploads as context for his outreach effort
 - other: Any other type of religious/spiritual content not covered above
 
 Be thorough and accurate in your analysis.`
@@ -98,9 +203,9 @@ export default function NewPage() {
     imageSrc: string
     contentType: string
     extractedText: string
-    bibleCharacters: string[]
     detailedDescription: string
     confidence: string
+    contentIdeas: string[]
     isAnalyzing: boolean
   }>>([])
   const [isDragOver, setIsDragOver] = useState(false)
@@ -109,6 +214,7 @@ export default function NewPage() {
   const [totalTokensUsed, setTotalTokensUsed] = useState({ input: 0, output: 0 })
   const [isTokensUpdated, setIsTokensUpdated] = useState(false)
   const [selectedImageForDetails, setSelectedImageForDetails] = useState<number | null>(null)
+  const [showAllIdeas, setShowAllIdeas] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
@@ -138,6 +244,7 @@ export default function NewPage() {
       setAiResponse(draft.aiResponse || '')
       setImageAnalysisResults(draft.imageAnalysisResults.map(result => ({
         ...result,
+        contentIdeas: result.contentIdeas || [],
         isAnalyzing: false
       })))
     }
@@ -221,9 +328,9 @@ export default function NewPage() {
             imageSrc: result.imageSrc,
             contentType: result.contentType,
             extractedText: result.extractedText,
-            bibleCharacters: result.bibleCharacters,
             detailedDescription: result.detailedDescription,
             confidence: result.confidence,
+            contentIdeas: result.contentIdeas,
           }))
         })
         setSavedSessions(userInputStorage.getAllSessions())
@@ -300,8 +407,8 @@ When refining or improving content, consider:
         if (analysis.extractedText) {
           imageContext += `  Text: ${analysis.extractedText}\n`
         }
-        if (analysis.bibleCharacters && analysis.bibleCharacters.length > 0) {
-          imageContext += `  Characters: ${analysis.bibleCharacters.join(', ')}\n`
+        if (analysis.contentIdeas && analysis.contentIdeas.length > 0) {
+          imageContext += `  Content Ideas: ${analysis.contentIdeas.join(', ')}\n`
         }
         if (analysis.detailedDescription) {
           imageContext += `  Description: ${analysis.detailedDescription}\n`
@@ -394,9 +501,9 @@ When refining or improving content, consider:
           imageSrc,
           contentType: '',
           extractedText: '',
-          bibleCharacters: [],
           detailedDescription: '',
           confidence: '',
+          contentIdeas: [],
           isAnalyzing: true
         }
       } else {
@@ -468,9 +575,9 @@ When refining or improving content, consider:
         analysisResult = {
           contentType: 'other',
           extractedText: '',
-          bibleCharacters: [],
           detailedDescription: 'Failed to analyze image',
-          confidence: 'low'
+          confidence: 'low',
+          contentIdeas: []
         }
       }
 
@@ -481,9 +588,9 @@ When refining or improving content, consider:
           imageSrc,
           contentType: analysisResult.contentType || 'other',
           extractedText: analysisResult.extractedText || '',
-          bibleCharacters: Array.isArray(analysisResult.bibleCharacters) ? analysisResult.bibleCharacters : [],
           detailedDescription: analysisResult.detailedDescription || '',
           confidence: analysisResult.confidence || 'low',
+          contentIdeas: CONTENT_IDEAS[analysisResult.contentType as keyof typeof CONTENT_IDEAS] || CONTENT_IDEAS.other,
           isAnalyzing: false
         }
         return updated
@@ -497,9 +604,9 @@ When refining or improving content, consider:
           imageSrc,
           contentType: 'error',
           extractedText: '',
-          bibleCharacters: [],
           detailedDescription: 'Failed to analyze image. Please check your API key.',
           confidence: 'low',
+          contentIdeas: [],
           isAnalyzing: false
         }
         return updated
@@ -609,12 +716,32 @@ When refining or improving content, consider:
     }
   }
 
+  // Helper function to get the content type for the header
+  const getContentTypeForHeader = () => {
+    const contentTypes = imageAnalysisResults
+      .filter(result => result.contentIdeas && result.contentIdeas.length > 0 && !result.isAnalyzing)
+      .map(result => result.contentType)
+      .filter(Boolean)
+
+    if (contentTypes.length === 0) return 'content'
+
+    // If all content types are the same, use that type
+    const uniqueTypes = [...new Set(contentTypes)]
+    if (uniqueTypes.length === 1) {
+      return uniqueTypes[0].replace(/_/g, ' ')
+    }
+
+    // If multiple types, use 'content' as generic term
+    return 'content'
+  }
+
   const loadSession = (session: UserInputData) => {
     setTextContent(session.textContent)
     setImageAttachments(session.images)
     setAiResponse(session.aiResponse || '')
     setImageAnalysisResults(session.imageAnalysisResults.map(result => ({
       ...result,
+      contentIdeas: result.contentIdeas || [],
       isAnalyzing: false
     })))
 
@@ -823,15 +950,15 @@ When refining or improving content, consider:
                                 </div>
                               )}
 
-                              {/* Bible characters */}
-                              {analysis.bibleCharacters.length > 0 && (
+                              {/* Content ideas */}
+                              {analysis.contentIdeas.length > 0 && (
                                 <div>
-                                  <h4 className="text-sm font-medium mb-2">Identified Bible Characters:</h4>
-                                  <div className="flex flex-wrap gap-2">
-                                    {analysis.bibleCharacters.map((character, charIndex) => (
-                                      <span key={charIndex} className="text-xs px-3 py-1 bg-orange-100 text-orange-800 rounded-full">
-                                        {character}
-                                      </span>
+                                  <h4 className="text-sm font-medium mb-2">Content Ideas:</h4>
+                                  <div className="space-y-2">
+                                    {analysis.contentIdeas.map((idea, ideaIndex) => (
+                                      <div key={ideaIndex} className="text-xs px-3 py-2 bg-blue-50 text-blue-800 rounded-lg border border-blue-200">
+                                        {idea}
+                                      </div>
                                     ))}
                                   </div>
                                 </div>
@@ -855,6 +982,59 @@ When refining or improving content, consider:
                         </div>
                       )
                     })()}
+                  </DialogContent>
+                </Dialog>
+
+                {/* See All Ideas Dialog */}
+                <Dialog open={showAllIdeas} onOpenChange={setShowAllIdeas}>
+                  <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>All Content Ideas for {getContentTypeForHeader()}</DialogTitle>
+                      <DialogDescription>
+                        Click any idea below to add it to your content. These ideas are tailored to your uploaded images.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-6">
+                      {imageAnalysisResults
+                        .filter(result => result.contentIdeas && result.contentIdeas.length > 0 && !result.isAnalyzing)
+                        .map((analysis, analysisIndex) => (
+                          <div key={analysisIndex} className="space-y-3">
+                            {analysisIndex > 0 && <hr className="border-border" />}
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-full overflow-hidden bg-muted border flex-shrink-0">
+                                <Image
+                                  src={analysis.imageSrc}
+                                  alt={`Image ${analysisIndex + 1}`}
+                                  width={32}
+                                  height={32}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <span className="text-sm font-medium text-muted-foreground">
+                                Ideas from Image {analysisIndex + 1}
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                              {analysis.contentIdeas?.map((idea, ideaIndex) => (
+                                <div
+                                  key={ideaIndex}
+                                  className="relative p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-white hover:border-gray-300 transition-all duration-200 hover:shadow-sm"
+                                  onClick={() => {
+                                    const currentText = textContent;
+                                    const newText = currentText ? `${currentText}\n\n${idea}` : idea;
+                                    setTextContent(newText);
+                                    setShowAllIdeas(false); // Close modal after selecting
+                                  }}
+                                >
+                                  <p className="text-sm text-gray-800 leading-relaxed">
+                                    {idea}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
                   </DialogContent>
                 </Dialog>
               </div>
@@ -912,7 +1092,7 @@ When refining or improving content, consider:
         </div>
 
         <main
-          className="container mx-auto px-4 py-8 relative"
+          className="container mx-auto px-4 py-12 relative"
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
@@ -1068,27 +1248,65 @@ When refining or improving content, consider:
                     className="hidden"
                   />
 
+                  {/* Content Ideas Grid */}
+                  {imageAnalysisResults.some(result => result.contentIdeas && result.contentIdeas.length > 0 && !result.isAnalyzing) && (
+                    <div className="mt-12 opacity-0 animate-fade-in-up">
+                      <div className="flex items-center justify-between mb-4 opacity-0 animate-fade-in-left" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-primary animate-pulse" />
+                          <label className="text-lg font-semibold">Need Ideas for your {getContentTypeForHeader()}?</label>
+                          <span className="text-xs text-muted-foreground">
+                            Click any idea to add it to your content
+                          </span>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs cursor-pointer"
+                          onClick={() => setShowAllIdeas(true)}
+                        >
+                          See All
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4">
+                        {imageAnalysisResults.flatMap((analysis, imageIndex) =>
+                          analysis.contentIdeas?.map((idea, ideaIndex) => {
+                            const globalIndex = imageAnalysisResults.slice(0, imageIndex).reduce((total, result) => total + (result.contentIdeas?.length || 0), 0) + ideaIndex;
+                            return (
+                              <div
+                                key={`${imageIndex}-${ideaIndex}`}
+                                className="relative px-4 py-2 border border-gray-300 rounded-xl cursor-pointer hover:bg-white hover:scale-105 transition-all duration-300 opacity-0 animate-fade-in-up"
+                                style={{
+                                  animationDelay: `${0.4 + globalIndex * 0.1}s`,
+                                  animationFillMode: 'forwards'
+                                }}
+                                onClick={() => {
+                                  const currentText = textContent;
+                                  const newText = currentText ? `${currentText}\n\n${idea}` : idea;
+                                  setTextContent(newText);
+                                }}
+                              >
+                                <div className="flex flex-col items-center justify-center gap-3 text-center min-h-[100px]">
+                                  <p className="text-sm text-gray-800 leading-relaxed line-clamp-4 text-balance">
+                                    {idea}
+                                  </p>
+                                </div>
+                              </div>
+                            );
+                          }) || []
+                        )}
+                      </div>
+
+                    </div>
+                  )}
+
                   {/* Content Type Selector */}
-                  <div className="mt-6">
+                  <div className="mt-12">
                     <div className="flex items-center gap-4 mb-4">
                       <label className="text-lg font-semibold">In what format?</label>
                       <span className="text-sm text-muted-foreground">Expected output format from this task</span>
                     </div>
-                    <div className="grid grid-cols-6 gap-4 mb-8">
-                      {/* Mixed */}
-                      <div className={`p-4 border rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
-                        selectedFormat === 'Mixed'
-                          ? 'bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-600 border-indigo-500'
-                          : 'bg-transparent border-gray-300 hover:bg-gradient-to-br hover:from-indigo-500 hover:via-purple-600 hover:to-pink-600'
-                      }`} onClick={() => handleFormatChange('Mixed')}>
-                        <div className="p-3">
-                          <Layers className={`w-8 h-8 ${selectedFormat === 'Mixed' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`} />
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
-                          <span className={`font-medium text-sm text-center ${selectedFormat === 'Mixed' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`}>Mixed</span>
-                        </div>
-                      </div>
-
+                    <div className="grid grid-cols-5 gap-4 mb-8">
                       {/* Images */}
                       <div className={`p-4 border rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
                         selectedFormat === 'Images'
@@ -1152,127 +1370,367 @@ When refining or improving content, consider:
                   </div>
 
                   {/* Output Format Grid Selector */}
-                  <div className="mt-6">
+                  <div className="mt-12">
                     <div className="flex items-center gap-4 mb-4">
                       <label className="text-lg font-semibold">Where will you share?</label>
-                      <span className="text-sm text-muted-foreground">Expected output format from this task</span>
+                      <span className="text-sm text-muted-foreground">Select platforms and their optimal video formats</span>
                     </div>
-                    <div className="grid grid-cols-6 gap-4">
+                    <div className="space-y-6">
+                      {/* Instagram */}
+                      <Accordion
+                        title="Instagram"
+                        defaultOpen={false}
+                        className="border-muted"
+                        icon={<Instagram className="w-6 h-6 text-pink-500" />}
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Instagram', 'Story / Reel / IGTV (Vertical): 1080 × 1920 px (9:16)', !selectedOutputs['Instagram']?.includes('Story / Reel / IGTV (Vertical): 1080 × 1920 px (9:16)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Instagram']?.includes('Story / Reel / IGTV (Vertical): 1080 × 1920 px (9:16)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Instagram', 'Story / Reel / IGTV (Vertical): 1080 × 1920 px (9:16)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Story / Reel / IGTV (Vertical)</div>
+                              <div className="text-muted-foreground">1080 × 1920 px (9:16)</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Instagram', 'Feed Post (Square): 1080 × 1080 px (1:1)', !selectedOutputs['Instagram']?.includes('Feed Post (Square): 1080 × 1080 px (1:1)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Instagram']?.includes('Feed Post (Square): 1080 × 1080 px (1:1)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Instagram', 'Feed Post (Square): 1080 × 1080 px (1:1)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Feed Post (Square)</div>
+                              <div className="text-muted-foreground">1080 × 1080 px (1:1)</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Instagram', 'Feed Post (Landscape): 1080 × 608 px (~16:9)', !selectedOutputs['Instagram']?.includes('Feed Post (Landscape): 1080 × 608 px (~16:9)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Instagram']?.includes('Feed Post (Landscape): 1080 × 608 px (~16:9)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Instagram', 'Feed Post (Landscape): 1080 × 608 px (~16:9)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Feed Post (Landscape)</div>
+                              <div className="text-muted-foreground">1080 × 608 px (~16:9)</div>
+                            </div>
+                          </div>
+                        </div>
+                      </Accordion>
+
                       {/* Facebook */}
-                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-blue-500 hover:via-indigo-600 hover:to-purple-700 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('Facebook', 'Facebook', !selectedOutputs['Facebook']?.includes('Facebook'))}>
-                        <div className="p-3">
-                          <Facebook className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
+                      <Accordion
+                        title="Facebook"
+                        defaultOpen={false}
+                        className="border-muted"
+                        icon={<Facebook className="w-6 h-6 text-blue-600" />}
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Facebook', 'Feed Video (Landscape): 1200 × 630 px (~1.91:1)', !selectedOutputs['Facebook']?.includes('Feed Video (Landscape): 1200 × 630 px (~1.91:1)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Facebook']?.includes('Feed Video (Landscape): 1200 × 630 px (~1.91:1)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Facebook', 'Feed Video (Landscape): 1200 × 630 px (~1.91:1)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Feed Video (Landscape)</div>
+                              <div className="text-muted-foreground">1200 × 630 px (~1.91:1)</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Facebook', 'Feed Video (Square): 1080 × 1080 px (1:1)', !selectedOutputs['Facebook']?.includes('Feed Video (Square): 1080 × 1080 px (1:1)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Facebook']?.includes('Feed Video (Square): 1080 × 1080 px (1:1)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Facebook', 'Feed Video (Square): 1080 × 1080 px (1:1)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Feed Video (Square)</div>
+                              <div className="text-muted-foreground">1080 × 1080 px (1:1)</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Facebook', 'Vertical Video: 1080 × 1920 px (9:16)', !selectedOutputs['Facebook']?.includes('Vertical Video: 1080 × 1920 px (9:16)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Facebook']?.includes('Vertical Video: 1080 × 1920 px (9:16)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Facebook', 'Vertical Video: 1080 × 1920 px (9:16)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Vertical Video</div>
+                              <div className="text-muted-foreground">1080 × 1920 px (9:16)</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Facebook', 'Cover Video: 820 × 462 px (16:9 cinematic crop)', !selectedOutputs['Facebook']?.includes('Cover Video: 820 × 462 px (16:9 cinematic crop)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Facebook']?.includes('Cover Video: 820 × 462 px (16:9 cinematic crop)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Facebook', 'Cover Video: 820 × 462 px (16:9 cinematic crop)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Cover Video</div>
+                              <div className="text-muted-foreground">820 × 462 px (16:9 cinematic crop)</div>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">Facebook</span>
-                          <span className="text-xs text-gray-500 group-hover:text-white/80">3.07B users</span>
-                        </div>
-                      </div>
+                      </Accordion>
 
                       {/* YouTube */}
-                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-red-500 hover:via-orange-600 hover:to-yellow-600 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('YouTube', 'YouTube', !selectedOutputs['YouTube']?.includes('YouTube'))}>
-                        <div className="p-3">
-                          <Youtube className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
+                      <Accordion
+                        title="YouTube"
+                        defaultOpen={false}
+                        className="border-muted"
+                        icon={<Youtube className="w-6 h-6 text-red-600" />}
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('YouTube', 'Standard Video: 1920 × 1080 px (16:9 Full HD)', !selectedOutputs['YouTube']?.includes('Standard Video: 1920 × 1080 px (16:9 Full HD)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['YouTube']?.includes('Standard Video: 1920 × 1080 px (16:9 Full HD)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('YouTube', 'Standard Video: 1920 × 1080 px (16:9 Full HD)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Standard Video</div>
+                              <div className="text-muted-foreground">1920 × 1080 px (16:9 Full HD)</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('YouTube', 'Shorts (Vertical): 1080 × 1920 px (9:16)', !selectedOutputs['YouTube']?.includes('Shorts (Vertical): 1080 × 1920 px (9:16)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['YouTube']?.includes('Shorts (Vertical): 1080 × 1920 px (9:16)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('YouTube', 'Shorts (Vertical): 1080 × 1920 px (9:16)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Shorts (Vertical)</div>
+                              <div className="text-muted-foreground">1080 × 1920 px (9:16)</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('YouTube', '4K UHD: 3840 × 2160 px (16:9)', !selectedOutputs['YouTube']?.includes('4K UHD: 3840 × 2160 px (16:9)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['YouTube']?.includes('4K UHD: 3840 × 2160 px (16:9)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('YouTube', '4K UHD: 3840 × 2160 px (16:9)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">4K UHD</div>
+                              <div className="text-muted-foreground">3840 × 2160 px (16:9)</div>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">YouTube</span>
-                          <span className="text-xs text-gray-500 group-hover:text-white/80">2.5B users</span>
-                        </div>
-                      </div>
-
-                      {/* Instagram */}
-                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-pink-500 hover:via-rose-600 hover:to-purple-700 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('Instagram', 'Instagram', !selectedOutputs['Instagram']?.includes('Instagram'))}>
-                        <div className="p-3">
-                          <Instagram className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">Instagram</span>
-                          <span className="text-xs text-gray-500 group-hover:text-white/80">2.0B users</span>
-                        </div>
-                      </div>
-
-                      {/* WhatsApp */}
-                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-green-500 hover:via-emerald-500 hover:to-teal-600 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('WhatsApp', 'WhatsApp', !selectedOutputs['WhatsApp']?.includes('WhatsApp'))}>
-                        <div className="p-3">
-                          <MessageCircle className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">WhatsApp</span>
-                          <span className="text-xs text-gray-500 group-hover:text-white/80">2.0B users</span>
-                        </div>
-                      </div>
-
-                      {/* TikTok */}
-                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-black hover:via-gray-800 hover:to-black transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('TikTok', 'TikTok', !selectedOutputs['TikTok']?.includes('TikTok'))}>
-                        <div className="p-3">
-                          <Video className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">TikTok</span>
-                          <span className="text-xs text-gray-500 group-hover:text-white/80">1.6B users</span>
-                        </div>
-                      </div>
-
-                      {/* WeChat */}
-                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-lime-400 hover:via-green-500 hover:to-emerald-600 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('WeChat', 'WeChat', !selectedOutputs['WeChat']?.includes('WeChat'))}>
-                        <div className="p-3">
-                          <MessageSquare className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">WeChat</span>
-                          <span className="text-xs text-gray-500 group-hover:text-white/80">1.3-1.4B users</span>
-                        </div>
-                      </div>
-
-                      {/* Telegram */}
-                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-cyan-400 hover:via-blue-500 hover:to-indigo-600 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('Telegram', 'Telegram', !selectedOutputs['Telegram']?.includes('Telegram'))}>
-                        <div className="p-3">
-                          <Send className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">Telegram</span>
-                          <span className="text-xs text-gray-500 group-hover:text-white/80">0.9-1.0B+ users</span>
-                        </div>
-                      </div>
-
-                      {/* Snapchat */}
-                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-yellow-400 hover:via-orange-500 hover:to-red-500 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('Snapchat', 'Snapchat', !selectedOutputs['Snapchat']?.includes('Snapchat'))}>
-                        <div className="p-3">
-                          <Camera className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">Snapchat</span>
-                          <span className="text-xs text-gray-500 group-hover:text-white/80">0.8-0.9B users</span>
-                        </div>
-                      </div>
-
-                      {/* Twitter */}
-                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-slate-500 hover:via-gray-600 hover:to-zinc-700 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('Twitter', 'Twitter', !selectedOutputs['Twitter']?.includes('Twitter'))}>
-                        <div className="p-3">
-                          <X className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">Twitter</span>
-                          <span className="text-xs text-gray-500 group-hover:text-white/80">0.5-0.6B+ users</span>
-                        </div>
-                      </div>
+                      </Accordion>
 
                       {/* LinkedIn */}
-                      <div className="p-4 bg-transparent border border-gray-300 rounded-xl hover:bg-gradient-to-br hover:from-blue-600 hover:via-cyan-600 hover:to-teal-600 transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3" onClick={() => handleOutputChange('LinkedIn', 'LinkedIn', !selectedOutputs['LinkedIn']?.includes('LinkedIn'))}>
-                        <div className="p-3">
-                          <Users className="w-8 h-8 text-black group-hover:text-white group-hover:drop-shadow-lg" />
+                      <Accordion
+                        title="LinkedIn"
+                        defaultOpen={false}
+                        className="border-muted"
+                        icon={<Users className="w-6 h-6 text-blue-700" />}
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('LinkedIn', 'Feed Video (Landscape): 1200 × 627 px (~1.91:1)', !selectedOutputs['LinkedIn']?.includes('Feed Video (Landscape): 1200 × 627 px (~1.91:1)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['LinkedIn']?.includes('Feed Video (Landscape): 1200 × 627 px (~1.91:1)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('LinkedIn', 'Feed Video (Landscape): 1200 × 627 px (~1.91:1)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Feed Video (Landscape)</div>
+                              <div className="text-muted-foreground">1200 × 627 px (~1.91:1)</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('LinkedIn', 'Feed Video (Square): 1080 × 1080 px (1:1)', !selectedOutputs['LinkedIn']?.includes('Feed Video (Square): 1080 × 1080 px (1:1)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['LinkedIn']?.includes('Feed Video (Square): 1080 × 1080 px (1:1)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('LinkedIn', 'Feed Video (Square): 1080 × 1080 px (1:1)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Feed Video (Square)</div>
+                              <div className="text-muted-foreground">1080 × 1080 px (1:1)</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('LinkedIn', 'Stories (Vertical): 1080 × 1920 px (9:16)', !selectedOutputs['LinkedIn']?.includes('Stories (Vertical): 1080 × 1920 px (9:16)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['LinkedIn']?.includes('Stories (Vertical): 1080 × 1920 px (9:16)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('LinkedIn', 'Stories (Vertical): 1080 × 1920 px (9:16)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Stories (Vertical)</div>
+                              <div className="text-muted-foreground">1080 × 1920 px (9:16)</div>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="font-medium text-sm text-center text-black group-hover:text-white group-hover:drop-shadow-lg">LinkedIn</span>
-                          <span className="text-xs text-gray-500 group-hover:text-white/80">1B+ users</span>
-                        </div>
-                      </div>
+                      </Accordion>
 
+                      {/* Twitter (X) */}
+                      <Accordion
+                        title="Twitter (X)"
+                        defaultOpen={false}
+                        className="border-muted"
+                        icon={<X className="w-6 h-6 text-gray-800" />}
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Twitter', 'Landscape Video: 1600 × 900 px (16:9)', !selectedOutputs['Twitter']?.includes('Landscape Video: 1600 × 900 px (16:9)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Twitter']?.includes('Landscape Video: 1600 × 900 px (16:9)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Twitter', 'Landscape Video: 1600 × 900 px (16:9)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Landscape Video</div>
+                              <div className="text-muted-foreground">1600 × 900 px (16:9)</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Twitter', 'Square Video: 1080 × 1080 px (1:1)', !selectedOutputs['Twitter']?.includes('Square Video: 1080 × 1080 px (1:1)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Twitter']?.includes('Square Video: 1080 × 1080 px (1:1)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Twitter', 'Square Video: 1080 × 1080 px (1:1)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Square Video</div>
+                              <div className="text-muted-foreground">1080 × 1080 px (1:1)</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Twitter', 'Vertical Video: 1080 × 1920 px (9:16)', !selectedOutputs['Twitter']?.includes('Vertical Video: 1080 × 1920 px (9:16)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Twitter']?.includes('Vertical Video: 1080 × 1920 px (9:16)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Twitter', 'Vertical Video: 1080 × 1920 px (9:16)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Vertical Video</div>
+                              <div className="text-muted-foreground">1080 × 1920 px (9:16)</div>
+                            </div>
+                          </div>
+                        </div>
+                      </Accordion>
+
+                      {/* TikTok */}
+                      <Accordion
+                        title="TikTok"
+                        defaultOpen={false}
+                        className="border-muted"
+                        icon={<Video className="w-6 h-6 text-black" />}
+                      >
+                        <div className="grid grid-cols-1 gap-3">
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('TikTok', 'Standard Vertical Video: 1080 × 1920 px (9:16)', !selectedOutputs['TikTok']?.includes('Standard Vertical Video: 1080 × 1920 px (9:16)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['TikTok']?.includes('Standard Vertical Video: 1080 × 1920 px (9:16)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('TikTok', 'Standard Vertical Video: 1080 × 1920 px (9:16)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Standard Vertical Video</div>
+                              <div className="text-muted-foreground">1080 × 1920 px (9:16)</div>
+                            </div>
+                          </div>
+                        </div>
+                      </Accordion>
+
+                      {/* Pinterest */}
+                      <Accordion
+                        title="Pinterest"
+                        defaultOpen={false}
+                        className="border-muted"
+                        icon={<div className="w-6 h-6 bg-red-600 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">P</span>
+                        </div>}
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Pinterest', 'Standard Pin Video: 1000 × 1500 px (2:3)', !selectedOutputs['Pinterest']?.includes('Standard Pin Video: 1000 × 1500 px (2:3)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Pinterest']?.includes('Standard Pin Video: 1000 × 1500 px (2:3)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Pinterest', 'Standard Pin Video: 1000 × 1500 px (2:3)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Standard Pin Video</div>
+                              <div className="text-muted-foreground">1000 × 1500 px (2:3)</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Pinterest', 'Square Video: 1000 × 1000 px (1:1)', !selectedOutputs['Pinterest']?.includes('Square Video: 1000 × 1000 px (1:1)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Pinterest']?.includes('Square Video: 1000 × 1000 px (1:1)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Pinterest', 'Square Video: 1000 × 1000 px (1:1)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Square Video</div>
+                              <div className="text-muted-foreground">1000 × 1000 px (1:1)</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Pinterest', 'Vertical Video: 1080 × 1920 px (9:16)', !selectedOutputs['Pinterest']?.includes('Vertical Video: 1080 × 1920 px (9:16)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Pinterest']?.includes('Vertical Video: 1080 × 1920 px (9:16)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Pinterest', 'Vertical Video: 1080 × 1920 px (9:16)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Vertical Video</div>
+                              <div className="text-muted-foreground">1080 × 1920 px (9:16)</div>
+                            </div>
+                          </div>
+                        </div>
+                      </Accordion>
+
+                      {/* Snapchat */}
+                      <Accordion
+                        title="Snapchat"
+                        defaultOpen={false}
+                        className="border-muted"
+                        icon={<Camera className="w-6 h-6 text-yellow-500" />}
+                      >
+                        <div className="grid grid-cols-1 gap-3">
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Snapchat', 'Standard Vertical Video: 1080 × 1920 px (9:16)', !selectedOutputs['Snapchat']?.includes('Standard Vertical Video: 1080 × 1920 px (9:16)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Snapchat']?.includes('Standard Vertical Video: 1080 × 1920 px (9:16)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Snapchat', 'Standard Vertical Video: 1080 × 1920 px (9:16)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Standard Vertical Video</div>
+                              <div className="text-muted-foreground">1080 × 1920 px (9:16)</div>
+                            </div>
+                          </div>
+                        </div>
+                      </Accordion>
+
+                      {/* Universal Video Formats */}
+                      <Accordion
+                        title="Universal Video Formats"
+                        defaultOpen={false}
+                        className="border-muted"
+                        icon={<Globe className="w-6 h-6 text-green-600" />}
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Universal', 'Full HD: 1920 × 1080 px (16:9)', !selectedOutputs['Universal']?.includes('Full HD: 1920 × 1080 px (16:9)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Universal']?.includes('Full HD: 1920 × 1080 px (16:9)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Universal', 'Full HD: 1920 × 1080 px (16:9)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Full HD</div>
+                              <div className="text-muted-foreground">1920 × 1080 px (16:9)</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Universal', '4K UHD: 3840 × 2160 px (16:9)', !selectedOutputs['Universal']?.includes('4K UHD: 3840 × 2160 px (16:9)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Universal']?.includes('4K UHD: 3840 × 2160 px (16:9)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Universal', '4K UHD: 3840 × 2160 px (16:9)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">4K UHD</div>
+                              <div className="text-muted-foreground">3840 × 2160 px (16:9)</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Universal', 'Vertical HD: 1080 × 1920 px (9:16)', !selectedOutputs['Universal']?.includes('Vertical HD: 1080 × 1920 px (9:16)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Universal']?.includes('Vertical HD: 1080 × 1920 px (9:16)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Universal', 'Vertical HD: 1080 × 1920 px (9:16)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Vertical HD</div>
+                              <div className="text-muted-foreground">1080 × 1920 px (9:16)</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-3 p-3 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer" onClick={() => handleOutputChange('Universal', 'Square HD: 1080 × 1080 px (1:1)', !selectedOutputs['Universal']?.includes('Square HD: 1080 × 1080 px (1:1)'))}>
+                            <Checkbox
+                              checked={selectedOutputs['Universal']?.includes('Square HD: 1080 × 1080 px (1:1)') || false}
+                              onCheckedChange={(checked) => handleOutputChange('Universal', 'Square HD: 1080 × 1080 px (1:1)', checked as boolean)}
+                            />
+                            <div className="text-sm">
+                              <div className="font-medium">Square HD</div>
+                              <div className="text-muted-foreground">1080 × 1080 px (1:1)</div>
+                            </div>
+                          </div>
+                        </div>
+                      </Accordion>
                     </div>
                   </div>
 
                   {aiResponse && (
-                    <div>
+                    <div className="mt-12">
                       <label className="text-sm font-medium mb-2 block">AI Enhanced Content</label>
                       <div className="p-4 bg-muted/50 rounded-lg border">
                         <p className="text-sm whitespace-pre-wrap">{aiResponse}</p>
@@ -1292,7 +1750,7 @@ When refining or improving content, consider:
                   )}
 
                   {/* Original Images Section - kept for reference */}
-                  <div>
+                  <div className="mt-12">
                     <label className="text-sm font-medium mb-2 block">Browse Images</label>
                     <div className="flex gap-4 overflow-x-auto pb-4">
                       {/* Demo images carousel */}

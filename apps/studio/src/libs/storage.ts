@@ -2,9 +2,9 @@ export interface ImageAnalysisResult {
   imageSrc: string
   contentType: string
   extractedText: string
-  bibleCharacters: string[]
   detailedDescription: string
   confidence: string
+  contentIdeas: string[]
   isAnalyzing?: boolean
 }
 
@@ -137,9 +137,9 @@ class UserInputStorage {
                 imageSrc: result?.imageSrc || '',
                 contentType: result?.contentType || 'unknown',
                 extractedText: result?.extractedText || '',
-                bibleCharacters: Array.isArray(result?.bibleCharacters) ? result.bibleCharacters : [],
                 detailedDescription: result?.detailedDescription || '',
                 confidence: result?.confidence || 'unknown',
+                contentIdeas: Array.isArray(result?.contentIdeas) ? result.contentIdeas : [],
                 isAnalyzing: result?.isAnalyzing || false,
               }))
             : []
