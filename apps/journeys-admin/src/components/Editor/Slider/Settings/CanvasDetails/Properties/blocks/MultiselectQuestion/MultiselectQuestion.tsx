@@ -228,44 +228,54 @@ export function MultiselectQuestion({
         <Box
           sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 4 }}
         >
-          <TextField
-            type="number"
-            value={localMin}
-            onChange={(e) => handleMinChange(e.target.value)}
-            onBlur={handleBlurCommit}
-            slotProps={{
-              input: {
-                inputProps: {
-                  '-moz-appearance': 'textfield',
-                  min: 0,
-                  max:
-                    typeof localMax === 'number'
-                      ? localMax
-                      : optionCount > 0
-                        ? optionCount
-                        : 0,
-                  'aria-label': t('Min selections')
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <TextField
+              type="number"
+              value={localMin}
+              onChange={(e) => handleMinChange(e.target.value)}
+              onBlur={handleBlurCommit}
+              slotProps={{
+                input: {
+                  inputProps: {
+                    '-moz-appearance': 'textfield',
+                    min: 0,
+                    max:
+                      typeof localMax === 'number'
+                        ? localMax
+                        : optionCount > 0
+                          ? optionCount
+                          : 0,
+                    'aria-label': t('Min selections')
+                  }
                 }
-              }
-            }}
-          />
+              }}
+            />
+            <Typography variant="caption" color="text.secondary" align="center">
+              {t('Min')}
+            </Typography>
+          </Box>
           <Box />
-          <TextField
-            type="number"
-            value={localMax}
-            onChange={(e) => handleMaxChange(e.target.value)}
-            onBlur={handleBlurCommit}
-            slotProps={{
-              input: {
-                inputProps: {
-                  '-moz-appearance': 'textfield',
-                  min: typeof localMin === 'number' ? localMin : 0,
-                  max: optionCount > 0 ? optionCount : 0,
-                  'aria-label': t('Max selections')
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <TextField
+              type="number"
+              value={localMax}
+              onChange={(e) => handleMaxChange(e.target.value)}
+              onBlur={handleBlurCommit}
+              slotProps={{
+                input: {
+                  inputProps: {
+                    '-moz-appearance': 'textfield',
+                    min: typeof localMin === 'number' ? localMin : 0,
+                    max: optionCount > 0 ? optionCount : 0,
+                    'aria-label': t('Max selections')
+                  }
                 }
-              }
-            }}
-          />
+              }}
+            />
+            <Typography variant="caption" color="text.secondary" align="center">
+              {t('Max')}
+            </Typography>
+          </Box>
         </Box>
       </Box>
     </Box>
