@@ -1235,6 +1235,8 @@ input PhoneActionInput {
   phone: String!
   countryCode: String!
   contactAction: ContactActionType = call
+  customizable: Boolean
+  parentStepId: String
 }
 
 input PlausibleStatsAggregateFilter {

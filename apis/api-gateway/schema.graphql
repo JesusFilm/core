@@ -4651,6 +4651,8 @@ input PhoneActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   phone: String!
   countryCode: String!
   contactAction: ContactActionType = call
+  customizable: Boolean
+  parentStepId: String
 }
 
 input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
