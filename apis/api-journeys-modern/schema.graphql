@@ -1081,6 +1081,9 @@ type MultiselectBlock implements Block
   parentOrder: Int
   min: Int
   max: Int
+
+  """Whether to display aggregated results after submission"""
+  displayResults: Boolean
 }
 
 input MultiselectBlockCreateInput {
@@ -1089,10 +1092,15 @@ input MultiselectBlockCreateInput {
   parentBlockId: ID!
 }
 
+input MultiselectBlockSettingsInput {
+  displayResults: Boolean
+}
+
 input MultiselectBlockUpdateInput {
   parentBlockId: ID
   min: Int
   max: Int
+  settings: MultiselectBlockSettingsInput
 }
 
 type MultiselectOptionBlock implements Block
@@ -1325,6 +1333,10 @@ input QrCodesFilter {
 }
 
 type Query {
+  """
+  Returns an object keyed by option block id with rounded percentage values (public, no auth).
+  """
+  multiselectResults(blockId: ID!): Json!
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
   journeySimpleGet(id: ID!): Json

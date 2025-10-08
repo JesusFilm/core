@@ -765,6 +765,10 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   Get a single visitor
   """
   visitor(id: ID!) : Visitor! @join__field(graph: API_JOURNEYS) 
+  """
+  Returns an object keyed by option block id with rounded percentage values (public, no auth).
+  """
+  multiselectResults(blockId: ID!) : Json! @join__field(graph: API_JOURNEYS_MODERN) 
   node(id: ID!) : Node @join__field(graph: API_JOURNEYS_MODERN) 
   nodes(ids: [ID!]!) : [Node]! @join__field(graph: API_JOURNEYS_MODERN) 
   journeySimpleGet(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
@@ -996,6 +1000,10 @@ type MultiselectBlock implements Block @join__type(graph: API_JOURNEYS)  @join__
   parentOrder: Int
   max: Int
   min: Int
+  """
+  Whether to display aggregated results after submission
+  """
+  displayResults: Boolean
 }
 
 type MultiselectOptionBlock implements Block @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Block")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -4605,10 +4613,15 @@ input MultiselectBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   parentBlockId: ID!
 }
 
+input MultiselectBlockSettingsInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  displayResults: Boolean
+}
+
 input MultiselectBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   parentBlockId: ID
   min: Int
   max: Int
+  settings: MultiselectBlockSettingsInput
 }
 
 input MultiselectOptionBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {

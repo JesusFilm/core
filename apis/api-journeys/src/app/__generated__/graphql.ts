@@ -1360,6 +1360,7 @@ export class MultiselectBlock implements Block {
     parentOrder?: Nullable<number>;
     max?: Nullable<number>;
     min?: Nullable<number>;
+    displayResults?: Nullable<boolean>;
 }
 
 export class MultiselectOptionBlock implements Block {

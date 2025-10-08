@@ -865,6 +865,7 @@ type MultiselectBlock implements Block
   parentOrder: Int
   max: Int
   min: Int
+  displayResults: Boolean @shareable
 }
 
 type MultiselectOptionBlock implements Block
