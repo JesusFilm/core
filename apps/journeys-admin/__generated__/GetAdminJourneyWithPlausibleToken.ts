@@ -298,6 +298,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_TextResponseBl
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBlock_settings {

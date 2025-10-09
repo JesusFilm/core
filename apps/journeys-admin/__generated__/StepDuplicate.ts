@@ -294,6 +294,7 @@ export interface StepDuplicate_blockDuplicate_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface StepDuplicate_blockDuplicate_TypographyBlock_settings {
