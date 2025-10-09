@@ -1,4 +1,5 @@
 import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
+import tracer from 'dd-trace'
 import { HTTPException } from 'hono/http-exception'
 import { handle } from 'hono/vercel'
 
@@ -25,6 +26,71 @@ export const GET_SHORT_LINK_QUERY = graphql(`
 `)
 
 const app = new OpenAPIHono().basePath('/')
+
+// Add Datadog tracing middleware
+app.use('*', async (c, next) => {
+  const span = tracer.startSpan('arclight.keyword.request', {
+    tags: {
+      'http.method': c.req.method,
+      'http.url': c.req.url,
+      'service.name': 'arclight-keyword'
+    }
+  })
+
+  // Log request details
+  console.log(
+    JSON.stringify({
+      level: 'info',
+      method: c.req.method,
+      url: c.req.url,
+      userAgent: c.req.header('user-agent'),
+      ip: c.req.header('x-forwarded-for') || c.req.header('x-real-ip'),
+      msg: 'Keyword request received',
+      testCorrelation:
+        'This log should have dd.trace_id and dd.span_id added automatically'
+    })
+  )
+
+  try {
+    await next()
+    span.setTag('http.status_code', c.res.status)
+
+    // Log successful response
+    console.log(
+      JSON.stringify({
+        level: 'info',
+        method: c.req.method,
+        url: c.req.url,
+        statusCode: c.res.status,
+        msg: 'Keyword request completed'
+      })
+    )
+
+    span.finish()
+  } catch (error) {
+    span.setTag('error', true)
+    span.setTag(
+      'error.message',
+      error instanceof Error ? error.message : String(error)
+    )
+
+    // Log error with stack trace
+    console.log(
+      JSON.stringify({
+        level: 'error',
+        method: c.req.method,
+        url: c.req.url,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        errorType: error instanceof Error ? error.constructor.name : 'Unknown',
+        msg: 'Keyword request failed'
+      })
+    )
+
+    span.finish()
+    throw error
+  }
+})
 
 const keywordRoute = createRoute({
   method: 'get',
