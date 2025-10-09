@@ -1,4 +1,4 @@
-import { Decorator, Meta, StoryObj } from '@storybook/react'
+import { Decorator, Meta, StoryObj } from '@storybook/nextjs'
 import { formatISO } from 'date-fns'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps } from 'react'

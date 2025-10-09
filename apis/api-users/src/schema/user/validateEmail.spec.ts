@@ -33,7 +33,7 @@ describe('validateEmail', () => {
   it('should return true', async () => {
     const userId = 'userId'
     const token = 'token'
-    prismaMock.user.update.mockImplementation()
+    prismaMock.user.update.mockResolvedValue({} as any)
     expect(await validateEmail(userId, token)).toBe(true)
     expect(prismaMock.user.update).toHaveBeenCalledWith({
       where: { userId },

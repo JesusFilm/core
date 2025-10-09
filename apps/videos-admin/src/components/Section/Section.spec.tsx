@@ -47,7 +47,7 @@ describe('Section', () => {
     expect(screen.getByTestId('Section title-title-section')).toHaveStyle({
       'border-bottom': '0px',
       'border-color': 'transparent',
-      'background-color': 'none'
+      'background-color': 'rgba(0, 0, 0, 0)'
     })
   })
 

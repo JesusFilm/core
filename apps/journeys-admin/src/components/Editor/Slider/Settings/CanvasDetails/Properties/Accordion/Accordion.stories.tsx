@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import PaletteIcon from '@core/shared/ui/icons/Palette'

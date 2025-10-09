@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentPropsWithRef } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'

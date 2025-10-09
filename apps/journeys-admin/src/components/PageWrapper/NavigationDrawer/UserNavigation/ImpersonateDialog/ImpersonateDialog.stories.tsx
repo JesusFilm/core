@@ -1,6 +1,6 @@
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ReactElement, useState } from 'react'
+import { screen, userEvent } from 'storybook/test'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 

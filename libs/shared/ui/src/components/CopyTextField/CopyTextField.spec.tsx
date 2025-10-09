@@ -69,7 +69,7 @@ describe('CopyTextField', () => {
   })
 
   it('should show custom styling', () => {
-    const { getByRole } = render(
+    const { container } = render(
       <CopyTextField
         value="test"
         sx={{
@@ -80,9 +80,9 @@ describe('CopyTextField', () => {
         buttonVariant="button"
       />
     )
-    expect(getByRole('textbox')).toHaveStyle(
-      'background-color: rgb (255, 255, 255)'
-    )
+    // Check that the TextField wrapper received the sx styling
+    const textField = container.querySelector('.MuiTextField-root')
+    expect(textField).toHaveStyle('background-color: rgb(255, 255, 255)')
   })
 
   it('renders icon button when buttonVariant is "icon"', () => {

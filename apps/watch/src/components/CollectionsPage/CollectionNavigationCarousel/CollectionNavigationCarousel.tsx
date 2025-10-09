@@ -71,6 +71,7 @@ export function CollectionNavigationCarousel({
                   data-testid="CarouselItemImage"
                 />
               ) : (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={item.image}
                   alt={item.title}

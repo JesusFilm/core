@@ -1,5 +1,4 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import { SnackbarProvider } from 'notistack'
@@ -61,6 +60,7 @@ jest.mock('next/legacy/image', () => ({
   __esModule: true,
   default: jest.fn(
     ({ priority, blurDataURL, objectFit, objectPosition, ...props }) => {
+      // eslint-disable-next-line @next/next/no-img-element
       return <img {...props} />
     }
   )
@@ -82,17 +82,6 @@ const mockUsePlausible = usePlausible as jest.MockedFunction<
 >
 
 describe('CardBlock', () => {
-  const originalLocation = window.location
-  const mockOrigin = 'https://example.com'
-
-  beforeAll(() => {
-    Object.defineProperty(window, 'location', {
-      value: {
-        origin: mockOrigin
-      }
-    })
-  })
-
   beforeEach(() => {
     jest.clearAllMocks()
     treeBlocksVar([])
@@ -102,10 +91,6 @@ describe('CardBlock', () => {
     blurImageMock.mockReturnValue(
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAJCAYAAAA7KqwyAAAABmJLR0QA/wD/AP+gvaeTAAABA0lEQVQokV2RMY4cQQwDi5S69x7hwP9/ngMfPDstOpiFAwcVECAqIPXz60fUxq9F7UWtRlUgmBzuuXnfF3+ui+/r4tcVcgumQIUFiHyA/7OTB0IRXgwk/2h7kEwBxVNWHpMIEMIQDskNOSjFdwQR3Q0YymCLspCFFAJYIAVxkN/IN9JCMr8R7W1k4/WhC7uQgIhocAq30Qh6gMNkCEPr1ciFeuG18VrUR6A55AhrEAdyCHBKdERJNHuBC9ZGe6NeqJoSaAZuM3pGJcNI1ARjpKKzFlTBWrAX6o26EcJzwEKEZPAcDDiDgNh0usFFqqEb1kJVjyB+XjgL1xvXwjMoNxKMzF9Ukn10nay9yQAAAABJRU5ErkJggg=='
     )
-  })
-
-  afterAll(() => {
-    Object.defineProperty(window, 'location', originalLocation)
   })
 
   it('should render card with theme background color', async () => {

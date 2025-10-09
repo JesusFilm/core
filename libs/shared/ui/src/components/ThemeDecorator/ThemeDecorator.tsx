@@ -1,5 +1,5 @@
 import { CacheProvider } from '@emotion/react'
-import { Parameters } from '@storybook/react'
+import { Parameters } from '@storybook/nextjs'
 import { ReactElement, ReactNode } from 'react'
 
 // eslint-disable-next-line @nx/enforce-module-boundaries

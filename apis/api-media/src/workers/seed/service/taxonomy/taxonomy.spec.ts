@@ -7,8 +7,8 @@ describe('seed/taxonomy', () => {
   it('should seed taxonomies and taxonomy names', async () => {
     prismaMock.taxonomy.findMany.mockResolvedValue([])
     prismaMock.taxonomyName.findMany.mockResolvedValue([])
-    prismaMock.taxonomy.createMany.mockImplementation()
-    prismaMock.taxonomyName.createMany.mockImplementation()
+    prismaMock.taxonomy.createMany.mockResolvedValue({} as any)
+    prismaMock.taxonomyName.createMany.mockResolvedValue({} as any)
 
     await seedTaxonomies()
 
@@ -25,8 +25,8 @@ describe('seed/taxonomy', () => {
       { id: 'existing', category: 'existing', term: 'existing' }
     ])
     prismaMock.taxonomyName.findMany.mockResolvedValue([])
-    prismaMock.taxonomy.createMany.mockImplementation()
-    prismaMock.taxonomyName.createMany.mockImplementation()
+    prismaMock.taxonomy.createMany.mockResolvedValue({} as any)
+    prismaMock.taxonomyName.createMany.mockResolvedValue({} as any)
 
     await seedTaxonomies()
 
@@ -47,8 +47,8 @@ describe('seed/taxonomy', () => {
         languageCode: 'existing'
       }
     ])
-    prismaMock.taxonomy.createMany.mockImplementation()
-    prismaMock.taxonomyName.createMany.mockImplementation()
+    prismaMock.taxonomy.createMany.mockResolvedValue({} as any)
+    prismaMock.taxonomyName.createMany.mockResolvedValue({} as any)
 
     await seedTaxonomies()
 

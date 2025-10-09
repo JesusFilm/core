@@ -1,5 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing'
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import noop from 'lodash/noop'
 import { ComponentPropsWithoutRef } from 'react'
 

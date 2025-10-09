@@ -1,5 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
+import { changeJSDOMURL } from '../../../../../libs/utils/changeJSDOMURL'
+
 import { BibleQuotesCarouselHeader } from './BibleQuotesCarouselHeader'
 
 jest.mock('next-i18next', () => ({
@@ -36,12 +38,7 @@ describe('BibleQuotesCarouselHeader', () => {
       value: mockClipboard,
       configurable: true
     })
-    Object.defineProperty(window, 'location', {
-      value: {
-        href: 'https://watch.jesusfilm.org/easter'
-      },
-      writable: true
-    })
+    changeJSDOMURL('https://watch.jesusfilm.org/easter')
   })
 
   afterEach(() => {
@@ -66,11 +63,9 @@ describe('BibleQuotesCarouselHeader', () => {
 
     expect(mockShare).toHaveBeenCalledTimes(1)
     expect(mockShare).toHaveBeenCalledWith({
-      url: expect.stringContaining(
-        'https://watch.jesusfilm.org/easter?utm_source=share'
-      ),
-      title: expect.any(String),
-      text: expect.any(String)
+      url: expect.stringContaining('/easter?utm_source=share'),
+      title: 'Share Data Title',
+      text: ''
     })
   })
 
@@ -86,9 +81,7 @@ describe('BibleQuotesCarouselHeader', () => {
 
     expect(mockClipboard.writeText).toHaveBeenCalledTimes(1)
     expect(mockClipboard.writeText).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'https://watch.jesusfilm.org/easter?utm_source=share'
-      )
+      expect.stringContaining('/easter?utm_source=share')
     )
   })
 
