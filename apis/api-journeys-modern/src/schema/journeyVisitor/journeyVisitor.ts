@@ -232,9 +232,9 @@ builder.queryField('journeyVisitorExport', (t) => {
         }
 
         if (
-          !ability(Action.Manage, subject('Journey', journey), context.user)
+          !ability(Action.Export, subject('Journey', journey), context.user)
         ) {
-          throw new GraphQLError('User is not allowed to manage journey', {
+          throw new GraphQLError('User is not allowed to export visitors', {
             extensions: { code: 'FORBIDDEN' }
           })
         }
