@@ -652,7 +652,7 @@ describe('video', () => {
         take: 100,
         where: {
           published: true,
-          availableLanguages: { isEmpty: false },
+          availableLanguages: { isEmpty: false }
         },
         include: {
           _count: {
@@ -1425,12 +1425,8 @@ describe('video', () => {
       expect(data).toHaveProperty('data.videos', [
         {
           id: 'videoId',
-          children: [
-            { id: 'child-with-languages' }
-          ],
-          parents: [
-            { id: 'parent-with-languages' }
-          ]
+          children: [{ id: 'child-with-languages' }],
+          parents: [{ id: 'parent-with-languages' }]
         }
       ])
     })
@@ -3142,7 +3138,9 @@ describe('video', () => {
           where: { id: 'videoId' },
           select: { id: true }
         })
-        expect(mockUpdateVideoAvailableLanguages).toHaveBeenCalledWith('videoId')
+        expect(mockUpdateVideoAvailableLanguages).toHaveBeenCalledWith(
+          'videoId'
+        )
         expect(result).toHaveProperty('data.fixVideoLanguages', true)
       })
 
