@@ -52,122 +52,24 @@ const steps = [
   { id: 3, title: 'Output', description: 'Select output formats' }
 ]
 
-// Predefined content ideas JSON
-const CONTENT_IDEAS = {
-  devotional: [
-    "Break into a carousel of 3–5 slides: hook, main thought, scripture, reflection question.",
-    "Create a daily SMS/email drip series.",
-    "Turn into a 30–60 sec explainer video with calm background music.",
-    "Extract a \"key line\" and design a quote card for Instagram or WhatsApp.",
-    "Generate small group study questions: \"How does this truth apply today?\"",
-    "Create a timeline graphic (e.g. \"Now → Eternity\")."
-  ],
-  bible: [
-    "Comic-style panel summarizing the story for kids/teens.",
-    "Line-art illustration suitable for coloring sheets (family/kids ministry).",
-    "Turn into motion graphics animation of the scene with subtitles.",
-    "Before/after infographic (e.g. Saul → Paul transformation).",
-    "Add to a Bible trivia quiz for outreach."
-  ],
-  church_service_slide: [
-    "Convert into a reel/short for quick online recap.",
-    "Adapt slide points into a Twitter/X thread or LinkedIn post.",
-    "Build a carousel \"Sunday recap\" to share midweek.",
-    "Export scripture from slide as a WhatsApp sticker pack.",
-    "Turn a full deck into a mini e-booklet/PDF for attendees who missed it."
-  ],
-  sermon_notes: [
-    "Summarize into a 1-page \"sermon in a sentence\" visual.",
-    "Create a YouTube short with preacher's key phrase overlayed on b-roll.",
-    "Design discussion guide handouts for small groups.",
-    "Generate a podcast script or narration from notes.",
-    "Pull quotes for social graphics (\"Mic drop moments\")."
-  ],
-  scripture_verse: [
-    "Create verse wallpapers (phone/desktop lock screens).",
-    "Design a looped verse video with background music.",
-    "Convert into a verse-of-the-day story post.",
-    "Turn into printable cards/bookmarks.",
-    "Add verse to nature photography background for Pinterest."
-  ],
-  worship_image: [
-    "Make a motion lyric video snippet for TikTok/Reels.",
-    "Overlay a worship quote/testimony onto the image.",
-    "Create event promo graphics for upcoming services.",
-    "Build a Spotify-style album cover design for worship playlists.",
-    "Generate a behind-the-scenes story series (\"What worship means to us\")."
-  ],
-  religious_artwork: [
-    "Share as art appreciation posts with scripture tie-ins.",
-    "Turn into timelapse \"art with scripture narration\" video.",
-    "Create color-reduced versions for printables/posters.",
-    "Overlay questions/reflection prompts (\"What does this say to you about God?\").",
-    "Design museum-style info cards for social carousels."
-  ],
-  nature_spiritual: [
-    "Pair with a Psalm or creation verse for an image post.",
-    "Create guided reflection videos (voice + slow zoom pan).",
-    "Turn into prayer prompts for daily quiet times.",
-    "Use as backgrounds for scripture quote animations.",
-    "Generate seasonal devotionals (spring renewal, autumn harvest, etc.)."
-  ],
-  community_event: [
-    "Build a highlight reel video.",
-    "Make a photo collage carousel.",
-    "Create invite templates for next events.",
-    "Turn testimonies into short social video clips.",
-    "Add captions for Facebook/Instagram albums with scripture themes."
-  ],
-  ministry_activity: [
-    "Create before/after impact posts (problem → outreach → result).",
-    "Develop volunteer recruitment carousels.",
-    "Produce a case study story for donor updates.",
-    "Build mini-doc style video with photos + voiceover.",
-    "Generate quote cards from participants' testimonies."
-  ],
-  personal_message: [
-    "Suggest gentle pivot questions to shift talk toward eternity (\"What gives you hope when life feels incomplete?\").",
-    "Generate short scripture replies contextualized for tone.",
-    "Draft bridging sentences that tie personal issues to gospel truths.",
-    "Offer two-line testimonies (relatable, not preachy).",
-    "Turn into a follow-up prayer text."
-  ],
-  comment: [
-    "Create polite, reflective response templates.",
-    "Suggest verse-based rebuttals (tone-matched: gentle, firm, encouraging).",
-    "Generate comment-to-DM pivot messages.",
-    "Build shareable reply graphics if discussion is public.",
-    "Create FAQ-style blog posts based on recurring comments."
-  ],
-  email: [
-    "Rewrite into a devotional email series.",
-    "Create a newsletter \"mini-sermon\" section.",
-    "Repurpose into a blog entry.",
-    "Adapt into print bulletin inserts.",
-    "Generate a short prayer chain message."
-  ],
-  news_article: [
-    "Summarize with a biblical worldview lens.",
-    "Build a \"Christian response explainer video.\"",
-    "Create discussion questions for small groups.",
-    "Turn headline into a graphic with scripture overlay.",
-    "Produce a \"What this shows about eternity\" reflection thread."
-  ],
-  other: [
-    "Auto-suggest closest match from above, or…",
-    "Turn raw content into general outreach formats: meme, short reflection, prayer prompt, or verse tie-in."
-  ]
-}
-
 // Removed - now using proper conversation history instead of RAG
 
-const IMAGE_ANALYSIS_PROMPT = `You are an expert at analyzing content images from religious and spiritual point of view for our digital ai tool that helps the user create content for social media and private gospel sharing usign images, text or video.  Analyze this image and provide a detailed response in the following JSON format:
+const IMAGE_ANALYSIS_PROMPT = `You are an expert at analyzing content images from religious and spiritual point of view for our digital ai tool that helps the user create content for social media and private gospel sharing using images, text or video. Your task is to generate gospel-focused content ideas that help private conversations or social media followers consider God, Gospel, and Salvation. Each idea should be a practical, actionable suggestion based on the image content.  Gospel-centered content ideas inspired by this image. Each idea should connect naturally to the visual, point people toward God, the Gospel, and Salvation, and be practical for sharing in private conversations or on social media. Keep ideas specific, actionable, and matched to what our Canva-like design tool can create (e.g., Instagram stories, carousels, social posts, simple videos, or printable PDFs).
+  content ideas inspired by this image. Each idea should connect 
+  naturally to the visual, point people toward God, the Gospel, and 
+  Salvation, and be practical for sharing in private conversations or 
+  on social media. Keep ideas specific, actionable, and matched to 
+  what our Canva-like design tool can create (e.g., Instagram 
+  stories, carousels, social posts, simple videos, or printable PDFs).
+
+Analyze this image and provide a detailed response in the following JSON format:
 
 {
   "contentType": "One of: devotional, bible, church_service_slide, sermon_notes, scripture_verse, worship_image, religious_artwork, nature_spiritual, community_event, ministry_activity, personal_message, comment, email, news_article, other",
   "extractedText": "Any text visible in the image - perform OCR and extract all readable text exactly as it appears",
   "detailedDescription": "If there's no text, provide a detailed description of the image including: composition, colors, mood, setting, any people/objects/symbols, artistic style, and spiritual/religious elements",
-  "confidence": "Overall confidence in the analysis (high/medium/low)"
+  "confidence": "Overall confidence in the analysis (high/medium/low)",
+  "contentIdeas": ["First gospel-focused content idea as a string inspired by the image and most appropriate for the image content (10 words max)", "Second gospel-focused content idea as a string inspired by the image and most appropriate for the image content (10 words max)", "Third gospel-focused content idea as a string inspired by the image and most appropriate for the image content (10 words max)"]
 }
 
 Content type definitions:
@@ -192,6 +94,7 @@ Be thorough and accurate in your analysis.`
 export default function NewPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedFormat, setSelectedFormat] = useState<string>('')
+  const [selectedContext, setSelectedContext] = useState<string>('')
   const [selectedOutputs, setSelectedOutputs] = useState<Record<string, string[]>>({})
   const [openaiApiKey, setOpenaiApiKey] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -215,6 +118,9 @@ export default function NewPage() {
   const [isTokensUpdated, setIsTokensUpdated] = useState(false)
   const [selectedImageForDetails, setSelectedImageForDetails] = useState<number | null>(null)
   const [showAllIdeas, setShowAllIdeas] = useState(false)
+  const [animatingSuggestion, setAnimatingSuggestion] = useState<{analysisIndex: number, ideaIndex: number} | null>(null)
+  const [animatingTextarea, setAnimatingTextarea] = useState(false)
+  const [hiddenSuggestions, setHiddenSuggestions] = useState<Set<string>>(new Set())
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
@@ -359,6 +265,10 @@ export default function NewPage() {
 
   const handleFormatChange = (format: string) => {
     setSelectedFormat(format)
+  }
+
+  const handleContextChange = (context: string) => {
+    setSelectedContext(context)
   }
 
 // Removed - using proper conversation history instead
@@ -569,6 +479,10 @@ When refining or improving content, consider:
       let analysisResult
       try {
         analysisResult = JSON.parse(analysisText)
+        // Ensure contentIdeas is always an array
+        if (!Array.isArray(analysisResult.contentIdeas)) {
+          analysisResult.contentIdeas = []
+        }
       } catch (parseError) {
         console.error('Failed to parse analysis response:', parseError)
         console.error('Raw response:', data.choices[0]?.message?.content)
@@ -590,7 +504,7 @@ When refining or improving content, consider:
           extractedText: analysisResult.extractedText || '',
           detailedDescription: analysisResult.detailedDescription || '',
           confidence: analysisResult.confidence || 'low',
-          contentIdeas: CONTENT_IDEAS[analysisResult.contentType as keyof typeof CONTENT_IDEAS] || CONTENT_IDEAS.other,
+          contentIdeas: analysisResult.contentIdeas || [],
           isAnalyzing: false
         }
         return updated
@@ -951,13 +865,13 @@ When refining or improving content, consider:
                               )}
 
                               {/* Content ideas */}
-                              {analysis.contentIdeas.length > 0 && (
+                              {Array.isArray(analysis.contentIdeas) && analysis.contentIdeas.length > 0 && (
                                 <div>
                                   <h4 className="text-sm font-medium mb-2">Content Ideas:</h4>
                                   <div className="space-y-2">
                                     {analysis.contentIdeas.map((idea, ideaIndex) => (
                                       <div key={ideaIndex} className="text-xs px-3 py-2 bg-blue-50 text-blue-800 rounded-lg border border-blue-200">
-                                        {idea}
+                                        {typeof idea === 'string' ? idea : JSON.stringify(idea)}
                                       </div>
                                     ))}
                                   </div>
@@ -1015,22 +929,45 @@ When refining or improving content, consider:
                               </span>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                              {analysis.contentIdeas?.map((idea, ideaIndex) => (
-                                <div
-                                  key={ideaIndex}
-                                  className="relative p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-white hover:border-gray-300 transition-all duration-200 hover:shadow-sm"
-                                  onClick={() => {
-                                    const currentText = textContent;
-                                    const newText = currentText ? `${currentText}\n\n${idea}` : idea;
-                                    setTextContent(newText);
-                                    setShowAllIdeas(false); // Close modal after selecting
-                                  }}
-                                >
-                                  <p className="text-sm text-gray-800 leading-relaxed">
-                                    {idea}
-                                  </p>
-                                </div>
-                              ))}
+                              {Array.isArray(analysis.contentIdeas) && analysis.contentIdeas.map((idea, ideaIndex) => {
+                                const suggestionKey = `modal-${analysisIndex}-${ideaIndex}`;
+                                if (hiddenSuggestions.has(suggestionKey)) return null;
+
+                                return (
+                                  <div
+                                    key={ideaIndex}
+                                    className={`relative p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-white hover:border-gray-300 hover:shadow-sm ${
+                                      animatingSuggestion?.analysisIndex === analysisIndex && animatingSuggestion?.ideaIndex === ideaIndex
+                                        ? 'animate-suggestion-disappear opacity-100'
+                                        : 'transition-all duration-200'
+                                    }`}
+                                    onClick={() => {
+                                      // Set animating state to start the disappear animation immediately
+                                      setAnimatingSuggestion({ analysisIndex, ideaIndex });
+
+                                      // After suggestion animation completes (500ms), add text and hide the suggestion
+                                      setTimeout(() => {
+                                        const currentText = textContent;
+                                        const newText = currentText ? `${currentText}\n\n${idea}` : idea;
+                                        setTextContent(newText);
+                                        setAnimatingTextarea(true);
+                                        setHiddenSuggestions(prev => new Set(prev).add(suggestionKey)); // Hide this suggestion permanently
+                                        setAnimatingSuggestion(null); // Clear animation state
+
+                                        // Reset textarea animation after it completes (800ms)
+                                        setTimeout(() => {
+                                          setAnimatingTextarea(false);
+                                          setShowAllIdeas(false); // Close modal after both animations complete
+                                        }, 800);
+                                      }, 500); // Match suggestion disappear animation duration
+                                    }}
+                                  >
+                                    <p className="text-sm text-gray-800 leading-relaxed">
+                                      {typeof idea === 'string' ? idea : JSON.stringify(idea)}
+                                    </p>
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
                         ))}
@@ -1109,11 +1046,90 @@ When refining or improving content, consider:
           {currentStep === 1 && (
             <div className="max-w-4xl mx-auto">
               <Card className="bg-transparent border-0 shadow-none">
+                <CardHeader className="text-center mb-6 relative">
+                  <blockquote className="text-lg italic text-stone-600 mb-4 text-balance z-30 animate-bible-quote-appear">
+                    "Let your conversation be always full of grace, seasoned&nbsp;with&nbsp;salt, so that you may know how to answer everyone."
+                    <cite className="block mt-2 text-sm font-medium text-stone-500 opacity-0 animate-fade-in-up delay-1000">Colossians 4:5–6</cite>
+                  </blockquote>
+
+                  <div data-testid="testimonial-background" className='fixed inset-0 bg-stone-50 z-20 animate-background-dissolve' />
+                  <p className="text-stone-700 font-medium">Help me to share God's grace...</p>
+                </CardHeader>
+
                 <CardHeader className="text-center">
                   <CardTitle className="text-2xl">What do you want to share?</CardTitle>
                   <p className="text-muted-foreground">Drop here your idea or picture of your content</p>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                  {/* Context Selector */}
+                  <div className="mb-8">
+                    <div className="flex items-center gap-4 mb-4">
+                      <label className="text-lg font-semibold">Where will you share?</label>
+                      <span className="text-sm text-muted-foreground">Choose the context for sharing God's grace</span>
+                    </div>
+                    <div className="grid grid-cols-5 gap-4">
+                      {/* Chat/Comments */}
+                      <div className={`p-4 border rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
+                        selectedContext === 'Chat/Comments'
+                          ? 'bg-gradient-to-br from-blue-500 via-cyan-600 to-teal-600 border-blue-500'
+                          : 'bg-transparent border-gray-300 hover:bg-gradient-to-br hover:from-blue-500 hover:via-cyan-600 hover:to-teal-600'
+                      }`} onClick={() => handleContextChange('Chat/Comments')}>
+                        <div className="p-3">
+                          <MessageSquare className={`w-8 h-8 ${selectedContext === 'Chat/Comments' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`} />
+                        </div>
+                        <span className={`font-medium text-sm text-center ${selectedContext === 'Chat/Comments' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`}>Chat/Comments</span>
+                      </div>
+
+                      {/* Social Media */}
+                      <div className={`p-4 border rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
+                        selectedContext === 'Social Media'
+                          ? 'bg-gradient-to-br from-purple-500 via-pink-600 to-red-600 border-purple-500'
+                          : 'bg-transparent border-gray-300 hover:bg-gradient-to-br hover:from-purple-500 hover:via-pink-600 hover:to-red-600'
+                      }`} onClick={() => handleContextChange('Social Media')}>
+                        <div className="p-3">
+                          <Users className={`w-8 h-8 ${selectedContext === 'Social Media' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`} />
+                        </div>
+                        <span className={`font-medium text-sm text-center ${selectedContext === 'Social Media' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`}>Social Media</span>
+                      </div>
+
+                      {/* Website */}
+                      <div className={`p-4 border rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
+                        selectedContext === 'Website'
+                          ? 'bg-gradient-to-br from-orange-500 via-yellow-600 to-amber-600 border-orange-500'
+                          : 'bg-transparent border-gray-300 hover:bg-gradient-to-br hover:from-orange-500 hover:via-yellow-600 hover:to-amber-600'
+                      }`} onClick={() => handleContextChange('Website')}>
+                        <div className="p-3">
+                          <Globe className={`w-8 h-8 ${selectedContext === 'Website' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`} />
+                        </div>
+                        <span className={`font-medium text-sm text-center ${selectedContext === 'Website' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`}>Website</span>
+                      </div>
+
+                      {/* Paper */}
+                      <div className={`p-4 border rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
+                        selectedContext === 'Paper'
+                          ? 'bg-gradient-to-br from-emerald-500 via-green-600 to-lime-600 border-emerald-500'
+                          : 'bg-transparent border-gray-300 hover:bg-gradient-to-br hover:from-emerald-500 hover:via-green-600 hover:to-lime-600'
+                      }`} onClick={() => handleContextChange('Paper')}>
+                        <div className="p-3">
+                          <FileText className={`w-8 h-8 ${selectedContext === 'Paper' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`} />
+                        </div>
+                        <span className={`font-medium text-sm text-center ${selectedContext === 'Paper' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`}>Paper</span>
+                      </div>
+
+                      {/* Real Life */}
+                      <div className={`p-4 border rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
+                        selectedContext === 'Real Life'
+                          ? 'bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-600 border-rose-500'
+                          : 'bg-transparent border-gray-300 hover:bg-gradient-to-br hover:from-rose-500 hover:via-pink-600 hover:to-fuchsia-600'
+                      }`} onClick={() => handleContextChange('Real Life')}>
+                        <div className="p-3">
+                          <Users className={`w-8 h-8 ${selectedContext === 'Real Life' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`} />
+                        </div>
+                        <span className={`font-medium text-sm text-center ${selectedContext === 'Real Life' ? 'text-white drop-shadow-lg' : 'text-black group-hover:text-white group-hover:drop-shadow-lg'}`}>Real Life</span>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="relative bg-white rounded-3xl shadow-xl ">
                     {/* <label className="text-sm font-medium mb-2 block">Text Content</label> */}
                     <div className="relative">
@@ -1171,7 +1187,9 @@ When refining or improving content, consider:
                       <Textarea
                         ref={textareaRef}
                         placeholder="Enter your text content here... You can also paste or drop images directly."
-                        className={`relative shadow-none resize-none bg-transparent pr-12 pb-16 px-4 border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-base`}
+                        className={`relative shadow-none resize-none bg-transparent pr-12 pb-16 px-4 border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-base ${
+                          animatingTextarea ? 'animate-text-appear' : ''
+                        }`}
                         value={textContent}
                         onChange={(e) => setTextContent(e.target.value)}
                         onPaste={handlePaste}
@@ -1251,10 +1269,10 @@ When refining or improving content, consider:
                   {/* Content Ideas Grid */}
                   {imageAnalysisResults.some(result => result.contentIdeas && result.contentIdeas.length > 0 && !result.isAnalyzing) && (
                     <div className="mt-12 opacity-0 animate-fade-in-up">
-                      <div className="flex items-center justify-between mb-4 opacity-0 animate-fade-in-left" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
+                      <div className="hidden items-center justify-between mb-4 opacity-0 animate-fade-in-left" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
                         <div className="flex items-center gap-2">
                           <Sparkles className="w-4 h-4 text-primary animate-pulse" />
-                          <label className="text-lg font-semibold">Need Ideas for your {getContentTypeForHeader()}?</label>
+                          <label className="text-lg font-semibold hidden">Need Ideas for your {getContentTypeForHeader()}?</label>
                           <span className="text-xs text-muted-foreground">
                             Click any idea to add it to your content
                           </span>
@@ -1268,32 +1286,53 @@ When refining or improving content, consider:
                           See All
                         </Button>
                       </div>
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="flex flex-col gap-2">
                         {imageAnalysisResults.flatMap((analysis, imageIndex) =>
-                          analysis.contentIdeas?.map((idea, ideaIndex) => {
+                          Array.isArray(analysis.contentIdeas) ? analysis.contentIdeas.map((idea, ideaIndex) => {
                             const globalIndex = imageAnalysisResults.slice(0, imageIndex).reduce((total, result) => total + (result.contentIdeas?.length || 0), 0) + ideaIndex;
+                            const suggestionKey = `main-${imageIndex}-${ideaIndex}`;
+                            if (hiddenSuggestions.has(suggestionKey)) return null;
+
                             return (
                               <div
                                 key={`${imageIndex}-${ideaIndex}`}
-                                className="relative px-4 py-2 border border-gray-300 rounded-xl cursor-pointer hover:bg-white hover:scale-105 transition-all duration-300 opacity-0 animate-fade-in-up"
+                                className={`relative w-fit px-4 py-2 border border-gray-300 rounded-xl cursor-pointer hover:bg-white hover:scale-102 ${
+                                  animatingSuggestion?.analysisIndex === imageIndex && animatingSuggestion?.ideaIndex === ideaIndex
+                                    ? 'animate-suggestion-disappear'
+                                    : 'opacity-0 animate-fade-in-up transition-all duration-300'
+                                }`}
                                 style={{
                                   animationDelay: `${0.4 + globalIndex * 0.1}s`,
                                   animationFillMode: 'forwards'
                                 }}
                                 onClick={() => {
-                                  const currentText = textContent;
-                                  const newText = currentText ? `${currentText}\n\n${idea}` : idea;
-                                  setTextContent(newText);
+                                  // Set animating state to start the disappear animation immediately
+                                  setAnimatingSuggestion({ analysisIndex: imageIndex, ideaIndex });
+
+                                  // After suggestion animation completes (500ms), add text and hide the suggestion
+                                  setTimeout(() => {
+                                    const currentText = textContent;
+                                    const newText = currentText ? `${currentText}\n\n${idea}` : idea;
+                                    setTextContent(newText);
+                                    setAnimatingTextarea(true);
+                                    setHiddenSuggestions(prev => new Set(prev).add(suggestionKey)); // Hide this suggestion permanently
+                                    setAnimatingSuggestion(null); // Clear animation state
+
+                                    // Reset textarea animation after it completes (800ms)
+                                    setTimeout(() => {
+                                      setAnimatingTextarea(false);
+                                    }, 800);
+                                  }, 1200); // Match suggestion disappear animation duration
                                 }}
                               >
-                                <div className="flex flex-col items-center justify-center gap-3 text-center min-h-[100px]">
+                                <div className="flex flex-col items-start justify-center gap-3 text-left">
                                   <p className="text-sm text-gray-800 leading-relaxed line-clamp-4 text-balance">
-                                    {idea}
+                                    {typeof idea === 'string' ? idea : JSON.stringify(idea)}
                                   </p>
                                 </div>
                               </div>
                             );
-                          }) || []
+                          }).filter(Boolean) : []
                         )}
                       </div>
 
