@@ -10,7 +10,8 @@ export enum Action {
   Read = 'read',
   Update = 'update',
   Delete = 'delete',
-  Manage = 'manage'
+  Manage = 'manage',
+  Export = 'export'
 }
 
 export enum Subject {

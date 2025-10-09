@@ -473,6 +473,12 @@ export interface JourneyCollectionUpdateInput {
   journeyIds?: string[] | null;
 }
 
+export interface JourneyCustomizationFieldInput {
+  id: string;
+  key: string;
+  value?: string | null;
+}
+
 export interface JourneyEventsExportLogInput {
   journeyId: string;
   eventsFilter: EventType[];
@@ -552,6 +558,7 @@ export interface JourneyVisitorFilter {
   journeyId: string;
   hasChatStarted?: boolean | null;
   hasPollAnswers?: boolean | null;
+  hasMultiselectSubmission?: boolean | null;
   hasTextResponse?: boolean | null;
   hasIcon?: boolean | null;
   hideInactive?: boolean | null;

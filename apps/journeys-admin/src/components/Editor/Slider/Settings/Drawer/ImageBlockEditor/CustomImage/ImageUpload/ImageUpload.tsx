@@ -1,4 +1,3 @@
-import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -14,17 +13,8 @@ import CheckBrokenIcon from '@core/shared/ui/icons/CheckBroken'
 import Upload1IconIcon from '@core/shared/ui/icons/Upload1'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { CreateCloudflareUploadByFile } from '../../../../../../../../../__generated__/CreateCloudflareUploadByFile'
 import { ImageBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
-
-export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = gql`
-  mutation CreateCloudflareUploadByFile {
-    createCloudflareUploadByFile {
-      uploadUrl
-      id
-    }
-  }
-`
+import { useCloudflareUploadByFileMutation } from '../../../../../../../../libs/useCloudflareUploadByFileMutation'
 
 interface ImageUploadProps {
   onChange: (input: ImageBlockUpdateInput) => void
@@ -41,8 +31,7 @@ export function ImageUpload({
   loading,
   error
 }: ImageUploadProps): ReactElement {
-  const [createCloudflareUploadByFile] =
-    useMutation<CreateCloudflareUploadByFile>(CREATE_CLOUDFLARE_UPLOAD_BY_FILE)
+  const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
   const [success, setSuccess] = useState<boolean>()
 
   const onDrop = async (acceptedFiles: File[]): Promise<void> => {

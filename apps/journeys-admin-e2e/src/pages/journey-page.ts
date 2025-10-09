@@ -1212,7 +1212,7 @@ export class JourneyPage {
     expect(clipBoardText).toContain(actualValue)
   }
   async editUrlAndSave() {
-    await this.clickButtonInShareDialog('Edit URL')
+    await this.clickButtonInShareDialog('Edit Link')
     const updatedSlugName = await this.UpdateUrlSlug()
     await this.clickDialogActionBtnsInShareDialog('Save')
     await this.validateUrlUpdatedUrl(updatedSlugName)

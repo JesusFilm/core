@@ -55,6 +55,11 @@ interface Action {
   gtmEventName: String
 }
 
+enum ContactActionType {
+  call
+  text
+}
+
 type NavigateToBlockAction implements Action
   @shareable
 {
@@ -95,6 +100,7 @@ type PhoneAction implements Action
   gtmEventName: String
   phone: String!
   countryCode: String!
+  contactAction: ContactActionType!
 }
 
 interface Block {
@@ -163,6 +169,7 @@ type Journey
   socialNodeX: Int
   socialNodeY: Int
   fromTemplateId: String
+  showAssistant: Boolean
   journeyCustomizationDescription: String
   journeyCustomizationFields: [JourneyCustomizationField!]!
   journeyTheme: JourneyTheme
@@ -427,7 +434,6 @@ type Mutation {
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
   customDomainDelete(id: ID!): CustomDomain!
   customDomainCheck(id: ID!): CustomDomainCheck!
-  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
 
   """
@@ -848,6 +854,27 @@ input ImageBlockUpdateInput {
   scale: Int
   focalTop: Int
   focalLeft: Int
+}
+
+type MultiselectBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  max: Int
+  min: Int
+}
+
+type MultiselectOptionBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  label: String!
 }
 
 type RadioOptionBlock implements Block
@@ -1383,33 +1410,6 @@ enum ButtonAction {
   PhoneAction
 }
 
-input ButtonClickEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """stepName of the parent stepBlock"""
-  label: String
-
-  """label of the button"""
-  value: String
-
-  """Action type of the button when it was clicked"""
-  action: ButtonAction
-
-  """
-  The label for each corresponding action, mapping below:
-  NavigateToBlockAction - StepName (generated in client) of the StepBlock
-  LinkAction - url of the link
-  """
-  actionValue: String
-}
-
 type ButtonClickEvent implements Event
   @shareable
 {
@@ -1510,6 +1510,24 @@ type ChatOpenEvent implements Event
   messagePlatform of the link used for chat (based on the messagePlatform in the value field)
   """
   messagePlatform: MessagePlatform
+}
+
+type MultiselectSubmissionEvent implements Event
+  @shareable
+{
+  id: ID!
+
+  """ID of the journey that the multiselect block belongs to"""
+  journeyId: ID!
+
+  """time event was created"""
+  createdAt: DateTime!
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """comma separated selected option labels"""
+  value: String
 }
 
 interface Event {
@@ -2573,6 +2591,7 @@ type JourneyVisitor
   populated by RadioQuestionSubmission mutation
   """
   lastRadioOptionSubmission: String
+  lastMultiselectSubmission: String
   events: [Event!]!
   visitor: Visitor!
 }
@@ -2601,6 +2620,7 @@ input JourneyVisitorFilter {
   journeyId: String!
   hasChatStarted: Boolean
   hasPollAnswers: Boolean
+  hasMultiselectSubmission: Boolean
   hasTextResponse: Boolean
   hasIcon: Boolean
   hideInactive: Boolean

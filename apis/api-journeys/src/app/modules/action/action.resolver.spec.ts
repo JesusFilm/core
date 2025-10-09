@@ -31,6 +31,7 @@ describe('ActionResolver', () => {
     email: 'john.smith@example.com',
     phone: null,
     countryCode: null,
+    contactAction: null,
     customizable: null,
     parentStepId: null
   }
@@ -45,6 +46,7 @@ describe('ActionResolver', () => {
     email: null,
     phone: null,
     countryCode: null,
+    contactAction: null,
     customizable: null,
     parentStepId: null
   }
@@ -59,6 +61,7 @@ describe('ActionResolver', () => {
     email: null,
     phone: null,
     countryCode: null,
+    contactAction: null,
     customizable: null,
     parentStepId: null
   }
@@ -73,6 +76,7 @@ describe('ActionResolver', () => {
     email: null,
     phone: '1234567890',
     countryCode: 'US',
+    contactAction: null,
     customizable: null,
     parentStepId: null
   }

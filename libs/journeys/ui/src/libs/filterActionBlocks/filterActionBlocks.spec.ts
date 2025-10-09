@@ -16,7 +16,7 @@ const buttonAction: ButtonBlockAction = {
   parentBlockId: 'button',
   gtmEventName: 'click',
   url: 'https://m.me/some-user',
-  customizable: null,
+  customizable: false,
   parentStepId: null
 }
 

@@ -7,6 +7,8 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { RadioOption } from '@core/journeys/ui/RadioOption'
+import { resolveJourneyCustomizationString } from '@core/journeys/ui/resolveJourneyCustomizationString'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import {
   RadioOptionBlockUpdateContent,
@@ -34,12 +36,21 @@ export function RadioOptionEdit({
   ...radioOptionProps
 }: RadioOptionEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
+
+  const resolvedLabel = !journey?.template
+    ? (resolveJourneyCustomizationString(
+        label,
+        journey?.journeyCustomizationFields ?? []
+      ) ?? label)
+    : label
+
   const [radioOptionBlockUpdate] = useMutation<
     RadioOptionBlockUpdateContent,
     RadioOptionBlockUpdateContentVariables
   >(RADIO_OPTION_BLOCK_UPDATE_CONTENT)
 
-  const [value, setValue] = useState(label)
+  const [value, setValue] = useState(resolvedLabel)
   const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
   const [selection, setSelection] = useState({ start: 0, end: value.length })
 
@@ -59,9 +70,9 @@ export function RadioOptionEdit({
   }, [undo?.id])
 
   useEffect(() => {
-    if (value !== label) setValue(label)
+    if (value !== resolvedLabel) setValue(resolvedLabel)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [label])
+  }, [resolvedLabel])
 
   function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })

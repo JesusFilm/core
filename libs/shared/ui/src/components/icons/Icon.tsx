@@ -70,6 +70,7 @@ import Download2 from './Download2'
 import Drag from './Drag'
 import DuplicateCard from './DuplicateCard'
 import Edit2 from './Edit2'
+import Edit3 from './Edit3'
 import Ellipsis from './Ellipsis'
 import Email from './Email'
 import Embed from './Embed'
@@ -292,6 +293,7 @@ export type IconName =
   | 'Drag'
   | 'DuplicateCard'
   | 'Edit2'
+  | 'Edit3'
   | 'Ellipsis'
   | 'Email'
   | 'Embed'
@@ -518,6 +520,7 @@ const iconComponents: IconComponents = {
   Drag,
   DuplicateCard,
   Edit2,
+  Edit3,
   Ellipsis,
   Email,
   Embed,

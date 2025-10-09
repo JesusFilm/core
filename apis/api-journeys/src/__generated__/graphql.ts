@@ -216,22 +216,12 @@ export type ButtonClickEvent = Event & {
 };
 
 export type ButtonClickEventCreateInput = {
-  /** Action type of the button when it was clicked */
   action?: InputMaybe<ButtonAction>;
-  /**
-   * The label for each corresponding action, mapping below:
-   * NavigateToBlockAction - StepName (generated in client) of the StepBlock
-   * LinkAction - url of the link
-   */
   actionValue?: InputMaybe<Scalars['String']['input']>;
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** stepName of the parent stepBlock */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** label of the button */
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -393,6 +383,11 @@ export type CloudflareR2CreateInput = {
   /** the id of the Video object this file relates to in the database */
   videoId: Scalars['String']['input'];
 };
+
+export enum ContactActionType {
+  Call = 'call',
+  Text = 'text'
+}
 
 export type Continent = {
   __typename?: 'Continent';
@@ -1216,6 +1211,7 @@ export type JourneyVisitor = {
    * link action button. Populated by ButtonClickEvent
    */
   lastLinkAction?: Maybe<Scalars['String']['output']>;
+  lastMultiselectSubmission?: Maybe<Scalars['String']['output']>;
   /**
    * The selected option  of the last radio option the visitor filled out,
    * populated by RadioQuestionSubmission mutation
@@ -1258,10 +1254,18 @@ export type JourneyVisitorEdge = {
   node: JourneyVisitor;
 };
 
+export type JourneyVisitorExportSelect = {
+  createdAt?: InputMaybe<Scalars['Boolean']['input']>;
+  email?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['Boolean']['input']>;
+  phone?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type JourneyVisitorFilter = {
   countryCode?: InputMaybe<Scalars['String']['input']>;
   hasChatStarted?: InputMaybe<Scalars['Boolean']['input']>;
   hasIcon?: InputMaybe<Scalars['Boolean']['input']>;
+  hasMultiselectSubmission?: InputMaybe<Scalars['Boolean']['input']>;
   hasPollAnswers?: InputMaybe<Scalars['Boolean']['input']>;
   hasTextResponse?: InputMaybe<Scalars['Boolean']['input']>;
   hideInactive?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1457,6 +1461,70 @@ export enum MessagePlatform {
   WhatsApp = 'whatsApp'
 }
 
+export type MultiselectBlock = Block & {
+  __typename?: 'MultiselectBlock';
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  max?: Maybe<Scalars['Int']['output']>;
+  min?: Maybe<Scalars['Int']['output']>;
+  parentBlockId?: Maybe<Scalars['ID']['output']>;
+  parentOrder?: Maybe<Scalars['Int']['output']>;
+};
+
+export type MultiselectBlockCreateInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  journeyId: Scalars['ID']['input'];
+  parentBlockId: Scalars['ID']['input'];
+};
+
+export type MultiselectBlockUpdateInput = {
+  max?: InputMaybe<Scalars['Int']['input']>;
+  min?: InputMaybe<Scalars['Int']['input']>;
+  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type MultiselectOptionBlock = Block & {
+  __typename?: 'MultiselectOptionBlock';
+  id: Scalars['ID']['output'];
+  journeyId: Scalars['ID']['output'];
+  label: Scalars['String']['output'];
+  parentBlockId?: Maybe<Scalars['ID']['output']>;
+  parentOrder?: Maybe<Scalars['Int']['output']>;
+};
+
+export type MultiselectOptionBlockCreateInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  journeyId: Scalars['ID']['input'];
+  label: Scalars['String']['input'];
+  parentBlockId: Scalars['ID']['input'];
+};
+
+export type MultiselectOptionBlockUpdateInput = {
+  label?: InputMaybe<Scalars['String']['input']>;
+  parentBlockId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type MultiselectSubmissionEvent = Event & {
+  __typename?: 'MultiselectSubmissionEvent';
+  /** time event was created */
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  /** ID of the journey that the multiselect block belongs to */
+  journeyId: Scalars['ID']['output'];
+  /** stepName of the parent stepBlock */
+  label?: Maybe<Scalars['String']['output']>;
+  /** comma separated selected option labels */
+  value?: Maybe<Scalars['String']['output']>;
+};
+
+export type MultiselectSubmissionEventCreateInput = {
+  blockId: Scalars['ID']['input'];
+  id?: InputMaybe<Scalars['ID']['input']>;
+  label?: InputMaybe<Scalars['String']['input']>;
+  stepId?: InputMaybe<Scalars['ID']['input']>;
+  values: Array<Scalars['String']['input']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   audioPreviewCreate: AudioPreview;
@@ -1556,9 +1624,15 @@ export type Mutation = {
   journeysRestore?: Maybe<Array<Maybe<Journey>>>;
   /** Sets journeys statuses to trashed */
   journeysTrash?: Maybe<Array<Maybe<Journey>>>;
+  multiselectBlockCreate: MultiselectBlock;
+  multiselectBlockUpdate: MultiselectBlock;
+  multiselectOptionBlockCreate: MultiselectOptionBlock;
+  multiselectOptionBlockUpdate: MultiselectOptionBlock;
+  multiselectSubmissionEventCreate: MultiselectSubmissionEvent;
   playlistCreate?: Maybe<MutationPlaylistCreateResult>;
   playlistDelete?: Maybe<MutationPlaylistDeleteResult>;
   playlistItemAdd?: Maybe<MutationPlaylistItemAddResult>;
+  playlistItemAddWithVideoAndLanguageIds?: Maybe<MutationPlaylistItemAddWithVideoAndLanguageIdsResult>;
   playlistItemRemove?: Maybe<MutationPlaylistItemRemoveResult>;
   playlistItemsReorder?: Maybe<MutationPlaylistItemsReorderResult>;
   playlistUpdate?: Maybe<MutationPlaylistUpdateResult>;
@@ -2135,6 +2209,35 @@ export type MutationJourneysTrashArgs = {
 };
 
 
+export type MutationMultiselectBlockCreateArgs = {
+  input: MultiselectBlockCreateInput;
+};
+
+
+export type MutationMultiselectBlockUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: MultiselectBlockUpdateInput;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type MutationMultiselectOptionBlockCreateArgs = {
+  input: MultiselectOptionBlockCreateInput;
+};
+
+
+export type MutationMultiselectOptionBlockUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: MultiselectOptionBlockUpdateInput;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type MutationMultiselectSubmissionEventCreateArgs = {
+  input: MultiselectSubmissionEventCreateInput;
+};
+
+
 export type MutationPlaylistCreateArgs = {
   input: PlaylistCreateInput;
 };
@@ -2146,9 +2249,14 @@ export type MutationPlaylistDeleteArgs = {
 
 
 export type MutationPlaylistItemAddArgs = {
-  id?: InputMaybe<Scalars['ID']['input']>;
   playlistId: Scalars['ID']['input'];
-  videoVariantId: Scalars['ID']['input'];
+  videoVariantIds: Array<Scalars['ID']['input']>;
+};
+
+
+export type MutationPlaylistItemAddWithVideoAndLanguageIdsArgs = {
+  playlistId: Scalars['ID']['input'];
+  videos: Array<PlaylistItemVideoInput>;
 };
 
 
@@ -2735,7 +2843,14 @@ export type MutationPlaylistItemAddResult = MutationPlaylistItemAddSuccess | Not
 
 export type MutationPlaylistItemAddSuccess = {
   __typename?: 'MutationPlaylistItemAddSuccess';
-  data: PlaylistItem;
+  data: Array<PlaylistItem>;
+};
+
+export type MutationPlaylistItemAddWithVideoAndLanguageIdsResult = MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess | NotFoundError;
+
+export type MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess = {
+  __typename?: 'MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess';
+  data: Array<PlaylistItem>;
 };
 
 export type MutationPlaylistItemRemoveResult = MutationPlaylistItemRemoveSuccess | NotFoundError;
@@ -2949,6 +3064,7 @@ export type PageInfo = {
 
 export type PhoneAction = Action & {
   __typename?: 'PhoneAction';
+  contactAction: ContactActionType;
   countryCode: Scalars['String']['output'];
   gtmEventName?: Maybe<Scalars['String']['output']>;
   parentBlock: Block;
@@ -2957,6 +3073,7 @@ export type PhoneAction = Action & {
 };
 
 export type PhoneActionInput = {
+  contactAction?: InputMaybe<ContactActionType>;
   countryCode: Scalars['String']['input'];
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
   phone: Scalars['String']['input'];
@@ -3172,6 +3289,14 @@ export type PlaylistItem = {
   videoVariant: VideoVariant;
 };
 
+/** The video variant to add to the playlist. This is used instead of the videoVariantId as clients typically know the video id and language id of the video variant but not the videoVariantId. */
+export type PlaylistItemVideoInput = {
+  /** The language id of the video variant */
+  languageId: Scalars['String']['input'];
+  /** The video id of the video variant */
+  videoId: Scalars['String']['input'];
+};
+
 export type PlaylistUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   note?: InputMaybe<Scalars['String']['input']>;
@@ -3270,6 +3395,8 @@ export type Query = {
   journeyTheme?: Maybe<JourneyTheme>;
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];
+  /** Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information */
+  journeyVisitorExport?: Maybe<Scalars['String']['output']>;
   /** Get a list of Visitor Information by Journey */
   journeyVisitorsConnection: JourneyVisitorsConnection;
   journeys: Array<Journey>;
@@ -3514,6 +3641,13 @@ export type QueryJourneyThemeArgs = {
 
 export type QueryJourneyVisitorCountArgs = {
   filter: JourneyVisitorFilter;
+};
+
+
+export type QueryJourneyVisitorExportArgs = {
+  filter?: InputMaybe<JourneyEventsFilter>;
+  journeyId: Scalars['ID']['input'];
+  select?: InputMaybe<JourneyVisitorExportSelect>;
 };
 
 
