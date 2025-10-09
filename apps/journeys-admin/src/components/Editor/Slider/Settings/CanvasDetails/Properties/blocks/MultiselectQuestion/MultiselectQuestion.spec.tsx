@@ -234,4 +234,48 @@ describe('MultiselectQuestion Properties', () => {
       expect(mockEnableSetsDefaults.result as jest.Mock).toHaveBeenCalled()
     )
   })
+
+  it('clamps max to 1 when user enters 0 and options exist', async () => {
+    const mockClampMaxToOne: MockedResponse = {
+      request: {
+        query: MULTISELECT_BLOCK_UPDATE,
+        variables: {
+          id: selectedBlock.id,
+          input: { max: 1 }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          multiselectBlockUpdate: {
+            __typename: 'MultiselectBlock',
+            id: selectedBlock.id,
+            parentBlockId: selectedBlock.parentBlockId,
+            parentOrder: selectedBlock.parentOrder,
+            min: selectedBlock.min,
+            max: 1
+          }
+        }
+      }))
+    }
+
+    render(
+      <MockedProvider mocks={[mockClampMaxToOne]}>
+        <SnackbarProvider>
+          <EditorProvider initialState={{ selectedBlock }}>
+            <MultiselectQuestion {...selectedBlock} />
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const maxInput = screen.getByRole('spinbutton', {
+      name: 'Max selections'
+    }) as HTMLInputElement
+
+    fireEvent.change(maxInput, { target: { value: '0' } })
+
+    await waitFor(() =>
+      expect(mockClampMaxToOne.result as jest.Mock).toHaveBeenCalled()
+    )
+  })
 })

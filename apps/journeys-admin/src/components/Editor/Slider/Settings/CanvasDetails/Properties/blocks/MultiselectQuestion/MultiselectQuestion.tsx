@@ -132,6 +132,7 @@ export function MultiselectQuestion({
       return
     }
     const optionMax = optionCount > 0 ? optionCount : 0
+    const lowerBound = optionCount > 0 ? 1 : 0
     const clampedLocalMin =
       typeof localMin === 'number'
         ? Math.max(0, Math.min(optionMax, localMin))
@@ -140,7 +141,7 @@ export function MultiselectQuestion({
     if (nextMax < clampedLocalMin) {
       nextMax = clampedLocalMin
     }
-    const clampedMax = Math.max(0, Math.min(optionMax, nextMax))
+    const clampedMax = Math.max(lowerBound, Math.min(optionMax, nextMax))
     setLocalMax(clampedMax)
     if (!limitEnabled) setLimitEnabled(true)
     commitUpdate({ max: clampedMax })
@@ -156,12 +157,26 @@ export function MultiselectQuestion({
       nextMaxRaw !== null &&
       nextMaxRaw !== undefined
 
-    const normalizedMin = bothNumbers
+    let normalizedMin = bothNumbers
       ? Math.min(nextMinRaw as number, nextMaxRaw as number)
       : nextMinRaw
-    const normalizedMax = bothNumbers
+    let normalizedMax = bothNumbers
       ? Math.max(nextMinRaw as number, nextMaxRaw as number)
       : nextMaxRaw
+
+    // Enforce max lower bound of 1 when there are options
+    const optionMax = optionCount > 0 ? optionCount : 0
+    const lowerBound = optionCount > 0 ? 1 : 0
+    if (normalizedMax != null) {
+      normalizedMax = Math.max(lowerBound, Math.min(optionMax, normalizedMax))
+    }
+    if (
+      normalizedMin != null &&
+      normalizedMax != null &&
+      (normalizedMin as number) > (normalizedMax as number)
+    ) {
+      normalizedMin = normalizedMax
+    }
 
     if (normalizedMin === min && normalizedMax === max) return
 
@@ -185,11 +200,15 @@ export function MultiselectQuestion({
   const handleRangeCommit = useCallback(
     (_event: Event, newValue: number | number[]): void => {
       if (!Array.isArray(newValue)) return
-      const [newMin, newMax] = newValue
+      let [newMin, newMax] = newValue
+      const optionMax = optionCount > 0 ? optionCount : 0
+      const lowerBound = optionCount > 0 ? 1 : 0
+      newMax = Math.max(lowerBound, Math.min(optionMax, newMax))
+      if (newMin > newMax) newMin = newMax
       if (newMin === min && newMax === max) return
       commitUpdate({ min: newMin, max: newMax })
     },
-    [commitUpdate, min, max]
+    [commitUpdate, min, max, optionCount]
   )
 
   return (
@@ -232,11 +251,17 @@ export function MultiselectQuestion({
                 // When enabled, set sensible defaults if missing
                 const optionMax = optionCount > 0 ? optionCount : 0
                 const defaultMin = typeof localMin === 'number' ? localMin : 0
-                const defaultMax =
+                let defaultMax =
                   typeof localMax === 'number' ? localMax : optionMax
+                const lowerBound = optionCount > 0 ? 1 : 0
+                defaultMax = Math.max(
+                  lowerBound,
+                  Math.min(optionMax, defaultMax)
+                )
+                const normalizedMin = Math.min(defaultMin, defaultMax)
                 setLocalMin(defaultMin)
                 setLocalMax(defaultMax)
-                commitUpdate({ min: defaultMin, max: defaultMax })
+                commitUpdate({ min: normalizedMin, max: defaultMax })
               }
             }}
             inputProps={{ 'aria-label': t('Set Selection Limit') }}
@@ -251,8 +276,12 @@ export function MultiselectQuestion({
                 const minValue = typeof localMin === 'number' ? localMin : 0
                 const maxValue =
                   typeof localMax === 'number' ? localMax : optionMax
+                const lowerBound = optionCount > 0 ? 1 : 0
                 const clampedMin = Math.max(0, Math.min(minValue, optionMax))
-                const clampedMax = Math.max(0, Math.min(maxValue, optionMax))
+                const clampedMax = Math.max(
+                  lowerBound,
+                  Math.min(maxValue, optionMax)
+                )
                 const orderedMin = Math.min(clampedMin, clampedMax)
                 const orderedMax = Math.max(clampedMin, clampedMax)
                 return [orderedMin, orderedMax]
@@ -316,7 +345,10 @@ export function MultiselectQuestion({
                   input: {
                     inputProps: {
                       '-moz-appearance': 'textfield',
-                      min: typeof localMin === 'number' ? localMin : 0,
+                      min: Math.max(
+                        typeof localMin === 'number' ? localMin : 0,
+                        optionCount > 0 ? 1 : 0
+                      ),
                       max: optionCount > 0 ? optionCount : 0,
                       'aria-label': t('Max selections')
                     }
