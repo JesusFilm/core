@@ -7,8 +7,8 @@ interface BodyTitletProps {
 
 export function BodyTitle({ bodyTitle }: BodyTitletProps): ReactElement {
   return (
-    <Container className="bg-[#EFEFEF] mx-auto px-[60px] pt-[40px] pb-[20px] max-w-[600px]">
-      <Text className="text-[#444451] text-[18px] font-semibold font-['Helvetica'] p-0 m-0">
+    <Container className="mx-auto max-w-[600px] bg-[#EFEFEF] px-[60px] pt-[40px] pb-[20px]">
+      <Text className="m-0 p-0 font-['Helvetica'] text-[18px] font-semibold text-[#444451]">
         {bodyTitle}
       </Text>
     </Container>

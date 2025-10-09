@@ -53,7 +53,7 @@ export function ContainerHero({
 
   return (
     <div
-      className="h-[90vh] md:h-[70vh] w-full flex items-end relative transition-height duration-300 ease-out bg-stone-900 font-sans"
+      className="transition-height relative flex h-[90vh] w-full items-end bg-stone-900 font-sans duration-300 ease-out md:h-[70vh]"
       data-testid="ContainerHero"
     >
       <CollectionsHeader feedbackButtonLabel={feedbackButtonLabel} />
@@ -64,10 +64,10 @@ export function ContainerHero({
 
       <div
         data-testid="ContainerHeroTitleContainer"
-        className="w-full relative flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"
+        className="relative mx-auto flex w-full max-w-[1920px] flex-col pb-4 sm:flex-row"
       >
         <div
-          className="absolute top-0 left-0 right-0 h-full w-full pointer-events-none md:hidden"
+          className="pointer-events-none absolute top-0 right-0 left-0 h-full w-full md:hidden"
           style={{
             backdropFilter: 'brightness(.6) blur(40px)',
             mask: 'linear-gradient(0deg, rgba(2,0,36,1) 46%, rgba(2,0,36,1) 53%, rgba(0,0,0,0) 100%)'
@@ -75,11 +75,11 @@ export function ContainerHero({
         />
         <div
           data-testid="ContainerHeroTitle"
-          className="w-full flex padded pb-4 min-h-[500px] items-end"
+          className="padded flex min-h-[500px] w-full items-end pb-4"
         >
-          <div className="pb-4 sm:pb-0 w-full relative z-[2] flex flex-col">
-            <div className="flex items-center justify-between w-full z-[2]">
-              <h2 className="text-[3.75rem] font-bold text-white opacity-90 mix-blend-screen mb-1 flex-grow">
+          <div className="relative z-[2] flex w-full flex-col pb-4 sm:pb-0">
+            <div className="z-[2] flex w-full items-center justify-between">
+              <h2 className="mb-1 flex-grow text-[3.75rem] font-bold text-white opacity-90 mix-blend-screen">
                 {title}
               </h2>
               <ContainerHeroMuteButton
@@ -89,7 +89,7 @@ export function ContainerHero({
             </div>
 
             <h1
-              className="text-secondary-contrast opacity-50 mix-blend-screen z-[2] uppercase tracking-widest text-white"
+              className="text-secondary-contrast z-[2] tracking-widest text-white uppercase opacity-50 mix-blend-screen"
               data-testid="ContainerHeroDescription"
             >
               {`${descriptionBeforeYear} ${currentYear} ${descriptionAfterYear}`}

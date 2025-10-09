@@ -35,15 +35,15 @@ export function ActionJourneyView({
               <Column align="center">
                 {journey.primaryImageBlock?.src != null ? (
                   <Img
-                    className="rounded-lg mt-[30px]"
+                    className="mt-[30px] rounded-lg"
                     width={160}
                     height={160}
                     src={journey.primaryImageBlock?.src}
                     style={{ objectFit: 'cover' }}
                   />
                 ) : (
-                  <div className="bg-zinc-400 h-[160px] w-[160px] rounded-lg mt-[30px]">
-                    <Text className="font-sans font-bold text-center align-middle text-[#FFFFFF] text-3xl m-[0px] pt-[65px]">
+                  <div className="mt-[30px] h-[160px] w-[160px] rounded-lg bg-zinc-400">
+                    <Text className="m-[0px] pt-[65px] text-center align-middle font-sans text-3xl font-bold text-[#FFFFFF]">
                       {journey?.title.at(0)}
                     </Text>
                   </div>
@@ -53,7 +53,7 @@ export function ActionJourneyView({
             {variant === 'withTeam' && (
               <Row className="px-[28px]">
                 <Column align="center">
-                  <Text className="font-sans font-semibold text-[12px] leading-[16px] text-[#ABADB7] mb-[0px]">
+                  <Text className="mb-[0px] font-sans text-[12px] leading-[16px] font-semibold text-[#ABADB7]">
                     {journey?.team?.title.toUpperCase()}
                   </Text>
                 </Column>
@@ -61,7 +61,7 @@ export function ActionJourneyView({
             )}
             <Row className="px-[28px]">
               <Column align="center">
-                <Text className="font-sans font-semibold text-[20px] text-black visited:text-black leading-[28px]">
+                <Text className="font-sans text-[20px] leading-[28px] font-semibold text-black visited:text-black">
                   {journey.title}
                 </Text>
               </Column>
@@ -70,7 +70,7 @@ export function ActionJourneyView({
         </Column>
       </Row>
       {url != null && buttonText != null && (
-        <Row className="px-[28px] mt-[20px]">
+        <Row className="mt-[20px] px-[28px]">
           <Column align="center">
             <ActionButton url={url} buttonText={buttonText} />
           </Column>

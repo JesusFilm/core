@@ -19,8 +19,8 @@ export function DiscussionQuestions({
   return (
     <div data-testid="ContentDiscussionQuestions">
       <div className="pt-4">
-        <div className="flex flex-wrap items-center justify-between mb-6 px-2 gap-2">
-          <h2 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-2 px-2">
+          <h2 className="text-sm font-semibold tracking-wider text-red-100/70 uppercase xl:text-base 2xl:text-lg">
             {t('Related questions')}
           </h2>
           <a
@@ -32,9 +32,9 @@ export function DiscussionQuestions({
               data-testid="AskQuestionButton"
               aria-label={t('Ask a question')}
               tabIndex={0}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-gray-900 font-bold text-xs uppercase tracking-wider transition-colors duration-200 hover:bg-[#cb333b] hover:text-white cursor-pointer"
+              className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold tracking-wider text-gray-900 uppercase transition-colors duration-200 hover:bg-[#cb333b] hover:text-white"
             >
-              <MessageCircle className="w-4 h-4" />
+              <MessageCircle className="h-4 w-4" />
               {t('Ask yours')}
             </button>
           </a>

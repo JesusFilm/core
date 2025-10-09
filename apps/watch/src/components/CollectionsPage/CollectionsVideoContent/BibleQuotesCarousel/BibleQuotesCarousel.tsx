@@ -87,11 +87,11 @@ export function BibleQuotesCarousel({
           >
             <BibleQuote imageUrl={quote.imageUrl} bgColor={quote.bgColor}>
               {quote.author && (
-                <span className="text-xs font-medium tracking-wider uppercase text-amber-100/60">
+                <span className="text-xs font-medium tracking-wider text-amber-100/60 uppercase">
                   {quote.author}:
                 </span>
               )}
-              <h3 className="text-base text-white/90 text-balance text-lg">
+              <h3 className="text-base text-lg text-balance text-white/90">
                 {quote.text}
               </h3>
             </BibleQuote>
@@ -101,16 +101,16 @@ export function BibleQuotesCarousel({
         {freeResource && (
           <SwiperSlide
             data-testid="BibleQuotesSwiperSlide"
-            className="max-w-[400px] pl-6 pr-10 xl:pl-12"
+            className="max-w-[400px] pr-10 pl-6 xl:pl-12"
           >
             <BibleQuote
               imageUrl={freeResource.imageUrl}
               bgColor={freeResource.bgColor}
             >
-              <span className="text-md tracking-wider uppercase text-white/80">
+              <span className="text-md tracking-wider text-white/80 uppercase">
                 {freeResource.subtitle}
               </span>
-              <h3 className="font-bold text-white/90 text-balance text-2xl mb-4 mt-2">
+              <h3 className="mt-2 mb-4 text-2xl font-bold text-balance text-white/90">
                 {freeResource.title}
               </h3>
               <a
@@ -121,7 +121,7 @@ export function BibleQuotesCarousel({
                   rel="noopener noreferrer"
                   aria-label="Join Bible study"
                   tabIndex={0}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-white/80 transition-colors duration-200 cursor-pointer"
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold tracking-wider text-black uppercase transition-colors duration-200 hover:bg-white/80"
                   onClick={handleShareClick}
                 >
                   <Icon

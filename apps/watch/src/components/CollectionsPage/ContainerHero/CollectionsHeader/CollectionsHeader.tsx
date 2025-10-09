@@ -25,7 +25,7 @@ export function CollectionsHeader({
     <>
       <div
         data-testid="CollectionsHeader"
-        className="absolute top-0 left-0 right-0 w-full h-[100px] lg:h-[200px] max-w-[1920px] mx-auto z-99 flex items-center justify-between padded"
+        className="padded absolute top-0 right-0 left-0 z-99 mx-auto flex h-[100px] w-full max-w-[1920px] items-center justify-between lg:h-[200px]"
       >
         <NextLink href="https://www.jesusfilm.org/watch" locale={false}>
           <Image

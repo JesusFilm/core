@@ -3,7 +3,7 @@ import { ReactElement } from 'react'
 
 export default function Index(): ReactElement {
   return (
-    <div className="h-full max-w-864 m-x-auto m-y-0">
+    <div className="m-x-auto m-y-0 h-full max-w-864">
       <Image
         src="/arclight.png"
         alt="logo"

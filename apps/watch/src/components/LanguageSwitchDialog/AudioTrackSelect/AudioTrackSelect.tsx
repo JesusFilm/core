@@ -104,7 +104,7 @@ export function AudioTrackSelect({
       <div className="flex items-center justify-between">
         <label
           htmlFor="audio-select"
-          className="block text-xl font-medium text-gray-700 ml-7"
+          className="ml-7 block text-xl font-medium text-gray-700"
         >
           {t('Language')}
         </label>

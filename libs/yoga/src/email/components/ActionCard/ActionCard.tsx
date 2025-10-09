@@ -32,10 +32,10 @@ export function ActionCard({
   const textPosition = textAlignment != null ? textAlignment : 'text-center'
 
   return (
-    <Section className="mt-[60px] mb-[15px] max-w-[500px] ">
+    <Section className="mt-[60px] mb-[15px] max-w-[500px]">
       <Container
         align="center"
-        className="w-full bg-[#FFFFFF] pt-[20px] pb-[40px] rounded-lg"
+        className="w-full rounded-lg bg-[#FFFFFF] pt-[20px] pb-[40px]"
       >
         <Section align="center" className="px-[28px]">
           <Row align="center" style={{ marginTop: '-50px' }}>
@@ -46,11 +46,11 @@ export function ActionCard({
                   alt={recipient?.firstName ?? ''}
                   width={64}
                   height={64}
-                  className="rounded-full border-solid border-4 border-[#FFFFFF] shadow-md"
+                  className="rounded-full border-4 border-solid border-[#FFFFFF] shadow-md"
                 />
               ) : (
-                <div className="bg-[#FFFFFF] h-[64px] w-[64px] rounded-full border-solid border-4 border-[#FFFFFF] shadow-md">
-                  <Text className="font-sans font-bold text-[#FFFFFF] text-3xl mt-[14px] mr-[2px]">
+                <div className="h-[64px] w-[64px] rounded-full border-4 border-solid border-[#FFFFFF] bg-[#FFFFFF] shadow-md">
+                  <Text className="mt-[14px] mr-[2px] font-sans text-3xl font-bold text-[#FFFFFF]">
                     👋
                   </Text>
                 </div>
@@ -60,7 +60,7 @@ export function ActionCard({
           <Row>
             <th>
               <Text
-                className={`font-semibold text-[16px] leading-[28px] mt-[12px] mb-[0px] ${textPosition}`}
+                className={`mt-[12px] mb-[0px] text-[16px] leading-[28px] font-semibold ${textPosition}`}
                 style={{
                   font: '16px "Open Sans", sans-serif'
                 }}
@@ -71,7 +71,7 @@ export function ActionCard({
               </Text>
               {headerText != null && (
                 <Text
-                  className={`font-semibold text-[16px] leading-[24px] mt-[0px] mb-[20px] text-center ${textPosition}`}
+                  className={`mt-[0px] mb-[20px] text-center text-[16px] leading-[24px] font-semibold ${textPosition}`}
                   style={{
                     font: '16px "Open Sans", sans-serif'
                   }}
@@ -81,14 +81,14 @@ export function ActionCard({
               )}
               {subHeaderText != null && (
                 <Text
-                  className={`font-semibold text-[20px] leading-[24px] mt-[0px] mb-[20px] text-center ${textPosition}`}
+                  className={`mt-[0px] mb-[20px] text-center text-[20px] leading-[24px] font-semibold ${textPosition}`}
                 >
                   {subHeaderText}
                 </Text>
               )}
               {bodyText != null && (
                 <Text
-                  className={`font-[400] text-[16px] leading-[24px] mt-[0px] mb-[20px] text-center ${textPosition}`}
+                  className={`mt-[0px] mb-[20px] text-center text-[16px] leading-[24px] font-[400] ${textPosition}`}
                 >
                   {bodyText}
                 </Text>

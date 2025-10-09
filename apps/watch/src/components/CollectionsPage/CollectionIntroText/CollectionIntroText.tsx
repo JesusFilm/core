@@ -38,8 +38,8 @@ export function CollectionIntroText({
   locale
 }: CollectionIntroTextProps): ReactElement {
   return (
-    <div className="block relative flex flex-col md:flex-row gap-4 padded pt-8 md:py-8 responsive-container w-full">
-      <div className="w-full flex-1 dates-block 2xl:pr-0 order-last xl:pb-0">
+    <div className="padded responsive-container relative block flex w-full flex-col gap-4 pt-8 md:flex-row md:py-8">
+      <div className="dates-block order-last w-full flex-1 xl:pb-0 2xl:pr-0">
         <EasterDates
           title={easterDatesTitle}
           westernEasterLabel={westernEasterLabel}
@@ -48,8 +48,8 @@ export function CollectionIntroText({
           locale={locale}
         />
       </div>
-      <div className="into-text space-y-6 xl:pr-20 flex-1 pb-8 md:pb-0">
-        <h2 className="text-4xl font-bold mb-0">{title}</h2>
+      <div className="into-text flex-1 space-y-6 pb-8 md:pb-0 xl:pr-20">
+        <h2 className="mb-0 text-4xl font-bold">{title}</h2>
         <p className="text-xl opacity-50">{subtitle}</p>
         <p className="text-xl xl:text-2xl">
           {firstParagraph.beforeHighlight}
@@ -58,8 +58,8 @@ export function CollectionIntroText({
           </span>
           {firstParagraph.afterHighlight}
         </p>
-        <p className="text-xl xl:text-2xl ">{secondParagraph}</p>
-        <p className="text-xl xl:text-2xl ">{thirdParagraph}</p>
+        <p className="text-xl xl:text-2xl">{secondParagraph}</p>
+        <p className="text-xl xl:text-2xl">{thirdParagraph}</p>
       </div>
     </div>
   )

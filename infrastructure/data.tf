@@ -13,11 +13,3 @@ data "aws_ssm_parameter" "doppler_api_languages_prod_token" {
 data "aws_ssm_parameter" "doppler_api_users_prod_token" {
   name = "/terraform/prd/DOPPLER_API_USERS_PROD_TOKEN"
 }
-
-data "aws_ssm_parameter" "doppler_media_transcoder_prod_token" {
-  name = "/terraform/prd/DOPPLER_MEDIA_TRANSCODER_PROD_TOKEN"
-}
-
-data "aws_ssm_parameter" "doppler_media_transcoder_stage_token" {
-  name = "/terraform/prd/DOPPLER_MEDIA_TRANSCODER_STAGE_TOKEN"
-}

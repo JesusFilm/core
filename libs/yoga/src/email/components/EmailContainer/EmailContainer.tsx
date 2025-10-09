@@ -8,7 +8,7 @@ export function EmailContainer({
   children
 }: EmailContainerProps): ReactElement {
   return (
-    <div className="bg-[#EFEFEF] h-full m-0 px-[20px]">
+    <div className="m-0 h-full bg-[#EFEFEF] px-[20px]">
       <div>{children}</div>
     </div>
   )

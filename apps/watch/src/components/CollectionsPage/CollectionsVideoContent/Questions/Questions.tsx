@@ -43,8 +43,8 @@ export const Questions = ({
   return (
     <div className="xl:w-2/5">
       <div className="questions-block pt-16 xl:pt-4">
-        <div className="flex flex-wrap items-center justify-between mb-6 padded">
-          <h4 className="flex items-center gap-4 text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70 flex-shrink-0 py-4">
+        <div className="padded mb-6 flex flex-wrap items-center justify-between">
+          <h4 className="flex flex-shrink-0 items-center gap-4 py-4 text-sm font-semibold tracking-wider text-red-100/70 uppercase xl:text-base 2xl:text-lg">
             {questionsTitle}
           </h4>
 
@@ -58,7 +58,7 @@ export const Questions = ({
               rel="noopener noreferrer"
               aria-label="Ask a question"
               tabIndex={0}
-              className="inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer flex-shrink-0"
+              className="inline-flex flex-shrink-0 cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold tracking-wider text-black uppercase transition-colors duration-200 hover:bg-red-500 hover:text-white"
             >
               <Icon
                 name="MessageCircle"

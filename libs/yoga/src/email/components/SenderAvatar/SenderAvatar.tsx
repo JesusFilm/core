@@ -16,11 +16,11 @@ export function SenderAvatar({ sender }: SenderAvatarProps): ReactElement {
           alt={sender?.firstName}
           width={32}
           height={32}
-          className="rounded-full border-solid border-2 border-[#FFFFFF] shadow-md"
+          className="rounded-full border-2 border-solid border-[#FFFFFF] shadow-md"
         />
       ) : (
-        <div className="bg-zinc-400 h-[32px] w-[32px] rounded-full border-solid border-2 border-[#FFFFFF] shadow-md">
-          <Text className="font-sans font-bold text-[#FFFFFF] m-[5px]">
+        <div className="h-[32px] w-[32px] rounded-full border-2 border-solid border-[#FFFFFF] bg-zinc-400 shadow-md">
+          <Text className="m-[5px] font-sans font-bold text-[#FFFFFF]">
             {sender.firstName.at(0)}
           </Text>
         </div>
