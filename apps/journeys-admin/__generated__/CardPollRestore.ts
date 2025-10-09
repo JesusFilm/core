@@ -301,6 +301,7 @@ export interface CardPollRestore_imageRestore_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardPollRestore_imageRestore_TypographyBlock_settings {
@@ -822,6 +823,7 @@ export interface CardPollRestore_subtitleRestore_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardPollRestore_subtitleRestore_TypographyBlock_settings {
@@ -1343,6 +1345,7 @@ export interface CardPollRestore_titleRestore_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardPollRestore_titleRestore_TypographyBlock_settings {
@@ -1864,6 +1867,7 @@ export interface CardPollRestore_radioQuestionRestore_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardPollRestore_radioQuestionRestore_TypographyBlock_settings {
@@ -2385,6 +2389,7 @@ export interface CardPollRestore_radioOption1Restore_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardPollRestore_radioOption1Restore_TypographyBlock_settings {
@@ -2906,6 +2911,7 @@ export interface CardPollRestore_radioOption2Restore_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardPollRestore_radioOption2Restore_TypographyBlock_settings {
@@ -3427,6 +3433,7 @@ export interface CardPollRestore_radioOption3Restore_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardPollRestore_radioOption3Restore_TypographyBlock_settings {
@@ -3948,6 +3955,7 @@ export interface CardPollRestore_radioOption4Restore_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardPollRestore_radioOption4Restore_TypographyBlock_settings {
@@ -4469,6 +4477,7 @@ export interface CardPollRestore_bodyRestore_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardPollRestore_bodyRestore_TypographyBlock_settings {

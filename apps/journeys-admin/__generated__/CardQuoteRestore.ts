@@ -301,6 +301,7 @@ export interface CardQuoteRestore_image_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardQuoteRestore_image_TypographyBlock_settings {
@@ -822,6 +823,7 @@ export interface CardQuoteRestore_subtitle_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardQuoteRestore_subtitle_TypographyBlock_settings {
@@ -1343,6 +1345,7 @@ export interface CardQuoteRestore_title_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardQuoteRestore_title_TypographyBlock_settings {
@@ -1864,6 +1867,7 @@ export interface CardQuoteRestore_body_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardQuoteRestore_body_TypographyBlock_settings {
