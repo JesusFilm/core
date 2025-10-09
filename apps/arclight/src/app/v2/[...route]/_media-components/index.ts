@@ -4,7 +4,11 @@ import { timeout } from 'hono/timeout'
 import { VideoLabel, prisma as mediaPrisma } from '@core/prisma/media/client'
 
 import { generateCacheKey, getWithStaleCache } from '../../../../lib/cache'
-import { getLanguageDetailsFromTags } from '../../../../lib/getLanguageIdsFromTags'
+import {
+  getLanguageDetailsFromTags,
+  getPreferredContent,
+  getPreferredItems
+} from '../../../../lib/getLanguageIdsFromTags'
 import { getImageUrl } from '../../../../lib/imageHelper'
 
 import { mediaComponent } from './[mediaComponentId]'
@@ -356,25 +360,15 @@ mediaComponents.openapi(route, async (c) => {
           ? false
           : (variant?.downloadable ?? false)
 
-      const getPreferredContent = (
-        contentArray: Array<{ value: string; languageId: string }>
-      ) => {
-        if (!contentArray || contentArray.length === 0) return ''
-
-        const firstRequestedLanguage = metadataLanguages[0]
-        if (firstRequestedLanguage) {
-          const firstLanguageContent = contentArray.find(
-            (item) => item.languageId === firstRequestedLanguage.id
-          )
-          if (firstLanguageContent) {
-            return firstLanguageContent.value
-          }
-        }
-        const availableContent = contentArray.find((item) =>
-          metadataLanguages.some((lang) => lang.id === item.languageId)
-        )
-        return availableContent?.value ?? ''
-      }
+      const titleContent = getPreferredContent(video.title, metadataLanguages)
+      const shortDescriptionContent = getPreferredContent(
+        video.snippet,
+        metadataLanguages
+      )
+      const longDescriptionContent = getPreferredContent(
+        video.description,
+        metadataLanguages
+      )
 
       return {
         mediaComponentId: video.id,
@@ -417,21 +411,18 @@ mediaComponents.openapi(route, async (c) => {
           verseEnd: citation.verseEnd === -1 ? null : citation.verseEnd
         })),
         primaryLanguageId: Number(video.primaryLanguageId),
-        title: getPreferredContent(video.title),
-        shortDescription: getPreferredContent(video.snippet),
-        longDescription: getPreferredContent(video.description),
-        studyQuestions:
-          video.studyQuestions.length > 0
-            ? video.studyQuestions
-                .filter((item) =>
-                  metadataLanguages.some((lang) => lang.id === item.languageId)
-                )
-                .map((item) => item.value)
-            : [],
+        title: titleContent.value,
+        shortDescription: shortDescriptionContent.value,
+        longDescription: longDescriptionContent.value,
+        studyQuestions: getPreferredItems(
+          video.studyQuestions,
+          metadataLanguages
+        ),
         metadataLanguageTag:
-          metadataLanguages.find(
-            (lang) => lang.id === video.title[0]?.languageId
-          )?.bcp47 ?? 'en',
+          titleContent.bcp47 ??
+          longDescriptionContent.bcp47 ??
+          shortDescriptionContent.bcp47 ??
+          'en',
         ...(expand.includes('languageIds')
           ? {
               languageIds: video.availableLanguages.map((languageId) =>
