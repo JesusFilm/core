@@ -957,7 +957,11 @@ builder.mutationFields((t) => ({
       }
 
       // Use shared helper to recalculate and update availableLanguages
-      await updateVideoAvailableLanguages(videoId)
+      try {
+        await updateVideoAvailableLanguages(videoId)
+      } catch (error) {
+        console.error('Language management update error:', error)
+      }
 
       return true
     }
