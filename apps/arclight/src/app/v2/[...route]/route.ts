@@ -1,12 +1,11 @@
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
-import tracer from 'dd-trace'
 import { compress } from 'hono/compress'
 import { etag } from 'hono/etag'
 import { HTTPException } from 'hono/http-exception'
 import { handle } from 'hono/vercel'
 
-import { logger } from '../../../logger'
+import { createTracingMiddleware } from '../../../lib/tracingMiddleware'
 
 import { mediaComponentLinks } from './_media-component-links'
 import { mediaComponents } from './_media-components'
@@ -29,64 +28,7 @@ app.use(
 app.use('*', etag())
 
 // Add Datadog tracing middleware
-app.use('*', async (c, next) => {
-  const span = tracer.startSpan('arclight.v2.api.request', {
-    tags: {
-      'http.method': c.req.method,
-      'http.url': c.req.url,
-      'service.name': 'arclight-v2'
-    }
-  })
-
-  // Log request details
-  logger.info(
-    {
-      method: c.req.method,
-      url: c.req.url,
-      userAgent: c.req.header('user-agent'),
-      ip: c.req.header('x-forwarded-for') || c.req.header('x-real-ip')
-    },
-    'V2 API request received'
-  )
-
-  try {
-    await next()
-    span.setTag('http.status_code', c.res.status)
-
-    // Log successful response
-    logger.info(
-      {
-        method: c.req.method,
-        url: c.req.url,
-        statusCode: c.res.status
-      },
-      'V2 API request completed'
-    )
-
-    span.finish()
-  } catch (error) {
-    span.setTag('error', true)
-    span.setTag(
-      'error.message',
-      error instanceof Error ? error.message : String(error)
-    )
-
-    // Log error with stack trace
-    logger.error(
-      {
-        method: c.req.method,
-        url: c.req.url,
-        error: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-        errorType: error instanceof Error ? error.constructor.name : 'Unknown'
-      },
-      'V2 API request failed'
-    )
-
-    span.finish()
-    throw error
-  }
-})
+app.use('*', createTracingMiddleware('arclight.v2.api.request', 'arclight-v2'))
 
 app.use('*', async (c, next) => {
   await next()
