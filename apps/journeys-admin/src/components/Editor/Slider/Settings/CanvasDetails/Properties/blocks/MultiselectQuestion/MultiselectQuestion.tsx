@@ -110,13 +110,19 @@ export function MultiselectQuestion({
       setLocalMin('')
       return
     }
+    const optionMax = optionCount > 0 ? optionCount : 0
+    const clampedLocalMax =
+      typeof localMax === 'number'
+        ? Math.max(0, Math.min(optionMax, localMax))
+        : optionMax
     let nextMin = parsed as number
-    if (typeof localMax === 'number' && nextMin > localMax) {
-      nextMin = localMax
+    if (nextMin > clampedLocalMax) {
+      nextMin = clampedLocalMax
     }
-    setLocalMin(nextMin)
+    const clampedMin = Math.max(0, Math.min(optionMax, nextMin))
+    setLocalMin(clampedMin)
     if (!limitEnabled) setLimitEnabled(true)
-    commitUpdate({ min: nextMin })
+    commitUpdate({ min: clampedMin })
   }
 
   function handleMaxChange(value: string): void {
@@ -125,13 +131,19 @@ export function MultiselectQuestion({
       setLocalMax('')
       return
     }
+    const optionMax = optionCount > 0 ? optionCount : 0
+    const clampedLocalMin =
+      typeof localMin === 'number'
+        ? Math.max(0, Math.min(optionMax, localMin))
+        : 0
     let nextMax = parsed as number
-    if (typeof localMin === 'number' && nextMax < localMin) {
-      nextMax = localMin
+    if (nextMax < clampedLocalMin) {
+      nextMax = clampedLocalMin
     }
-    setLocalMax(nextMax)
+    const clampedMax = Math.max(0, Math.min(optionMax, nextMax))
+    setLocalMax(clampedMax)
     if (!limitEnabled) setLimitEnabled(true)
-    commitUpdate({ max: nextMax })
+    commitUpdate({ max: clampedMax })
   }
 
   const handleBlurCommit = useCallback(() => {
