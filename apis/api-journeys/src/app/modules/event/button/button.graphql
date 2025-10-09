@@ -3,7 +3,6 @@ enum ButtonAction {
   LinkAction
   EmailAction
   PhoneAction
-  ChatAction
 }
 
 type ButtonClickEvent implements Event @shareable {
