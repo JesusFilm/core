@@ -74,6 +74,12 @@ export async function getLanguageIdsFromTags(
   return { metadataLanguageId, fallbackLanguageId }
 }
 
+/**
+ * Selects language records matching the provided BCP47 tags and returns their ids and tags in preference order.
+ *
+ * @param metadataLanguageTags - Preferred language tags (first is primary, second is optional). The first tag may be canonicalized before lookup.
+ * @returns An array of objects with `id` and `bcp47` for found languages, ordered to match the preference of the input tags; returns an empty array if `metadataLanguageTags` is empty.
+ */
 export async function getLanguageDetailsFromTags(
   metadataLanguageTags: string[]
 ): Promise<Array<{ id: string; bcp47: string | null }>> {
@@ -116,8 +122,11 @@ type LanguageDetail = {
 }
 
 /**
- * Get a single content item (like title or description) in the preferred language
- * with fallback to other available languages. Returns the value and language metadata.
+ * Selects the best content string for a field based on preferred languages, falling back to other available languages.
+ *
+ * @param contentArray - Array of content items with their language ids.
+ * @param metadataLanguages - Ordered language details where the first entry is the primary preference.
+ * @returns The selected content and its language metadata: `value` is the text (empty if none), `languageId` is the source language id or `null`, and `bcp47` is the corresponding BCP-47 tag or `null`.
  */
 export function getPreferredContent(
   contentArray: ContentItem[],
@@ -157,8 +166,11 @@ export function getPreferredContent(
 }
 
 /**
- * Get all items (like study questions) in the preferred language
- * with fallback to other available languages
+ * Selects item values in the preferred language, falling back to values from any other available metadata languages.
+ *
+ * @param itemArray - Array of content items to select values from
+ * @param metadataLanguages - Language details ordered by preference; the first entry is treated as the primary language
+ * @returns `string[]` of values matching the primary language if any exist, otherwise values whose `languageId` appears in `metadataLanguages`, or an empty array
  */
 export function getPreferredItems(
   itemArray: ContentItem[],
