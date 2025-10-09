@@ -99,6 +99,7 @@ export async function getLanguageDetailsFromTags(
   return languages.sort((a, b) => {
     const indexA = neededBcp47Tags.indexOf(a.bcp47 ?? '')
     const indexB = neededBcp47Tags.indexOf(b.bcp47 ?? '')
+    if (indexA === -1 && indexB === -1) return 0
     if (indexA === -1) return 1
     if (indexB === -1) return -1
     return indexA - indexB
