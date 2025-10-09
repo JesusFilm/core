@@ -151,13 +151,19 @@ export function getPreferredContent(
     }
   }
 
-  const fallbackContent = contentArray.find((item) =>
-    metadataLanguages.some((lang) => lang.id === item.languageId)
-  )
+  let fallbackContent: ContentItem | undefined
+  let fallbackLang: LanguageDetail | undefined
 
-  const fallbackLang = metadataLanguages.find(
-    (lang) => lang.id === fallbackContent?.languageId
-  )
+  for (const lang of metadataLanguages) {
+    const matchingContent = contentArray.find(
+      (item) => item.languageId === lang.id
+    )
+    if (matchingContent) {
+      fallbackContent = matchingContent
+      fallbackLang = lang
+      break
+    }
+  }
 
   return {
     value: fallbackContent?.value ?? '',
