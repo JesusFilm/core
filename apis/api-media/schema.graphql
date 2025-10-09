@@ -243,6 +243,7 @@ type Mutation {
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
   videoDelete(id: ID!): Video!
+  fixVideoLanguages(videoId: ID!): Boolean!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
   videoDescriptionUpdate(input: VideoTranslationUpdateInput!): VideoDescription!
   videoDescriptionDelete(id: ID!): VideoDescription!
