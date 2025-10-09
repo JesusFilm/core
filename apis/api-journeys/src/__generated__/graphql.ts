@@ -127,6 +127,7 @@ export type Browser = {
 };
 
 export enum ButtonAction {
+  ChatAction = 'ChatAction',
   EmailAction = 'EmailAction',
   LinkAction = 'LinkAction',
   NavigateToBlockAction = 'NavigateToBlockAction',
