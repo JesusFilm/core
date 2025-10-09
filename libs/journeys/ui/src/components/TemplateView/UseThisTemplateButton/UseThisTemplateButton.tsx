@@ -46,7 +46,7 @@ export function UseThisTemplateButton({
       {
         pathname: `${domain}/users/sign-in`,
         query: {
-          redirect: url.includes('createNew') ? url : `${url}?createNew=true`,
+          redirect: `${url}/customize`,
           login: login ?? false
         }
       },
