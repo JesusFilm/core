@@ -6,6 +6,8 @@ import { etag } from 'hono/etag'
 import { HTTPException } from 'hono/http-exception'
 import { handle } from 'hono/vercel'
 
+import { logger } from '../../../logger'
+
 import { mediaComponentLinks } from './_media-component-links'
 import { mediaComponents } from './_media-components'
 import { mediaCountries } from './_media-countries'
@@ -37,15 +39,14 @@ app.use('*', async (c, next) => {
   })
 
   // Log request details
-  console.log(
-    JSON.stringify({
-      level: 'info',
+  logger.info(
+    {
       method: c.req.method,
       url: c.req.url,
       userAgent: c.req.header('user-agent'),
-      ip: c.req.header('x-forwarded-for') || c.req.header('x-real-ip'),
-      msg: 'V2 API request received'
-    })
+      ip: c.req.header('x-forwarded-for') || c.req.header('x-real-ip')
+    },
+    'V2 API request received'
   )
 
   try {
@@ -53,14 +54,13 @@ app.use('*', async (c, next) => {
     span.setTag('http.status_code', c.res.status)
 
     // Log successful response
-    console.log(
-      JSON.stringify({
-        level: 'info',
+    logger.info(
+      {
         method: c.req.method,
         url: c.req.url,
-        statusCode: c.res.status,
-        msg: 'V2 API request completed'
-      })
+        statusCode: c.res.status
+      },
+      'V2 API request completed'
     )
 
     span.finish()
@@ -72,16 +72,15 @@ app.use('*', async (c, next) => {
     )
 
     // Log error with stack trace
-    console.log(
-      JSON.stringify({
-        level: 'error',
+    logger.error(
+      {
         method: c.req.method,
         url: c.req.url,
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
-        errorType: error instanceof Error ? error.constructor.name : 'Unknown',
-        msg: 'V2 API request failed'
-      })
+        errorType: error instanceof Error ? error.constructor.name : 'Unknown'
+      },
+      'V2 API request failed'
     )
 
     span.finish()

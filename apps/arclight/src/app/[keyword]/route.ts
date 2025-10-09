@@ -8,6 +8,7 @@ import { ResultOf, graphql } from '@core/shared/gql'
 import { getApolloClient } from '../../lib/apolloClient'
 import { getBrightcoveUrl } from '../../lib/brightcove'
 import { getClientIp, setCorsHeaders } from '../../lib/redirectUtils'
+import { logger } from '../../logger'
 
 export const GET_SHORT_LINK_QUERY = graphql(`
   query GetShortLinkQuery($hostname: String!, $pathname: String!) {
@@ -38,17 +39,14 @@ app.use('*', async (c, next) => {
   })
 
   // Log request details
-  console.log(
-    JSON.stringify({
-      level: 'info',
+  logger.info(
+    {
       method: c.req.method,
       url: c.req.url,
       userAgent: c.req.header('user-agent'),
-      ip: c.req.header('x-forwarded-for') || c.req.header('x-real-ip'),
-      msg: 'Keyword request received',
-      testCorrelation:
-        'This log should have dd.trace_id and dd.span_id added automatically'
-    })
+      ip: c.req.header('x-forwarded-for') || c.req.header('x-real-ip')
+    },
+    'Keyword request received'
   )
 
   try {
@@ -56,14 +54,13 @@ app.use('*', async (c, next) => {
     span.setTag('http.status_code', c.res.status)
 
     // Log successful response
-    console.log(
-      JSON.stringify({
-        level: 'info',
+    logger.info(
+      {
         method: c.req.method,
         url: c.req.url,
-        statusCode: c.res.status,
-        msg: 'Keyword request completed'
-      })
+        statusCode: c.res.status
+      },
+      'Keyword request completed'
     )
 
     span.finish()
@@ -75,16 +72,15 @@ app.use('*', async (c, next) => {
     )
 
     // Log error with stack trace
-    console.log(
-      JSON.stringify({
-        level: 'error',
+    logger.error(
+      {
         method: c.req.method,
         url: c.req.url,
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
-        errorType: error instanceof Error ? error.constructor.name : 'Unknown',
-        msg: 'Keyword request failed'
-      })
+        errorType: error instanceof Error ? error.constructor.name : 'Unknown'
+      },
+      'Keyword request failed'
     )
 
     span.finish()
