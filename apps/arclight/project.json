@@ -10,7 +10,7 @@
       "options": {
         "commands": [
           "cp -r libs/locales apps/arclight/public",
-          "nx _build arclight",
+          "NODE_OPTIONS='--require dd-trace/init' nx _build arclight",
           "cp apps/arclight/next-logger.config.js dist/apps/arclight/next-logger.config.js"
         ],
         "parallel": false
@@ -19,7 +19,7 @@
         "production": {
           "commands": [
             "cp -r libs/locales apps/arclight/public",
-            "CI=true nx _build arclight --prod",
+            "CI=true NODE_OPTIONS='--require dd-trace/init' nx _build arclight --prod",
             "cp apps/arclight/next-logger.config.js dist/apps/arclight/next-logger.config.js"
           ]
         }
@@ -42,7 +42,7 @@
           "VERCEL_PROJECT_ID=$ARCLIGHT_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=preview --token=$VERCEL_TOKEN",
           "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.preview.local",
           "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.preview.local",
-          "pnpm exec vercel build",
+          "NODE_OPTIONS='--require dd-trace/init' pnpm exec vercel build",
           "VERCEL_PROJECT_ID=$ARCLIGHT_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/arclight/.vercel-url"
         ],
         "parallel": false
@@ -53,7 +53,7 @@
             "VERCEL_PROJECT_ID=$ARCLIGHT_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=production --token=$VERCEL_TOKEN",
             "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.production.local",
             "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.production.local",
-            "pnpm exec vercel build --prod",
+            "NODE_OPTIONS='--require dd-trace/init' pnpm exec vercel build --prod",
             "VERCEL_PROJECT_ID=$ARCLIGHT_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/arclight/.vercel-url"
           ]
         }
@@ -84,16 +84,19 @@
       "options": {
         "buildTarget": "arclight:_build",
         "dev": true,
-        "port": 4600
+        "port": 4600,
+        "nodeOptions": "--require dd-trace/init"
       },
       "configurations": {
         "development": {
           "buildTarget": "arclight:_build:development",
-          "dev": true
+          "dev": true,
+          "nodeOptions": "--require dd-trace/init"
         },
         "production": {
           "buildTarget": "arclight:_build:production",
-          "dev": false
+          "dev": false,
+          "nodeOptions": "--require dd-trace/init"
         }
       }
     },
