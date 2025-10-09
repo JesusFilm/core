@@ -586,7 +586,7 @@ builder.mutationFields((t) => ({
             currentVariant.languageId
           )
         }
-        
+
         // Cascade update to parent collections
         await updateParentCollectionLanguages(currentVariant.videoId)
       }
@@ -718,7 +718,7 @@ builder.mutationFields((t) => ({
 
       // Update availableLanguages array when variant is deleted
       await removeLanguageFromVideoIfUnused(videoId, languageId)
-      
+
       // Cascade update to parent collections
       await updateParentCollectionLanguages(videoId)
 

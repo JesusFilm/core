@@ -570,7 +570,7 @@ builder.queryFields((t) => ({
     },
     resolve: async (query, _parent, { offset, limit, where }, context) => {
       const filter = videosFilter(where ?? {})
-      
+
       // Public query: only show published videos with available languages
       filter.published = true
       filter.availableLanguages = { isEmpty: false }
@@ -598,7 +598,7 @@ builder.queryFields((t) => ({
     nullable: false,
     resolve: async (_parent, { where }, context) => {
       const filter = videosFilter(where ?? {})
-      
+
       // Public query: only show published videos with available languages
       filter.published = true
       filter.availableLanguages = { isEmpty: false }
