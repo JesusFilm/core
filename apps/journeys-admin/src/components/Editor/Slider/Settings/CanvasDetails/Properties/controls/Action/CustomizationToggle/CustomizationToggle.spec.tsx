@@ -39,6 +39,7 @@ describe('CustomizationToggle', () => {
       parentBlockId: 'journeyId',
       parentOrder: 0,
       locked: false,
+      nextBlockId: null,
       slug: 'slug'
     } as unknown as TreeBlock<StepBlock>
 
@@ -65,6 +66,7 @@ describe('CustomizationToggle', () => {
       parentBlockId: 'journeyId',
       parentOrder: 0,
       locked: false,
+      nextBlockId: null,
       slug: 'slug'
     } as unknown as TreeBlock<StepBlock>
 
@@ -95,6 +97,7 @@ describe('CustomizationToggle', () => {
       parentBlockId: 'journeyId',
       parentOrder: 0,
       locked: false,
+      nextBlockId: null,
       slug: 'slug'
     } as unknown as TreeBlock<StepBlock>
 
@@ -134,6 +137,7 @@ describe('CustomizationToggle', () => {
       parentBlockId: 'journeyId',
       parentOrder: 0,
       locked: false,
+      nextBlockId: null,
       slug: 'slug'
     } as unknown as TreeBlock<StepBlock>
 
@@ -146,7 +150,7 @@ describe('CustomizationToggle', () => {
     const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
     fireEvent.click(toggle)
 
-    expect(mockAddAction).toHaveBeenCalledWith(
+    expect(addAction).toHaveBeenCalledWith(
       expect.objectContaining({
         blockId: 'button-3',
         action: expect.objectContaining({
@@ -184,6 +188,7 @@ describe('CustomizationToggle', () => {
       parentBlockId: 'journeyId',
       parentOrder: 0,
       locked: false,
+      nextBlockId: null,
       slug: 'slug'
     } as unknown as TreeBlock<StepBlock>
 
@@ -196,7 +201,7 @@ describe('CustomizationToggle', () => {
     const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
     fireEvent.click(toggle)
 
-    expect(mockAddAction).toHaveBeenCalledWith(
+    expect(addAction).toHaveBeenCalledWith(
       expect.objectContaining({
         blockId: 'button-4',
         action: expect.objectContaining({
@@ -227,7 +232,10 @@ describe('CustomizationToggle', () => {
     const selectedStep = {
       id: 'step-5',
       __typename: 'StepBlock',
+      parentBlockId: 'journeyId',
+      parentOrder: 0,
       locked: false,
+      nextBlockId: null,
       slug: 'slug'
     } as unknown as TreeBlock<StepBlock>
 
@@ -242,6 +250,10 @@ describe('CustomizationToggle', () => {
   })
 
   it('handles toggle change for PhoneAction', () => {
+    // Clear any previous mock overrides and restore the global mock
+    jest.clearAllMocks()
+    jest.restoreAllMocks()
+
     const selectedBlock = {
       id: 'button-6',
       __typename: 'ButtonBlock',
@@ -252,14 +264,18 @@ describe('CustomizationToggle', () => {
         phone: '+1234567890',
         countryCode: 'US',
         contactAction: ContactActionType.call,
-        customizable: false
+        customizable: false,
+        parentStepId: 'step-6'
       }
     } as unknown as TreeBlock<ButtonBlock>
 
     const selectedStep = {
       id: 'step-6',
       __typename: 'StepBlock',
+      parentBlockId: 'journeyId',
+      parentOrder: 0,
       locked: false,
+      nextBlockId: null,
       slug: 'slug'
     } as unknown as TreeBlock<StepBlock>
 

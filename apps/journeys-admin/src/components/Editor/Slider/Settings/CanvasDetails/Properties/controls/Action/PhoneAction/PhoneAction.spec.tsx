@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { BlockFields_StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
 
 import {
   ButtonColor,
@@ -44,21 +45,22 @@ describe('PhoneAction', () => {
       phone: '+1234567890',
       countryCode: 'US',
       contactAction: ContactActionType.call,
-      customizable: false
+      customizable: false,
+      parentStepId: 'step1.id'
     },
     children: [],
     settings: null
   }
 
-  const selectedStep: TreeBlock = {
+  const selectedStep: TreeBlock<BlockFields_StepBlock> = {
     __typename: 'StepBlock',
     id: 'step1.id',
     parentBlockId: null,
     parentOrder: 0,
     locked: false,
+    nextBlockId: null,
     slug: 'step-1',
-    children: [],
-    settings: null
+    children: []
   }
 
   it('displays the country code and phone number', async () => {
@@ -225,7 +227,9 @@ describe('PhoneAction', () => {
           input: {
             phone: '+1234567890',
             countryCode: 'US',
-            contactAction: ContactActionType.text
+            contactAction: ContactActionType.text,
+            customizable: false,
+            parentStepId: 'step1.id'
           }
         }
       },
@@ -237,7 +241,9 @@ describe('PhoneAction', () => {
             gtmEventName: null,
             phone: '+1234567890',
             countryCode: 'US',
-            contactAction: ContactActionType.text
+            contactAction: ContactActionType.text,
+            customizable: false,
+            parentStepId: 'step1.id'
           }
         }
       }
@@ -267,7 +273,9 @@ describe('PhoneAction', () => {
         gtmEventName: 'gtmEventName',
         phone: '',
         countryCode: 'US',
-        contactAction: ContactActionType.call
+        contactAction: ContactActionType.call,
+        customizable: false,
+        parentStepId: 'step1.id'
       }
     }
 
@@ -316,7 +324,9 @@ describe('PhoneAction', () => {
         gtmEventName: 'gtmEventName',
         phone: '',
         countryCode: 'US',
-        contactAction: ContactActionType.call
+        contactAction: ContactActionType.call,
+        customizable: false,
+        parentStepId: 'step1.id'
       }
     }
 
@@ -352,7 +362,9 @@ describe('PhoneAction', () => {
         gtmEventName: 'gtmEventName',
         phone: '',
         countryCode: 'US',
-        contactAction: ContactActionType.call
+        contactAction: ContactActionType.call,
+        customizable: false,
+        parentStepId: 'step1.id'
       }
     }
 
