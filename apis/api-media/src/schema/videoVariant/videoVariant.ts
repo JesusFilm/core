@@ -479,9 +479,11 @@ builder.mutationFields((t) => ({
           version: input.version ?? undefined
         }
       })
-      // Update video's availableLanguages and cascade to parent collections
-      await addLanguageToVideo(newVariant.videoId, newVariant.languageId)
-      await updateParentCollectionLanguages(newVariant.videoId)
+      // Update video's availableLanguages and cascade to parent collections only for published variants
+      if (newVariant.published) {
+        await addLanguageToVideo(newVariant.videoId, newVariant.languageId)
+        await updateParentCollectionLanguages(newVariant.videoId)
+      }
 
       // Handle parent variant creation for child videos
       try {
