@@ -1609,6 +1609,7 @@ export type Mutation = {
   deleteCloudflareImage: Scalars['Boolean']['output'];
   deleteMuxVideo: Scalars['Boolean']['output'];
   enableMuxDownload?: Maybe<MuxVideo>;
+  fixVideoLanguages: Scalars['Boolean']['output'];
   hostCreate: Host;
   hostDelete: Host;
   hostUpdate: Host;
@@ -2054,6 +2055,11 @@ export type MutationDeleteMuxVideoArgs = {
 export type MutationEnableMuxDownloadArgs = {
   id: Scalars['ID']['input'];
   resolution?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationFixVideoLanguagesArgs = {
+  videoId: Scalars['ID']['input'];
 };
 
 
