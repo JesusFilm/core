@@ -216,22 +216,12 @@ export type ButtonClickEvent = Event & {
 };
 
 export type ButtonClickEventCreateInput = {
-  /** Action type of the button when it was clicked */
   action?: InputMaybe<ButtonAction>;
-  /**
-   * The label for each corresponding action, mapping below:
-   * NavigateToBlockAction - StepName (generated in client) of the StepBlock
-   * LinkAction - url of the link
-   */
   actionValue?: InputMaybe<Scalars['String']['input']>;
   blockId: Scalars['ID']['input'];
-  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
-  /** stepName of the parent stepBlock */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
-  /** label of the button */
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1221,6 +1211,7 @@ export type JourneyVisitor = {
    * link action button. Populated by ButtonClickEvent
    */
   lastLinkAction?: Maybe<Scalars['String']['output']>;
+  lastMultiselectSubmission?: Maybe<Scalars['String']['output']>;
   /**
    * The selected option  of the last radio option the visitor filled out,
    * populated by RadioQuestionSubmission mutation
@@ -1263,10 +1254,18 @@ export type JourneyVisitorEdge = {
   node: JourneyVisitor;
 };
 
+export type JourneyVisitorExportSelect = {
+  createdAt?: InputMaybe<Scalars['Boolean']['input']>;
+  email?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['Boolean']['input']>;
+  phone?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type JourneyVisitorFilter = {
   countryCode?: InputMaybe<Scalars['String']['input']>;
   hasChatStarted?: InputMaybe<Scalars['Boolean']['input']>;
   hasIcon?: InputMaybe<Scalars['Boolean']['input']>;
+  hasMultiselectSubmission?: InputMaybe<Scalars['Boolean']['input']>;
   hasPollAnswers?: InputMaybe<Scalars['Boolean']['input']>;
   hasTextResponse?: InputMaybe<Scalars['Boolean']['input']>;
   hideInactive?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1507,10 +1506,14 @@ export type MultiselectOptionBlockUpdateInput = {
 
 export type MultiselectSubmissionEvent = Event & {
   __typename?: 'MultiselectSubmissionEvent';
+  /** time event was created */
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  /** ID of the journey that the multiselect block belongs to */
   journeyId: Scalars['ID']['output'];
+  /** stepName of the parent stepBlock */
   label?: Maybe<Scalars['String']['output']>;
+  /** comma separated selected option labels */
   value?: Maybe<Scalars['String']['output']>;
 };
 
@@ -3380,6 +3383,8 @@ export type Query = {
   journeyTheme?: Maybe<JourneyTheme>;
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];
+  /** Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information */
+  journeyVisitorExport?: Maybe<Scalars['String']['output']>;
   /** Get a list of Visitor Information by Journey */
   journeyVisitorsConnection: JourneyVisitorsConnection;
   journeys: Array<Journey>;
@@ -3624,6 +3629,13 @@ export type QueryJourneyThemeArgs = {
 
 export type QueryJourneyVisitorCountArgs = {
   filter: JourneyVisitorFilter;
+};
+
+
+export type QueryJourneyVisitorExportArgs = {
+  filter?: InputMaybe<JourneyEventsFilter>;
+  journeyId: Scalars['ID']['input'];
+  select?: InputMaybe<JourneyVisitorExportSelect>;
 };
 
 

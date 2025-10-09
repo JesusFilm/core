@@ -57,7 +57,8 @@ export const TextResponse = ({
   hint,
   minRows,
   type,
-  required
+  required,
+  hideLabel
 }: TextResponseProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
   const [value, setValue] = useState('')
@@ -119,6 +120,16 @@ export const TextResponse = ({
     }
   }
 
+  const helperText = (() => {
+    if (resolvedHint != null && resolvedHint.trim() !== '') {
+      return resolvedHint
+    }
+    if (required && (hideLabel || resolvedLabel.trim() === '')) {
+      return t('This field is required.')
+    }
+    return ''
+  })()
+
   return (
     <Box sx={{ mb: 4 }} data-testid="JourneysTextResponse">
       <Stack
@@ -126,24 +137,26 @@ export const TextResponse = ({
         flexDirection="column"
         spacing={1}
       >
-        <Typography
-          id={`textResponse-label-${blockId}`}
-          variant="subtitle2"
-          sx={{
-            fontSize: 14,
-            fontWeight: 500,
-            fontFamily: theme.typography.button.fontFamily
-          }}
-        >
-          {resolvedLabel.trim() === '' ? t('Label') : resolvedLabel}
-          {(required ?? false) ? '*' : ''}
-        </Typography>
+        {hideLabel !== true && (
+          <Typography
+            id={`textResponse-label-${blockId}`}
+            variant="subtitle2"
+            sx={{
+              fontSize: 14,
+              fontWeight: 500,
+              fontFamily: theme.typography.button.fontFamily
+            }}
+          >
+            {resolvedLabel.trim() === '' ? t('Label') : resolvedLabel}
+            {(required ?? false) ? '*' : ''}
+          </Typography>
+        )}
         <TextField
           id={`textResponse-field`}
           name={blockId}
           placeholder={trimmedPlaceholder}
           value={currentValue}
-          helperText={resolvedHint != null ? resolvedHint : ''}
+          helperText={helperText}
           multiline
           disabled={isSubmitting}
           minRows={minRows ?? 1}
