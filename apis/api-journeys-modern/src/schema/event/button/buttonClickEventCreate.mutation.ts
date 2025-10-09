@@ -8,9 +8,6 @@ import { ButtonClickEventCreateInput } from './inputs'
 
 builder.mutationField('buttonClickEventCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    override: {
-      from: 'api-journeys'
-    },
     nullable: false,
     type: ButtonClickEventRef,
     args: {
