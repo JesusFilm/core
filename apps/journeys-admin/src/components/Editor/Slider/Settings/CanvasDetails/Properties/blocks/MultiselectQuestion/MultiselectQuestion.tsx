@@ -170,6 +170,9 @@ export function MultiselectQuestion({
     if (normalizedMax != null) {
       normalizedMax = Math.max(lowerBound, Math.min(optionMax, normalizedMax))
     }
+    if (normalizedMin != null) {
+      normalizedMin = Math.max(0, Math.min(optionMax, normalizedMin as number))
+    }
     if (
       normalizedMin != null &&
       normalizedMax != null &&
@@ -185,7 +188,7 @@ export function MultiselectQuestion({
     setLocalMax(normalizedMax ?? '')
 
     commitUpdate({ min: normalizedMin, max: normalizedMax })
-  }, [commitUpdate, localMin, localMax, min, max])
+  }, [commitUpdate, localMin, localMax, min, max, optionCount])
 
   const handleRangeChange = useCallback(
     (_event: Event, newValue: number | number[]): void => {

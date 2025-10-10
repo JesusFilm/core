@@ -6,6 +6,7 @@ import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import type { TreeBlock } from '@core/journeys/ui/block'
 
 import {
   deleteCardBlockMock,
@@ -330,22 +331,6 @@ describe('useBlockDeleteCommand', () => {
       children: [card]
     }
 
-    const multiselectUpdateDoc = gql`
-      mutation MultiselectBlockUpdate(
-        $id: ID!
-        $input: MultiselectBlockUpdateInput!
-      ) {
-        multiselectBlockUpdate(id: $id, input: $input) {
-          __typename
-          id
-          parentBlockId
-          parentOrder
-          min
-          max
-        }
-      }
-    `
-
     const blockDeleteMockResult = jest.fn(() => ({
       data: {
         blockDelete: [
@@ -357,7 +342,6 @@ describe('useBlockDeleteCommand', () => {
         ]
       }
     }))
-    const multiselectUpdateMockResult = jest.fn(() => ({ data: {} }))
 
     const { result } = renderHook(() => useBlockDeleteCommand(), {
       wrapper: ({ children }) => (
