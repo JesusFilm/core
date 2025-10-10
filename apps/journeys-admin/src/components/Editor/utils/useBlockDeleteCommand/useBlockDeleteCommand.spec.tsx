@@ -26,7 +26,7 @@ import {
   BlockFields_StepBlock as StepBlock,
   BlockFields_MultiselectBlock as MultiselectBlock,
   BlockFields_MultiselectOptionBlock as MultiselectOptionBlock
-} from '../../../../__generated__/BlockFields'
+} from '../../../../../__generated__/BlockFields'
 import { BLOCK_DELETE } from '../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation'
 
 describe('useBlockDeleteCommand', () => {
