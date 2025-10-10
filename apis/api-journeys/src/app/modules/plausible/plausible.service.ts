@@ -1,10 +1,4 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  NormalizedCacheObject,
-  createHttpLink,
-  gql
-} from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache, gql } from '@apollo/client'
 import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable, OnModuleInit } from '@nestjs/common'
 import axios, { AxiosInstance } from 'axios'
@@ -125,7 +119,7 @@ interface PlausibleAPIStatsAggregateResponse {
 
 @Injectable()
 export class PlausibleService implements OnModuleInit {
-  client: ApolloClient<NormalizedCacheObject>
+  client: ApolloClient
   plausibleClient: AxiosInstance
 
   constructor(
@@ -133,7 +127,7 @@ export class PlausibleService implements OnModuleInit {
     private readonly plausibleQueue: Queue<PlausibleJob>,
     private readonly prismaService: PrismaService
   ) {
-    const httpLink = createHttpLink({
+    const httpLink = new HttpLink({
       uri: process.env.GATEWAY_URL,
       fetch,
       headers: {
@@ -144,7 +138,11 @@ export class PlausibleService implements OnModuleInit {
     })
     this.client = new ApolloClient({
       link: httpLink,
-      cache: new InMemoryCache()
+      cache: new InMemoryCache(),
+      clientAwareness: {
+        name: 'api-journeys',
+        version: process.env.SERVICE_VERSION ?? ''
+      }
     })
 
     this.plausibleClient = axios.create({
@@ -231,7 +229,7 @@ export class PlausibleService implements OnModuleInit {
   async createSite(
     domain: string
   ): Promise<MutationSiteCreateResult | undefined> {
-    const { data } = await this.client.mutate({
+    const { data } = await this.client.mutate<any>({
       mutation: SITE_CREATE,
       variables: {
         input: {

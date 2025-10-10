@@ -1,4 +1,5 @@
-import { OperationVariables, QueryResult, gql, useQuery } from '@apollo/client'
+import { OperationVariables, gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import { sendGTMEvent } from '@next/third-parties/google'
 import {
   ReactElement,
@@ -14,7 +15,7 @@ import {
 } from './__generated__/GetLastActiveTeamIdAndTeams'
 
 interface Context {
-  query: QueryResult<GetLastActiveTeamIdAndTeams, OperationVariables>
+  query: useQuery.Result<GetLastActiveTeamIdAndTeams, OperationVariables>
   /** activeTeam is null if loaded and set intentionally */
   activeTeam: Team | null | undefined
   setActiveTeam: (team: Team | null) => void

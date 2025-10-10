@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
+import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
@@ -19,20 +20,21 @@ describe('AccessDenied', () => {
       query: { journeyId: 'mockedJourneyId' }
     } as unknown as NextRouter)
 
-    const mockUserJourneyRequest: MockedResponse<UserJourneyRequest> = {
-      request: {
-        query: USER_JOURNEY_REQUEST,
-        variables: { journeyId: 'mockedJourneyId' }
-      },
-      result: jest.fn(() => ({
-        data: {
-          userJourneyRequest: {
-            id: 'mockedJourneyId',
-            __typename: 'UserJourney'
+    const mockUserJourneyRequest: MockLink.MockedResponse<UserJourneyRequest> =
+      {
+        request: {
+          query: USER_JOURNEY_REQUEST,
+          variables: { journeyId: 'mockedJourneyId' }
+        },
+        result: jest.fn(() => ({
+          data: {
+            userJourneyRequest: {
+              id: 'mockedJourneyId',
+              __typename: 'UserJourney'
+            }
           }
-        }
-      }))
-    }
+        }))
+      }
 
     const { getAllByRole } = render(
       <MockedProvider mocks={[mockUserJourneyRequest]}>

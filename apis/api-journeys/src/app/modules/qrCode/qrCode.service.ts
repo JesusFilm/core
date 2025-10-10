@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { Injectable } from '@nestjs/common'
 import { graphql } from 'gql.tada'
 import { GraphQLError } from 'graphql'
@@ -15,7 +15,7 @@ import {
 } from '../../../__generated__/graphql'
 import { PrismaService } from '../../lib/prisma.service'
 
-const httpLink = createHttpLink({
+const httpLink = new HttpLink({
   uri: process.env.GATEWAY_URL,
   headers: {
     'interop-token': process.env.INTEROP_TOKEN ?? '',
@@ -117,12 +117,16 @@ export class QrCodeService {
   async getShortLink(id: string): Promise<ShortLink> {
     const apollo = new ApolloClient({
       link: httpLink,
-      cache: new InMemoryCache()
+      cache: new InMemoryCache(),
+      clientAwareness: {
+        name: 'api-journeys',
+        version: process.env.SERVICE_VERSION ?? ''
+      }
     })
 
     const {
       data: { shortLink }
-    } = await apollo.query({
+    } = await apollo.query<any>({
       query: GET_SHORT_LINK,
       variables: { id }
     })
@@ -150,7 +154,7 @@ export class QrCodeService {
 
     const {
       data: { shortLinkCreate }
-    } = await apollo.mutate({
+    } = await apollo.mutate<any>({
       mutation: CREATE_SHORT_LINK,
       variables: {
         input
@@ -188,7 +192,7 @@ export class QrCodeService {
 
     const {
       data: { shortLinkUpdate }
-    } = await apollo.mutate({
+    } = await apollo.mutate<any>({
       mutation: UPDATE_SHORT_LINK,
       variables: {
         input
@@ -221,7 +225,7 @@ export class QrCodeService {
 
     const {
       data: { shortLinkDelete }
-    } = await apollo.mutate({
+    } = await apollo.mutate<any>({
       mutation: DELETE_SHORT_LINK,
       variables: {
         id

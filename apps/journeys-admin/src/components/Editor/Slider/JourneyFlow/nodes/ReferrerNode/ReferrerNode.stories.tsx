@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
 import type { Meta, StoryObj } from '@storybook/react'
 import type { ComponentPropsWithoutRef } from 'react'

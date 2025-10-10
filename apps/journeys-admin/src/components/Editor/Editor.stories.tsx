@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
+import { MockLink } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/test'
 
@@ -92,7 +93,7 @@ const journey: Journey = {
   socialNodeY: null
 }
 
-const mockGetStepBlocksWithPosition: MockedResponse<GetStepBlocksWithPosition> =
+const mockGetStepBlocksWithPosition: MockLink.MockedResponse<GetStepBlocksWithPosition> =
   {
     request: {
       query: GET_STEP_BLOCKS_WITH_POSITION,

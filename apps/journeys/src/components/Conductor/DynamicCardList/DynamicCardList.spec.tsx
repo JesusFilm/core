@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { TreeBlock, useBlocks } from '@core/journeys/ui/block'
@@ -8,6 +9,8 @@ import { BlockFields_StepBlock as StepBlock } from '../../../../__generated__/Bl
 import { StepViewEventCreate } from '../../../../__generated__/StepViewEventCreate'
 
 import { DynamicCardList } from './DynamicCardList'
+
+// const MockedResponse = MockLink.MockedResponse
 
 jest.mock('@core/journeys/ui/block', () => ({
   __esModule: true,
@@ -64,26 +67,27 @@ describe('DynamicCardList', () => {
     children: []
   }
 
-  const mockStepViewEventCreate: MockedResponse<StepViewEventCreate> = {
-    request: {
-      query: STEP_VIEW_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId: 'step2.id',
-          value: 'Step {{number}}'
+  const mockStepViewEventCreate: MockLink.MockedResponse<StepViewEventCreate> =
+    {
+      request: {
+        query: STEP_VIEW_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'uuid',
+            blockId: 'step2.id',
+            value: 'Step {{number}}'
+          }
         }
-      }
-    },
-    result: {
-      data: {
-        stepViewEventCreate: {
-          id: 'uuid',
-          __typename: 'StepViewEvent'
+      },
+      result: {
+        data: {
+          stepViewEventCreate: {
+            id: 'uuid',
+            __typename: 'StepViewEvent'
+          }
         }
       }
     }
-  }
   const defaultUseBlockMocks = {
     blockHistory: [step1, step2],
     treeBlocks: [step1, step2, step3, step4],

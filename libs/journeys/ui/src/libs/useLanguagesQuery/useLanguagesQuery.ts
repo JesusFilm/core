@@ -1,4 +1,5 @@
-import { QueryResult, gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 
 import {
   GetLanguages,
@@ -20,7 +21,7 @@ export const GET_LANGUAGES = gql`
 
 export function useLanguagesQuery(
   variables?: GetLanguagesVariables
-): QueryResult<GetLanguages, GetLanguagesVariables> {
+): useQuery.Result<GetLanguages, GetLanguagesVariables> {
   const query = useQuery<GetLanguages, GetLanguagesVariables>(GET_LANGUAGES, {
     variables
   })

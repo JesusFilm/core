@@ -1,4 +1,5 @@
-import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
+import { NormalizedCacheObject } from '@apollo/client'
+import { ApolloProvider } from '@apollo/client/react'
 import type { EmotionCache } from '@emotion/cache'
 import GlobalStyles from '@mui/material/GlobalStyles'
 import { AppCacheProvider } from '@mui/material-nextjs/v15-pagesRouter'

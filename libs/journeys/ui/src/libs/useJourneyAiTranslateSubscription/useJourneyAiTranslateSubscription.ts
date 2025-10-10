@@ -1,9 +1,5 @@
-import {
-  SubscriptionHookOptions,
-  gql,
-  useApolloClient,
-  useSubscription
-} from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useApolloClient, useSubscription } from '@apollo/client/react'
 
 import {
   JourneyAiTranslateCreateSubscription,
@@ -118,7 +114,7 @@ export function updateCacheWithTranslatedJourney(
 }
 
 export function useJourneyAiTranslateSubscription(
-  options?: SubscriptionHookOptions<
+  options?: useSubscription.Options<
     JourneyAiTranslateCreateSubscription,
     JourneyAiTranslateCreateSubscriptionVariables
   >

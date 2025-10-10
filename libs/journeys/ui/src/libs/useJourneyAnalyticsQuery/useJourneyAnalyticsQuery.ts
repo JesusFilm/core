@@ -1,10 +1,5 @@
-import {
-  NoInfer,
-  QueryHookOptions,
-  QueryResult,
-  gql,
-  useQuery
-} from '@apollo/client'
+import { NoInfer, gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import { useState } from 'react'
 import { Edge, Node } from 'reactflow'
 
@@ -144,14 +139,14 @@ export interface JourneyAnalytics {
 
 export function useJourneyAnalyticsQuery(
   options?: Omit<
-    QueryHookOptions<
+    useQuery.Options<
       NoInfer<GetJourneyAnalytics>,
       NoInfer<GetJourneyAnalyticsVariables>
     >,
     'onCompleted'
   > & { onCompleted?: (data: JourneyAnalytics | undefined) => void }
 ): Omit<
-  QueryResult<GetJourneyAnalytics, GetJourneyAnalyticsVariables>,
+  useQuery.Result<GetJourneyAnalytics, GetJourneyAnalyticsVariables>,
   'data'
 > & { data: JourneyAnalytics | undefined } {
   const [data, setData] = useState<JourneyAnalytics | undefined>()

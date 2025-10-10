@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
+import { MockLink } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -80,7 +81,7 @@ describe('WebView', () => {
     })
   })
 
-  const visitorUpdateMock: MockedResponse<
+  const visitorUpdateMock: MockLink.MockedResponse<
     VisitorUpdateForCurrentUser,
     VisitorUpdateForCurrentUserVariables
   > = {

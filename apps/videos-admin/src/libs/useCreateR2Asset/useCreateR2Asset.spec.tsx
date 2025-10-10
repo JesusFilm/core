@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from "@apollo/client/testing/react";
 import { act, renderHook } from '@testing-library/react'
 
 import { useCreateR2AssetMutation } from './useCreateR2Asset'

@@ -1,4 +1,4 @@
-import { ApolloClient, ApolloQueryResult } from '@apollo/client'
+import { ApolloClient, ObservableQuery } from '@apollo/client'
 import { Job } from 'bullmq'
 
 import {
@@ -191,7 +191,7 @@ describe('EmailConsumer', () => {
                 email: 'jsmith@exmaple.com'
               }
             }
-          } as unknown as ApolloQueryResult<unknown>)
+          } as unknown as ObservableQuery.Result<unknown>)
       )
       await service(teamRemoved)
       expect(sendEmail).toHaveBeenCalled()

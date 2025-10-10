@@ -1,4 +1,3 @@
-import { ApolloError } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Switch from '@mui/material/Switch'
 import Tooltip from '@mui/material/Tooltip'

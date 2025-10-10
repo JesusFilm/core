@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import Typography from '@mui/material/Typography'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { ReactFlowProvider } from 'reactflow'

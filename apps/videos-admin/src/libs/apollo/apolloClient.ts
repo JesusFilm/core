@@ -34,8 +34,13 @@ export const {
   return new ApolloClient({
     link: httpLink,
     cache: new InMemoryCache(cache),
-    connectToDevTools: process.env.NODE_ENV === 'development',
-    // Prevent shared cache between RSC and client components to avoid conflicts
+    devtools: {
+      enabled: process.env.NODE_ENV === 'development'
+    },
+    clientAwareness: {
+      name: 'videos-admin',
+      version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
+    },
     defaultOptions: {
       query: {
         fetchPolicy: 'network-only'

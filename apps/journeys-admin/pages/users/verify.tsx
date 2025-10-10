@@ -1,4 +1,5 @@
-import { ApolloError, gql, useApolloClient, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useApolloClient, useMutation } from '@apollo/client/react'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -56,9 +57,7 @@ function ValidateEmail({
   const user = useUser()
   const email = user.email ?? ''
   const { setActiveTeam } = useTeam()
-  const [error, setError] = useState<GraphQLError | ApolloError | null>(
-    initialError
-  )
+  const [error, setError] = useState<GraphQLError | Error | null>(initialError)
   const [disableValidationButton, setDisableValidationButton] = useState(false)
   const [disableResendButton, setDisableResendButton] = useState(false)
   const [validateEmail] = useMutation(VALIDATE_EMAIL, {

@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 
@@ -47,7 +47,7 @@ export const UPDATE_SHORT_LINK = graphql(`
 
 // Create Apollo client for GraphQL operations
 const createApolloClient = () => {
-  const httpLink = createHttpLink({
+  const httpLink = new HttpLink({
     uri: process.env.GATEWAY_URL,
     headers: {
       'interop-token': process.env.INTEROP_TOKEN ?? '',
@@ -58,7 +58,11 @@ const createApolloClient = () => {
 
   return new ApolloClient({
     link: httpLink,
-    cache: new InMemoryCache()
+    cache: new InMemoryCache(),
+    clientAwareness: {
+      name: 'api-journeys-modern',
+      version: process.env.SERVICE_VERSION ?? ''
+    }
   })
 }
 

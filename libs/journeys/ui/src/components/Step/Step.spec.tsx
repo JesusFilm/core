@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
+import { MockLink } from '@apollo/client/testing'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { render, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
@@ -175,26 +176,27 @@ describe('Step', () => {
     Object.defineProperty(window, 'location', originalLocation)
   })
 
-  const mockStepViewEventCreate: MockedResponse<StepViewEventCreate> = {
-    request: {
-      query: STEP_VIEW_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId: 'Step1',
-          value: 'Step {{number}}'
+  const mockStepViewEventCreate: MockLink.MockedResponse<StepViewEventCreate> =
+    {
+      request: {
+        query: STEP_VIEW_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'uuid',
+            blockId: 'Step1',
+            value: 'Step {{number}}'
+          }
         }
-      }
-    },
-    result: jest.fn(() => ({
-      data: {
-        stepViewEventCreate: {
-          id: 'uuid',
-          __typename: 'StepViewEvent'
+      },
+      result: jest.fn(() => ({
+        data: {
+          stepViewEventCreate: {
+            id: 'uuid',
+            __typename: 'StepViewEvent'
+          }
         }
-      }
-    }))
-  }
+      }))
+    }
 
   it('should create a stepViewEvent', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')

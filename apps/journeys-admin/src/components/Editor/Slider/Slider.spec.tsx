@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
+import { MockLink } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -175,7 +176,7 @@ describe('Slider', () => {
       activeSlide: ActiveSlide.Content
     }
 
-    const mockGetJourneyFlowBackButtonClicked: MockedResponse<getJourneyFlowBackButtonClicked> =
+    const mockGetJourneyFlowBackButtonClicked: MockLink.MockedResponse<getJourneyFlowBackButtonClicked> =
       {
         request: {
           query: GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED
@@ -191,7 +192,7 @@ describe('Slider', () => {
         }))
       }
 
-    const mockUpdateJourneyFlowBackButtonClicked: MockedResponse<
+    const mockUpdateJourneyFlowBackButtonClicked: MockLink.MockedResponse<
       UpdateJourneyFlowBackButtonClicked,
       UpdateJourneyFlowBackButtonClickedVariables
     > = {
@@ -246,7 +247,7 @@ describe('Slider', () => {
       activeSlide: ActiveSlide.Content
     }
 
-    const mockGetJourneyFlowBackButtonClicked: MockedResponse<getJourneyFlowBackButtonClicked> =
+    const mockGetJourneyFlowBackButtonClicked: MockLink.MockedResponse<getJourneyFlowBackButtonClicked> =
       {
         request: {
           query: GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED

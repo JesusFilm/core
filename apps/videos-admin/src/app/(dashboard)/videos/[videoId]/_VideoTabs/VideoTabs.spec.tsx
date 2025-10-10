@@ -4,7 +4,7 @@ import {
   QueryResult,
   useQuery
 } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 

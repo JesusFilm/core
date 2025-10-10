@@ -1,9 +1,9 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { render } from '@react-email/render'
 import { Job } from 'bullmq'
 
 import { prisma } from '@core/prisma/journeys/client'
-import { graphql } from '@core/shared/gql'
+import { ResultOf, graphql } from '@core/shared/gql'
 import { sendEmail } from '@core/yoga/email'
 import {
   ApiUsersJob,
@@ -15,7 +15,7 @@ import { VisitorInteraction } from '../../../emails/templates/VisitorInteraction
 import { fetchEmailDetails } from './fetchEmailDetails'
 import { processUserIds } from './processUserIds'
 
-const httpLink = createHttpLink({
+const httpLink = new HttpLink({
   uri: process.env.GATEWAY_URL,
   headers: {
     'interop-token': process.env.INTEROP_TOKEN ?? '',
@@ -26,7 +26,11 @@ const httpLink = createHttpLink({
 
 const apollo = new ApolloClient({
   link: httpLink,
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
+  clientAwareness: {
+    name: 'api-journeys-modern',
+    version: process.env.SERVICE_VERSION ?? ''
+  }
 })
 
 export async function service(job: Job<ApiUsersJob>): Promise<void> {
@@ -36,6 +40,17 @@ export async function service(job: Job<ApiUsersJob>): Promise<void> {
       break
   }
 }
+
+const USER_QUERY = graphql(`
+  query User($userId: ID!) {
+    user(id: $userId) {
+      id
+      firstName
+      email
+      imageUrl
+    }
+  }
+`)
 
 async function visitorEventEmails(
   job: Job<EventsNotificationJob>
@@ -53,21 +68,12 @@ async function visitorEventEmails(
 
   await Promise.all(
     recipientUserIds.map(async (userId) => {
-      const { data } = await apollo.query({
-        query: graphql(`
-          query User($userId: ID!) {
-            user(id: $userId) {
-              id
-              firstName
-              email
-              imageUrl
-            }
-          }
-        `),
+      const { data } = await apollo.query<ResultOf<typeof USER_QUERY>>({
+        query: USER_QUERY,
         variables: { userId }
       })
 
-      if (data.user == null) return
+      if (data?.user == null) return
 
       const analyticsUrl = `${
         process.env.JOURNEYS_ADMIN_URL ?? ''

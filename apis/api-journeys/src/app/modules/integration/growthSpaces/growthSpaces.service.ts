@@ -1,9 +1,4 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  createHttpLink,
-  gql
-} from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache, gql } from '@apollo/client'
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Inject, Injectable } from '@nestjs/common'
 import axios, { AxiosError, AxiosInstance } from 'axios'
@@ -118,7 +113,7 @@ export class IntegrationGrowthSpacesService {
     const key = `language-${journey.languageId}`
     let languageCode = await this.cacheManager.get<string>(key)
     if (languageCode == null) {
-      const httpLink = createHttpLink({
+      const httpLink = new HttpLink({
         uri: process.env.GATEWAY_URL,
         headers: {
           'x-graphql-client-name': 'api-journeys',
@@ -127,7 +122,11 @@ export class IntegrationGrowthSpacesService {
       })
       const apollo = new ApolloClient({
         link: httpLink,
-        cache: new InMemoryCache()
+        cache: new InMemoryCache(),
+        clientAwareness: {
+          name: 'api-journeys',
+          version: process.env.SERVICE_VERSION ?? ''
+        }
       })
 
       const { data } = await apollo.query<

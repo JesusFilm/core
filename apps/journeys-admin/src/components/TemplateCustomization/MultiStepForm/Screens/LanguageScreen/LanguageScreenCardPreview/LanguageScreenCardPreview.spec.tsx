@@ -5,7 +5,7 @@ import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
 
 import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 
 const mockJourney = {
   ...journey,
