@@ -101,4 +101,48 @@ describe('getValidationSchema', () => {
     const schemaDescription = schema.describe()
     expect(Object.keys(schemaDescription.fields).length).toBe(0)
   })
+
+  it('should not enforce multiselect when min is null or 0', async () => {
+    const mockBlocks = asTreeBlocks([
+      {
+        id: 'multi1',
+        __typename: 'MultiselectBlock',
+        min: null,
+        children: []
+      },
+      {
+        id: 'multi2',
+        __typename: 'MultiselectBlock',
+        min: 0,
+        children: []
+      }
+    ])
+
+    const schema = getValidationSchema(mockBlocks, mockT)
+
+    await expect(
+      schema.validate({ multi1: [], multi2: [] })
+    ).resolves.not.toThrow()
+  })
+
+  it('should enforce multiselect min when min > 0', async () => {
+    const mockBlocks = asTreeBlocks([
+      {
+        id: 'multi',
+        __typename: 'MultiselectBlock',
+        min: 2,
+        children: []
+      }
+    ])
+
+    const schema = getValidationSchema(mockBlocks, mockT)
+
+    await expect(schema.validate({ multi: [] })).rejects.toThrow(
+      'Select at least {{count}} option(s)'
+    )
+    await expect(schema.validate({ multi: ['A'] })).rejects.toThrow(
+      'Select at least {{count}} option(s)'
+    )
+    await expect(schema.validate({ multi: ['A', 'B'] })).resolves.not.toThrow()
+  })
 })

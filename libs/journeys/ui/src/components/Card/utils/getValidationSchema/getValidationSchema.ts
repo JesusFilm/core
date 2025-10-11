@@ -1,9 +1,10 @@
 import { TFunction } from 'next-i18next'
-import { object, string } from 'yup'
+import { array, object, string } from 'yup'
 
 import { TextResponseType } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
 import { TextResponseFields } from '../../../TextResponse/__generated__/TextResponseFields'
+import { getMultiselectBlocks } from '../getMultiselectBlocks'
 import { getTextResponseBlocks } from '../getTextResponseBlocks'
 
 /**
@@ -16,7 +17,8 @@ export function getValidationSchema(
   children: TreeBlock[],
   t: TFunction
 ): ReturnType<typeof object> {
-  const validationSchema: Record<string, ReturnType<typeof string>> = {}
+  // Use a broad schema record to support both string and array validations
+  const validationSchema: Record<string, any> = {}
   const textResponseBlocks = getTextResponseBlocks(children) as Array<
     TreeBlock<TextResponseFields>
   >
@@ -39,6 +41,17 @@ export function getValidationSchema(
     }
 
     validationSchema[block.id] = fieldSchema
+  })
+
+  // Multiselect validations: if min is set and > 0, require at least min selections
+  const multiselectBlocks = getMultiselectBlocks(children)
+  multiselectBlocks.forEach((block) => {
+    const min = (block as any).min as number | null | undefined
+    if (typeof min === 'number' && min > 0) {
+      validationSchema[block.id] = array()
+        .of(string())
+        .min(min, t('Select at least {{count}} option(s)', { count: min }))
+    }
   })
 
   return object().shape(validationSchema)
