@@ -143,11 +143,13 @@ const categorySharingOptions = {
 const RotatingText = ({
   onCategoryChange,
   hoveredCategory,
-  isHovering
+  isHovering,
+  isAnimationStopped
 }: {
   onCategoryChange: (category: string) => void
   hoveredCategory: string | null
   isHovering: boolean
+  isAnimationStopped: boolean
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [currentTextIndex, setCurrentTextIndex] = useState(0)
@@ -292,21 +294,21 @@ const RotatingText = ({
 
   // Auto-rotate when not hovering
   useEffect(() => {
-    if (!isHovering) {
+    if (!isHovering && !isAnimationStopped) {
       const interval = setInterval(() => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % rotatingItems.length)
       }, 3000) // Change every 3 seconds
 
       return () => clearInterval(interval)
     }
-  }, [rotatingItems.length, isHovering])
+  }, [rotatingItems.length, isHovering, isAnimationStopped])
 
   // Update category when not hovering
   useEffect(() => {
-    if (!isHovering) {
+    if (!isHovering && !isAnimationStopped) {
       onCategoryChange(rotatingItems[currentIndex].category)
     }
-  }, [currentIndex, onCategoryChange, rotatingItems, isHovering])
+  }, [currentIndex, onCategoryChange, rotatingItems, isHovering, isAnimationStopped])
 
   // Handle hover state - show category-specific options
   useEffect(() => {
@@ -374,6 +376,7 @@ export default function NewPage() {
   const [highlightedCategory, setHighlightedCategory] = useState<string>('')
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [isHovering, setIsHovering] = useState<boolean>(false)
+  const [isAnimationStopped, setIsAnimationStopped] = useState<boolean>(false)
   const [selectedOutputs, setSelectedOutputs] = useState<
     Record<string, string[]>
   >({})
@@ -578,6 +581,8 @@ export default function NewPage() {
   const handleContextChange = (context: string) => {
     setSelectedContext(context)
     setIsContextContainerHidden(true)
+    setHighlightedCategory('') // Stop automatic highlight animation when a tile is selected
+    setIsAnimationStopped(true) // Stop the rotating text animation
   }
 
   // Helper function to determine if a tile should show hover effects
@@ -1587,10 +1592,10 @@ When refining or improving content, consider:
               <div className={`max-w-4xl mx-auto transition-all duration-500 ease-in-out}`}>
                 <Card className="bg-transparent border-0 shadow-none">
                   <CardHeader
-                  className={`ext-left w-full transition-all duration-300 ease-out ${
+                  className={`ext-left w-full transition-all duration-500 ease-out ${
                     isContextContainerHidden
-                      ? 'opacity-0 max-h-0 p-0 transform pointer-events-none'
-                      : 'opacity-100 max-h-full transform '
+                      ? 'opacity-0 max-h-0 py-0 pointer-events-none'
+                      : 'opacity-100 max-h-full  '
                   }`}>
                     <div className="flex items-center justify-between gap-4 mb-4">
                       <CardTitle className="text-2xl">
@@ -1599,12 +1604,13 @@ When refining or improving content, consider:
                           onCategoryChange={setHighlightedCategory}
                           hoveredCategory={hoveredCategory}
                           isHovering={isHovering}
+                          isAnimationStopped={isAnimationStopped}
                         />
                       </CardTitle>
                       {/* <p className="text-sm text-muted-foreground text-right">Choose where you will share today's message</p> */}
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-6">
+                  <CardContent data-testid="section-channels" className="space-y-6">
                     {/* Context Selector */}
                     <div className="mb-8">
                       <div className="grid grid-cols-5 gap-4">
@@ -1845,7 +1851,7 @@ When refining or improving content, consider:
                       </div>
                     </div>
 
-                    <div className="relative bg-white rounded-3xl shadow-xl ">
+                    <div data-testid="section-prompt" className="relative hidden bg-white rounded-3xl shadow-xl ">
                       {/* <label className="text-sm font-medium mb-2 block">Text Content</label> */}
                       <div className="relative">
                         {/* Image Attachments Carousel - inside textarea */}
