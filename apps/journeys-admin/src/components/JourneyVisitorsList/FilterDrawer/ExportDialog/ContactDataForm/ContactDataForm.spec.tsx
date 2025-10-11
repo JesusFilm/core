@@ -29,6 +29,7 @@ describe('ContactDataForm', () => {
     expect(screen.getByLabelText('Email')).toBeInTheDocument()
     expect(screen.getByLabelText('Phone')).toBeInTheDocument()
     expect(screen.getByLabelText('Poll Selection')).toBeInTheDocument()
+    expect(screen.getByLabelText('Multiselect Submission')).toBeInTheDocument()
     expect(screen.getByLabelText('Subscription')).toBeInTheDocument()
     expect(screen.getByLabelText('Text Submission')).toBeInTheDocument()
 
@@ -40,6 +41,7 @@ describe('ContactDataForm', () => {
     expect(screen.getByLabelText('Poll Selection')).toBeChecked()
     expect(screen.getByLabelText('Subscription')).toBeChecked()
     expect(screen.getByLabelText('Text Submission')).toBeChecked()
+    expect(screen.getByLabelText('Multiselect Submission')).toBeChecked()
   })
 
   it('handles "Select All" checkbox correctly', () => {
@@ -55,6 +57,7 @@ describe('ContactDataForm', () => {
     expect(screen.getByLabelText('Poll Selection')).not.toBeChecked()
     expect(screen.getByLabelText('Subscription')).not.toBeChecked()
     expect(screen.getByLabelText('Text Submission')).not.toBeChecked()
+    expect(screen.getByLabelText('Multiselect Submission')).not.toBeChecked()
 
     // Check all again
     fireEvent.click(selectAllCheckbox)
@@ -120,9 +123,17 @@ describe('ContactDataForm', () => {
     // Check Text Submission
     fireEvent.click(screen.getByLabelText('Text Submission'))
     expect(screen.getByLabelText('Text Submission')).toBeChecked()
-    expect(screen.getByLabelText('All')).toBeChecked()
+    expect(screen.getByLabelText('All')).not.toBeChecked()
     expect(screen.getByTestId('selected-fields')).toHaveTextContent(
       'name, email, phone, RadioQuestionSubmissionEvent, SignUpSubmissionEvent, TextResponseSubmissionEvent'
+    )
+
+    // Check Multiselect Submission
+    fireEvent.click(screen.getByLabelText('Multiselect Submission'))
+    expect(screen.getByLabelText('Multiselect Submission')).toBeChecked()
+    expect(screen.getByLabelText('All')).toBeChecked()
+    expect(screen.getByTestId('selected-fields')).toHaveTextContent(
+      'name, email, phone, RadioQuestionSubmissionEvent, SignUpSubmissionEvent, TextResponseSubmissionEvent, MultiselectSubmissionEvent'
     )
   })
 })

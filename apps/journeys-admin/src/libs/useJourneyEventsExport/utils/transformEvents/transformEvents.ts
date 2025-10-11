@@ -4,6 +4,18 @@ import { JourneyEvent } from '../../useJourneyEventsExport'
 export function transformEvents(events: EventEdge[]): JourneyEvent[] {
   return events.map((edge) => {
     switch (edge.node.typename) {
+      case 'MultiselectSubmissionEvent': {
+        const raw = edge.node.value ?? ''
+        const withLineBreaks = raw
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => s.length > 0)
+          .join('\n')
+        return {
+          ...edge.node,
+          value: withLineBreaks
+        }
+      }
       case 'VideoProgressEvent':
         return {
           ...edge.node,
