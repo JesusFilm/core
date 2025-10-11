@@ -69,6 +69,10 @@
     animation: fadeInUp 0.6s ease-out forwards;
   }
 
+  .animate-fade-in-out {
+    animation: fadeInOut 3s ease-out forwards;
+  }
+
   .animate-fade-in-left {
     animation: fadeInLeft 0.6s ease-out forwards;
   }
@@ -81,6 +85,21 @@
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInOut {
+    0% {
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
     }
   }
 
@@ -138,7 +157,15 @@
   }
 
   .animate-background-dissolve {
-    animation: backgroundDissolve 1.5s ease-out 2s forwards;
+    animation: backgroundDissolve 2s ease-out 3s forwards;
+  }
+
+  .animate-glow-delay {
+    animation: glowDelay 3s ease-out 0.9s forwards;
+  }
+
+  .animate-text-rotate {
+    animation: textRotate 0.6s ease-in-out;
   }
 
   @keyframes bibleQuoteAppear {
@@ -162,6 +189,34 @@
     }
     100% {
       opacity: 0;
+    }
+  }
+
+  @keyframes glowDelay {
+    0% {
+      filter: drop-shadow(0 0 12px rgba(202, 138, 4, 0));
+    }
+
+    50% {
+      filter: drop-shadow(0 0 12px rgba(202, 138, 4, 0.8));
+    }
+    100% {
+      filter: drop-shadow(0 0 12px rgba(202, 138, 4, 0));
+    }
+  }
+
+  @keyframes textRotate {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    50% {
+      opacity: 0.5;
+      transform: translateY(-5px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 }
