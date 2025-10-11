@@ -370,6 +370,7 @@ export default function NewPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedFormat, setSelectedFormat] = useState<string>('')
   const [selectedContext, setSelectedContext] = useState<string>('')
+  const [isContextContainerHidden, setIsContextContainerHidden] = useState<boolean>(false)
   const [highlightedCategory, setHighlightedCategory] = useState<string>('')
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [isHovering, setIsHovering] = useState<boolean>(false)
@@ -576,6 +577,7 @@ export default function NewPage() {
 
   const handleContextChange = (context: string) => {
     setSelectedContext(context)
+    setIsContextContainerHidden(true)
   }
 
   // Helper function to determine if a tile should show hover effects
@@ -1476,6 +1478,63 @@ When refining or improving content, consider:
           </div>
         </div>
 
+        {/* Previous Requests Accordion */}
+        {savedSessions.length > 0 && (
+          <div className="max-w-4xl mx-auto mb-8">
+            <Accordion
+              title="Your Previous Sessions"
+              defaultOpen={false}
+              className="border-muted"
+              icon={<History className="w-4 h-4 text-muted-foreground" />}
+            >
+              <div className="space-y-3">
+                {savedSessions.map((session) => (
+                  <Card key={session.id} className="p-3 border-muted">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <div className="mb-1">
+                          <h4 className="font-medium text-sm truncate">
+                            {session.textContent.substring(0, 60)}...
+                          </h4>
+                        </div>
+                        <div className="text-xs text-muted-foreground space-y-0.5">
+                          <p>
+                            {new Date(session.timestamp).toLocaleString()}
+                          </p>
+                          <p>
+                            {session.images.length} images •{' '}
+                            {session.aiResponse
+                              ? 'Has AI response'
+                              : 'No AI response'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 ml-3">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => loadSession(session)}
+                          className="h-7 px-2 text-xs"
+                        >
+                          Load
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => deleteSession(session.id)}
+                          className="h-7 px-2 text-xs text-primary hover:text-primary"
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </Accordion>
+          </div>
+        )}
+
         <main
           className="container mx-auto px-4 py-12 relative"
           onDragOver={handleDragOver}
@@ -1525,9 +1584,14 @@ When refining or improving content, consider:
 
               <hr className="w-full border-t border-stone-200 my-8" />
 
-              <div className="max-w-4xl mx-auto">
+              <div className={`max-w-4xl mx-auto transition-all duration-500 ease-in-out}`}>
                 <Card className="bg-transparent border-0 shadow-none">
-                  <CardHeader className="text-left w-full">
+                  <CardHeader
+                  className={`ext-left w-full transition-all duration-300 ease-out ${
+                    isContextContainerHidden
+                      ? 'opacity-0 max-h-0 p-0 transform pointer-events-none'
+                      : 'opacity-100 max-h-full transform '
+                  }`}>
                     <div className="flex items-center justify-between gap-4 mb-4">
                       <CardTitle className="text-2xl">
                         Share God's grace… <br />
@@ -2084,7 +2148,7 @@ When refining or improving content, consider:
                     )}
 
                     {/* Content Type Selector */}
-                    <div className="mt-12">
+                    <div className="mt-12 hidden">
                       <div className="flex items-center gap-4 mb-4">
                         <label className="text-lg font-semibold">
                           In what format?
@@ -2202,7 +2266,7 @@ When refining or improving content, consider:
                     </div>
 
                     {/* Output Format Grid Selector */}
-                    <div className="mt-12">
+                    <div className="mt-12 hidden">
                       <div className="flex items-center gap-4 mb-4">
                         <label className="text-lg font-semibold">
                           Where will you share?
@@ -3204,7 +3268,7 @@ When refining or improving content, consider:
                     )}
 
                     {/* Original Images Section - kept for reference */}
-                    <div className="mt-12">
+                    <div className="mt-12 hidden">
                       <label className="text-sm font-medium mb-2 block">
                         Browse Images
                       </label>
@@ -3389,66 +3453,6 @@ When refining or improving content, consider:
             </div>
           )}
 
-          {/* Previous Requests Accordion */}
-          <div className="max-w-4xl mx-auto mt-12 mb-8">
-            <Accordion
-              title="Previous Tasks"
-              defaultOpen={false}
-              className="border-muted"
-              icon={<History className="w-4 h-4 text-muted-foreground" />}
-            >
-              <div className="space-y-3">
-                {savedSessions.length === 0 ? (
-                  <p className="text-center text-muted-foreground py-6 text-sm">
-                    No saved requests yet. Your past ideas will appear here.
-                  </p>
-                ) : (
-                  savedSessions.map((session) => (
-                    <Card key={session.id} className="p-3 border-muted">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
-                          <div className="mb-1">
-                            <h4 className="font-medium text-sm truncate">
-                              {session.textContent.substring(0, 60)}...
-                            </h4>
-                          </div>
-                          <div className="text-xs text-muted-foreground space-y-0.5">
-                            <p>
-                              {new Date(session.timestamp).toLocaleString()}
-                            </p>
-                            <p>
-                              {session.images.length} images •{' '}
-                              {session.aiResponse
-                                ? 'Has AI response'
-                                : 'No AI response'}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 ml-3">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => loadSession(session)}
-                            className="h-7 px-2 text-xs"
-                          >
-                            Load
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => deleteSession(session.id)}
-                            className="h-7 px-2 text-xs text-primary hover:text-primary"
-                          >
-                            Delete
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-                  ))
-                )}
-              </div>
-            </Accordion>
-          </div>
         </main>
       </div>
     </>
