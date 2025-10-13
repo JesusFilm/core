@@ -1,4 +1,5 @@
 import {
+  Camera,
   Crown,
   Facebook,
   FileText,
@@ -7,33 +8,35 @@ import {
   Image as ImageIcon,
   Info,
   Instagram,
+  Laugh,
+  type LucideIcon,
   MessageCircle,
   MessageSquare,
-  Camera,
-  Send,
-  Layers,
-  X,
   Palette,
   Paperclip,
+  Pepper,
   Plus,
   Printer,
+  Salt,
   Settings,
   Sparkles,
   Twitter,
   Users,
   Video,
+  X,
   Youtube,
   Zap
 } from 'lucide-react'
 import Head from 'next/head'
 import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
 
 import { Accordion } from '../src/components/ui/accordion'
 import { Button } from '../src/components/ui/button'
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle
 } from '../src/components/ui/card'
@@ -139,6 +142,55 @@ const categorySharingOptions = {
     'at a youth group meeting'
   ]
 }
+
+const generationLabels = [
+  'Boomer',
+  'Gen X',
+  'Millennial',
+  'Gen Z',
+  'Gen Alpha'
+] as const
+
+const personaGenderOptions = [
+  { label: 'Female', value: 'female' },
+  { label: 'Male', value: 'male' },
+  { label: 'Mixed audience', value: 'mixed' }
+] as const
+
+const personaRelationshipOptions = [
+  { label: "Don't know yet", value: 'unknown' },
+  { label: 'Friend', value: 'friend' },
+  { label: 'Family', value: 'family' },
+  { label: 'Coworker', value: 'coworker' },
+  { label: 'Neighbor', value: 'neighbor' },
+  { label: 'Ministry contact', value: 'ministry' }
+] as const
+
+const personaToneOptions: Array<{
+  value: string
+  label: string
+  description: string
+  icon: LucideIcon
+}> = [
+  {
+    value: 'serious',
+    label: '0 jokes',
+    description: 'Keep it sincere and thoughtful.',
+    icon: Salt
+  },
+  {
+    value: 'memes',
+    label: 'Memes x2',
+    description: 'Use playful humor and modern references.',
+    icon: Laugh
+  },
+  {
+    value: 'pepTalk',
+    label: 'Pep talk',
+    description: 'Encourage them with warmth and energy.',
+    icon: Pepper
+  }
+]
 
 const RotatingText = ({
   onCategoryChange,
@@ -419,8 +471,36 @@ export default function NewPage() {
   )
   const [showTestimonialBackground, setShowTestimonialBackground] =
     useState(true)
+  const [personaName, setPersonaName] = useState('')
+  const [personaGenerationIndex, setPersonaGenerationIndex] = useState(2)
+  const [personaGender, setPersonaGender] = useState<
+    (typeof personaGenderOptions)[number]['value']
+  >('mixed')
+  const [personaRelationship, setPersonaRelationship] = useState<
+    (typeof personaRelationshipOptions)[number]['value']
+  >('unknown')
+  const [personaTones, setPersonaTones] = useState<string[]>([])
+  const [personaScreenshotFile, setPersonaScreenshotFile] =
+    useState<File | null>(null)
+  const [personaScreenshotPreview, setPersonaScreenshotPreview] =
+    useState<string | null>(null)
+  const [personaNotes, setPersonaNotes] = useState('')
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
+
+  useEffect(() => {
+    if (!personaScreenshotFile) {
+      setPersonaScreenshotPreview(null)
+      return
+    }
+
+    const objectUrl = URL.createObjectURL(personaScreenshotFile)
+    setPersonaScreenshotPreview(objectUrl)
+
+    return () => {
+      URL.revokeObjectURL(objectUrl)
+    }
+  }, [personaScreenshotFile])
 
   // Close context menu when clicking outside
   useEffect(() => {
@@ -583,6 +663,25 @@ export default function NewPage() {
     setIsContextContainerHidden(true)
     setHighlightedCategory('') // Stop automatic highlight animation when a tile is selected
     setIsAnimationStopped(true) // Stop the rotating text animation
+  }
+
+  const handlePersonaScreenshotChange = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0] ?? null
+    setPersonaScreenshotFile(file)
+  }
+
+  const removePersonaScreenshot = () => {
+    setPersonaScreenshotFile(null)
+  }
+
+  const togglePersonaTone = (tone: string) => {
+    setPersonaTones((previous) =>
+      previous.includes(tone)
+        ? previous.filter((value) => value !== tone)
+        : [...previous, tone]
+    )
   }
 
   // Helper function to determine if a tile should show hover effects
@@ -1850,6 +1949,216 @@ When refining or improving content, consider:
                         </div>
                       </div>
                     </div>
+
+                    {selectedContext && (
+                      <Card className="mt-10 border border-stone-200 bg-white/80 shadow-xl backdrop-blur-sm">
+                        <CardHeader className="space-y-3 pb-0">
+                          <CardTitle className="flex items-center gap-3 text-xl">
+                            <Users className="h-5 w-5 text-stone-500" />
+                            Tell us about who you're serving
+                          </CardTitle>
+                          <CardDescription className="text-sm text-stone-500">
+                            To be relevant we need to learn more about the person (audience) who will receive this {selectedContext}{' '}
+                            content.
+                          </CardDescription>
+                          <div className="w-fit rounded-full bg-stone-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-stone-500">
+                            Channel:
+                            <span className="ml-2 text-stone-900">{selectedContext}</span>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-8">
+                          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)]">
+                            <div className="rounded-2xl border-2 border-dashed border-stone-300 bg-stone-50/80 p-6 text-center">
+                              {personaScreenshotPreview ? (
+                                <div className="flex flex-col items-center gap-4">
+                                  <div className="relative h-32 w-32 overflow-hidden rounded-2xl border border-stone-200 bg-white shadow">
+                                    <Image
+                                      src={personaScreenshotPreview}
+                                      alt="Persona screenshot preview"
+                                      fill
+                                      sizes="128px"
+                                      className="object-cover"
+                                    />
+                                  </div>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={removePersonaScreenshot}
+                                    className="h-auto rounded-full border-stone-300 bg-white/90 px-4 py-2 text-xs font-semibold text-stone-600 hover:border-stone-400 hover:text-stone-900"
+                                  >
+                                    <X className="h-4 w-4" />
+                                    Remove screenshot
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="flex flex-col items-center gap-4">
+                                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-inner">
+                                    <Camera className="h-8 w-8 text-stone-400" />
+                                  </div>
+                                  <div className="text-sm font-semibold text-stone-700">
+                                    Paste their profile screenshot
+                                  </div>
+                                </div>
+                              )}
+                              <label className="mt-6 flex w-full cursor-pointer flex-col gap-2 text-sm font-medium text-stone-600">
+                                <span className="text-xs uppercase tracking-wide text-stone-500">
+                                  Upload or paste an image
+                                </span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handlePersonaScreenshotChange}
+                                  className="w-full cursor-pointer rounded-full border border-dashed border-stone-300 bg-white px-4 py-2 text-xs font-semibold text-stone-600 file:mr-4 file:rounded-full file:border-0 file:bg-stone-900 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-white hover:border-stone-400"
+                                />
+                              </label>
+                              <p className="mt-3 text-xs text-muted-foreground">
+                                Or fill out the persona manually using the fields on the right.
+                              </p>
+                            </div>
+                            <div className="space-y-6">
+                              <div>
+                                <label className="text-sm font-semibold text-stone-700">
+                                  Persona name or role
+                                </label>
+                                <Input
+                                  value={personaName}
+                                  onChange={(event) => setPersonaName(event.target.value)}
+                                  placeholder="e.g. Ana, a college sophomore curious about faith"
+                                  className="mt-2 h-11 rounded-xl border-stone-300 bg-white/90"
+                                />
+                              </div>
+                              <div className="space-y-3">
+                                <div className="flex items-center justify-between text-sm font-medium text-stone-700">
+                                  <span>Generation</span>
+                                  <span className="text-stone-500">
+                                    {generationLabels[personaGenerationIndex]}
+                                  </span>
+                                </div>
+                                <input
+                                  type="range"
+                                  min={0}
+                                  max={generationLabels.length - 1}
+                                  step={1}
+                                  value={personaGenerationIndex}
+                                  onChange={(event) =>
+                                    setPersonaGenerationIndex(Number(event.target.value))
+                                  }
+                                  className="w-full accent-stone-900"
+                                />
+                                <div className="flex justify-between text-[10px] font-semibold uppercase tracking-wide text-stone-400">
+                                  {generationLabels.map((label, index) => (
+                                    <span
+                                      key={label}
+                                      className={
+                                        index === personaGenerationIndex
+                                          ? 'text-stone-900'
+                                          : undefined
+                                      }
+                                    >
+                                      {label}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                              <div className="grid gap-4 sm:grid-cols-2">
+                                <div>
+                                  <p className="text-sm font-semibold text-stone-700">
+                                    Gender emphasis
+                                  </p>
+                                  <div className="mt-3 flex flex-wrap gap-2">
+                                    {personaGenderOptions.map((option) => (
+                                      <Button
+                                        key={option.value}
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setPersonaGender(option.value)}
+                                        className={`h-auto rounded-full border-2 px-4 py-2 text-xs font-semibold uppercase tracking-wide transition ${
+                                          personaGender === option.value
+                                            ? 'border-stone-900 bg-stone-900 text-white shadow'
+                                            : 'border-stone-200 bg-white/80 text-stone-600 hover:border-stone-400 hover:text-stone-900'
+                                        }`}
+                                      >
+                                        {option.label}
+                                      </Button>
+                                    ))}
+                                  </div>
+                                </div>
+                                <div>
+                                  <p className="text-sm font-semibold text-stone-700">
+                                    Relationship
+                                  </p>
+                                  <div className="mt-3 flex flex-wrap gap-2">
+                                    {personaRelationshipOptions.map((option) => (
+                                      <Button
+                                        key={option.value}
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setPersonaRelationship(option.value)}
+                                        className={`h-auto rounded-full border-2 px-4 py-2 text-xs font-semibold uppercase tracking-wide transition ${
+                                          personaRelationship === option.value
+                                            ? 'border-stone-900 bg-stone-900 text-white shadow'
+                                            : 'border-stone-200 bg-white/80 text-stone-600 hover:border-stone-400 hover:text-stone-900'
+                                        }`}
+                                      >
+                                        {option.label}
+                                      </Button>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="grid gap-6 lg:grid-cols-3">
+                            <div className="lg:col-span-2">
+                              <p className="text-sm font-semibold text-stone-700">
+                                Tone preference
+                              </p>
+                              <div className="mt-3 grid gap-3 md:grid-cols-3">
+                                {personaToneOptions.map((tone) => {
+                                  const Icon = tone.icon
+                                  const isActive = personaTones.includes(tone.value)
+                                  return (
+                                    <Button
+                                      key={tone.value}
+                                      type="button"
+                                      variant="outline"
+                                      onClick={() => togglePersonaTone(tone.value)}
+                                      className={`h-auto items-start gap-2 rounded-2xl border-2 px-4 py-4 text-left text-sm font-semibold transition ${
+                                        isActive
+                                          ? 'border-stone-900 bg-stone-900 text-white shadow-lg'
+                                          : 'border-stone-200 bg-white/80 text-stone-700 hover:border-stone-400 hover:text-stone-900'
+                                      }`}
+                                    >
+                                      <div className="flex items-center gap-2 text-sm">
+                                        <Icon className="h-4 w-4" />
+                                        {tone.label}
+                                      </div>
+                                      <p className="text-xs font-normal opacity-80">
+                                        {tone.description}
+                                      </p>
+                                    </Button>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-stone-700">
+                                Audience notes
+                              </p>
+                              <Textarea
+                                value={personaNotes}
+                                onChange={(event) => setPersonaNotes(event.target.value)}
+                                placeholder="What keeps them up at night? What do they hope God will do?"
+                                className="mt-3 min-h-[160px] rounded-2xl border-stone-300 bg-white/90"
+                              />
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
 
                     <div data-testid="section-prompt" className="relative hidden bg-white rounded-3xl shadow-xl ">
                       {/* <label className="text-sm font-medium mb-2 block">Text Content</label> */}
