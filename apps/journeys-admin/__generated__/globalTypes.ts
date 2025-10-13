@@ -45,6 +45,7 @@ export enum EventType {
   ButtonClickEvent = "ButtonClickEvent",
   ChatOpenEvent = "ChatOpenEvent",
   JourneyViewEvent = "JourneyViewEvent",
+  MultiselectSubmissionEvent = "MultiselectSubmissionEvent",
   RadioQuestionSubmissionEvent = "RadioQuestionSubmissionEvent",
   SignUpSubmissionEvent = "SignUpSubmissionEvent",
   StepNextEvent = "StepNextEvent",

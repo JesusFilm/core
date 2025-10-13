@@ -10,6 +10,7 @@ export const EventType = builder.enumType('EventType', {
     'StepViewEvent',
     'StepNextEvent',
     'StepPreviousEvent',
+    'MultiselectSubmissionEvent',
     'TextResponseSubmissionEvent',
     'VideoStartEvent',
     'VideoPlayEvent',
