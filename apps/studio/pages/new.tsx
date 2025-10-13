@@ -619,7 +619,15 @@ When refining or improving content, consider:
 - Previous AI responses may show patterns in content style and messaging
 - Maintain consistency with your previous suggestions
 - Build upon rather than contradict earlier improvements
-- If no previous context is available, proceed with standard enhancement`
+- If no previous context is available, proceed with standard enhancement
+
+Structure every response as a multi-step experience that can be rendered across sequential cards:
+- Separate each section clearly using "Step X" headings (e.g., "Step 1", "Step 2").
+- Tailor the number of steps to match the user's request (e.g., multiple chat replies, carousel slides, scripted beats).
+- Within each step, provide concise, editable content (Markdown is allowed) followed by:
+  - A "Keywords" line listing exactly three relevant keywords for Unsplash image search.
+  - An "AI Visual Prompt" line with a short prompt suitable for tools like Veo3 or Nano Banana.
+- Ensure the formatting makes it easy to parse each step into separate cards with editable text areas and associated image carousels.`
     })
 
     // Add current session conversation history
