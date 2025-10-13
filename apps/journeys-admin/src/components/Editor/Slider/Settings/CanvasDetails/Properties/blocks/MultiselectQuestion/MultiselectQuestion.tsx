@@ -18,7 +18,7 @@ import { BlockFields_MultiselectBlock as MultiselectBlock } from '../../../../..
 
 export const MULTISELECT_BLOCK_UPDATE = gql`
   ${MULTISELECT_QUESTION_FIELDS}
-  mutation MultiselectBlockUpdate(
+  mutation MultiselectBlockUpdate_SettingsPanel(
     $id: ID!
     $input: MultiselectBlockUpdateInput!
   ) {

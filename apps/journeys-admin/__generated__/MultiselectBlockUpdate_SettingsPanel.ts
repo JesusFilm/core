@@ -6,10 +6,10 @@
 import { MultiselectBlockUpdateInput } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: MultiselectBlockUpdate
+// GraphQL mutation operation: MultiselectBlockUpdate_SettingsPanel
 // ====================================================
 
-export interface MultiselectBlockUpdate_multiselectBlockUpdate {
+export interface MultiselectBlockUpdate_SettingsPanel_multiselectBlockUpdate {
   __typename: "MultiselectBlock";
   id: string;
   parentBlockId: string | null;
@@ -18,11 +18,11 @@ export interface MultiselectBlockUpdate_multiselectBlockUpdate {
   max: number | null;
 }
 
-export interface MultiselectBlockUpdate {
-  multiselectBlockUpdate: MultiselectBlockUpdate_multiselectBlockUpdate;
+export interface MultiselectBlockUpdate_SettingsPanel {
+  multiselectBlockUpdate: MultiselectBlockUpdate_SettingsPanel_multiselectBlockUpdate;
 }
 
-export interface MultiselectBlockUpdateVariables {
+export interface MultiselectBlockUpdate_SettingsPanelVariables {
   id: string;
   input: MultiselectBlockUpdateInput;
 }

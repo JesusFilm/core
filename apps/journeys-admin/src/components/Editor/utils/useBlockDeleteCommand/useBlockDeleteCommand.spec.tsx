@@ -187,7 +187,7 @@ describe('useBlockDeleteCommand', () => {
     }
 
     const multiselectUpdateDoc = gql`
-      mutation MultiselectBlockUpdate(
+      mutation MultiselectBlockUpdate_Spec(
         $id: ID!
         $input: MultiselectBlockUpdateInput!
       ) {

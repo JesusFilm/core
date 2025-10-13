@@ -3,6 +3,7 @@ import { array, object, string } from 'yup'
 
 import { TextResponseType } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
+import { BlockFields_MultiselectBlock as MultiselectBlock } from '../../../../libs/block/__generated__/BlockFields'
 import { TextResponseFields } from '../../../TextResponse/__generated__/TextResponseFields'
 import { getMultiselectBlocks } from '../getMultiselectBlocks'
 import { getTextResponseBlocks } from '../getTextResponseBlocks'
@@ -44,10 +45,11 @@ export function getValidationSchema(
   })
 
   // Multiselect validations: enforce min and max when provided
-  const multiselectBlocks = getMultiselectBlocks(children)
+  const multiselectBlocks: Array<TreeBlock<MultiselectBlock>> =
+    getMultiselectBlocks(children)
   multiselectBlocks.forEach((block) => {
-    const min = (block as any).min as number | null | undefined
-    const max = (block as any).max as number | null | undefined
+    const min = block.min
+    const max = block.max
 
     // Only build schema if either min or max is set
     if (typeof min === 'number' && min > 0) {

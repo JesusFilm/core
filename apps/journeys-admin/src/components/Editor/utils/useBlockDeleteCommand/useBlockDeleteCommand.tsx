@@ -34,7 +34,7 @@ export function useBlockDeleteCommand(): {
   const [journeyUpdate] = useJourneyUpdateMutation()
 
   const MULTISELECT_BLOCK_UPDATE = gql`
-    mutation MultiselectBlockUpdate(
+    mutation MultiselectBlockUpdate_DeleteFlow(
       $id: ID!
       $input: MultiselectBlockUpdateInput!
     ) {
