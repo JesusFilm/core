@@ -80,6 +80,7 @@ describe('ContactDataForm', () => {
     fireEvent.click(screen.getByLabelText('Poll Selection'))
     fireEvent.click(screen.getByLabelText('Subscription'))
     fireEvent.click(screen.getByLabelText('Text Submission'))
+    fireEvent.click(screen.getByLabelText('Multiselect Submission'))
     expect(screen.getByTestId('selected-fields')).toHaveTextContent('')
 
     // Check Name

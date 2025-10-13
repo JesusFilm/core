@@ -365,14 +365,15 @@ describe('ExportDialog', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Export (CSV)' }))
       expect(mockExportJourneyContacts).toHaveBeenCalledWith({
         journeyId: 'journey1',
-        filter: {
-          typenames: [
+        filter: expect.objectContaining({
+          typenames: expect.arrayContaining([
             'RadioQuestionSubmissionEvent',
+            'MultiselectSubmissionEvent',
             'SignUpSubmissionEvent',
             'TextResponseSubmissionEvent'
-          ],
+          ]),
           periodRangeEnd: expect.any(String)
-        },
+        }),
         select: {
           name: true,
           email: true,

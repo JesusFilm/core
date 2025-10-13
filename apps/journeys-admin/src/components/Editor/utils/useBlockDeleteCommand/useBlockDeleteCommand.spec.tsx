@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { gql } from '@apollo/client'
+import { MULTISELECT_BLOCK_UPDATE as multiselectUpdateDoc } from './useBlockDeleteCommand'
 import { fireEvent, renderHook, screen, waitFor } from '@testing-library/react'
 
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
@@ -186,21 +187,7 @@ describe('useBlockDeleteCommand', () => {
       children: [card]
     }
 
-    const multiselectUpdateDoc = gql`
-      mutation MultiselectBlockUpdate_Spec(
-        $id: ID!
-        $input: MultiselectBlockUpdateInput!
-      ) {
-        multiselectBlockUpdate(id: $id, input: $input) {
-          __typename
-          id
-          parentBlockId
-          parentOrder
-          min
-          max
-        }
-      }
-    `
+    // using imported document from the implementation for consistency
 
     const blockDeleteMockResult = jest.fn(() => ({
       data: {

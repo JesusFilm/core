@@ -20,6 +20,22 @@ import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutat
 
 import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
 
+export const MULTISELECT_BLOCK_UPDATE = gql`
+  mutation MultiselectBlockUpdate_DeleteFlow(
+    $id: ID!
+    $input: MultiselectBlockUpdateInput!
+  ) {
+    multiselectBlockUpdate(id: $id, input: $input) {
+      __typename
+      id
+      parentBlockId
+      parentOrder
+      min
+      max
+    }
+  }
+`
+
 export function useBlockDeleteCommand(): {
   addBlockDelete: (currentBlock: TreeBlock) => void
 } {
@@ -32,22 +48,6 @@ export function useBlockDeleteCommand(): {
   const [blockDelete] = useBlockDeleteMutation()
   const [blockRestore] = useBlockRestoreMutation()
   const [journeyUpdate] = useJourneyUpdateMutation()
-
-  const MULTISELECT_BLOCK_UPDATE = gql`
-    mutation MultiselectBlockUpdate_DeleteFlow(
-      $id: ID!
-      $input: MultiselectBlockUpdateInput!
-    ) {
-      multiselectBlockUpdate(id: $id, input: $input) {
-        __typename
-        id
-        parentBlockId
-        parentOrder
-        min
-        max
-      }
-    }
-  `
 
   const [updateMultiselectBlock] = useMutation(MULTISELECT_BLOCK_UPDATE)
 
