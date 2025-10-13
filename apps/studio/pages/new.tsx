@@ -619,7 +619,13 @@ When refining or improving content, consider:
 - Previous AI responses may show patterns in content style and messaging
 - Maintain consistency with your previous suggestions
 - Build upon rather than contradict earlier improvements
-- If no previous context is available, proceed with standard enhancement`
+- If no previous context is available, proceed with standard enhancement
+
+Output requirements:
+- Create multi-step content where each step is clearly separated in the response so the app can render each as an individual card.
+- Allow Markdown formatting within each step's content when helpful.
+- After the main content of every step, include a "Keywords" list with exactly three relevant Unsplash search terms and a concise "Visual Prompt" line for AI image/video generation tools such as Veo3 or Nano Banana.
+- Ensure the structure makes it easy for users to edit, copy, and associate each step with its own image carousel.`
     })
 
     // Add current session conversation history
