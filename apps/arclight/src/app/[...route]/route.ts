@@ -4,6 +4,7 @@ import { etag } from 'hono/etag'
 import { handle } from 'hono/vercel'
 
 import { setCorsHeaders } from '../../lib/redirectUtils'
+import { createTracingMiddleware } from '../../lib/tracingMiddleware'
 
 import { dh } from './_dh'
 import { dl } from './_dl'
@@ -14,6 +15,9 @@ export const dynamic = 'force-dynamic'
 
 const app = new OpenAPIHono().basePath('/')
 app.use(etag())
+
+// Add Datadog tracing middleware
+app.use('*', createTracingMiddleware('arclight.api.request', 'arclight'))
 
 // Register route modules
 app.route('/hls', hls)
