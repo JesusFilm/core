@@ -29,9 +29,10 @@ export function Logo(): ReactElement {
       alt={logo.alt}
       onClick={handleHomeClick}
       sx={{
+        borderRadius: '100%',
         width: 44,
         height: 44,
-        objectFit: 'contain'
+        objectFit: 'cover'
       }}
     />
   ) : showEmpty ? (
