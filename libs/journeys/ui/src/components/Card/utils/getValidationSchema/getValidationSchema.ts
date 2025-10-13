@@ -43,14 +43,33 @@ export function getValidationSchema(
     validationSchema[block.id] = fieldSchema
   })
 
-  // Multiselect validations: if min is set and > 0, require at least min selections
+  // Multiselect validations: enforce min and max when provided
   const multiselectBlocks = getMultiselectBlocks(children)
   multiselectBlocks.forEach((block) => {
     const min = (block as any).min as number | null | undefined
+    const max = (block as any).max as number | null | undefined
+
+    // Only build schema if either min or max is set
     if (typeof min === 'number' && min > 0) {
+      const base = array().of(string())
+      const withMin = base.min(
+        min,
+        t('Select at least {{count}} options.', { count: min })
+      )
+      validationSchema[block.id] =
+        typeof max === 'number' && max > 0
+          ? withMin.max(
+              max,
+              t('Select up to {{count}} options.', { count: max })
+            )
+          : withMin
+      return
+    }
+
+    if (typeof max === 'number' && max > 0) {
       validationSchema[block.id] = array()
         .of(string())
-        .min(min, t('Select at least {{count}} option(s)', { count: min }))
+        .max(max, t('Select up to {{count}} options.', { count: max }))
     }
   })
 

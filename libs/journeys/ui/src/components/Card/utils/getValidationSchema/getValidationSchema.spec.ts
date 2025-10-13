@@ -138,11 +138,56 @@ describe('getValidationSchema', () => {
     const schema = getValidationSchema(mockBlocks, mockT)
 
     await expect(schema.validate({ multi: [] })).rejects.toThrow(
-      'Select at least {{count}} option(s)'
+      'Select at least {{count}} options.'
     )
     await expect(schema.validate({ multi: ['A'] })).rejects.toThrow(
-      'Select at least {{count}} option(s)'
+      'Select at least {{count}} options.'
     )
     await expect(schema.validate({ multi: ['A', 'B'] })).resolves.not.toThrow()
+  })
+
+  it('should enforce multiselect max when max > 0', async () => {
+    const mockBlocks = asTreeBlocks([
+      {
+        id: 'multi',
+        __typename: 'MultiselectBlock',
+        min: null,
+        max: 2,
+        children: []
+      }
+    ])
+
+    const schema = getValidationSchema(mockBlocks, mockT)
+
+    await expect(schema.validate({ multi: ['A', 'B', 'C'] })).rejects.toThrow(
+      'Select up to {{count}} options.'
+    )
+    await expect(schema.validate({ multi: ['A'] })).resolves.not.toThrow()
+    await expect(schema.validate({ multi: ['A', 'B'] })).resolves.not.toThrow()
+  })
+
+  it('should enforce both min and max when both provided', async () => {
+    const mockBlocks = asTreeBlocks([
+      {
+        id: 'multi',
+        __typename: 'MultiselectBlock',
+        min: 2,
+        max: 3,
+        children: []
+      }
+    ])
+
+    const schema = getValidationSchema(mockBlocks, mockT)
+
+    await expect(schema.validate({ multi: ['A'] })).rejects.toThrow(
+      'Select at least {{count}} options.'
+    )
+    await expect(
+      schema.validate({ multi: ['A', 'B', 'C', 'D'] })
+    ).rejects.toThrow('Select up to {{count}} options.')
+    await expect(schema.validate({ multi: ['A', 'B'] })).resolves.not.toThrow()
+    await expect(
+      schema.validate({ multi: ['A', 'B', 'C'] })
+    ).resolves.not.toThrow()
   })
 })
