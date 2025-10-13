@@ -356,4 +356,98 @@ describe('transformJourneyAnalytics', () => {
     expect(result?.chatsStarted).toBe(5)
     expect(result?.linksVisited).toBe(3)
   })
+
+  it('should filter out videoComplete events to avoid doubling up with videoTrigger', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [],
+      journeyStepsActions: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoTrigger","blockId":"video1.id","target":""}',
+          visitors: 10
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoComplete","blockId":"video1.id","target":""}',
+          visitors: 10
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step2.id","event":"videoTrigger","blockId":"video2.id","target":""}',
+          visitors: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step2.id","event":"videoComplete","blockId":"video2.id","target":""}',
+          visitors: 5
+        }
+      ],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoTrigger","blockId":"video1.id","target":""}',
+          visitors: 10
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoComplete","blockId":"video1.id","target":""}',
+          visitors: 10
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step2.id","event":"videoTrigger","blockId":"video2.id","target":""}',
+          visitors: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step2.id","event":"videoComplete","blockId":"video2.id","target":""}',
+          visitors: 5
+        }
+      ],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 15
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    // videoTrigger events should be included in stepMap and blockMap
+    expect(result?.stepMap.get('step1.id')?.eventMap.get('videoTrigger')).toBe(
+      10
+    )
+    expect(result?.stepMap.get('step2.id')?.eventMap.get('videoTrigger')).toBe(
+      5
+    )
+
+    // videoComplete events should NOT be included in stepMap
+    expect(
+      result?.stepMap.get('step1.id')?.eventMap.get('videoComplete')
+    ).toBeUndefined()
+    expect(
+      result?.stepMap.get('step2.id')?.eventMap.get('videoComplete')
+    ).toBeUndefined()
+
+    // videoTrigger events should be included in blockMap (since videoTrigger is in ACTION_EVENTS)
+    expect(result?.blockMap.get('video1.id')).toBe(10)
+    expect(result?.blockMap.get('video2.id')).toBe(5)
+
+    // Total should only count videoTrigger events, not videoComplete
+    expect(result?.stepMap.get('step1.id')?.total).toBe(10)
+    expect(result?.stepMap.get('step2.id')?.total).toBe(5)
+  })
 })

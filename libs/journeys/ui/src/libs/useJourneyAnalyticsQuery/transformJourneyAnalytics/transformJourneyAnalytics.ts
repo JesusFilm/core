@@ -20,7 +20,9 @@ const ACTION_EVENTS: Array<keyof JourneyPlausibleEvents> = [
   'textResponseSubmit',
   'signupSubmit',
   'radioQuestionSubmit',
-  'videoComplete',
+  // VideoTrigger and VideoComplete can double up with each other
+  // only choose one of them
+  'videoTrigger',
   'chatButtonClick',
   'footerChatButtonClick'
 ]
@@ -126,8 +128,11 @@ function getJourneyEvents(
   const journeyEvents: PlausibleEvent[] = []
   journeyStepsActions.forEach((action) => {
     if (action.property === '(none)') return
+    const eventData = reverseKeyify(action.property)
+    if (eventData.event === 'videoComplete') return
+
     journeyEvents.push({
-      ...reverseKeyify(action.property),
+      ...eventData,
       events: action.visitors ?? 0
     })
   })
@@ -154,6 +159,7 @@ function getLinkClicks(journeyEvents: PlausibleEvent[]): {
   chatsStarted: number
   linksVisited: number
 } {
+  console.log('journeyEvents', journeyEvents)
   let chatsStarted = 0
   let linksVisited = 0
 
