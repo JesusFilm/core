@@ -5,6 +5,7 @@ import {
   Facebook,
   FileText,
   Globe,
+  Heart,
   History,
   Image as ImageIcon,
   Info,
@@ -63,6 +64,21 @@ const steps = [
   { id: 1, title: 'Content', description: 'What do you want to share?' },
   { id: 2, title: 'Style', description: 'Choose your design style' },
   { id: 3, title: 'Output', description: 'Select output formats' }
+]
+
+const chatContextOptions = [
+  { text: 'Start a conversation', emoji: '💬' },
+  { text: 'Reconnect with someone', emoji: '👥' },
+  { text: 'Invite someone to talk more', emoji: '💭' },
+  { text: 'Say you\'re sorry', emoji: '🙏' },
+  { text: 'Encourage a friend', emoji: '✋' },
+  { text: 'Share your story', emoji: '📝' },
+  { text: 'Tell what God\'s done (testimony)', emoji: '👑' },
+  { text: 'Share a verse', emoji: '📖' },
+  { text: 'Offer a prayer', emoji: '🤲' },
+  { text: 'Send a video', emoji: '🎥' },
+  { text: 'Recommend a podcast', emoji: '🎧' },
+  { text: 'Share a book or article', emoji: '📚' }
 ]
 
 // Removed - now using proper conversation history instead of RAG
@@ -375,6 +391,7 @@ export default function NewPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedFormat, setSelectedFormat] = useState<string>('')
   const [selectedContext, setSelectedContext] = useState<string>('')
+  const [selectedChatContext, setSelectedChatContext] = useState<string>('')
   const [isContextContainerHidden, setIsContextContainerHidden] = useState<boolean>(false)
   const [highlightedCategory, setHighlightedCategory] = useState<string>('')
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
@@ -2003,6 +2020,60 @@ Guidelines:
                         </div>
                       </div>
                     </div>
+
+                    {/* Chat Context Options - shown when Chat/Comments is selected */}
+                    {selectedContext === 'Chat/Comments' && (
+                      <div className="mb-8">
+                        {/* Regular options in flex wrap */}
+                        <div className="flex flex-wrap gap-3 mb-4">
+                          {chatContextOptions.map((option, index) => (
+                            <div
+                              key={option.text}
+                              className={`relative w-fit px-4 py-2 border rounded-xl cursor-pointer hover:bg-white hover:scale-102 transition-all duration-300 ${
+                                selectedChatContext === option.text
+                                  ? 'border-blue-500 bg-blue-50'
+                                  : 'border-gray-300 hover:border-gray-400'
+                              }`}
+                              style={{
+                                animationDelay: `${index * 0.1}s`,
+                                animationFillMode: 'forwards'
+                              }}
+                              onClick={() => setSelectedChatContext(option.text)}
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className="text-lg">{option.emoji}</span>
+                                <p className="text-sm text-gray-800 leading-relaxed">
+                                  {option.text}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Start from scratch option on its own line */}
+                        <div className="flex justify-start">
+                          <div
+                            className={`relative w-fit px-4 py-2 border rounded-xl cursor-pointer hover:bg-white hover:scale-102 transition-all duration-300 ${
+                              selectedChatContext === 'Start from scratch'
+                                ? 'border-blue-500 bg-blue-50'
+                                : 'border-gray-300 hover:border-gray-400'
+                            }`}
+                            style={{
+                              animationDelay: `${chatContextOptions.length * 0.1}s`,
+                              animationFillMode: 'forwards'
+                            }}
+                            onClick={() => setSelectedChatContext('Start from scratch')}
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg">➕</span>
+                              <p className="text-sm text-gray-800 leading-relaxed">
+                                Start from scratch
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     <div data-testid="section-prompt" className="relative hidden bg-white rounded-3xl shadow-xl ">
                       {/* <label className="text-sm font-medium mb-2 block">Text Content</label> */}
