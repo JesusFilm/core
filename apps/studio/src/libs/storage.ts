@@ -8,12 +8,20 @@ export interface ImageAnalysisResult {
   isAnalyzing?: boolean
 }
 
+export interface GeneratedStepContent {
+  title: string
+  content: string
+  keywords: string[]
+  mediaPrompt: string
+}
+
 export interface UserInputData {
   id: string
   timestamp: number
   textContent: string
   images: string[] // Array of image data URLs
   aiResponse?: string // The enhanced content from OpenAI text processing
+  aiSteps?: GeneratedStepContent[]
   imageAnalysisResults: ImageAnalysisResult[]
 }
 
@@ -132,6 +140,18 @@ class UserInputStorage {
           textContent: data.textContent || '',
           images: Array.isArray(data.images) ? data.images : [],
           aiResponse: data.aiResponse || '',
+          aiSteps: Array.isArray(data.aiSteps)
+            ? data.aiSteps.map((step) => ({
+                title: step?.title || '',
+                content: step?.content || '',
+                keywords: Array.isArray(step?.keywords)
+                  ? step.keywords
+                      .filter((keyword): keyword is string => Boolean(keyword))
+                      .slice(0, 5)
+                  : [],
+                mediaPrompt: step?.mediaPrompt || ''
+              }))
+            : [],
           imageAnalysisResults: Array.isArray(data.imageAnalysisResults)
             ? data.imageAnalysisResults.map(result => ({
                 imageSrc: result?.imageSrc || '',

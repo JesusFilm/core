@@ -18,7 +18,7 @@ const nextConfig = {
     ignoreDuringBuilds: process.env.CI === 'true'
   },
   images: {
-    domains: ['images.unsplash.com']
+    domains: ['images.unsplash.com', 'source.unsplash.com']
   }
 }
 
