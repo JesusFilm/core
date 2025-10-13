@@ -1,4 +1,6 @@
 import {
+  Camera,
+  Copy,
   Crown,
   Facebook,
   FileText,
@@ -10,10 +12,6 @@ import {
   Instagram,
   MessageCircle,
   MessageSquare,
-  Camera,
-  Send,
-  Layers,
-  X,
   Palette,
   Paperclip,
   Plus,
@@ -23,6 +21,7 @@ import {
   Twitter,
   Users,
   Video,
+  X,
   Youtube,
   Zap
 } from 'lucide-react'
@@ -55,7 +54,11 @@ import {
   TabsTrigger
 } from '../src/components/ui/tabs'
 import { Textarea } from '../src/components/ui/textarea'
-import { type UserInputData, userInputStorage } from '../src/libs/storage'
+import {
+  type GeneratedStepContent,
+  type UserInputData,
+  userInputStorage
+} from '../src/libs/storage'
 
 const steps = [
   { id: 1, title: 'Content', description: 'What do you want to share?' },
@@ -401,6 +404,8 @@ export default function NewPage() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [textContent, setTextContent] = useState('')
   const [aiResponse, setAiResponse] = useState('')
+  const [editableSteps, setEditableSteps] = useState<GeneratedStepContent[]>([])
+  const [copiedStepIndex, setCopiedStepIndex] = useState<number | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [imageAttachments, setImageAttachments] = useState<string[]>([])
   const [imageAnalysisResults, setImageAnalysisResults] = useState<
@@ -465,6 +470,7 @@ export default function NewPage() {
       setTextContent(draft.textContent)
       setImageAttachments(draft.images)
       setAiResponse(draft.aiResponse || '')
+      setEditableSteps(draft.aiSteps || [])
       setImageAnalysisResults(
         draft.imageAnalysisResults.map((result) => ({
           ...result,
@@ -505,6 +511,7 @@ export default function NewPage() {
             textContent: textContent || '',
             images: imageAttachments,
             aiResponse: aiResponse || '',
+            aiSteps: editableSteps,
             imageAnalysisResults: imageAnalysisResults || []
           })
         }
@@ -515,7 +522,13 @@ export default function NewPage() {
     }, 1000) // Save after 1 second of inactivity
 
     return () => clearTimeout(timeoutId)
-  }, [textContent, imageAttachments, aiResponse, imageAnalysisResults])
+  }, [
+    textContent,
+    imageAttachments,
+    aiResponse,
+    imageAnalysisResults,
+    editableSteps
+  ])
 
   // Auto-resize textarea
   const adjustTextareaHeight = () => {
@@ -540,6 +553,13 @@ export default function NewPage() {
     adjustTextareaHeight()
   }, [textContent])
 
+  useEffect(() => {
+    if (copiedStepIndex === null) return
+
+    const timeout = setTimeout(() => setCopiedStepIndex(null), 2000)
+    return () => clearTimeout(timeout)
+  }, [copiedStepIndex])
+
   const handleNext = () => {
     if (currentStep < steps.length) {
       const nextStep = currentStep + 1
@@ -551,6 +571,7 @@ export default function NewPage() {
           textContent,
           images: imageAttachments,
           aiResponse,
+          aiSteps: editableSteps,
           imageAnalysisResults: imageAnalysisResults.map((result) => ({
             imageSrc: result.imageSrc,
             contentType: result.contentType,
@@ -636,7 +657,26 @@ When refining or improving content, consider:
 - Previous AI responses may show patterns in content style and messaging
 - Maintain consistency with your previous suggestions
 - Build upon rather than contradict earlier improvements
-- If no previous context is available, proceed with standard enhancement`
+- If no previous context is available, proceed with standard enhancement
+
+Provide the response as JSON with this structure:
+{
+  "steps": [
+    {
+      "title": "Short label for the step (max 6 words)",
+      "content": "Markdown-ready devotional copy for this step",
+      "keywords": ["keyword one", "keyword two", "keyword three"],
+      "mediaPrompt": "≤150 character prompt for an image/video generator"
+    }
+  ]
+}
+
+Guidelines:
+- Include 3-5 sequential steps tailored to the user's request.
+- Keep the core spiritual message while making each step social-ready.
+- Ensure the three keywords are warm, descriptive, and suitable for Unsplash searches.
+- The mediaPrompt should align with the step's tone and visuals.
+- Use markdown formatting inside the content field when helpful.`
     })
 
     // Add current session conversation history
@@ -676,6 +716,114 @@ When refining or improving content, consider:
     return messages
   }
 
+  const normalizeGeneratedSteps = (
+    steps: GeneratedStepContent[]
+  ): GeneratedStepContent[] =>
+    steps.map((step, index) => {
+      const normalizedKeywords = Array.isArray(step?.keywords)
+        ? step.keywords
+            .map((keyword) =>
+              typeof keyword === 'string'
+                ? keyword.trim()
+                : String(keyword ?? '').trim()
+            )
+            .filter((keyword) => keyword.length > 0)
+            .slice(0, 3)
+        : []
+
+      return {
+        title: step?.title?.trim() || `Step ${index + 1}`,
+        content: step?.content?.trim() || '',
+        keywords: normalizedKeywords,
+        mediaPrompt: step?.mediaPrompt?.trim() || ''
+      }
+    })
+
+  const parseGeneratedSteps = (rawContent: string): GeneratedStepContent[] => {
+    if (!rawContent) return []
+
+    let preparedContent = rawContent.trim()
+    const codeBlockMatch = preparedContent.match(/```(?:json)?\s*([\s\S]*?)```/i)
+    if (codeBlockMatch?.[1]) {
+      preparedContent = codeBlockMatch[1].trim()
+    }
+
+    try {
+      const parsed = JSON.parse(preparedContent)
+      const stepsArray = Array.isArray(parsed?.steps)
+        ? parsed.steps
+        : Array.isArray(parsed)
+          ? parsed
+          : []
+
+      if (Array.isArray(stepsArray) && stepsArray.length > 0) {
+        return normalizeGeneratedSteps(stepsArray as GeneratedStepContent[])
+      }
+    } catch (error) {
+      console.warn(
+        'Failed to parse structured multi-step content. Falling back to default format.',
+        error
+      )
+    }
+
+    const fallbackSteps: GeneratedStepContent[] = []
+    const stepRegex = /(Step\s+\d+\s*[:-]?)([\s\S]*?)(?=(?:\nStep\s+\d+\s*[:-]?\b)|$)/gi
+    let match = stepRegex.exec(preparedContent)
+    if (match) {
+      stepRegex.lastIndex = 0
+      let fallbackIndex = 0
+      while ((match = stepRegex.exec(preparedContent)) !== null) {
+        const [, rawTitle, rawBody] = match
+        fallbackSteps.push({
+          title: rawTitle?.replace(/[:-]+$/, '').trim() || `Step ${fallbackIndex + 1}`,
+          content: rawBody?.trim() || '',
+          keywords: [],
+          mediaPrompt: ''
+        })
+        fallbackIndex += 1
+      }
+    }
+
+    if (fallbackSteps.length > 0) {
+      return normalizeGeneratedSteps(fallbackSteps)
+    }
+
+    return normalizeGeneratedSteps([
+      {
+        title: 'Step 1',
+        content: rawContent.trim(),
+        keywords: [],
+        mediaPrompt: ''
+      }
+    ])
+  }
+
+  const handleStepContentChange = (index: number, value: string) => {
+    setEditableSteps((prev) => {
+      if (!prev[index]) return prev
+      const updated = [...prev]
+      updated[index] = { ...updated[index], content: value }
+      return updated
+    })
+  }
+
+  const handleCopyStep = async (
+    step: GeneratedStepContent,
+    index: number
+  ): Promise<void> => {
+    try {
+      if (typeof navigator !== 'undefined' && navigator?.clipboard) {
+        await navigator.clipboard.writeText(step.content)
+        setCopiedStepIndex(index)
+      } else {
+        throw new Error('Clipboard API unavailable')
+      }
+    } catch (error) {
+      console.error('Failed to copy step content:', error)
+      alert('Unable to copy content automatically. Please copy manually.')
+    }
+  }
+
   const processContentWithAI = async () => {
     if (!textContent.trim()) {
       alert('Please enter some content to process.')
@@ -690,6 +838,7 @@ When refining or improving content, consider:
 
     setIsProcessing(true)
     const previousResponse = aiResponse
+    const previousSteps = editableSteps
     setAiResponse('')
 
     try {
@@ -728,6 +877,8 @@ When refining or improving content, consider:
       const processedContent =
         data.choices[0]?.message?.content || 'No response generated'
       setAiResponse(processedContent)
+      const parsedSteps = parseGeneratedSteps(processedContent)
+      setEditableSteps(parsedSteps)
 
       // Track token usage
       if (data.usage) {
@@ -740,6 +891,7 @@ When refining or improving content, consider:
       console.error('Error processing content:', error)
       // Restore previous response if API call failed
       setAiResponse(previousResponse)
+      setEditableSteps(previousSteps)
       alert(
         'Failed to process content. Please check your API key and try again.'
       )
@@ -1019,6 +1171,7 @@ When refining or improving content, consider:
     setTextContent(session.textContent)
     setImageAttachments(session.images)
     setAiResponse(session.aiResponse || '')
+    setEditableSteps(session.aiSteps || [])
     setImageAnalysisResults(
       session.imageAnalysisResults.map((result) => ({
         ...result,
@@ -3319,27 +3472,104 @@ When refining or improving content, consider:
                       </div>
                     </div>
 
-                    {aiResponse && (
-                      <div className="mt-12">
-                        <label className="text-sm font-medium mb-2 block">
-                          AI Enhanced Content
-                        </label>
-                        <div className="p-4 bg-muted/50 rounded-lg border">
-                          <p className="text-sm whitespace-pre-wrap">
-                            {aiResponse}
-                          </p>
+                    {editableSteps.length > 0 && (
+                      <div className="mt-12 space-y-6">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <label className="text-sm font-medium">
+                            AI Multi-Step Content
+                          </label>
+                          <div className="flex items-center gap-1 text-xs text-blue-600">
+                            <History className="w-3 h-3" />
+                            <span>Conversation context preserved</span>
+                          </div>
                         </div>
-                        <div className="flex items-center justify-between mt-2">
-                          <p className="text-xs text-muted-foreground">
-                            This enhanced version is ready for social sharing.
-                            You can use it as-is or edit it further.
-                          </p>
-                          {aiResponse && (
-                            <div className="flex items-center gap-1 text-xs text-blue-600">
-                              <History className="w-3 h-3" />
-                              <span>Conversation context preserved</span>
-                            </div>
-                          )}
+                        <div className="grid gap-6">
+                          {editableSteps.map((step, index) => (
+                            <Card key={`${step.title}-${index}`} className="border shadow-sm">
+                              <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                <CardTitle className="text-base font-semibold">
+                                  {step.title || `Step ${index + 1}`}
+                                </CardTitle>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="gap-2 self-start sm:self-auto"
+                                  onClick={() => handleCopyStep(step, index)}
+                                >
+                                  <Copy className="h-4 w-4" />
+                                  {copiedStepIndex === index ? 'Copied' : 'Copy'}
+                                </Button>
+                              </CardHeader>
+                              <CardContent className="space-y-4">
+                                <div className="space-y-2">
+                                  <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                                    Step Content
+                                  </label>
+                                  <Textarea
+                                    value={step.content}
+                                    onChange={(event) =>
+                                      handleStepContentChange(index, event.target.value)
+                                    }
+                                    className="min-h-[160px] whitespace-pre-wrap"
+                                  />
+                                </div>
+                                <div className="space-y-2">
+                                  <h4 className="text-sm font-medium">Keywords for Unsplash</h4>
+                                  {step.keywords.length > 0 ? (
+                                    <div className="flex flex-wrap gap-2">
+                                      {step.keywords.map((keyword, keywordIndex) => (
+                                        <span
+                                          key={`${keyword}-${keywordIndex}`}
+                                          className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20"
+                                        >
+                                          {keyword}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <p className="text-xs text-muted-foreground">
+                                      Keywords not provided.
+                                    </p>
+                                  )}
+                                </div>
+                                <div className="space-y-2">
+                                  <h4 className="text-sm font-medium">Media Prompt</h4>
+                                  <p className="text-sm whitespace-pre-wrap text-muted-foreground">
+                                    {step.mediaPrompt || 'No prompt provided.'}
+                                  </p>
+                                </div>
+                                <div className="space-y-2">
+                                  <h4 className="text-sm font-medium">Image Inspiration</h4>
+                                  {step.keywords.length > 0 ? (
+                                    <div className="flex gap-3 overflow-x-auto pb-2">
+                                      {step.keywords.map((keyword, keywordIndex) => {
+                                        const imageUrl = `https://source.unsplash.com/600x600/?${encodeURIComponent(keyword)}&sig=${index}-${keywordIndex}`
+                                        return (
+                                          <div
+                                            key={`${keyword}-${keywordIndex}-img`}
+                                            className="relative h-40 w-40 flex-shrink-0 overflow-hidden rounded-lg border"
+                                          >
+                                            <Image
+                                              src={imageUrl}
+                                              alt={`${step.title || `Step ${index + 1}`} inspiration ${keyword}`}
+                                              fill
+                                              sizes="160px"
+                                              className="object-cover"
+                                            />
+                                          </div>
+                                        )
+                                      })}
+                                    </div>
+                                  ) : (
+                                    <p className="text-xs text-muted-foreground">
+                                      Add keywords to view Unsplash inspirations.
+                                    </p>
+                                  )}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
                         </div>
                       </div>
                     )}

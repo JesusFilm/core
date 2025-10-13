@@ -3,7 +3,6 @@ import { Workspace } from 'polotno/canvas/workspace';
 import { unstable_setAnimationsEnabled } from 'polotno/config';
 import { createStore } from 'polotno/model/store';
 import { PagesTimeline } from 'polotno/pages-timeline';
-import { SidePanel } from 'polotno/side-panel';
 import { Toolbar } from 'polotno/toolbar/toolbar';
 import { ZoomButtons } from 'polotno/toolbar/zoom-buttons';
 import React from 'react';
@@ -19,7 +18,7 @@ const store = createStore({
   // but it will be good if you can keep it for Polotno project support
   showCredit: true,
 });
-const page = store.addPage();
+store.addPage();
 store.loadJSON(JSON.parse(initialState));
 
 export const Editor = () => {

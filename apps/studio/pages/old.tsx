@@ -6,7 +6,6 @@ import {
   Instagram,
   Minus,
   Palette,
-  Play,
   Plus,
   Printer,
   Settings,
