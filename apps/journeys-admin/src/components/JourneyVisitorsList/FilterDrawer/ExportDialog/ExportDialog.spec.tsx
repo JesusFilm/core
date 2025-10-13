@@ -162,6 +162,7 @@ describe('ExportDialog', () => {
       EventType.ChatOpenEvent,
       EventType.TextResponseSubmissionEvent,
       EventType.RadioQuestionSubmissionEvent,
+      EventType.MultiselectSubmissionEvent,
       EventType.ButtonClickEvent,
       EventType.SignUpSubmissionEvent,
       EventType.VideoStartEvent,

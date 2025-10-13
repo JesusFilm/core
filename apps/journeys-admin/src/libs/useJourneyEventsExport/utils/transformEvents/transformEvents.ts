@@ -6,14 +6,14 @@ export function transformEvents(events: EventEdge[]): JourneyEvent[] {
     switch (edge.node.typename) {
       case 'MultiselectSubmissionEvent': {
         const raw = edge.node.value ?? ''
-        const withLineBreaks = raw
+        const withSemicolons = raw
           .split(',')
           .map((s) => s.trim())
           .filter((s) => s.length > 0)
-          .join('\n')
+          .join('; ')
         return {
           ...edge.node,
-          value: withLineBreaks
+          value: withSemicolons
         }
       }
       case 'VideoProgressEvent':

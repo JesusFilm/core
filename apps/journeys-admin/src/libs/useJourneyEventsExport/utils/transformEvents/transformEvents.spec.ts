@@ -428,7 +428,7 @@ describe('transformEvents', () => {
     ])
   })
 
-  it('should convert MultiselectSubmissionEvent comma-separated values to line breaks', () => {
+  it('should convert MultiselectSubmissionEvent comma-separated values to semicolons', () => {
     const events: EventEdge[] = [
       {
         __typename: 'JourneyEventEdge',
@@ -451,6 +451,6 @@ describe('transformEvents', () => {
     ]
 
     const transformed = transformEvents(events)
-    expect(transformed[0].value).toBe('Red\nBlue\nGreen')
+    expect(transformed[0].value).toBe('Red; Blue; Green')
   })
 })
