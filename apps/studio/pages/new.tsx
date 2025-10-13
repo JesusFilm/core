@@ -4109,6 +4109,35 @@ Guidelines:
                       </div>
                     )}
 
+                    {/* Generate Designs Button */}
+                    <div className="mt-8 pt-6 border-t border-border">
+                      <Button
+                        size="lg"
+                        className="w-full h-16 text-lg font-semibold flex items-center justify-center gap-2"
+                        disabled={isGeneratingDesign || !hasGeneratedContent}
+                        onClick={() => {
+                          void handleGenerateDesign()
+                        }}
+                      >
+                        {isGeneratingDesign ? (
+                          <>
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Preparing designs...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-5 h-5" />
+                            Generate Designs in Studio
+                          </>
+                        )}
+                      </Button>
+                      {!hasGeneratedContent && (
+                        <p className="mt-3 text-xs text-muted-foreground text-center">
+                          Generate content with AI in Step 1 to enable Studio designs.
+                        </p>
+                      )}
+                    </div>
+
                     {/* Original Images Section - kept for reference */}
                     <div className="mt-12 hidden">
                       <label className="text-sm font-medium mb-2 block">
@@ -4275,34 +4304,6 @@ Guidelines:
                       )
                     )}
                   </Tabs>
-
-                  <div className="mt-8 pt-6 border-t border-border">
-                    <Button
-                      size="lg"
-                      className="w-full h-16 text-lg font-semibold flex items-center justify-center gap-2"
-                      disabled={isGeneratingDesign || !hasGeneratedContent}
-                      onClick={() => {
-                        void handleGenerateDesign()
-                      }}
-                    >
-                      {isGeneratingDesign ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Preparing designs...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-5 h-5" />
-                          Generate Designs in Studio
-                        </>
-                      )}
-                    </Button>
-                    {!hasGeneratedContent && (
-                      <p className="mt-3 text-xs text-muted-foreground text-center">
-                        Generate content with AI in Step 1 to enable Studio designs.
-                      </p>
-                    )}
-                  </div>
                 </CardContent>
               </Card>
             </div>
