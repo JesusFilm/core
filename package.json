@@ -46,6 +46,8 @@
     "@aws-sdk/client-s3": "^3.679.0",
     "@aws-sdk/lib-storage": "^3.825.0",
     "@aws-sdk/s3-request-presigner": "^3.679.0",
+    "@blueprintjs/core": "^6.3.1",
+    "@blueprintjs/icons": "^6.1.0",
     "@casl/ability": "^6.5.0",
     "@casl/prisma": "^1.4.1",
     "@crowdin/crowdin-api-client": "^1.41.4",
@@ -194,12 +196,14 @@
     "notistack": "^3.0.1",
     "pino": "^9.3.2",
     "pino-http": "^10.0.0",
+    "polotno": "^2.29.1",
     "powerbi-client": "^2.23.1",
     "powerbi-client-react": "^2.0.0",
     "prism-react-renderer": "^2.0.0",
     "prop-types": "^15.8.1",
     "qrcode.react": "^4.2.0",
     "qs": "^6.13.1",
+    "rc-dock": "4.0.0-alpha.2",
     "react": "^19.0.0",
     "react-colorful": "^5.5.1",
     "react-div-100vh": "^0.7.0",
@@ -422,6 +426,11 @@
     "react-is": "^19.0.0",
     "html-tokenize": {
       "readable-stream": "^3.6.0"
+    }
+  },
+  "pnpm": {
+    "overrides": {
+      "react-konva": "^19.0.10"
     }
   }
 }

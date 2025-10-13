@@ -1,0 +1,67 @@
+{
+  "name": "studio",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/studio",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/studio"
+      },
+      "configurations": {
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/next:server",
+      "options": {
+        "buildTarget": "studio:build",
+        "dev": true,
+        "hostname": "0.0.0.0",
+        "port": 4301
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "studio:build:production",
+          "dev": false
+        },
+        "development": {
+          "buildTarget": "studio:build",
+          "dev": true
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/studio/**/*.{ts,tsx,js,jsx}"],
+        "cache": true,
+        "cacheLocation": ".cache/studio/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/studio"],
+      "options": {
+        "jestConfig": "apps/studio/jest.config.ts"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsc -b apps/studio/tsconfig.json"
+      }
+    },
+    "export": {
+      "executor": "@nx/next:export",
+      "options": {
+        "buildTarget": "studio:build:production"
+      }
+    }
+  }
+}
