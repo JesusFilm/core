@@ -5,7 +5,7 @@ import { createStore } from 'polotno/model/store';
 import { PagesTimeline } from 'polotno/pages-timeline';
 import { Toolbar } from 'polotno/toolbar/toolbar';
 import { ZoomButtons } from 'polotno/toolbar/zoom-buttons';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 // Enable animations
 unstable_setAnimationsEnabled(true);
@@ -22,6 +22,39 @@ store.addPage();
 store.loadJSON(JSON.parse(initialState));
 
 export const Editor = () => {
+  useEffect(() => {
+    const loadDesign = async () => {
+      const getDefaultDesign = () => JSON.parse(initialState);
+
+      if (typeof window !== 'undefined') {
+        const storedDesign = window.localStorage.getItem(
+          'studio-polotno-design'
+        );
+        try {
+          if (storedDesign) {
+            await store.loadJSON(JSON.parse(storedDesign));
+          } else {
+            await store.loadJSON(getDefaultDesign());
+          }
+        } catch (error) {
+          console.error('Failed to load design for Polotno editor:', error);
+          await store.loadJSON(getDefaultDesign());
+        } finally {
+          window.localStorage.removeItem('studio-polotno-design');
+          window.localStorage.removeItem('studio-polotno-design-meta');
+        }
+      } else {
+        await store.loadJSON(getDefaultDesign());
+      }
+
+      if (store.pages.length === 0) {
+        store.addPage();
+      }
+    };
+
+    void loadDesign();
+  }, []);
+
   return (
     <>
     <div className="bp5-navbar" 

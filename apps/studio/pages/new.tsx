@@ -1,6 +1,5 @@
 import {
   Camera,
-  Copy,
   Crown,
   Facebook,
   FileText,
@@ -9,6 +8,7 @@ import {
   Image as ImageIcon,
   Info,
   Instagram,
+  Loader2,
   MessageCircle,
   MessageSquare,
   Palette,
@@ -21,11 +21,13 @@ import {
   Users,
   Video,
   X,
+  X,
   Youtube,
   Zap
 } from 'lucide-react'
 import Head from 'next/head'
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 
 import { Accordion } from '../src/components/ui/accordion'
@@ -163,6 +165,249 @@ const categorySharingOptions = {
     'during a conference or retreat',
     'at a youth group meeting'
   ]
+}
+
+type SelectedOutputsMap = Record<string, string[]>
+
+const DIMENSION_REGEX = /(\d+)\s*[×xX]\s*(\d+)/
+
+const getPrimaryOutputSelection = (
+  outputs: SelectedOutputsMap
+): string | null => {
+  for (const options of Object.values(outputs)) {
+    if (options && options.length > 0) {
+      return options[0]
+    }
+  }
+  return null
+}
+
+const parseDimensionsFromLabel = (label: string | null) => {
+  const fallback = { width: 1080, height: 1920 }
+  if (!label) {
+    return fallback
+  }
+
+  const match = label.match(DIMENSION_REGEX)
+  if (!match) {
+    return fallback
+  }
+
+  const width = Number.parseInt(match[1], 10)
+  const height = Number.parseInt(match[2], 10)
+
+  if (Number.isNaN(width) || Number.isNaN(height)) {
+    return fallback
+  }
+
+  return { width, height }
+}
+
+const splitContentIntoSections = (content: string) => {
+  return content
+    .split(/\n\s*\n/)
+    .map((section) => section.trim())
+    .filter((section) => section.length > 0)
+}
+
+const extractHeadingAndBody = (section: string) => {
+  const lines = section
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+
+  if (lines.length === 0) {
+    return { heading: '', body: '' }
+  }
+
+  const headingCandidate = lines[0]
+  let body = lines.slice(1).join('\n').trim()
+
+  if (!body) {
+    const sentences = headingCandidate
+      .split(/(?<=[.!?])\s+/)
+      .map((sentence) => sentence.trim())
+      .filter((sentence) => sentence.length > 0)
+
+    const heading = sentences.shift() ?? headingCandidate
+    body = sentences.join(' ').trim()
+
+    return {
+      heading,
+      body
+    }
+  }
+
+  return {
+    heading: headingCandidate,
+    body
+  }
+}
+
+const generateElementId = (prefix: string) =>
+  `${prefix}-${Math.random().toString(36).slice(2, 10)}-${Date.now().toString(36)}`
+
+type TextElementConfig = {
+  id: string
+  text: string
+  x: number
+  y: number
+  width: number
+  height: number
+  fontSize: number
+  align: 'left' | 'center'
+  fontFamily: string
+  fontWeight: 'normal' | 'bold'
+  fill: string
+  lineHeight: number
+}
+
+const createTextElement = ({
+  id,
+  text,
+  x,
+  y,
+  width,
+  height,
+  fontSize,
+  align,
+  fontFamily,
+  fontWeight,
+  fill,
+  lineHeight
+}: TextElementConfig) => ({
+  id,
+  type: 'text',
+  name: '',
+  opacity: 1,
+  visible: true,
+  selectable: true,
+  removable: true,
+  alwaysOnTop: false,
+  showInExport: true,
+  x,
+  y,
+  width,
+  height,
+  rotation: 0,
+  animations: [],
+  blurEnabled: false,
+  blurRadius: 10,
+  brightnessEnabled: false,
+  brightness: 0,
+  sepiaEnabled: false,
+  grayscaleEnabled: false,
+  filters: {},
+  shadowEnabled: false,
+  shadowBlur: 5,
+  shadowOffsetX: 0,
+  shadowOffsetY: 0,
+  shadowColor: 'black',
+  shadowOpacity: 1,
+  draggable: true,
+  resizable: true,
+  contentEditable: true,
+  styleEditable: true,
+  text,
+  placeholder: '',
+  fontSize,
+  fontFamily,
+  fontStyle: 'normal',
+  fontWeight,
+  textDecoration: '',
+  fill,
+  align,
+  verticalAlign: 'top',
+  strokeWidth: 0,
+  stroke: 'black',
+  lineHeight,
+  letterSpacing: 0,
+  backgroundEnabled: false,
+  backgroundColor: '#FFFFFF',
+  backgroundOpacity: 1,
+  backgroundCornerRadius: 0.5,
+  backgroundPadding: 0.5
+})
+
+const createPolotnoDesignFromContent = (
+  content: string,
+  selectedOutputs: SelectedOutputsMap
+) => {
+  const primarySelection = getPrimaryOutputSelection(selectedOutputs)
+  const { width, height } = parseDimensionsFromLabel(primarySelection)
+  const sections = splitContentIntoSections(content)
+  const normalizedSections = sections.length > 0 ? sections : [content]
+
+  const pages = normalizedSections.map((section, index) => {
+    const { heading, body } = extractHeadingAndBody(section)
+    const headingText = heading || `Page ${index + 1}`
+    const bodyText = body && body.length > 0 ? body : ''
+
+    const headingElement = createTextElement({
+      id: generateElementId('heading'),
+      text: headingText,
+      x: width * 0.1,
+      y: height * 0.12,
+      width: width * 0.8,
+      height: Math.max(160, height * 0.18),
+      fontSize: Math.min(Math.max(width * 0.06, 42), 80),
+      align: 'center',
+      fontFamily: 'Playfair Display',
+      fontWeight: 'bold',
+      fill: '#1f2933',
+      lineHeight: 1.2
+    })
+
+    const elements = [headingElement]
+
+    if (bodyText) {
+      elements.push(
+        createTextElement({
+          id: generateElementId('body'),
+          text: bodyText,
+          x: width * 0.1,
+          y: height * 0.35,
+          width: width * 0.8,
+          height: height * 0.5,
+          fontSize: Math.max(28, width * 0.035),
+          align: 'left',
+          fontFamily: 'Inter',
+          fontWeight: 'normal',
+          fill: '#374151',
+          lineHeight: 1.4
+        })
+      )
+    }
+
+    return {
+      id: generateElementId('page'),
+      name: `Page ${index + 1}`,
+      children: elements,
+      background: '#f8fafc',
+      bleed: 0,
+      duration: 5000,
+      width,
+      height
+    }
+  })
+
+  return {
+    design: {
+      width,
+      height,
+      fonts: [],
+      pages,
+      audios: [],
+      unit: 'px',
+      dpi: 72
+    },
+    meta: {
+      primarySelection,
+      pageCount: pages.length,
+      width,
+      height
+    }
+  }
 }
 
 const RotatingText = ({
@@ -394,6 +639,7 @@ const RotatingText = ({
 }
 
 export default function NewPage() {
+  const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedFormat, setSelectedFormat] = useState<string>('')
   const [selectedContext, setSelectedContext] = useState<string>('')
@@ -404,10 +650,10 @@ export default function NewPage() {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [isHovering, setIsHovering] = useState<boolean>(false)
   const [isAnimationStopped, setIsAnimationStopped] = useState<boolean>(false)
+  const [selectedOutputs, setSelectedOutputs] = useState<SelectedOutputsMap>({})
   const [isTilesContainerHovered, setIsTilesContainerHovered] = useState<boolean>(false)
-  const [selectedOutputs, setSelectedOutputs] = useState<
-    Record<string, string[]>
-  >({})
+  const [selectedOutputs, setSelectedOutputs] = useState<SelectedOutputsMap>({})
+
   const [openaiApiKey, setOpenaiApiKey] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [unsplashApiKey, setUnsplashApiKey] = useState('')
@@ -450,23 +696,10 @@ export default function NewPage() {
   )
   const [showTestimonialBackground, setShowTestimonialBackground] =
     useState(true)
-  const [unsplashImages, setUnsplashImages] = useState<Record<string, string[]>>(
-    {}
-  )
+  const [isGeneratingDesign, setIsGeneratingDesign] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
-
-  // Load Unsplash images when steps change
-  useEffect(() => {
-    if (editableSteps.length > 0) {
-      console.log(`🚀 Starting to load Unsplash images for ${editableSteps.length} steps`)
-      console.log('🔑 Environment check - UNSPLASH_ACCESS_KEY:', process.env.UNSPLASH_ACCESS_KEY ? '***' + process.env.UNSPLASH_ACCESS_KEY.slice(-4) : 'NOT SET')
-      console.log('🔑 Settings check - unsplashApiKey:', unsplashApiKey ? '***' + unsplashApiKey.slice(-4) : 'NOT SET')
-      editableSteps.forEach((step, index) => {
-        void loadUnsplashImagesForStep(step, index)
-      })
-    }
-  }, [editableSteps, unsplashApiKey])
+  const hasGeneratedContent = aiResponse.trim().length > 0
 
   // Close context menu when clicking outside
   useEffect(() => {
@@ -1293,6 +1526,53 @@ Guidelines:
   const handleSubmit = async () => {
     if (textContent.trim()) {
       await processContentWithAI()
+    }
+  }
+
+  const handleGenerateDesign = async () => {
+    const baseContent = aiResponse.trim()
+
+    if (!baseContent) {
+      alert('Generate AI content in Step 1 before creating Studio designs.')
+      return
+    }
+
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    setIsGeneratingDesign(true)
+
+    try {
+      const { design, meta } = createPolotnoDesignFromContent(
+        baseContent,
+        selectedOutputs
+      )
+      const timestamp = new Date().toISOString()
+      const metadata = {
+        ...meta,
+        generatedAt: timestamp,
+        selectedOutputs,
+        contentPreview: baseContent.slice(0, 280)
+      }
+
+      window.localStorage.setItem(
+        'studio-polotno-design',
+        JSON.stringify(design)
+      )
+      window.localStorage.setItem(
+        'studio-polotno-design-meta',
+        JSON.stringify(metadata)
+      )
+
+      await router.push('/')
+    } catch (error) {
+      console.error('Failed to create Polotno design from AI content:', error)
+      alert(
+        'We were unable to prepare your designs for Studio. Please try again.'
+      )
+    } finally {
+      setIsGeneratingDesign(false)
     }
   }
 
@@ -4000,15 +4280,28 @@ Guidelines:
                     <Button
                       size="lg"
                       className="w-full h-16 text-lg font-semibold flex items-center justify-center gap-2"
+                      disabled={isGeneratingDesign || !hasGeneratedContent}
                       onClick={() => {
-                        console.log('Selected outputs:', selectedOutputs)
-                        // Dummy create functionality
-                        console.log('Create functionality - coming soon!')
+                        void handleGenerateDesign()
                       }}
                     >
-                      <Sparkles className="w-5 h-5" />
-                      Create Content
+                      {isGeneratingDesign ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Preparing designs...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-5 h-5" />
+                          Generate Designs in Studio
+                        </>
+                      )}
                     </Button>
+                    {!hasGeneratedContent && (
+                      <p className="mt-3 text-xs text-muted-foreground text-center">
+                        Generate content with AI in Step 1 to enable Studio designs.
+                      </p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
