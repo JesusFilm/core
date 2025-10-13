@@ -325,6 +325,7 @@ export interface GetJourney_journey_blocks_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface GetJourney_journey_blocks_TypographyBlock_settings {

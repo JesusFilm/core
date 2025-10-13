@@ -311,6 +311,7 @@ export interface TextResponseWithButtonRestore_textResponse_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_TypographyBlock_settings {
@@ -860,6 +861,7 @@ export interface TextResponseWithButtonRestore_button_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_button_TypographyBlock_settings {
@@ -1409,6 +1411,7 @@ export interface TextResponseWithButtonRestore_startIcon_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_TypographyBlock_settings {
@@ -1958,6 +1961,7 @@ export interface TextResponseWithButtonRestore_endIcon_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_TypographyBlock_settings {

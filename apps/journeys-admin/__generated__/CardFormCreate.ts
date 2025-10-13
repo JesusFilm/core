@@ -81,6 +81,7 @@ export interface CardFormCreate_textResponse {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface CardFormCreate_button_action_PhoneAction {
