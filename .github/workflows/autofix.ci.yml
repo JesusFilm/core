@@ -53,7 +53,7 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: type-check
-      - name: Cache lint artifacts
+      - name: Cache lint artifacts # after prettier and type-check
         uses: actions/cache@v4
         with:
           path: ./.cache
@@ -65,7 +65,6 @@ jobs:
         with:
           targets: lint
           args: --fix
-
       - name: Extract Translations
         uses: mansagroup/nrwl-nx-action@v3
         with:
