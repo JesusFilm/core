@@ -14,8 +14,8 @@ import {
   BlockFields_ButtonBlock_action_EmailAction as ButtonBlockEmailAction
 } from '../../../../../../../../../../__generated__/BlockFields'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
-import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 import { TextFieldFormRef } from '../../../../../../../../TextFieldForm/TextFieldForm'
+import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 
 interface EmailActionProps {
   ref?: RefObject<TextFieldFormRef | null>
@@ -26,7 +26,7 @@ export function EmailAction({ ref }: EmailActionProps): ReactElement {
   const {
     state: { selectedBlock: stateSelectedBlock, selectedStep }
   } = useEditor()
-  const selectedBlock = stateSelectedBlock as TreeBlock<ButtonBlock> | undefined
+  const selectedBlock = stateSelectedBlock
 
   const { addAction } = useActionCommand()
 

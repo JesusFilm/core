@@ -1,11 +1,11 @@
 import { gql, useMutation } from '@apollo/client'
+import InfoOutlined from '@mui/icons-material/InfoOutlined'
 import Box from '@mui/material/Box'
 import Slider from '@mui/material/Slider'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
-import Tooltip from '@mui/material/Tooltip'
-import InfoOutlined from '@mui/icons-material/InfoOutlined'
 import Switch from '@mui/material/Switch'
+import TextField from '@mui/material/TextField'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
 
@@ -115,7 +115,7 @@ export function MultiselectQuestion({
       typeof localMax === 'number'
         ? Math.max(0, Math.min(optionMax, localMax))
         : optionMax
-    let nextMin = parsed as number
+    let nextMin = parsed
     if (nextMin > clampedLocalMax) {
       nextMin = clampedLocalMax
     }
@@ -137,7 +137,7 @@ export function MultiselectQuestion({
       typeof localMin === 'number'
         ? Math.max(0, Math.min(optionMax, localMin))
         : 0
-    let nextMax = parsed as number
+    let nextMax = parsed
     if (nextMax < clampedLocalMin) {
       nextMax = clampedLocalMin
     }
@@ -148,8 +148,8 @@ export function MultiselectQuestion({
   }
 
   const handleBlurCommit = useCallback(() => {
-    const nextMinRaw = localMin === '' ? null : (localMin as number)
-    const nextMaxRaw = localMax === '' ? null : (localMax as number)
+    const nextMinRaw = localMin === '' ? null : (localMin)
+    const nextMaxRaw = localMax === '' ? null : (localMax)
 
     const bothNumbers =
       nextMinRaw !== null &&
@@ -158,10 +158,10 @@ export function MultiselectQuestion({
       nextMaxRaw !== undefined
 
     let normalizedMin = bothNumbers
-      ? Math.min(nextMinRaw as number, nextMaxRaw as number)
+      ? Math.min(nextMinRaw, nextMaxRaw)
       : nextMinRaw
     let normalizedMax = bothNumbers
-      ? Math.max(nextMinRaw as number, nextMaxRaw as number)
+      ? Math.max(nextMinRaw, nextMaxRaw)
       : nextMaxRaw
 
     // Enforce max lower bound of 1 when there are options
@@ -171,12 +171,12 @@ export function MultiselectQuestion({
       normalizedMax = Math.max(lowerBound, Math.min(optionMax, normalizedMax))
     }
     if (normalizedMin != null) {
-      normalizedMin = Math.max(0, Math.min(optionMax, normalizedMin as number))
+      normalizedMin = Math.max(0, Math.min(optionMax, normalizedMin))
     }
     if (
       normalizedMin != null &&
       normalizedMax != null &&
-      (normalizedMin as number) > (normalizedMax as number)
+      (normalizedMin) > (normalizedMax)
     ) {
       normalizedMin = normalizedMax
     }

@@ -13,12 +13,12 @@ import { Drawer } from '../../Drawer'
 
 import { NewButtonButton } from './NewButtonButton'
 import { NewImageButton } from './NewImageButton'
+import { NewMultiselectButton } from './NewMultiselectButton'
 import { NewRadioQuestionButton } from './NewRadioQuestionButton'
 import { NewSpacerButton } from './NewSpacerButton'
 import { NewTextResponseButton } from './NewTextResponseButton'
 import { NewTypographyButton } from './NewTypographyButton'
 import { NewVideoButton } from './NewVideoButton'
-import { NewMultiselectButton } from './NewMultiselectButton'
 
 export function AddBlock(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

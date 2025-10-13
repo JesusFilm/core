@@ -16,6 +16,7 @@ import {
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
+import { TextFieldFormRef } from '../../../../../../../TextFieldForm/TextFieldForm'
 import { useActionCommand } from '../../../../../../utils/useActionCommand'
 
 import { CustomizationToggle } from './CustomizationToggle'
@@ -23,7 +24,6 @@ import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { ActionValue, actions, getAction } from './utils/actions'
-import { TextFieldFormRef } from '../../../../../../../TextFieldForm/TextFieldForm'
 
 export function Action(): ReactElement {
   const {
@@ -36,11 +36,7 @@ export function Action(): ReactElement {
   const emailActionRef = useRef<TextFieldFormRef | null>(null)
 
   // Add addtional types here to use this component for that block
-  const selectedBlock = stateSelectedBlock as
-    | TreeBlock<ButtonBlock>
-    | TreeBlock<SignUpBlock>
-    | TreeBlock<VideoBlock>
-    | undefined
+  const selectedBlock = stateSelectedBlock
   const [action, setAction] = useState<ActionValue>(
     getAction(t, selectedBlock?.action?.__typename).value
   )

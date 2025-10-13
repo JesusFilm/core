@@ -149,10 +149,10 @@ describe('MultiselectQuestion Properties', () => {
 
     const minInput = screen.getByRole('spinbutton', {
       name: 'Min selections'
-    }) as HTMLInputElement
+    })
     const maxInput = screen.getByRole('spinbutton', {
       name: 'Max selections'
-    }) as HTMLInputElement
+    })
 
     fireEvent.change(minInput, { target: { value: '1' } })
     fireEvent.change(maxInput, { target: { value: '2' } })
@@ -270,7 +270,7 @@ describe('MultiselectQuestion Properties', () => {
 
     const maxInput = screen.getByRole('spinbutton', {
       name: 'Max selections'
-    }) as HTMLInputElement
+    })
 
     fireEvent.change(maxInput, { target: { value: '0' } })
 

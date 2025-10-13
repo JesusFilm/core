@@ -4,13 +4,13 @@ import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
+import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
 import { MULTISELECT_OPTION_FIELDS } from '@core/journeys/ui/MultiselectOption/multiselectOptionFields'
 import { MULTISELECT_QUESTION_FIELDS } from '@core/journeys/ui/MultiselectQuestion/multiselectQuestionFields'
-import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
 import CheckSquareContainedIcon from '@core/shared/ui/icons/CheckSquareContained'
 
 import type {
@@ -19,13 +19,13 @@ import type {
   BlockFields_MultiselectBlock as MultiselectBlock,
   BlockFields_MultiselectOptionBlock as MultiselectOptionBlock
 } from '../../../../../../../../__generated__/BlockFields'
-import type { MultiselectBlockCreate } from '../../../../../../../../__generated__/MultiselectBlockCreate'
 import {
   ButtonAlignment,
   ButtonColor,
   ButtonSize,
   ButtonVariant
 } from '../../../../../../../../__generated__/globalTypes'
+import type { MultiselectBlockCreate } from '../../../../../../../../__generated__/MultiselectBlockCreate'
 // Note: multiselect option creation is part of the same mutation operation type
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
@@ -227,7 +227,7 @@ export function NewMultiselectButton(): ReactElement {
   function handleClick(): void {
     const card = selectedStep?.children.find(
       (block) => block.__typename === 'CardBlock'
-    ) as TreeBlock<CardBlock> | undefined
+    )
 
     if (card == null || journey == null) return
 

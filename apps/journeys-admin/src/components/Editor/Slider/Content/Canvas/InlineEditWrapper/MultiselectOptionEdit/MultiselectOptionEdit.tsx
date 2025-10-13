@@ -3,14 +3,14 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { MultiselectOption } from '@core/journeys/ui/MultiselectOption/MultiselectOption'
+import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { MultiselectOptionBlockUpdate } from '../../../../../../../../__generated__/MultiselectOptionBlockUpdate'
-import { MultiselectOptionBlockUpdateVariables } from '../../../../../../../../__generated__/MultiselectOptionBlockUpdate'
+import { MultiselectOption } from '@core/journeys/ui/MultiselectOption/MultiselectOption'
+
+import { MultiselectOptionBlockUpdate , MultiselectOptionBlockUpdateVariables } from '../../../../../../../../__generated__/MultiselectOptionBlockUpdate'
 import { MultiselectOptionFields } from '../../../../../../../../__generated__/MultiselectOptionFields'
 import { InlineEditInput } from '../InlineEditInput'
-import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 
 export const MULTISELECT_OPTION_BLOCK_UPDATE = gql`
   mutation MultiselectOptionBlockUpdate(

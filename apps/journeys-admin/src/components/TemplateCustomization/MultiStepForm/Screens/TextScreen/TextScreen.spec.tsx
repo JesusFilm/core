@@ -5,11 +5,12 @@ import React from 'react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
-import { TextScreen, JOURNEY_CUSTOMIZATION_FIELD_UPDATE } from './TextScreen'
 import type {
   JourneyCustomizationFieldUpdate,
   JourneyCustomizationFieldUpdateVariables
 } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
+
+import { JOURNEY_CUSTOMIZATION_FIELD_UPDATE, TextScreen } from './TextScreen'
 
 describe('TextScreen', () => {
   const baseJourney = {
@@ -36,7 +37,7 @@ describe('TextScreen', () => {
     render(
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: baseJourney as any, variant: 'admin' }}
+          value={{ journey: baseJourney, variant: 'admin' }}
         >
           <TextScreen
             handleNext={jest.fn()}
@@ -55,7 +56,7 @@ describe('TextScreen', () => {
     render(
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: baseJourney as any, variant: 'admin' }}
+          value={{ journey: baseJourney, variant: 'admin' }}
         >
           <TextScreen
             handleNext={jest.fn()}
@@ -117,7 +118,7 @@ describe('TextScreen', () => {
     render(
       <MockedProvider mocks={[journeyCustomizationFieldUpdate]}>
         <JourneyProvider
-          value={{ journey: baseJourney as any, variant: 'admin' }}
+          value={{ journey: baseJourney, variant: 'admin' }}
         >
           <TextScreen
             handleNext={handleNext}
@@ -151,7 +152,7 @@ describe('TextScreen', () => {
     render(
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: baseJourney as any, variant: 'admin' }}
+          value={{ journey: baseJourney, variant: 'admin' }}
         >
           <TextScreen
             handleNext={handleNext}

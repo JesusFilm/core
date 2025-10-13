@@ -1,14 +1,20 @@
-import { MockedProvider } from '@apollo/client/testing'
 import { gql } from '@apollo/client'
-import { MULTISELECT_BLOCK_UPDATE as multiselectUpdateDoc } from './useBlockDeleteCommand'
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, renderHook, screen, waitFor } from '@testing-library/react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
-import type { TreeBlock } from '@core/journeys/ui/block'
 
+import {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_MultiselectBlock as MultiselectBlock,
+  BlockFields_MultiselectOptionBlock as MultiselectOptionBlock,
+  BlockFields_StepBlock as StepBlock
+} from '../../../../../__generated__/BlockFields'
+import { BLOCK_DELETE } from '../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation'
 import {
   deleteCardBlockMock,
   deleteStepMock,
@@ -21,14 +27,7 @@ import {
 } from '../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 
-import { useBlockDeleteCommand } from './useBlockDeleteCommand'
-import {
-  BlockFields_CardBlock as CardBlock,
-  BlockFields_StepBlock as StepBlock,
-  BlockFields_MultiselectBlock as MultiselectBlock,
-  BlockFields_MultiselectOptionBlock as MultiselectOptionBlock
-} from '../../../../../__generated__/BlockFields'
-import { BLOCK_DELETE } from '../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation'
+import { MULTISELECT_BLOCK_UPDATE as multiselectUpdateDoc , useBlockDeleteCommand } from './useBlockDeleteCommand'
 
 describe('useBlockDeleteCommand', () => {
   const initiatEditorState = {

@@ -2,9 +2,10 @@ import Divider from '@mui/material/Divider'
 import FormGroup from '@mui/material/FormGroup'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, SetStateAction, useEffect, Dispatch } from 'react'
+import { Dispatch, ReactElement, SetStateAction, useEffect } from 'react'
 
 import { CheckboxOption } from '../CheckBoxOption'
+
 interface ContactDataFormProps {
   setSelectedFields: Dispatch<SetStateAction<string[]>>
   selectedFields: string[]

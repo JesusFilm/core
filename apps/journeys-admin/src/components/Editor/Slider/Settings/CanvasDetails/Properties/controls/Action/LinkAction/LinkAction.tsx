@@ -14,8 +14,8 @@ import {
   BlockFields_ButtonBlock_action_LinkAction as ButtonBlockLinkAction
 } from '../../../../../../../../../../__generated__/BlockFields'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
-import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 import { TextFieldFormRef } from '../../../../../../../../TextFieldForm/TextFieldForm'
+import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 
 interface LinkActionProps {
   ref?: RefObject<TextFieldFormRef | null>
@@ -27,7 +27,7 @@ export function LinkAction({ ref }: LinkActionProps): ReactElement {
     state: { selectedBlock: stateSelectedBlock, selectedStep }
   } = useEditor()
   const { addAction } = useActionCommand()
-  const selectedBlock = stateSelectedBlock as TreeBlock<ButtonBlock> | undefined
+  const selectedBlock = stateSelectedBlock
 
   const linkAction =
     selectedBlock?.action?.__typename === 'LinkAction'
