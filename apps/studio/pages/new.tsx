@@ -364,37 +364,61 @@ const splitContentIntoSections = (content: string) => {
 }
 
 const extractHeadingAndBody = (section: string) => {
-  const lines = section
-    .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0)
+  const rawLines = section.split('\n')
+  let heading = ''
+  const bodyLines: string[] = []
+  let headingCaptured = false
 
-  if (lines.length === 0) {
+  for (const rawLine of rawLines) {
+    if (!headingCaptured) {
+      const trimmed = rawLine.trim()
+      if (trimmed.length === 0) continue
+
+      const headingMatch = trimmed.match(/^#{1,6}\s+(.*)$/)
+      heading = headingMatch ? headingMatch[1].trim() : trimmed
+      headingCaptured = true
+      continue
+    }
+
+    bodyLines.push(rawLine)
+  }
+
+  if (!headingCaptured) {
     return { heading: '', body: '' }
   }
 
-  const headingCandidate = lines[0]
-  let body = lines.slice(1).join('\n').trim()
+  const body = bodyLines.join('\n').trim()
 
-  if (!body) {
-    const sentences = headingCandidate
+  if (body.length === 0) {
+    const sentences = heading
       .split(/(?<=[.!?])\s+/)
       .map((sentence) => sentence.trim())
       .filter((sentence) => sentence.length > 0)
 
-    const heading = sentences.shift() ?? headingCandidate
-    body = sentences.join(' ').trim()
+    const primaryHeading = sentences.shift() ?? heading
 
     return {
-      heading,
-      body
+      heading: primaryHeading,
+      body: sentences.join(' ').trim()
     }
   }
 
   return {
-    heading: headingCandidate,
+    heading,
     body
   }
+}
+
+const deriveHeadingFromContent = (content: string, fallback: string) => {
+  if (!content) return fallback
+  const { heading } = extractHeadingAndBody(content)
+  return heading || fallback
+}
+
+const deriveBodyFromContent = (content: string) => {
+  if (!content) return ''
+  const { body } = extractHeadingAndBody(content)
+  return body
 }
 
 const generateElementId = (prefix: string) =>
@@ -500,8 +524,25 @@ const createPolotnoDesignFromContent = ({
         return null
       }
 
-      const title = step.title?.trim() || `Step ${index + 1}`
-      const content = step.content?.trim() || ''
+      const fallbackHeading = `Step ${index + 1}`
+      const possibleTitle =
+        typeof (step as { title?: unknown })?.title === 'string'
+          ? ((step as { title?: string }).title ?? '').trim()
+          : ''
+
+      let content =
+        typeof step?.content === 'string' ? step.content.trim() : ''
+
+      if (!content && possibleTitle) {
+        content = `# ${possibleTitle}`
+      }
+
+      const heading = deriveHeadingFromContent(
+        content,
+        possibleTitle || fallbackHeading
+      )
+      const bodyContent = deriveBodyFromContent(content)
+
       const keywords = Array.isArray(step.keywords)
         ? step.keywords
             .map((keyword) =>
@@ -511,22 +552,25 @@ const createPolotnoDesignFromContent = ({
             )
             .filter((keyword) => keyword.length > 0)
         : []
-      const mediaPrompt = step.mediaPrompt?.trim() || ''
+      const mediaPrompt =
+        typeof step?.mediaPrompt === 'string' ? step.mediaPrompt.trim() : ''
 
-      if (!title && !content && keywords.length === 0 && !mediaPrompt) {
+      if (!content && keywords.length === 0 && !mediaPrompt) {
         return null
       }
 
       return {
-        title,
+        heading,
         content,
+        body: bodyContent,
         keywords: keywords.slice(0, 5),
         mediaPrompt
       }
     })
     .filter(Boolean) as Array<{
-      title: string
+      heading: string
       content: string
+      body: string
       keywords: string[]
       mediaPrompt: string
     }>
@@ -537,7 +581,7 @@ const createPolotnoDesignFromContent = ({
     ? normalizedSteps.map((step, index) => {
         const headingElement = createTextElement({
           id: generateElementId('heading'),
-          text: step.title,
+          text: step.heading,
           x: width * 0.1,
           y: height * 0.12,
           width: width * 0.8,
@@ -556,7 +600,7 @@ const createPolotnoDesignFromContent = ({
           elements.push(
             createTextElement({
               id: generateElementId('body'),
-              text: step.content,
+              text: step.body || step.content,
               x: width * 0.1,
               y: height * 0.35,
               width: width * 0.8,
@@ -602,7 +646,7 @@ const createPolotnoDesignFromContent = ({
 
         return {
           id: generateElementId('page'),
-          name: step.title.slice(0, 40) || `Step ${index + 1}`,
+          name: step.heading.slice(0, 40) || `Step ${index + 1}`,
           children: elements,
           background: '#f8fafc',
           bleed: 0,
@@ -686,7 +730,7 @@ const createPolotnoDesignFromContent = ({
       height,
       usesStructuredSteps: hasStructuredSteps,
       stepTitles: hasStructuredSteps
-        ? normalizedSteps.map((step) => step.title)
+        ? normalizedSteps.map((step) => step.heading)
         : []
     }
   }
@@ -1008,7 +1052,9 @@ export default function NewPage() {
       setTextContent(draft.textContent)
       setImageAttachments(draft.images)
       setAiResponse(draft.aiResponse || '')
-      setEditableSteps(draft.aiSteps || [])
+      setEditableSteps(
+        draft.aiSteps ? normalizeGeneratedSteps(draft.aiSteps) : []
+      )
       setImageAnalysisResults(
         draft.imageAnalysisResults.map((result) => ({
           ...result,
@@ -1216,8 +1262,7 @@ Provide the response as JSON with this structure:
 {
   "steps": [
     {
-      "title": "Short label for the step (max 6 words)",
-      "content": "Markdown-ready devotional copy for this step",
+      "content": "# Short label for the step (max 6 words)\n\nMarkdown-formatted devotional copy for this step",
       "keywords": ["keyword one", "keyword two", "keyword three"],
       "mediaPrompt": "≤150 character prompt for an image/video generator"
     }
@@ -1229,7 +1274,8 @@ Guidelines:
 - Keep the core spiritual message while making each step social-ready.
 - Ensure the three keywords are warm, descriptive, and suitable for Unsplash searches.
 - The mediaPrompt should align with the step's tone and visuals.
-- Use markdown formatting inside the content field when helpful.`
+- Use markdown formatting inside the content field when helpful.
+- Begin each content field with a level-one markdown heading that states the step's short label (e.g., "# Let Your Light Shine") followed by a blank line.`
     })
 
     // Add current session conversation history
@@ -1270,9 +1316,9 @@ Guidelines:
   }
 
   const normalizeGeneratedSteps = (
-    steps: GeneratedStepContent[]
+    steps: Array<Partial<GeneratedStepContent> & { title?: string }>
   ): GeneratedStepContent[] =>
-    steps.map((step, index) => {
+    steps.map((step) => {
       const normalizedKeywords = Array.isArray(step?.keywords)
         ? step.keywords
             .map((keyword) =>
@@ -1284,11 +1330,35 @@ Guidelines:
             .slice(0, 3)
         : []
 
+      const rawTitle =
+        typeof step?.title === 'string' ? step.title.trim() : ''
+
+      let content =
+        typeof step?.content === 'string' ? step.content.trim() : ''
+
+      if (rawTitle) {
+        if (!content) {
+          content = `# ${rawTitle}`
+        } else {
+          const firstMeaningfulLine =
+            content
+              .split('\n')
+              .map((line) => line.trim())
+              .find((line) => line.length > 0) ?? ''
+
+          if (!/^#{1,6}\s+/.test(firstMeaningfulLine)) {
+            content = `# ${rawTitle}\n\n${content}`.trim()
+          }
+        }
+      }
+
+      const mediaPrompt =
+        typeof step?.mediaPrompt === 'string' ? step.mediaPrompt.trim() : ''
+
       return {
-        title: step?.title?.trim() || `Step ${index + 1}`,
-        content: step?.content?.trim() || '',
+        content,
         keywords: normalizedKeywords,
-        mediaPrompt: step?.mediaPrompt?.trim() || ''
+        mediaPrompt
       }
     })
 
@@ -1327,9 +1397,13 @@ Guidelines:
       let fallbackIndex = 0
       while ((match = stepRegex.exec(preparedContent)) !== null) {
         const [, rawTitle, rawBody] = match
+        const normalizedTitle =
+          rawTitle?.replace(/[:-]+$/, '').trim() || `Step ${fallbackIndex + 1}`
+        const normalizedBody = rawBody?.trim() || ''
         fallbackSteps.push({
-          title: rawTitle?.replace(/[:-]+$/, '').trim() || `Step ${fallbackIndex + 1}`,
-          content: rawBody?.trim() || '',
+          content: normalizedTitle
+            ? `# ${normalizedTitle}\n\n${normalizedBody}`.trim()
+            : normalizedBody,
           keywords: [],
           mediaPrompt: ''
         })
@@ -1343,7 +1417,6 @@ Guidelines:
 
     return normalizeGeneratedSteps([
       {
-        title: 'Step 1',
         content: rawContent.trim(),
         keywords: [],
         mediaPrompt: ''
@@ -1655,7 +1728,15 @@ Guidelines:
     const stepKey = `step-${stepIndex}`
     if (unsplashImages[stepKey]) return // Already loaded
 
-    console.log(`🖼️ Loading Unsplash images for Step ${stepIndex + 1}: "${step.title}" using first keyword: "${step.keywords[0]}"`)
+    const heading = deriveHeadingFromContent(
+      step.content,
+      `Step ${stepIndex + 1}`
+    )
+    console.log(
+      `🖼️ Loading Unsplash images for Step ${
+        stepIndex + 1
+      }: "${heading}" using first keyword: "${step.keywords[0]}"`
+    )
 
     try {
       // Use only the first keyword and get multiple images
@@ -1831,22 +1912,22 @@ Guidelines:
         editableSteps.length > 0
           ? editableSteps
               .map((step, index) => {
-                const title = step?.title?.trim()
-                const content = step?.content?.trim()
+                const content = step?.content?.trim() || ''
+                const heading = deriveHeadingFromContent(
+                  content,
+                  `Step ${index + 1}`
+                )
+                const body = deriveBodyFromContent(content)
 
-                if (title && content) {
-                  return `${title}: ${content}`
-                }
-
-                if (title) {
-                  return title
+                if (body) {
+                  return `${heading}: ${body}`
                 }
 
                 if (content) {
-                  return `Step ${index + 1}: ${content}`
+                  return `${heading}: ${content}`
                 }
 
-                return ''
+                return heading
               })
               .filter((section) => section.length > 0)
               .join('\n\n')
@@ -1906,7 +1987,9 @@ Guidelines:
     setTextContent(session.textContent)
     setImageAttachments(session.images)
     setAiResponse(session.aiResponse || '')
-    setEditableSteps(session.aiSteps || [])
+    setEditableSteps(
+      session.aiSteps ? normalizeGeneratedSteps(session.aiSteps) : []
+    )
     setImageAnalysisResults(
       session.imageAnalysisResults.map((result) => ({
         ...result,
@@ -4134,101 +4217,120 @@ Guidelines:
                               </label>
                             </div>
                             <div className="grid gap-6">
-                              {editableSteps.map((step, index) => (
-                            <Card key={`${step.title}-${index}`} className="bg-transparent shadow-none">
-                              <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                <CardTitle className="text-base font-semibold">
-                                  {step.title || `Step ${index + 1}`}
-                                </CardTitle>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  className="gap-2 self-start sm:self-auto"
-                                  onClick={() => handleCopyStep(step, index)}
-                                >
-                                  <Copy className="h-4 w-4" />
-                                  {copiedStepIndex === index ? 'Copied' : 'Copy'}
-                                </Button>
-                              </CardHeader>
-                              <CardContent className="space-y-4">
-                                <div className="space-y-2">
-                                  <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                                    Step Content
-                                  </label>
-                                  <Textarea
-                                    value={step.content}
-                                    onChange={(event) =>
-                                      handleStepContentChange(index, event.target.value)
-                                    }
-                                    className="min-h-[160px] whitespace-pre-wrap bg-white"
-                                  />
-                                </div>
-                                <div className="space-y-2 hidden">
-                                  <h4 className="text-sm font-medium">Media Prompt</h4>
-                                  <p className="text-sm whitespace-pre-wrap text-muted-foreground">
-                                    {step.mediaPrompt || 'No prompt provided.'}
-                                  </p>
-                                </div>
-                                <div className="space-y-2">
-                                  <h4 className="text-sm font-medium">Image Inspiration</h4>
-                                  {step.keywords.length > 0 && (
-                                    <div className="flex flex-wrap gap-2 mb-4">
-                                      {step.keywords.map((keyword, keywordIndex) => (
-                                        <span
-                                          key={`${keyword}-${keywordIndex}`}
-                                          className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center gap-1"
-                                        >
-                                          <Search className="h-3 w-3" />
-                                          {keyword}
-                                        </span>
-                                      ))}
-                                    </div>
-                                  )}
-                                  {step.keywords.length > 0 ? (
-                                    <div className="w-full">
-                                      {(() => {
-                                        const stepKey = `step-${index}`
-                                        const stepImages = unsplashImages[stepKey] || []
+                              {editableSteps.map((step, index) => {
+                                const heading = deriveHeadingFromContent(
+                                  step.content,
+                                  `Step ${index + 1}`
+                                )
+                                const cardKey = heading
+                                  ? `${heading}-${index}`
+                                  : `step-${index}`
 
-                                        // If we have unsplash images, show all of them; otherwise show fallback images
-                                        const displayImages = stepImages.length > 0 ? stepImages : [
-                                          `https://source.unsplash.com/600x600/?${encodeURIComponent(step.keywords[0])}&sig=${index}-0`
-                                        ]
+                                return (
+                                  <Card
+                                    key={cardKey}
+                                    className="bg-transparent shadow-none"
+                                  >
+                                    <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                      <CardTitle className="text-base font-semibold">
+                                        {heading}
+                                      </CardTitle>
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="gap-2 self-start sm:self-auto"
+                                        onClick={() => handleCopyStep(step, index)}
+                                      >
+                                        <Copy className="h-4 w-4" />
+                                        {copiedStepIndex === index ? 'Copied' : 'Copy'}
+                                      </Button>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                      <div className="space-y-2">
+                                        <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                                          Step Content
+                                        </label>
+                                        <Textarea
+                                          value={step.content}
+                                          onChange={(event) =>
+                                            handleStepContentChange(index, event.target.value)
+                                          }
+                                          className="min-h-[160px] whitespace-pre-wrap bg-white"
+                                        />
+                                      </div>
+                                      <div className="space-y-2 hidden">
+                                        <h4 className="text-sm font-medium">Media Prompt</h4>
+                                        <p className="text-sm whitespace-pre-wrap text-muted-foreground">
+                                          {step.mediaPrompt || 'No prompt provided.'}
+                                        </p>
+                                      </div>
+                                      <div className="space-y-2">
+                                        <h4 className="text-sm font-medium">Image Inspiration</h4>
+                                        {step.keywords.length > 0 && (
+                                          <div className="flex flex-wrap gap-2 mb-4">
+                                            {step.keywords.map((keyword, keywordIndex) => (
+                                              <span
+                                                key={`${keyword}-${keywordIndex}`}
+                                                className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center gap-1"
+                                              >
+                                                <Search className="h-3 w-3" />
+                                                {keyword}
+                                              </span>
+                                            ))}
+                                          </div>
+                                        )}
+                                        {step.keywords.length > 0 ? (
+                                          <div className="w-full">
+                                            {(() => {
+                                              const stepKey = `step-${index}`
+                                              const stepImages = unsplashImages[stepKey] || []
 
-                                        return (
-                                          <Carousel className="w-full relative">
-                                            <CarouselContent>
-                                              {displayImages.map((imageUrl, imageIndex) => (
-                                                <CarouselItem key={`${index}-${imageIndex}-img`} className="basis-1/6 mr-2">
-                                                  <div className="relative aspect-square  mx-auto overflow-hidden rounded-lg border">
-                                                    <Image
-                                                      src={imageUrl}
-                                                      alt={`${step.title || `Step ${index + 1}`} inspiration`}
-                                                      fill
-                                                      className="object-cover"
-                                                    />
-                                                  </div>
-                                                </CarouselItem>
-                                              ))}
-                                            </CarouselContent>
-                                           
-                                                <CarouselPrevious />
-                                                <CarouselNext />
+                                              const displayImages =
+                                                stepImages.length > 0
+                                                  ? stepImages
+                                                  : [
+                                                      `https://source.unsplash.com/600x600/?${encodeURIComponent(step.keywords[0])}&sig=${index}-0`
+                                                    ]
 
-                                          </Carousel>
-                                        )
-                                      })()}
-                                    </div>
-                                  ) : (
-                                    <p className="text-xs text-muted-foreground">
-                                      Add keywords to view Unsplash inspirations.
-                                    </p>
-                                  )}
-                                </div>
-                              </CardContent>
-                            </Card>
-                              ))}
+                                              return (
+                                                <Carousel className="w-full relative">
+                                                  <CarouselContent>
+                                                    {displayImages.map(
+                                                      (imageUrl, imageIndex) => (
+                                                        <CarouselItem
+                                                          key={`${index}-${imageIndex}-img`}
+                                                          className="basis-1/6 mr-2"
+                                                        >
+                                                          <div className="relative aspect-square  mx-auto overflow-hidden rounded-lg border">
+                                                            <Image
+                                                              src={imageUrl}
+                                                              alt={`${heading} inspiration`}
+                                                              fill
+                                                              className="object-cover"
+                                                            />
+                                                          </div>
+                                                        </CarouselItem>
+                                                      )
+                                                    )}
+                                                  </CarouselContent>
+
+                                                  <CarouselPrevious />
+                                                  <CarouselNext />
+                                                </Carousel>
+                                              )
+                                            })()}
+                                          </div>
+                                        ) : (
+                                          <p className="text-sm text-muted-foreground">
+                                            Add keywords to unlock image inspiration.
+                                          </p>
+                                        )}
+                                      </div>
+                                    </CardContent>
+                                  </Card>
+                                )
+                              })}
                             </div>
                           </>
                         )}

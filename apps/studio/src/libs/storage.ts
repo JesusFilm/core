@@ -9,7 +9,6 @@ export interface ImageAnalysisResult {
 }
 
 export interface GeneratedStepContent {
-  title: string
   content: string
   keywords: string[]
   mediaPrompt: string
@@ -142,7 +141,6 @@ class UserInputStorage {
           aiResponse: data.aiResponse || '',
           aiSteps: Array.isArray(data.aiSteps)
             ? data.aiSteps.map((step) => ({
-                title: step?.title || '',
                 content: step?.content || '',
                 keywords: Array.isArray(step?.keywords)
                   ? step.keywords
