@@ -5,7 +5,6 @@ import {
   Facebook,
   FileText,
   Globe,
-  Heart,
   History,
   Image as ImageIcon,
   Info,
@@ -54,6 +53,13 @@ import {
   TabsTrigger
 } from '../src/components/ui/tabs'
 import { Textarea } from '../src/components/ui/textarea'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel'
 import {
   type GeneratedStepContent,
   type UserInputData,
@@ -392,16 +398,19 @@ export default function NewPage() {
   const [selectedFormat, setSelectedFormat] = useState<string>('')
   const [selectedContext, setSelectedContext] = useState<string>('')
   const [selectedChatContext, setSelectedChatContext] = useState<string>('')
+  const [collapsedTiles, setCollapsedTiles] = useState<boolean>(false)
   const [isContextContainerHidden, setIsContextContainerHidden] = useState<boolean>(false)
   const [highlightedCategory, setHighlightedCategory] = useState<string>('')
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [isHovering, setIsHovering] = useState<boolean>(false)
   const [isAnimationStopped, setIsAnimationStopped] = useState<boolean>(false)
+  const [isTilesContainerHovered, setIsTilesContainerHovered] = useState<boolean>(false)
   const [selectedOutputs, setSelectedOutputs] = useState<
     Record<string, string[]>
   >({})
   const [openaiApiKey, setOpenaiApiKey] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [unsplashApiKey, setUnsplashApiKey] = useState('')
   const [textContent, setTextContent] = useState('')
   const [aiResponse, setAiResponse] = useState('')
   const [editableSteps, setEditableSteps] = useState<GeneratedStepContent[]>([])
@@ -441,8 +450,23 @@ export default function NewPage() {
   )
   const [showTestimonialBackground, setShowTestimonialBackground] =
     useState(true)
+  const [unsplashImages, setUnsplashImages] = useState<Record<string, string[]>>(
+    {}
+  )
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
+
+  // Load Unsplash images when steps change
+  useEffect(() => {
+    if (editableSteps.length > 0) {
+      console.log(`🚀 Starting to load Unsplash images for ${editableSteps.length} steps`)
+      console.log('🔑 Environment check - UNSPLASH_ACCESS_KEY:', process.env.UNSPLASH_ACCESS_KEY ? '***' + process.env.UNSPLASH_ACCESS_KEY.slice(-4) : 'NOT SET')
+      console.log('🔑 Settings check - unsplashApiKey:', unsplashApiKey ? '***' + unsplashApiKey.slice(-4) : 'NOT SET')
+      editableSteps.forEach((step, index) => {
+        void loadUnsplashImagesForStep(step, index)
+      })
+    }
+  }, [editableSteps, unsplashApiKey])
 
   // Close context menu when clicking outside
   useEffect(() => {
@@ -484,11 +508,18 @@ export default function NewPage() {
   // Load OpenAI API key from localStorage on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedApiKey = localStorage.getItem(
+      const savedOpenAIApiKey = localStorage.getItem(
         'jesus-film-studio-openai-api-key'
       )
-      if (savedApiKey) {
-        setOpenaiApiKey(savedApiKey)
+      if (savedOpenAIApiKey) {
+        setOpenaiApiKey(savedOpenAIApiKey)
+      }
+
+      const savedUnsplashApiKey = localStorage.getItem(
+        'jesus-film-studio-unsplash-api-key'
+      )
+      if (savedUnsplashApiKey) {
+        setUnsplashApiKey(savedUnsplashApiKey)
       }
     }
   }, [])
@@ -499,6 +530,13 @@ export default function NewPage() {
       localStorage.setItem('jesus-film-studio-openai-api-key', openaiApiKey)
     }
   }, [openaiApiKey])
+
+  // Save Unsplash API key to localStorage when it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined' && unsplashApiKey) {
+      localStorage.setItem('jesus-film-studio-unsplash-api-key', unsplashApiKey)
+    }
+  }, [unsplashApiKey])
 
   // Auto-save draft when content changes
   useEffect(() => {
@@ -529,6 +567,11 @@ export default function NewPage() {
     imageAnalysisResults,
     editableSteps
   ])
+
+  // Collapse tiles when a chat context is selected
+  useEffect(() => {
+    setCollapsedTiles(selectedChatContext !== '')
+  }, [selectedChatContext])
 
   // Auto-resize textarea
   const adjustTextareaHeight = () => {
@@ -820,18 +863,18 @@ Guidelines:
       }
     } catch (error) {
       console.error('Failed to copy step content:', error)
-      alert('Unable to copy content automatically. Please copy manually.')
+      console.warn('Unable to copy content automatically. Please copy manually.')
     }
   }
 
   const processContentWithAI = async () => {
     if (!textContent.trim()) {
-      alert('Please enter some content to process.')
+      console.warn('Please enter some content to process.')
       return
     }
 
     if (!openaiApiKey) {
-      alert('Please set your OpenAI API key in settings first.')
+      console.warn('Please set your OpenAI API key in settings first.')
       setIsSettingsOpen(true)
       return
     }
@@ -892,7 +935,7 @@ Guidelines:
       // Restore previous response if API call failed
       setAiResponse(previousResponse)
       setEditableSteps(previousSteps)
-      alert(
+      console.error(
         'Failed to process content. Please check your API key and try again.'
       )
     } finally {
@@ -1036,6 +1079,116 @@ Guidelines:
     }
   }
 
+  const searchUnsplash = async (query: string, perPage: number = 3): Promise<string[]> => {
+    console.log(`🔍 Unsplash Search: "${query}" (perPage: ${perPage})`)
+
+    const accessKey = unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
+    console.log('UNSPLASH_ACCESS_KEY available:', !!accessKey, accessKey ? '***' + accessKey.slice(-4) : 'NOT SET')
+
+    if (!accessKey) {
+      console.error('❌ UNSPLASH_ACCESS_KEY not found in environment variables or settings')
+      return []
+    }
+
+    try {
+      const apiUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=${perPage}&content_filter=high&orientation=squarish&client_id=${accessKey}`
+      console.log('🌐 Making API request to:', apiUrl.replace(accessKey, '***' + accessKey.slice(-4)))
+
+      const response = await fetch(apiUrl)
+
+      console.log('📡 Response status:', response.status, response.statusText)
+
+      if (!response.ok) {
+        console.error('❌ Unsplash API error:', response.status, response.statusText)
+        const errorText = await response.text()
+        console.error('❌ Error response body:', errorText)
+
+        // Check for common error patterns
+        try {
+          const errorData = JSON.parse(errorText)
+          if (errorData.errors && errorData.errors.includes('OAuth error: The access token is invalid')) {
+            console.error('❌ INVALID API KEY: The Unsplash Access Key you entered is invalid.')
+            console.error('💡 SOLUTION: Get a new Access Key from https://unsplash.com/developers')
+            console.warn('Please check your Unsplash Access Key in Settings and get a new one from https://unsplash.com/developers if needed.')
+          }
+        } catch (e) {
+          // Error text is not JSON, continue with generic error
+        }
+
+        return []
+      }
+
+      const data = await response.json()
+      console.log(`✅ Unsplash Response for "${query}": ${data.results?.length || 0} images found`)
+
+      if (data.results && data.results.length > 0) {
+        console.log('🖼️ First image details:', {
+          id: data.results[0].id,
+          description: data.results[0].description,
+          url: data.results[0].urls?.regular
+        })
+      }
+
+      const imageUrls = data.results?.map((photo: any) => photo.urls?.regular).filter(Boolean) || []
+      console.log(`📸 Extracted ${imageUrls.length} image URLs for "${query}"`)
+
+      return imageUrls
+    } catch (error) {
+      console.error('💥 Failed to search Unsplash:', error)
+      return []
+    }
+  }
+
+  const loadUnsplashImagesForStep = async (step: GeneratedStepContent, stepIndex: number) => {
+    if (!step.keywords.length) return
+
+    const stepKey = `step-${stepIndex}`
+    if (unsplashImages[stepKey]) return // Already loaded
+
+    console.log(`🖼️ Loading Unsplash images for Step ${stepIndex + 1}: "${step.title}" using first keyword: "${step.keywords[0]}"`)
+
+    try {
+      // Use only the first keyword and get multiple images
+      const images = await searchUnsplash(step.keywords[0], 12)
+
+      console.log(`📸 Completed loading ${images.length} images for Step ${stepIndex + 1}`)
+
+      setUnsplashImages(prev => ({
+        ...prev,
+        [stepKey]: images
+      }))
+    } catch (error) {
+      console.error('Failed to load Unsplash images for step:', error)
+    }
+  }
+
+  // Debug function to test Unsplash API
+  const testUnsplashAPI = async () => {
+    console.log('🧪 Testing Unsplash API...')
+
+    if (!unsplashApiKey && !process.env.UNSPLASH_ACCESS_KEY) {
+      console.warn('No Unsplash Access Key found. Please enter one in Settings.')
+      setIsSettingsOpen(true)
+      return
+    }
+
+    const testResult = await searchUnsplash('test', 1)
+    console.log('🧪 Test result:', testResult)
+
+    if (testResult.length > 0) {
+      console.log(`✅ Unsplash API working! Found ${testResult.length} test image(s).`)
+    } else {
+      console.warn('❌ Unsplash API test failed. Check your Access Key in Settings.')
+    }
+  }
+
+  // Expose test function to window for debugging
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).testUnsplashAPI = testUnsplashAPI
+    }
+  }, [])
+
   const processFiles = (files: FileList | File[]) => {
     const fileArray = Array.from(files)
     const imageFiles = fileArray.filter((file) =>
@@ -1047,7 +1200,7 @@ Guidelines:
     imageFiles.forEach((file, fileIndex) => {
       if (file.size > 10 * 1024 * 1024) {
         // 10MB limit
-        alert(
+        console.warn(
           `File ${file.name} is too large. Please use images smaller than 10MB.`
         )
         return
@@ -1122,7 +1275,7 @@ Guidelines:
     const url = prompt('Enter website URL:')
     if (url) {
       // You could add this to attachments or handle it differently
-      alert(`Link to site: ${url} - This feature can be implemented further`)
+      console.log(`Link to site: ${url} - This feature can be implemented further`)
     }
   }
 
@@ -1341,6 +1494,51 @@ Guidelines:
                           Your API key is required to process content with
                           OpenAI. It will be stored locally in your browser.
                         </p>
+                      </div>
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="unsplash-api-key"
+                          className="text-sm font-medium"
+                        >
+                          Unsplash Access Key
+                        </label>
+                        <Input
+                          id="unsplash-api-key"
+                          type="password"
+                          placeholder="Enter your Unsplash Access Key..."
+                          value={unsplashApiKey}
+                          onChange={(e) => setUnsplashApiKey(e.target.value)}
+                          className={`w-full ${unsplashApiKey && !/^[A-Za-z0-9_-]{40,80}$/.test(unsplashApiKey) ? 'border-red-500' : ''}`}
+                        />
+                        {unsplashApiKey && !/^[A-Za-z0-9_-]{40,80}$/.test(unsplashApiKey) && (
+                          <p className="text-xs text-red-600 mt-1">
+                            Access Key appears to be invalid format. Should be 40-80 characters.
+                          </p>
+                        )}
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs text-muted-foreground">
+                            Your Unsplash Access Key is used to fetch relevant
+                            images for content steps. Get one from{' '}
+                            <a
+                              href="https://unsplash.com/developers"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary hover:underline"
+                            >
+                              Unsplash Developers
+                            </a>
+                            . It will be stored locally in your browser.
+                          </p>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={testUnsplashAPI}
+                            className="ml-4 whitespace-nowrap"
+                          >
+                            Test Key
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </DialogContent>
@@ -1783,10 +1981,14 @@ Guidelines:
                   <CardContent data-testid="section-channels" className="space-y-6">
                     {/* Context Selector */}
                     <div className="mb-8">
-                      <div className="grid grid-cols-5 gap-4">
+                      <div
+                        className="grid grid-cols-5 gap-4"
+                        onMouseEnter={() => setIsTilesContainerHovered(true)}
+                        onMouseLeave={() => setIsTilesContainerHovered(false)}
+                      >
                         {/* Chat/Comments */}
                         <div
-                          className={`p-4 border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
+                          className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Chat/Comments'
                               ? 'bg-gradient-to-br from-blue-500 via-cyan-600 to-teal-600 border-blue-500'
                               : !isHovering && highlightedCategory === 'Chat/Comments'
@@ -1807,17 +2009,19 @@ Guidelines:
                             setIsHovering(false)
                           }}
                         >
-                          <div className="p-3">
-                            <MessageSquare
-                              className={`w-8 h-8 ${
-                                selectedContext === 'Chat/Comments'
-                                  ? 'text-white drop-shadow-lg'
-                                  : !isHovering && highlightedCategory === 'Chat/Comments'
-                                    ? 'text-cyan-600'
-                                    : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
-                              }`}
-                            />
-                          </div>
+                          {!(collapsedTiles && !isTilesContainerHovered) && (
+                            <div className="p-3">
+                              <MessageSquare
+                                className={`w-8 h-8 ${
+                                  selectedContext === 'Chat/Comments'
+                                    ? 'text-white drop-shadow-lg'
+                                    : !isHovering && highlightedCategory === 'Chat/Comments'
+                                      ? 'text-cyan-600'
+                                      : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
+                                }`}
+                              />
+                            </div>
+                          )}
                           <span
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Chat/Comments'
@@ -1833,7 +2037,7 @@ Guidelines:
 
                         {/* Social Media */}
                         <div
-                          className={`p-4 border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
+                          className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Social Media'
                               ? 'bg-gradient-to-br from-purple-500 via-pink-600 to-red-600 border-purple-500'
                               : !isHovering && highlightedCategory === 'Social Media'
@@ -1854,17 +2058,19 @@ Guidelines:
                             setIsHovering(false)
                           }}
                         >
-                          <div className="p-3">
-                            <Users
-                              className={`w-8 h-8 ${
-                                selectedContext === 'Social Media'
-                                  ? 'text-white drop-shadow-lg'
-                                  : !isHovering && highlightedCategory === 'Social Media'
-                                    ? 'text-pink-500'
-                                    : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
-                              }`}
-                            />
-                          </div>
+                          {!(collapsedTiles && !isTilesContainerHovered) && (
+                            <div className="p-3">
+                              <Users
+                                className={`w-8 h-8 ${
+                                  selectedContext === 'Social Media'
+                                    ? 'text-white drop-shadow-lg'
+                                    : !isHovering && highlightedCategory === 'Social Media'
+                                      ? 'text-pink-500'
+                                      : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
+                                }`}
+                              />
+                            </div>
+                          )}
                           <span
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Social Media'
@@ -1880,7 +2086,7 @@ Guidelines:
 
                         {/* Website */}
                         <div
-                          className={`p-4 border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
+                          className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Website'
                               ? 'bg-gradient-to-br from-orange-500 via-yellow-600 to-amber-600 border-orange-500'
                               : !isHovering && highlightedCategory === 'Website'
@@ -1901,17 +2107,19 @@ Guidelines:
                             setIsHovering(false)
                           }}
                         >
-                          <div className="p-3">
-                            <Globe
-                              className={`w-8 h-8 ${
-                                selectedContext === 'Website'
-                                  ? 'text-white drop-shadow-lg'
-                                  : !isHovering && highlightedCategory === 'Website'
-                                    ? 'text-orange-500'
-                                    : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
-                              }`}
-                            />
-                          </div>
+                          {!(collapsedTiles && !isTilesContainerHovered) && (
+                            <div className="p-3">
+                              <Globe
+                                className={`w-8 h-8 ${
+                                  selectedContext === 'Website'
+                                    ? 'text-white drop-shadow-lg'
+                                    : !isHovering && highlightedCategory === 'Website'
+                                      ? 'text-orange-500'
+                                      : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
+                                }`}
+                              />
+                            </div>
+                          )}
                           <span
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Website'
@@ -1927,7 +2135,7 @@ Guidelines:
 
                         {/* Print */}
                         <div
-                          className={`p-4 border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
+                          className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Print'
                               ? 'bg-gradient-to-br from-emerald-500 via-green-600 to-lime-600 border-emerald-500'
                               : !isHovering && highlightedCategory === 'Print'
@@ -1948,17 +2156,19 @@ Guidelines:
                             setIsHovering(false)
                           }}
                         >
-                          <div className="p-3">
-                            <FileText
-                              className={`w-8 h-8 ${
-                                selectedContext === 'Print'
-                                  ? 'text-white drop-shadow-lg'
-                                  : !isHovering && highlightedCategory === 'Print'
-                                    ? 'text-emerald-600'
-                                    : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
-                              }`}
-                            />
-                          </div>
+                          {!(collapsedTiles && !isTilesContainerHovered) && (
+                            <div className="p-3">
+                              <FileText
+                                className={`w-8 h-8 ${
+                                  selectedContext === 'Print'
+                                    ? 'text-white drop-shadow-lg'
+                                    : !isHovering && highlightedCategory === 'Print'
+                                      ? 'text-emerald-600'
+                                      : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
+                                }`}
+                              />
+                            </div>
+                          )}
                           <span
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Print'
@@ -1974,7 +2184,7 @@ Guidelines:
 
                         {/* Real Life */}
                         <div
-                          className={`p-4 border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center gap-3 ${
+                          className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Real Life'
                               ? 'bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-600 border-rose-500'
                               : !isHovering && highlightedCategory === 'Real Life'
@@ -1995,17 +2205,19 @@ Guidelines:
                             setIsHovering(false)
                           }}
                         >
-                          <div className="p-3">
-                            <Users
-                              className={`w-8 h-8 ${
-                                selectedContext === 'Real Life'
-                                  ? 'text-white drop-shadow-lg'
-                                  : !isHovering && highlightedCategory === 'Real Life'
-                                    ? 'text-rose-500'
-                                    : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
-                              }`}
-                            />
-                          </div>
+                          {!(collapsedTiles && !isTilesContainerHovered) && (
+                            <div className="p-3">
+                              <Users
+                                className={`w-8 h-8 ${
+                                  selectedContext === 'Real Life'
+                                    ? 'text-white drop-shadow-lg'
+                                    : !isHovering && highlightedCategory === 'Real Life'
+                                      ? 'text-rose-500'
+                                      : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
+                                }`}
+                              />
+                            </div>
+                          )}
                           <span
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Real Life'
@@ -2075,7 +2287,7 @@ Guidelines:
                       </div>
                     )}
 
-                    <div data-testid="section-prompt" className="relative hidden bg-white rounded-3xl shadow-xl ">
+                    <div data-testid="section-prompt" className={`relative ${selectedChatContext ? '' : 'hidden'} bg-white rounded-3xl shadow-xl `}>
                       {/* <label className="text-sm font-medium mb-2 block">Text Content</label> */}
                       <div className="relative">
                         {/* Image Attachments Carousel - inside textarea */}
@@ -3472,20 +3684,46 @@ Guidelines:
                       </div>
                     </div>
 
-                    {editableSteps.length > 0 && (
+                    {aiResponse && (
                       <div className="mt-12 space-y-6">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <label className="text-sm font-medium">
-                            AI Multi-Step Content
+                            AI Response
                           </label>
                           <div className="flex items-center gap-1 text-xs text-blue-600">
                             <History className="w-3 h-3" />
                             <span>Conversation context preserved</span>
                           </div>
                         </div>
-                        <div className="grid gap-6">
-                          {editableSteps.map((step, index) => (
-                            <Card key={`${step.title}-${index}`} className="border shadow-sm">
+
+                        {/* Raw AI Response */}
+                        <Card className="border shadow-sm">
+                          <CardHeader>
+                            <CardTitle className="text-base font-semibold">
+                              Raw AI Response
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-2">
+                              <Textarea
+                                value={aiResponse}
+                                readOnly
+                                className="min-h-[200px] whitespace-pre-wrap"
+                              />
+                            </div>
+                          </CardContent>
+                        </Card>
+
+                        {editableSteps.length > 0 && (
+                          <>
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <label className="text-sm font-medium">
+                                Parsed Multi-Step Content
+                              </label>
+                            </div>
+                            <div className="grid gap-6">
+                              {editableSteps.map((step, index) => (
+                            <Card key={`${step.title}-${index}`}>
                               <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                                 <CardTitle className="text-base font-semibold">
                                   {step.title || `Step ${index + 1}`}
@@ -3542,24 +3780,39 @@ Guidelines:
                                 <div className="space-y-2">
                                   <h4 className="text-sm font-medium">Image Inspiration</h4>
                                   {step.keywords.length > 0 ? (
-                                    <div className="flex gap-3 overflow-x-auto pb-2">
-                                      {step.keywords.map((keyword, keywordIndex) => {
-                                        const imageUrl = `https://source.unsplash.com/600x600/?${encodeURIComponent(keyword)}&sig=${index}-${keywordIndex}`
+                                    <div className="w-full">
+                                      {(() => {
+                                        const stepKey = `step-${index}`
+                                        const stepImages = unsplashImages[stepKey] || []
+
+                                        // If we have unsplash images, show all of them; otherwise show fallback images
+                                        const displayImages = stepImages.length > 0 ? stepImages : [
+                                          `https://source.unsplash.com/600x600/?${encodeURIComponent(step.keywords[0])}&sig=${index}-0`
+                                        ]
+
                                         return (
-                                          <div
-                                            key={`${keyword}-${keywordIndex}-img`}
-                                            className="relative h-40 w-40 flex-shrink-0 overflow-hidden rounded-lg border"
-                                          >
-                                            <Image
-                                              src={imageUrl}
-                                              alt={`${step.title || `Step ${index + 1}`} inspiration ${keyword}`}
-                                              fill
-                                              sizes="160px"
-                                              className="object-cover"
-                                            />
-                                          </div>
+                                          <Carousel className="w-full relative">
+                                            <CarouselContent>
+                                              {displayImages.map((imageUrl, imageIndex) => (
+                                                <CarouselItem key={`${index}-${imageIndex}-img`} className="basis-1/6 mr-2">
+                                                  <div className="relative aspect-square  mx-auto overflow-hidden rounded-lg border">
+                                                    <Image
+                                                      src={imageUrl}
+                                                      alt={`${step.title || `Step ${index + 1}`} inspiration`}
+                                                      fill
+                                                      className="object-cover"
+                                                    />
+                                                  </div>
+                                                </CarouselItem>
+                                              ))}
+                                            </CarouselContent>
+                                           
+                                                <CarouselPrevious />
+                                                <CarouselNext />
+
+                                          </Carousel>
                                         )
-                                      })}
+                                      })()}
                                     </div>
                                   ) : (
                                     <p className="text-xs text-muted-foreground">
@@ -3569,8 +3822,10 @@ Guidelines:
                                 </div>
                               </CardContent>
                             </Card>
-                          ))}
-                        </div>
+                              ))}
+                            </div>
+                          </>
+                        )}
                       </div>
                     )}
 
@@ -3748,7 +4003,7 @@ Guidelines:
                       onClick={() => {
                         console.log('Selected outputs:', selectedOutputs)
                         // Dummy create functionality
-                        alert('Create functionality - coming soon!')
+                        console.log('Create functionality - coming soon!')
                       }}
                     >
                       <Sparkles className="w-5 h-5" />

@@ -1,4 +1,7 @@
 @import 'tailwindcss';
+@source "../../../@/components/**/*.{js,ts,jsx,tsx}";
+@source "./**/*.{js,ts,jsx,tsx}";
+@source "../../libs/**/*.{js,ts,jsx,tsx}";
 
 @theme {
   --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
