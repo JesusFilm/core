@@ -111,7 +111,7 @@ export function VideoDetails({
 
   return (
     <Drawer title={t('Video Details')} open={open} onClose={onClose}>
-      <Stack sx={{ display: 'flex', justifyContent: 'center' }}>
+      <Stack sx={{ display: 'flex', justifyContent: 'center'}}>
         {activeVideoBlock != null && (
           <Stack
             direction="row"
@@ -142,10 +142,10 @@ export function VideoDetails({
           sx={{
             flexGrow: 1,
             overflow: 'auto',
-            mt: activeVideoBlock != null ? -6 : 0
+            mt: activeVideoBlock != null ? -6 : 0            
           }}
         >
-          <Details
+          <Details            
             id={id}
             open={open}
             onSelect={handleSelect}
