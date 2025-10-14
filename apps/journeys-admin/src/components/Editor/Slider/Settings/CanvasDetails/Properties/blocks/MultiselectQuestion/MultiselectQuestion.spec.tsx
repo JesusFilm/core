@@ -131,7 +131,7 @@ describe('MultiselectQuestion Properties', () => {
         'To edit multiselect content, choose each option individually'
       )
     ).toBeInTheDocument()
-    expect(screen.getByText('Set Selection Limit')).toBeInTheDocument()
+    expect(screen.getByText('Selection Limit')).toBeInTheDocument()
   })
 
   it('changes label and range and commits on blur', async () => {
@@ -225,7 +225,7 @@ describe('MultiselectQuestion Properties', () => {
     )
 
     const toggle = screen.getByRole('checkbox', {
-      name: 'Set Selection Limit'
+      name: 'Selection Limit'
     })
     // enable
     fireEvent.click(toggle)

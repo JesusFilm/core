@@ -148,8 +148,8 @@ export function MultiselectQuestion({
   }
 
   const handleBlurCommit = useCallback(() => {
-    const nextMinRaw = localMin === '' ? null : (localMin)
-    const nextMaxRaw = localMax === '' ? null : (localMax)
+    const nextMinRaw = localMin === '' ? null : localMin
+    const nextMaxRaw = localMax === '' ? null : localMax
 
     const bothNumbers =
       nextMinRaw !== null &&
@@ -176,7 +176,7 @@ export function MultiselectQuestion({
     if (
       normalizedMin != null &&
       normalizedMax != null &&
-      (normalizedMin) > (normalizedMax)
+      normalizedMin > normalizedMax
     ) {
       normalizedMin = normalizedMax
     }
@@ -224,9 +224,7 @@ export function MultiselectQuestion({
 
       <Box sx={{ p: 4, display: 'grid', gap: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2 }}>
-          <Typography variant="subtitle2">
-            {t('Set Selection Limit')}
-          </Typography>
+          <Typography variant="subtitle2">{t('Selection Limit')}</Typography>
           <Tooltip
             title={t('Maximum number of selections allowed.')}
             placement="top"
@@ -267,7 +265,7 @@ export function MultiselectQuestion({
                 commitUpdate({ min: normalizedMin, max: defaultMax })
               }
             }}
-            inputProps={{ 'aria-label': t('Set Selection Limit') }}
+            inputProps={{ 'aria-label': t('Selection Limit') }}
             sx={{ ml: 'auto' }}
           />
         </Box>
