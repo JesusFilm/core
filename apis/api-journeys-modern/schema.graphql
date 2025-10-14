@@ -373,6 +373,7 @@ enum EventType {
   StepViewEvent
   StepNextEvent
   StepPreviousEvent
+  MultiselectSubmissionEvent
   TextResponseSubmissionEvent
   VideoStartEvent
   VideoPlayEvent
