@@ -462,6 +462,8 @@
   "{{ language }} ({{ nativeLanguage }})": "{{ language }} ({{ nativeLanguage }})",
   "Custom Video": "Custom Video",
   "YouTube": "YouTube",
+  "Enable Subtitles": "Enable Subtitles",
+  "This video does not have any subtitles.": "This video does not have any subtitles.",
   "Less": "Less",
   "More": "More",
   "Video Details": "Video Details",
