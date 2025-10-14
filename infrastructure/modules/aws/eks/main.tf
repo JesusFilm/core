@@ -239,3 +239,32 @@ resource "aws_eks_node_group" "az_2a" {
     aws_iam_role_policy_attachment.eks-node-AmazonEC2ContainerRegistryReadOnly,
   ]
 }
+
+# Ensure at least one ON_DEMAND node group exists in production
+resource "aws_eks_node_group" "on_demand" {
+  count            = var.env == "prod" ? 1 : 0
+  cluster_name     = aws_eks_cluster.this.name
+  node_group_name  = "jfp-eks-node-group-ondemand-${var.env}"
+  node_role_arn    = aws_iam_role.eks-node.arn
+  subnet_ids       = var.subnet_ids_2b
+
+  scaling_config {
+    desired_size = 1
+    max_size     = 2
+    min_size     = 1
+  }
+
+  update_config {
+    max_unavailable = 1
+  }
+
+  capacity_type = "ON_DEMAND"
+
+  instance_types = ["t3.large"]
+
+  depends_on = [
+    aws_iam_role_policy_attachment.eks-node-AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.eks-node-AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.eks-node-AmazonEC2ContainerRegistryReadOnly,
+  ]
+}
