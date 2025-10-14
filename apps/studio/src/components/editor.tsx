@@ -18,8 +18,7 @@ const store = createStore({
   // but it will be good if you can keep it for Polotno project support
   showCredit: true,
 });
-store.addPage();
-store.loadJSON(JSON.parse(initialState));
+// Don't preload initial state - let useEffect handle loading
 
 export const Editor = () => {
   useEffect(() => {

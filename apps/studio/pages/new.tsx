@@ -1,5 +1,6 @@
 import {
   Camera,
+  Copy,
   Crown,
   Facebook,
   FileText,
@@ -20,7 +21,6 @@ import {
   Twitter,
   Users,
   Video,
-  X,
   X,
   Youtube,
   Zap
@@ -803,7 +803,6 @@ export default function NewPage() {
   const [isAnimationStopped, setIsAnimationStopped] = useState<boolean>(false)
   const [selectedOutputs, setSelectedOutputs] = useState<SelectedOutputsMap>({})
   const [isTilesContainerHovered, setIsTilesContainerHovered] = useState<boolean>(false)
-  const [selectedOutputs, setSelectedOutputs] = useState<SelectedOutputsMap>({})
 
   const [openaiApiKey, setOpenaiApiKey] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -814,6 +813,7 @@ export default function NewPage() {
   const [copiedStepIndex, setCopiedStepIndex] = useState<number | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [imageAttachments, setImageAttachments] = useState<string[]>([])
+  const [unsplashImages, setUnsplashImages] = useState<Record<string, string[]>>({})
   const [imageAnalysisResults, setImageAnalysisResults] = useState<
     Array<{
       imageSrc: string
