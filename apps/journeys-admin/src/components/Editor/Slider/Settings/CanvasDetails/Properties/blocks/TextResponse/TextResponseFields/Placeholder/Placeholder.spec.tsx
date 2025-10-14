@@ -99,7 +99,7 @@ describe('Edit Placeholder field', () => {
 
   it('should display placeholder value', () => {
     render(
-      <MockedProvider mocks={[mockPlaceholderUpdate1]} addTypename={false}>
+      <MockedProvider mocks={[mockPlaceholderUpdate1]}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <Placeholder />
         </EditorProvider>
@@ -187,7 +187,7 @@ describe('Edit Placeholder field', () => {
 
   it('should not be able to type beyond max character limit', () => {
     render(
-      <MockedProvider mocks={[mockPlaceholderUpdate1]} addTypename={false}>
+      <MockedProvider mocks={[mockPlaceholderUpdate1]}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <Placeholder />
         </EditorProvider>
@@ -205,7 +205,7 @@ describe('Edit Placeholder field', () => {
     ])
 
     render(
-      <MockedProvider link={link} addTypename={false}>
+      <MockedProvider link={link}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <Placeholder />
         </EditorProvider>
@@ -226,7 +226,7 @@ describe('Edit Placeholder field', () => {
     ])
 
     render(
-      <MockedProvider link={link} addTypename={false}>
+      <MockedProvider link={link}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <CommandUndoItem variant="button" />
           <Placeholder />
@@ -257,7 +257,7 @@ describe('Edit Placeholder field', () => {
     ])
 
     render(
-      <MockedProvider link={link} addTypename={false}>
+      <MockedProvider link={link}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <CommandUndoItem variant="button" />
           <CommandRedoItem variant="button" />
@@ -290,7 +290,7 @@ describe('Edit Placeholder field', () => {
     ])
 
     render(
-      <MockedProvider link={link} addTypename={false}>
+      <MockedProvider link={link}>
         <EditorProvider initialState={{}}>
           <Placeholder />
         </EditorProvider>

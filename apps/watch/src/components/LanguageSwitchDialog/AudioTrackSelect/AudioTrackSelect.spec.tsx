@@ -76,7 +76,7 @@ describe('AudioTrackSelect', () => {
 
   it('should display native name and display name when audioLanguageId matches a language', async () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <WatchProvider>
           <AudioTrackSelect audioLanguageId="496" />
         </WatchProvider>
@@ -94,7 +94,7 @@ describe('AudioTrackSelect', () => {
   describe('helper text', () => {
     it('should show helper text', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <AudioTrackSelect audioLanguageId="529" />
           </WatchProvider>
@@ -115,7 +115,7 @@ describe('AudioTrackSelect', () => {
       })
 
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <AudioTrackSelect audioLanguageId="529" />
           </WatchProvider>
@@ -129,7 +129,7 @@ describe('AudioTrackSelect', () => {
 
     it('should show available languages text when videoAudioLanguageIds is not null', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <AudioTrackSelect
               audioLanguageId="529"
@@ -148,7 +148,7 @@ describe('AudioTrackSelect', () => {
 
     it('should show not available languages text when videoAudioLanguageIds is not null and audioLanguageId does not match', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <AudioTrackSelect
               audioLanguageId="529"
@@ -171,7 +171,7 @@ describe('AudioTrackSelect', () => {
   describe('native name', () => {
     it('should display native name when audioLanguageId matches a language', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <AudioTrackSelect audioLanguageId="496" />
           </WatchProvider>
@@ -189,7 +189,7 @@ describe('AudioTrackSelect', () => {
 
     it('should not display native name when it matches the display name', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <AudioTrackSelect audioLanguageId="529" />
           </WatchProvider>
@@ -209,7 +209,7 @@ describe('AudioTrackSelect', () => {
   describe('autocomplete', () => {
     it('should show available languages text when videoAudioLanguageIds is not null', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <AudioTrackSelect
               audioLanguageId="529"
@@ -235,7 +235,7 @@ describe('AudioTrackSelect', () => {
 
     it('should call updateAudioLanguage when a language is selected', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <AudioTrackSelect audioLanguageId="529" />
           </WatchProvider>
@@ -254,7 +254,7 @@ describe('AudioTrackSelect', () => {
 
     it('should call updateAudioLanguage with reload true when selected language is in videoAudioLanguageIds', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <AudioTrackSelect
               audioLanguageId="529"
@@ -278,7 +278,7 @@ describe('AudioTrackSelect', () => {
       useInstantSearchMock.mockReturnValue(mockInstantSearch)
 
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <AudioTrackSelect audioLanguageId="529" />
           </WatchProvider>

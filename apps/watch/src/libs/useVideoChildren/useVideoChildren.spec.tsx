@@ -68,11 +68,7 @@ const wrapper = ({
 }: {
   children: ReactNode
   mocks: any[]
-}) => (
-  <MockedProvider mocks={mocks} addTypename={false}>
-    {children}
-  </MockedProvider>
-)
+}) => <MockedProvider mocks={mocks}>{children}</MockedProvider>
 
 describe('useVideoChildren', () => {
   beforeEach(() => {

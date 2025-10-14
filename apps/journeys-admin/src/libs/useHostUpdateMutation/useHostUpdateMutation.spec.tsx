@@ -83,7 +83,6 @@ describe('useHostUpdateMutation', () => {
     const { result } = renderHook(() => useHostUpdateMutation(), {
       wrapper: ({ children }) => (
         <MockedProvider
-          addTypename={false}
           mocks={[
             {
               request: {

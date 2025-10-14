@@ -105,7 +105,7 @@ const TestWrapper = ({
   children: React.ReactNode
   mocks: any[]
 }) => (
-  <MockedProvider mocks={mocks} addTypename={false}>
+  <MockedProvider mocks={mocks}>
     <SnackbarProvider>
       <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
     </SnackbarProvider>

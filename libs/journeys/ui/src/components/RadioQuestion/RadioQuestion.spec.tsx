@@ -103,7 +103,7 @@ describe('RadioQuestion', () => {
 
   it('should display the correct options', () => {
     const { getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <RadioQuestion {...block} addOption={jest.fn()} />
       </MockedProvider>
     )
@@ -184,7 +184,6 @@ describe('RadioQuestion', () => {
             }
           }
         ]}
-        addTypename={false}
       >
         <RadioQuestion {...block} uuid={() => 'uuid'} />
       </MockedProvider>
@@ -199,7 +198,7 @@ describe('RadioQuestion', () => {
 
   it('should display list options with wrappers', async () => {
     const { getByText, getAllByTestId } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <RadioQuestion
           {...block}
           wrappers={{
@@ -226,7 +225,7 @@ describe('RadioQuestion', () => {
 
   it('should display grid options with wrappers', async () => {
     const { getByText, getAllByTestId } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <RadioQuestion
           {...block}
           gridView={true}

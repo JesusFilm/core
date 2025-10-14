@@ -52,7 +52,7 @@ describe('LanguageSwitchDialog', () => {
 
   it('should render dialog with all components', () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <WatchProvider>
           <LanguageSwitchDialog open />
         </WatchProvider>
@@ -65,7 +65,7 @@ describe('LanguageSwitchDialog', () => {
 
   it('should hide dialog if open is false', () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <WatchProvider>
           <LanguageSwitchDialog open={false} />
         </WatchProvider>
@@ -77,7 +77,7 @@ describe('LanguageSwitchDialog', () => {
 
   it('should hide the dialog if open is not provided', () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <WatchProvider>
           <LanguageSwitchDialog />
         </WatchProvider>
@@ -90,7 +90,7 @@ describe('LanguageSwitchDialog', () => {
   it('should call handleClose when close button is clicked', async () => {
     const mockHandleClose = jest.fn()
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <WatchProvider>
           <LanguageSwitchDialog open handleClose={mockHandleClose} />
         </WatchProvider>
@@ -105,7 +105,7 @@ describe('LanguageSwitchDialog', () => {
 
   it('should render audio track select', async () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <WatchProvider
           initialState={{
             audioLanguageId: '529',
@@ -137,7 +137,7 @@ describe('LanguageSwitchDialog', () => {
 
   it('should render subtitles select', async () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <WatchProvider
           initialState={{
             subtitleLanguageId: '529',
@@ -170,7 +170,7 @@ describe('LanguageSwitchDialog', () => {
 
   it('should render subtitle checkbox checked if subtitleOn is true', async () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <WatchProvider initialState={{ subtitleOn: true }}>
           <LanguageSwitchDialog open />
         </WatchProvider>
@@ -182,7 +182,7 @@ describe('LanguageSwitchDialog', () => {
 
   it('should render subtitle checkbox unchecked if subtitleOn is false', async () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <WatchProvider initialState={{ subtitleOn: false }}>
           <LanguageSwitchDialog open />
         </WatchProvider>

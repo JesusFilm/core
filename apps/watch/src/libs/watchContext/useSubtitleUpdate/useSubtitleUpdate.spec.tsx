@@ -87,7 +87,7 @@ describe('useSubtitleUpdate', () => {
   it('should disable all subtitle tracks when subtitles are off', async () => {
     const { result } = renderHook(() => useSubtitleUpdate(), {
       wrapper: ({ children }) => (
-        <MockedProvider mocks={[getSubtitlesMock]} addTypename={false}>
+        <MockedProvider mocks={[getSubtitlesMock]}>
           <VideoProvider value={{ content: mockVideoContent }}>
             {children}
           </VideoProvider>
@@ -115,7 +115,7 @@ describe('useSubtitleUpdate', () => {
   it('should do nothing when subtitleLanguage is null', async () => {
     const { result } = renderHook(() => useSubtitleUpdate(), {
       wrapper: ({ children }) => (
-        <MockedProvider mocks={[getSubtitlesMock]} addTypename={false}>
+        <MockedProvider mocks={[getSubtitlesMock]}>
           <VideoProvider value={{ content: mockVideoContent }}>
             {children}
           </VideoProvider>
@@ -144,7 +144,7 @@ describe('useSubtitleUpdate', () => {
   it('should disable all subtitle tracks when subtitle language is not found', async () => {
     const { result } = renderHook(() => useSubtitleUpdate(), {
       wrapper: ({ children }) => (
-        <MockedProvider mocks={[getSubtitlesMock]} addTypename={false}>
+        <MockedProvider mocks={[getSubtitlesMock]}>
           <VideoProvider value={{ content: mockVideoContent }}>
             {children}
           </VideoProvider>

@@ -95,7 +95,6 @@ describe('useJourneyAiTranslateSubscription', () => {
       {
         wrapper: ({ children }) => (
           <MockedProvider
-            addTypename={false}
             mocks={[
               {
                 request: {
@@ -126,7 +125,6 @@ describe('useJourneyAiTranslateSubscription', () => {
       {
         wrapper: ({ children }) => (
           <MockedProvider
-            addTypename={false}
             mocks={[
               {
                 request: {

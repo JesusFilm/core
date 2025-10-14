@@ -129,7 +129,7 @@ describe('WatchContext', () => {
 
     it('should set initial state', () => {
       const { rerender } = render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider initialState={defaultInitialState}>
             <TestWatchState />
           </WatchProvider>
@@ -145,7 +145,7 @@ describe('WatchContext', () => {
       ).toBeInTheDocument()
 
       rerender(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider
             initialState={{
               ...defaultInitialState,
@@ -169,7 +169,7 @@ describe('WatchContext', () => {
     it('should return the initial state', () => {
       const { result } = renderHook(() => useWatch(), {
         wrapper: ({ children }: { children: ReactNode }) => (
-          <MockedProvider mocks={[]} addTypename={false}>
+          <MockedProvider mocks={[]}>
             <WatchProvider
               initialState={{
                 audioLanguageId: '496',

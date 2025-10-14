@@ -67,10 +67,7 @@ describe('VideoKeywords', () => {
   it('adds a new keyword when Enter is pressed', async () => {
     const onChange = jest.fn()
     render(
-      <MockedProvider
-        mocks={[mockGetKeywords, mockCreateKeyword]}
-        addTypename={false}
-      >
+      <MockedProvider mocks={[mockGetKeywords, mockCreateKeyword]}>
         <VideoKeywords
           primaryLanguageId="en"
           initialKeywords={[]}
@@ -152,7 +149,7 @@ describe('VideoKeywords', () => {
       error: new Error('fail')
     }
     render(
-      <MockedProvider mocks={[errorMock, createErrorMock]} addTypename={false}>
+      <MockedProvider mocks={[errorMock, createErrorMock]}>
         <VideoKeywords
           primaryLanguageId="en"
           initialKeywords={[]}

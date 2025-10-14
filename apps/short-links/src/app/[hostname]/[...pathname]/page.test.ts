@@ -1,8 +1,8 @@
 /**
  * @jest-environment node
  */
-
-import { createMockClient } from '@apollo/client/v4-migration'
+import { ApolloClient, InMemoryCache } from '@apollo/client'
+import { MockLink } from '@apollo/client/testing'
 import { notFound, redirect } from 'next/navigation'
 
 import { ResultOf, VariablesOf } from '@core/shared/gql'
@@ -31,25 +31,34 @@ describe('PathnamePage', () => {
   })
 
   it('should redirect if short link is found', async () => {
-    mockGetApolloClient.mockReturnValue(
-      createMockClient(
+    MockLink.defaultOptions = { delay: 0 }
+    const client = new ApolloClient({
+      link: new MockLink([
         {
-          __typename: 'Query',
-          shortLink: {
-            __typename: 'QueryShortLinkByPathSuccess',
+          request: {
+            query: GET_SHORT_LINK_QUERY,
+            variables: {
+              hostname: 'short.link',
+              pathname: 'test'
+            } as VariablesOf<typeof GET_SHORT_LINK_QUERY>
+          },
+          result: {
             data: {
-              __typename: 'ShortLink',
-              to: 'https://example.com'
-            }
+              __typename: 'Query',
+              shortLink: {
+                __typename: 'QueryShortLinkByPathSuccess',
+                data: {
+                  __typename: 'ShortLink',
+                  to: 'https://example.com'
+                }
+              }
+            } as ResultOf<typeof GET_SHORT_LINK_QUERY>
           }
-        } as ResultOf<typeof GET_SHORT_LINK_QUERY>,
-        GET_SHORT_LINK_QUERY,
-        {
-          hostname: 'short.link',
-          pathname: 'test'
-        } as VariablesOf<typeof GET_SHORT_LINK_QUERY>
-      )
-    )
+        }
+      ]),
+      cache: new InMemoryCache()
+    })
+    mockGetApolloClient.mockReturnValue(client)
     await PathnamePage({
       params: Promise.resolve({ hostname: 'short.link', pathname: ['test'] })
     })
@@ -58,20 +67,30 @@ describe('PathnamePage', () => {
   })
 
   it('should return not found if short link is not found', async () => {
-    mockGetApolloClient.mockReturnValue(
-      createMockClient(
+    MockLink.defaultOptions = { delay: 0 }
+    const client = new ApolloClient({
+      link: new MockLink([
         {
-          shortLink: {
-            __typename: 'NotFoundError'
+          request: {
+            query: GET_SHORT_LINK_QUERY,
+            variables: {
+              hostname: 'short.link',
+              pathname: 'test'
+            } as VariablesOf<typeof GET_SHORT_LINK_QUERY>
+          },
+          result: {
+            data: {
+              __typename: 'Query',
+              shortLink: {
+                __typename: 'NotFoundError'
+              }
+            } as ResultOf<typeof GET_SHORT_LINK_QUERY>
           }
-        } as ResultOf<typeof GET_SHORT_LINK_QUERY>,
-        GET_SHORT_LINK_QUERY,
-        {
-          hostname: 'short.link',
-          pathname: 'test'
-        } as VariablesOf<typeof GET_SHORT_LINK_QUERY>
-      )
-    )
+        }
+      ]),
+      cache: new InMemoryCache()
+    })
+    mockGetApolloClient.mockReturnValue(client)
     await PathnamePage({
       params: Promise.resolve({ hostname: 'short.link', pathname: ['test'] })
     })

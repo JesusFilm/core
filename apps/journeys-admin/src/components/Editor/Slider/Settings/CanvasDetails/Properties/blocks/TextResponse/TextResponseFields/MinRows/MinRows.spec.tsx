@@ -121,10 +121,7 @@ describe('MinRows', () => {
 
   it('should undo min rows change', async () => {
     render(
-      <MockedProvider
-        mocks={[mockMinRowsUpdate1, mockMinRowsUpdate2]}
-        addTypename={false}
-      >
+      <MockedProvider mocks={[mockMinRowsUpdate1, mockMinRowsUpdate2]}>
         <EditorProvider initialState={{ selectedBlock }}>
           <CommandUndoItem variant="button" />
           <MinRows />
@@ -143,7 +140,6 @@ describe('MinRows', () => {
     render(
       <MockedProvider
         mocks={[mockMinRowsUpdate1, mockMinRowsUpdate2, mockMinRowsUpdate3]}
-        addTypename={false}
       >
         <EditorProvider initialState={{ selectedBlock }}>
           <CommandUndoItem variant="button" />
@@ -165,7 +161,7 @@ describe('MinRows', () => {
 
   it('should not call mutation if no selected block', async () => {
     render(
-      <MockedProvider mocks={[mockMinRowsUpdate1]} addTypename={false}>
+      <MockedProvider mocks={[mockMinRowsUpdate1]}>
         <EditorProvider initialState={{}}>
           <MinRows />
         </EditorProvider>

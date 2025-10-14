@@ -90,7 +90,7 @@ interface SignUpMockProps {
 }
 
 const SignUpMock = ({ mocks = [] }: SignUpMockProps): ReactElement => (
-  <MockedProvider mocks={mocks} addTypename={false}>
+  <MockedProvider mocks={mocks}>
     <SignUp {...block} uuid={() => 'uuid'} />
   </MockedProvider>
 )

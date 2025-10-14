@@ -217,7 +217,6 @@ describe('RadioQuestion Properties', () => {
     render(
       <MockedProvider
         mocks={[mockRadioQuestionUpdate, mockRadioQuestionUpdateUndo]}
-        addTypename={false}
       >
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
@@ -255,7 +254,6 @@ describe('RadioQuestion Properties', () => {
           mockRadioQuestionUpdateUndo,
           mockRadioQuestionUpdateRedo
         ]}
-        addTypename={false}
       >
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock }}>
@@ -299,7 +297,7 @@ describe('RadioQuestion Properties', () => {
     }
 
     render(
-      <MockedProvider mocks={[mockRadioQuestionUpdate]} addTypename={false}>
+      <MockedProvider mocks={[mockRadioQuestionUpdate]}>
         <SnackbarProvider>
           <EditorProvider initialState={{ selectedBlock: blockWithoutParent }}>
             <RadioQuestion {...blockWithoutParent} />
