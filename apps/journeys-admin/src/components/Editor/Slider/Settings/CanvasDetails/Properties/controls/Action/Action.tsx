@@ -16,6 +16,7 @@ import {
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
+import { TextFieldFormRef } from '../../../../../../../TextFieldForm/TextFieldForm'
 import { useActionCommand } from '../../../../../../utils/useActionCommand'
 
 import { CustomizationToggle } from './CustomizationToggle'
@@ -23,7 +24,6 @@ import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
 import { ActionValue, actions, getAction } from './utils/actions'
-import { TextFieldFormRef } from '../../../../../../../TextFieldForm/TextFieldForm'
 
 export function Action(): ReactElement {
   const {
