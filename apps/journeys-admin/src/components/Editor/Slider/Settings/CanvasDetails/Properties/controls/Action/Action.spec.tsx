@@ -247,7 +247,7 @@ describe('Action', () => {
     await waitFor(() =>
       expect(getByRole('option', { name: 'URL/Website' })).toBeInTheDocument()
     )
-    userEvent.click(getByRole('option', { name: 'URL/Website' }))
+    await userEvent.click(getByRole('option', { name: 'URL/Website' }))
     await waitFor(() =>
       expect(getByRole('textbox', { name: 'Paste URL here...' })).toHaveFocus()
     )
@@ -257,7 +257,7 @@ describe('Action', () => {
     await waitFor(() =>
       expect(getByRole('option', { name: 'Email' })).toBeInTheDocument()
     )
-    userEvent.click(getByRole('option', { name: 'Email' }))
+    await userEvent.click(getByRole('option', { name: 'Email' }))
     await waitFor(() =>
       expect(
         getByRole('textbox', { name: 'Paste Email here...' })
