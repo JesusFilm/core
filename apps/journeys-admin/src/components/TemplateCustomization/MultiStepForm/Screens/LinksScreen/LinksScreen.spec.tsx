@@ -300,9 +300,7 @@ describe('LinksScreen', () => {
 
     // Change Email field
     const emailGroup = screen.getByLabelText('Edit Email Link')
-    const emailInput = within(emailGroup).getByRole(
-      'textbox'
-    )
+    const emailInput = within(emailGroup).getByRole('textbox')
     fireEvent.change(emailInput, { target: { value: 'changed@example.com' } })
 
     // TODO: uncomment this when chat buttons are added to duplicate api
