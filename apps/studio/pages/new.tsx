@@ -481,67 +481,192 @@ const createTextElement = ({
   backgroundPadding: 0.5
 })
 
-const createPolotnoDesignFromContent = (
-  content: string,
+const createPolotnoDesignFromContent = ({
+  rawContent,
+  selectedOutputs,
+  steps = []
+}: {
+  rawContent: string
   selectedOutputs: SelectedOutputsMap
-) => {
+  steps?: GeneratedStepContent[]
+}) => {
   const primarySelection = getPrimaryOutputSelection(selectedOutputs)
   const { width, height } = parseDimensionsFromLabel(primarySelection)
-  const sections = splitContentIntoSections(content)
-  const normalizedSections = sections.length > 0 ? sections : [content]
 
-  const pages = normalizedSections.map((section, index) => {
-    const { heading, body } = extractHeadingAndBody(section)
-    const headingText = heading || `Page ${index + 1}`
-    const bodyText = body && body.length > 0 ? body : ''
+  const normalizedSteps = (steps || [])
+    .map((step, index) => {
+      if (!step) {
+        return null
+      }
 
-    const headingElement = createTextElement({
-      id: generateElementId('heading'),
-      text: headingText,
-      x: width * 0.1,
-      y: height * 0.12,
-      width: width * 0.8,
-      height: Math.max(160, height * 0.18),
-      fontSize: Math.min(Math.max(width * 0.06, 42), 80),
-      align: 'center',
-      fontFamily: 'Playfair Display',
-      fontWeight: 'bold',
-      fill: '#1f2933',
-      lineHeight: 1.2
+      const title = step.title?.trim() || `Step ${index + 1}`
+      const content = step.content?.trim() || ''
+      const keywords = Array.isArray(step.keywords)
+        ? step.keywords
+            .map((keyword) =>
+              typeof keyword === 'string'
+                ? keyword.trim()
+                : String(keyword ?? '').trim()
+            )
+            .filter((keyword) => keyword.length > 0)
+        : []
+      const mediaPrompt = step.mediaPrompt?.trim() || ''
+
+      if (!title && !content && keywords.length === 0 && !mediaPrompt) {
+        return null
+      }
+
+      return {
+        title,
+        content,
+        keywords: keywords.slice(0, 5),
+        mediaPrompt
+      }
     })
+    .filter(Boolean) as Array<{
+      title: string
+      content: string
+      keywords: string[]
+      mediaPrompt: string
+    }>
 
-    const elements = [headingElement]
+  const hasStructuredSteps = normalizedSteps.length > 0
 
-    if (bodyText) {
-      elements.push(
-        createTextElement({
-          id: generateElementId('body'),
-          text: bodyText,
+  const pages = hasStructuredSteps
+    ? normalizedSteps.map((step, index) => {
+        const headingElement = createTextElement({
+          id: generateElementId('heading'),
+          text: step.title,
           x: width * 0.1,
-          y: height * 0.35,
+          y: height * 0.12,
           width: width * 0.8,
-          height: height * 0.5,
-          fontSize: Math.max(28, width * 0.035),
-          align: 'left',
-          fontFamily: 'Inter',
-          fontWeight: 'normal',
-          fill: '#374151',
-          lineHeight: 1.4
+          height: Math.max(160, height * 0.18),
+          fontSize: Math.min(Math.max(width * 0.06, 42), 82),
+          align: 'center',
+          fontFamily: 'Playfair Display',
+          fontWeight: 'bold',
+          fill: '#1f2933',
+          lineHeight: 1.2
         })
-      )
-    }
 
-    return {
-      id: generateElementId('page'),
-      name: `Page ${index + 1}`,
-      children: elements,
-      background: '#f8fafc',
-      bleed: 0,
-      duration: 5000,
-      width,
-      height
-    }
-  })
+        const elements = [headingElement]
+
+        if (step.content) {
+          elements.push(
+            createTextElement({
+              id: generateElementId('body'),
+              text: step.content,
+              x: width * 0.1,
+              y: height * 0.35,
+              width: width * 0.8,
+              height: height * 0.45,
+              fontSize: Math.max(26, width * 0.034),
+              align: 'left',
+              fontFamily: 'Inter',
+              fontWeight: 'normal',
+              fill: '#374151',
+              lineHeight: 1.4
+            })
+          )
+        }
+
+        const metaLines: string[] = []
+
+        if (step.keywords.length > 0) {
+          metaLines.push(`Keywords: ${step.keywords.join(', ')}`)
+        }
+
+        if (step.mediaPrompt) {
+          metaLines.push(`Visual prompt: ${step.mediaPrompt}`)
+        }
+
+        if (metaLines.length > 0) {
+          elements.push(
+            createTextElement({
+              id: generateElementId('meta'),
+              text: metaLines.join('\n'),
+              x: width * 0.1,
+              y: height * 0.8,
+              width: width * 0.8,
+              height: height * 0.15,
+              fontSize: Math.max(22, width * 0.028),
+              align: 'left',
+              fontFamily: 'Inter',
+              fontWeight: 'normal',
+              fill: '#4b5563',
+              lineHeight: 1.3
+            })
+          )
+        }
+
+        return {
+          id: generateElementId('page'),
+          name: step.title.slice(0, 40) || `Step ${index + 1}`,
+          children: elements,
+          background: '#f8fafc',
+          bleed: 0,
+          duration: 5000,
+          width,
+          height
+        }
+      })
+    : (() => {
+        const sections = splitContentIntoSections(rawContent)
+        const normalizedSections = sections.length > 0 ? sections : [rawContent]
+
+        return normalizedSections.map((section, index) => {
+          const { heading, body } = extractHeadingAndBody(section)
+          const headingText = heading || `Page ${index + 1}`
+          const bodyText = body && body.length > 0 ? body : ''
+
+          const headingElement = createTextElement({
+            id: generateElementId('heading'),
+            text: headingText,
+            x: width * 0.1,
+            y: height * 0.12,
+            width: width * 0.8,
+            height: Math.max(160, height * 0.18),
+            fontSize: Math.min(Math.max(width * 0.06, 42), 80),
+            align: 'center',
+            fontFamily: 'Playfair Display',
+            fontWeight: 'bold',
+            fill: '#1f2933',
+            lineHeight: 1.2
+          })
+
+          const elements = [headingElement]
+
+          if (bodyText) {
+            elements.push(
+              createTextElement({
+                id: generateElementId('body'),
+                text: bodyText,
+                x: width * 0.1,
+                y: height * 0.35,
+                width: width * 0.8,
+                height: height * 0.5,
+                fontSize: Math.max(28, width * 0.035),
+                align: 'left',
+                fontFamily: 'Inter',
+                fontWeight: 'normal',
+                fill: '#374151',
+                lineHeight: 1.4
+              })
+            )
+          }
+
+          return {
+            id: generateElementId('page'),
+            name: `Page ${index + 1}`,
+            children: elements,
+            background: '#f8fafc',
+            bleed: 0,
+            duration: 5000,
+            width,
+            height
+          }
+        })
+      })()
 
   return {
     design: {
@@ -557,7 +682,11 @@ const createPolotnoDesignFromContent = (
       primarySelection,
       pageCount: pages.length,
       width,
-      height
+      height,
+      usesStructuredSteps: hasStructuredSteps,
+      stepTitles: hasStructuredSteps
+        ? normalizedSteps.map((step) => step.title)
+        : []
     }
   }
 }
@@ -1691,16 +1820,41 @@ Guidelines:
     setIsGeneratingDesign(true)
 
     try {
-      const { design, meta } = createPolotnoDesignFromContent(
-        baseContent,
-        selectedOutputs
-      )
+      const { design, meta } = createPolotnoDesignFromContent({
+        rawContent: baseContent,
+        selectedOutputs,
+        steps: editableSteps
+      })
       const timestamp = new Date().toISOString()
+      const previewSource =
+        editableSteps.length > 0
+          ? editableSteps
+              .map((step, index) => {
+                const title = step?.title?.trim()
+                const content = step?.content?.trim()
+
+                if (title && content) {
+                  return `${title}: ${content}`
+                }
+
+                if (title) {
+                  return title
+                }
+
+                if (content) {
+                  return `Step ${index + 1}: ${content}`
+                }
+
+                return ''
+              })
+              .filter((section) => section.length > 0)
+              .join('\n\n')
+          : baseContent
       const metadata = {
         ...meta,
         generatedAt: timestamp,
         selectedOutputs,
-        contentPreview: baseContent.slice(0, 280)
+        contentPreview: previewSource.slice(0, 280)
       }
 
       window.localStorage.setItem(
