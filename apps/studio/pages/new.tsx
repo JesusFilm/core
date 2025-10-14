@@ -1,5 +1,6 @@
 import {
   Camera,
+  Check,
   Copy,
   Crown,
   Facebook,
@@ -26,13 +27,50 @@ import {
   Youtube,
   Zap
 } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import dynamic from 'next/dynamic'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Accordion } from '../src/components/ui/accordion'
+import { Button } from '../src/components/ui/button'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle
+} from '../src/components/ui/card'
+import { Checkbox } from '../src/components/ui/checkbox'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '../src/components/ui/dialog'
+import { Input } from '../src/components/ui/input'
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
+} from '../src/components/ui/tabs'
+import { Textarea } from '../src/components/ui/textarea'
+import {
+  type GeneratedStepContent,
+  type UserInputData,
+  userInputStorage
+} from '../src/libs/storage'
+
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+} from '@/components/ui/carousel'
 
 // Dynamic imports for components to avoid hydration issues
 const AnimatedLoadingText = dynamic(
@@ -183,43 +221,6 @@ const FormatSelection = dynamic(
   }),
   { ssr: false }
 )
-import { Button } from '../src/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle
-} from '../src/components/ui/card'
-import { Checkbox } from '../src/components/ui/checkbox'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '../src/components/ui/dialog'
-import { Input } from '../src/components/ui/input'
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger
-} from '../src/components/ui/tabs'
-import { Textarea } from '../src/components/ui/textarea'
-import {
-  type GeneratedStepContent,
-  type UserInputData,
-  userInputStorage
-} from '../src/libs/storage'
-
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel'
 
 const steps = [
   { id: 1, title: 'Content', description: 'What do you want to share?' },
@@ -736,7 +737,7 @@ const createPolotnoDesignFromContent = ({
   }
 }
 
-const RotatingText = ({
+const RotatingText = React.memo(({
   onCategoryChange,
   hoveredCategory,
   isHovering,
@@ -962,7 +963,7 @@ const RotatingText = ({
       {getCurrentText()}
     </span>
   )
-}
+})
 
 export default function NewPage() {
   const router = useRouter()
@@ -971,7 +972,7 @@ export default function NewPage() {
   const [selectedChatContext, setSelectedChatContext] = useState<string>('')
   const [collapsedTiles, setCollapsedTiles] = useState<boolean>(false)
   const [isContextContainerHidden, setIsContextContainerHidden] = useState<boolean>(false)
-  const [highlightedCategory, setHighlightedCategory] = useState<string>('')
+  const highlightedCategoryRef = useRef<string>('')
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [isHovering, setIsHovering] = useState<boolean>(false)
   const [isAnimationStopped, setIsAnimationStopped] = useState<boolean>(false)
@@ -985,6 +986,7 @@ export default function NewPage() {
   const [aiResponse, setAiResponse] = useState('')
   const [editableSteps, setEditableSteps] = useState<GeneratedStepContent[]>([])
   const [copiedStepIndex, setCopiedStepIndex] = useState<number | null>(null)
+  const [editingStepIndices, setEditingStepIndices] = useState<Set<number>>(new Set())
   const [isProcessing, setIsProcessing] = useState(false)
   const [imageAttachments, setImageAttachments] = useState<string[]>([])
   const [unsplashImages, setUnsplashImages] = useState<Record<string, string[]>>({})
@@ -1026,6 +1028,26 @@ export default function NewPage() {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const hasGeneratedContent = aiResponse.trim().length > 0
 
+  // Create stable handlers for step interactions to prevent re-renders
+  const stepHandlers = useMemo(() => {
+    const handlers: Record<number, {
+      onContentChange: (value: string) => void
+      onFocus: () => void
+    }> = {}
+
+    editableSteps.forEach((_, index) => {
+      handlers[index] = {
+        onContentChange: (value: string) => handleStepContentChange(index, value),
+        onFocus: () => {
+          setEditingStepIndices(prev => new Set([...prev, index]))
+        }
+      }
+    })
+
+    return handlers
+  }, [editableSteps.length]) // Only recreate when step count changes
+
+
   // Close context menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -1062,6 +1084,10 @@ export default function NewPage() {
           isAnalyzing: false
         }))
       )
+      // Set textarea value directly
+      if (textareaRef.current) {
+        textareaRef.current.value = draft.textContent
+      }
     }
   }, [])
 
@@ -1098,35 +1124,6 @@ export default function NewPage() {
     }
   }, [unsplashApiKey])
 
-  // Auto-save draft when content changes
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      try {
-        // Only save if there's actual content to save
-        const hasContent = textContent?.trim() || imageAttachments.length > 0
-        if (hasContent) {
-          userInputStorage.autoSaveDraft({
-            textContent: textContent || '',
-            images: imageAttachments,
-            aiResponse: aiResponse || '',
-            aiSteps: editableSteps,
-            imageAnalysisResults: imageAnalysisResults || []
-          })
-        }
-      } catch (error) {
-        console.error('Failed to auto-save draft in useEffect:', error)
-        // Don't let auto-save errors crash the app
-      }
-    }, 1000) // Save after 1 second of inactivity
-
-    return () => clearTimeout(timeoutId)
-  }, [
-    textContent,
-    imageAttachments,
-    aiResponse,
-    imageAnalysisResults,
-    editableSteps
-  ])
 
   // Collapse tiles when a chat context is selected
   useEffect(() => {
@@ -1137,8 +1134,15 @@ export default function NewPage() {
   const adjustTextareaHeight = () => {
     const textarea = textareaRef.current
     if (textarea) {
+      // Temporarily allow overflow to calculate proper scrollHeight
+      const originalOverflow = textarea.style.overflow
+      textarea.style.overflow = 'hidden'
       textarea.style.height = 'auto'
-      textarea.style.height = textarea.scrollHeight + 'px'
+      // Calculate height based on scrollHeight with a small buffer
+      const newHeight = Math.max(textarea.scrollHeight, 40) // Minimum height of 40px
+      textarea.style.height = newHeight + 'px'
+      // Restore original overflow setting
+      textarea.style.overflow = originalOverflow
     }
   }
 
@@ -1155,6 +1159,15 @@ export default function NewPage() {
   useEffect(() => {
     adjustTextareaHeight()
   }, [textContent])
+
+  // Adjust height when window resizes (in case font loading affects height)
+  useEffect(() => {
+    const handleResize = () => {
+      adjustTextareaHeight()
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     if (copiedStepIndex === null) return
@@ -1424,14 +1437,132 @@ Guidelines:
     ])
   }
 
-  const handleStepContentChange = (index: number, value: string) => {
+  const handleStepContentChange = useCallback((index: number, value: string) => {
     setEditableSteps((prev) => {
       if (!prev[index]) return prev
       const updated = [...prev]
       updated[index] = { ...updated[index], content: value }
       return updated
     })
-  }
+  }, [])
+
+  // Memoized component for steps to prevent re-renders from tile hover states
+  const StepsList = React.memo(({
+    editableSteps,
+    editingStepIndices,
+    stepHandlers,
+    copiedStepIndex,
+    unsplashImages
+  }: {
+    editableSteps: GeneratedStepContent[]
+    editingStepIndices: Set<number>
+    stepHandlers: Record<number, { onContentChange: (value: string) => void; onFocus: () => void }>
+    copiedStepIndex: number | null
+    unsplashImages: Record<string, string[]>
+  }) => {
+    return (
+      <>
+        {editableSteps.map((step, index) => {
+          const heading = deriveHeadingFromContent(
+            step.content,
+            `Step ${index + 1}`
+          )
+          const cardKey = heading
+            ? `${heading}-${index}`
+            : `step-${index}`
+
+          return (
+            <Card
+              key={cardKey}
+              className="bg-transparent shadow-none"
+            >
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <StepContentRenderer
+                    content={step.content}
+                    className="-mx-6"
+                    stepIndex={index}
+                    isEditing={editingStepIndices.has(index)}
+                    onContentChange={stepHandlers[index]?.onContentChange}
+                    onFocus={stepHandlers[index]?.onFocus}
+                    copiedStepIndex={copiedStepIndex}
+                  />
+                </div>
+                <div className="space-y-2 hidden">
+                  <h4 className="text-sm font-medium">Media Prompt</h4>
+                  <p className="text-sm whitespace-pre-wrap text-muted-foreground">
+                    {step.mediaPrompt || 'No prompt provided.'}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium">Image Inspiration</h4>
+                  {step.keywords.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {step.keywords.map((keyword, keywordIndex) => (
+                        <span
+                          key={`${keyword}-${keywordIndex}`}
+                          className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center gap-1"
+                        >
+                          <Search className="h-3 w-3" />
+                          {keyword}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {step.keywords.length > 0 ? (
+                    <div className="w-full">
+                      {(() => {
+                        const stepKey = `step-${index}`
+                        const stepImages = unsplashImages[stepKey] || []
+
+                        const displayImages =
+                          stepImages.length > 0
+                            ? stepImages
+                            : [
+                                `https://source.unsplash.com/600x600/?${encodeURIComponent(step.keywords[0])}&sig=${index}-0`
+                              ]
+
+                        return (
+                          <Carousel className="w-full relative">
+                            <CarouselContent>
+                              {displayImages.map(
+                                (imageUrl, imageIndex) => (
+                                  <CarouselItem
+                                    key={`${index}-${imageIndex}-img`}
+                                    className="basis-1/6 mr-2"
+                                  >
+                                    <div className="relative aspect-square  mx-auto overflow-hidden rounded-lg border">
+                                      <Image
+                                        src={imageUrl}
+                                        alt={`${heading} inspiration`}
+                                        fill
+                                        className="object-cover"
+                                      />
+                                    </div>
+                                  </CarouselItem>
+                                )
+                              )}
+                            </CarouselContent>
+
+                            <CarouselPrevious />
+                            <CarouselNext />
+                          </Carousel>
+                        )
+                      })()}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Add keywords to unlock image inspiration.
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )
+        })}
+      </>
+    )
+  })
 
   const handleCopyStep = async (
     step: GeneratedStepContent,
@@ -1451,7 +1582,8 @@ Guidelines:
   }
 
   const processContentWithAI = async () => {
-    if (!textContent.trim()) {
+    const currentValue = textareaRef.current?.value || ''
+    if (!currentValue.trim()) {
       console.warn('Please enter some content to process.')
       return
     }
@@ -1472,7 +1604,7 @@ Guidelines:
       const messages = buildConversationHistory()
 
       // Add the current user input (or refinement request)
-      const currentUserMessage = textContent.trim()
+      const currentUserMessage = currentValue.trim()
       messages.push({
         role: 'user',
         content: currentUserMessage
@@ -1663,10 +1795,7 @@ Guidelines:
   }
 
   const searchUnsplash = async (query: string, perPage: number = 3): Promise<string[]> => {
-    console.log(`🔍 Unsplash Search: "${query}" (perPage: ${perPage})`)
-
     const accessKey = unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
-    console.log('UNSPLASH_ACCESS_KEY available:', !!accessKey, accessKey ? '***' + accessKey.slice(-4) : 'NOT SET')
 
     if (!accessKey) {
       console.error('❌ UNSPLASH_ACCESS_KEY not found in environment variables or settings')
@@ -1882,7 +2011,10 @@ Guidelines:
   }
 
   const handleSubmit = async () => {
-    if (textContent.trim()) {
+    const currentValue = textareaRef.current?.value || ''
+    if (currentValue.trim()) {
+      // Update textContent state before processing
+      setTextContent(currentValue)
       await processContentWithAI()
     }
   }
@@ -1990,6 +2122,10 @@ Guidelines:
     setEditableSteps(
       session.aiSteps ? normalizeGeneratedSteps(session.aiSteps) : []
     )
+    // Set textarea value directly
+    if (textareaRef.current) {
+      textareaRef.current.value = session.textContent
+    }
     setImageAnalysisResults(
       session.imageAnalysisResults.map((result) => ({
         ...result,
@@ -2059,6 +2195,180 @@ Guidelines:
       { name: 'Card Component: 400 × 300 px', icon: Globe }
     ]
   }
+
+  // MDX renderer component for step content
+  const StepContentRenderer = React.memo(({
+    content,
+    stepIndex,
+    isEditing,
+    onContentChange,
+    onFocus,
+    copiedStepIndex,
+    className
+  }: {
+    content: string
+    stepIndex: number
+    isEditing: boolean
+    onContentChange: (value: string) => void
+    onFocus: () => void
+    copiedStepIndex: number | null
+    className?: string
+  }) => {
+    const [localContent, setLocalContent] = useState(content)
+
+    // Update local content when prop changes (when not editing)
+    useEffect(() => {
+      if (!isEditing) {
+        setLocalContent(content)
+      }
+    }, [content, isEditing])
+
+    const handleBlur = () => {
+      // Only update parent state on blur
+      onContentChange(localContent)
+      setEditingStepIndices(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(stepIndex)
+        return newSet
+      })
+    }
+
+    // Focus textarea when entering edit mode (only once per edit session)
+    useEffect(() => {
+      if (isEditing) {
+        // Small delay to ensure DOM is ready
+        setTimeout(() => {
+          const textarea = document.querySelector(`textarea[data-step-index="${stepIndex}"]`) as HTMLTextAreaElement
+          if (textarea) {
+            textarea.focus()
+          }
+        }, 0)
+      }
+    }, [isEditing, stepIndex])
+
+    return (
+      <div className={`relative ${className || ''}`}>
+        {isEditing ? (
+          <Textarea
+            value={localContent}
+            onChange={(e) => setLocalContent(e.target.value)}
+            onBlur={handleBlur}
+            className="min-h-[160px] whitespace-pre-wrap bg-white border-none outline-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-base font-mono px-6 py-6 rounded-bl-none rounded-br-none"
+            data-step-index={stepIndex}
+          />
+        ) : (
+          (() => {
+            try {
+              // Simple MDX-like rendering - convert basic markdown to JSX
+              const renderMarkdown = (text: string) => {
+                // Split by lines and process each line
+                const lines = text.split('\n')
+                const elements: JSX.Element[] = []
+                let key = 0
+
+                for (let i = 0; i < lines.length; i++) {
+                  const line = lines[i]
+
+                  // Headers
+                  if (line.startsWith('# ')) {
+                    elements.push(<h1 key={key++} className="text-2xl font-bold mb-2 mt-4 first:mt-0">{line.substring(2)}</h1>)
+                  } else if (line.startsWith('## ')) {
+                    elements.push(<h2 key={key++} className="text-xl font-semibold mb-2 mt-3">{line.substring(3)}</h2>)
+                  } else if (line.startsWith('### ')) {
+                    elements.push(<h3 key={key++} className="text-lg font-medium mb-1 mt-2">{line.substring(4)}</h3>)
+                  }
+                  // Bold text
+                  else if (line.includes('**')) {
+                    const parts = line.split('**')
+                    const processedParts = parts.map((part, index) =>
+                      index % 2 === 1 ? <strong key={index}>{part}</strong> : part
+                    )
+                    elements.push(<p key={key++} className="mb-2">{processedParts}</p>)
+                  }
+                  // Italic text
+                  else if (line.includes('*')) {
+                    const parts = line.split('*')
+                    const processedParts = parts.map((part, index) =>
+                      index % 2 === 1 ? <em key={index}>{part}</em> : part
+                    )
+                    elements.push(<p key={key++} className="mb-2">{processedParts}</p>)
+                  }
+                  // Lists
+                  else if (line.startsWith('- ') || line.startsWith('* ')) {
+                    elements.push(<li key={key++} className="mb-1">{line.substring(2)}</li>)
+                  }
+                  // Empty lines
+                  else if (line.trim() === '') {
+                    // Skip empty lines, they'll be handled by margins
+                  }
+                  // Regular paragraphs
+                  else {
+                    elements.push(<p key={key++} className="mb-2">{line}</p>)
+                  }
+                }
+
+                return elements
+              }
+
+              return (
+                <div
+                  className="min-h-[160px] whitespace-pre-wrap bg-white border-none shadow-sm outline-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-base px-6 py-6 rounded-tl rounded-tr-md"
+                  onClick={onFocus}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      onFocus()
+                    }
+                  }}
+                >
+                  {renderMarkdown(content)}
+                </div>
+              )
+            } catch (error) {
+              console.error('MDX rendering error:', error)
+              return (
+                <div
+                  className="min-h-[160px] p-3 border border-input rounded-md bg-white cursor-text whitespace-pre-wrap pr-12"
+                  onClick={onFocus}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      onFocus()
+                    }
+                  }}
+                >
+                  {content}
+                </div>
+              )
+            }
+          })()
+        )}
+        <Button
+          type="button"
+          variant="transparent"
+          size="sm"
+          className={`absolute top-2 right-2 gap-1 h-8 w-8 p-0 opacity-60 hover:opacity-100 transition-opacity ${
+            copiedStepIndex === stepIndex ? '' : ''
+          }`}
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            handleCopyStep({ content: isEditing ? localContent : content }, stepIndex)
+          }}
+          onMouseDown={(e) => e.preventDefault()}
+          title={copiedStepIndex === stepIndex ? "Copied!" : "Copy content"}
+        >
+          {copiedStepIndex === stepIndex ? (
+            <Check className="h-4 w-4 text-green-600" />
+          ) : (
+            <Copy className="h-4 w-4" />
+          )}
+        </Button>
+      </div>
+    )
+  })
 
   return (
     <>
@@ -2634,7 +2944,9 @@ Guidelines:
                       <CardTitle className="text-2xl">
                         Share God's grace… <br />
                         <RotatingText
-                          onCategoryChange={setHighlightedCategory}
+                          onCategoryChange={(category) => {
+                            highlightedCategoryRef.current = category
+                          }}
                           hoveredCategory={hoveredCategory}
                           isHovering={isHovering}
                           isAnimationStopped={isAnimationStopped}
@@ -2657,7 +2969,7 @@ Guidelines:
                           className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Chat/Comments'
                               ? 'bg-gradient-to-br from-blue-500 via-cyan-600 to-teal-600 border-blue-500'
-                              : !isHovering && highlightedCategory === 'Chat/Comments'
+                              : !isHovering && highlightedCategoryRef.current === 'Chat/Comments'
                                 ? 'bg-transparent border-cyan-600'
                                 : `bg-transparent border-gray-300 ${
                                     shouldShowHoverEffect('Chat/Comments')
@@ -2681,7 +2993,7 @@ Guidelines:
                                 className={`w-8 h-8 ${
                                   selectedContext === 'Chat/Comments'
                                     ? 'text-white drop-shadow-lg'
-                                    : !isHovering && highlightedCategory === 'Chat/Comments'
+                                    : !isHovering && highlightedCategoryRef.current === 'Chat/Comments'
                                       ? 'text-cyan-600'
                                       : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                                 }`}
@@ -2692,7 +3004,7 @@ Guidelines:
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Chat/Comments'
                                 ? 'text-white drop-shadow-lg'
-                                : !isHovering && highlightedCategory === 'Chat/Comments'
+                                : !isHovering && highlightedCategoryRef.current === 'Chat/Comments'
                                   ? 'text-cyan-600'
                                   : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                             }`}
@@ -2706,7 +3018,7 @@ Guidelines:
                           className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Social Media'
                               ? 'bg-gradient-to-br from-purple-500 via-pink-600 to-red-600 border-purple-500'
-                              : !isHovering && highlightedCategory === 'Social Media'
+                              : !isHovering && highlightedCategoryRef.current === 'Social Media'
                                 ? 'bg-transparent border-pink-500'
                                 : `bg-transparent border-gray-300 ${
                                     shouldShowHoverEffect('Social Media')
@@ -2730,7 +3042,7 @@ Guidelines:
                                 className={`w-8 h-8 ${
                                   selectedContext === 'Social Media'
                                     ? 'text-white drop-shadow-lg'
-                                    : !isHovering && highlightedCategory === 'Social Media'
+                                    : !isHovering && highlightedCategoryRef.current === 'Social Media'
                                       ? 'text-pink-500'
                                       : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                                 }`}
@@ -2741,7 +3053,7 @@ Guidelines:
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Social Media'
                                 ? 'text-white drop-shadow-lg'
-                                : !isHovering && highlightedCategory === 'Social Media'
+                                : !isHovering && highlightedCategoryRef.current === 'Social Media'
                                   ? 'text-pink-500'
                                   : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                             }`}
@@ -2755,7 +3067,7 @@ Guidelines:
                           className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Website'
                               ? 'bg-gradient-to-br from-orange-500 via-yellow-600 to-amber-600 border-orange-500'
-                              : !isHovering && highlightedCategory === 'Website'
+                              : !isHovering && highlightedCategoryRef.current === 'Website'
                                 ? 'bg-transparent border-orange-500'
                                 : `bg-transparent border-gray-300 ${
                                     shouldShowHoverEffect('Website')
@@ -2779,7 +3091,7 @@ Guidelines:
                                 className={`w-8 h-8 ${
                                   selectedContext === 'Website'
                                     ? 'text-white drop-shadow-lg'
-                                    : !isHovering && highlightedCategory === 'Website'
+                                    : !isHovering && highlightedCategoryRef.current === 'Website'
                                       ? 'text-orange-500'
                                       : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                                 }`}
@@ -2790,7 +3102,7 @@ Guidelines:
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Website'
                                 ? 'text-white drop-shadow-lg'
-                                : !isHovering && highlightedCategory === 'Website'
+                                : !isHovering && highlightedCategoryRef.current === 'Website'
                                   ? 'text-orange-500'
                                   : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                             }`}
@@ -2804,7 +3116,7 @@ Guidelines:
                           className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Print'
                               ? 'bg-gradient-to-br from-emerald-500 via-green-600 to-lime-600 border-emerald-500'
-                              : !isHovering && highlightedCategory === 'Print'
+                              : !isHovering && highlightedCategoryRef.current === 'Print'
                                 ? 'bg-transparent border-emerald-500'
                                 : `bg-transparent border-gray-300 ${
                                     shouldShowHoverEffect('Print')
@@ -2828,7 +3140,7 @@ Guidelines:
                                 className={`w-8 h-8 ${
                                   selectedContext === 'Print'
                                     ? 'text-white drop-shadow-lg'
-                                    : !isHovering && highlightedCategory === 'Print'
+                                    : !isHovering && highlightedCategoryRef.current === 'Print'
                                       ? 'text-emerald-600'
                                       : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                                 }`}
@@ -2839,7 +3151,7 @@ Guidelines:
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Print'
                                 ? 'text-white drop-shadow-lg'
-                                : !isHovering && highlightedCategory === 'Print'
+                                : !isHovering && highlightedCategoryRef.current === 'Print'
                                   ? 'text-emerald-600'
                                   : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                             }`}
@@ -2853,7 +3165,7 @@ Guidelines:
                           className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Real Life'
                               ? 'bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-600 border-rose-500'
-                              : !isHovering && highlightedCategory === 'Real Life'
+                              : !isHovering && highlightedCategoryRef.current === 'Real Life'
                                 ? 'bg-transparent border-rose-500'
                                 : `bg-transparent border-gray-300 ${
                                     shouldShowHoverEffect('Real Life')
@@ -2877,7 +3189,7 @@ Guidelines:
                                 className={`w-8 h-8 ${
                                   selectedContext === 'Real Life'
                                     ? 'text-white drop-shadow-lg'
-                                    : !isHovering && highlightedCategory === 'Real Life'
+                                    : !isHovering && highlightedCategoryRef.current === 'Real Life'
                                       ? 'text-rose-500'
                                       : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                                 }`}
@@ -2888,7 +3200,7 @@ Guidelines:
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Real Life'
                                 ? 'text-white drop-shadow-lg'
-                                : !isHovering && highlightedCategory === 'Real Life'
+                                : !isHovering && highlightedCategoryRef.current === 'Real Life'
                                   ? 'text-rose-500'
                                   : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                             }`}
@@ -3015,19 +3327,23 @@ Guidelines:
                         <Textarea
                           ref={textareaRef}
                           placeholder="Enter your text content here... You can also paste or drop images directly."
-                          className={`relative shadow-none resize-none bg-transparent pr-12 pb-16 px-4 border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-base ${
+                          className={`relative shadow-none resize-none bg-transparent pr-12 pb-16 px-4 border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-base scrollbar-hide ${
                             animatingTextarea ? 'animate-text-appear' : ''
                           }`}
-                          value={textContent}
-                          onChange={(e) => setTextContent(e.target.value)}
+                          style={{
+                            minHeight: '40px',
+                            height: 'auto',
+                            overflowY: 'hidden'
+                          }}
                           onPaste={handlePaste}
                           onKeyDown={(e) => {
                             if (
                               e.key === 'Enter' &&
                               (e.metaKey || e.ctrlKey) &&
-                              textContent.trim()
+                              (e.target as HTMLTextAreaElement).value.trim()
                             ) {
                               e.preventDefault()
+                              setTextContent((e.target as HTMLTextAreaElement).value)
                               void handleSubmit()
                             }
                           }}
@@ -3066,7 +3382,7 @@ Guidelines:
                         {/* Run button - bottom right */}
                         <button
                           onClick={handleSubmit}
-                          disabled={!textContent.trim() || isProcessing}
+                          disabled={!textareaRef.current?.value?.trim() || isProcessing}
                           className="absolute bottom-3 right-3 px-4 py-2 text-sm font-medium text-white rounded-full bg-primary hover:bg-primary/90 transition-colors group cursor-pointer"
                         >
                           {isProcessing ? (
@@ -4217,120 +4533,13 @@ Guidelines:
                               </label>
                             </div>
                             <div className="grid gap-6">
-                              {editableSteps.map((step, index) => {
-                                const heading = deriveHeadingFromContent(
-                                  step.content,
-                                  `Step ${index + 1}`
-                                )
-                                const cardKey = heading
-                                  ? `${heading}-${index}`
-                                  : `step-${index}`
-
-                                return (
-                                  <Card
-                                    key={cardKey}
-                                    className="bg-transparent shadow-none"
-                                  >
-                                    <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                      <CardTitle className="text-base font-semibold">
-                                        {heading}
-                                      </CardTitle>
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        className="gap-2 self-start sm:self-auto"
-                                        onClick={() => handleCopyStep(step, index)}
-                                      >
-                                        <Copy className="h-4 w-4" />
-                                        {copiedStepIndex === index ? 'Copied' : 'Copy'}
-                                      </Button>
-                                    </CardHeader>
-                                    <CardContent className="space-y-4">
-                                      <div className="space-y-2">
-                                        <label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                                          Step Content
-                                        </label>
-                                        <Textarea
-                                          value={step.content}
-                                          onChange={(event) =>
-                                            handleStepContentChange(index, event.target.value)
-                                          }
-                                          className="min-h-[160px] whitespace-pre-wrap bg-white"
-                                        />
-                                      </div>
-                                      <div className="space-y-2 hidden">
-                                        <h4 className="text-sm font-medium">Media Prompt</h4>
-                                        <p className="text-sm whitespace-pre-wrap text-muted-foreground">
-                                          {step.mediaPrompt || 'No prompt provided.'}
-                                        </p>
-                                      </div>
-                                      <div className="space-y-2">
-                                        <h4 className="text-sm font-medium">Image Inspiration</h4>
-                                        {step.keywords.length > 0 && (
-                                          <div className="flex flex-wrap gap-2 mb-4">
-                                            {step.keywords.map((keyword, keywordIndex) => (
-                                              <span
-                                                key={`${keyword}-${keywordIndex}`}
-                                                className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center gap-1"
-                                              >
-                                                <Search className="h-3 w-3" />
-                                                {keyword}
-                                              </span>
-                                            ))}
-                                          </div>
-                                        )}
-                                        {step.keywords.length > 0 ? (
-                                          <div className="w-full">
-                                            {(() => {
-                                              const stepKey = `step-${index}`
-                                              const stepImages = unsplashImages[stepKey] || []
-
-                                              const displayImages =
-                                                stepImages.length > 0
-                                                  ? stepImages
-                                                  : [
-                                                      `https://source.unsplash.com/600x600/?${encodeURIComponent(step.keywords[0])}&sig=${index}-0`
-                                                    ]
-
-                                              return (
-                                                <Carousel className="w-full relative">
-                                                  <CarouselContent>
-                                                    {displayImages.map(
-                                                      (imageUrl, imageIndex) => (
-                                                        <CarouselItem
-                                                          key={`${index}-${imageIndex}-img`}
-                                                          className="basis-1/6 mr-2"
-                                                        >
-                                                          <div className="relative aspect-square  mx-auto overflow-hidden rounded-lg border">
-                                                            <Image
-                                                              src={imageUrl}
-                                                              alt={`${heading} inspiration`}
-                                                              fill
-                                                              className="object-cover"
-                                                            />
-                                                          </div>
-                                                        </CarouselItem>
-                                                      )
-                                                    )}
-                                                  </CarouselContent>
-
-                                                  <CarouselPrevious />
-                                                  <CarouselNext />
-                                                </Carousel>
-                                              )
-                                            })()}
-                                          </div>
-                                        ) : (
-                                          <p className="text-sm text-muted-foreground">
-                                            Add keywords to unlock image inspiration.
-                                          </p>
-                                        )}
-                                      </div>
-                                    </CardContent>
-                                  </Card>
-                                )
-                              })}
+                              <StepsList
+                                editableSteps={editableSteps}
+                                editingStepIndices={editingStepIndices}
+                                stepHandlers={stepHandlers}
+                                copiedStepIndex={copiedStepIndex}
+                                unsplashImages={unsplashImages}
+                              />
                             </div>
                           </>
                         )}
