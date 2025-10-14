@@ -10,7 +10,10 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { MultiselectQuestion } from '@core/journeys/ui/MultiselectQuestion'
 
 import { BlockFields_MultiselectOptionBlock as MultiselectOptionBlock } from '../../../../../../../../__generated__/BlockFields'
-import { MultiselectOptionBlockCreate , MultiselectOptionBlockCreateVariables } from '../../../../../../../../__generated__/MultiselectOptionBlockCreate'
+import {
+  MultiselectOptionBlockCreate,
+  MultiselectOptionBlockCreateVariables
+} from '../../../../../../../../__generated__/MultiselectOptionBlockCreate'
 import { MultiselectQuestionFields } from '../../../../../../../../__generated__/MultiselectQuestionFields'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 

@@ -27,7 +27,10 @@ import {
 } from '../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
 import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 
-import { MULTISELECT_BLOCK_UPDATE as multiselectUpdateDoc , useBlockDeleteCommand } from './useBlockDeleteCommand'
+import {
+  MULTISELECT_BLOCK_UPDATE as multiselectUpdateDoc,
+  useBlockDeleteCommand
+} from './useBlockDeleteCommand'
 
 describe('useBlockDeleteCommand', () => {
   const initiatEditorState = {

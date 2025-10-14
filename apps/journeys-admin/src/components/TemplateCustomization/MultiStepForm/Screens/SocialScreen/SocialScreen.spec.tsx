@@ -31,9 +31,7 @@ describe('SocialScreen', () => {
   ): ReturnType<typeof render> => {
     return render(
       <MockedProvider mocks={mocks}>
-        <JourneyProvider
-          value={{ journey: baseJourney, variant: 'admin' }}
-        >
+        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
           <SocialScreen
             handleNext={handleNext}
             handleScreenNavigation={handleScreenNavigation}

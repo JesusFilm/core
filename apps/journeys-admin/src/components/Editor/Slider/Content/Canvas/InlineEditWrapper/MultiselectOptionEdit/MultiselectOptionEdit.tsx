@@ -8,7 +8,10 @@ import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { MultiselectOption } from '@core/journeys/ui/MultiselectOption/MultiselectOption'
 
-import { MultiselectOptionBlockUpdate , MultiselectOptionBlockUpdateVariables } from '../../../../../../../../__generated__/MultiselectOptionBlockUpdate'
+import {
+  MultiselectOptionBlockUpdate,
+  MultiselectOptionBlockUpdateVariables
+} from '../../../../../../../../__generated__/MultiselectOptionBlockUpdate'
 import { MultiselectOptionFields } from '../../../../../../../../__generated__/MultiselectOptionFields'
 import { InlineEditInput } from '../InlineEditInput'
 

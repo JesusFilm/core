@@ -9,9 +9,9 @@ import type {
   JourneyCustomizationFieldUpdate,
   JourneyCustomizationFieldUpdateVariables
 } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
+import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 
 import { JOURNEY_CUSTOMIZATION_FIELD_UPDATE, TextScreen } from './TextScreen'
-import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 
 describe('TextScreen', () => {
   const baseJourney = {
