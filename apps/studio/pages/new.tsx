@@ -16,6 +16,7 @@ import {
   Paperclip,
   Plus,
   Printer,
+  Search,
   Settings,
   Sparkles,
   Twitter,
@@ -4134,7 +4135,7 @@ Guidelines:
                             </div>
                             <div className="grid gap-6">
                               {editableSteps.map((step, index) => (
-                            <Card key={`${step.title}-${index}`}>
+                            <Card key={`${step.title}-${index}`} className="bg-transparent shadow-none">
                               <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                                 <CardTitle className="text-base font-semibold">
                                   {step.title || `Step ${index + 1}`}
@@ -4160,29 +4161,10 @@ Guidelines:
                                     onChange={(event) =>
                                       handleStepContentChange(index, event.target.value)
                                     }
-                                    className="min-h-[160px] whitespace-pre-wrap"
+                                    className="min-h-[160px] whitespace-pre-wrap bg-white"
                                   />
                                 </div>
-                                <div className="space-y-2">
-                                  <h4 className="text-sm font-medium">Keywords for Unsplash</h4>
-                                  {step.keywords.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
-                                      {step.keywords.map((keyword, keywordIndex) => (
-                                        <span
-                                          key={`${keyword}-${keywordIndex}`}
-                                          className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20"
-                                        >
-                                          {keyword}
-                                        </span>
-                                      ))}
-                                    </div>
-                                  ) : (
-                                    <p className="text-xs text-muted-foreground">
-                                      Keywords not provided.
-                                    </p>
-                                  )}
-                                </div>
-                                <div className="space-y-2">
+                                <div className="space-y-2 hidden">
                                   <h4 className="text-sm font-medium">Media Prompt</h4>
                                   <p className="text-sm whitespace-pre-wrap text-muted-foreground">
                                     {step.mediaPrompt || 'No prompt provided.'}
@@ -4190,6 +4172,19 @@ Guidelines:
                                 </div>
                                 <div className="space-y-2">
                                   <h4 className="text-sm font-medium">Image Inspiration</h4>
+                                  {step.keywords.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                      {step.keywords.map((keyword, keywordIndex) => (
+                                        <span
+                                          key={`${keyword}-${keywordIndex}`}
+                                          className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center gap-1"
+                                        >
+                                          <Search className="h-3 w-3" />
+                                          {keyword}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
                                   {step.keywords.length > 0 ? (
                                     <div className="w-full">
                                       {(() => {
