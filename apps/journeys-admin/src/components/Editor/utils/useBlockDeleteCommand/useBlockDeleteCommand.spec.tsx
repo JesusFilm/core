@@ -1,4 +1,3 @@
-import { gql } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, renderHook, screen, waitFor } from '@testing-library/react'
 
