@@ -1,7 +1,12 @@
-import { ApolloClient, ApolloLink, InMemoryCache, Observable } from '@apollo/client';
-import { Defer20220824Handler } from "@apollo/client/incremental";
-import { LocalState } from "@apollo/client/local-state";
-import { ApolloProvider } from "@apollo/client/react";
+import {
+  ApolloClient,
+  ApolloLink,
+  InMemoryCache,
+  Observable
+} from '@apollo/client'
+import { Defer20220824Handler } from '@apollo/client/incremental'
+import { LocalState } from '@apollo/client/local-state'
+import { ApolloProvider } from '@apollo/client/react'
 import noop from 'lodash/noop'
 import { ReactElement, ReactNode } from 'react'
 
@@ -43,11 +48,10 @@ export const ApolloLoadingProvider = ({
   return <ApolloProvider client={client}>{children}</ApolloProvider>
 }
 
-declare module "@apollo/client" {
+declare module '@apollo/client' {
   export interface TypeOverrides extends Defer20220824Handler.TypeOverrides {}
 }
 
 /*
 End: Inserted by Apollo Client 3->4 migration codemod.
 */
-

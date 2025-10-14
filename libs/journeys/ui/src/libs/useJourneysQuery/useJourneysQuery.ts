@@ -1,6 +1,6 @@
-import { gql } from '@apollo/client';
-import { useQuery } from "@apollo/client/react";
-import type { NoInfer } from "@apollo/client/utilities/internal";
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
+import type { NoInfer } from '@apollo/client/utilities/internal'
 
 import { GetJourneys, GetJourneysVariables } from './__generated__/GetJourneys'
 

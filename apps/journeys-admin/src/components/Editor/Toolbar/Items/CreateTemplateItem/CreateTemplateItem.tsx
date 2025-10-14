@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement } from 'react'

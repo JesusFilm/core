@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import {
   TitleDescLanguageUpdate,
@@ -38,7 +38,10 @@ export function useTitleDescLanguageUpdateMutation(
     TitleDescLanguageUpdate,
     TitleDescLanguageUpdateVariables
   >
-): useMutation.ResultTuple<TitleDescLanguageUpdate, TitleDescLanguageUpdateVariables> {
+): useMutation.ResultTuple<
+  TitleDescLanguageUpdate,
+  TitleDescLanguageUpdateVariables
+> {
   const mutation = useMutation<
     TitleDescLanguageUpdate,
     TitleDescLanguageUpdateVariables

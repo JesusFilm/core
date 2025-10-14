@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'

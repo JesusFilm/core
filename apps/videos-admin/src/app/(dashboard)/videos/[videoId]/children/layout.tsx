@@ -1,5 +1,5 @@
-'use client';
-import { useMutation, useQuery } from "@apollo/client/react";
+'use client'
+import { useMutation, useQuery } from '@apollo/client/react'
 import { DragEndEvent } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
 import { useParams, usePathname, useRouter } from 'next/navigation'

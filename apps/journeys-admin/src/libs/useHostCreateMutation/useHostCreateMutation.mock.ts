@@ -7,7 +7,10 @@ import {
 
 import { CREATE_HOST } from './useHostCreateMutation'
 
-export const hostCreateMock: MockLink.MockedResponse<CreateHost, CreateHostVariables> = {
+export const hostCreateMock: MockLink.MockedResponse<
+  CreateHost,
+  CreateHostVariables
+> = {
   request: {
     query: CREATE_HOST,
     variables: { teamId: 'team.id', input: { title: 'value' } }

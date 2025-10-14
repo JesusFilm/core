@@ -1,5 +1,5 @@
-import { NormalizedCacheObject } from '@apollo/client';
-import { ApolloProvider } from "@apollo/client/react";
+import { NormalizedCacheObject } from '@apollo/client'
+import { ApolloProvider } from '@apollo/client/react'
 import type { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import type { ReactElement } from 'react'

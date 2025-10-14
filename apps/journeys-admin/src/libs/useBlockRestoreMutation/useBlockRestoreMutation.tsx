@@ -1,5 +1,5 @@
-import { ApolloCache, Reference, gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { ApolloCache, Reference, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import compact from 'lodash/compact'
 
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'

@@ -1,5 +1,5 @@
-import { MockLink } from '@apollo/client/testing';
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -171,24 +171,25 @@ describe('DuplicateJourneys', () => {
       }
     }))
 
-    const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> = {
-      request: {
-        query: UPDATE_LAST_ACTIVE_TEAM_ID,
-        variables: {
-          input: {
-            lastActiveTeamId: 'teamId'
+    const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
+      {
+        request: {
+          query: UPDATE_LAST_ACTIVE_TEAM_ID,
+          variables: {
+            input: {
+              lastActiveTeamId: 'teamId'
+            }
           }
-        }
-      },
-      result: jest.fn(() => ({
-        data: {
-          journeyProfileUpdate: {
-            __typename: 'JourneyProfile',
-            id: 'teamId'
+        },
+        result: jest.fn(() => ({
+          data: {
+            journeyProfileUpdate: {
+              __typename: 'JourneyProfile',
+              id: 'teamId'
+            }
           }
-        }
-      }))
-    }
+        }))
+      }
 
     const mockLanguage = {
       request: {

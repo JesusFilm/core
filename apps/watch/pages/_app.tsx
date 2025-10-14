@@ -1,5 +1,5 @@
-import { type NormalizedCacheObject } from '@apollo/client';
-import { ApolloProvider } from "@apollo/client/react";
+import { type NormalizedCacheObject } from '@apollo/client'
+import { ApolloProvider } from '@apollo/client/react'
 import type { EmotionCache } from '@emotion/cache'
 import { AppCacheProvider } from '@mui/material-nextjs/v15-pagesRouter'
 import { GoogleTagManager } from '@next/third-parties/google'

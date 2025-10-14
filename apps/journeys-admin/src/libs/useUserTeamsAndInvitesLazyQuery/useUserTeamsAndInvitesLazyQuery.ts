@@ -1,4 +1,4 @@
-import { useLazyQuery } from "@apollo/client/react";
+import { useLazyQuery } from '@apollo/client/react'
 import { useState } from 'react'
 
 import {

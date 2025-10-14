@@ -1,5 +1,5 @@
-import { ApolloLink, gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { ApolloLink, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -28,7 +28,10 @@ export function useBlockDeleteMutation(
 ): [
   (
     block: BlockFields,
-    options?: useMutation.MutationFunctionOptions<BlockDelete, BlockDeleteVariables>
+    options?: useMutation.MutationFunctionOptions<
+      BlockDelete,
+      BlockDeleteVariables
+    >
   ) => Promise<ApolloLink.Result<BlockDelete> | undefined>,
   useMutation.Result<BlockDelete>
 ] {
@@ -40,7 +43,10 @@ export function useBlockDeleteMutation(
 
   async function wrappedBlockDeleteMutation(
     block: TreeBlock,
-    options: useMutation.MutationFunctionOptions<BlockDelete, BlockDeleteVariables>
+    options: useMutation.MutationFunctionOptions<
+      BlockDelete,
+      BlockDeleteVariables
+    >
   ): Promise<ApolloLink.Result<BlockDelete> | undefined> {
     if (journey == null) return
 

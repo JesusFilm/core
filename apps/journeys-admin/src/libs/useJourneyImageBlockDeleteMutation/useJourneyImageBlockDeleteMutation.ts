@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import {
   JourneyImageBlockDelete,
@@ -20,7 +20,10 @@ export function useJourneyImageBlockDeleteMutation(
     JourneyImageBlockDelete,
     JourneyImageBlockDeleteVariables
   >
-): useMutation.ResultTuple<JourneyImageBlockDelete, JourneyImageBlockDeleteVariables> {
+): useMutation.ResultTuple<
+  JourneyImageBlockDelete,
+  JourneyImageBlockDeleteVariables
+> {
   const mutation = useMutation<
     JourneyImageBlockDelete,
     JourneyImageBlockDeleteVariables

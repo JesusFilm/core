@@ -1,5 +1,5 @@
-import { ApolloLink, gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { ApolloLink, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import {
   BlockActionNavigateToBlockUpdate,

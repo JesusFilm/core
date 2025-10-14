@@ -56,21 +56,22 @@ const getTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
     }
   }
 }
-const getEmptyTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
-  request: {
-    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-  },
-  result: {
-    data: {
-      teams: [],
-      getJourneyProfile: {
-        __typename: 'JourneyProfile',
-        id: 'journeyProfileId',
-        lastActiveTeamId: null
+const getEmptyTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
+  {
+    request: {
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+    },
+    result: {
+      data: {
+        teams: [],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
+          lastActiveTeamId: null
+        }
       }
     }
   }
-}
 
 const Template: StoryObj<typeof TeamSelect> = {
   render: (args) => (

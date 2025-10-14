@@ -1,5 +1,5 @@
-import { ApolloCache, gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { ApolloCache, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import {
   CreateHost,

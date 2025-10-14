@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { HostUpdateInput } from '../../../__generated__/globalTypes'
 import {

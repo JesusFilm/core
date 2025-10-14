@@ -1,6 +1,6 @@
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
-import { Defer20220824Handler } from "@apollo/client/incremental";
-import { LocalState } from "@apollo/client/local-state";
+import { Defer20220824Handler } from '@apollo/client/incremental'
+import { LocalState } from '@apollo/client/local-state'
 import { registerApolloClient } from '@apollo/client-integration-nextjs'
 
 /*
@@ -43,14 +43,13 @@ export const { getClient: getApolloClient } = registerApolloClient(() => {
     you can safely remove this option.
     */
     incrementalHandler: new Defer20220824Handler()
-  });
+  })
 })
 
-declare module "@apollo/client" {
+declare module '@apollo/client' {
   export interface TypeOverrides extends Defer20220824Handler.TypeOverrides {}
 }
 
 /*
 End: Inserted by Apollo Client 3->4 migration codemod.
 */
-

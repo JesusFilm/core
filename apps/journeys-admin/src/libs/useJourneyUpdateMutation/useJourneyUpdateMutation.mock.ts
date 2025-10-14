@@ -12,7 +12,10 @@ import { JOURNEY_SETTINGS_UPDATE } from './useJourneyUpdateMutation'
 
 export const getJourneySettingsUpdateMock = <T extends JourneyUpdateInput>(
   input: T
-): MockLink.MockedResponse<JourneySettingsUpdate, JourneySettingsUpdateVariables> => {
+): MockLink.MockedResponse<
+  JourneySettingsUpdate,
+  JourneySettingsUpdateVariables
+> => {
   return {
     request: {
       query: JOURNEY_SETTINGS_UPDATE,

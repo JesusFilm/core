@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockLink } from '@apollo/client/testing';
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
@@ -99,24 +99,25 @@ describe('TeamOnboarding', () => {
     }
   }
 
-  const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> = {
-    request: {
-      query: UPDATE_LAST_ACTIVE_TEAM_ID,
-      variables: {
-        input: {
-          lastActiveTeamId: 'teamId1'
+  const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
+    {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: {
+            lastActiveTeamId: 'teamId1'
+          }
         }
-      }
-    },
-    result: {
-      data: {
-        journeyProfileUpdate: {
-          __typename: 'JourneyProfile' as const,
-          id: 'teamId1'
+      },
+      result: {
+        data: {
+          journeyProfileUpdate: {
+            __typename: 'JourneyProfile' as const,
+            id: 'teamId1'
+          }
         }
       }
     }
-  }
   function TestComponent(): ReactElement {
     const { activeTeam } = useTeam()
 

@@ -1,4 +1,4 @@
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, renderHook, screen } from '@testing-library/react'
 import { ReactNode } from 'react'
 

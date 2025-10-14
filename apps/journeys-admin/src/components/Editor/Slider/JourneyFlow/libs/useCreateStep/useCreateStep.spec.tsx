@@ -1,5 +1,5 @@
-import { MockLink } from '@apollo/client/testing';
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -66,16 +66,18 @@ describe('useCreateStep', () => {
     mockUuidv4.mockReturnValueOnce('newStep.id')
     mockUuidv4.mockReturnValueOnce('newCard.id')
 
-    const mockRestoreStep: MockLink.MockedResponse<BlockRestore, BlockRestoreVariables> =
-      {
-        request: {
-          ...restoreStepMock.request,
-          variables: { id: 'newStep.id' }
-        },
-        result: {
-          ...restoreStepMock.result
-        }
+    const mockRestoreStep: MockLink.MockedResponse<
+      BlockRestore,
+      BlockRestoreVariables
+    > = {
+      request: {
+        ...restoreStepMock.request,
+        variables: { id: 'newStep.id' }
+      },
+      result: {
+        ...restoreStepMock.result
       }
+    }
 
     const result = jest.fn().mockReturnValue(stepAndCardBlockCreateMock.result)
     const result2 = jest.fn().mockReturnValue(mockBlockDelete.result)

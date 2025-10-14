@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockLink } from '@apollo/client/testing';
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
@@ -216,7 +216,10 @@ const getVideoMock: MockLink.MockedResponse<GetVideo, GetVideoVariables> = {
   }
 }
 
-const getExistingCoverVideoMock: MockLink.MockedResponse<GetVideo, GetVideoVariables> = {
+const getExistingCoverVideoMock: MockLink.MockedResponse<
+  GetVideo,
+  GetVideoVariables
+> = {
   request: {
     query: GET_VIDEO,
     variables: {

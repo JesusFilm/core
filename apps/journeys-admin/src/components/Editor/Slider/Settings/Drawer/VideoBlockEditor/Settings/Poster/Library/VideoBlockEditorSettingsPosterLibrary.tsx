@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import omit from 'lodash/omit'
 import pick from 'lodash/pick'
 import { ReactElement, useEffect } from 'react'

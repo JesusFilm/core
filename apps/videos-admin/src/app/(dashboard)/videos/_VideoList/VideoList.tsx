@@ -1,5 +1,5 @@
-'use client';
-import { useQuery } from "@apollo/client/react";
+'use client'
+import { useQuery } from '@apollo/client/react'
 import GetAppIcon from '@mui/icons-material/GetApp'
 import PrintIcon from '@mui/icons-material/Print'
 import Button from '@mui/material/Button'

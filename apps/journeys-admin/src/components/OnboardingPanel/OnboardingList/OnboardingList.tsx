@@ -1,6 +1,6 @@
-'use client';
-import { gql } from '@apollo/client';
-import { useSuspenseQuery } from "@apollo/client/react";
+'use client'
+import { gql } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/client/react'
 import compact from 'lodash/compact'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo } from 'react'

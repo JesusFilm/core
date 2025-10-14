@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'

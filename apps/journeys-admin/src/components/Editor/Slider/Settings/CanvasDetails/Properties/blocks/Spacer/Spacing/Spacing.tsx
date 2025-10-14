@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import { Dispatch, ReactElement, SetStateAction } from 'react'

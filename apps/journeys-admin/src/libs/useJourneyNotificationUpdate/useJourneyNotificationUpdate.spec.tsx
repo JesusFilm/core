@@ -1,4 +1,4 @@
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, renderHook } from '@testing-library/react'
 
 import { useJourneyNotificationUpdate } from './useJourneyNotificationUpdate'

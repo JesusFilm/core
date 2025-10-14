@@ -1,5 +1,5 @@
-import { OperationVariables, gql } from '@apollo/client';
-import { useLazyQuery } from "@apollo/client/react";
+import { OperationVariables, gql } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client/react'
 
 import {
   GetCurrentUser_me as ApiUser,

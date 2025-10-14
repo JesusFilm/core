@@ -1,6 +1,6 @@
-import { gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
-import { ApolloError } from "@apollo/client/v4-migration";
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
+import { ApolloError } from '@apollo/client/v4-migration'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'

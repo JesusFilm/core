@@ -1,5 +1,5 @@
-import { MockLink } from '@apollo/client/testing';
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 
@@ -40,7 +40,10 @@ describe('TemplateView', () => {
     ]
   }
 
-  const getJourneysMock: MockLink.MockedResponse<GetJourneys, GetJourneysVariables> = {
+  const getJourneysMock: MockLink.MockedResponse<
+    GetJourneys,
+    GetJourneysVariables
+  > = {
     request: {
       query: GET_JOURNEYS,
       variables: {

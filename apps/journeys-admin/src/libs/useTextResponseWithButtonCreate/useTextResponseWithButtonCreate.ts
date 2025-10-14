@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'

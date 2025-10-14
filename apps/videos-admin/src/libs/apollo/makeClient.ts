@@ -5,8 +5,8 @@ import {
   InMemoryCache,
   NormalizedCacheObject
 } from '@apollo/client'
-import { Defer20220824Handler } from "@apollo/client/incremental";
-import { LocalState } from "@apollo/client/local-state";
+import { Defer20220824Handler } from '@apollo/client/incremental'
+import { LocalState } from '@apollo/client/local-state'
 
 import { cache } from './cache'
 
@@ -16,9 +16,7 @@ Copy the contents of this block into a `.d.ts` file in your project to enable co
 If you do not use the `@defer` directive in your application, you can safely remove this block.
 */
 
-export function makeClient(
-  options?: HttpOptions
-): ApolloClient {
+export function makeClient(options?: HttpOptions): ApolloClient {
   const httpLink = new HttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
     ...options,
@@ -51,14 +49,13 @@ export function makeClient(
     you can safely remove this option.
     */
     incrementalHandler: new Defer20220824Handler()
-  });
+  })
 }
 
-declare module "@apollo/client" {
+declare module '@apollo/client' {
   export interface TypeOverrides extends Defer20220824Handler.TypeOverrides {}
 }
 
 /*
 End: Inserted by Apollo Client 3->4 migration codemod.
 */
-

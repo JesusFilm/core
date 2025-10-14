@@ -1,4 +1,4 @@
-import type { MutationFunction } from "@apollo/client/react";
+import type { MutationFunction } from '@apollo/client/react'
 
 import {
   CreateCloudflareR2Asset,

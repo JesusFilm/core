@@ -72,30 +72,31 @@ export const onboardingJourneys: OnboardingJourneys[] = [
   }
 ]
 
-export const getTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
-  request: {
-    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-  },
-  result: {
-    data: {
-      teams: [
-        {
-          id: 'teamId',
-          title: 'Team Title',
-          __typename: 'Team',
-          publicTitle: 'Public Team Title',
-          userTeams: [],
-          customDomains: []
+export const getTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
+  {
+    request: {
+      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+    },
+    result: {
+      data: {
+        teams: [
+          {
+            id: 'teamId',
+            title: 'Team Title',
+            __typename: 'Team',
+            publicTitle: 'Public Team Title',
+            userTeams: [],
+            customDomains: []
+          }
+        ],
+        getJourneyProfile: {
+          __typename: 'JourneyProfile',
+          id: 'journeyProfileId',
+          lastActiveTeamId: 'teamId'
         }
-      ],
-      getJourneyProfile: {
-        __typename: 'JourneyProfile',
-        id: 'journeyProfileId',
-        lastActiveTeamId: 'teamId'
       }
     }
   }
-}
 
 export const getOnboardingJourneysMock: MockLink.MockedResponse<
   GetOnboardingJourneys,

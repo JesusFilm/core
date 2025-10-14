@@ -113,27 +113,29 @@ export const mockStepBlockDeleteFromSocialPreview: MockLink.MockedResponse<
   }
 }
 
-export const deleteStepMock: MockLink.MockedResponse<BlockDelete, BlockDeleteVariables> =
-  {
-    request: {
-      query: BLOCK_DELETE,
-      variables: {
-        id: mockNewStepBlock.id
-      }
-    },
-    result: {
-      data: {
-        blockDelete: [
-          {
-            __typename: 'StepBlock',
-            id: mockNewStepBlock.id,
-            parentOrder: mockNewStepBlock.parentOrder,
-            nextBlockId: null
-          }
-        ]
-      }
+export const deleteStepMock: MockLink.MockedResponse<
+  BlockDelete,
+  BlockDeleteVariables
+> = {
+  request: {
+    query: BLOCK_DELETE,
+    variables: {
+      id: mockNewStepBlock.id
+    }
+  },
+  result: {
+    data: {
+      blockDelete: [
+        {
+          __typename: 'StepBlock',
+          id: mockNewStepBlock.id,
+          parentOrder: mockNewStepBlock.parentOrder,
+          nextBlockId: null
+        }
+      ]
     }
   }
+}
 
 export const mockStepBlockRestoreFromSocialPreview: MockLink.MockedResponse<
   StepBlockRestoreFromSocialPreview,

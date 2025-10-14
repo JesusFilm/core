@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@apollo/client/react";
+import { useMutation, useQuery } from '@apollo/client/react'
 import CloseIcon from '@mui/icons-material/Close'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'

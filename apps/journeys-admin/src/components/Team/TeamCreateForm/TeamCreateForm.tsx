@@ -1,5 +1,5 @@
-import { useMutation } from "@apollo/client/react";
-import { ApolloError } from "@apollo/client/v4-migration";
+import { useMutation } from '@apollo/client/react'
+import { ApolloError } from '@apollo/client/v4-migration'
 import { Formik, FormikConfig, FormikHelpers } from 'formik'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'

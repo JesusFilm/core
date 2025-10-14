@@ -1,5 +1,5 @@
-import { Reference, gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { Reference, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
 

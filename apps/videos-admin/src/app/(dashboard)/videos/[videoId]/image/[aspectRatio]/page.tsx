@@ -1,5 +1,5 @@
-'use client';
-import { useMutation, useSuspenseQuery } from "@apollo/client/react";
+'use client'
+import { useMutation, useSuspenseQuery } from '@apollo/client/react'
 import Typography from '@mui/material/Typography'
 import type FormDataType from 'form-data'
 import { useRouter } from 'next/navigation'

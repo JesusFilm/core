@@ -1,5 +1,5 @@
-import { ObservableQuery, gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { ObservableQuery, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import CircularProgress from '@mui/material/CircularProgress'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'

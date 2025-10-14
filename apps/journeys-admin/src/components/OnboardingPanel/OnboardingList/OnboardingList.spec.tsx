@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from "@apollo/client/react";
+import { useSuspenseQuery } from '@apollo/client/react'
 import { render, screen } from '@testing-library/react'
 
 import { onboardingJourneys } from '../data'

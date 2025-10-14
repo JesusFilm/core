@@ -290,28 +290,29 @@ export const mockStepPreviousEventCreate: MockLink.MockedResponse<StepPreviousEv
     }))
   }
 
-export const mockStepNextEventCreate: MockLink.MockedResponse<StepNextEventCreate> = {
-  request: {
-    query: STEP_NEXT_EVENT_CREATE,
-    variables: {
-      input: {
-        id: 'uuid',
-        blockId: 'step1.id',
-        nextStepId: 'step2.id',
-        label: 'Step {{number}}',
-        value: 'Step {{number}}'
+export const mockStepNextEventCreate: MockLink.MockedResponse<StepNextEventCreate> =
+  {
+    request: {
+      query: STEP_NEXT_EVENT_CREATE,
+      variables: {
+        input: {
+          id: 'uuid',
+          blockId: 'step1.id',
+          nextStepId: 'step2.id',
+          label: 'Step {{number}}',
+          value: 'Step {{number}}'
+        }
       }
-    }
-  },
-  result: jest.fn(() => ({
-    data: {
-      stepNextEventCreate: {
-        id: 'uuid',
-        __typename: 'StepNextEvent'
+    },
+    result: jest.fn(() => ({
+      data: {
+        stepNextEventCreate: {
+          id: 'uuid',
+          __typename: 'StepNextEvent'
+        }
       }
-    }
-  }))
-}
+    }))
+  }
 
 export const mockTextResponseSubmissionEventCreate = {
   request: {

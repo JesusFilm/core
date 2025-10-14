@@ -1,6 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
-import { gql } from '@apollo/client';
-import { useMutation, useQuery } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'

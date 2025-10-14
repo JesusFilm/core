@@ -1,5 +1,5 @@
-import { ApolloCache, gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { ApolloCache, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -82,7 +82,10 @@ export function useStepAndCardBlockCreateMutation(
     StepAndCardBlockCreate,
     StepAndCardBlockCreateVariables
   >
-): useMutation.ResultTuple<StepAndCardBlockCreate, StepAndCardBlockCreateVariables> {
+): useMutation.ResultTuple<
+  StepAndCardBlockCreate,
+  StepAndCardBlockCreateVariables
+> {
   const { journey } = useJourney()
   const mutation = useMutation<
     StepAndCardBlockCreate,

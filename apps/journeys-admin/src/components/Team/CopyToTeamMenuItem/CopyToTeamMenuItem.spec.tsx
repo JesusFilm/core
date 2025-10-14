@@ -1,5 +1,5 @@
-import { MockLink } from '@apollo/client/testing';
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import {
   fireEvent,
   render,
@@ -37,24 +37,25 @@ describe('CopyToTeamMenuItem', () => {
     handleCloseMenu.mockClear()
   })
 
-  const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> = {
-    request: {
-      query: UPDATE_LAST_ACTIVE_TEAM_ID,
-      variables: {
-        input: {
-          lastActiveTeamId: 'teamId'
+  const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
+    {
+      request: {
+        query: UPDATE_LAST_ACTIVE_TEAM_ID,
+        variables: {
+          input: {
+            lastActiveTeamId: 'teamId'
+          }
         }
-      }
-    },
-    result: jest.fn(() => ({
-      data: {
-        journeyProfileUpdate: {
-          __typename: 'JourneyProfile',
-          id: 'teamId'
+      },
+      result: jest.fn(() => ({
+        data: {
+          journeyProfileUpdate: {
+            __typename: 'JourneyProfile',
+            id: 'teamId'
+          }
         }
-      }
-    }))
-  }
+      }))
+    }
 
   // Additional mock for translation scenario where updateLastActiveTeamId is called twice
   const updateLastActiveTeamIdMockForTranslation: MockLink.MockedResponse<UpdateLastActiveTeamId> =
@@ -371,16 +372,17 @@ describe('CopyToTeamMenuItem', () => {
   })
 
   it('should handle journey duplication errors', async () => {
-    const duplicateJourneyErrorMock: MockLink.MockedResponse<JourneyDuplicate> = {
-      request: {
-        query: JOURNEY_DUPLICATE,
-        variables: {
-          id: 'journeyId',
-          teamId: 'teamId'
-        }
-      },
-      error: new Error('Network error occurred')
-    }
+    const duplicateJourneyErrorMock: MockLink.MockedResponse<JourneyDuplicate> =
+      {
+        request: {
+          query: JOURNEY_DUPLICATE,
+          variables: {
+            id: 'journeyId',
+            teamId: 'teamId'
+          }
+        },
+        error: new Error('Network error occurred')
+      }
 
     render(
       <MockedProvider
@@ -615,23 +617,24 @@ describe('CopyToTeamMenuItem', () => {
   })
 
   it('should handle journey duplication failure when no duplicate ID returned', async () => {
-    const duplicateJourneyFailMock: MockLink.MockedResponse<JourneyDuplicate> = {
-      request: {
-        query: JOURNEY_DUPLICATE,
-        variables: {
-          id: 'journeyId',
-          teamId: 'teamId'
-        }
-      },
-      result: {
-        data: {
-          journeyDuplicate: {
-            id: '',
-            __typename: 'Journey'
+    const duplicateJourneyFailMock: MockLink.MockedResponse<JourneyDuplicate> =
+      {
+        request: {
+          query: JOURNEY_DUPLICATE,
+          variables: {
+            id: 'journeyId',
+            teamId: 'teamId'
+          }
+        },
+        result: {
+          data: {
+            journeyDuplicate: {
+              id: '',
+              __typename: 'Journey'
+            }
           }
         }
       }
-    }
 
     render(
       <MockedProvider

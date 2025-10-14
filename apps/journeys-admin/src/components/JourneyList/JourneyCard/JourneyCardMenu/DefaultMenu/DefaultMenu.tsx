@@ -1,5 +1,5 @@
-import { ObservableQuery, gql } from '@apollo/client';
-import { useQuery } from "@apollo/client/react";
+import { ObservableQuery, gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'

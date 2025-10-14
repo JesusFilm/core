@@ -1,5 +1,5 @@
-import { Reference, gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { Reference, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'

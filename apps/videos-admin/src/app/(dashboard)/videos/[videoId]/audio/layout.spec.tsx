@@ -1,6 +1,6 @@
-import { NetworkStatus, OperationVariables } from '@apollo/client';
-import { useQuery } from "@apollo/client/react";
-import { MockedProvider } from "@apollo/client/testing/react";
+import { NetworkStatus, OperationVariables } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'

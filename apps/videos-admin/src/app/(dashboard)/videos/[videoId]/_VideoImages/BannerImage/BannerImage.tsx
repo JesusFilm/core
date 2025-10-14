@@ -1,5 +1,5 @@
-'use client';
-import { useSuspenseQuery } from "@apollo/client/react";
+'use client'
+import { useSuspenseQuery } from '@apollo/client/react'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 

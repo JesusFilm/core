@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 
@@ -22,7 +22,10 @@ export function useJourneyImageBlockCreateMutation(
     JourneyImageBlockCreate,
     JourneyImageBlockCreateVariables
   >
-): useMutation.ResultTuple<JourneyImageBlockCreate, JourneyImageBlockCreateVariables> {
+): useMutation.ResultTuple<
+  JourneyImageBlockCreate,
+  JourneyImageBlockCreateVariables
+> {
   const mutation = useMutation<
     JourneyImageBlockCreate,
     JourneyImageBlockCreateVariables

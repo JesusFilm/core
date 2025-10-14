@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useLazyQuery } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'

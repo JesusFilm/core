@@ -1,5 +1,5 @@
-import { OperationVariables, gql } from '@apollo/client';
-import { useQuery } from "@apollo/client/react";
+import { OperationVariables, gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import { sendGTMEvent } from '@next/third-parties/google'
 import {
   ReactElement,

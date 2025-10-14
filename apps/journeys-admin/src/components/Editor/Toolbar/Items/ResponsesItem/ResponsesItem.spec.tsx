@@ -1,5 +1,5 @@
-import { MockLink } from '@apollo/client/testing';
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -56,17 +56,18 @@ describe('ResponsesItem', () => {
   })
 
   it('should display responses count next to button', async () => {
-    const getVisitorCountMock: MockLink.MockedResponse<GetJourneyVisitorsCount> = {
-      request: {
-        query: GET_JOURNEY_VISITORS_COUNT_WITH_TEXT_RESPONSES,
-        variables: {
-          filter: { journeyId: 'journey-id', hasTextResponse: true }
+    const getVisitorCountMock: MockLink.MockedResponse<GetJourneyVisitorsCount> =
+      {
+        request: {
+          query: GET_JOURNEY_VISITORS_COUNT_WITH_TEXT_RESPONSES,
+          variables: {
+            filter: { journeyId: 'journey-id', hasTextResponse: true }
+          }
+        },
+        result: {
+          data: { journeyVisitorCount: 153 }
         }
-      },
-      result: {
-        data: { journeyVisitorCount: 153 }
       }
-    }
     render(
       <SnackbarProvider>
         <MockedProvider mocks={[getVisitorCountMock]}>

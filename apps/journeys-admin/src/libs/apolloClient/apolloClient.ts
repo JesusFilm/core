@@ -1,9 +1,14 @@
 import MutationQueueLink from '@adobe/apollo-link-mutation-queue'
-import { ApolloClient, ApolloLink, HttpLink, NormalizedCacheObject } from '@apollo/client';
+import {
+  ApolloClient,
+  ApolloLink,
+  HttpLink,
+  NormalizedCacheObject
+} from '@apollo/client'
 import { EntityStore, StoreObject } from '@apollo/client/cache'
-import { Defer20220824Handler } from "@apollo/client/incremental";
+import { Defer20220824Handler } from '@apollo/client/incremental'
 import { setContext } from '@apollo/client/link/context'
-import { LocalState } from "@apollo/client/local-state";
+import { LocalState } from '@apollo/client/local-state'
 import { getMainDefinition } from '@apollo/client/utilities'
 import DebounceLink from 'apollo-link-debounce'
 import { getApp } from 'firebase/app'
@@ -81,13 +86,11 @@ class SSELink extends ApolloLink {
       return () => {
         unsubscribe()
       }
-    });
+    })
   }
 }
 
-export function createApolloClient(
-  token?: string
-): ApolloClient {
+export function createApolloClient(token?: string): ApolloClient {
   const gatewayUrl =
     process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:4000'
 
@@ -132,7 +135,12 @@ export function createApolloClient(
     httpLink
   )
 
-  const link = ApolloLink.from([debounceLink, mutationQueueLink, authLink, splitLink])
+  const link = ApolloLink.from([
+    debounceLink,
+    mutationQueueLink,
+    authLink,
+    splitLink
+  ])
 
   return new ApolloClient({
     ssrMode,
@@ -156,7 +164,7 @@ export function createApolloClient(
     you can safely remove this option.
     */
     incrementalHandler: new Defer20220824Handler()
-  });
+  })
 }
 
 interface InitializeApolloOptions {
@@ -201,11 +209,10 @@ export function useApollo({
   return store
 }
 
-declare module "@apollo/client" {
+declare module '@apollo/client' {
   export interface TypeOverrides extends Defer20220824Handler.TypeOverrides {}
 }
 
 /*
 End: Inserted by Apollo Client 3->4 migration codemod.
 */
-

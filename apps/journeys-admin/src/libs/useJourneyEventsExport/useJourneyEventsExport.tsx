@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useLazyQuery, useMutation } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useLazyQuery, useMutation } from '@apollo/client/react'
 import isNil from 'lodash/isNil'
 import omitBy from 'lodash/omitBy'
 import { useTranslation } from 'next-i18next'

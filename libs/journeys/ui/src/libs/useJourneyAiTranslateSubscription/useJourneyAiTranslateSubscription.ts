@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useApolloClient, useSubscription } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useApolloClient, useSubscription } from '@apollo/client/react'
 
 import {
   JourneyAiTranslateCreateSubscription,

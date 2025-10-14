@@ -1,5 +1,5 @@
-import { makeVar } from '@apollo/client';
-import { useReactiveVar } from "@apollo/client/react";
+import { makeVar } from '@apollo/client'
+import { useReactiveVar } from '@apollo/client/react'
 import { useCallback } from 'react'
 
 import { BlockFields_StepBlock as StepFields } from './__generated__/BlockFields'

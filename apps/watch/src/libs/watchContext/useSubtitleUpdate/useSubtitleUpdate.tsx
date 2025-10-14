@@ -1,4 +1,4 @@
-import { useLazyQuery } from "@apollo/client/react";
+import { useLazyQuery } from '@apollo/client/react'
 import Player from 'video.js/dist/types/player'
 
 import { graphql } from '@core/shared/gql'

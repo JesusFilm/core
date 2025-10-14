@@ -1,5 +1,5 @@
-import { MockLink } from '@apollo/client/testing';
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { ReactElement } from 'react'
@@ -18,38 +18,39 @@ import { CreateJourneyButton } from '../../OnboardingPanel/CreateJourneyButton'
 import { TeamSelect } from '.'
 
 describe('TeamSelect', () => {
-  const getMultipleTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
-    request: {
-      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-    },
-    result: {
-      data: {
-        teams: [
-          {
-            id: 'teamId1',
-            title: 'Team Title',
-            publicTitle: null,
-            __typename: 'Team',
-            userTeams: [],
-            customDomains: []
-          },
-          {
-            id: 'teamId2',
-            title: 'Team Title2',
-            publicTitle: null,
-            __typename: 'Team',
-            userTeams: [],
-            customDomains: []
+  const getMultipleTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
+    {
+      request: {
+        query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+      },
+      result: {
+        data: {
+          teams: [
+            {
+              id: 'teamId1',
+              title: 'Team Title',
+              publicTitle: null,
+              __typename: 'Team',
+              userTeams: [],
+              customDomains: []
+            },
+            {
+              id: 'teamId2',
+              title: 'Team Title2',
+              publicTitle: null,
+              __typename: 'Team',
+              userTeams: [],
+              customDomains: []
+            }
+          ],
+          getJourneyProfile: {
+            __typename: 'JourneyProfile',
+            id: 'journeyProfileId',
+            lastActiveTeamId: 'teamId1'
           }
-        ],
-        getJourneyProfile: {
-          __typename: 'JourneyProfile',
-          id: 'journeyProfileId',
-          lastActiveTeamId: 'teamId1'
         }
       }
     }
-  }
   function TestComponent(): ReactElement {
     const { activeTeam } = useTeam()
 

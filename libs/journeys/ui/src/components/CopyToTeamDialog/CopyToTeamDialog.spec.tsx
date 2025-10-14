@@ -1,5 +1,5 @@
-import { MockLink } from '@apollo/client/testing';
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -87,24 +87,25 @@ describe('CopyToTeamDialog', () => {
   })
 
   it('should call submit action and update team state on dialog submit', async () => {
-    const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> = {
-      request: {
-        query: UPDATE_LAST_ACTIVE_TEAM_ID,
-        variables: {
-          input: {
-            lastActiveTeamId: 'teamId'
+    const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
+      {
+        request: {
+          query: UPDATE_LAST_ACTIVE_TEAM_ID,
+          variables: {
+            input: {
+              lastActiveTeamId: 'teamId'
+            }
           }
-        }
-      },
-      result: jest.fn(() => ({
-        data: {
-          journeyProfileUpdate: {
-            __typename: 'JourneyProfile',
-            id: 'teamId'
+        },
+        result: jest.fn(() => ({
+          data: {
+            journeyProfileUpdate: {
+              __typename: 'JourneyProfile',
+              id: 'teamId'
+            }
           }
-        }
-      }))
-    }
+        }))
+      }
     const result = jest.fn(() => ({
       data: {
         teams: [
@@ -173,24 +174,25 @@ describe('CopyToTeamDialog', () => {
   })
 
   it('should not update team state when shouldUpdateTeamState is false', async () => {
-    const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> = {
-      request: {
-        query: UPDATE_LAST_ACTIVE_TEAM_ID,
-        variables: {
-          input: {
-            lastActiveTeamId: 'teamId'
+    const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
+      {
+        request: {
+          query: UPDATE_LAST_ACTIVE_TEAM_ID,
+          variables: {
+            input: {
+              lastActiveTeamId: 'teamId'
+            }
           }
-        }
-      },
-      result: jest.fn(() => ({
-        data: {
-          journeyProfileUpdate: {
-            __typename: 'JourneyProfile',
-            id: 'teamId'
+        },
+        result: jest.fn(() => ({
+          data: {
+            journeyProfileUpdate: {
+              __typename: 'JourneyProfile',
+              id: 'teamId'
+            }
           }
-        }
-      }))
-    }
+        }))
+      }
     const result = jest.fn(() => ({
       data: {
         teams: [
@@ -581,24 +583,25 @@ describe('CopyToTeamDialog', () => {
       }
     }))
 
-    const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> = {
-      request: {
-        query: UPDATE_LAST_ACTIVE_TEAM_ID,
-        variables: {
-          input: {
-            lastActiveTeamId: 'teamId'
+    const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
+      {
+        request: {
+          query: UPDATE_LAST_ACTIVE_TEAM_ID,
+          variables: {
+            input: {
+              lastActiveTeamId: 'teamId'
+            }
           }
-        }
-      },
-      result: jest.fn(() => ({
-        data: {
-          journeyProfileUpdate: {
-            __typename: 'JourneyProfile',
-            id: 'teamId'
+        },
+        result: jest.fn(() => ({
+          data: {
+            journeyProfileUpdate: {
+              __typename: 'JourneyProfile',
+              id: 'teamId'
+            }
           }
-        }
-      }))
-    }
+        }))
+      }
 
     const { getByRole } = render(
       <MockedProvider

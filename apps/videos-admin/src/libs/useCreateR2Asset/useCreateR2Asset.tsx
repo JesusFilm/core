@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client/react";
+import { useMutation } from '@apollo/client/react'
 
 import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 
@@ -26,7 +26,10 @@ export function useCreateR2AssetMutation(
     CreateCloudflareR2Asset,
     CreateCloudflareR2AssetVariables
   >
-): useMutation.ResultTuple<CreateCloudflareR2Asset, CreateCloudflareR2AssetVariables> {
+): useMutation.ResultTuple<
+  CreateCloudflareR2Asset,
+  CreateCloudflareR2AssetVariables
+> {
   const mutation = useMutation<
     CreateCloudflareR2Asset,
     CreateCloudflareR2AssetVariables

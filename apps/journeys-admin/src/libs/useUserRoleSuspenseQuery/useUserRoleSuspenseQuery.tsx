@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from "@apollo/client/react";
+import { useSuspenseQuery } from '@apollo/client/react'
 
 import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
 

@@ -1,5 +1,5 @@
-import { MockLink } from '@apollo/client/testing';
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -239,7 +239,10 @@ describe('HostForm', () => {
   })
 
   it('should call updatehost mutation on title change', async () => {
-    const updateHostMock: MockLink.MockedResponse<UpdateHost, UpdateHostVariables> = {
+    const updateHostMock: MockLink.MockedResponse<
+      UpdateHost,
+      UpdateHostVariables
+    > = {
       request: {
         query: UPDATE_HOST,
         variables: {
@@ -292,7 +295,10 @@ describe('HostForm', () => {
   })
 
   it('should call createhost mutation on title change if host does not exist', async () => {
-    const hostCreateMock: MockLink.MockedResponse<CreateHost, CreateHostVariables> = {
+    const hostCreateMock: MockLink.MockedResponse<
+      CreateHost,
+      CreateHostVariables
+    > = {
       request: {
         query: CREATE_HOST,
         variables: {
@@ -345,7 +351,10 @@ describe('HostForm', () => {
   })
 
   it('should call updatehost mutation on location change', async () => {
-    const updateHostMock: MockLink.MockedResponse<UpdateHost, UpdateHostVariables> = {
+    const updateHostMock: MockLink.MockedResponse<
+      UpdateHost,
+      UpdateHostVariables
+    > = {
       request: {
         query: UPDATE_HOST,
         variables: {
@@ -398,7 +407,10 @@ describe('HostForm', () => {
   })
 
   it('should call createhost mutation on location change if host does not exist', async () => {
-    const hostCreateMock: MockLink.MockedResponse<CreateHost, CreateHostVariables> = {
+    const hostCreateMock: MockLink.MockedResponse<
+      CreateHost,
+      CreateHostVariables
+    > = {
       request: {
         query: CREATE_HOST,
         variables: {

@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockLink } from '@apollo/client/testing';
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import {
@@ -58,27 +58,28 @@ describe('UserTeamInviteForm', () => {
     }
   }
 
-  const userTeamInviteCreateMock: MockLink.MockedResponse<UserTeamInviteCreate> = {
-    request: {
-      query: USER_TEAM_INVITE_CREATE,
-      variables: {
-        teamId: 'teamId',
-        input: {
-          email: 'johnTHEgeronimo@example.com'
+  const userTeamInviteCreateMock: MockLink.MockedResponse<UserTeamInviteCreate> =
+    {
+      request: {
+        query: USER_TEAM_INVITE_CREATE,
+        variables: {
+          teamId: 'teamId',
+          input: {
+            email: 'johnTHEgeronimo@example.com'
+          }
         }
-      }
-    },
-    result: {
-      data: {
-        userTeamInviteCreate: {
-          __typename: 'UserTeamInvite',
-          email: 'johnTHEgeronimo@example.com',
-          id: 'inviteId2',
-          teamId: 'teamId'
+      },
+      result: {
+        data: {
+          userTeamInviteCreate: {
+            __typename: 'UserTeamInvite',
+            email: 'johnTHEgeronimo@example.com',
+            id: 'inviteId2',
+            teamId: 'teamId'
+          }
         }
       }
     }
-  }
 
   const getUserTeamMock1: MockLink.MockedResponse<GetUserTeamsAndInvites> = {
     request: {

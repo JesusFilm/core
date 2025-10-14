@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { ApolloError } from "@apollo/client/v4-migration";
+import { gql } from '@apollo/client'
+import { ApolloError } from '@apollo/client/v4-migration'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'

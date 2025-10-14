@@ -96,7 +96,10 @@ export const mockCreateEventsExportLogMutation: MockLink.MockedResponse<
 
 export const getMockGetJourneyEventsCountQuery = (
   variables?: GetJourneyEventsCountVariables
-): MockLink.MockedResponse<GetJourneyEventsCount, GetJourneyEventsCountVariables> => ({
+): MockLink.MockedResponse<
+  GetJourneyEventsCount,
+  GetJourneyEventsCountVariables
+> => ({
   request: {
     query: GET_JOURNEY_EVENTS_COUNT,
     variables: {

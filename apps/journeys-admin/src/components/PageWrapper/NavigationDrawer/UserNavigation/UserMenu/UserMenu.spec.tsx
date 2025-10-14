@@ -1,7 +1,7 @@
-import { ApolloClient } from '@apollo/client';
-import { useApolloClient } from "@apollo/client/react";
-import { MockLink } from '@apollo/client/testing';
-import { MockedProvider } from "@apollo/client/testing/react";
+import { ApolloClient } from '@apollo/client'
+import { useApolloClient } from '@apollo/client/react'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'

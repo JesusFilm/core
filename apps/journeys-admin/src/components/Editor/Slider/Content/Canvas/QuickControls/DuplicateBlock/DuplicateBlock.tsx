@@ -1,5 +1,5 @@
-import { Reference, gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { Reference, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import IconButton from '@mui/material/IconButton'
 import omit from 'lodash/omit'
 import { useTranslation } from 'next-i18next'

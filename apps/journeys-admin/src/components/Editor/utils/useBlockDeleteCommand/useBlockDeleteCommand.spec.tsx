@@ -1,4 +1,4 @@
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, renderHook, screen, waitFor } from '@testing-library/react'
 
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'

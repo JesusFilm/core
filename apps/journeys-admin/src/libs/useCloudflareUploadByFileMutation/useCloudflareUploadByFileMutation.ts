@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { CreateCloudflareUploadByFile } from '../../../__generated__/CreateCloudflareUploadByFile'
 
@@ -17,7 +17,10 @@ export function useCloudflareUploadByFileMutation(
     CreateCloudflareUploadByFile,
     Record<string, never>
   >
-): useMutation.ResultTuple<CreateCloudflareUploadByFile, Record<string, never>> {
+): useMutation.ResultTuple<
+  CreateCloudflareUploadByFile,
+  Record<string, never>
+> {
   const mutation = useMutation<
     CreateCloudflareUploadByFile,
     Record<string, never>

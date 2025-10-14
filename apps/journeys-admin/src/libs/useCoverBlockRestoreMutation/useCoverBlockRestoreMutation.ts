@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'

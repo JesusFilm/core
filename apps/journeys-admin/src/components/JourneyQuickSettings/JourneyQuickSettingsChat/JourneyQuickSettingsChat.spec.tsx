@@ -1,5 +1,5 @@
-import { MockLink } from '@apollo/client/testing';
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -66,7 +66,10 @@ describe('JourneyQuickSettingsChat', () => {
   })
 
   it('should call update host mutation on name change', async () => {
-    const updateHostMock: MockLink.MockedResponse<UpdateHost, UpdateHostVariables> = {
+    const updateHostMock: MockLink.MockedResponse<
+      UpdateHost,
+      UpdateHostVariables
+    > = {
       request: {
         query: UPDATE_HOST,
         variables: {

@@ -1,5 +1,5 @@
-import { OperationVariables, gql } from '@apollo/client';
-import { useLazyQuery, useQuery } from "@apollo/client/react";
+import { OperationVariables, gql } from '@apollo/client'
+import { useLazyQuery, useQuery } from '@apollo/client/react'
 
 import { GetLanguagesContinents } from './__generated__/GetLanguagesContinents'
 

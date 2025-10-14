@@ -1,5 +1,5 @@
-import { ApolloCache, gql } from '@apollo/client';
-import { useMutation } from "@apollo/client/react";
+import { ApolloCache, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'

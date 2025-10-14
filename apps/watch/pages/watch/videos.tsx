@@ -1,5 +1,5 @@
-import { type NormalizedCacheObject, gql } from '@apollo/client';
-import { ApolloProvider } from "@apollo/client/react";
+import { type NormalizedCacheObject, gql } from '@apollo/client'
+import { ApolloProvider } from '@apollo/client/react'
 import type { UiState } from 'instantsearch.js'
 import type { RouterProps } from 'instantsearch.js/es/middlewares'
 import type { GetStaticProps } from 'next'

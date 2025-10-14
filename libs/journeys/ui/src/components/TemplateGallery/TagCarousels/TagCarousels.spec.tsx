@@ -1,4 +1,4 @@
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor, within } from '@testing-library/react'
 
 import { getTagsMock } from '../data'

@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useQuery } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import { useMemo } from 'react'
 
 import { GetTags, GetTags_tags as Tag } from './__generated__/GetTags'

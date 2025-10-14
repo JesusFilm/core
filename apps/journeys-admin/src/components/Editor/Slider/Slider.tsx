@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useMutation, useQuery } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Collapse from '@mui/material/Collapse'
 import IconButton from '@mui/material/IconButton'

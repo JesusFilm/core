@@ -1,4 +1,4 @@
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'

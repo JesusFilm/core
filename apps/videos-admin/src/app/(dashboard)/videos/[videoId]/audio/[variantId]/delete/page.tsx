@@ -1,5 +1,5 @@
-'use client';
-import { useMutation, useSuspenseQuery } from "@apollo/client/react";
+'use client'
+import { useMutation, useSuspenseQuery } from '@apollo/client/react'
 import { useRouter } from 'next/navigation'
 import { enqueueSnackbar } from 'notistack'
 

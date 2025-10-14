@@ -26,7 +26,10 @@ const JourneyDetailsDialogStory: Meta<typeof JourneyDetailsDialog> = {
   }
 }
 
-const getLanguagesMock: MockLink.MockedResponse<GetLanguages, GetLanguagesVariables> = {
+const getLanguagesMock: MockLink.MockedResponse<
+  GetLanguages,
+  GetLanguagesVariables
+> = {
   request: {
     query: GET_LANGUAGES,
     variables: {

@@ -116,24 +116,26 @@ export const deleteCardBlockMock: MockLink.MockedResponse<
   }
 }
 
-export const deleteStepMock: MockLink.MockedResponse<BlockDelete, BlockDeleteVariables> =
-  {
-    request: {
-      query: BLOCK_DELETE,
-      variables: {
-        id: selectedStep.id
-      }
-    },
-    result: {
-      data: {
-        blockDelete: [
-          {
-            __typename: 'StepBlock',
-            id: selectedStep.id,
-            parentOrder: selectedStep.parentOrder,
-            nextBlockId: null
-          }
-        ]
-      }
+export const deleteStepMock: MockLink.MockedResponse<
+  BlockDelete,
+  BlockDeleteVariables
+> = {
+  request: {
+    query: BLOCK_DELETE,
+    variables: {
+      id: selectedStep.id
+    }
+  },
+  result: {
+    data: {
+      blockDelete: [
+        {
+          __typename: 'StepBlock',
+          id: selectedStep.id,
+          parentOrder: selectedStep.parentOrder,
+          nextBlockId: null
+        }
+      ]
     }
   }
+}

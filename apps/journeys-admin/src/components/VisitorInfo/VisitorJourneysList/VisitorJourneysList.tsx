@@ -1,5 +1,5 @@
-import { gql } from '@apollo/client';
-import { useQuery } from "@apollo/client/react";
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import TimelineConnector from '@mui/lab/TimelineConnector'
 import TimelineSeparator from '@mui/lab/TimelineSeparator'
 import { ReactElement } from 'react'

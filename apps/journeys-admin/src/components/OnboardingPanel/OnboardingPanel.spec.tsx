@@ -1,5 +1,5 @@
-import { MockLink } from '@apollo/client/testing';
-import { MockedProvider } from "@apollo/client/testing/react";
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { v4 as uuidv4 } from 'uuid'
@@ -52,77 +52,79 @@ const variables = {
   captionTypographyContent: 'Deuteronomy 10:11',
   teamId: 'teamId'
 }
-const createJourneyMock: MockLink.MockedResponse<CreateJourney, CreateJourneyVariables> =
-  {
-    request: {
-      query: CREATE_JOURNEY,
-      variables
-    },
-    result: {
-      data: {
-        journeyCreate: {
-          createdAt: '2022-02-17T21:47:32.004Z',
-          description: variables.description,
-          id: variables.journeyId,
-          language: {
-            id: '529',
-            name: [
-              {
-                value: 'English',
-                primary: true,
-                __typename: 'LanguageName'
-              }
-            ],
-            __typename: 'Language'
-          },
-          publishedAt: null,
-          slug: 'untitled-journey-journeyId',
-          status: JourneyStatus.draft,
-          themeMode: ThemeMode.dark,
-          themeName: ThemeName.base,
-          title: variables.title,
-          __typename: 'Journey',
-          userJourneys: [
+const createJourneyMock: MockLink.MockedResponse<
+  CreateJourney,
+  CreateJourneyVariables
+> = {
+  request: {
+    query: CREATE_JOURNEY,
+    variables
+  },
+  result: {
+    data: {
+      journeyCreate: {
+        createdAt: '2022-02-17T21:47:32.004Z',
+        description: variables.description,
+        id: variables.journeyId,
+        language: {
+          id: '529',
+          name: [
             {
-              __typename: 'UserJourney',
-              id: 'user-journey-id',
-              user: {
-                __typename: 'User',
-                id: 'user-id1',
-                firstName: 'Admin',
-                lastName: 'One',
-                imageUrl: 'https://bit.ly/3Gth4Yf'
-              }
+              value: 'English',
+              primary: true,
+              __typename: 'LanguageName'
             }
-          ]
+          ],
+          __typename: 'Language'
         },
-        stepBlockCreate: {
-          id: variables.stepId,
-          __typename: 'StepBlock'
-        },
-        cardBlockCreate: {
-          id: variables.cardId,
-          __typename: 'CardBlock'
-        },
-        imageBlockCreate: {
-          id: variables.imageId,
-          __typename: 'ImageBlock'
-        },
-        headlineTypographyBlockCreate: {
-          id: 'headlineTypographyId',
-          __typename: 'TypographyBlock'
-        },
-        bodyTypographyBlockCreate: {
-          id: 'bodyTypographyId',
-          __typename: 'TypographyBlock'
-        },
-        captionTypographyBlockCreate: {
-          id: 'captionTypographyId',
-          __typename: 'TypographyBlock'
-        }
+        publishedAt: null,
+        slug: 'untitled-journey-journeyId',
+        status: JourneyStatus.draft,
+        themeMode: ThemeMode.dark,
+        themeName: ThemeName.base,
+        title: variables.title,
+        __typename: 'Journey',
+        userJourneys: [
+          {
+            __typename: 'UserJourney',
+            id: 'user-journey-id',
+            user: {
+              __typename: 'User',
+              id: 'user-id1',
+              firstName: 'Admin',
+              lastName: 'One',
+              imageUrl: 'https://bit.ly/3Gth4Yf'
+            }
+          }
+        ]
+      },
+      stepBlockCreate: {
+        id: variables.stepId,
+        __typename: 'StepBlock'
+      },
+      cardBlockCreate: {
+        id: variables.cardId,
+        __typename: 'CardBlock'
+      },
+      imageBlockCreate: {
+        id: variables.imageId,
+        __typename: 'ImageBlock'
+      },
+      headlineTypographyBlockCreate: {
+        id: 'headlineTypographyId',
+        __typename: 'TypographyBlock'
+      },
+      bodyTypographyBlockCreate: {
+        id: 'bodyTypographyId',
+        __typename: 'TypographyBlock'
+      },
+      captionTypographyBlockCreate: {
+        id: 'captionTypographyId',
+        __typename: 'TypographyBlock'
       }
     }
   }
+}
 const mocks: MockLink.MockedResponse[] = [createJourneyMock, getTeamsMock]
 
 describe('OnboardingPanel', () => {
