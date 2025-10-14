@@ -44,11 +44,49 @@ export function SubtitleToggle({
         width: '100%'
       }}
     >
-      <Typography variant="caption">{t('Enable Subtitles')}</Typography>
+      <Typography
+        variant="caption"
+        sx={{
+          fontWeight: subtitleEnabled && hasSubtitles ? 600 : 400,
+          color:
+            subtitleEnabled && hasSubtitles ? 'primary.main' : 'text.secondary'
+        }}
+      >
+        {t('Enable Subtitles')}
+      </Typography>
       <Tooltip
         open={showTooltip}
         title={t('This video does not have any subtitles.')}
         placement="top"
+        PopperProps={{
+          container: () =>
+            document.querySelector('.MuiDrawer-paper') || document.body,
+          modifiers: [
+            {
+              name: 'preventOverflow',
+              enabled: true,
+              options: {
+                boundary: 'clippingParents'
+              }
+            },
+            {
+              name: 'flip',
+              enabled: true
+            }
+          ]
+        }}
+        slotProps={{
+          tooltip: {
+            sx: {
+              maxWidth: 'min(125px, 45vw)',
+              whiteSpace: 'normal',
+              wordWrap: 'break-word',
+              textAlign: 'center',
+              lineHeight: 1.4,
+              padding: '8px 12px'
+            }
+          }
+        }}
       >
         <Box>
           <Switch
