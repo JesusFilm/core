@@ -1,6 +1,5 @@
-'use client'
-
-import { useMutation, useSuspenseQuery } from '@apollo/client'
+'use client';
+import { useMutation, useSuspenseQuery } from "@apollo/client/react";
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import WarningIcon from '@mui/icons-material/Warning'
 import Alert from '@mui/material/Alert'

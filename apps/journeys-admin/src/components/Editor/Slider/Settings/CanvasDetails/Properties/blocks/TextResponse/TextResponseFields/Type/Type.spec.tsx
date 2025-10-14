@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -30,7 +31,7 @@ describe('Type', () => {
     hideLabel: false
   }
 
-  const mockEmailUpdate: MockedResponse<TextResponseTypeUpdate> = {
+  const mockEmailUpdate: MockLink.MockedResponse<TextResponseTypeUpdate> = {
     request: {
       query: TEXT_RESPONSE_TYPE_UPDATE,
       variables: {
@@ -55,7 +56,7 @@ describe('Type', () => {
     }))
   }
 
-  const mockPhoneUpdate: MockedResponse<TextResponseTypeUpdate> = {
+  const mockPhoneUpdate: MockLink.MockedResponse<TextResponseTypeUpdate> = {
     request: {
       query: TEXT_RESPONSE_TYPE_UPDATE,
       variables: {
@@ -82,7 +83,7 @@ describe('Type', () => {
     }))
   }
 
-  const mockFreeformUpdate: MockedResponse<TextResponseTypeUpdate> = {
+  const mockFreeformUpdate: MockLink.MockedResponse<TextResponseTypeUpdate> = {
     request: {
       query: TEXT_RESPONSE_TYPE_UPDATE,
       variables: {
@@ -223,7 +224,7 @@ describe('Type', () => {
   })
 
   it('should retain integration and route when switching from email to name', async () => {
-    const mockNameUpdate: MockedResponse<TextResponseTypeUpdate> = {
+    const mockNameUpdate: MockLink.MockedResponse<TextResponseTypeUpdate> = {
       request: {
         query: TEXT_RESPONSE_TYPE_UPDATE,
         variables: {

@@ -1,6 +1,5 @@
-'use client'
-
-import { useQuery } from '@apollo/client'
+'use client';
+import { useQuery } from "@apollo/client/react";
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Link from 'next/link'

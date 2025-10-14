@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import type { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 import { ComponentPropsWithoutRef } from 'react'
@@ -46,7 +46,7 @@ const qrCode: QrCodeFields = {
     to: 'http://localhost:4100/journeySlug?utm_source=ns-qr-code&utm_campaign=$shortLink.id'
   }
 }
-const getJourneyQrCodesMock: MockedResponse<
+const getJourneyQrCodesMock: MockLink.MockedResponse<
   GetJourneyQrCodes,
   GetJourneyQrCodesVariables
 > = {

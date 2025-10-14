@@ -1,10 +1,5 @@
-import {
-  ApolloCache,
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { ApolloCache, gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import {
   CreateHost,
@@ -45,8 +40,8 @@ export function hostCreateUpdate(
 }
 
 export function useHostCreateMutation(
-  options?: MutationHookOptions<CreateHost, CreateHostVariables>
-): MutationTuple<CreateHost, CreateHostVariables> {
+  options?: useMutation.Options<CreateHost, CreateHostVariables>
+): useMutation.ResultTuple<CreateHost, CreateHostVariables> {
   return useMutation<CreateHost, CreateHostVariables>(CREATE_HOST, {
     ...options,
     update(...args) {

@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import {
   JourneyDuplicate,
@@ -19,8 +15,8 @@ export const JOURNEY_DUPLICATE = gql`
 `
 
 export function useJourneyDuplicateMutation(
-  options?: MutationHookOptions<JourneyDuplicate, JourneyDuplicateVariables>
-): MutationTuple<JourneyDuplicate, JourneyDuplicateVariables> {
+  options?: useMutation.Options<JourneyDuplicate, JourneyDuplicateVariables>
+): useMutation.ResultTuple<JourneyDuplicate, JourneyDuplicateVariables> {
   const mutation = useMutation<JourneyDuplicate, JourneyDuplicateVariables>(
     JOURNEY_DUPLICATE,
     {

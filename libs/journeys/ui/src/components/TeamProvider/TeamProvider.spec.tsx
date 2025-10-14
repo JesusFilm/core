@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
@@ -65,7 +66,7 @@ const teams: Team[] = [
   }
 ]
 
-const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+const getTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
@@ -97,7 +98,7 @@ describe('TeamProvider', () => {
   })
 
   it('should show last viewed team as the active team', async () => {
-    const getLastViewedTeamMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+    const getLastViewedTeamMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
       ...getTeamsMock,
       result: {
         data: {

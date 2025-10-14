@@ -1,6 +1,5 @@
-'use client'
-
-import { useMutation, useQuery } from '@apollo/client'
+'use client';
+import { useMutation, useQuery } from "@apollo/client/react";
 import { DragEndEvent } from '@dnd-kit/core'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'

@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -15,7 +16,7 @@ import { TeamUpdateDialog } from '.'
 import '../../../../test/i18n'
 
 describe('TeamUpdateDialog', () => {
-  const teamUpdateMock: MockedResponse<TeamUpdate> = {
+  const teamUpdateMock: MockLink.MockedResponse<TeamUpdate> = {
     request: {
       query: TEAM_UPDATE,
       variables: {
@@ -37,7 +38,7 @@ describe('TeamUpdateDialog', () => {
       }
     }
   }
-  const teamUpdateErrorMock: MockedResponse<TeamUpdate> = {
+  const teamUpdateErrorMock: MockLink.MockedResponse<TeamUpdate> = {
     request: {
       query: TEAM_UPDATE,
       variables: {

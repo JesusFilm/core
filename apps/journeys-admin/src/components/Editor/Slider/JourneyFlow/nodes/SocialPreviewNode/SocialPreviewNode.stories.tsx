@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import Box from '@mui/material/Box'
 import { StoryObj } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
@@ -33,7 +34,7 @@ const SocialPreviewNodeStory = {
   title: 'Journeys-Admin/Editor/Slider/JourneyFlow/nodes/SocialPreviewNode'
 }
 
-const stepAndCardBlockCreateMock: MockedResponse<
+const stepAndCardBlockCreateMock: MockLink.MockedResponse<
   StepAndCardBlockCreate,
   StepAndCardBlockCreateVariables
 > = {

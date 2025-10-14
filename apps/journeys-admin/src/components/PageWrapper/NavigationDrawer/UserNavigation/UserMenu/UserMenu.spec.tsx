@@ -1,5 +1,7 @@
-import { ApolloClient, useApolloClient } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { ApolloClient } from '@apollo/client';
+import { useApolloClient } from "@apollo/client/react";
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
@@ -121,8 +123,8 @@ describe('UserMenu', () => {
     const clearStore = jest.fn()
     mockUseApolloClient.mockReturnValue({
       clearStore
-    } as unknown as ApolloClient<object>)
-    const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+    } as unknown as ApolloClient)
+    const getTeams: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
       request: {
         query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
       },

@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
@@ -34,7 +35,7 @@ describe('TeamMenu', () => {
     jest.clearAllMocks()
   })
 
-  const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+  const getTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
@@ -66,7 +67,7 @@ describe('TeamMenu', () => {
       }
     }
   }
-  const getEmptyTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+  const getEmptyTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },

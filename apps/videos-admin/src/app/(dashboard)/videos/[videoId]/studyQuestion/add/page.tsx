@@ -1,6 +1,5 @@
-'use client'
-
-import { useMutation, useSuspenseQuery } from '@apollo/client'
+'use client';
+import { useMutation, useSuspenseQuery } from "@apollo/client/react";
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'

@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   GetIntegration,
@@ -8,7 +8,7 @@ import { IntegrationType } from '../../../__generated__/globalTypes'
 
 import { GET_INTEGRATION } from './useIntegrationQuery'
 
-export const getIntegrationMock: MockedResponse<
+export const getIntegrationMock: MockLink.MockedResponse<
   GetIntegration,
   GetIntegrationVariables
 > = {

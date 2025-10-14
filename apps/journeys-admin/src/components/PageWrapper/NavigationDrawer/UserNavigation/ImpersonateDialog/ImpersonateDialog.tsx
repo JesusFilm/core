@@ -1,4 +1,6 @@
-import { ApolloError, gql, useApolloClient, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useApolloClient, useMutation } from "@apollo/client/react";
+import { ApolloError } from "@apollo/client/v4-migration";
 import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import TextField from '@mui/material/TextField'

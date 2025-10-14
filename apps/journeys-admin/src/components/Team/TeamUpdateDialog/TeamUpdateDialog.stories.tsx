@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { expect, screen, userEvent, waitFor } from '@storybook/test'
 import { SnackbarProvider } from 'notistack'
@@ -23,7 +23,7 @@ const TeamUpdateDialogStory: Meta<typeof TeamUpdateDialog> = {
   title: 'Journeys-Admin/Team/TeamUpdateDialog'
 }
 
-const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+const getTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
@@ -48,7 +48,7 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   }
 }
 
-const teamUpdateMock: MockedResponse<TeamUpdate> = {
+const teamUpdateMock: MockLink.MockedResponse<TeamUpdate> = {
   request: {
     query: TEAM_UPDATE,
     variables: {

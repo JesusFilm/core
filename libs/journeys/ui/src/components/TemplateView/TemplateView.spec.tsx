@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 
@@ -39,7 +40,7 @@ describe('TemplateView', () => {
     ]
   }
 
-  const getJourneysMock: MockedResponse<GetJourneys, GetJourneysVariables> = {
+  const getJourneysMock: MockLink.MockedResponse<GetJourneys, GetJourneysVariables> = {
     request: {
       query: GET_JOURNEYS,
       variables: {
@@ -276,7 +277,7 @@ describe('TemplateView', () => {
   })
 
   it('should render template tags', async () => {
-    const getTagsMock: MockedResponse<GetTags> = {
+    const getTagsMock: MockLink.MockedResponse<GetTags> = {
       request: {
         query: GET_TAGS
       },

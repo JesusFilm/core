@@ -1,6 +1,5 @@
-'use client'
-
-import { useMutation, useSuspenseQuery } from '@apollo/client'
+'use client';
+import { useMutation, useSuspenseQuery } from "@apollo/client/react";
 import DeleteIcon from '@mui/icons-material/Delete'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'

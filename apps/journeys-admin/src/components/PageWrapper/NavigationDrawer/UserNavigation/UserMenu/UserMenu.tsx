@@ -1,4 +1,4 @@
-import { useApolloClient } from '@apollo/client'
+import { useApolloClient } from "@apollo/client/react";
 import LanguageIcon from '@mui/icons-material/Language'
 import Avatar from '@mui/material/Avatar'
 import Box from '@mui/material/Box'

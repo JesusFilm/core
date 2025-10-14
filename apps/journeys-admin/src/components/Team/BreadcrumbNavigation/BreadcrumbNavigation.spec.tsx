@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 
@@ -19,7 +20,7 @@ jest.mock('next/router', () => ({
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('BreadcrumbNavigation', () => {
-  const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+  const getTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },

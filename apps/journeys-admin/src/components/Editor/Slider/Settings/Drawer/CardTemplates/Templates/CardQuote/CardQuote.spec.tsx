@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -70,7 +71,7 @@ const step: TreeBlock = {
   slug: null,
   children: [card]
 }
-const cardQuoteCreateMock: MockedResponse<
+const cardQuoteCreateMock: MockLink.MockedResponse<
   CardQuoteCreate,
   CardQuoteCreateVariables
 > = {
@@ -209,7 +210,7 @@ const cardQuoteCreateMock: MockedResponse<
   }
 }
 
-const cardQuoteMockDelete: MockedResponse<
+const cardQuoteMockDelete: MockLink.MockedResponse<
   CardQuoteDelete,
   CardQuoteDeleteVariables
 > = {
@@ -235,7 +236,7 @@ const cardQuoteMockDelete: MockedResponse<
   }
 }
 
-const cardQuoteMockRestore: MockedResponse<
+const cardQuoteMockRestore: MockLink.MockedResponse<
   CardQuoteRestore,
   CardQuoteRestoreVariables
 > = {

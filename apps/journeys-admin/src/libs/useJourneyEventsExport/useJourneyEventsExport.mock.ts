@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   CreateEventsExportLog,
@@ -20,7 +20,7 @@ import {
 } from './useJourneyEventsExport'
 import { FILTERED_EVENTS } from './utils/constants'
 
-export const mockGetJourneyEventsQuery: MockedResponse<
+export const mockGetJourneyEventsQuery: MockLink.MockedResponse<
   GetJourneyEvents,
   GetJourneyEventsVariables
 > = {
@@ -71,7 +71,7 @@ export const mockGetJourneyEventsQuery: MockedResponse<
   }
 }
 
-export const mockCreateEventsExportLogMutation: MockedResponse<
+export const mockCreateEventsExportLogMutation: MockLink.MockedResponse<
   CreateEventsExportLog,
   CreateEventsExportLogVariables
 > = {
@@ -96,7 +96,7 @@ export const mockCreateEventsExportLogMutation: MockedResponse<
 
 export const getMockGetJourneyEventsCountQuery = (
   variables?: GetJourneyEventsCountVariables
-): MockedResponse<GetJourneyEventsCount, GetJourneyEventsCountVariables> => ({
+): MockLink.MockedResponse<GetJourneyEventsCount, GetJourneyEventsCountVariables> => ({
   request: {
     query: GET_JOURNEY_EVENTS_COUNT,
     variables: {

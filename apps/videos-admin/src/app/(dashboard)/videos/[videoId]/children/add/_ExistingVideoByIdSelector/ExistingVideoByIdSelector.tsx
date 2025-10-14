@@ -1,6 +1,5 @@
-'use client'
-
-import { useLazyQuery } from '@apollo/client'
+'use client';
+import { useLazyQuery } from "@apollo/client/react";
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'

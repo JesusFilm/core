@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from "@apollo/client/testing/react";
 import { act, renderHook, waitFor } from '@testing-library/react'
 import axios from 'axios'
 import { SnackbarProvider, useSnackbar } from 'notistack'

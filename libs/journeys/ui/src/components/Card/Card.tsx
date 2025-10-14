@@ -1,4 +1,6 @@
-import { ApolloError, gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
+import { ApolloError } from "@apollo/client/v4-migration";
 import Paper from '@mui/material/Paper'
 import { styled, useTheme } from '@mui/material/styles'
 import { sendGTMEvent } from '@next/third-parties/google'

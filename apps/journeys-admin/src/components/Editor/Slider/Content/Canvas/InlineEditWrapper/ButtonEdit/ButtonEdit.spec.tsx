@@ -1,5 +1,6 @@
 import { ApolloLink } from '@apollo/client'
-import { MockLink, MockedProvider } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import DebounceLink from 'apollo-link-debounce'
@@ -9,8 +10,8 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { ButtonFields } from '../../../../../../../../__generated__/ButtonFields'
-import { ButtonVariant } from '../../../../../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { ButtonVariant } from '../../../../../../../../__generated__/globalTypes'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 

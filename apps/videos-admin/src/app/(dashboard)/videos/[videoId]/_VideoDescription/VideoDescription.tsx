@@ -1,6 +1,5 @@
-'use client'
-
-import { useMutation, useSuspenseQuery } from '@apollo/client'
+'use client';
+import { useMutation, useSuspenseQuery } from "@apollo/client/react";
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Form, Formik, FormikProps, FormikValues } from 'formik'

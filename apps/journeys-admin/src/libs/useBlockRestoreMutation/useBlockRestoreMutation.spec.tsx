@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { act, renderHook } from '@testing-library/react'
 
 import {
@@ -22,7 +23,7 @@ import {
 import { stepBlock, stepBlockRes } from './useBlockRestoreMutation.mock'
 
 describe('useBlockRestoreMutation', () => {
-  const useBlockRestoreMutationMock: MockedResponse<
+  const useBlockRestoreMutationMock: MockLink.MockedResponse<
     BlockRestore,
     BlockRestoreVariables
   > = {

@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
@@ -160,7 +161,7 @@ const video: TreeBlock<VideoBlock> = {
   children: []
 }
 
-const getVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
+const getVideoMock: MockLink.MockedResponse<GetVideo, GetVideoVariables> = {
   request: {
     query: GET_VIDEO,
     variables: {
@@ -215,7 +216,7 @@ const getVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
   }
 }
 
-const getExistingCoverVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
+const getExistingCoverVideoMock: MockLink.MockedResponse<GetVideo, GetVideoVariables> = {
   request: {
     query: GET_VIDEO,
     variables: {
@@ -269,7 +270,7 @@ const getExistingCoverVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
   }
 }
 
-const getVariantLanguagesMock: MockedResponse<any> = {
+const getVariantLanguagesMock: MockLink.MockedResponse<any> = {
   request: {
     query: GET_VIDEO_VARIANT_LANGUAGES,
     variables: { id: '2_0-FallingPlates' }
@@ -294,7 +295,7 @@ const getVariantLanguagesMock: MockedResponse<any> = {
   }
 }
 
-const coverVideoBlockCreateMock: MockedResponse<
+const coverVideoBlockCreateMock: MockLink.MockedResponse<
   CoverVideoBlockCreate,
   CoverVideoBlockCreateVariables
 > = {
@@ -331,7 +332,7 @@ const coverVideoBlockCreateMock: MockedResponse<
   }
 }
 
-const coverBlockDeleteMock: MockedResponse<
+const coverBlockDeleteMock: MockLink.MockedResponse<
   CoverBlockDelete,
   CoverBlockDeleteVariables
 > = {
@@ -360,7 +361,7 @@ const coverBlockDeleteMock: MockedResponse<
   }
 }
 
-const coverBlockRestoreMock: MockedResponse<
+const coverBlockRestoreMock: MockLink.MockedResponse<
   CoverBlockRestore,
   CoverBlockRestoreVariables
 > = {
@@ -496,7 +497,7 @@ describe('BackgroundMediaVideo', () => {
           ...video
         }
       }
-      const coverVideoBlockUpdateMock: MockedResponse<
+      const coverVideoBlockUpdateMock: MockLink.MockedResponse<
         CoverVideoBlockUpdate,
         CoverVideoBlockUpdateVariables
       > = {

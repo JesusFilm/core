@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { formatISO } from 'date-fns'
 import { SnackbarProvider } from 'notistack'
@@ -100,7 +101,7 @@ describe('QrCodeDialog', () => {
     }
   }
 
-  const getJourneyQrCodesMock: MockedResponse<
+  const getJourneyQrCodesMock: MockLink.MockedResponse<
     GetJourneyQrCodes,
     GetJourneyQrCodesVariables
   > = {
@@ -119,7 +120,7 @@ describe('QrCodeDialog', () => {
     }
   }
 
-  const getPlausibleJourneyQrCodeScansMock: MockedResponse<
+  const getPlausibleJourneyQrCodeScansMock: MockLink.MockedResponse<
     GetPlausibleJourneyQrCodeScans,
     GetPlausibleJourneyQrCodeScansVariables
   > = {
@@ -203,7 +204,7 @@ describe('QrCodeDialog', () => {
   })
 
   it('should show QR code for deployment', async () => {
-    const deployedQrCodesMock: MockedResponse<
+    const deployedQrCodesMock: MockLink.MockedResponse<
       GetJourneyQrCodes,
       GetJourneyQrCodesVariables
     > = {
@@ -253,7 +254,7 @@ describe('QrCodeDialog', () => {
   })
 
   it('should generate QrCode and add to cache', async () => {
-    const getEmptyQrCodesMock: MockedResponse<
+    const getEmptyQrCodesMock: MockLink.MockedResponse<
       GetJourneyQrCodes,
       GetJourneyQrCodesVariables
     > = {
@@ -264,7 +265,7 @@ describe('QrCodeDialog', () => {
         }
       }))
     }
-    const qrCodeCreateMock: MockedResponse<
+    const qrCodeCreateMock: MockLink.MockedResponse<
       QrCodeCreate,
       QrCodeCreateVariables
     > = {
@@ -317,7 +318,7 @@ describe('QrCodeDialog', () => {
   })
 
   it('should throw error if qr code creation failed', async () => {
-    const getEmptyQrCodesMock: MockedResponse<
+    const getEmptyQrCodesMock: MockLink.MockedResponse<
       GetJourneyQrCodes,
       GetJourneyQrCodesVariables
     > = {
@@ -328,7 +329,7 @@ describe('QrCodeDialog', () => {
         }
       }))
     }
-    const qrCodeCreateMock: MockedResponse<
+    const qrCodeCreateMock: MockLink.MockedResponse<
       QrCodeCreate,
       QrCodeCreateVariables
     > = {

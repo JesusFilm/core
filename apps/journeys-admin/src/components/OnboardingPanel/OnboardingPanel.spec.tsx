@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { v4 as uuidv4 } from 'uuid'
@@ -51,7 +52,7 @@ const variables = {
   captionTypographyContent: 'Deuteronomy 10:11',
   teamId: 'teamId'
 }
-const createJourneyMock: MockedResponse<CreateJourney, CreateJourneyVariables> =
+const createJourneyMock: MockLink.MockedResponse<CreateJourney, CreateJourneyVariables> =
   {
     request: {
       query: CREATE_JOURNEY,
@@ -122,7 +123,7 @@ const createJourneyMock: MockedResponse<CreateJourney, CreateJourneyVariables> =
       }
     }
   }
-const mocks: MockedResponse[] = [createJourneyMock, getTeamsMock]
+const mocks: MockLink.MockedResponse[] = [createJourneyMock, getTeamsMock]
 
 describe('OnboardingPanel', () => {
   it('should add a new journey on custom journey button click', async () => {

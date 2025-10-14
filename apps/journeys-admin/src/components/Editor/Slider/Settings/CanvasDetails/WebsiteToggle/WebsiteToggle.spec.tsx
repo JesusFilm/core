@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -39,7 +40,7 @@ describe('WebsiteToggle', () => {
 
   const getJourneySettingsUpdateMock = (
     website: boolean
-  ): MockedResponse<JourneySettingsUpdate, JourneySettingsUpdateVariables> => {
+  ): MockLink.MockedResponse<JourneySettingsUpdate, JourneySettingsUpdateVariables> => {
     return {
       request: {
         query: JOURNEY_SETTINGS_UPDATE,

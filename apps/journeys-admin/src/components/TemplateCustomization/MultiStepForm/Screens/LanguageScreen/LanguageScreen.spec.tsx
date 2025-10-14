@@ -1,41 +1,42 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { render, waitFor, fireEvent, screen } from '@testing-library/react'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
-import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
 import {
   GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
   TeamProvider
 } from '@core/journeys/ui/TeamProvider'
-
 import { JOURNEY_DUPLICATE } from '@core/journeys/ui/useJourneyDuplicateMutation'
-import {
-  mockChildJourneys,
-  mockChildVariables
-} from '../../../../../libs/useGetChildTemplateJourneyLanguages/useGetChildTemplateJourneyLanguages.mock'
-import {
-  mockParentJourneys,
-  mockParentVariables
-} from '../../../../../libs/useGetParentTemplateJourneyLanguages/useGetParentTemplateJourneyLanguages.mock'
-import { GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
-import { GET_PARENT_JOURNEYS_FROM_TEMPLATE_ID } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 
-import { LanguageScreen } from './LanguageScreen'
-import { NextRouter, useRouter } from 'next/router'
-import { GetLastActiveTeamIdAndTeams } from '../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
-import {
-  JourneyDuplicate,
-  JourneyDuplicateVariables
-} from '../../../../../../__generated__/JourneyDuplicate'
 import {
   GetChildJourneysFromTemplateId,
   GetChildJourneysFromTemplateIdVariables
 } from '../../../../../../__generated__/GetChildJourneysFromTemplateId'
+import { GetLastActiveTeamIdAndTeams } from '../../../../../../__generated__/GetLastActiveTeamIdAndTeams'
 import {
   GetParentJourneysFromTemplateId,
   GetParentJourneysFromTemplateIdVariables
 } from '../../../../../../__generated__/GetParentJourneysFromTemplateId'
+import {
+  JourneyDuplicate,
+  JourneyDuplicateVariables
+} from '../../../../../../__generated__/JourneyDuplicate'
+import { GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
+import {
+  mockChildJourneys,
+  mockChildVariables
+} from '../../../../../libs/useGetChildTemplateJourneyLanguages/useGetChildTemplateJourneyLanguages.mock'
+import { GET_PARENT_JOURNEYS_FROM_TEMPLATE_ID } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
+import {
+  mockParentJourneys,
+  mockParentVariables
+} from '../../../../../libs/useGetParentTemplateJourneyLanguages/useGetParentTemplateJourneyLanguages.mock'
+
+import { LanguageScreen } from './LanguageScreen'
 
 jest.mock('next-firebase-auth', () => ({
   __esModule: true,
@@ -49,7 +50,7 @@ jest.mock('next/router', () => ({
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-const mockGetLastActiveTeamIdAndTeams: MockedResponse<GetLastActiveTeamIdAndTeams> =
+const mockGetLastActiveTeamIdAndTeams: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
   {
     request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
     result: {
@@ -73,7 +74,7 @@ const mockGetLastActiveTeamIdAndTeams: MockedResponse<GetLastActiveTeamIdAndTeam
     }
   }
 
-const mockGetChildJourneysFromTemplateId: MockedResponse<
+const mockGetChildJourneysFromTemplateId: MockLink.MockedResponse<
   GetChildJourneysFromTemplateId,
   GetChildJourneysFromTemplateIdVariables
 > = {
@@ -84,7 +85,7 @@ const mockGetChildJourneysFromTemplateId: MockedResponse<
   }
 }
 
-const mockGetParentJourneysFromTemplateId: MockedResponse<
+const mockGetParentJourneysFromTemplateId: MockLink.MockedResponse<
   GetParentJourneysFromTemplateId,
   GetParentJourneysFromTemplateIdVariables
 > = {
@@ -95,7 +96,7 @@ const mockGetParentJourneysFromTemplateId: MockedResponse<
   }
 }
 
-const mockJourneyDuplicate: MockedResponse<
+const mockJourneyDuplicate: MockLink.MockedResponse<
   JourneyDuplicate,
   JourneyDuplicateVariables
 > = {
@@ -115,6 +116,7 @@ describe('LanguageScreen', () => {
   const handleScreenNavigation = jest.fn()
 
   let push: jest.Mock
+
   beforeEach(() => {
     jest.clearAllMocks()
     push = jest.fn()

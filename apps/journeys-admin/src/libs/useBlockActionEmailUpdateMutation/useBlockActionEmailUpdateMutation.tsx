@@ -1,10 +1,5 @@
-import {
-  FetchResult,
-  MutationFunctionOptions,
-  MutationResult,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { ApolloLink, gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import {
   BlockActionEmailUpdate,
@@ -25,7 +20,7 @@ export const BLOCK_ACTION_EMAIL_UPDATE = gql`
 `
 
 export function useBlockActionEmailUpdateMutation(
-  options?: MutationFunctionOptions<
+  options?: useMutation.MutationFunctionOptions<
     BlockActionEmailUpdate,
     BlockActionEmailUpdateVariables
   >
@@ -35,12 +30,12 @@ export function useBlockActionEmailUpdateMutation(
     url: string,
     customizable: boolean | null,
     parentStepId: string | null,
-    options?: MutationFunctionOptions<
+    options?: useMutation.MutationFunctionOptions<
       BlockActionEmailUpdate,
       BlockActionEmailUpdateVariables
     >
-  ) => Promise<FetchResult<BlockActionEmailUpdate> | undefined>,
-  MutationResult<BlockActionEmailUpdate>
+  ) => Promise<ApolloLink.Result<BlockActionEmailUpdate> | undefined>,
+  useMutation.Result<BlockActionEmailUpdate>
 ] {
   const [blockActionEmailUpdate, result] = useMutation<
     BlockActionEmailUpdate,
@@ -52,11 +47,11 @@ export function useBlockActionEmailUpdateMutation(
     email: string,
     customizable: boolean | null,
     parentStepId: string | null,
-    options?: MutationFunctionOptions<
+    options?: useMutation.MutationFunctionOptions<
       BlockActionEmailUpdate,
       BlockActionEmailUpdateVariables
     >
-  ): Promise<FetchResult<BlockActionEmailUpdate> | undefined> {
+  ): Promise<ApolloLink.Result<BlockActionEmailUpdate> | undefined> {
     return await blockActionEmailUpdate({
       ...options,
       variables: {

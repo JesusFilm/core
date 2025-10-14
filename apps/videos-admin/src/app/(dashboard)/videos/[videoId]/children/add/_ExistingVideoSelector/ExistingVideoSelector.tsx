@@ -1,6 +1,5 @@
-'use client'
-
-import { useLazyQuery } from '@apollo/client'
+'use client';
+import { useLazyQuery } from "@apollo/client/react";
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'

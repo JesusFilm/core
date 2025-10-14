@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from "@apollo/client/testing/react";
 import { render, screen, waitFor } from '@testing-library/react'
 import type { HitsRenderState } from 'instantsearch.js/es/connectors/hits/connectHits'
 import type { RefinementListRenderState } from 'instantsearch.js/es/connectors/refinement-list/connectRefinementList'

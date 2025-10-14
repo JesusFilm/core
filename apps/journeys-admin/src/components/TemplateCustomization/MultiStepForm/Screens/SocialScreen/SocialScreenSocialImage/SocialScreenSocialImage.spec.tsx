@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import fetch, { Response } from 'node-fetch'
 import { SnackbarProvider } from 'notistack'
@@ -7,9 +7,9 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { publishedJourney } from '@core/journeys/ui/TemplateView/data'
 
 import { cloudflareUploadMutationMock } from '../../../../../../libs/useCloudflareUploadByFileMutation/useCloudflareUploadByFileMutation.mock'
+import { journeyImageBlockAssociationUpdateMock } from '../../../../../../libs/useJourneyImageBlockAssociationUpdateMutation/useJourneyImageBlockAssociationUpdateMutation.mock'
 import { journeyImageBlockCreateMock } from '../../../../../../libs/useJourneyImageBlockCreateMutation/useJourneyImageBlockCreateMutation.mock'
 import { journeyImageBlockUpdateMock } from '../../../../../../libs/useJourneyImageBlockUpdateMutation/useJourneyImageBlockUpdateMutation.mock'
-import { journeyImageBlockAssociationUpdateMock } from '../../../../../../libs/useJourneyImageBlockAssociationUpdateMutation/useJourneyImageBlockAssociationUpdateMutation.mock'
 
 import { SocialScreenSocialImage } from './SocialScreenSocialImage'
 

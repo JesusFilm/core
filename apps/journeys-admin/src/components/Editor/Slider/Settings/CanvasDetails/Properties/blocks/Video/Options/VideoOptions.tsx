@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'

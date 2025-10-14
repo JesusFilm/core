@@ -1,5 +1,5 @@
 // import { MockedProvider } from '@apollo/client/testing'
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
 import { Meta, StoryObj } from '@storybook/react'
 
@@ -28,7 +28,7 @@ const customDomain: CustomDomain = {
   journeyCollection: null
 }
 
-const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
+const getLastActiveTeamIdAndTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
   {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS

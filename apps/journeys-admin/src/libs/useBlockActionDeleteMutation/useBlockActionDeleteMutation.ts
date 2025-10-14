@@ -1,11 +1,5 @@
-import {
-  FetchResult,
-  MutationFunctionOptions,
-  MutationHookOptions,
-  MutationResult,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { ApolloLink, gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
@@ -24,16 +18,16 @@ export const BLOCK_ACTION_DELETE = gql`
 `
 
 export function useBlockActionDeleteMutation(
-  options?: MutationHookOptions<BlockActionDelete, BlockActionDeleteVariables>
+  options?: useMutation.Options<BlockActionDelete, BlockActionDeleteVariables>
 ): [
   (
     block: Pick<BlockFields, '__typename' | 'id'>,
-    options?: MutationFunctionOptions<
+    options?: useMutation.MutationFunctionOptions<
       BlockActionDelete,
       BlockActionDeleteVariables
     >
-  ) => Promise<FetchResult<BlockActionDelete> | undefined>,
-  MutationResult<BlockActionDelete>
+  ) => Promise<ApolloLink.Result<BlockActionDelete> | undefined>,
+  useMutation.Result<BlockActionDelete>
 ] {
   const [blockActionDeleteMutation, result] = useMutation<
     BlockActionDelete,
@@ -42,11 +36,11 @@ export function useBlockActionDeleteMutation(
 
   async function wrappedBlockActionDeleteMutation(
     block: TreeBlock,
-    options: MutationFunctionOptions<
+    options: useMutation.MutationFunctionOptions<
       BlockActionDelete,
       BlockActionDeleteVariables
     >
-  ): Promise<FetchResult<BlockActionDelete> | undefined> {
+  ): Promise<ApolloLink.Result<BlockActionDelete> | undefined> {
     return await blockActionDeleteMutation({
       ...options,
       variables: {

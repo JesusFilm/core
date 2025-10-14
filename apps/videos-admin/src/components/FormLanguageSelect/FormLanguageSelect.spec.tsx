@@ -1,6 +1,5 @@
-'use client'
-
-import { MockedProvider } from '@apollo/client/testing'
+'use client';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Form, Formik } from 'formik'

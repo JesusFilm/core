@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import React from 'react'
 
@@ -30,7 +31,7 @@ jest.mock('notistack', () => ({
 
 const checkCustomDomainMock: (
   customDomainCheck?: Partial<CustomDomainCheck>
-) => MockedResponse<CheckCustomDomain> = (customDomainCheck) => ({
+) => MockLink.MockedResponse<CheckCustomDomain> = (customDomainCheck) => ({
   request: {
     query: CHECK_CUSTOM_DOMAIN,
     variables: {

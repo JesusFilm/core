@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -126,7 +127,7 @@ describe('HostList', () => {
   it('should update journey host on list item click, navigate to host selection', async () => {
     const handleSelection = jest.fn()
 
-    const updateJourneyHostMock: MockedResponse<
+    const updateJourneyHostMock: MockLink.MockedResponse<
       UpdateJourneyHost,
       UpdateJourneyHostVariables
     > = {

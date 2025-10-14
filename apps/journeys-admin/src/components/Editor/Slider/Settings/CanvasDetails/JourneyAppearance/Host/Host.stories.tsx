@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/test'
@@ -90,7 +91,7 @@ const userMock = {
     }
   }
 }
-const getUserTeamMock: MockedResponse<GetUserTeamsAndInvites> = {
+const getUserTeamMock: MockLink.MockedResponse<GetUserTeamsAndInvites> = {
   request: {
     query: GET_USER_TEAMS_AND_INVITES,
     variables: {
@@ -105,7 +106,7 @@ const getUserTeamMock: MockedResponse<GetUserTeamsAndInvites> = {
     }
   }
 }
-const getTeamHostsMock: MockedResponse<
+const getTeamHostsMock: MockLink.MockedResponse<
   GetAllTeamHosts,
   GetAllTeamHostsVariables
 > = {
@@ -154,7 +155,7 @@ const getTeamHostsMock: MockedResponse<
 }
 
 const Template: StoryObj<
-  ComponentProps<typeof Host> & { mocks: MockedResponse[] }
+  ComponentProps<typeof Host> & { mocks: MockLink.MockedResponse[] }
 > = {
   render: ({ mocks, ...args }) => (
     <MockedProvider mocks={mocks}>

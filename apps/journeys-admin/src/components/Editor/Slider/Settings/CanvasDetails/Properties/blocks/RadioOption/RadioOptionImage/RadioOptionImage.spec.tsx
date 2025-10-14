@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -166,7 +167,7 @@ describe('RadioOptionImage', () => {
     process.env = originalEnv
   })
 
-  const radioOptionImageCreateMock: MockedResponse<
+  const radioOptionImageCreateMock: MockLink.MockedResponse<
     RadioOptionImageCreate,
     RadioOptionImageCreateVariables
   > = {
@@ -209,7 +210,7 @@ describe('RadioOptionImage', () => {
     }
   }
 
-  const radioOptionImageDeleteMock: MockedResponse<
+  const radioOptionImageDeleteMock: MockLink.MockedResponse<
     RadioOptionImageDelete,
     RadioOptionImageDeleteVariables
   > = {
@@ -238,7 +239,7 @@ describe('RadioOptionImage', () => {
     }
   }
 
-  const radioOptionImageRestoreMock: MockedResponse<
+  const radioOptionImageRestoreMock: MockLink.MockedResponse<
     RadioOptionImageRestore,
     RadioOptionImageRestoreVariables
   > = {
@@ -486,7 +487,7 @@ describe('RadioOptionImage', () => {
           focalTop: 50
         }
       }
-      const radioOptionImageUpdateMock: MockedResponse<
+      const radioOptionImageUpdateMock: MockLink.MockedResponse<
         RadioOptionImageUpdate,
         RadioOptionImageUpdateVariables
       > = {
@@ -569,7 +570,7 @@ describe('RadioOptionImage', () => {
           focalTop: 50
         }
       }
-      const radioOptionImageUpdateMock: MockedResponse<
+      const radioOptionImageUpdateMock: MockLink.MockedResponse<
         RadioOptionImageUpdate,
         RadioOptionImageUpdateVariables
       > = {
@@ -672,7 +673,7 @@ describe('RadioOptionImage', () => {
           focalTop: 50
         }
       }
-      const radioOptionImageUpdateMock: MockedResponse<
+      const radioOptionImageUpdateMock: MockLink.MockedResponse<
         RadioOptionImageUpdate,
         RadioOptionImageUpdateVariables
       > = {

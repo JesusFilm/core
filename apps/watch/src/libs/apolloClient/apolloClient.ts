@@ -1,15 +1,23 @@
 import {
   ApolloClient,
-  NormalizedCacheObject,
-  createHttpLink,
-  from
+  ApolloLink,
+  HttpLink,
+  NormalizedCacheObject
 } from '@apollo/client'
+import { Defer20220824Handler } from "@apollo/client/incremental";
 import { setContext } from '@apollo/client/link/context'
 import { RetryLink } from '@apollo/client/link/retry'
+import { LocalState } from "@apollo/client/local-state";
 import fetch from 'cross-fetch'
 import { useMemo } from 'react'
 
 import { cache } from './cache'
+
+/*
+Start: Inserted by Apollo Client 3->4 migration codemod.
+Copy the contents of this block into a `.d.ts` file in your project to enable correct response types in your custom links.
+If you do not use the `@defer` directive in your application, you can safely remove this block.
+*/
 
 interface CreateApolloClientParams {
   token?: string
@@ -19,9 +27,9 @@ interface CreateApolloClientParams {
 export function createApolloClient({
   token,
   initialState
-}: CreateApolloClientParams = {}): ApolloClient<NormalizedCacheObject> {
+}: CreateApolloClientParams = {}): ApolloClient {
   const isSsrMode = typeof window === 'undefined'
-  const httpLink = createHttpLink({
+  const httpLink = new HttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
     fetch
   })
@@ -54,18 +62,44 @@ export function createApolloClient({
 
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
-    link: from([retryLink, authLink, httpLink]),
+    link: ApolloLink.from([retryLink, authLink, httpLink]),
     cache: cache().restore(initialState ?? {}),
-    connectToDevTools: true
-  })
+
+    /*
+    Inserted by Apollo Client 3->4 migration codemod.
+    If you are not using the `@client` directive in your application,
+    you can safely remove this option.
+    */
+    localState: new LocalState({}),
+
+    devtools: {
+      enabled: true
+    },
+
+    /*
+    Inserted by Apollo Client 3->4 migration codemod.
+    If you are not using the `@defer` directive in your application,
+    you can safely remove this option.
+    */
+    incrementalHandler: new Defer20220824Handler()
+  });
 }
 
 export function useApolloClient({
   token,
   initialState
-}: CreateApolloClientParams = {}): ApolloClient<NormalizedCacheObject> {
+}: CreateApolloClientParams = {}): ApolloClient {
   return useMemo(
     () => createApolloClient({ token, initialState }),
     [token, initialState]
   )
 }
+
+declare module "@apollo/client" {
+  export interface TypeOverrides extends Defer20220824Handler.TypeOverrides {}
+}
+
+/*
+End: Inserted by Apollo Client 3->4 migration codemod.
+*/
+

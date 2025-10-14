@@ -1,11 +1,5 @@
-import {
-  FetchResult,
-  MutationFunctionOptions,
-  MutationHookOptions,
-  MutationResult,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { ApolloLink, gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import {
   BlockActionNavigateToBlockUpdate,
@@ -24,7 +18,7 @@ export const BLOCK_ACTION_NAVIGATE_TO_BLOCK_UPDATE = gql`
 `
 
 export function useBlockActionNavigateToBlockUpdateMutation(
-  options?: MutationHookOptions<
+  options?: useMutation.Options<
     BlockActionNavigateToBlockUpdate,
     BlockActionNavigateToBlockUpdateVariables
   >
@@ -32,12 +26,12 @@ export function useBlockActionNavigateToBlockUpdateMutation(
   (
     block: Pick<BlockFields, 'id' | '__typename'>,
     targetBlockId: string,
-    options?: MutationFunctionOptions<
+    options?: useMutation.MutationFunctionOptions<
       BlockActionNavigateToBlockUpdate,
       BlockActionNavigateToBlockUpdateVariables
     >
-  ) => Promise<FetchResult<BlockActionNavigateToBlockUpdate> | undefined>,
-  MutationResult<BlockActionNavigateToBlockUpdate>
+  ) => Promise<ApolloLink.Result<BlockActionNavigateToBlockUpdate> | undefined>,
+  useMutation.Result<BlockActionNavigateToBlockUpdate>
 ] {
   const [blockActionNavigateToBlockUpdate, result] = useMutation<
     BlockActionNavigateToBlockUpdate,
@@ -47,11 +41,11 @@ export function useBlockActionNavigateToBlockUpdateMutation(
   async function wrappedBlockActionNavigateToBlockUpdate(
     block: Pick<BlockFields, 'id' | '__typename'>,
     targetBlockId: string,
-    options?: MutationFunctionOptions<
+    options?: useMutation.MutationFunctionOptions<
       BlockActionNavigateToBlockUpdate,
       BlockActionNavigateToBlockUpdateVariables
     >
-  ): Promise<FetchResult<BlockActionNavigateToBlockUpdate> | undefined> {
+  ): Promise<ApolloLink.Result<BlockActionNavigateToBlockUpdate> | undefined> {
     return await blockActionNavigateToBlockUpdate({
       ...options,
       variables: {

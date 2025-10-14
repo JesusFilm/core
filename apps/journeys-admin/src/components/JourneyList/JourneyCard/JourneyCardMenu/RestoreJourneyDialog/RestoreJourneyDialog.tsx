@@ -1,4 +1,5 @@
-import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
+import { ObservableQuery, gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -24,7 +25,7 @@ export interface RestoreJourneyDialogProps {
   published: boolean
   open: boolean
   handleClose: () => void
-  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  refetch?: () => Promise<ObservableQuery.Result<GetAdminJourneys>>
 }
 
 export function RestoreJourneyDialog({

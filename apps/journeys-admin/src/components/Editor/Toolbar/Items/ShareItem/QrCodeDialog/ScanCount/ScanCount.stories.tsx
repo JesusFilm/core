@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import type { Meta, StoryObj } from '@storybook/react'
 import { expect, screen, waitFor } from '@storybook/test'
 import { ComponentProps } from 'react'
@@ -23,7 +23,7 @@ const meta: Meta<typeof ScanCount> = {
     layout: 'fullscreen'
   }
 }
-const getPlausibleJourneyQrCodeScansMock: MockedResponse<
+const getPlausibleJourneyQrCodeScansMock: MockLink.MockedResponse<
   GetPlausibleJourneyQrCodeScans,
   GetPlausibleJourneyQrCodeScansVariables
 > = {

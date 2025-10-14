@@ -1,5 +1,7 @@
-import { NetworkStatus, useSuspenseQuery } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { NetworkStatus } from '@apollo/client';
+import { useSuspenseQuery } from "@apollo/client/react";
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import _unescape from 'lodash/unescape'
@@ -38,7 +40,7 @@ const mockVideoSnippetResult = {
   }
 }
 
-const mockCreateVideoSnippet: MockedResponse<
+const mockCreateVideoSnippet: MockLink.MockedResponse<
   ResultOf<typeof CREATE_VIDEO_SNIPPET>,
   VariablesOf<typeof CREATE_VIDEO_SNIPPET>
 > = {

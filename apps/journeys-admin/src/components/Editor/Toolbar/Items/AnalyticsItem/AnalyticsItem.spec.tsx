@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { render, waitFor } from '@testing-library/react'
 import { formatISO } from 'date-fns'
 import { SnackbarProvider } from 'notistack'
@@ -23,7 +24,7 @@ jest.mock('date-fns', () => {
 
 const mockFormatIso = formatISO as jest.MockedFunction<typeof formatISO>
 
-const getJourneyPlausibleVisitorsMock: MockedResponse<
+const getJourneyPlausibleVisitorsMock: MockLink.MockedResponse<
   GetJourneyPlausibleVisitors,
   GetJourneyPlausibleVisitorsVariables
 > = {

@@ -1,4 +1,5 @@
-import { ApolloQueryResult, gql, useQuery } from '@apollo/client'
+import { ObservableQuery, gql } from '@apollo/client';
+import { useQuery } from "@apollo/client/react";
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
@@ -67,7 +68,7 @@ interface DefaultMenuProps {
   setOpenTranslateDialog: () => void
   handleKeepMounted?: () => void
   template?: boolean
-  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  refetch?: () => Promise<ObservableQuery.Result<GetAdminJourneys>>
 }
 
 /**

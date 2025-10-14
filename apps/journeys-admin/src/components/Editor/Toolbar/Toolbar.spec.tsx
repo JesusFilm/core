@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import Slider from '@mui/material/Slider'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -30,7 +31,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('Toolbar', () => {
-  const mockGetPlausibleJourneyFlowViewed: MockedResponse<GetPlausibleJourneyFlowViewed> =
+  const mockGetPlausibleJourneyFlowViewed: MockLink.MockedResponse<GetPlausibleJourneyFlowViewed> =
     {
       request: {
         query: GET_PLAUSIBLE_JOURNEY_FLOW_VIEWED
@@ -46,7 +47,7 @@ describe('Toolbar', () => {
       }
     }
 
-  const mockUpdatePlausibleJourneyFlowViewed: MockedResponse<
+  const mockUpdatePlausibleJourneyFlowViewed: MockLink.MockedResponse<
     UpdatePlausibleJourneyFlowViewed,
     UpdatePlausibleJourneyFlowViewedVariables
   > = {

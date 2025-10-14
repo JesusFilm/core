@@ -1,10 +1,6 @@
-import {
-  NetworkStatus,
-  OperationVariables,
-  QueryResult,
-  useQuery
-} from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { NetworkStatus, OperationVariables } from '@apollo/client';
+import { useQuery } from "@apollo/client/react";
+import { MockedProvider } from "@apollo/client/testing/react";
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
@@ -115,7 +111,7 @@ const setupMock = (data: any) => {
     observable: {} as any,
     reobserve: jest.fn(),
     variables: {}
-  } as QueryResult<any, OperationVariables>)
+  } as useQuery.Result<any, OperationVariables>)
 }
 
 describe('VideoTabView', () => {

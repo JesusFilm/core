@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
@@ -41,7 +41,7 @@ export const mockNewCardBlock: TreeBlock<CardBlock> = {
   children: []
 }
 
-export const mockBlockDelete: MockedResponse<
+export const mockBlockDelete: MockLink.MockedResponse<
   BlockDelete,
   BlockDeleteVariables
 > = {

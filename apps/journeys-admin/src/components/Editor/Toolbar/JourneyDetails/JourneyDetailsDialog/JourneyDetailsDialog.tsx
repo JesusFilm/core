@@ -1,4 +1,4 @@
-import { ApolloError } from '@apollo/client'
+import { ApolloError } from "@apollo/client/v4-migration";
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'

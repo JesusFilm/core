@@ -1,17 +1,25 @@
 import {
   ApolloClient,
+  HttpLink,
   HttpOptions,
   InMemoryCache,
-  NormalizedCacheObject,
-  createHttpLink
+  NormalizedCacheObject
 } from '@apollo/client'
+import { Defer20220824Handler } from "@apollo/client/incremental";
+import { LocalState } from "@apollo/client/local-state";
 
 import { cache } from './cache'
 
+/*
+Start: Inserted by Apollo Client 3->4 migration codemod.
+Copy the contents of this block into a `.d.ts` file in your project to enable correct response types in your custom links.
+If you do not use the `@defer` directive in your application, you can safely remove this block.
+*/
+
 export function makeClient(
   options?: HttpOptions
-): ApolloClient<NormalizedCacheObject> {
-  const httpLink = createHttpLink({
+): ApolloClient {
+  const httpLink = new HttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
     ...options,
     headers: {
@@ -25,6 +33,32 @@ export function makeClient(
   return new ApolloClient({
     link: httpLink,
     cache: new InMemoryCache(cache),
-    connectToDevTools: true
-  })
+
+    /*
+    Inserted by Apollo Client 3->4 migration codemod.
+    If you are not using the `@client` directive in your application,
+    you can safely remove this option.
+    */
+    localState: new LocalState({}),
+
+    devtools: {
+      enabled: true
+    },
+
+    /*
+    Inserted by Apollo Client 3->4 migration codemod.
+    If you are not using the `@defer` directive in your application,
+    you can safely remove this option.
+    */
+    incrementalHandler: new Defer20220824Handler()
+  });
 }
+
+declare module "@apollo/client" {
+  export interface TypeOverrides extends Defer20220824Handler.TypeOverrides {}
+}
+
+/*
+End: Inserted by Apollo Client 3->4 migration codemod.
+*/
+

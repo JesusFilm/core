@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 import Box from '@mui/material/Box'
 import MuiButton from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -25,6 +26,7 @@ import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 
@@ -40,7 +42,6 @@ import {
 import { findMessagePlatform } from './utils/findMessagePlatform'
 import { getActionLabel } from './utils/getActionLabel'
 import { getLinkActionGoal } from './utils/getLinkActionGoal'
-import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 export const BUTTON_CLICK_EVENT_CREATE = gql`
   mutation ButtonClickEventCreate($input: ButtonClickEventCreateInput!) {
@@ -353,5 +354,5 @@ export function Button({
         </Typography>
       </MuiButton>
     </Box>
-  )
+  );
 }

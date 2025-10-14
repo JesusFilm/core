@@ -1,4 +1,4 @@
-import { UseSuspenseQueryResult, useSuspenseQuery } from '@apollo/client'
+import { useSuspenseQuery } from "@apollo/client/react";
 
 import {
   GetAdminJourneys,
@@ -8,7 +8,7 @@ import { GET_ADMIN_JOURNEYS } from '../useAdminJourneysQuery/useAdminJourneysQue
 
 export function useAdminJourneysSuspenseQuery(
   variables?: GetAdminJourneysVariables
-): UseSuspenseQueryResult<GetAdminJourneys, GetAdminJourneysVariables> {
+): useSuspenseQuery.Result<GetAdminJourneys, GetAdminJourneysVariables> {
   const query = useSuspenseQuery<GetAdminJourneys, GetAdminJourneysVariables>(
     GET_ADMIN_JOURNEYS,
     {

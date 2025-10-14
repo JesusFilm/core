@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
@@ -12,7 +13,7 @@ import { GET_JOURNEY_CREATED_AT } from './ExportDialog/ExportDialog'
 import { FilterDrawer } from './FilterDrawer'
 
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
-const mockJourneyCreatedAt: MockedResponse<
+const mockJourneyCreatedAt: MockLink.MockedResponse<
   GetJourneyCreatedAt,
   GetJourneyCreatedAtVariables
 > = {

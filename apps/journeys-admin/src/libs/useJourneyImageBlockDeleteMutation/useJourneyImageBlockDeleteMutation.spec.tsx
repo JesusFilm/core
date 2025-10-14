@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { act, renderHook, waitFor } from '@testing-library/react'
 
 import { JourneyImageBlockDelete } from '../../../__generated__/JourneyImageBlockDelete'
@@ -9,7 +10,7 @@ import {
 } from './useJourneyImageBlockDeleteMutation'
 
 describe('useJourneyImageBlockDeleteMutation', () => {
-  const journeyImageBlockDeleteMutationMock: MockedResponse<JourneyImageBlockDelete> =
+  const journeyImageBlockDeleteMutationMock: MockLink.MockedResponse<JourneyImageBlockDelete> =
     {
       request: {
         query: JOURNEY_IMAGE_BLOCK_DELETE,

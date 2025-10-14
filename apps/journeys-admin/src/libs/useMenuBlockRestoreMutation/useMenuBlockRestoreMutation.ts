@@ -1,10 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  Reference,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { Reference, gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -78,8 +73,8 @@ export function restoreCache(cache, data, journeyId): void {
 }
 
 export function useMenuBlockRestoreMutation(
-  options?: MutationHookOptions<MenuBlockRestore, MenuBlockRestoreVariables>
-): MutationTuple<MenuBlockRestore, MenuBlockRestoreVariables> {
+  options?: useMutation.Options<MenuBlockRestore, MenuBlockRestoreVariables>
+): useMutation.ResultTuple<MenuBlockRestore, MenuBlockRestoreVariables> {
   const { journey } = useJourney()
   const mutation = useMutation<MenuBlockRestore, MenuBlockRestoreVariables>(
     MENU_BLOCK_RESTORE,

@@ -1,4 +1,5 @@
-import { MutationResult, gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
 import { ICON_FIELDS } from '@core/journeys/ui/Icon/iconFields'
@@ -67,7 +68,7 @@ interface TextResponseWithButtonBlocks {
  */
 export function useTextResponseWithButtonCreate(): [
   (blocks: TextResponseWithButtonBlocks, journeyId: string) => void,
-  MutationResult<TextResponseWithButtonCreate>
+  useMutation.Result<TextResponseWithButtonCreate>
 ] {
   const [textResponseWithButtonCreate, createResult] = useMutation<
     TextResponseWithButtonCreate,

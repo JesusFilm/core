@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from "@apollo/client/testing/react";
 import { act, renderHook } from '@testing-library/react'
 
 import { ThemeMode, ThemeName } from '../../../__generated__/globalTypes'

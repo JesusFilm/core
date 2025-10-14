@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
@@ -40,7 +41,7 @@ jest.mock('apps/journeys-admin/src/libs/useCurrentUserLazyQuery', () => ({
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('TeamOnboarding', () => {
-  const teamCreateMock: MockedResponse<TeamCreate> = {
+  const teamCreateMock: MockLink.MockedResponse<TeamCreate> = {
     request: {
       query: TEAM_CREATE,
       variables: {
@@ -62,7 +63,7 @@ describe('TeamOnboarding', () => {
       }
     }
   }
-  const teamCreateErrorMock: MockedResponse<TeamCreate> = {
+  const teamCreateErrorMock: MockLink.MockedResponse<TeamCreate> = {
     request: {
       query: TEAM_CREATE,
       variables: {
@@ -73,7 +74,7 @@ describe('TeamOnboarding', () => {
     },
     error: new Error('Team Title already exists.')
   }
-  const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+  const getTeams: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },
@@ -98,7 +99,7 @@ describe('TeamOnboarding', () => {
     }
   }
 
-  const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
+  const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> = {
     request: {
       query: UPDATE_LAST_ACTIVE_TEAM_ID,
       variables: {
@@ -159,7 +160,7 @@ describe('TeamOnboarding', () => {
       }
     })
 
-    const teamMock: MockedResponse<TeamCreate> = {
+    const teamMock: MockLink.MockedResponse<TeamCreate> = {
       request: {
         query: TEAM_CREATE,
         variables: {
@@ -303,7 +304,7 @@ describe('TeamOnboarding', () => {
       }
     })
 
-    const teamMock: MockedResponse<TeamCreate> = {
+    const teamMock: MockLink.MockedResponse<TeamCreate> = {
       request: {
         query: TEAM_CREATE,
         variables: {

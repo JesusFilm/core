@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -7,13 +7,12 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
-import { createCloudflareUploadByUrlMock } from '../ImageBlockEditor/CustomImage/CustomUrl/data'
-import { listUnsplashCollectionPhotosMock } from '../ImageBlockEditor/UnsplashGallery/data'
-
 import { JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE } from '../../../../../../libs/useJourneyImageBlockAssociationUpdateMutation'
 import { JOURNEY_IMAGE_BLOCK_CREATE } from '../../../../../../libs/useJourneyImageBlockCreateMutation'
 import { JOURNEY_IMAGE_BLOCK_DELETE } from '../../../../../../libs/useJourneyImageBlockDeleteMutation'
 import { JOURNEY_IMAGE_BLOCK_UPDATE } from '../../../../../../libs/useJourneyImageBlockUpdateMutation'
+import { createCloudflareUploadByUrlMock } from '../ImageBlockEditor/CustomImage/CustomUrl/data'
+import { listUnsplashCollectionPhotosMock } from '../ImageBlockEditor/UnsplashGallery/data'
 
 import { ImageEdit } from './ImageEdit'
 

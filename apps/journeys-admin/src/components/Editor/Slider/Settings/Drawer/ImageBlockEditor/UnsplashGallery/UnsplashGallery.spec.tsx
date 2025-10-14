@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../__generated__/BlockFields'
@@ -50,7 +51,7 @@ describe('UnsplashGallery', () => {
     __typename: 'UnsplashPhoto'
   }
 
-  const listUnsplashCollectionPhotosMock: MockedResponse<
+  const listUnsplashCollectionPhotosMock: MockLink.MockedResponse<
     ListUnsplashCollectionPhotos,
     ListUnsplashCollectionPhotosVariables
   > = {
@@ -69,7 +70,7 @@ describe('UnsplashGallery', () => {
     }
   }
 
-  const searchUnsplashPhotosMock: MockedResponse<
+  const searchUnsplashPhotosMock: MockLink.MockedResponse<
     SearchUnsplashPhotos,
     SearchUnsplashPhotosVariables
   > = {
@@ -91,7 +92,7 @@ describe('UnsplashGallery', () => {
     }
   }
 
-  const triggerUnsplashDownloadMock: MockedResponse<
+  const triggerUnsplashDownloadMock: MockLink.MockedResponse<
     TriggerUnsplashDownload,
     TriggerUnsplashDownloadVariables
   > = {

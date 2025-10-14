@@ -1,6 +1,5 @@
-'use client'
-
-import { useMutation, useSuspenseQuery } from '@apollo/client'
+'use client';
+import { useMutation, useSuspenseQuery } from "@apollo/client/react";
 import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'

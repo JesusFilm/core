@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { ReactElement } from 'react'
@@ -17,7 +18,7 @@ import { CreateJourneyButton } from '../../OnboardingPanel/CreateJourneyButton'
 import { TeamSelect } from '.'
 
 describe('TeamSelect', () => {
-  const getMultipleTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+  const getMultipleTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },

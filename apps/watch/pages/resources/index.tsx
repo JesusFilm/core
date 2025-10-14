@@ -1,5 +1,6 @@
 /* eslint-disable i18next/no-literal-string */
-import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
+import { NormalizedCacheObject } from '@apollo/client';
+import { ApolloProvider } from "@apollo/client/react";
 import { GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { ReactElement } from 'react'

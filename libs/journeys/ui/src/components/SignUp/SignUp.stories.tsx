@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/test'
 import { SnackbarProvider } from 'notistack'
@@ -62,7 +63,7 @@ const signUpProps: ComponentProps<typeof SignUp> = {
   children: []
 }
 
-const submitEventMock: MockedResponse = {
+const submitEventMock: MockLink.MockedResponse = {
   request: {
     query: SIGN_UP_SUBMISSION_EVENT_CREATE,
     variables: {

@@ -1,4 +1,5 @@
-import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
+import { ObservableQuery, gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 import CircularProgress from '@mui/material/CircularProgress'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
@@ -37,7 +38,7 @@ export interface ArchiveJourneyProps {
   id: string
   published: boolean
   handleClose: () => void
-  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  refetch?: () => Promise<ObservableQuery.Result<GetAdminJourneys>>
   disabled?: boolean
 }
 

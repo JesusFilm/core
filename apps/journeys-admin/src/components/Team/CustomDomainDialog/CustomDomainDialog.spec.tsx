@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -20,7 +21,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
-const checkCustomDomainMockConfiguredAndVerified: MockedResponse<CheckCustomDomain> =
+const checkCustomDomainMockConfiguredAndVerified: MockLink.MockedResponse<CheckCustomDomain> =
   {
     request: {
       query: CHECK_CUSTOM_DOMAIN,

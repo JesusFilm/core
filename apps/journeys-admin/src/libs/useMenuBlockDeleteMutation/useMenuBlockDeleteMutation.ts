@@ -1,10 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  Reference,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { Reference, gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import { STEP_FIELDS } from '@core/journeys/ui/Step/stepFields'
 
@@ -58,8 +53,8 @@ export function removeCachedBlocks(cache, blocks, journeyId): void {
 }
 
 export function useMenuBlockDeleteMutation(
-  options?: MutationHookOptions<MenuBlockDelete, MenuBlockDeleteVariables>
-): MutationTuple<MenuBlockDelete, MenuBlockDeleteVariables> {
+  options?: useMutation.Options<MenuBlockDelete, MenuBlockDeleteVariables>
+): useMutation.ResultTuple<MenuBlockDelete, MenuBlockDeleteVariables> {
   const mutation = useMutation<MenuBlockDelete, MenuBlockDeleteVariables>(
     MENU_BLOCK_DELETE,
     {

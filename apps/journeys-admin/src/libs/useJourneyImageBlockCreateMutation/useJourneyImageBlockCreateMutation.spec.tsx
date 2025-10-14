@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { act, renderHook, waitFor } from '@testing-library/react'
 
 import { JourneyImageBlockCreate } from '../../../__generated__/JourneyImageBlockCreate'
@@ -9,7 +10,7 @@ import {
 } from './useJourneyImageBlockCreateMutation'
 
 describe('useJourneyImageBlockCreateMutation', () => {
-  const journeyImageBlockCreateMutationMock: MockedResponse<JourneyImageBlockCreate> =
+  const journeyImageBlockCreateMutationMock: MockLink.MockedResponse<JourneyImageBlockCreate> =
     {
       request: {
         query: JOURNEY_IMAGE_BLOCK_CREATE,

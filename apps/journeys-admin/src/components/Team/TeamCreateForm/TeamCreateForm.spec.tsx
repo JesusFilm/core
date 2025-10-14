@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
 import { fireEvent, render, waitFor } from '@testing-library/react'
@@ -22,7 +23,7 @@ import { TEAM_CREATE } from '../../../libs/useTeamCreateMutation/useTeamCreateMu
 import { TeamCreateForm } from '.'
 
 describe('TeamCreateForm', () => {
-  const teamCreateMock: MockedResponse<TeamCreate> = {
+  const teamCreateMock: MockLink.MockedResponse<TeamCreate> = {
     request: {
       query: TEAM_CREATE,
       variables: {
@@ -44,7 +45,7 @@ describe('TeamCreateForm', () => {
       }
     }
   }
-  const teamCreateErrorMock: MockedResponse<TeamCreate> = {
+  const teamCreateErrorMock: MockLink.MockedResponse<TeamCreate> = {
     request: {
       query: TEAM_CREATE,
       variables: {
@@ -55,7 +56,7 @@ describe('TeamCreateForm', () => {
     },
     error: new Error('Team Title already exists.')
   }
-  const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+  const getTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
     result: {
       data: {

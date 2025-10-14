@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -27,7 +28,7 @@ describe('AIGallery', () => {
     process.env = originalEnv
   })
 
-  const getAIImage: MockedResponse<CreateAiImage, CreateAiImageVariables> = {
+  const getAIImage: MockLink.MockedResponse<CreateAiImage, CreateAiImageVariables> = {
     request: {
       query: CREATE_AI_IMAGE,
       variables: {

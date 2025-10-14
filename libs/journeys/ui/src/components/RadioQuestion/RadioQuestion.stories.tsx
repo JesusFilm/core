@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
@@ -81,7 +82,7 @@ const children: Array<TreeBlock<RadioOptionFields>> = [
   }
 ]
 
-const submitEventMock: MockedResponse = {
+const submitEventMock: MockLink.MockedResponse = {
   request: {
     query: RADIO_QUESTION_SUBMISSION_EVENT_CREATE,
     variables: {

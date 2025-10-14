@@ -1,10 +1,5 @@
-import {
-  FetchResult,
-  MutationFunctionOptions,
-  MutationResult,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { ApolloLink, gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import {
   BlockActionLinkUpdate,
@@ -25,7 +20,7 @@ export const BLOCK_ACTION_LINK_UPDATE = gql`
 `
 
 export function useBlockActionLinkUpdateMutation(
-  options?: MutationFunctionOptions<
+  options?: useMutation.MutationFunctionOptions<
     BlockActionLinkUpdate,
     BlockActionLinkUpdateVariables
   >
@@ -35,12 +30,12 @@ export function useBlockActionLinkUpdateMutation(
     url: string,
     customizable: boolean | null,
     parentStepId: string | null,
-    options?: MutationFunctionOptions<
+    options?: useMutation.MutationFunctionOptions<
       BlockActionLinkUpdate,
       BlockActionLinkUpdateVariables
     >
-  ) => Promise<FetchResult<BlockActionLinkUpdate> | undefined>,
-  MutationResult<BlockActionLinkUpdate>
+  ) => Promise<ApolloLink.Result<BlockActionLinkUpdate> | undefined>,
+  useMutation.Result<BlockActionLinkUpdate>
 ] {
   const [blockActionLinkUpdate, result] = useMutation<
     BlockActionLinkUpdate,
@@ -52,11 +47,11 @@ export function useBlockActionLinkUpdateMutation(
     url: string,
     customizable: boolean | null,
     parentStepId: string | null,
-    options?: MutationFunctionOptions<
+    options?: useMutation.MutationFunctionOptions<
       BlockActionLinkUpdate,
       BlockActionLinkUpdateVariables
     >
-  ): Promise<FetchResult<BlockActionLinkUpdate> | undefined> {
+  ): Promise<ApolloLink.Result<BlockActionLinkUpdate> | undefined> {
     return await blockActionLinkUpdate({
       ...options,
       variables: {

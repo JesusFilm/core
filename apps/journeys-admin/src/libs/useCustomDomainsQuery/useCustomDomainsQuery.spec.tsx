@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from "@apollo/client/testing/react";
 import { renderHook, waitFor } from '@testing-library/react'
 
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../__generated__/GetCustomDomains'

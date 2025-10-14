@@ -1,24 +1,23 @@
+import CircularProgress from '@mui/material/CircularProgress'
+import IconButton from '@mui/material/IconButton'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
-import { ReactElement, useState } from 'react'
+import { styled } from '@mui/material/styles'
 import type FormDataType from 'form-data'
+import { useTranslation } from 'next-i18next'
 import fetch from 'node-fetch'
-
-import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
-import { NextImage } from '@core/shared/ui/NextImage'
+import { useSnackbar } from 'notistack'
+import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
-import { styled } from '@mui/material/styles'
-import IconButton from '@mui/material/IconButton'
-import { useCloudflareUploadByFileMutation } from '../../../../../../libs/useCloudflareUploadByFileMutation'
+import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
+import { NextImage } from '@core/shared/ui/NextImage'
 
-import { useJourneyImageBlockUpdateMutation } from '../../../../../../libs/useJourneyImageBlockUpdateMutation'
-import { useJourneyImageBlockCreateMutation } from '../../../../../../libs/useJourneyImageBlockCreateMutation'
+import { useCloudflareUploadByFileMutation } from '../../../../../../libs/useCloudflareUploadByFileMutation'
 import { useJourneyImageBlockAssociationUpdateMutation } from '../../../../../../libs/useJourneyImageBlockAssociationUpdateMutation'
-import { useSnackbar } from 'notistack'
-import { useTranslation } from 'next-i18next'
-import CircularProgress from '@mui/material/CircularProgress'
+import { useJourneyImageBlockCreateMutation } from '../../../../../../libs/useJourneyImageBlockCreateMutation'
+import { useJourneyImageBlockUpdateMutation } from '../../../../../../libs/useJourneyImageBlockUpdateMutation'
 
 interface SocialScreenSocialImage {
   hasCreatorDescription?: boolean

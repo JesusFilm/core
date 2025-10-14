@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
@@ -38,8 +34,8 @@ export const TEAM_CREATE = gql`
 `
 
 export function useTeamCreateMutation(
-  options?: MutationHookOptions<TeamCreate, TeamCreateVariables>
-): MutationTuple<TeamCreate, TeamCreateVariables> {
+  options?: useMutation.Options<TeamCreate, TeamCreateVariables>
+): useMutation.ResultTuple<TeamCreate, TeamCreateVariables> {
   const { setActiveTeam } = useTeam()
   const mutation = useMutation<TeamCreate>(TEAM_CREATE, {
     update(cache, { data }) {

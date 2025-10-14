@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
 
@@ -47,11 +43,11 @@ export const JOURNEY_SETTINGS_UPDATE = gql`
   }
 `
 export function useJourneyUpdateMutation(
-  options?: MutationHookOptions<
+  options?: useMutation.Options<
     JourneySettingsUpdate,
     JourneySettingsUpdateVariables
   >
-): MutationTuple<JourneySettingsUpdate, JourneySettingsUpdateVariables> {
+): useMutation.ResultTuple<JourneySettingsUpdate, JourneySettingsUpdateVariables> {
   const mutation = useMutation<
     JourneySettingsUpdate,
     JourneySettingsUpdateVariables

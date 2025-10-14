@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
@@ -85,7 +86,7 @@ const journey = {
 } as unknown as Journey
 
 interface SignUpMockProps {
-  mocks?: Array<MockedResponse<Record<string, unknown>>>
+  mocks?: Array<MockLink.MockedResponse<Record<string, unknown>>>
 }
 
 const SignUpMock = ({ mocks = [] }: SignUpMockProps): ReactElement => (

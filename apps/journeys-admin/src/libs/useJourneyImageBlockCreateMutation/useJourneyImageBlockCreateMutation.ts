@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 
@@ -22,11 +18,11 @@ export const JOURNEY_IMAGE_BLOCK_CREATE = gql`
 `
 
 export function useJourneyImageBlockCreateMutation(
-  options?: MutationHookOptions<
+  options?: useMutation.Options<
     JourneyImageBlockCreate,
     JourneyImageBlockCreateVariables
   >
-): MutationTuple<JourneyImageBlockCreate, JourneyImageBlockCreateVariables> {
+): useMutation.ResultTuple<JourneyImageBlockCreate, JourneyImageBlockCreateVariables> {
   const mutation = useMutation<
     JourneyImageBlockCreate,
     JourneyImageBlockCreateVariables

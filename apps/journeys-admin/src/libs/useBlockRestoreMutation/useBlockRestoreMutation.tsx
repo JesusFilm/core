@@ -1,11 +1,5 @@
-import {
-  ApolloCache,
-  MutationHookOptions,
-  MutationTuple,
-  Reference,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { ApolloCache, Reference, gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 import compact from 'lodash/compact'
 
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
@@ -94,8 +88,8 @@ export function blockRestoreUpdate(
 }
 
 export function useBlockRestoreMutation(
-  options?: MutationHookOptions<BlockRestore, BlockRestoreVariables>
-): MutationTuple<BlockRestore, BlockRestoreVariables> {
+  options?: useMutation.Options<BlockRestore, BlockRestoreVariables>
+): useMutation.ResultTuple<BlockRestore, BlockRestoreVariables> {
   const { journey } = useJourney()
 
   return useMutation<BlockRestore, BlockRestoreVariables>(BLOCK_RESTORE, {

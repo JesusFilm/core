@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 
@@ -24,7 +24,7 @@ const TeamSelectStory: Meta<typeof TeamSelect> = {
   }
 }
 
-const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+const getTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
@@ -56,7 +56,7 @@ const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
     }
   }
 }
-const getEmptyTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+const getEmptyTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },

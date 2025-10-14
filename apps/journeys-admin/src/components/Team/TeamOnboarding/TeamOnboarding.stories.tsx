@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent } from '@storybook/test'
 import { SnackbarProvider } from 'notistack'
@@ -17,7 +17,7 @@ const TeamOnboardingStory: Meta<typeof TeamOnboarding> = {
   title: 'Journeys-Admin/Team/TeamOnboarding'
 }
 
-const teamCreateMock: MockedResponse<TeamCreate> = {
+const teamCreateMock: MockLink.MockedResponse<TeamCreate> = {
   request: {
     query: TEAM_CREATE,
     variables: {

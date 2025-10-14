@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import { IMAGE_FIELDS } from '@core/journeys/ui/Image/imageFields'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
@@ -34,8 +30,8 @@ export const COVER_BLOCK_RESTORE = gql`
 `
 
 export function useCoverBlockRestoreMutation(
-  options?: MutationHookOptions<CoverBlockRestore, CoverBlockRestoreVariables>
-): MutationTuple<CoverBlockRestore, CoverBlockRestoreVariables> {
+  options?: useMutation.Options<CoverBlockRestore, CoverBlockRestoreVariables>
+): useMutation.ResultTuple<CoverBlockRestore, CoverBlockRestoreVariables> {
   return useMutation<CoverBlockRestore, CoverBlockRestoreVariables>(
     COVER_BLOCK_RESTORE,
     options

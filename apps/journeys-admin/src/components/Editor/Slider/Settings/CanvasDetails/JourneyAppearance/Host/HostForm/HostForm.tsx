@@ -1,10 +1,5 @@
-import {
-  ApolloCache,
-  LazyQueryHookExecOptions,
-  QueryResult,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { ApolloCache, gql } from '@apollo/client';
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client/react";
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
@@ -45,10 +40,10 @@ interface HostFormTabProps {
   getAllTeamHostsQuery: (
     options?:
       | Partial<
-          LazyQueryHookExecOptions<GetAllTeamHosts, GetAllTeamHostsVariables>
+          useLazyQuery.ExecOptions<GetAllTeamHosts, GetAllTeamHostsVariables>
         >
       | undefined
-  ) => Promise<QueryResult<GetAllTeamHosts, GetAllTeamHostsVariables>>
+  ) => Promise<useQuery.Result<GetAllTeamHosts, GetAllTeamHostsVariables>>
 }
 
 export function HostForm({

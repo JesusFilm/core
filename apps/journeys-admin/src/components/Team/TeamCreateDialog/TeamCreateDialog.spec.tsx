@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -28,7 +29,7 @@ describe('TeamCreateDialog', () => {
     ;(useMediaQuery as jest.Mock).mockImplementation(() => true)
   })
 
-  const teamCreateMock: MockedResponse<TeamCreate> = {
+  const teamCreateMock: MockLink.MockedResponse<TeamCreate> = {
     request: {
       query: TEAM_CREATE,
       variables: {
@@ -50,7 +51,7 @@ describe('TeamCreateDialog', () => {
       }
     }
   }
-  const teamCreateErrorMock: MockedResponse<TeamCreate> = {
+  const teamCreateErrorMock: MockLink.MockedResponse<TeamCreate> = {
     request: {
       query: TEAM_CREATE,
       variables: {
@@ -61,7 +62,7 @@ describe('TeamCreateDialog', () => {
     },
     error: new Error('Team Title already exists.')
   }
-  const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+  const getTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
     result: {
       data: {

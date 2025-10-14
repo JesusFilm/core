@@ -1,10 +1,11 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from "@apollo/client/testing/react";
 import { render, screen } from '@testing-library/react'
 
+import { isJourneyCustomizable } from '../../../../libs/isJourneyCustomizable'
 import { JourneyProvider } from '../../../../libs/JourneyProvider'
 import { journey } from '../../TemplateFooter/data'
+
 import { TemplateActionButton } from './TemplateActionButton'
-import { isJourneyCustomizable } from '../../../../libs/isJourneyCustomizable'
 
 jest.mock('../../../../libs/isJourneyCustomizable', () => ({
   isJourneyCustomizable: jest.fn()

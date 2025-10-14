@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
@@ -29,7 +29,7 @@ const ArchivedJourneyListStory: Meta<typeof ArchivedJourneyList> = {
   }
 }
 
-const getAdminJourneysMock: MockedResponse<
+const getAdminJourneysMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {

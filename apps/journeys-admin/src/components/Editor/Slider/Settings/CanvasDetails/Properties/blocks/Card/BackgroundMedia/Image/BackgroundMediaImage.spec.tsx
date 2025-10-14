@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -162,7 +163,7 @@ describe('BackgroundMediaImage', () => {
     process.env = originalEnv
   })
 
-  const coverImageBlockCreateMock: MockedResponse<
+  const coverImageBlockCreateMock: MockLink.MockedResponse<
     CoverImageBlockCreate,
     CoverImageBlockCreateVariables
   > = {
@@ -206,7 +207,7 @@ describe('BackgroundMediaImage', () => {
     }
   }
 
-  const coverBlockDeleteMock: MockedResponse<
+  const coverBlockDeleteMock: MockLink.MockedResponse<
     CoverBlockDelete,
     CoverBlockDeleteVariables
   > = {
@@ -235,7 +236,7 @@ describe('BackgroundMediaImage', () => {
     }
   }
 
-  const coverBlockRestoreMock: MockedResponse<
+  const coverBlockRestoreMock: MockLink.MockedResponse<
     CoverBlockRestore,
     CoverBlockRestoreVariables
   > = {
@@ -360,7 +361,7 @@ describe('BackgroundMediaImage', () => {
           focalTop: 50
         }
       }
-      const coverImageBlockUpdateMock: MockedResponse<
+      const coverImageBlockUpdateMock: MockLink.MockedResponse<
         CoverImageBlockUpdate,
         CoverImageBlockUpdateVariables
       > = {

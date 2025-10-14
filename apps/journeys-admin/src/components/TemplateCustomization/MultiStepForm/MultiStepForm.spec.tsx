@@ -1,10 +1,12 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
-import { MultiStepForm } from './MultiStepForm'
-import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
+
 import { MessagePlatform } from '../../../../__generated__/globalTypes'
+import { JourneyFields as Journey } from '../../../../__generated__/JourneyFields'
+
+import { MultiStepForm } from './MultiStepForm'
 
 // Mock complex dependencies that the screens use
 jest.mock('next-firebase-auth', () => ({

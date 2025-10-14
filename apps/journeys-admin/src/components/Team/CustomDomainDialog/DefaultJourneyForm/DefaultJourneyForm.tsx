@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 import Autocomplete from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'

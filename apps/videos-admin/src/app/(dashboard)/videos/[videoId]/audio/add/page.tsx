@@ -1,6 +1,5 @@
-'use client'
-
-import { useSuspenseQuery } from '@apollo/client'
+'use client';
+import { useSuspenseQuery } from "@apollo/client/react";
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'

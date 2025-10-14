@@ -1,4 +1,5 @@
-import { gql, useLazyQuery } from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useLazyQuery } from "@apollo/client/react";
 import Box from '@mui/material/Box'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'

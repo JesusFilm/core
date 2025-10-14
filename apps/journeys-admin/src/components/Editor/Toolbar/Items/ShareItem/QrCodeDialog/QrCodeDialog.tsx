@@ -1,4 +1,5 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation, useQuery } from "@apollo/client/react";
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'

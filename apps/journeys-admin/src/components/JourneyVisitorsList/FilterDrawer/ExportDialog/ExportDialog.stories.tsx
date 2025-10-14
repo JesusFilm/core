@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import { ThemeProvider } from '@mui/material/styles'
 import { Meta, StoryObj } from '@storybook/react'
 
@@ -19,7 +19,7 @@ const journey: Journey = {
   createdAt: '2024-01-01T00:00:00Z'
 }
 
-const getJourneyCreatedAtMock: MockedResponse<
+const getJourneyCreatedAtMock: MockLink.MockedResponse<
   GetJourneyCreatedAt,
   GetJourneyCreatedAtVariables
 > = {

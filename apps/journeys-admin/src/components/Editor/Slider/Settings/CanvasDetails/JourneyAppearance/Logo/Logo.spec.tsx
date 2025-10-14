@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import pick from 'lodash/pick'
 import { v4 as uuidv4 } from 'uuid'
@@ -78,7 +79,7 @@ describe('Logo', () => {
     focalTop: 50
   }
 
-  function getLogoImageBlockCreateMock(): MockedResponse<
+  function getLogoImageBlockCreateMock(): MockLink.MockedResponse<
     LogoBlockCreate,
     LogoBlockCreateVariables
   > {
@@ -116,7 +117,7 @@ describe('Logo', () => {
     id: string,
     input: ImageBlockUpdateInput,
     update?: boolean
-  ): MockedResponse<ImageBlockUpdate, ImageBlockUpdateVariables> {
+  ): MockLink.MockedResponse<ImageBlockUpdate, ImageBlockUpdateVariables> {
     const updateInput =
       update === true
         ? {

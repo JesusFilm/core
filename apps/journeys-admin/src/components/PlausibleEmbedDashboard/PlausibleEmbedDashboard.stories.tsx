@@ -1,4 +1,4 @@
-import type { MockedResponse } from '@apollo/client/testing'
+import type { MockLink } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import type { Meta, StoryObj } from '@storybook/react'
 import type { ComponentPropsWithRef } from 'react'
@@ -29,7 +29,7 @@ const journey = {
   plausibleToken: '3Q7Nfj1AlMJjeIA48AUhR'
 } as unknown as Journey
 
-const adminJourneyMock: MockedResponse<GetAdminJourneyWithPlausibleToken> = {
+const adminJourneyMock: MockLink.MockedResponse<GetAdminJourneyWithPlausibleToken> = {
   request: {
     query: GET_ADMIN_JOURNEY_WITH_PLAUSIBLE_TOKEN,
     variables: {

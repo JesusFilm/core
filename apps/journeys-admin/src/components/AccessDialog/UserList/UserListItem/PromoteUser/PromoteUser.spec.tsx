@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { UserJourneyRole } from '../../../../../../__generated__/globalTypes'
@@ -24,7 +24,6 @@ describe('PromoteUser', () => {
     }))
     const { getByRole } = render(
       <MockedProvider
-        addTypename={false}
         mocks={[
           {
             request: {

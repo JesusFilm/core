@@ -1,4 +1,5 @@
-import { QueryHookOptions, QueryResult, gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useQuery } from "@apollo/client/react";
 
 import {
   GetVariantLanguagesIdAndSlug,
@@ -20,11 +21,11 @@ export const GET_VARIANT_LANGUAGES_ID_AND_SLUG = gql`
 `
 
 export function useVariantLanguagesIdAndSlugQuery(
-  options?: QueryHookOptions<
+  options?: useQuery.Options<
     GetVariantLanguagesIdAndSlug,
     GetVariantLanguagesIdAndSlugVariables
   >
-): QueryResult<
+): useQuery.Result<
   GetVariantLanguagesIdAndSlug,
   GetVariantLanguagesIdAndSlugVariables
 > {

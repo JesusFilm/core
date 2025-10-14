@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -44,7 +45,7 @@ const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 Object.assign(navigator, { clipboard: { writeText: jest.fn() } })
 
 describe('ShareItem', () => {
-  const journeyForSharingMock: MockedResponse<GetJourneyForSharing> = {
+  const journeyForSharingMock: MockLink.MockedResponse<GetJourneyForSharing> = {
     request: {
       query: GET_JOURNEY_FOR_SHARING,
       variables: { id: 'journeyId' }
@@ -223,7 +224,7 @@ describe('ShareItem', () => {
       events: { on }
     } as unknown as NextRouter)
 
-    const getUserRoleMock: MockedResponse<GetUserRole> = {
+    const getUserRoleMock: MockLink.MockedResponse<GetUserRole> = {
       request: { query: GET_USER_ROLE },
       result: jest.fn(() => ({
         data: {

@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   GetLanguages,
@@ -7,7 +7,7 @@ import {
 
 import { GET_LANGUAGES } from '.'
 
-export const getLanguagesMock: MockedResponse<
+export const getLanguagesMock: MockLink.MockedResponse<
   GetLanguages,
   GetLanguagesVariables
 > = {

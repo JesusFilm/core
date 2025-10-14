@@ -1,5 +1,5 @@
-import { MutationResult } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import type { useMutation } from "@apollo/client/react";
+import { MockedProvider } from "@apollo/client/testing/react";
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { Edge, OnSelectionChangeParams, useKeyPress } from 'reactflow'
 
@@ -49,7 +49,7 @@ const mockUseBlockDeleteMutation =
 describe('useDeleteOnKeyPress', () => {
   const deleteBlock = jest.fn()
   const deleteEdge = jest.fn()
-  const deleteResult = {} as unknown as MutationResult<BlockDelete>
+  const deleteResult = {} as unknown as useMutation.Result<BlockDelete>
 
   beforeEach(() => {
     mockUseDeleteEdge.mockReturnValue(deleteEdge)

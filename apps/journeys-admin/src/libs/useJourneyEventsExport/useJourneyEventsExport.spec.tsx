@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { act, renderHook, waitFor } from '@testing-library/react'
 
 import {
@@ -96,7 +97,7 @@ describe('useJourneyEventsExport', () => {
       }
     })
 
-    const mockGetJourneyEventsQueryPage1: MockedResponse<
+    const mockGetJourneyEventsQueryPage1: MockLink.MockedResponse<
       GetJourneyEvents,
       GetJourneyEventsVariables
     > = {
@@ -149,7 +150,7 @@ describe('useJourneyEventsExport', () => {
       }))
     }
 
-    const mockGetJourneyEventsQueryPage2: MockedResponse<
+    const mockGetJourneyEventsQueryPage2: MockLink.MockedResponse<
       GetJourneyEvents,
       GetJourneyEventsVariables
     > = {
@@ -202,7 +203,7 @@ describe('useJourneyEventsExport', () => {
       }))
     }
 
-    const mockCreateEventsExportLogMutation: MockedResponse<
+    const mockCreateEventsExportLogMutation: MockLink.MockedResponse<
       CreateEventsExportLog,
       CreateEventsExportLogVariables
     > = {

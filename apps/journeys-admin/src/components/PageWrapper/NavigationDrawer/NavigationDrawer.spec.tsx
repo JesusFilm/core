@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { Suspense } from 'react'
@@ -85,7 +86,7 @@ describe('NavigationDrawer', () => {
       email: 'amin@email.com'
     } as unknown as User
 
-    const getMeMock: MockedResponse<GetMe> = {
+    const getMeMock: MockLink.MockedResponse<GetMe> = {
       request: {
         query: GET_ME,
         variables: { input: { redirect: undefined } }
@@ -106,7 +107,7 @@ describe('NavigationDrawer', () => {
       }
     }
 
-    const getUserRoleMock: MockedResponse<GetUserRole> = {
+    const getUserRoleMock: MockLink.MockedResponse<GetUserRole> = {
       request: {
         query: GET_USER_ROLE
       },
@@ -121,7 +122,7 @@ describe('NavigationDrawer', () => {
       }
     }
 
-    const getAdminJourneysMock: MockedResponse<
+    const getAdminJourneysMock: MockLink.MockedResponse<
       GetAdminJourneys,
       GetAdminJourneysVariables
     > = {

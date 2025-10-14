@@ -1,7 +1,8 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
 import { NextRouter, useRouter } from 'next/router'
+import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../libs/useJourneyQuery/__generated__/GetJourney'
@@ -86,7 +87,7 @@ describe('CopyToTeamDialog', () => {
   })
 
   it('should call submit action and update team state on dialog submit', async () => {
-    const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
+    const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> = {
       request: {
         query: UPDATE_LAST_ACTIVE_TEAM_ID,
         variables: {
@@ -172,7 +173,7 @@ describe('CopyToTeamDialog', () => {
   })
 
   it('should not update team state when shouldUpdateTeamState is false', async () => {
-    const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
+    const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> = {
       request: {
         query: UPDATE_LAST_ACTIVE_TEAM_ID,
         variables: {
@@ -580,7 +581,7 @@ describe('CopyToTeamDialog', () => {
       }
     }))
 
-    const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
+    const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> = {
       request: {
         query: UPDATE_LAST_ACTIVE_TEAM_ID,
         variables: {

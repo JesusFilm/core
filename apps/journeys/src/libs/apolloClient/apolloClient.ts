@@ -1,9 +1,5 @@
-import {
-  ApolloClient,
-  NormalizedCacheObject,
-  createHttpLink
-} from '@apollo/client'
-import { setContext } from '@apollo/client/link/context'
+import { ApolloClient, HttpLink } from '@apollo/client'
+import { SetContextLink } from '@apollo/client/link/context'
 import { UserCredential, getAuth, signInAnonymously } from 'firebase/auth'
 import { useMemo } from 'react'
 
@@ -11,7 +7,7 @@ import { firebaseClient } from '../firebaseClient'
 
 import { cache } from './cache'
 
-const httpLink = createHttpLink({
+const httpLink = new HttpLink({
   uri: process.env.GATEWAY_URL ?? '/api/graphql',
   headers: {
     'x-graphql-client-name': 'journeys',
@@ -22,7 +18,7 @@ const httpLink = createHttpLink({
 
 let signInPromise: Promise<UserCredential>
 
-const authLink = setContext(async (_, { headers }) => {
+const authLink = new SetContextLink(async ({ headers }, _) => {
   const auth = getAuth(firebaseClient)
   if (signInPromise == null) signInPromise = signInAnonymously(auth)
   const userCredential = await signInPromise
@@ -37,15 +33,17 @@ const authLink = setContext(async (_, { headers }) => {
   }
 })
 
-export function createApolloClient(): ApolloClient<NormalizedCacheObject> {
+export function createApolloClient(): ApolloClient {
   return new ApolloClient({
     ssrMode: typeof window === 'undefined',
     link: typeof window === 'undefined' ? httpLink : authLink.concat(httpLink),
     cache: cache(),
-    connectToDevTools: true
+    devtools: {
+      enabled: true
+    }
   })
 }
 
-export function useApollo(): ApolloClient<NormalizedCacheObject> {
+export function useApollo(): ApolloClient {
   return useMemo(() => createApolloClient(), [])
 }

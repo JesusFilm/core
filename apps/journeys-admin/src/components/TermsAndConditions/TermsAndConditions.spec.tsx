@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { User, useUser } from 'next-firebase-auth'
@@ -38,7 +39,7 @@ jest.mock('next-firebase-auth', () => ({
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 const mockUseUser = useUser as jest.MockedFunction<typeof useUser>
 
-const journeyProfileCreateMock: MockedResponse<JourneyProfileCreate> = {
+const journeyProfileCreateMock: MockLink.MockedResponse<JourneyProfileCreate> = {
   request: {
     query: JOURNEY_PROFILE_CREATE
   },
@@ -54,7 +55,7 @@ const journeyProfileCreateMock: MockedResponse<JourneyProfileCreate> = {
   }
 }
 
-const teamCreateMock: MockedResponse<TeamCreate> = {
+const teamCreateMock: MockLink.MockedResponse<TeamCreate> = {
   request: {
     query: TEAM_CREATE,
     variables: {
@@ -78,7 +79,7 @@ const teamCreateMock: MockedResponse<TeamCreate> = {
   }
 }
 
-const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+const getTeams: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
@@ -94,7 +95,7 @@ const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   }
 }
 
-const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
+const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> = {
   request: {
     query: UPDATE_LAST_ACTIVE_TEAM_ID,
     variables: {
@@ -113,7 +114,7 @@ const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
   }
 }
 
-const journeyDuplicateMock: MockedResponse<JourneyDuplicate> = {
+const journeyDuplicateMock: MockLink.MockedResponse<JourneyDuplicate> = {
   request: {
     query: JOURNEY_DUPLICATE,
     variables: {
@@ -411,7 +412,7 @@ describe('TermsAndConditions', () => {
       query: { redirect: null }
     } as unknown as NextRouter)
 
-    const teamCreateMockWithEmailUsername: MockedResponse<TeamCreate> = {
+    const teamCreateMockWithEmailUsername: MockLink.MockedResponse<TeamCreate> = {
       request: {
         query: TEAM_CREATE,
         variables: {

@@ -1,14 +1,13 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from "@apollo/client/testing/react";
 import { act, renderHook, waitFor } from '@testing-library/react'
 
 import { GET_CHILD_JOURNEYS_FROM_TEMPLATE_ID } from './useGetChildTemplateJourneyLanguages'
-
-import { useGetChildTemplateJourneyLanguages } from '.'
-
 import {
   mockChildJourneys,
   mockChildVariables
 } from './useGetChildTemplateJourneyLanguages.mock'
+
+import { useGetChildTemplateJourneyLanguages } from '.'
 
 describe('useGetChildTemplateJourneyLanguages', () => {
   it('should fetch and return child journeys with languages', async () => {

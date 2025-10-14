@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 import Stack from '@mui/material/Stack'
 import pick from 'lodash/pick'
 import { ReactElement } from 'react'

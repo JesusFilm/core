@@ -1,9 +1,5 @@
-import {
-  LazyQueryExecFunction,
-  OperationVariables,
-  gql,
-  useLazyQuery
-} from '@apollo/client'
+import { OperationVariables, gql } from '@apollo/client';
+import { useLazyQuery } from "@apollo/client/react";
 
 import {
   GetCurrentUser_me as ApiUser,
@@ -20,7 +16,7 @@ export const GET_CURRENT_USER = gql`
 `
 
 export function useCurrentUserLazyQuery(): {
-  loadUser: LazyQueryExecFunction<GetCurrentUser, OperationVariables>
+  loadUser: useLazyQuery.ExecFunction<GetCurrentUser, OperationVariables>
   data: ApiUser
 } {
   const [loadUser, { data }] = useLazyQuery<GetCurrentUser>(GET_CURRENT_USER)

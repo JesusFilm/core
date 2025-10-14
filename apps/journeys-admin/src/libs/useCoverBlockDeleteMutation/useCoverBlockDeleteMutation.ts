@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import {
   CoverBlockDelete,
@@ -24,8 +20,8 @@ export const COVER_BLOCK_DELETE = gql`
 `
 
 export function useCoverBlockDeleteMutation(
-  options?: MutationHookOptions<CoverBlockDelete, CoverBlockDeleteVariables>
-): MutationTuple<CoverBlockDelete, CoverBlockDeleteVariables> {
+  options?: useMutation.Options<CoverBlockDelete, CoverBlockDeleteVariables>
+): useMutation.ResultTuple<CoverBlockDelete, CoverBlockDeleteVariables> {
   return useMutation<CoverBlockDelete, CoverBlockDeleteVariables>(
     COVER_BLOCK_DELETE,
     options

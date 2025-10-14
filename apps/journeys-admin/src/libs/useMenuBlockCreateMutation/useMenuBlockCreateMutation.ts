@@ -1,10 +1,5 @@
-import {
-  ApolloCache,
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { ApolloCache, gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import { BUTTON_FIELDS } from '@core/journeys/ui/Button/buttonFields'
 import { CARD_FIELDS } from '@core/journeys/ui/Card/cardFields'
@@ -114,8 +109,8 @@ function updateCache(
 }
 
 export function useMenuBlockCreateMutation(
-  options?: MutationHookOptions<MenuBlockCreate, MenuBlockCreateVariables>
-): MutationTuple<MenuBlockCreate, MenuBlockCreateVariables> {
+  options?: useMutation.Options<MenuBlockCreate, MenuBlockCreateVariables>
+): useMutation.ResultTuple<MenuBlockCreate, MenuBlockCreateVariables> {
   const { journey } = useJourney()
   const mutation = useMutation<MenuBlockCreate, MenuBlockCreateVariables>(
     MENU_BLOCK_CREATE,

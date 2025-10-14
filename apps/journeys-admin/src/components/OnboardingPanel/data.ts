@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '@core/journeys/ui/TeamProvider'
 import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
@@ -72,7 +72,7 @@ export const onboardingJourneys: OnboardingJourneys[] = [
   }
 ]
 
-export const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+export const getTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
@@ -97,7 +97,7 @@ export const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   }
 }
 
-export const getOnboardingJourneysMock: MockedResponse<
+export const getOnboardingJourneysMock: MockLink.MockedResponse<
   GetOnboardingJourneys,
   GetOnboardingJourneysVariables
 > = {

@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { CreateMuxVideoUploadByFileMutation } from '../../../../../../../../../__generated__/CreateMuxVideoUploadByFileMutation'
 import { GetMyMuxVideoQuery } from '../../../../../../../../../__generated__/GetMyMuxVideoQuery'
@@ -8,7 +8,7 @@ import {
   GET_MY_MUX_VIDEO_QUERY
 } from './AddByFile'
 
-export const createMuxVideoMock: MockedResponse<CreateMuxVideoUploadByFileMutation> =
+export const createMuxVideoMock: MockLink.MockedResponse<CreateMuxVideoUploadByFileMutation> =
   {
     request: {
       query: CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
@@ -27,7 +27,7 @@ export const createMuxVideoMock: MockedResponse<CreateMuxVideoUploadByFileMutati
     }
   }
 
-export const getMuxVideoMock: MockedResponse<GetMyMuxVideoQuery> = {
+export const getMuxVideoMock: MockLink.MockedResponse<GetMyMuxVideoQuery> = {
   request: {
     query: GET_MY_MUX_VIDEO_QUERY,
     variables: {

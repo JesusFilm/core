@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { sendGTMEvent } from '@next/third-parties/google'
 import { render, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
@@ -175,7 +176,7 @@ describe('Step', () => {
     Object.defineProperty(window, 'location', originalLocation)
   })
 
-  const mockStepViewEventCreate: MockedResponse<StepViewEventCreate> = {
+  const mockStepViewEventCreate: MockLink.MockedResponse<StepViewEventCreate> = {
     request: {
       query: STEP_VIEW_EVENT_CREATE,
       variables: {

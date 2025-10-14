@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
@@ -114,7 +115,7 @@ describe('BackgroundColor', () => {
   }
 
   // Mock that accepts both with and without alpha channel
-  const cardBlockBackgroundColorUpdateMock: MockedResponse<
+  const cardBlockBackgroundColorUpdateMock: MockLink.MockedResponse<
     CardBlockBackgroundColorUpdate,
     CardBlockBackgroundColorUpdateVariables
   > = {
@@ -265,7 +266,7 @@ describe('BackgroundColor', () => {
         ...cardBlockBackgroundColorUpdateMock.result
       }))
 
-      const cardBlockBackgroundColorUpdateUndoMock: MockedResponse<
+      const cardBlockBackgroundColorUpdateUndoMock: MockLink.MockedResponse<
         CardBlockBackgroundColorUpdate,
         CardBlockBackgroundColorUpdateVariables
       > = {
@@ -510,7 +511,7 @@ describe('BackgroundColor', () => {
         }
       })
 
-      const mockCardBlockBackgroundColorUpdate: MockedResponse<
+      const mockCardBlockBackgroundColorUpdate: MockLink.MockedResponse<
         CardBlockBackdropBlurUpdate,
         CardBlockBackdropBlurUpdateVariables
       > = {

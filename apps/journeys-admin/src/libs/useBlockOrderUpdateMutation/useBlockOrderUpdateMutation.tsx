@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
@@ -23,8 +19,8 @@ export const BLOCK_ORDER_UPDATE = gql`
 `
 
 export function useBlockOrderUpdateMutation(
-  options?: MutationHookOptions<BlockOrderUpdate, BlockOrderUpdateVariables>
-): MutationTuple<BlockOrderUpdate, BlockOrderUpdateVariables> {
+  options?: useMutation.Options<BlockOrderUpdate, BlockOrderUpdateVariables>
+): useMutation.ResultTuple<BlockOrderUpdate, BlockOrderUpdateVariables> {
   return useMutation<BlockOrderUpdate, BlockOrderUpdateVariables>(
     BLOCK_ORDER_UPDATE,
     options

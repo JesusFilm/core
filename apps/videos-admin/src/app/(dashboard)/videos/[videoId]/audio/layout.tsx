@@ -1,6 +1,5 @@
-'use client'
-
-import { useQuery } from '@apollo/client'
+'use client';
+import { useQuery } from "@apollo/client/react";
 import AddIcon from '@mui/icons-material/Add'
 import DeleteIcon from '@mui/icons-material/Delete'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'

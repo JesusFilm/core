@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import {
   JourneyImageBlockAssociationUpdate,
@@ -28,11 +24,11 @@ export const JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE = gql`
 `
 
 export function useJourneyImageBlockAssociationUpdateMutation(
-  options?: MutationHookOptions<
+  options?: useMutation.Options<
     JourneyImageBlockAssociationUpdate,
     JourneyImageBlockAssociationUpdateVariables
   >
-): MutationTuple<
+): useMutation.ResultTuple<
   JourneyImageBlockAssociationUpdate,
   JourneyImageBlockAssociationUpdateVariables
 > {

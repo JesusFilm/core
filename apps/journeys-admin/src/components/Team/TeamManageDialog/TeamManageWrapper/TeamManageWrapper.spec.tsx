@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { render, waitFor } from '@testing-library/react'
 
 import {
@@ -26,7 +27,7 @@ jest.mock('../../../../libs/useCurrentUserLazyQuery', () => ({
 const user1 = { id: 'userId', email: 'miguelohara@example.com' }
 
 describe('TeamMembersList', () => {
-  const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {
+  const getUserTeamMock1: MockLink.MockedResponse<GetUserTeamsAndInvites> = {
     request: {
       query: GET_USER_TEAMS_AND_INVITES,
       variables: {
@@ -63,7 +64,7 @@ describe('TeamMembersList', () => {
     }
   }
 
-  const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+  const getTeams: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },

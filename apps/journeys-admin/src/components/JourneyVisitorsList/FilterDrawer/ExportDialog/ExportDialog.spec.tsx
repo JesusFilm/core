@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -27,7 +28,7 @@ import { ExportDialog, GET_JOURNEY_CREATED_AT } from './ExportDialog'
 const mockOnClose = jest.fn()
 
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
-const mockJourneyCreatedAt: MockedResponse<
+const mockJourneyCreatedAt: MockLink.MockedResponse<
   GetJourneyCreatedAt,
   GetJourneyCreatedAtVariables
 > = {
@@ -86,7 +87,7 @@ describe('ExportDialog', () => {
   })
 
   describe('Visitor Actions', () => {
-    const getJourneyEventsMock: MockedResponse<
+    const getJourneyEventsMock: MockLink.MockedResponse<
       GetJourneyEvents,
       GetJourneyEventsVariables
     > = {
@@ -171,7 +172,7 @@ describe('ExportDialog', () => {
       EventType.VideoProgressEvent
     ]
 
-    const mockCreateEventsExportLogMutation: MockedResponse<
+    const mockCreateEventsExportLogMutation: MockLink.MockedResponse<
       CreateEventsExportLog,
       CreateEventsExportLogVariables
     > = {

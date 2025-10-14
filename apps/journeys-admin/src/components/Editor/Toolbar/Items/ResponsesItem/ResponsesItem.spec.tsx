@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -55,7 +56,7 @@ describe('ResponsesItem', () => {
   })
 
   it('should display responses count next to button', async () => {
-    const getVisitorCountMock: MockedResponse<GetJourneyVisitorsCount> = {
+    const getVisitorCountMock: MockLink.MockedResponse<GetJourneyVisitorsCount> = {
       request: {
         query: GET_JOURNEY_VISITORS_COUNT_WITH_TEXT_RESPONSES,
         variables: {

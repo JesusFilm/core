@@ -1,6 +1,5 @@
-'use client'
-
-import { useLazyQuery, useMutation } from '@apollo/client'
+'use client';
+import { useLazyQuery, useMutation } from "@apollo/client/react";
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
 import { ReactNode, createContext, useContext, useReducer } from 'react'

@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from "@apollo/client/testing/react";
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 

@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
@@ -70,7 +71,7 @@ describe('ImageOptions', () => {
     }
   }
 
-  const imageBlockUpdateMock: MockedResponse<
+  const imageBlockUpdateMock: MockLink.MockedResponse<
     ImageBlockUpdate,
     ImageBlockUpdateVariables
   > = {
@@ -259,7 +260,7 @@ describe('ImageOptions', () => {
       data: scaleUpdateResponse
     }))
 
-    const zoomUpdateMock: MockedResponse<
+    const zoomUpdateMock: MockLink.MockedResponse<
       ImageBlockUpdate,
       ImageBlockUpdateVariables
     > = {

@@ -1,5 +1,6 @@
 import { ApolloLink } from '@apollo/client'
-import { MockLink, MockedProvider } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import DebounceLink from 'apollo-link-debounce'
@@ -14,8 +15,8 @@ import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRe
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import {
-  TEXT_RESPONSE_LABEL_UPDATE,
-  TEXT_RESPONSE_HIDE_LABEL_UPDATE
+  TEXT_RESPONSE_HIDE_LABEL_UPDATE,
+  TEXT_RESPONSE_LABEL_UPDATE
 } from './Label'
 
 import { Label } from '.'

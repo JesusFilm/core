@@ -1,10 +1,6 @@
-import {
-  NetworkStatus,
-  OperationVariables,
-  QueryResult,
-  useQuery
-} from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { NetworkStatus, OperationVariables } from '@apollo/client';
+import { useQuery } from "@apollo/client/react";
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
@@ -91,7 +87,7 @@ describe('ClientLayout', () => {
     const mockedUseQuery = useQuery as jest.MockedFunction<typeof useQuery>
 
     // Create a complete mock for the QueryResult
-    const mockQueryResult: QueryResult<any, OperationVariables> = {
+    const mockQueryResult: useQuery.Result<any, OperationVariables> = {
       data: {
         adminVideo: {
           id: 'video123',

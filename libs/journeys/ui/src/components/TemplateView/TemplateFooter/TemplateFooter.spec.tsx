@@ -1,12 +1,12 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor, screen } from '@testing-library/react'
+import { MockedProvider } from "@apollo/client/testing/react";
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 
-import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { isJourneyCustomizable } from '../../../libs/isJourneyCustomizable'
+import { JourneyProvider } from '../../../libs/JourneyProvider'
 
 import { journey } from './data'
 import { TemplateFooter } from './TemplateFooter'
-import { NextRouter, useRouter } from 'next/router'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

@@ -1,4 +1,6 @@
-import { ApolloError, gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
+import { ApolloError } from "@apollo/client/v4-migration";
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import { SxProps } from '@mui/system/styleFunctionSx'

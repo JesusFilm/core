@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -194,7 +194,7 @@ describe('AccessDialog', () => {
     const handleClose = jest.fn()
     const { getByRole, getByText } = render(
       <SnackbarProvider>
-        <MockedProvider addTypename mocks={mocks}>
+        <MockedProvider mocks={mocks}>
           <AccessDialog journeyId="journeyId" open onClose={handleClose} />
         </MockedProvider>
       </SnackbarProvider>
@@ -211,7 +211,7 @@ describe('AccessDialog', () => {
     const handleClose = jest.fn()
     const { getByText, getAllByText } = render(
       <SnackbarProvider>
-        <MockedProvider addTypename mocks={mocks}>
+        <MockedProvider mocks={mocks}>
           <AccessDialog journeyId="journeyId" open onClose={handleClose} />
         </MockedProvider>
       </SnackbarProvider>
@@ -228,7 +228,7 @@ describe('AccessDialog', () => {
     const handleClose = jest.fn()
     const { getByText } = render(
       <SnackbarProvider>
-        <MockedProvider addTypename mocks={mocks}>
+        <MockedProvider mocks={mocks}>
           <AccessDialog journeyId="journeyId" open onClose={handleClose} />
         </MockedProvider>
       </SnackbarProvider>
@@ -246,7 +246,7 @@ describe('AccessDialog', () => {
     const handleClose = jest.fn()
     const { getByRole, getAllByRole, getByText } = render(
       <SnackbarProvider>
-        <MockedProvider addTypename mocks={mocks}>
+        <MockedProvider mocks={mocks}>
           <AccessDialog journeyId="journeyId" open onClose={handleClose} />
         </MockedProvider>
       </SnackbarProvider>
@@ -265,7 +265,7 @@ describe('AccessDialog', () => {
     const handleClose = jest.fn()
     const { getByText, getAllByText } = render(
       <SnackbarProvider>
-        <MockedProvider addTypename mocks={mocks}>
+        <MockedProvider mocks={mocks}>
           <AccessDialog journeyId="journeyId" open onClose={handleClose} />
         </MockedProvider>
       </SnackbarProvider>

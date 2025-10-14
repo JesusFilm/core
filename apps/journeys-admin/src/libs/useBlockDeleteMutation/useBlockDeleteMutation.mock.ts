@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
@@ -70,7 +70,7 @@ export const selectedStep: TreeBlock<StepBlock> = {
   children: [selectedStepCardBlock]
 }
 
-export const deleteBlockMock: MockedResponse<
+export const deleteBlockMock: MockLink.MockedResponse<
   BlockDelete,
   BlockDeleteVariables
 > = {
@@ -93,7 +93,7 @@ export const deleteBlockMock: MockedResponse<
   }
 }
 
-export const deleteCardBlockMock: MockedResponse<
+export const deleteCardBlockMock: MockLink.MockedResponse<
   BlockDelete,
   BlockDeleteVariables
 > = {
@@ -116,7 +116,7 @@ export const deleteCardBlockMock: MockedResponse<
   }
 }
 
-export const deleteStepMock: MockedResponse<BlockDelete, BlockDeleteVariables> =
+export const deleteStepMock: MockLink.MockedResponse<BlockDelete, BlockDeleteVariables> =
   {
     request: {
       query: BLOCK_DELETE,

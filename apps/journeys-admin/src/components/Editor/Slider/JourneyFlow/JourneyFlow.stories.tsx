@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
@@ -68,7 +68,7 @@ export const Loading = {
   }
 }
 
-const mockGetStepBlocksWithPosition: MockedResponse<
+const mockGetStepBlocksWithPosition: MockLink.MockedResponse<
   GetStepBlocksWithPosition,
   GetStepBlocksWithPositionVariables
 > = {

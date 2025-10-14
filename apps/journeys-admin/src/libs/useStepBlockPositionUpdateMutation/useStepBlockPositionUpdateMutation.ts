@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import {
   StepBlockPositionUpdate,
@@ -21,11 +17,11 @@ export const STEP_BLOCK_POSITION_UPDATE = gql`
 `
 
 export function useStepBlockPositionUpdateMutation(
-  options?: MutationHookOptions<
+  options?: useMutation.Options<
     StepBlockPositionUpdate,
     StepBlockPositionUpdateVariables
   >
-): MutationTuple<StepBlockPositionUpdate, StepBlockPositionUpdateVariables> {
+): useMutation.ResultTuple<StepBlockPositionUpdate, StepBlockPositionUpdateVariables> {
   const mutation = useMutation<
     StepBlockPositionUpdate,
     StepBlockPositionUpdateVariables

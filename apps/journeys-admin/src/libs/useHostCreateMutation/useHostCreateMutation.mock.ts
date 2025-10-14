@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   CreateHost,
@@ -7,7 +7,7 @@ import {
 
 import { CREATE_HOST } from './useHostCreateMutation'
 
-export const hostCreateMock: MockedResponse<CreateHost, CreateHostVariables> = {
+export const hostCreateMock: MockLink.MockedResponse<CreateHost, CreateHostVariables> = {
   request: {
     query: CREATE_HOST,
     variables: { teamId: 'team.id', input: { title: 'value' } }

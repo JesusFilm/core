@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
@@ -21,7 +22,7 @@ const VisitorDetailsStory: Meta<typeof VisitorDetails> = {
 
 const Template: StoryObj<
   ComponentProps<typeof VisitorDetails> & {
-    mocks: [MockedResponse<GetVisitorForDetails>]
+    mocks: [MockLink.MockedResponse<GetVisitorForDetails>]
   }
 > = {
   render: ({ ...args }) => (

@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import {
   JourneyNotificationUpdate,
@@ -24,11 +20,11 @@ export const JOURNEY_NOTIFICATION_UPDATE = gql`
 `
 
 export function useJourneyNotificationUpdate(
-  options?: MutationHookOptions<
+  options?: useMutation.Options<
     JourneyNotificationUpdate,
     JourneyNotificationUpdateVariables
   >
-): MutationTuple<
+): useMutation.ResultTuple<
   JourneyNotificationUpdate,
   JourneyNotificationUpdateVariables
 > {

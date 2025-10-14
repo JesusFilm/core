@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
@@ -29,7 +30,7 @@ import {
   DomainNameForm
 } from './DomainNameForm'
 
-const createCustomDomainMock: MockedResponse<
+const createCustomDomainMock: MockLink.MockedResponse<
   CreateCustomDomain,
   CreateCustomDomainVariables
 > = {
@@ -50,7 +51,7 @@ const createCustomDomainMock: MockedResponse<
   }
 }
 
-const deleteCustomDomainMock: MockedResponse<
+const deleteCustomDomainMock: MockLink.MockedResponse<
   DeleteCustomDomain,
   DeleteCustomDomainVariables
 > = {
@@ -68,7 +69,7 @@ const deleteCustomDomainMock: MockedResponse<
   }
 }
 
-const createCustomDomainErrorMock: MockedResponse<
+const createCustomDomainErrorMock: MockLink.MockedResponse<
   CheckCustomDomain,
   CreateCustomDomainVariables
 > = {
@@ -81,7 +82,7 @@ const createCustomDomainErrorMock: MockedResponse<
   }
 }
 
-const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
+const getLastActiveTeamIdAndTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
   {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS

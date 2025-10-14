@@ -1,4 +1,5 @@
-import { Reference, gql, useMutation } from '@apollo/client'
+import { Reference, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -47,7 +48,6 @@ export function RemoveUser({
   const [userJourneyRemove] = useMutation<UserJourneyRemove>(
     USER_JOURNEY_REMOVE,
     {
-      variables: { id },
       update(cache, { data }) {
         if (data?.userJourneyRemove.journey != null)
           cache.modify({
@@ -87,7 +87,7 @@ export function RemoveUser({
     })
   }
 
-  const [loadUserInvites] = useUserInvitesLazyQuery({ journeyId })
+  const [loadUserInvites] = useUserInvitesLazyQuery()
 
   const handleClick = async (): Promise<void> => {
     if (email == null) {
@@ -95,7 +95,7 @@ export function RemoveUser({
 
       // Remove userJourney and any associated userInvite
     } else {
-      const result = await loadUserInvites()
+      const result = await loadUserInvites({ variables: { journeyId } })
       const userInvite = result.data?.userInvites?.find(
         (invite) => invite.email === email
       )
@@ -103,7 +103,7 @@ export function RemoveUser({
         void handleRemoveUserInvite(userInvite.id)
       }
 
-      await userJourneyRemove()
+      await userJourneyRemove({ variables: { id } })
     }
 
     onClick?.()

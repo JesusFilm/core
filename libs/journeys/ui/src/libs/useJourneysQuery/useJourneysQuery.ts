@@ -1,10 +1,6 @@
-import {
-  NoInfer,
-  QueryHookOptions,
-  QueryResult,
-  gql,
-  useQuery
-} from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useQuery } from "@apollo/client/react";
+import type { NoInfer } from "@apollo/client/utilities/internal";
 
 import { GetJourneys, GetJourneysVariables } from './__generated__/GetJourneys'
 
@@ -70,11 +66,11 @@ export const GET_JOURNEYS = gql`
 `
 
 export function useJourneysQuery(
-  options?: QueryHookOptions<
+  options?: useQuery.Options<
     NoInfer<GetJourneys>,
     NoInfer<GetJourneysVariables>
   >
-): QueryResult<GetJourneys, GetJourneysVariables> {
+): useQuery.Result<GetJourneys, GetJourneysVariables> {
   const query = useQuery<GetJourneys, GetJourneysVariables>(
     GET_JOURNEYS,
     options

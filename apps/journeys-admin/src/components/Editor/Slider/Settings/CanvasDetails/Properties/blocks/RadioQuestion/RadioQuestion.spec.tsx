@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -42,7 +43,7 @@ const selectedBlockWithGridView: TreeBlock<RadioQuestionBlock> = {
   children: []
 }
 
-const mockRadioQuestionUpdate: MockedResponse<
+const mockRadioQuestionUpdate: MockLink.MockedResponse<
   RadioQuestionUpdate,
   RadioQuestionUpdateVariables
 > = {
@@ -67,7 +68,7 @@ const mockRadioQuestionUpdate: MockedResponse<
   }))
 }
 
-const mockRadioQuestionUpdateUndo: MockedResponse<
+const mockRadioQuestionUpdateUndo: MockLink.MockedResponse<
   RadioQuestionUpdate,
   RadioQuestionUpdateVariables
 > = {
@@ -92,7 +93,7 @@ const mockRadioQuestionUpdateUndo: MockedResponse<
   }))
 }
 
-const mockRadioQuestionUpdateRedo: MockedResponse<
+const mockRadioQuestionUpdateRedo: MockLink.MockedResponse<
   RadioQuestionUpdate,
   RadioQuestionUpdateVariables
 > = {

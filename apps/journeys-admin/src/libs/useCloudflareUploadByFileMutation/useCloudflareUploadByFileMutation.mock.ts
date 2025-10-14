@@ -1,10 +1,10 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { CreateCloudflareUploadByFile } from '../../../__generated__/CreateCloudflareUploadByFile'
 
 import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE } from './useCloudflareUploadByFileMutation'
 
-export const cloudflareUploadMutationMock: MockedResponse<CreateCloudflareUploadByFile> =
+export const cloudflareUploadMutationMock: MockLink.MockedResponse<CreateCloudflareUploadByFile> =
   {
     request: {
       query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE,

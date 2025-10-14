@@ -1,4 +1,5 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import { useRouter } from 'next/router'
 import {
   AuthAction,
@@ -143,6 +144,15 @@ export const getServerSideProps = withUserTokenSSR({
         id: query?.journeyId as string
       }
     })
+
+    if (data == null) {
+      return {
+        redirect: {
+          permanent: false,
+          destination: '/'
+        }
+      }
+    }
 
     if (data.journey?.team?.id != null) {
       // from: src/components/Editor/Properties/JourneyLink/JourneyLink.tsx

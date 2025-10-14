@@ -1,4 +1,5 @@
-import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
+import { type MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { render, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/compat/router'
@@ -198,7 +199,7 @@ describe('Editor', () => {
       ]
     }
 
-    const mockGetStepBlocksWithPosition: MockedResponse<GetStepBlocksWithPosition> =
+    const mockGetStepBlocksWithPosition: MockLink.MockedResponse<GetStepBlocksWithPosition> =
       {
         request: {
           query: GET_STEP_BLOCKS_WITH_POSITION,

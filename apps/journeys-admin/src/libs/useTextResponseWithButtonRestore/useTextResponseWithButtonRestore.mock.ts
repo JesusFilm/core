@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   ButtonColor,
@@ -12,7 +12,7 @@ import {
 
 import { TEXT_RESPONSE_WITH_BUTTON_RESTORE } from './useTextResponseWithButtonRestore'
 
-export const textResponseWithButtonRestoreMock: MockedResponse<
+export const textResponseWithButtonRestoreMock: MockLink.MockedResponse<
   TextResponseWithButtonRestore,
   TextResponseWithButtonRestoreVariables
 > = {

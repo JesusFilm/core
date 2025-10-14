@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import {
   TitleDescLanguageUpdate,
@@ -38,11 +34,11 @@ export const TITLE_DESC_LANGUAGE_UPDATE = gql`
  * @returns {MutationTuple<TitleDescLanguageUpdate, TitleDescLanguageUpdateVariables>} A tuple containing the mutation function and loading state
  */
 export function useTitleDescLanguageUpdateMutation(
-  options?: MutationHookOptions<
+  options?: useMutation.Options<
     TitleDescLanguageUpdate,
     TitleDescLanguageUpdateVariables
   >
-): MutationTuple<TitleDescLanguageUpdate, TitleDescLanguageUpdateVariables> {
+): useMutation.ResultTuple<TitleDescLanguageUpdate, TitleDescLanguageUpdateVariables> {
   const mutation = useMutation<
     TitleDescLanguageUpdate,
     TitleDescLanguageUpdateVariables

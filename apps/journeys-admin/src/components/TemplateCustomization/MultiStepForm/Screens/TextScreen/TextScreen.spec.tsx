@@ -1,15 +1,17 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
-import { TextScreen, JOURNEY_CUSTOMIZATION_FIELD_UPDATE } from './TextScreen'
 import type {
   JourneyCustomizationFieldUpdate,
   JourneyCustomizationFieldUpdateVariables
 } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
+
+import { JOURNEY_CUSTOMIZATION_FIELD_UPDATE, TextScreen } from './TextScreen'
 
 describe('TextScreen', () => {
   const baseJourney = {
@@ -80,7 +82,7 @@ describe('TextScreen', () => {
 
   it('submits only when values changed and calls handleNext', async () => {
     const handleNext = jest.fn()
-    const journeyCustomizationFieldUpdate: MockedResponse<
+    const journeyCustomizationFieldUpdate: MockLink.MockedResponse<
       JourneyCustomizationFieldUpdate,
       JourneyCustomizationFieldUpdateVariables
     > = {

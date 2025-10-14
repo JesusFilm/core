@@ -14,8 +14,8 @@ import {
   BlockFields_ButtonBlock_action_EmailAction as ButtonBlockEmailAction
 } from '../../../../../../../../../../__generated__/BlockFields'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
-import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 import { TextFieldFormRef } from '../../../../../../../../TextFieldForm/TextFieldForm'
+import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 
 interface EmailActionProps {
   ref?: RefObject<TextFieldFormRef | null>

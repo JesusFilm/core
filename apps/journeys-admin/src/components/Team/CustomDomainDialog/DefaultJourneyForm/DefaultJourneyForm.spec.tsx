@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -46,7 +47,7 @@ jest.mock('uuid', () => ({
   __esModule: true,
   v4: jest.fn(() => 'uuid')
 }))
-const createJourneyCollectionMock: MockedResponse<
+const createJourneyCollectionMock: MockLink.MockedResponse<
   CreateJourneyCollection,
   CreateJourneyCollectionVariables
 > = {
@@ -95,7 +96,7 @@ const createJourneyCollectionMock: MockedResponse<
     }
   }
 }
-const updateJourneyCollectionMock: MockedResponse<
+const updateJourneyCollectionMock: MockLink.MockedResponse<
   UpdateJourneyCollection,
   UpdateJourneyCollectionVariables
 > = {
@@ -118,7 +119,7 @@ const updateJourneyCollectionMock: MockedResponse<
     }
   }
 }
-const deleteJourneyCollectionMock: MockedResponse<
+const deleteJourneyCollectionMock: MockLink.MockedResponse<
   DeleteJourneyCollection,
   DeleteJourneyCollectionVariables
 > = {
@@ -137,7 +138,7 @@ const deleteJourneyCollectionMock: MockedResponse<
   }
 }
 
-const getAdminJourneysMock: MockedResponse<
+const getAdminJourneysMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -155,7 +156,7 @@ const getAdminJourneysMock: MockedResponse<
   }
 }
 
-const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
+const getLastActiveTeamIdAndTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
   {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS

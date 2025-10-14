@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import {
   UpdateJourneyHost,
@@ -22,8 +18,8 @@ export const UPDATE_JOURNEY_HOST = gql`
 `
 
 export function useUpdateJourneyHostMutation(
-  options?: MutationHookOptions<UpdateJourneyHost, UpdateJourneyHostVariables>
-): MutationTuple<UpdateJourneyHost, UpdateJourneyHostVariables> {
+  options?: useMutation.Options<UpdateJourneyHost, UpdateJourneyHostVariables>
+): useMutation.ResultTuple<UpdateJourneyHost, UpdateJourneyHostVariables> {
   const mutation = useMutation<UpdateJourneyHost>(UPDATE_JOURNEY_HOST, options)
 
   return mutation

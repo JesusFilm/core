@@ -1,4 +1,5 @@
-import { QueryResult, gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useQuery } from "@apollo/client/react";
 import { useMemo } from 'react'
 
 import {
@@ -29,7 +30,7 @@ export const GET_USER_TEAMS_AND_INVITES = gql`
 
 export function useUserTeamsAndInvitesQuery(
   variables?: GetUserTeamsAndInvitesVariables
-): QueryResult<GetUserTeamsAndInvites, GetUserTeamsAndInvitesVariables> & {
+): useQuery.Result<GetUserTeamsAndInvites, GetUserTeamsAndInvitesVariables> & {
   emails: string[]
 } {
   const query = useQuery<

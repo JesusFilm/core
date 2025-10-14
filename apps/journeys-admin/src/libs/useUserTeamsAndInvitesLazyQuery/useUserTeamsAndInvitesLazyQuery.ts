@@ -1,4 +1,4 @@
-import { LazyQueryResultTuple, useLazyQuery } from '@apollo/client'
+import { useLazyQuery } from "@apollo/client/react";
 import { useState } from 'react'
 
 import {
@@ -8,7 +8,7 @@ import {
 import { GET_USER_TEAMS_AND_INVITES } from '../useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 
 export function useUserTeamsAndInvitesLazyQuery(): {
-  query: LazyQueryResultTuple<
+  query: useLazyQuery.ResultTuple<
     GetUserTeamsAndInvites,
     GetUserTeamsAndInvitesVariables
   >

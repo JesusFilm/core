@@ -1,8 +1,12 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor, screen } from '@testing-library/react'
+import { MockedProvider } from "@apollo/client/testing/react";
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+
+import { isJourneyCustomizable } from '../../../libs/isJourneyCustomizable'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import {
   JourneyFields as Journey,
@@ -11,9 +15,6 @@ import {
 import { journey } from '../TemplateFooter/data'
 
 import { TemplateViewHeader } from './TemplateViewHeader'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
-import { NextRouter, useRouter } from 'next/router'
-import { isJourneyCustomizable } from '../../../libs/isJourneyCustomizable'
 
 jest.mock('../../../libs/isJourneyCustomizable', () => ({
   isJourneyCustomizable: jest.fn()

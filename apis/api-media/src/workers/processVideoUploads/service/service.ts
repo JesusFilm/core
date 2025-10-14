@@ -1,13 +1,9 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  createHttpLink,
-  gql
-} from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { Job } from 'bullmq'
 import { Logger } from 'pino'
 
 import { prisma } from '@core/prisma/media/client'
+import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getVideo } from '../../../schema/mux/video/service'
 import { jobName as processVideoDownloadsNowJobName } from '../../processVideoDownloads/config'
@@ -15,21 +11,21 @@ import { queue as processVideoDownloadsQueue } from '../../processVideoDownloads
 
 const FIVE_DAYS = 5 * 24 * 60 * 60
 
-const GET_LANGUAGE_SLUG = gql`
+const GET_LANGUAGE_SLUG = graphql(`
   query GetLanguageSlug($languageId: ID!) {
     language(id: $languageId) {
       id
       slug
     }
   }
-`
+`)
 
-function createLanguageClient(): ApolloClient<any> {
+function createLanguageClient(): ApolloClient {
   if (!process.env.GATEWAY_URL) {
     throw new Error('GATEWAY_URL environment variable is required')
   }
 
-  const httpLink = createHttpLink({
+  const httpLink = new HttpLink({
     uri: process.env.GATEWAY_URL,
     headers: {
       'x-graphql-client-name': 'api-media',
@@ -56,16 +52,16 @@ async function getLanguageSlug(
   languageId: string,
   logger?: Logger
 ): Promise<string> {
-  let apollo: ApolloClient<any> | null = null
+  let apollo: ApolloClient | null = null
   try {
     apollo = createLanguageClient()
-    const { data } = await apollo.query({
+    const { data } = await apollo.query<ResultOf<typeof GET_LANGUAGE_SLUG>>({
       query: GET_LANGUAGE_SLUG,
       variables: { languageId },
       fetchPolicy: 'no-cache'
     })
 
-    if (!data.language?.slug) {
+    if (data?.language?.slug == null) {
       throw new Error(`No language slug found for language ID: ${languageId}`)
     }
 

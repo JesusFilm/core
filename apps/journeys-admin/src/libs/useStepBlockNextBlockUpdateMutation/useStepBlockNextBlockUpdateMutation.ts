@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 
 import {
   StepBlockNextBlockUpdate,
@@ -20,11 +16,11 @@ export const STEP_BLOCK_NEXT_BLOCK_UPDATE = gql`
 `
 
 export function useStepBlockNextBlockUpdateMutation(
-  options?: MutationHookOptions<
+  options?: useMutation.Options<
     StepBlockNextBlockUpdate,
     StepBlockNextBlockUpdateVariables
   >
-): MutationTuple<StepBlockNextBlockUpdate, StepBlockNextBlockUpdateVariables> {
+): useMutation.ResultTuple<StepBlockNextBlockUpdate, StepBlockNextBlockUpdateVariables> {
   return useMutation<
     StepBlockNextBlockUpdate,
     StepBlockNextBlockUpdateVariables

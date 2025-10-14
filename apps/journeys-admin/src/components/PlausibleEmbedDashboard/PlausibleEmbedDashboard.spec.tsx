@@ -1,4 +1,5 @@
-import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
+import { type MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import { render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 
@@ -36,7 +37,7 @@ describe('PlausibleEmbedDashboard', () => {
       }
     }))
 
-    const adminJourneyMock: MockedResponse<GetAdminJourneyWithPlausibleToken> =
+    const adminJourneyMock: MockLink.MockedResponse<GetAdminJourneyWithPlausibleToken> =
       {
         request: {
           query: GET_ADMIN_JOURNEY_WITH_PLAUSIBLE_TOKEN,

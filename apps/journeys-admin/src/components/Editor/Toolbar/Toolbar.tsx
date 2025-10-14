@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client';
+import { useApolloClient, useMutation } from "@apollo/client/react";
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'

@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing';
+import { MockedProvider } from "@apollo/client/testing/react";
 import {
   fireEvent,
   render,
@@ -36,7 +37,7 @@ describe('CopyToTeamMenuItem', () => {
     handleCloseMenu.mockClear()
   })
 
-  const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
+  const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> = {
     request: {
       query: UPDATE_LAST_ACTIVE_TEAM_ID,
       variables: {
@@ -56,7 +57,7 @@ describe('CopyToTeamMenuItem', () => {
   }
 
   // Additional mock for translation scenario where updateLastActiveTeamId is called twice
-  const updateLastActiveTeamIdMockForTranslation: MockedResponse<UpdateLastActiveTeamId> =
+  const updateLastActiveTeamIdMockForTranslation: MockLink.MockedResponse<UpdateLastActiveTeamId> =
     {
       request: {
         query: UPDATE_LAST_ACTIVE_TEAM_ID,
@@ -108,7 +109,7 @@ describe('CopyToTeamMenuItem', () => {
     }))
   }
 
-  const duplicateJourneyMock: MockedResponse<JourneyDuplicate> = {
+  const duplicateJourneyMock: MockLink.MockedResponse<JourneyDuplicate> = {
     request: {
       query: JOURNEY_DUPLICATE,
       variables: {
@@ -126,7 +127,7 @@ describe('CopyToTeamMenuItem', () => {
     }))
   }
 
-  const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
+  const getLastActiveTeamIdAndTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
     {
       request: {
         query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -370,7 +371,7 @@ describe('CopyToTeamMenuItem', () => {
   })
 
   it('should handle journey duplication errors', async () => {
-    const duplicateJourneyErrorMock: MockedResponse<JourneyDuplicate> = {
+    const duplicateJourneyErrorMock: MockLink.MockedResponse<JourneyDuplicate> = {
       request: {
         query: JOURNEY_DUPLICATE,
         variables: {
@@ -614,7 +615,7 @@ describe('CopyToTeamMenuItem', () => {
   })
 
   it('should handle journey duplication failure when no duplicate ID returned', async () => {
-    const duplicateJourneyFailMock: MockedResponse<JourneyDuplicate> = {
+    const duplicateJourneyFailMock: MockLink.MockedResponse<JourneyDuplicate> = {
       request: {
         query: JOURNEY_DUPLICATE,
         variables: {

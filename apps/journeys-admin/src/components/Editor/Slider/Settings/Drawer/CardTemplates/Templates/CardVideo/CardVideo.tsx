@@ -1,4 +1,5 @@
-import { Reference, gql, useMutation } from '@apollo/client'
+import { Reference, gql } from '@apollo/client';
+import { useMutation } from "@apollo/client/react";
 import ButtonBase from '@mui/material/ButtonBase'
 import Image from 'next/image'
 import type { ReactElement } from 'react'
