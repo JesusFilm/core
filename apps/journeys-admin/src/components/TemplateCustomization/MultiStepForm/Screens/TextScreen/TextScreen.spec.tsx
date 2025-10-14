@@ -11,6 +11,7 @@ import type {
 } from '../../../../../../__generated__/JourneyCustomizationFieldUpdate'
 
 import { JOURNEY_CUSTOMIZATION_FIELD_UPDATE, TextScreen } from './TextScreen'
+import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 
 describe('TextScreen', () => {
   const baseJourney = {
@@ -31,14 +32,12 @@ describe('TextScreen', () => {
         __typename: 'JourneyCustomizationField'
       }
     ]
-  }
+  } as unknown as JourneyFields
 
   it('renders editable tokens with initial values', () => {
     render(
       <MockedProvider>
-        <JourneyProvider
-          value={{ journey: baseJourney, variant: 'admin' }}
-        >
+        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
           <TextScreen
             handleNext={jest.fn()}
             handleScreenNavigation={jest.fn()}
@@ -55,9 +54,7 @@ describe('TextScreen', () => {
   it('updates value on blur and on Tab/Enter', () => {
     render(
       <MockedProvider>
-        <JourneyProvider
-          value={{ journey: baseJourney, variant: 'admin' }}
-        >
+        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
           <TextScreen
             handleNext={jest.fn()}
             handleScreenNavigation={jest.fn()}
@@ -117,9 +114,7 @@ describe('TextScreen', () => {
 
     render(
       <MockedProvider mocks={[journeyCustomizationFieldUpdate]}>
-        <JourneyProvider
-          value={{ journey: baseJourney, variant: 'admin' }}
-        >
+        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
           <TextScreen
             handleNext={handleNext}
             handleScreenNavigation={jest.fn()}
@@ -151,9 +146,7 @@ describe('TextScreen', () => {
     const handleNext = jest.fn()
     render(
       <MockedProvider>
-        <JourneyProvider
-          value={{ journey: baseJourney, variant: 'admin' }}
-        >
+        <JourneyProvider value={{ journey: baseJourney, variant: 'admin' }}>
           <TextScreen
             handleNext={handleNext}
             handleScreenNavigation={jest.fn()}

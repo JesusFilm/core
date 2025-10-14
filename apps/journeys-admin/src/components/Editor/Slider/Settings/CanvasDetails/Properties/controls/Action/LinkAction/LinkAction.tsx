@@ -27,7 +27,7 @@ export function LinkAction({ ref }: LinkActionProps): ReactElement {
     state: { selectedBlock: stateSelectedBlock, selectedStep }
   } = useEditor()
   const { addAction } = useActionCommand()
-  const selectedBlock = stateSelectedBlock
+  const selectedBlock = stateSelectedBlock as TreeBlock<ButtonBlock>
 
   const linkAction =
     selectedBlock?.action?.__typename === 'LinkAction'

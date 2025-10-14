@@ -276,7 +276,7 @@ describe('DoneScreen', () => {
   it('does not navigate when journey has no id', () => {
     const journeyWithoutId = {
       ...journey,
-      id: null
+      id: null as unknown as string
     }
 
     render(
