@@ -3,7 +3,6 @@ import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-
 import { intlFormat, parseISO } from 'date-fns'
 import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
@@ -12,9 +11,9 @@ import { useJourney } from '../../../libs/JourneyProvider'
 
 import { PreviewTemplateButton } from './PreviewTemplateButton'
 import { SocialImage } from './SocialImage'
+import { TemplateActionButton } from './TemplateActionButton'
 import { TemplateCreatorDetails } from './TemplateCreatorDetails/TemplateCreatorDetails'
 import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
-import { TemplateActionButton } from './TemplateActionButton'
 
 interface TemplateViewHeaderProps {
   isPublisher: boolean | undefined
