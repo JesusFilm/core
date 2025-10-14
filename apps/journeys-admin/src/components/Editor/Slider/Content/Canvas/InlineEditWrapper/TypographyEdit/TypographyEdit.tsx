@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from 'uuid'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { resolveJourneyCustomizationString } from '@core/journeys/ui/resolveJourneyCustomizationString'
 import { Typography } from '@core/journeys/ui/Typography'
 
 import {
@@ -14,8 +16,6 @@ import {
 } from '../../../../../../../../__generated__/TypographyBlockUpdateContent'
 import { TypographyFields } from '../../../../../../../../__generated__/TypographyFields'
 import { InlineEditInput } from '../InlineEditInput'
-import { resolveJourneyCustomizationString } from '@core/journeys/ui/resolveJourneyCustomizationString'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 export const TYPOGRAPHY_BLOCK_UPDATE_CONTENT = gql`
   mutation TypographyBlockUpdateContent($id: ID!, $content: String!) {

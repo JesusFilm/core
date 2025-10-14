@@ -3,11 +3,12 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { TitleEdit } from '../../../../Editor/Slider/Settings/SocialDetails/TitleEdit'
 import { DescriptionEdit } from '../../../../Editor/Slider/Settings/SocialDetails/DescriptionEdit'
+import { TitleEdit } from '../../../../Editor/Slider/Settings/SocialDetails/TitleEdit'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
-import { SocialScreenSocialImage } from './SocialScreenSocialImage'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
+
+import { SocialScreenSocialImage } from './SocialScreenSocialImage'
 
 interface SocialScreenProps {
   handleNext: () => void

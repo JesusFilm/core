@@ -1,11 +1,11 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor, within } from '@testing-library/react'
 
+import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
 
 import { LanguageScreenCardPreview } from './LanguageScreenCardPreview'
-import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
-import { MockedProvider } from '@apollo/client/testing'
 
 const mockJourney = {
   ...journey,

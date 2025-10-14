@@ -11,10 +11,10 @@ import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { TextResponseType } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
+import { useJourney } from '../../libs/JourneyProvider'
 import { TextField } from '../TextField'
 
 import { TextResponseFields } from './__generated__/TextResponseFields'
-import { useJourney } from '../../libs/JourneyProvider'
 import { getTextResponseValues } from './utils/getTextResponseValues'
 
 /**

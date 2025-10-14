@@ -1,6 +1,7 @@
 import { useLazyQuery } from '@apollo/client'
-import { graphql, VariablesOf } from '@core/shared/gql'
 import { useTranslation } from 'next-i18next'
+
+import { VariablesOf, graphql } from '@core/shared/gql'
 
 import { downloadCsv } from './utils/processContactsCsv/processContactsCsv'
 

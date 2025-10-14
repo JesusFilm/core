@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import { useState } from 'react'
 
 import { ContactDataForm } from './ContactDataForm'
-import { useState } from 'react'
 
 describe('ContactDataForm', () => {
   beforeEach(() => {

@@ -1,11 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react'
-import { http, HttpResponse } from 'msw'
+import { HttpResponse, http } from 'msw'
 // eslint-disable-next-line no-restricted-imports
 import { I18nextProvider } from 'react-i18next'
 
-import { server } from '../../../../../test/mswServer'
-import { makeI18n } from '../../../../../test/i18n'
 import { VideoContentFields_bibleCitations as BibleCitation } from '../../../../../__generated__/VideoContentFields'
+import { makeI18n } from '../../../../../test/i18n'
+import { server } from '../../../../../test/mswServer'
 
 import { BibleCitationCard } from './BibleCitationCard'
 

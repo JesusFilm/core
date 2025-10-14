@@ -3,8 +3,9 @@ import Step from '@mui/material/Step'
 import StepConnector from '@mui/material/StepConnector'
 import { StepIconProps } from '@mui/material/StepIcon'
 import Stepper from '@mui/material/Stepper'
-import Check from '@core/shared/ui/icons/Check'
 import { ReactElement } from 'react'
+
+import Check from '@core/shared/ui/icons/Check'
 
 interface ProgressStepperProps {
   activeStepNumber: number

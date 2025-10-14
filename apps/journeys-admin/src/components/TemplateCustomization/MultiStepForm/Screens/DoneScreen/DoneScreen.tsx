@@ -9,8 +9,9 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
-import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
+
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem'
+import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 
 interface DoneScreenProps {
   handleScreenNavigation?: (screen: CustomizationScreen) => void
