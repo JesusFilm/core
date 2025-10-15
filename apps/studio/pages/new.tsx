@@ -1180,26 +1180,6 @@ export default function NewPage() {
       const nextStep = currentStep + 1
       setCurrentStep(nextStep)
 
-      // Automatically save session when reaching the final step
-      if (nextStep === steps.length) {
-        userInputStorage.saveCurrentSession({
-          textContent,
-          images: imageAttachments,
-          aiResponse,
-          aiSteps: editableSteps,
-          imageAnalysisResults: imageAnalysisResults.map((result) => ({
-            imageSrc: result.imageSrc,
-            contentType: result.contentType,
-            extractedText: result.extractedText,
-            detailedDescription: result.detailedDescription,
-            confidence: result.confidence,
-            contentIdeas: result.contentIdeas
-          }))
-        })
-        setSavedSessions(userInputStorage.getAllSessions())
-        // Clear draft since session is now saved
-        userInputStorage.clearDraft()
-      }
     }
   }
 
@@ -1701,6 +1681,23 @@ Guidelines:
       setAiResponse(processedContent)
       const parsedSteps = parseGeneratedSteps(processedContent)
       setEditableSteps(parsedSteps)
+
+      // Save session after AI response is processed
+      userInputStorage.saveCurrentSession({
+        textContent,
+        images: imageAttachments,
+        aiResponse: processedContent,
+        aiSteps: parsedSteps,
+        imageAnalysisResults: imageAnalysisResults.map((result) => ({
+          imageSrc: result.imageSrc,
+          contentType: result.contentType,
+          extractedText: result.extractedText,
+          detailedDescription: result.detailedDescription,
+          confidence: result.confidence,
+          contentIdeas: result.contentIdeas
+        }))
+      })
+      setSavedSessions(userInputStorage.getAllSessions())
 
       // Track token usage
       accumulateUsage(data.usage)
@@ -4597,7 +4594,7 @@ Guidelines:
                     )}
 
                     {/* Generate Designs Button */}
-                    {editableSteps.length > 0 && (
+                    {editableSteps.length > 0 && !isProcessing && (
                       <div className="mt-8 pt-6 border-t border-border">
                         <Button
                           size="lg"
