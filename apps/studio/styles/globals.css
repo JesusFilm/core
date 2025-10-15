@@ -34,6 +34,44 @@
   --radius: var(--radius-md);
 }
 
+@layer components {
+  .xray-on [data-id] {
+    outline: 1px dashed rgba(0, 0, 0, 0.35);
+    position: relative;
+  }
+  /* Hide old pseudo-labels in favor of real clickable labels */
+  .xray-on [data-id]::after { display: none; }
+
+  /* Clickable X-ray label element */
+  .xray-on .xray-label {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 10px;
+    line-height: 1.2;
+    padding: 1px 4px;
+    border-radius: 3px;
+    pointer-events: auto;
+    z-index: 2147483647;
+    white-space: nowrap;
+    cursor: copy;
+    user-select: none;
+  }
+  .xray-on .xray-label:active {
+    filter: brightness(1.2);
+  }
+
+  /* Depth-based top offset (+4px per inner level) */
+  .xray-on [data-id] > .xray-label { top: 8px; }
+  .xray-on [data-id] [data-id] > .xray-label { top: 12px; }
+  .xray-on [data-id] [data-id] [data-id] > .xray-label { top: 16px; }
+  .xray-on [data-id] [data-id] [data-id] [data-id] > .xray-label { top: 20px; }
+  .xray-on [data-id] [data-id] [data-id] [data-id] [data-id] > .xray-label { top: 24px; }
+  .xray-on [data-id] [data-id] [data-id] [data-id] [data-id] [data-id] > .xray-label { top: 28px; }
+}
+
 @layer base {
   *,
   ::before,

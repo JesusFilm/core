@@ -231,17 +231,13 @@ const steps = [
 
 const chatContextOptions = [
   { text: 'Start a conversation', emoji: '💬' },
-  { text: 'Reconnect with someone', emoji: '👥' },
-  { text: 'Invite someone to talk more', emoji: '💭' },
-  { text: 'Say you\'re sorry', emoji: '🙏' },
-  { text: 'Encourage a friend', emoji: '✋' },
+  { text: 'Reconnect', emoji: '🙋‍♂️' },
+  { text: 'Invite to talk more', emoji: '💭' },
+  { text: "Say you're sorry", emoji: '🙇' },
+  { text: 'Encourage a friend', emoji: '🙌' },
   { text: 'Share your story', emoji: '📝' },
-  { text: 'Tell what God\'s done (testimony)', emoji: '👑' },
   { text: 'Share a verse', emoji: '📖' },
-  { text: 'Offer a prayer', emoji: '🤲' },
-  { text: 'Send a video', emoji: '🎥' },
-  { text: 'Recommend a podcast', emoji: '🎧' },
-  { text: 'Share a book or article', emoji: '📚' }
+  { text: 'Offer a prayer', emoji: '🤲' }
 ]
 
 // Removed - now using proper conversation history instead of RAG
@@ -285,7 +281,7 @@ Be thorough and accurate in your analysis.`
 
 // Category-specific sharing options
 const categorySharingOptions = {
-  'Chat/Comments': [
+  'Conversations': [
     'in a text with your friends',
     'in a group chat with your family',
     'in a prayer group on WhatsApp',
@@ -754,10 +750,10 @@ const RotatingText = React.memo(({
 
   // All rotating items for auto-rotation when not hovering
   const rotatingItems = [
-    // Chat/Comments - Blue gradient
+    // Conversations - Blue gradient
     {
       text: 'in a text with your friends',
-      category: 'Chat/Comments',
+      category: 'Conversations',
       colorClass: 'text-cyan-600'
     },
     {
@@ -784,7 +780,7 @@ const RotatingText = React.memo(({
     // Social Media - Purple/Pink/Red gradient
     {
       text: 'in a group chat with your family',
-      category: 'Chat/Comments',
+      category: 'Conversations',
       colorClass: 'text-cyan-600'
     },
     {
@@ -811,7 +807,7 @@ const RotatingText = React.memo(({
     // Website - Orange/Yellow/Amber gradient
     {
       text: 'in a prayer group on WhatsApp',
-      category: 'Chat/Comments',
+      category: 'Conversations',
       colorClass: 'text-cyan-600'
     },
     {
@@ -838,7 +834,7 @@ const RotatingText = React.memo(({
     // Print - Emerald/Green/Lime gradient
     {
       text: 'in YouTube comments',
-      category: 'Chat/Comments',
+      category: 'Conversations',
       colorClass: 'text-cyan-600'
     },
     {
@@ -865,7 +861,7 @@ const RotatingText = React.memo(({
     // Real Life - Rose/Pink/Fuchsia gradient
     {
       text: 'in a private message to someone in need',
-      category: 'Chat/Comments',
+      category: 'Conversations',
       colorClass: 'text-cyan-600'
     },
     {
@@ -941,7 +937,7 @@ const RotatingText = React.memo(({
   const getCurrentColorClass = () => {
     if (isHovering && hoveredCategory) {
       const categoryColors = {
-        'Chat/Comments': 'text-cyan-600',
+        'Conversations': 'text-cyan-600',
         'Social Media': 'text-pink-500',
         Website: 'text-orange-500',
         Print: 'text-emerald-600',
@@ -1028,6 +1024,86 @@ export default function NewPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const hasGeneratedContent = aiResponse.trim().length > 0
+
+  // Toggle X-ray mode (Cmd+Shift+X) to show minimalistic component labels from data-id
+  useEffect(() => {
+    const getPageRoot = (): Element =>
+      (document.querySelector('[data-id="PageRoot"]') as Element) || document.body
+
+    const removeXrayLabels = (root: Element) => {
+      root.querySelectorAll('.xray-label').forEach((label) => label.remove())
+    }
+
+    const copyText = async (text: string) => {
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text)
+          return
+        }
+      } catch {}
+      const textarea = document.createElement('textarea')
+      textarea.value = text
+      textarea.style.position = 'fixed'
+      textarea.style.opacity = '0'
+      document.body.appendChild(textarea)
+      textarea.select()
+      try {
+        document.execCommand('copy')
+      } finally {
+        document.body.removeChild(textarea)
+      }
+    }
+
+    const attachXrayLabels = (root: Element) => {
+      const elements = root.querySelectorAll('[data-id]')
+      elements.forEach((el) => {
+        const host = el as HTMLElement
+        if (host.querySelector(':scope > .xray-label')) return
+        const label = document.createElement('div')
+        label.className = 'xray-label'
+        const name = host.getAttribute('data-id') || ''
+        label.textContent = name
+        label.setAttribute('role', 'button')
+        label.setAttribute('tabindex', '0')
+        label.setAttribute('aria-label', `Copy component id ${name}`)
+        const handleClick = (ev: MouseEvent) => {
+          ev.stopPropagation()
+          void copyText(name)
+        }
+        const handleKey = (ev: KeyboardEvent) => {
+          const key = ev.key.toLowerCase()
+          if (key === 'enter' || key === ' ') {
+            ev.preventDefault()
+            ev.stopPropagation()
+            void copyText(name)
+          }
+        }
+        label.addEventListener('click', handleClick)
+        label.addEventListener('keydown', handleKey as unknown as EventListener)
+        host.insertBefore(label, host.firstChild)
+      })
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!event.metaKey || !event.shiftKey) return
+      if (event.key.toLowerCase() !== 'x') return
+      const target = event.target as HTMLElement | null
+      if (target && target.closest('input, textarea, [contenteditable="true"]')) return
+      document.documentElement.classList.toggle('xray-on')
+      const root = getPageRoot()
+      if (document.documentElement.classList.contains('xray-on')) {
+        attachXrayLabels(root)
+      } else {
+        removeXrayLabels(root)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    // If xray is already on (hot reload), ensure labels exist
+    if (document.documentElement.classList.contains('xray-on')) {
+      attachXrayLabels(getPageRoot())
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   // Create stable handlers for step interactions to prevent re-renders
   const stepHandlers = useMemo(() => {
@@ -2430,14 +2506,14 @@ Guidelines:
 
   return (
     <>
-      <Head>
+      <Head data-id="Head">
         <title>Create New Content | Studio | Jesus Film Project</title>
       </Head>
-      <div className="min-h-screen bg-stone-100 text-foreground">
-        <header className="border-b border-border bg-background backdrop-blur">
-          <div className="container mx-auto px-4 py-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
+      <div className="min-h-screen bg-stone-100 text-foreground" data-id="PageRoot">
+        <header className="border-b border-border bg-background backdrop-blur" data-id="Header">
+          <div className="container mx-auto px-4 py-6" data-id="HeaderContainer">
+            <div className="flex items-center justify-between" data-id="HeaderRow">
+              <div className="flex items-center gap-4" data-id="HeaderBranding">
                 <Image
                   src="/jesusfilm-sign.svg"
                   alt="Jesus Film Project"
@@ -2447,7 +2523,7 @@ Guidelines:
                 />
                 <h1 className="text-2xl font-bold text-foreground">Studio</h1>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4" data-id="HeaderActions">
                 {(totalTokensUsed.input > 0 || totalTokensUsed.output > 0) && (
                   <div
                     className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm transition-colors duration-300 ${
@@ -2816,8 +2892,8 @@ Guidelines:
         </header>
 
         {/* Stepper */}
-        <div className="border-b border-border bg-stone-100 hidden">
-          <div className="container mx-auto px-4 py-6">
+        <div className="border-b border-border bg-stone-100 hidden" data-id="Stepper">
+          <div className="container mx-auto px-4 py-6" data-id="StepperContainer">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 {steps.map((step, index) => (
@@ -2932,6 +3008,7 @@ Guidelines:
         )}
 
         <main
+          data-id="Main"
           className="container mx-auto px-4 py-6 relative"
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -2950,7 +3027,7 @@ Guidelines:
             <>
         
 
-              <div className={`max-w-4xl mx-auto transition-all duration-500 ease-in-out}`} suppressHydrationWarning>
+              <div className={`max-w-4xl mx-auto transition-all duration-500 ease-in-out}`} suppressHydrationWarning data-id="Step1Container">
                 <Card className="bg-transparent border-0 shadow-none">
                    
                   <CardHeader
@@ -2959,17 +3036,17 @@ Guidelines:
                       ? 'opacity-0 max-h-0 py-0 pointer-events-none'
                       : 'opacity-100 max-h-full  '
                   }`}>
-                    <div className="flex items-start justify-between gap-8 mb-4">
-                      <blockquote className="text-xl font-medium text-stone-950 text-balance w-3/5 text-left z-30 animate-bible-quote-appear">
+                    <div className="flex items-start justify-between gap-8 mb-4" data-id="HeroRow">
+                      <blockquote className="text-xl font-medium text-stone-950 text-balance w-3/5 text-left z-30 animate-bible-quote-appear" data-id="Verse">
                         &ldquo;Let your conversation be always{' '}
                         <span className="animate-glow-delay">full&nbsp;of&nbsp;grace</span>,
-                        seasoned&nbsp;with&nbsp;salt, so that you may know how to
+                        seasoned&nbsp;with&nbsp;salt, so&nbsp;that&nbsp;you&nbsp;may know how to
                         answer everyone.&rdquo;
                         <cite className="block mt-2 text-sm font-medium text-stone-500">
                           Colossians 4:5–6
                         </cite>
                       </blockquote>
-                      <p className="absolute block -bottom-40 text-center w-full text-sm font-medium text-stone-400 opacity-0 animate-fade-in-out [animation-delay:1200ms] z-100 uppercase tracking-widest">
+                      <p className="absolute block -bottom-40 text-center w-full text-sm font-medium text-stone-400 opacity-0 animate-fade-in-out [animation-delay:1200ms] z-100 uppercase tracking-widest" data-id="IntroLabel">
                         Introducing: Sharing Studio...
                       </p>
 
@@ -2983,7 +3060,7 @@ Guidelines:
                       />
                     )}
                       <CardTitle
-
+                      data-id="HeroTitle"
                       className="text-xl text-right flex-1 relative"
                       >
                         Share God's grace… <br />
@@ -2996,31 +3073,33 @@ Guidelines:
                       </CardTitle>
                     </div>
                   </CardHeader>
-                  <CardContent data-testid="section-channels" className="space-y-6">
+                  <CardContent data-testid="section-channels" className="space-y-6" data-id="ChannelsSection">
                     {/* Context Selector */}
-                    <div className="mb-8">
+                    <div className="mb-8" data-id="ContextSelector">
                       <div
                         className="grid grid-cols-5 gap-4"
+                        data-id="ContextGrid"
                         onMouseEnter={() => setIsTilesContainerHovered(true)}
                         onMouseLeave={() => setIsTilesContainerHovered(false)}
                         suppressHydrationWarning
                       >
-                        {/* Chat/Comments */}
+                        {/* Conversations */}
                         <div
+                          data-id="Tile-Conversations"
                           className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
-                            selectedContext === 'Chat/Comments'
+                            selectedContext === 'Conversations'
                               ? 'bg-gradient-to-br from-blue-500 via-cyan-600 to-teal-600 border-blue-500'
-                              : !isHovering && highlightedCategory === 'Chat/Comments'
+                              : !isHovering && highlightedCategory === 'Conversations'
                                 ? 'bg-transparent border-cyan-600'
                                 : `bg-transparent border-gray-300 ${
-                                    shouldShowHoverEffect('Chat/Comments')
+                                    shouldShowHoverEffect('Conversations')
                                       ? 'hover:bg-gradient-to-br hover:from-blue-500 hover:via-cyan-600 hover:to-teal-600 hover:border-cyan-600'
                                       : ''
                                   }`
                           }`}
-                          onClick={() => handleContextChange('Chat/Comments')}
+                          onClick={() => handleContextChange('Conversations')}
                           onMouseEnter={() => {
-                            setHoveredCategory('Chat/Comments')
+                            setHoveredCategory('Conversations')
                             setIsHovering(true)
                           }}
                           onMouseLeave={() => {
@@ -3029,12 +3108,12 @@ Guidelines:
                           }}
                         >
                           {!(collapsedTiles && !isTilesContainerHovered) && (
-                            <div className="p-3">
+                            <div className="p-3" data-id="Tile-Conversations-Icon">
                               <MessageSquare
                                 className={`w-8 h-8 ${
-                                  selectedContext === 'Chat/Comments'
+                                  selectedContext === 'Conversations'
                                     ? 'text-white drop-shadow-lg'
-                                    : !isHovering && highlightedCategory === 'Chat/Comments'
+                                    : !isHovering && highlightedCategory === 'Conversations'
                                       ? 'text-cyan-600'
                                       : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                                 }`}
@@ -3042,20 +3121,22 @@ Guidelines:
                             </div>
                           )}
                           <span
+                            data-id="Tile-Conversations-Label"
                             className={`font-medium text-sm text-center ${
-                              selectedContext === 'Chat/Comments'
+                              selectedContext === 'Conversations'
                                 ? 'text-white drop-shadow-lg'
-                                : !isHovering && highlightedCategory === 'Chat/Comments'
+                                : !isHovering && highlightedCategory === 'Conversations'
                                   ? 'text-cyan-600'
                                   : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                             }`}
                           >
-                            <span className="inline md:hidden">Chat</span><span className="hidden md:inline">Chat Comments</span>
+                            <span className="inline md:hidden">Conv.</span><span className="hidden md:inline">Conversations</span>
                           </span>
                         </div>
 
                         {/* Social Media */}
                         <div
+                          data-id="Tile-SocialMedia"
                           className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Social Media'
                               ? 'bg-gradient-to-br from-purple-500 via-pink-600 to-red-600 border-purple-500'
@@ -3078,7 +3159,7 @@ Guidelines:
                           }}
                         >
                           {!(collapsedTiles && !isTilesContainerHovered) && (
-                            <div className="p-3">
+                            <div className="p-3" data-id="Tile-SocialMedia-Icon">
                               <Users
                                 className={`w-8 h-8 ${
                                   selectedContext === 'Social Media'
@@ -3091,6 +3172,7 @@ Guidelines:
                             </div>
                           )}
                           <span
+                            data-id="Tile-SocialMedia-Label"
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Social Media'
                                 ? 'text-white drop-shadow-lg'
@@ -3105,6 +3187,7 @@ Guidelines:
 
                         {/* Website */}
                         <div
+                          data-id="Tile-Website"
                           className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Website'
                               ? 'bg-gradient-to-br from-orange-500 via-yellow-600 to-amber-600 border-orange-500'
@@ -3127,7 +3210,7 @@ Guidelines:
                           }}
                         >
                           {!(collapsedTiles && !isTilesContainerHovered) && (
-                            <div className="p-3">
+                            <div className="p-3" data-id="Tile-Website-Icon">
                               <Globe
                                 className={`w-8 h-8 ${
                                   selectedContext === 'Website'
@@ -3140,6 +3223,7 @@ Guidelines:
                             </div>
                           )}
                           <span
+                            data-id="Tile-Website-Label"
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Website'
                                 ? 'text-white drop-shadow-lg'
@@ -3154,6 +3238,7 @@ Guidelines:
 
                         {/* Print */}
                         <div
+                          data-id="Tile-Print"
                           className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Print'
                               ? 'bg-gradient-to-br from-emerald-500 via-green-600 to-lime-600 border-emerald-500'
@@ -3176,7 +3261,7 @@ Guidelines:
                           }}
                         >
                           {!(collapsedTiles && !isTilesContainerHovered) && (
-                            <div className="p-3">
+                            <div className="p-3" data-id="Tile-Print-Icon">
                               <FileText
                                 className={`w-8 h-8 ${
                                   selectedContext === 'Print'
@@ -3189,6 +3274,7 @@ Guidelines:
                             </div>
                           )}
                           <span
+                            data-id="Tile-Print-Label"
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Print'
                                 ? 'text-white drop-shadow-lg'
@@ -3252,15 +3338,15 @@ Guidelines:
                       </div>
                     </div>
 
-                    {/* Chat Context Options - shown when Chat/Comments is selected */}
-                    {selectedContext === 'Chat/Comments' && (
+                    {/* Chat Context Options - shown when Conversations is selected */}
+                    {selectedContext === 'Conversations' && (
                       <div className="mb-8">
                         {/* Regular options in flex wrap */}
                         <div className="flex flex-wrap gap-3 mb-4">
                           {chatContextOptions.map((option, index) => (
                             <div
                               key={option.text}
-                              className={`relative w-fit px-4 py-2 border rounded-xl cursor-pointer hover:bg-white hover:scale-102 transition-all duration-300 ${
+                              className={`relative w-fit px-4 py-2 border-2 rounded-xl cursor-pointer hover:bg-white hover:scale-102 transition-all duration-300 ${
                                 selectedChatContext === option.text
                                   ? 'border-blue-500 bg-blue-50'
                                   : 'border-gray-300 hover:border-gray-400'
@@ -3281,10 +3367,10 @@ Guidelines:
                           ))}
                         </div>
 
-                        {/* Start from scratch option on its own line */}
-                        <div className="flex justify-start">
+                        {/* Start from scratch option aligned right and square */}
+                        <div className="flex justify-end pr-4 md:pr-8">
                           <div
-                            className={`relative w-fit px-4 py-2 border rounded-xl cursor-pointer hover:bg-white hover:scale-102 transition-all duration-300 ${
+                            className={`relative border-2 rounded-xl cursor-pointer hover:bg-white hover:scale-102 transition-all duration-300 flex items-center justify-center aspect-square w-14 h-14 shadow-sm hover:shadow ${
                               selectedChatContext === 'Start from scratch'
                                 ? 'border-blue-500 bg-blue-50'
                                 : 'border-gray-300 hover:border-gray-400'
@@ -3295,12 +3381,7 @@ Guidelines:
                             }}
                             onClick={() => setSelectedChatContext('Start from scratch')}
                           >
-                            <div className="flex items-center gap-2">
-                              <span className="text-lg">➕</span>
-                              <p className="text-sm text-gray-800 leading-relaxed">
-                                Start from scratch
-                              </p>
-                            </div>
+                            <span className="text-lg">➕</span>
                           </div>
                         </div>
                       </div>
