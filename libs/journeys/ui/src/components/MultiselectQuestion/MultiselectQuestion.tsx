@@ -96,12 +96,38 @@ export function MultiselectQuestion({
     return map
   }, [children])
 
+  const labelToId = useMemo(() => {
+    const map = new Map<string, string>()
+    children?.forEach((option: any) => {
+      if (option.__typename === 'MultiselectOptionBlock') {
+        map.set(option.label as string, option.id)
+      }
+    })
+    return map
+  }, [children])
+
   useEffect(() => {
     if (!isActiveBlockOrDescendant(blockId)) {
       setSelectedIds([])
       formik?.setFieldValue(blockId, [])
     }
   }, [blockId, blockHistory])
+
+  // Keep local selection state in sync with Formik values (e.g., after submit/reset)
+  useEffect(() => {
+    const fieldValues =
+      (formik?.values?.[blockId] as string[] | undefined) ?? []
+    if (fieldValues.length === 0) {
+      // Clear selection if formik values are empty (e.g., after resetForm)
+      setSelectedIds([])
+      return
+    }
+    // Map labels back to ids when possible
+    const nextIds = fieldValues
+      .map((label) => labelToId.get(label) ?? label)
+      .filter((v): v is string => typeof v === 'string')
+    setSelectedIds(nextIds)
+  }, [formik?.values?.[blockId], labelToId, blockId])
 
   function toggleSelect(optionId: string): void {
     setSelectedIds((prev) => {
