@@ -141,6 +141,10 @@ export function MultiselectQuestion({
       // sync with Card Formik using labels (not ids) so submissions send labels
       const nextLabels = next.map((id) => idToLabel.get(id) ?? id)
       void formik?.setFieldValue(blockId, nextLabels)
+      // Mark field as touched so validation errors can display on option click
+      if (typeof formik?.setFieldTouched === 'function') {
+        void formik.setFieldTouched(blockId, true, false)
+      }
       return next
     })
   }
@@ -193,8 +197,10 @@ export function MultiselectQuestion({
           const errorMessage = (formik as any)?.errors?.[blockId] as
             | string
             | undefined
+          const isTouched = (formik as any)?.touched?.[blockId]
           const submitCount = (formik as any)?.submitCount ?? 0
-          const showError = Boolean(errorMessage) && submitCount > 0
+          const showError =
+            Boolean(errorMessage) && (isTouched || submitCount > 0)
           if (!showError) return null
           return (
             <Typography variant="caption" color="error" sx={{ mt: 1 }}>
