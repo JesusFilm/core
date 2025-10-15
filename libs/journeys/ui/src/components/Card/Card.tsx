@@ -275,6 +275,7 @@ export function Card({
 
   return (
     <Formik
+      key={`card-formik-${activeBlock?.id ?? id}`}
       initialValues={formikInitialValues}
       onSubmit={handleFormSubmit}
       validationSchema={validationSchema}
