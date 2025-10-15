@@ -4597,7 +4597,7 @@ Guidelines:
                     )}
 
                     {/* Generate Designs Button */}
-                    {editableSteps.length > 0 && !aiResponse.trim() && (
+                    {editableSteps.length > 0 && (
                       <div className="mt-8 pt-6 border-t border-border">
                         <Button
                           size="lg"
