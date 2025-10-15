@@ -7,6 +7,7 @@ import {
   Facebook,
   FileText,
   Globe,
+  HelpCircle,
   History,
   Image as ImageIcon,
   Info,
@@ -977,6 +978,7 @@ export default function NewPage() {
   const [isTilesContainerHovered, setIsTilesContainerHovered] = useState<boolean>(false)
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [isSessionsOpen, setIsSessionsOpen] = useState(false)
   const [unsplashApiKey, setUnsplashApiKey] = useState('')
   const [textContent, setTextContent] = useState('')
   const [aiResponse, setAiResponse] = useState('')
@@ -2566,6 +2568,14 @@ Guidelines:
                     </span>
                   </div>
                 )}
+                <Button
+                  variant="ghost"
+                  className="h-8 w-8 p-3 cursor-pointer hover:!bg-transparent group"
+                  onClick={() => setIsSessionsOpen(v => !v)}
+                >
+                  <History className="!h-5 !w-5 group-hover:!text-primary transition-colors" />
+                  <span className="sr-only">Sessions</span>
+                </Button>
                 <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
                   <DialogTrigger asChild>
                     <Button
@@ -2950,15 +2960,14 @@ Guidelines:
           </div>
         </div>
 
-        {/* Previous Requests Accordion */}
-        {savedSessions.length > 0 && (
+        {/* Previous Sessions */}
+        {isSessionsOpen && savedSessions.length > 0 && (
           <div className="max-w-4xl mx-auto mb-8">
-            <Accordion
-              title="Your Previous Sessions"
-              defaultOpen={false}
-              className="border-muted"
-              icon={<History className="w-4 h-4 text-muted-foreground" />}
-            >
+            <div className="border border-muted rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <History className="w-4 h-4 text-muted-foreground" />
+                <span className="text-sm font-medium text-muted-foreground">Previous Sessions</span>
+              </div>
               <div className="space-y-3">
                 {savedSessions.map((session) => (
                   <Card key={session.id} className="p-3 border-muted">
@@ -3003,7 +3012,7 @@ Guidelines:
                   </Card>
                 ))}
               </div>
-            </Accordion>
+            </div>
           </div>
         )}
 
@@ -3037,10 +3046,10 @@ Guidelines:
                       : 'opacity-100 max-h-full  '
                   }`}>
                     <div className="flex items-start justify-between gap-8 mb-4" data-id="HeroRow">
-                      <blockquote className="text-xl font-medium text-stone-950 text-balance w-3/5 text-left z-30 animate-bible-quote-appear" data-id="Verse">
+                      <blockquote className="text-xl font-medium text-stone-950 text-balance w-full text-center z-30 animate-bible-quote-appear py-12" data-id="Verse">
                         &ldquo;Let your conversation be always{' '}
-                        <span className="animate-glow-delay">full&nbsp;of&nbsp;grace</span>,
-                        seasoned&nbsp;with&nbsp;salt, so&nbsp;that&nbsp;you&nbsp;may know how to
+                        <span className="animate-gradient-wave animate-glow-delay">full&nbsp;of&nbsp;grace,
+                        seasoned&nbsp;with&nbsp;salt</span>, so&nbsp;that&nbsp;you&nbsp;may know how to
                         answer everyone.&rdquo;
                         <cite className="block mt-2 text-sm font-medium text-stone-500">
                           Colossians 4:5–6
@@ -3059,18 +3068,23 @@ Guidelines:
                         }
                       />
                     )}
+                    </div>
+                    <div className="flex justify-between items-center mb-4">
                       <CardTitle
                       data-id="HeroTitle"
-                      className="text-xl text-right flex-1 relative"
+                      className="text-2xl text-left relative"
                       >
-                        Share God's grace… <br />
-                        <RotatingText
+                        Share God's grace… <RotatingText
                           onCategoryChange={handleCategoryChange}
                           hoveredCategory={hoveredCategory}
                           isHovering={isHovering}
                           isAnimationStopped={isAnimationStopped}
                         />
                       </CardTitle>
+                      <Button variant="link" size="sm" className="">
+                        <HelpCircle className="h-4 w-4" />
+                        How it works
+                      </Button>
                     </div>
                   </CardHeader>
                   <CardContent data-testid="section-channels" className="space-y-6" data-id="ChannelsSection">
@@ -3086,7 +3100,7 @@ Guidelines:
                         {/* Conversations */}
                         <div
                           data-id="Tile-Conversations"
-                          className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
+                          className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-3' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Conversations'
                               ? 'bg-gradient-to-br from-blue-500 via-cyan-600 to-teal-600 border-blue-500'
                               : !isHovering && highlightedCategory === 'Conversations'
@@ -3365,24 +3379,6 @@ Guidelines:
                               </div>
                             </div>
                           ))}
-                        </div>
-
-                        {/* Start from scratch option aligned right and square */}
-                        <div className="flex justify-end pr-4 md:pr-8">
-                          <div
-                            className={`relative border-2 rounded-xl cursor-pointer hover:bg-white hover:scale-102 transition-all duration-300 flex items-center justify-center aspect-square w-14 h-14 shadow-sm hover:shadow ${
-                              selectedChatContext === 'Start from scratch'
-                                ? 'border-blue-500 bg-blue-50'
-                                : 'border-gray-300 hover:border-gray-400'
-                            }`}
-                            style={{
-                              animationDelay: `${chatContextOptions.length * 0.1}s`,
-                              animationFillMode: 'forwards'
-                            }}
-                            onClick={() => setSelectedChatContext('Start from scratch')}
-                          >
-                            <span className="text-lg">➕</span>
-                          </div>
                         </div>
                       </div>
                     )}

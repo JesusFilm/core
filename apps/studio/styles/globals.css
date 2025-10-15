@@ -261,6 +261,34 @@
     }
   }
 
+  .animate-gradient-wave {
+    background: linear-gradient(
+      90deg,
+      rgb(12 9 10) 0%,
+      rgb(41 37 36) 25%,
+      rgb(194, 150, 119) 50%,
+      rgb(41 37 36) 75%,
+      rgb(12 9 10) 100%
+    );
+    background-size: 200% 200%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientWave 10s ease-in-out infinite;
+  }
+
+  @keyframes gradientWave {
+    0% {
+      background-position: 0% 50%;
+    }
+    15% {
+      background-position: 150% 50%;
+    }
+    100% {
+      background-position:0% 50%;
+    }
+  }
+
   .scrollbar-hide {
     -ms-overflow-style: none;  /* Internet Explorer 10+ */
     scrollbar-width: none;  /* Firefox */
