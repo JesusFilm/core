@@ -14,9 +14,8 @@ import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
-import { MultiselectOption } from '../MultiselectOption/MultiselectOption'
-
 import { StyledListMultiselectOption } from '../MultiselectOption'
+import { MultiselectOption } from '../MultiselectOption/MultiselectOption'
 
 export const MULTISELECT_SUBMISSION_EVENT_CREATE = gql`
   mutation MultiselectSubmissionEventCreate(

@@ -1,14 +1,14 @@
 import Button, { ButtonProps } from '@mui/material/Button'
-import { styled } from '@mui/material/styles'
+import { styled , useTheme } from '@mui/material/styles'
 import { MouseEvent, ReactElement } from 'react'
-import { useTheme } from '@mui/material/styles'
+
+import CheckSquareContainedIcon from '@core/shared/ui/icons/CheckSquareContained'
+import SquareIcon from '@core/shared/ui/icons/Square'
 
 import type { TreeBlock } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 
 import { MultiselectOptionFields } from './__generated__/MultiselectOptionFields'
-import CheckSquareContainedIcon from '@core/shared/ui/icons/CheckSquareContained'
-import SquareIcon from '@core/shared/ui/icons/Square'
 
 export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
   theme

@@ -5,13 +5,13 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
-import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
-import { RadioQuestionFields } from '../RadioQuestion/__generated__/RadioQuestionFields'
-import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
 import {
   BlockFields_MultiselectBlock as MultiselectBlock,
   BlockFields_MultiselectOptionBlock as MultiselectOptionBlock
 } from '../../libs/block/__generated__/BlockFields'
+import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
+import { RadioQuestionFields } from '../RadioQuestion/__generated__/RadioQuestionFields'
+import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
 
 import { BlockRenderer } from './BlockRenderer'
 

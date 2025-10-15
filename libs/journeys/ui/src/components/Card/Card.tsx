@@ -16,19 +16,19 @@ import { useJourney } from '../../libs/JourneyProvider'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
+import { MULTISELECT_SUBMISSION_EVENT_CREATE } from '../MultiselectQuestion'
+import { MultiselectSubmissionEventCreate } from '../MultiselectQuestion/__generated__/MultiselectSubmissionEventCreate'
 import { StepFields } from '../Step/__generated__/StepFields'
 import { TextResponseSubmissionEventCreate } from '../TextResponse/__generated__/TextResponseSubmissionEventCreate'
 import { TEXT_RESPONSE_SUBMISSION_EVENT_CREATE } from '../TextResponse/TextResponse'
 import { VideoFields } from '../Video/__generated__/VideoFields'
-import { MULTISELECT_SUBMISSION_EVENT_CREATE } from '../MultiselectQuestion'
-import { MultiselectSubmissionEventCreate } from '../MultiselectQuestion/__generated__/MultiselectSubmissionEventCreate'
 
 import { CardFields } from './__generated__/CardFields'
 import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
 import { getFormInitialValues } from './utils/getFormInitialValues'
-import { getTextResponseBlocks } from './utils/getTextResponseBlocks'
 import { getMultiselectBlocks } from './utils/getMultiselectBlocks'
+import { getTextResponseBlocks } from './utils/getTextResponseBlocks'
 import { getValidationSchema } from './utils/getValidationSchema/getValidationSchema'
 
 export const STEP_NEXT_EVENT_CREATE = gql`
@@ -120,7 +120,7 @@ export function Card({
     (block) =>
       block.id === coverBlockId &&
       (block.__typename === 'ImageBlock' || block.__typename === 'VideoBlock')
-  ) as TreeBlock<ImageFields | VideoFields> | undefined
+  )
 
   const videoBlock =
     coverBlock?.__typename === 'VideoBlock' ? coverBlock : undefined
