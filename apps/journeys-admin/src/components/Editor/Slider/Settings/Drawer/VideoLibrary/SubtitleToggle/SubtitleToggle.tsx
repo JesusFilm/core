@@ -83,7 +83,10 @@ export function SubtitleToggle({
               wordWrap: 'break-word',
               textAlign: 'center',
               lineHeight: 1.4,
-              padding: '8px 12px'
+              padding: '8px 12px',
+              backgroundColor: 'secondary.dark',
+              fontSize: '12px',
+              fontWeight: 400
             }
           }
         }}
