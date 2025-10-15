@@ -49,7 +49,7 @@ export function SubtitleToggle({
         sx={{
           fontWeight: subtitleEnabled && hasSubtitles ? 600 : 400,
           color:
-            subtitleEnabled && hasSubtitles ? 'primary.main' : 'text.secondary'
+            subtitleEnabled && hasSubtitles ? 'text.primary' : 'text.secondary'
         }}
       >
         {t('Enable Subtitles')}
