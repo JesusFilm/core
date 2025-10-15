@@ -2932,7 +2932,7 @@ Guidelines:
         )}
 
         <main
-          className="container mx-auto px-4 py-12 relative"
+          className="container mx-auto px-4 py-6 relative"
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
@@ -2948,22 +2948,30 @@ Guidelines:
           {/* Step 1: Content */}
           {currentStep === 1 && (
             <>
-              <div className="max-w-4xl mx-auto">
-                <Card className="bg-transparent border-0 shadow-none">
-                  <CardHeader className="text-center mb-6 relative">
-                    <blockquote className="text-xl font-medium text-stone-950 mb-4 text-balance z-30 animate-bible-quote-appear">
-                      &ldquo;Let your conversation be always{' '}
-                      <span className="animate-glow-delay">full&nbsp;of&nbsp;grace</span>,
-                      seasoned&nbsp;with&nbsp;salt, so that you may know how to
-                      answer everyone.&rdquo;
-                      <cite className="block mt-2 text-sm font-medium text-stone-500 opacity-0 animate-fade-in-up  [animation-delay:400ms]">
-                        Colossians 4:5–6
-                      </cite>
-                    </blockquote>
+        
 
-                    <p className="absolute block -bottom-40 text-center w-full text-sm font-medium text-stone-400 opacity-0 animate-fade-in-out [animation-delay:1200ms] z-100 uppercase tracking-widest">
-                      Introducing: Sharing Studio...
-                    </p>
+              <div className={`max-w-4xl mx-auto transition-all duration-500 ease-in-out}`} suppressHydrationWarning>
+                <Card className="bg-transparent border-0 shadow-none">
+                   
+                  <CardHeader
+                  className={`relative w-full transition-all duration-500 ease-out ${
+                    isContextContainerHidden
+                      ? 'opacity-0 max-h-0 py-0 pointer-events-none'
+                      : 'opacity-100 max-h-full  '
+                  }`}>
+                    <div className="flex items-start justify-between gap-8 mb-4">
+                      <blockquote className="text-xl font-medium text-stone-950 text-balance w-3/5 text-left z-30 animate-bible-quote-appear">
+                        &ldquo;Let your conversation be always{' '}
+                        <span className="animate-glow-delay">full&nbsp;of&nbsp;grace</span>,
+                        seasoned&nbsp;with&nbsp;salt, so that you may know how to
+                        answer everyone.&rdquo;
+                        <cite className="block mt-2 text-sm font-medium text-stone-500">
+                          Colossians 4:5–6
+                        </cite>
+                      </blockquote>
+                      <p className="absolute block -bottom-40 text-center w-full text-sm font-medium text-stone-400 opacity-0 animate-fade-in-out [animation-delay:1200ms] z-100 uppercase tracking-widest">
+                        Introducing: Sharing Studio...
+                      </p>
 
                     {showTestimonialBackground && (
                       <div
@@ -2974,22 +2982,10 @@ Guidelines:
                         }
                       />
                     )}
-                  </CardHeader>
-                </Card>
-              </div>
+                      <CardTitle
 
-              <hr className="w-full border-t border-stone-200 my-8" />
-
-              <div className={`max-w-4xl mx-auto transition-all duration-500 ease-in-out}`} suppressHydrationWarning>
-                <Card className="bg-transparent border-0 shadow-none">
-                  <CardHeader
-                  className={`ext-left w-full transition-all duration-500 ease-out ${
-                    isContextContainerHidden
-                      ? 'opacity-0 max-h-0 py-0 pointer-events-none'
-                      : 'opacity-100 max-h-full  '
-                  }`}>
-                    <div className="flex items-center justify-between gap-4 mb-4">
-                      <CardTitle className="text-2xl">
+                      className="text-xl text-right flex-1 relative"
+                      >
                         Share God's grace… <br />
                         <RotatingText
                           onCategoryChange={handleCategoryChange}
@@ -2998,7 +2994,6 @@ Guidelines:
                           isAnimationStopped={isAnimationStopped}
                         />
                       </CardTitle>
-                      {/* <p className="text-sm text-muted-foreground text-right">Choose where you will share today's message</p> */}
                     </div>
                   </CardHeader>
                   <CardContent data-testid="section-channels" className="space-y-6">
@@ -3373,7 +3368,7 @@ Guidelines:
                         <Textarea
                           ref={textareaRef}
                           placeholder="Enter your text content here... You can also paste or drop images directly."
-                          className={`relative shadow-none resize-none bg-transparent pr-12 pb-16 px-4 border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-base scrollbar-hide min-h-[100px] h-auto overflow-y-hidden ${
+                          className={`relative shadow-none resize-none bg-transparent pr-12 pb-16 px-4 border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-base scrollbar-hide min-h-[200px] h-auto overflow-y-hidden ${
                             animatingTextarea ? 'animate-text-appear' : ''
                           }`}
                           onPaste={handlePaste}

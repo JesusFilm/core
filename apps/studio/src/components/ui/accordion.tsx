@@ -16,14 +16,14 @@ export function Accordion({ title, children, defaultOpen = false, className = ''
     <div className={`border border-border rounded-lg ${className}`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-4 text-left hover:bg-muted/50 transition-colors cursor-pointer"
+        className="w-full flex items-center justify-end p-4 hover:bg-muted/50 transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-2">
-          {icon}
           <span className="text-sm font-medium text-muted-foreground">{title}</span>
+          {icon}
         </div>
         <ChevronDown
-          className={`w-4 h-4 text-muted-foreground transition-transform ${
+          className={`w-4 h-4 text-muted-foreground transition-transform ml-2 ${
             isOpen ? 'transform rotate-180' : ''
           }`}
         />
