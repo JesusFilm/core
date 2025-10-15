@@ -22,12 +22,17 @@ interface IntegrationsButtonProps {
   url: string
   type?: IntegrationType
   showAddButton?: boolean
+  /** Optional override for integrations not yet in IntegrationType enum */
+  titleOverride?: string
+  srcOverride?: StaticImageData
 }
 
 export function IntegrationsButton({
   url,
   type,
-  showAddButton = false
+  showAddButton = false,
+  titleOverride,
+  srcOverride
 }: IntegrationsButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -39,6 +44,8 @@ export function IntegrationsButton({
   }
 
   function getIntegrationContent(): IntegrationContentProps {
+    if (titleOverride != null || srcOverride != null)
+      return { title: titleOverride ?? '', src: srcOverride }
     const defaultContent = { title: '', src: undefined }
     if (type == null) return defaultContent
     return IntegrationContent[type]
@@ -62,7 +69,7 @@ export function IntegrationsButton({
           backgroundColor: (theme) => theme.palette.grey[100]
         }
       }}
-      data-testid={`${type != null ? type : 'Add'}-IntegrationsButton`}
+      data-testid={`${type != null ? type : (titleOverride ?? 'Add')}-IntegrationsButton`}
     >
       <Box
         sx={{

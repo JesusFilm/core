@@ -29,6 +29,12 @@ export function Integrations(): ReactElement {
             }/integrations/new/growth-spaces`}
             type={IntegrationType.growthSpaces}
           />
+          <IntegrationsButton
+            url={`/teams/${
+              router.query.teamId as string
+            }/integrations/new/google`}
+            titleOverride="Google"
+          />
         </Stack>
       </Container>
     </Paper>

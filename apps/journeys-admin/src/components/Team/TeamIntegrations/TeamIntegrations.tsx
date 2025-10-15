@@ -37,6 +37,9 @@ export function TeamIntegrations(): ReactElement {
                 key={`${integration.id}`}
                 url={`/teams/${teamId}/integrations/${integration.id}`}
                 type={integration.type}
+                titleOverride={
+                  integration.type === 'google' ? 'Google' : undefined
+                }
               />
             ))}
         </Stack>

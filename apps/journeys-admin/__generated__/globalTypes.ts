@@ -108,6 +108,7 @@ export enum IdType {
 }
 
 export enum IntegrationType {
+  google = "google",
   growthSpaces = "growthSpaces",
 }
 

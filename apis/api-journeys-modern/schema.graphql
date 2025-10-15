@@ -603,7 +603,47 @@ interface Integration {
   team: Team!
 }
 
+type IntegrationGoogle implements Integration
+  @shareable
+{
+  id: ID!
+  type: IntegrationType!
+  team: Team!
+  accessId: String
+  accessSecretPart: String
+}
+
+type IntegrationGrowthSpaces implements Integration
+  @shareable
+{
+  id: ID!
+  type: IntegrationType!
+  team: Team!
+  accessId: String
+  accessSecretPart: String
+  routes: [IntegrationGrowthSpacesRoute!]
+}
+
+input IntegrationGrowthSpacesCreateInput {
+  accessId: String!
+  accessSecret: String!
+  teamId: String!
+}
+
+type IntegrationGrowthSpacesRoute
+  @shareable
+{
+  id: String
+  name: String
+}
+
+input IntegrationGrowthSpacesUpdateInput {
+  accessId: String!
+  accessSecret: String!
+}
+
 enum IntegrationType {
+  google
   growthSpaces
 }
 

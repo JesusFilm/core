@@ -18,6 +18,8 @@ export class IntegrationResolver {
   @ResolveField()
   __resolveType(obj: { type: IntegrationType }): string {
     switch (obj.type) {
+      case 'google':
+        return 'IntegrationGoogle'
       case 'growthSpaces':
         return 'IntegrationGrowthSpaces'
       default:

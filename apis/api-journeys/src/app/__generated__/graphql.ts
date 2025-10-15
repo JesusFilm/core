@@ -199,6 +199,7 @@ export enum MessagePlatform {
 }
 
 export enum IntegrationType {
+    google = "google",
     growthSpaces = "growthSpaces"
 }
 
@@ -642,6 +643,17 @@ export class HostCreateInput {
     location?: Nullable<string>;
     src1?: Nullable<string>;
     src2?: Nullable<string>;
+}
+
+export class IntegrationGoogleCreateInput {
+    teamId: string;
+    code: string;
+    redirectUri: string;
+}
+
+export class IntegrationGoogleUpdateInput {
+    code: string;
+    redirectUri: string;
 }
 
 export class IntegrationGrowthSpacesCreateInput {
@@ -1162,6 +1174,10 @@ export abstract class IMutation {
     abstract hostUpdate(id: string, teamId: string, input?: Nullable<HostUpdateInput>): Host | Promise<Host>;
 
     abstract hostDelete(id: string, teamId: string): Host | Promise<Host>;
+
+    abstract integrationGoogleCreate(input: IntegrationGoogleCreateInput): IntegrationGoogle | Promise<IntegrationGoogle>;
+
+    abstract integrationGoogleUpdate(id: string, input: IntegrationGoogleUpdateInput): IntegrationGoogle | Promise<IntegrationGoogle>;
 
     abstract integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput): IntegrationGrowthSpaces | Promise<IntegrationGrowthSpaces>;
 
@@ -1705,6 +1721,15 @@ export class Host {
     location?: Nullable<string>;
     src1?: Nullable<string>;
     src2?: Nullable<string>;
+}
+
+export class IntegrationGoogle implements Integration {
+    __typename?: 'IntegrationGoogle';
+    id: string;
+    team: Team;
+    type: IntegrationType;
+    accessId: string;
+    accessSecretPart: string;
 }
 
 export class IntegrationGrowthSpaces implements Integration {

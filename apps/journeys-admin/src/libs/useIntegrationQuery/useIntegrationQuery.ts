@@ -23,6 +23,12 @@ export const GET_INTEGRATION = gql`
           name
         }
       }
+      ... on IntegrationGoogle {
+        id
+        accessId
+        type
+        accessSecretPart
+      }
     }
   }
 `
