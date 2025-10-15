@@ -139,9 +139,8 @@ export function VideoBlockEditorSettings({
           <SubtitleSelector
             selectedSubtitle={values.subtitle}
             availableLanguages={getMockSubtitles(selectedBlock?.title)}
-            onChange={(subtitle) => {
-              void setFieldValue('subtitle', subtitle)
-              console.log('Subtitle language changed:', subtitle ?? 'Off')
+            onChange={async (subtitle) => {
+              await setFieldValue('subtitle', subtitle)
               // TODO: Include subtitle in backend update when backend support is added
             }}
             disabled={selectedBlock == null}
