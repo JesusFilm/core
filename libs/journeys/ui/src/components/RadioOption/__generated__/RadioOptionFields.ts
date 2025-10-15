@@ -9,6 +9,12 @@ import { ContactActionType } from "./../../../../__generated__/globalTypes";
 // GraphQL fragment: RadioOptionFields
 // ====================================================
 
+export interface RadioOptionFields_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface RadioOptionFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -43,7 +49,7 @@ export interface RadioOptionFields_action_PhoneAction {
   contactAction: ContactActionType;
 }
 
-export type RadioOptionFields_action = RadioOptionFields_action_NavigateToBlockAction | RadioOptionFields_action_LinkAction | RadioOptionFields_action_EmailAction | RadioOptionFields_action_PhoneAction;
+export type RadioOptionFields_action = RadioOptionFields_action_ChatAction | RadioOptionFields_action_NavigateToBlockAction | RadioOptionFields_action_LinkAction | RadioOptionFields_action_EmailAction | RadioOptionFields_action_PhoneAction;
 
 export interface RadioOptionFields {
   __typename: "RadioOptionBlock";

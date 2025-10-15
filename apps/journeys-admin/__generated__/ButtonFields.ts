@@ -9,6 +9,12 @@ import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignm
 // GraphQL fragment: ButtonFields
 // ====================================================
 
+export interface ButtonFields_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface ButtonFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -43,7 +49,7 @@ export interface ButtonFields_action_PhoneAction {
   contactAction: ContactActionType;
 }
 
-export type ButtonFields_action = ButtonFields_action_NavigateToBlockAction | ButtonFields_action_LinkAction | ButtonFields_action_EmailAction | ButtonFields_action_PhoneAction;
+export type ButtonFields_action = ButtonFields_action_ChatAction | ButtonFields_action_NavigateToBlockAction | ButtonFields_action_LinkAction | ButtonFields_action_EmailAction | ButtonFields_action_PhoneAction;
 
 export interface ButtonFields_settings {
   __typename: "ButtonBlockSettings";

@@ -60,6 +60,12 @@ export interface VideoBlockCreate_videoBlockCreate_mediaVideo_YouTube {
 
 export type VideoBlockCreate_videoBlockCreate_mediaVideo = VideoBlockCreate_videoBlockCreate_mediaVideo_Video | VideoBlockCreate_videoBlockCreate_mediaVideo_MuxVideo | VideoBlockCreate_videoBlockCreate_mediaVideo_YouTube;
 
+export interface VideoBlockCreate_videoBlockCreate_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface VideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -94,7 +100,7 @@ export interface VideoBlockCreate_videoBlockCreate_action_PhoneAction {
   contactAction: ContactActionType;
 }
 
-export type VideoBlockCreate_videoBlockCreate_action = VideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | VideoBlockCreate_videoBlockCreate_action_LinkAction | VideoBlockCreate_videoBlockCreate_action_EmailAction | VideoBlockCreate_videoBlockCreate_action_PhoneAction;
+export type VideoBlockCreate_videoBlockCreate_action = VideoBlockCreate_videoBlockCreate_action_ChatAction | VideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | VideoBlockCreate_videoBlockCreate_action_LinkAction | VideoBlockCreate_videoBlockCreate_action_EmailAction | VideoBlockCreate_videoBlockCreate_action_PhoneAction;
 
 export interface VideoBlockCreate_videoBlockCreate {
   __typename: "VideoBlock";
