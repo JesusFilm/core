@@ -9,6 +9,12 @@ import { ContactActionType } from "./../../../../__generated__/globalTypes";
 // GraphQL fragment: SignUpFields
 // ====================================================
 
+export interface SignUpFields_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface SignUpFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -43,7 +49,7 @@ export interface SignUpFields_action_PhoneAction {
   contactAction: ContactActionType;
 }
 
-export type SignUpFields_action = SignUpFields_action_NavigateToBlockAction | SignUpFields_action_LinkAction | SignUpFields_action_EmailAction | SignUpFields_action_PhoneAction;
+export type SignUpFields_action = SignUpFields_action_ChatAction | SignUpFields_action_NavigateToBlockAction | SignUpFields_action_LinkAction | SignUpFields_action_EmailAction | SignUpFields_action_PhoneAction;
 
 export interface SignUpFields {
   __typename: "SignUpBlock";
