@@ -57,7 +57,6 @@ describe('TemplateCardPreview', () => {
       expect(getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(7)
     )
     expect(getByTestId('UseTemplatesSlide')).toBeInTheDocument()
-    // Verify that TemplateActionButton is rendered (renders skeleton when journey is null)
     expect(getByTestId('UseThisTemplateButtonSkeleton')).toBeInTheDocument()
   })
 
