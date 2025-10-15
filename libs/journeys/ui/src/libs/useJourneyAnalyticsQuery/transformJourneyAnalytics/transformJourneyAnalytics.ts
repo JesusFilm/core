@@ -169,6 +169,24 @@ function getLinkClicks(journeyEvents: PlausibleEvent[]): {
         linksVisited += events
       }
     }
+
+    // Include PhoneAction button clicks that are tracked as chatButtonClick events
+    if (
+      event === 'chatButtonClick' &&
+      target != null &&
+      target.includes('phone:')
+    ) {
+      chatsStarted += events
+    }
+
+    // Include videoComplete events that trigger phone actions
+    if (
+      event === 'videoComplete' &&
+      target != null &&
+      target.includes('phone:')
+    ) {
+      chatsStarted += events
+    }
   })
 
   return {

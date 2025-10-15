@@ -15,10 +15,10 @@ const LinkActionStory: Meta<typeof LinkAction> = {
   ...simpleComponentConfig,
   component: LinkAction,
   title:
-    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/ActionStates'
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/LinkAction'
 }
 
-export const Link: StoryObj<typeof LinkAction> = {
+export const LinkActionComponent: StoryObj<typeof LinkAction> = {
   render: () => {
     const selectedBlock = steps[1].children[0].children[3]
 
