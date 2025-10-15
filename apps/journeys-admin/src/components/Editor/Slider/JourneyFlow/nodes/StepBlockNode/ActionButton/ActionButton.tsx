@@ -6,12 +6,12 @@ import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useGetValueFromJourneyCustomizationString } from '@core/journeys/ui/useGetValueFromJourneyCustomizationString'
 
 import { BlockFields as Block } from '../../../../../../../../__generated__/BlockFields'
 import { useUpdateEdge } from '../../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../../BaseNode'
 import { ACTION_BUTTON_HEIGHT } from '../libs/sizes'
-import { useGetValueFromJourneyCustomizationString } from '@core/journeys/ui/useGetValueFromJourneyCustomizationString'
 
 interface BlockUIProperties {
   title: string

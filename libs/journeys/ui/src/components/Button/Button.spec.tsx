@@ -10,6 +10,7 @@ import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
+  ContactActionType,
   IconColor,
   IconName,
   IconSize,
@@ -632,7 +633,7 @@ describe('Button', () => {
     )
   })
 
-  it('should create a chatOpenEvent onClick', async () => {
+  it('should create a chatOpenEvent onClick for link action', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
     const mockPlausible = jest.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
@@ -788,14 +789,17 @@ describe('Button', () => {
     })
   })
 
-  it('should create a chatOpenEvent for PhoneAction', async () => {
+  it('should create a chatOpenEvent onClick for phone action', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
     const mockPlausible = jest.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
     const action: ButtonFields_action = {
       __typename: 'PhoneAction',
       parentBlockId: 'button',
-      gtmEventName: 'click'
+      gtmEventName: 'click',
+      phone: '+1234567890',
+      countryCode: 'US',
+      contactAction: ContactActionType.call
     }
 
     const buttonBlock = {

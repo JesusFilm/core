@@ -27,6 +27,10 @@ describe('actions', () => {
         {
           value: 'ChatAction',
           label: 'translation_Chat'
+        },
+        {
+          value: 'PhoneAction',
+          label: 'translation_Phone'
         }
       ])
     })

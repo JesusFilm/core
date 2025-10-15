@@ -3436,6 +3436,7 @@ enum EventType @join__type(graph: API_JOURNEYS_MODERN)  {
   StepViewEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
   StepNextEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
   StepPreviousEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  MultiselectSubmissionEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
   TextResponseSubmissionEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
   VideoStartEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
   VideoPlayEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 

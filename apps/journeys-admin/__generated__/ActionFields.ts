@@ -3,15 +3,11 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { ContactActionType } from "./globalTypes";
+
 // ====================================================
 // GraphQL fragment: ActionFields
 // ====================================================
-
-export interface ActionFields_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
 
 export interface ActionFields_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -47,4 +43,13 @@ export interface ActionFields_ChatAction {
   parentStepId: string | null;
 }
 
-export type ActionFields = ActionFields_PhoneAction | ActionFields_NavigateToBlockAction | ActionFields_LinkAction | ActionFields_EmailAction | ActionFields_ChatAction;
+export interface ActionFields_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type ActionFields = ActionFields_NavigateToBlockAction | ActionFields_LinkAction | ActionFields_EmailAction | ActionFields_ChatAction | ActionFields_PhoneAction;

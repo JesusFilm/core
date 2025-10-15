@@ -41,6 +41,11 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum ContactActionType {
+  call = "call",
+  text = "text",
+}
+
 export enum IconColor {
   action = "action",
   disabled = "disabled",

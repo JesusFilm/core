@@ -65,6 +65,7 @@ import { useUpdateEdge } from './libs/useUpdateEdge'
 import { NewStepButton } from './NewStepButton'
 import { ChatNode } from './nodes/ChatNode'
 import { LinkNode } from './nodes/LinkNode'
+import { PhoneNode } from './nodes/PhoneNode'
 import { ReferrerNode } from './nodes/ReferrerNode'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import {
@@ -536,6 +537,7 @@ export function JourneyFlow(): ReactElement {
       SocialPreview: SocialPreviewNode,
       Link: LinkNode,
       Chat: ChatNode,
+      Phone: PhoneNode,
       Referrer: ReferrerNode
     }),
     []

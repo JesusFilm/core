@@ -1,6 +1,7 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -9,14 +10,12 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import { BLOCK_ACTION_DELETE } from '../../../../../../../../libs/useBlockActionDeleteMutation/useBlockActionDeleteMutation'
-
-import { Action } from './Action'
-import { steps } from './data'
-
 import { blockActionEmailUpdateMock } from '../../../../../../../../libs/useBlockActionEmailUpdateMutation/useBlockActionEmailUpdateMutation.mock'
 import { blockActionLinkUpdateMock } from '../../../../../../../../libs/useBlockActionLinkUpdateMutation/useBlockActionLinkUpdateMutation.mock'
 import { blockActionChatUpdateMock } from '../../../../../../../../libs/useBlockActionChatUpdateMutation/useBlockActionChatUpdateMutation.mock'
-import userEvent from '@testing-library/user-event'
+
+import { Action } from './Action'
+import { steps } from './data'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

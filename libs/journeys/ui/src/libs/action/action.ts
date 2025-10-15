@@ -1,5 +1,6 @@
 import { NextRouter } from 'next/dist/client/router'
 
+import { ContactActionType } from '../../../__generated__/globalTypes'
 import { nextActiveBlock } from '../block'
 
 import { ActionFields } from './__generated__/ActionFields'
@@ -50,5 +51,13 @@ export function handleAction(
       } else {
         void router.push(action.chatUrl)?.then(() => window.location.reload())
       }
+      break
+    case 'PhoneAction':
+      if (action.contactAction === ContactActionType.text) {
+        window.location.href = `sms:${action.phone}`
+      } else {
+        window.location.href = `tel:${action.phone}`
+      }
+      break
   }
 }

@@ -3,15 +3,11 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { ContactActionType } from "./../../../../__generated__/globalTypes";
+
 // ====================================================
 // GraphQL fragment: SignUpFields
 // ====================================================
-
-export interface SignUpFields_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
 
 export interface SignUpFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -47,7 +43,16 @@ export interface SignUpFields_action_ChatAction {
   parentStepId: string | null;
 }
 
-export type SignUpFields_action = SignUpFields_action_PhoneAction | SignUpFields_action_NavigateToBlockAction | SignUpFields_action_LinkAction | SignUpFields_action_EmailAction | SignUpFields_action_ChatAction;
+export interface SignUpFields_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type SignUpFields_action = SignUpFields_action_NavigateToBlockAction | SignUpFields_action_LinkAction | SignUpFields_action_EmailAction | SignUpFields_action_ChatAction | SignUpFields_action_PhoneAction;
 
 export interface SignUpFields {
   __typename: "SignUpBlock";
