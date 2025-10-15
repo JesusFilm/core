@@ -108,7 +108,7 @@ export function MultiselectQuestion({
   useEffect(() => {
     if (!isActiveBlockOrDescendant(blockId)) {
       setSelectedIds([])
-      formik?.setFieldValue(blockId, [])
+      void formik?.setFieldValue(blockId, [])
     }
   }, [blockId, blockHistory])
 
@@ -140,7 +140,7 @@ export function MultiselectQuestion({
           })()
       // sync with Card Formik using labels (not ids) so submissions send labels
       const nextLabels = next.map((id) => idToLabel.get(id) ?? id)
-      formik?.setFieldValue(blockId, nextLabels)
+      void formik?.setFieldValue(blockId, nextLabels)
       return next
     })
   }
@@ -193,7 +193,6 @@ export function MultiselectQuestion({
           const errorMessage = (formik as any)?.errors?.[blockId] as
             | string
             | undefined
-          const isTouched = (formik as any)?.touched?.[blockId]
           const submitCount = (formik as any)?.submitCount ?? 0
           const showError = Boolean(errorMessage) && submitCount > 0
           if (!showError) return null
