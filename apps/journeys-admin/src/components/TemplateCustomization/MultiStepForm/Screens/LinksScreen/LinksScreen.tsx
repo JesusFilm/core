@@ -19,11 +19,12 @@ import { JourneyChatButtonUpdate } from '../../../../../../__generated__/Journey
 import { useBlockActionEmailUpdateMutation } from '../../../../../libs/useBlockActionEmailUpdateMutation'
 import { useBlockActionLinkUpdateMutation } from '../../../../../libs/useBlockActionLinkUpdateMutation'
 import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/ChatOption/Details/Details'
+import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { getJourneyLinks } from '../../../utils/getJourneyLinks'
+import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
+
 import { CardsPreview } from './CardsPreview'
 import { LinksForm } from './LinksForm'
-import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
-import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
 
 interface LinksScreenProps {
   handleNext: () => void

@@ -1,4 +1,5 @@
 import { gql, useMutation } from '@apollo/client'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -9,20 +10,19 @@ import { v4 as uuidv4 } from 'uuid'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import EyeOpen from '@core/shared/ui/icons/EyeOpen'
-import EyeClosed from '@core/shared/ui/icons/EyeClosed'
 import { useGetValueFromJourneyCustomizationString } from '@core/journeys/ui/useGetValueFromJourneyCustomizationString'
+import EyeClosed from '@core/shared/ui/icons/EyeClosed'
+import EyeOpen from '@core/shared/ui/icons/EyeOpen'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
-import {
-  TextResponseLabelUpdate,
-  TextResponseLabelUpdateVariables
-} from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
 import {
   TextResponseHideLabelUpdate,
   TextResponseHideLabelUpdateVariables
 } from '../../../../../../../../../../../__generated__/TextResponseHideLabelUpdate'
-import IconButton from '@mui/material/IconButton'
+import {
+  TextResponseLabelUpdate,
+  TextResponseLabelUpdateVariables
+} from '../../../../../../../../../../../__generated__/TextResponseLabelUpdate'
 
 /**
  * GraphQL mutation for updating the label text in a TextResponse block.
