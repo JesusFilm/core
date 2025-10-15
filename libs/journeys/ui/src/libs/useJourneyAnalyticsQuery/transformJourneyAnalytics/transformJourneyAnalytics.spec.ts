@@ -522,7 +522,7 @@ describe('transformJourneyAnalytics', () => {
         {
           __typename: 'PlausibleStatsResponse',
           property:
-            '{"stepId":"step1.id","event":"videoComplete","blockId":"video1.id","target":"phone:+1234567890"}',
+            '{"stepId":"step1.id","event":"videoTrigger","blockId":"video1.id","target":"phone:+1234567890"}',
           visitors: 4
         },
         {
@@ -539,7 +539,7 @@ describe('transformJourneyAnalytics', () => {
         {
           __typename: 'PlausibleStatsResponse',
           property:
-            '{"stepId":"step1.id","event":"videoComplete","blockId":"video1.id","target":""}',
+            '{"stepId":"step1.id","event":"videoTrigger","blockId":"video1.id","target":""}',
           visitors: 4
         },
         {
@@ -585,7 +585,7 @@ describe('transformJourneyAnalytics', () => {
         {
           __typename: 'PlausibleStatsResponse',
           property:
-            '{"stepId":"step1.id","event":"videoComplete","blockId":"video1.id","target":"phone:+9876543210"}',
+            '{"stepId":"step1.id","event":"videoTrigger","blockId":"video1.id","target":"phone:+9876543210"}',
           visitors: 3
         },
         {
@@ -614,7 +614,7 @@ describe('transformJourneyAnalytics', () => {
         {
           __typename: 'PlausibleStatsResponse',
           property:
-            '{"stepId":"step1.id","event":"videoComplete","blockId":"video1.id","target":""}',
+            '{"stepId":"step1.id","event":"videoTrigger","blockId":"video1.id","target":""}',
           visitors: 3
         },
         {

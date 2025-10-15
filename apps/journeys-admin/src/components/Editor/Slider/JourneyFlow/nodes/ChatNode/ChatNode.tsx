@@ -12,9 +12,8 @@ import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { getGoalDetails } from '@core/journeys/ui/getGoalDetails'
 
 import { BaseNode, HandleVariant } from '../BaseNode'
-import { LINK_NODE_HEIGHT, LINK_NODE_WIDTH } from '../StepBlockNode/libs/sizes'
-
 import { LinkNodeAnalytics } from '../LinkNode/LinkNodeAnalytics'
+import { LINK_NODE_HEIGHT, LINK_NODE_WIDTH } from '../StepBlockNode/libs/sizes'
 
 export function ChatNode({ id }: NodeProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

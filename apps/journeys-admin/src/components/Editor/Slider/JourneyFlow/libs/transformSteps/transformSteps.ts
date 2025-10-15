@@ -227,19 +227,16 @@ export function transformSteps(
     actionBlocks.reduce((actionCount, block, blockIndex) => {
       const actionType = block.action?.__typename
       const isPositioned = actionType ? isPositionedAction(actionType) : false
-
       const isChat = block.action?.__typename === 'ChatAction'
 
+      // Actions that create separate nodes (positioned actions + chat actions)
+      const createsNode = isPositioned || isChat
+
       const priorAction = actionCount > 0
-      // TODO: Check
-      const actionIndex = isLinkOrEmail || isChat ? actionCount : 0
+      const actionIndex = createsNode ? actionCount : 0
 
       processActionBlock(block, step, priorAction, actionIndex, blockIndex)
-      return isLinkOrEmail || isChat ? actionCount + 1 : actionCount
-      // const actionIndex = isPositioned ? actionCount : 0
-
-      // processActionBlock(block, step, priorAction, actionIndex, blockIndex)
-      // return isPositioned ? actionCount + 1 : actionCount
+      return createsNode ? actionCount + 1 : actionCount
     }, 0)
 
     nodes.push({

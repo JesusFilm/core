@@ -159,7 +159,6 @@ function getLinkClicks(journeyEvents: PlausibleEvent[]): {
   chatsStarted: number
   linksVisited: number
 } {
-  console.log('journeyEvents', journeyEvents)
   let chatsStarted = 0
   let linksVisited = 0
 
@@ -192,9 +191,9 @@ function getLinkClicks(journeyEvents: PlausibleEvent[]): {
       chatsStarted += events
     }
 
-    // Include videoComplete events that trigger phone actions
+    // Include videoTrigger events that trigger phone actions
     if (
-      event === 'videoComplete' &&
+      event === 'videoTrigger' &&
       target != null &&
       target.includes('phone:')
     ) {
