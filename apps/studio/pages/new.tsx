@@ -973,7 +973,7 @@ export default function NewPage() {
   const [selectedChatContext, setSelectedChatContext] = useState<string>('')
   const [collapsedTiles, setCollapsedTiles] = useState<boolean>(false)
   const [isContextContainerHidden, setIsContextContainerHidden] = useState<boolean>(false)
-  const highlightedCategoryRef = useRef<string>('')
+  const [highlightedCategory, setHighlightedCategory] = useState<string>('')
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [isHovering, setIsHovering] = useState<boolean>(false)
   const [isAnimationStopped, setIsAnimationStopped] = useState<boolean>(false)
@@ -1068,28 +1068,6 @@ export default function NewPage() {
   useEffect(() => {
     const allSessions = userInputStorage.getAllSessions()
     setSavedSessions(allSessions)
-
-    // Load draft if no current session
-    const draft = userInputStorage.loadDraft()
-    if (draft) {
-      setTextContent(draft.textContent)
-      setImageAttachments(draft.images)
-      setAiResponse(draft.aiResponse || '')
-      setEditableSteps(
-        draft.aiSteps ? normalizeGeneratedSteps(draft.aiSteps) : []
-      )
-      setImageAnalysisResults(
-        draft.imageAnalysisResults.map((result) => ({
-          ...result,
-          contentIdeas: result.contentIdeas || [],
-          isAnalyzing: false
-        }))
-      )
-      // Set textarea value directly
-      if (textareaRef.current) {
-        textareaRef.current.value = draft.textContent
-      }
-    }
   }, [])
 
   useEffect(() => {
@@ -1249,12 +1227,17 @@ export default function NewPage() {
     })
   }
 
-  const handleContextChange = (context: string) => {
+  const handleContextChange = useCallback((context: string) => {
     setSelectedContext(context)
     setIsContextContainerHidden(true)
-    highlightedCategoryRef.current = '' // Stop automatic highlight animation when a tile is selected
+    setHighlightedCategory('') // Stop automatic highlight animation when a tile is selected
     setIsAnimationStopped(true) // Stop the rotating text animation
-  }
+  }, [])
+
+  // Memoized callback to prevent unnecessary re-renders of RotatingText
+  const handleCategoryChange = useCallback((category: string) => {
+    setHighlightedCategory(category)
+  }, [])
 
   // Helper function to determine if a tile should show hover effects
   const shouldShowHoverEffect = (category: string) => {
@@ -1275,10 +1258,8 @@ export default function NewPage() {
       content: string
     }> = []
 
-    // System message with base instructions
-    messages.push({
-      role: 'system',
-      content: `You are a content creation assistant for Jesus Film Project. Based on the user's devotional content, create an engaging and shareable version that:
+    // Build system message with base instructions
+    let systemPrompt = `You are a content creation assistant for Jesus Film Project. Based on the user's devotional content, create an engaging and shareable version that:
 
 1. Maintains the core spiritual message
 2. Makes it suitable for social media sharing
@@ -1296,20 +1277,42 @@ Provide the response as JSON with this structure:
 {
   "steps": [
     {
-      "content": "# Short label for the step (max 6 words)\n\nMarkdown-formatted devotional copy for this step",
-      "keywords": ["singleword"],
+      "content": "# Short label for the step (max 6 words)\n\nMarkdown-formatted instagram sotry or messages copy for this step",
+      "keywords": "singleword-keyword, singleword-keyword, singleword-keyword",
       "mediaPrompt": "≤150 character prompt for an image/video generator"
     }
   ]
 }
 
 Guidelines:
-- Include 3-5 sequential steps tailored to the user's request.
+- Include 7-12 sequential steps tailored to the user's request.
 - Keep the core spiritual message while making each step social-ready.
-- Provide exactly one single-word keyword per step that is suitable for Unsplash image searches.
+- Provide three exactly single-word keywords per step that is suitable for Unsplash image searches.
 - The mediaPrompt should align with the step's tone and visuals.
 - Use markdown formatting inside the content field when helpful.
 - Begin each content field with a level-one markdown heading that states the step's short label (e.g., "# Let Your Light Shine") followed by a blank line.`
+
+    // Add image analysis context if available
+    if (imageAnalysisResults.length > 0) {
+      let imageContext = '\n\nCurrent session includes analyzed images:\n'
+      imageAnalysisResults.forEach((analysis, imgIndex) => {
+        imageContext += `\nImage ${imgIndex + 1} (${analysis.contentType}):\n`
+        if (analysis.extractedText) {
+          imageContext += `  Text: ${analysis.extractedText}\n`
+        }
+        if (analysis.contentIdeas && analysis.contentIdeas.length > 0) {
+          imageContext += `  Content Ideas: ${analysis.contentIdeas.join(', ')}\n`
+        }
+        if (analysis.detailedDescription) {
+          imageContext += `  Description: ${analysis.detailedDescription}\n`
+        }
+      })
+      systemPrompt += imageContext
+    }
+
+    messages.push({
+      role: 'system',
+      content: systemPrompt
     })
 
     // Add current session conversation history
@@ -1325,25 +1328,6 @@ Guidelines:
         role: 'assistant',
         content: aiResponse
       })
-    }
-
-    // Add image analysis context if available (only for first message in conversation)
-    if (messages.length === 1 && imageAnalysisResults.length > 0) {
-      let imageContext = '\n\nCurrent session includes analyzed images:\n'
-      imageAnalysisResults.forEach((analysis, imgIndex) => {
-        imageContext += `\nImage ${imgIndex + 1} (${analysis.contentType}):\n`
-        if (analysis.extractedText) {
-          imageContext += `  Text: ${analysis.extractedText}\n`
-        }
-        if (analysis.contentIdeas && analysis.contentIdeas.length > 0) {
-          imageContext += `  Content Ideas: ${analysis.contentIdeas.join(', ')}\n`
-        }
-        if (analysis.detailedDescription) {
-          imageContext += `  Description: ${analysis.detailedDescription}\n`
-        }
-      })
-
-      messages[0].content += imageContext
     }
 
     return messages
@@ -2330,7 +2314,7 @@ Guidelines:
             value={localContent}
             onChange={(e) => setLocalContent(e.target.value)}
             onBlur={handleBlur}
-            className="min-h-[160px] whitespace-pre-wrap bg-white border-none outline-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-base font-mono px-6 py-6 rounded-bl-none rounded-br-none"
+            className="min-h-[160px] whitespace-pre-wrap bg-white border-none outline-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-sm font-mono px-6 py-6 rounded-bl-none rounded-br-none"
             data-step-index={stepIndex}
           />
         ) : (
@@ -2389,7 +2373,7 @@ Guidelines:
 
               return (
                 <div
-                  className="min-h-[160px] whitespace-pre-wrap bg-white border-none shadow-sm outline-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-base px-6 py-6 rounded-tl rounded-tr-md"
+                  className="min-h-[160px] text-sm font-mono  whitespace-pre-wrap bg-white border-none shadow-sm outline-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 px-6 py-6 rounded-tl rounded-tr-md"
                   onClick={onFocus}
                   tabIndex={0}
                   onKeyDown={(e) => {
@@ -3011,9 +2995,7 @@ Guidelines:
                       <CardTitle className="text-2xl">
                         Share God's grace… <br />
                         <RotatingText
-                          onCategoryChange={(category) => {
-                            highlightedCategoryRef.current = category
-                          }}
+                          onCategoryChange={handleCategoryChange}
                           hoveredCategory={hoveredCategory}
                           isHovering={isHovering}
                           isAnimationStopped={isAnimationStopped}
@@ -3036,7 +3018,7 @@ Guidelines:
                           className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Chat/Comments'
                               ? 'bg-gradient-to-br from-blue-500 via-cyan-600 to-teal-600 border-blue-500'
-                              : !isHovering && highlightedCategoryRef.current === 'Chat/Comments'
+                              : !isHovering && highlightedCategory === 'Chat/Comments'
                                 ? 'bg-transparent border-cyan-600'
                                 : `bg-transparent border-gray-300 ${
                                     shouldShowHoverEffect('Chat/Comments')
@@ -3060,7 +3042,7 @@ Guidelines:
                                 className={`w-8 h-8 ${
                                   selectedContext === 'Chat/Comments'
                                     ? 'text-white drop-shadow-lg'
-                                    : !isHovering && highlightedCategoryRef.current === 'Chat/Comments'
+                                    : !isHovering && highlightedCategory === 'Chat/Comments'
                                       ? 'text-cyan-600'
                                       : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                                 }`}
@@ -3071,7 +3053,7 @@ Guidelines:
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Chat/Comments'
                                 ? 'text-white drop-shadow-lg'
-                                : !isHovering && highlightedCategoryRef.current === 'Chat/Comments'
+                                : !isHovering && highlightedCategory === 'Chat/Comments'
                                   ? 'text-cyan-600'
                                   : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                             }`}
@@ -3085,7 +3067,7 @@ Guidelines:
                           className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Social Media'
                               ? 'bg-gradient-to-br from-purple-500 via-pink-600 to-red-600 border-purple-500'
-                              : !isHovering && highlightedCategoryRef.current === 'Social Media'
+                              : !isHovering && highlightedCategory === 'Social Media'
                                 ? 'bg-transparent border-pink-500'
                                 : `bg-transparent border-gray-300 ${
                                     shouldShowHoverEffect('Social Media')
@@ -3109,7 +3091,7 @@ Guidelines:
                                 className={`w-8 h-8 ${
                                   selectedContext === 'Social Media'
                                     ? 'text-white drop-shadow-lg'
-                                    : !isHovering && highlightedCategoryRef.current === 'Social Media'
+                                    : !isHovering && highlightedCategory === 'Social Media'
                                       ? 'text-pink-500'
                                       : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                                 }`}
@@ -3120,7 +3102,7 @@ Guidelines:
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Social Media'
                                 ? 'text-white drop-shadow-lg'
-                                : !isHovering && highlightedCategoryRef.current === 'Social Media'
+                                : !isHovering && highlightedCategory === 'Social Media'
                                   ? 'text-pink-500'
                                   : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                             }`}
@@ -3134,7 +3116,7 @@ Guidelines:
                           className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Website'
                               ? 'bg-gradient-to-br from-orange-500 via-yellow-600 to-amber-600 border-orange-500'
-                              : !isHovering && highlightedCategoryRef.current === 'Website'
+                              : !isHovering && highlightedCategory === 'Website'
                                 ? 'bg-transparent border-orange-500'
                                 : `bg-transparent border-gray-300 ${
                                     shouldShowHoverEffect('Website')
@@ -3158,7 +3140,7 @@ Guidelines:
                                 className={`w-8 h-8 ${
                                   selectedContext === 'Website'
                                     ? 'text-white drop-shadow-lg'
-                                    : !isHovering && highlightedCategoryRef.current === 'Website'
+                                    : !isHovering && highlightedCategory === 'Website'
                                       ? 'text-orange-500'
                                       : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                                 }`}
@@ -3169,7 +3151,7 @@ Guidelines:
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Website'
                                 ? 'text-white drop-shadow-lg'
-                                : !isHovering && highlightedCategoryRef.current === 'Website'
+                                : !isHovering && highlightedCategory === 'Website'
                                   ? 'text-orange-500'
                                   : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                             }`}
@@ -3183,7 +3165,7 @@ Guidelines:
                           className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Print'
                               ? 'bg-gradient-to-br from-emerald-500 via-green-600 to-lime-600 border-emerald-500'
-                              : !isHovering && highlightedCategoryRef.current === 'Print'
+                              : !isHovering && highlightedCategory === 'Print'
                                 ? 'bg-transparent border-emerald-500'
                                 : `bg-transparent border-gray-300 ${
                                     shouldShowHoverEffect('Print')
@@ -3207,7 +3189,7 @@ Guidelines:
                                 className={`w-8 h-8 ${
                                   selectedContext === 'Print'
                                     ? 'text-white drop-shadow-lg'
-                                    : !isHovering && highlightedCategoryRef.current === 'Print'
+                                    : !isHovering && highlightedCategory === 'Print'
                                       ? 'text-emerald-600'
                                       : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                                 }`}
@@ -3218,7 +3200,7 @@ Guidelines:
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Print'
                                 ? 'text-white drop-shadow-lg'
-                                : !isHovering && highlightedCategoryRef.current === 'Print'
+                                : !isHovering && highlightedCategory === 'Print'
                                   ? 'text-emerald-600'
                                   : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                             }`}
@@ -3232,7 +3214,7 @@ Guidelines:
                           className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Real Life'
                               ? 'bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-600 border-rose-500'
-                              : !isHovering && highlightedCategoryRef.current === 'Real Life'
+                              : !isHovering && highlightedCategory === 'Real Life'
                                 ? 'bg-transparent border-rose-500'
                                 : `bg-transparent border-gray-300 ${
                                     shouldShowHoverEffect('Real Life')
@@ -3256,7 +3238,7 @@ Guidelines:
                                 className={`w-8 h-8 ${
                                   selectedContext === 'Real Life'
                                     ? 'text-white drop-shadow-lg'
-                                    : !isHovering && highlightedCategoryRef.current === 'Real Life'
+                                    : !isHovering && highlightedCategory === 'Real Life'
                                       ? 'text-rose-500'
                                       : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                                 }`}
@@ -3267,7 +3249,7 @@ Guidelines:
                             className={`font-medium text-sm text-center ${
                               selectedContext === 'Real Life'
                                 ? 'text-white drop-shadow-lg'
-                                : !isHovering && highlightedCategoryRef.current === 'Real Life'
+                                : !isHovering && highlightedCategory === 'Real Life'
                                   ? 'text-rose-500'
                                   : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
                             }`}
@@ -3394,14 +3376,9 @@ Guidelines:
                         <Textarea
                           ref={textareaRef}
                           placeholder="Enter your text content here... You can also paste or drop images directly."
-                          className={`relative shadow-none resize-none bg-transparent pr-12 pb-16 px-4 border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-base scrollbar-hide ${
+                          className={`relative shadow-none resize-none bg-transparent pr-12 pb-16 px-4 border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-base scrollbar-hide min-h-[100px] h-auto overflow-y-hidden ${
                             animatingTextarea ? 'animate-text-appear' : ''
                           }`}
-                          style={{
-                            minHeight: '40px',
-                            height: 'auto',
-                            overflowY: 'hidden'
-                          }}
                           onPaste={handlePaste}
                           onKeyDown={(e) => {
                             if (
@@ -3455,7 +3432,7 @@ Guidelines:
                           {isProcessing ? (
                             <AnimatedLoadingText />
                           ) : (
-                            <>Run&nbsp;&nbsp;&nbsp;&nbsp;⌘ + ↵</>
+                            <>{aiResponse.trim() ? 'Retry' : 'Run'}&nbsp;&nbsp;&nbsp;&nbsp;⌘ + ↵</>
                           )}
                         </button>
                       </div>
@@ -4620,33 +4597,30 @@ Guidelines:
                     )}
 
                     {/* Generate Designs Button */}
-                    <div className="mt-8 pt-6 border-t border-border">
-                      <Button
-                        size="lg"
-                        className="w-full h-16 text-lg font-semibold flex items-center justify-center gap-2"
-                        disabled={isGeneratingDesign || !hasGeneratedContent}
-                        onClick={() => {
-                          void handleGenerateDesign()
-                        }}
-                      >
-                        {isGeneratingDesign ? (
-                          <>
-                            <Loader2 className="w-5 h-5 animate-spin" />
-                            Preparing designs...
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="w-5 h-5" />
-                            Generate Designs in Studio
-                          </>
-                        )}
-                      </Button>
-                      {!hasGeneratedContent && (
-                        <p className="mt-3 text-xs text-muted-foreground text-center">
-                          Generate content with AI in Step 1 to enable Studio designs.
-                        </p>
-                      )}
-                    </div>
+                    {editableSteps.length > 0 && !aiResponse.trim() && (
+                      <div className="mt-8 pt-6 border-t border-border">
+                        <Button
+                          size="lg"
+                          className="w-full h-16 text-lg font-semibold flex items-center justify-center gap-2"
+                          disabled={isGeneratingDesign}
+                          onClick={() => {
+                            void handleGenerateDesign()
+                          }}
+                        >
+                          {isGeneratingDesign ? (
+                            <>
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                              Preparing designs...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="w-5 h-5" />
+                              Generate Designs in Studio
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    )}
 
                     {/* Original Images Section - kept for reference */}
                     <div className="mt-12 hidden">
