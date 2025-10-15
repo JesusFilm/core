@@ -23,6 +23,7 @@ import { CustomizationToggle } from './CustomizationToggle'
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
+import { PhoneAction } from './PhoneAction'
 import { ActionValue, actions, getAction } from './utils/actions'
 
 export function Action(): ReactElement {
@@ -54,7 +55,9 @@ export function Action(): ReactElement {
   const filteredLabels = isSubmitButton
     ? labels.filter(
         (action) =>
-          action.value !== 'LinkAction' && action.value !== 'EmailAction'
+          action.value !== 'LinkAction' &&
+          action.value !== 'EmailAction' &&
+          action.value !== 'PhoneAction'
       )
     : labels
 
@@ -90,6 +93,7 @@ export function Action(): ReactElement {
 
   const isLink = !isSubmitButton && action === 'LinkAction'
   const isEmail = !isSubmitButton && action === 'EmailAction'
+  const isPhone = !isSubmitButton && action === 'PhoneAction'
 
   return (
     <>
@@ -118,6 +122,7 @@ export function Action(): ReactElement {
         </FormControl>
         {isLink && <LinkAction ref={linkActionRef} />}
         {isEmail && <EmailAction ref={emailActionRef} />}
+        {isPhone && <PhoneAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
         {(isLink || isEmail) && journey?.template && <CustomizationToggle />}
       </Stack>
