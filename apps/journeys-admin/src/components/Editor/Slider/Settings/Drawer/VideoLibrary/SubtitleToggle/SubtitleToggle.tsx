@@ -91,14 +91,12 @@ export function SubtitleToggle({
           }
         }}
       >
-        <Box>
-          <Switch
-            checked={subtitleEnabled && hasSubtitles}
-            onChange={handleSubtitleToggle}
-            disabled={disabled}
-            inputProps={{ 'aria-label': t('Enable Subtitles') }}
-          />
-        </Box>
+        <Switch
+          checked={subtitleEnabled && hasSubtitles}
+          onChange={handleSubtitleToggle}
+          disabled={disabled}
+          inputProps={{ 'aria-label': t('Enable Subtitles') }}
+        />
       </Tooltip>
     </Stack>
   )
