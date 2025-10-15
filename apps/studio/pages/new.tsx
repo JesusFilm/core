@@ -1,4 +1,5 @@
 import {
+  Bot,
   Camera,
   Check,
   Copy,
@@ -990,6 +991,7 @@ export default function NewPage() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [imageAttachments, setImageAttachments] = useState<string[]>([])
   const [unsplashImages, setUnsplashImages] = useState<Record<string, string[]>>({})
+  const [loadingUnsplashSteps, setLoadingUnsplashSteps] = useState<Set<string>>(new Set())
   const [imageAnalysisResults, setImageAnalysisResults] = useState<
     Array<{
       imageSrc: string
@@ -1124,6 +1126,40 @@ export default function NewPage() {
     }
   }, [unsplashApiKey])
 
+  // Intersection Observer hook for lazy loading
+  const useIntersectionObserver = (callback: () => void, options?: IntersectionObserverInit) => {
+    const [element, setElement] = useState<Element | null>(null)
+    const [hasTriggered, setHasTriggered] = useState(false)
+
+    useEffect(() => {
+      if (!element || hasTriggered) return
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            callback()
+            setHasTriggered(true)
+            observer.disconnect()
+          }
+        },
+        { threshold: 0.1, ...options }
+      )
+
+      observer.observe(element)
+
+      return () => observer.disconnect()
+    }, [element, callback, hasTriggered, options])
+
+    return { ref: setElement }
+  }
+
+  // Intersection Observer for lazy loading Unsplash images
+  const loadImagesWhenVisible = (step: GeneratedStepContent, stepIndex: number) => {
+    const accessKey = unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
+    if (accessKey && accessKey.length >= 40 && step.keywords && step.keywords.length > 0) {
+      loadUnsplashImagesForStep(step, stepIndex)
+    }
+  }
 
   // Collapse tiles when a chat context is selected
   useEffect(() => {
@@ -1231,7 +1267,7 @@ export default function NewPage() {
   const handleContextChange = (context: string) => {
     setSelectedContext(context)
     setIsContextContainerHidden(true)
-    setHighlightedCategory('') // Stop automatic highlight animation when a tile is selected
+    highlightedCategoryRef.current = '' // Stop automatic highlight animation when a tile is selected
     setIsAnimationStopped(true) // Stop the rotating text animation
   }
 
@@ -1276,7 +1312,7 @@ Provide the response as JSON with this structure:
   "steps": [
     {
       "content": "# Short label for the step (max 6 words)\n\nMarkdown-formatted devotional copy for this step",
-      "keywords": ["keyword one", "keyword two", "keyword three"],
+      "keywords": ["singleword"],
       "mediaPrompt": "≤150 character prompt for an image/video generator"
     }
   ]
@@ -1285,7 +1321,7 @@ Provide the response as JSON with this structure:
 Guidelines:
 - Include 3-5 sequential steps tailored to the user's request.
 - Keep the core spiritual message while making each step social-ready.
-- Ensure the three keywords are warm, descriptive, and suitable for Unsplash searches.
+- Provide exactly one single-word keyword per step that is suitable for Unsplash image searches.
 - The mediaPrompt should align with the step's tone and visuals.
 - Use markdown formatting inside the content field when helpful.
 - Begin each content field with a level-one markdown heading that states the step's short label (e.g., "# Let Your Light Shine") followed by a blank line.`
@@ -1471,11 +1507,15 @@ Guidelines:
             ? `${heading}-${index}`
             : `step-${index}`
 
+          // Intersection observer for lazy loading images
+          const { ref: cardRef } = useIntersectionObserver(
+            () => loadImagesWhenVisible(step, index),
+            { threshold: 0.1 }
+          )
+
           return (
-            <Card
-              key={cardKey}
-              className="bg-transparent shadow-none"
-            >
+            <div key={cardKey} ref={cardRef}>
+              <Card className="bg-transparent shadow-none">
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <StepContentRenderer
@@ -1514,39 +1554,67 @@ Guidelines:
                       {(() => {
                         const stepKey = `step-${index}`
                         const stepImages = unsplashImages[stepKey] || []
+                        const isLoading = loadingUnsplashSteps.has(stepKey)
+                        const hasApiKey = unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
 
-                        const displayImages =
-                          stepImages.length > 0
-                            ? stepImages
-                            : [
-                                `https://source.unsplash.com/600x600/?${encodeURIComponent(step.keywords[0])}&sig=${index}-0`
-                              ]
+                        if (isLoading) {
+                          return (
+                            <div className="flex items-center justify-center py-8">
+                              <div className="text-sm text-muted-foreground">
+                                🔍 Searching for images...
+                              </div>
+                            </div>
+                          )
+                        }
+
+                        if (stepImages.length > 0) {
+                          return (
+                            <Carousel className="w-full relative">
+                              <CarouselContent>
+                                {stepImages.map(
+                                  (imageUrl, imageIndex) => (
+                                    <CarouselItem
+                                      key={`${index}-${imageIndex}-img`}
+                                      className="basis-1/6 mr-2"
+                                    >
+                                      <div className="relative aspect-square  mx-auto overflow-hidden rounded-lg border">
+                                        <Image
+                                          src={imageUrl}
+                                          alt={`${heading} inspiration`}
+                                          fill
+                                          className="object-cover"
+                                        />
+                                      </div>
+                                    </CarouselItem>
+                                  )
+                                )}
+                              </CarouselContent>
+
+                              <CarouselPrevious />
+                              <CarouselNext />
+                            </Carousel>
+                          )
+                        }
+
+                        if (!hasApiKey) {
+                          return (
+                            <div className="text-sm text-muted-foreground py-4">
+                              <p className="mb-2">Add an Unsplash Access Key in Settings to see image inspiration.</p>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setIsSettingsOpen(true)}
+                              >
+                                Open Settings
+                              </Button>
+                            </div>
+                          )
+                        }
 
                         return (
-                          <Carousel className="w-full relative">
-                            <CarouselContent>
-                              {displayImages.map(
-                                (imageUrl, imageIndex) => (
-                                  <CarouselItem
-                                    key={`${index}-${imageIndex}-img`}
-                                    className="basis-1/6 mr-2"
-                                  >
-                                    <div className="relative aspect-square  mx-auto overflow-hidden rounded-lg border">
-                                      <Image
-                                        src={imageUrl}
-                                        alt={`${heading} inspiration`}
-                                        fill
-                                        className="object-cover"
-                                      />
-                                    </div>
-                                  </CarouselItem>
-                                )
-                              )}
-                            </CarouselContent>
-
-                            <CarouselPrevious />
-                            <CarouselNext />
-                          </Carousel>
+                          <div className="text-sm text-muted-foreground py-4">
+                            No images found for "{step.keywords[0]}". Try different keywords or check your Unsplash Access Key.
+                          </div>
                         )
                       })()}
                     </div>
@@ -1557,7 +1625,8 @@ Guidelines:
                   )}
                 </div>
               </CardContent>
-            </Card>
+              </Card>
+            </div>
           )
         })}
       </>
@@ -1797,14 +1866,22 @@ Guidelines:
   const searchUnsplash = async (query: string, perPage: number = 3): Promise<string[]> => {
     const accessKey = unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
 
+    console.log('🔑 API Key debug:', {
+      unsplashApiKey: unsplashApiKey ? `***${unsplashApiKey.slice(-4)}` : 'not set',
+      envVar: process.env.UNSPLASH_ACCESS_KEY ? `***${process.env.UNSPLASH_ACCESS_KEY.slice(-4)}` : 'not set',
+      accessKey: accessKey ? `***${accessKey.slice(-4)}` : 'not set',
+      query
+    })
+
     if (!accessKey) {
       console.error('❌ UNSPLASH_ACCESS_KEY not found in environment variables or settings')
       return []
     }
 
     try {
+      // Try query parameter approach first to debug
       const apiUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=${perPage}&content_filter=high&orientation=squarish&client_id=${accessKey}`
-      console.log('🌐 Making API request to:', apiUrl.replace(accessKey, '***' + accessKey.slice(-4)))
+      console.log('🌐 Making API request to:', apiUrl.replace(accessKey, `***${accessKey.slice(-4)}`))
 
       const response = await fetch(apiUrl)
 
@@ -1857,6 +1934,9 @@ Guidelines:
     const stepKey = `step-${stepIndex}`
     if (unsplashImages[stepKey]) return // Already loaded
 
+    // Set loading state
+    setLoadingUnsplashSteps(prev => new Set(prev).add(stepKey))
+
     const heading = deriveHeadingFromContent(
       step.content,
       `Step ${stepIndex + 1}`
@@ -1879,6 +1959,13 @@ Guidelines:
       }))
     } catch (error) {
       console.error('Failed to load Unsplash images for step:', error)
+    } finally {
+      // Remove loading state
+      setLoadingUnsplashSteps(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(stepKey)
+        return newSet
+      })
     }
   }
 
@@ -2734,6 +2821,10 @@ Guidelines:
                                             ? `${currentText}\n\n${idea}`
                                             : idea
                                           setTextContent(newText)
+                                          // Update textarea value directly
+                                          if (textareaRef.current) {
+                                            textareaRef.current.value = newText
+                                          }
                                           setAnimatingTextarea(true)
                                           setHiddenSuggestions((prev) =>
                                             new Set(prev).add(suggestionKey)
@@ -3485,6 +3576,10 @@ Guidelines:
                                                 ? `${currentText}\n\n${idea}`
                                                 : idea
                                               setTextContent(newText)
+                                              // Update textarea value directly
+                                              if (textareaRef.current) {
+                                                textareaRef.current.value = newText
+                                              }
                                               setAnimatingTextarea(true)
                                               setHiddenSuggestions((prev) =>
                                                 new Set(prev).add(suggestionKey)
@@ -4497,33 +4592,35 @@ Guidelines:
 
                     {aiResponse && (
                       <div className="mt-12 space-y-6">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <label className="text-sm font-medium">
-                            AI Response
-                          </label>
-                          <div className="flex items-center gap-1 text-xs text-blue-600">
+                        <Accordion
+                          title="AI Response"
+                          defaultOpen={false}
+                          className="border-muted"
+                          icon={<Bot className="w-4 h-4 text-muted-foreground" />}
+                        >
+                          <div className="flex items-center gap-1 text-xs text-blue-600 mb-4">
                             <History className="w-3 h-3" />
                             <span>Conversation context preserved</span>
                           </div>
-                        </div>
 
-                        {/* Raw AI Response */}
-                        <Card className="border shadow-sm">
-                          <CardHeader>
-                            <CardTitle className="text-base font-semibold">
-                              Raw AI Response
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="space-y-2">
-                              <Textarea
-                                value={aiResponse}
-                                readOnly
-                                className="min-h-[200px] whitespace-pre-wrap"
-                              />
-                            </div>
-                          </CardContent>
-                        </Card>
+                          {/* Raw AI Response */}
+                          <Card className="border shadow-sm">
+                            <CardHeader>
+                              <CardTitle className="text-base font-semibold">
+                                Raw AI Response
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="space-y-2">
+                                <Textarea
+                                  value={aiResponse}
+                                  readOnly
+                                  className="min-h-[200px] whitespace-pre-wrap"
+                                />
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </Accordion>
 
                         {editableSteps.length > 0 && (
                           <>
