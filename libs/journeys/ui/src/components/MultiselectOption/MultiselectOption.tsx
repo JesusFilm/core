@@ -1,5 +1,5 @@
 import Button, { ButtonProps } from '@mui/material/Button'
-import { styled , useTheme } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import { MouseEvent, ReactElement } from 'react'
 
 import CheckSquareContainedIcon from '@core/shared/ui/icons/CheckSquareContained'
