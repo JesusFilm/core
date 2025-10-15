@@ -127,7 +127,7 @@ export function VideoBlockEditorSettings({
     >
       <Stack direction="column" spacing={6}>
         {/* Subtitles */}
-        <Stack direction="column" spacing={2}>
+        <Stack direction="column" spacing={4}>
           <Typography
             variant="subtitle2"
             sx={{
@@ -146,6 +146,7 @@ export function VideoBlockEditorSettings({
             }}
             disabled={selectedBlock == null}
           />
+          <Divider />
         </Stack>
 
         {/* Timing */}
