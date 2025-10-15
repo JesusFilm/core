@@ -31,6 +31,14 @@ describe('PlausibleHelpers', () => {
       expect(generateActionTargetKey(action)).toBe('email:email')
     })
 
+    it('should generate target key for PhoneAction', () => {
+      const action = {
+        __typename: 'PhoneAction',
+        phone: 'phone'
+      } as unknown as Action
+      expect(generateActionTargetKey(action)).toBe('phone:phone')
+    })
+
     it('should throw error for unknown action type', () => {
       const action = {
         __typename: 'UnknownAction',

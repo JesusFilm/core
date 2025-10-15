@@ -40,10 +40,16 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum ContactActionType {
+  call = "call",
+  text = "text",
+}
+
 export enum EventType {
   ButtonClickEvent = "ButtonClickEvent",
   ChatOpenEvent = "ChatOpenEvent",
   JourneyViewEvent = "JourneyViewEvent",
+  MultiselectSubmissionEvent = "MultiselectSubmissionEvent",
   RadioQuestionSubmissionEvent = "RadioQuestionSubmissionEvent",
   SignUpSubmissionEvent = "SignUpSubmissionEvent",
   StepNextEvent = "StepNextEvent",
@@ -604,6 +610,13 @@ export interface LinkActionInput {
 
 export interface MeInput {
   redirect?: string | null;
+}
+
+export interface PhoneActionInput {
+  gtmEventName?: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction?: ContactActionType | null;
 }
 
 export interface QrCodeCreateInput {

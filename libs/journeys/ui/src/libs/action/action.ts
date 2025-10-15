@@ -1,5 +1,6 @@
 import { NextRouter } from 'next/dist/client/router'
 
+import { ContactActionType } from '../../../__generated__/globalTypes'
 import { nextActiveBlock } from '../block'
 
 import { ActionFields } from './__generated__/ActionFields'
@@ -38,6 +39,13 @@ export function handleAction(
       break
     case 'EmailAction':
       window.open(`mailto:${action.email}`, '_blank')
+      break
+    case 'PhoneAction':
+      if (action.contactAction === ContactActionType.text) {
+        window.location.href = `sms:${action.phone}`
+      } else {
+        window.location.href = `tel:${action.phone}`
+      }
       break
   }
 }

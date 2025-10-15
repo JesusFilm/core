@@ -2,18 +2,13 @@ import Divider from '@mui/material/Divider'
 import FormGroup from '@mui/material/FormGroup'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { Dispatch, ReactElement, SetStateAction, useEffect } from 'react'
 
 import { CheckboxOption } from '../CheckBoxOption'
 
-interface ContactDataState {
-  name: boolean
-  email: boolean
-  phone: boolean
-}
-
 interface ContactDataFormProps {
-  setContactData: (contactData: string[]) => void
+  setSelectedFields: Dispatch<SetStateAction<string[]>>
+  selectedFields: string[]
 }
 
 /**
@@ -24,66 +19,82 @@ interface ContactDataFormProps {
  * @returns A form with switches for selecting contact data fields
  */
 export function ContactDataForm({
-  setContactData
+  setSelectedFields,
+  selectedFields
 }: ContactDataFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [contactDataState, setContactDataState] = useState<ContactDataState>({
-    name: true,
-    email: true,
-    phone: true
-  })
-  const [selectAll, setSelectAll] = useState(true)
 
   const handleSelectAll = (checked: boolean): void => {
-    setContactDataState({
-      name: checked,
-      email: checked,
-      phone: checked
-    })
+    setSelectedFields(
+      checked
+        ? [
+            'name',
+            'email',
+            'phone',
+            'RadioQuestionSubmissionEvent',
+            'SignUpSubmissionEvent',
+            'TextResponseSubmissionEvent'
+          ]
+        : []
+    )
+  }
+
+  const toggleField = (field: string) => {
+    return (checked: boolean) =>
+      setSelectedFields((prev) =>
+        !checked ? prev.filter((f) => f !== field) : [...prev, field]
+      )
   }
 
   useEffect(() => {
-    const allSelected =
-      contactDataState.name && contactDataState.email && contactDataState.phone
-    setSelectAll(allSelected)
-
-    const selectedFields: string[] = []
-    if (contactDataState.name) selectedFields.push('name')
-    if (contactDataState.email) selectedFields.push('email')
-    if (contactDataState.phone) selectedFields.push('phone')
-
-    setContactData(selectedFields)
-  }, [contactDataState, setContactData])
+    setSelectedFields([
+      'name',
+      'email',
+      'phone',
+      'RadioQuestionSubmissionEvent',
+      'SignUpSubmissionEvent',
+      'TextResponseSubmissionEvent'
+    ])
+  }, [setSelectedFields])
 
   return (
     <Stack>
       <FormGroup>
         <CheckboxOption
-          checked={selectAll}
+          checked={selectedFields.length === 6}
           onChange={handleSelectAll}
           label={t('All')}
         />
         <Divider sx={{ my: 1 }} />
         <CheckboxOption
-          checked={contactDataState.name}
-          onChange={(checked) =>
-            setContactDataState((prev) => ({ ...prev, name: checked }))
-          }
+          checked={selectedFields.includes('name')}
+          onChange={toggleField('name')}
           label={t('Name')}
         />
         <CheckboxOption
-          checked={contactDataState.email}
-          onChange={(checked) =>
-            setContactDataState((prev) => ({ ...prev, email: checked }))
-          }
+          checked={selectedFields.includes('email')}
+          onChange={toggleField('email')}
           label={t('Email')}
         />
         <CheckboxOption
-          checked={contactDataState.phone}
-          onChange={(checked) =>
-            setContactDataState((prev) => ({ ...prev, phone: checked }))
-          }
+          checked={selectedFields.includes('phone')}
+          onChange={toggleField('phone')}
           label={t('Phone')}
+        />
+        <CheckboxOption
+          checked={selectedFields.includes('RadioQuestionSubmissionEvent')}
+          onChange={toggleField('RadioQuestionSubmissionEvent')}
+          label={t('Poll Selection')}
+        />
+        <CheckboxOption
+          checked={selectedFields.includes('SignUpSubmissionEvent')}
+          onChange={toggleField('SignUpSubmissionEvent')}
+          label={t('Subscription')}
+        />
+        <CheckboxOption
+          checked={selectedFields.includes('TextResponseSubmissionEvent')}
+          onChange={toggleField('TextResponseSubmissionEvent')}
+          label={t('Text Submission')}
         />
       </FormGroup>
     </Stack>

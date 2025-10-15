@@ -596,6 +596,7 @@ export enum EventType {
   ButtonClickEvent = 'ButtonClickEvent',
   ChatOpenEvent = 'ChatOpenEvent',
   JourneyViewEvent = 'JourneyViewEvent',
+  MultiselectSubmissionEvent = 'MultiselectSubmissionEvent',
   RadioQuestionSubmissionEvent = 'RadioQuestionSubmissionEvent',
   SignUpSubmissionEvent = 'SignUpSubmissionEvent',
   StepNextEvent = 'StepNextEvent',
@@ -1283,6 +1284,13 @@ export type JourneyVisitorEdge = {
   cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
   node: JourneyVisitor;
+};
+
+export type JourneyVisitorExportSelect = {
+  createdAt?: InputMaybe<Scalars['Boolean']['input']>;
+  email?: InputMaybe<Scalars['Boolean']['input']>;
+  name?: InputMaybe<Scalars['Boolean']['input']>;
+  phone?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type JourneyVisitorFilter = {
@@ -3415,6 +3423,8 @@ export type Query = {
   journeyTheme?: Maybe<JourneyTheme>;
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
   journeyVisitorCount: Scalars['Int']['output'];
+  /** Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information */
+  journeyVisitorExport?: Maybe<Scalars['String']['output']>;
   /** Get a list of Visitor Information by Journey */
   journeyVisitorsConnection: JourneyVisitorsConnection;
   journeys: Array<Journey>;
@@ -3659,6 +3669,13 @@ export type QueryJourneyThemeArgs = {
 
 export type QueryJourneyVisitorCountArgs = {
   filter: JourneyVisitorFilter;
+};
+
+
+export type QueryJourneyVisitorExportArgs = {
+  filter?: InputMaybe<JourneyEventsFilter>;
+  journeyId: Scalars['ID']['input'];
+  select?: InputMaybe<JourneyVisitorExportSelect>;
 };
 
 
