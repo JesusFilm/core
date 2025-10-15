@@ -15,7 +15,7 @@ export const GET_JOURNEY = gql`
 `
 
 export function useJourneyQuery(
-  variables?: GetJourneyVariables
+  variables: GetJourneyVariables
 ): useQuery.Result<GetJourney, GetJourneyVariables> {
   const query = useQuery<GetJourney, GetJourneyVariables>(GET_JOURNEY, {
     variables

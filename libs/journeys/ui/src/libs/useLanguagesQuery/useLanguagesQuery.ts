@@ -1,12 +1,8 @@
-import { gql } from '@apollo/client'
 import { useQuery } from '@apollo/client/react'
 
-import {
-  GetLanguages,
-  GetLanguagesVariables
-} from './__generated__/GetLanguages'
+import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 
-export const GET_LANGUAGES = gql`
+export const GET_LANGUAGES = graphql(`
   query GetLanguages($languageId: ID, $where: LanguagesFilter) {
     languages(limit: 5000, where: $where) {
       id
@@ -17,12 +13,12 @@ export const GET_LANGUAGES = gql`
       }
     }
   }
-`
+`)
 
 export function useLanguagesQuery(
-  variables?: GetLanguagesVariables
-): useQuery.Result<GetLanguages, GetLanguagesVariables> {
-  const query = useQuery<GetLanguages, GetLanguagesVariables>(GET_LANGUAGES, {
+  variables?: VariablesOf<typeof GET_LANGUAGES>
+): useQuery.Result<ResultOf<typeof GET_LANGUAGES>> {
+  const query = useQuery(GET_LANGUAGES, {
     variables
   })
 

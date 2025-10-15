@@ -48,7 +48,7 @@ export function TemplateView({
     }
   })
 
-  const relatedJourneys = data?.journeys.filter(({ id }) => id !== journey?.id)
+  const relatedJourneys = data?.journeys?.filter(({ id }) => id !== journey?.id)
 
   const { data: userData } = useUserRoleQuery()
   const isPublisher = userData?.getUserRole?.roles?.includes(Role.publisher)

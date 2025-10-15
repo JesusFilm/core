@@ -114,7 +114,7 @@ export function updateCacheWithTranslatedJourney(
 }
 
 export function useJourneyAiTranslateSubscription(
-  options?: useSubscription.Options<
+  options: useSubscription.Options<
     JourneyAiTranslateCreateSubscription,
     JourneyAiTranslateCreateSubscriptionVariables
   >
