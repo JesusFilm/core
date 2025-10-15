@@ -33,8 +33,10 @@ import {
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
 
+import { useVideoSubtitles } from '../../VideoLibrary/VideoSubtitleProvider'
+
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
-import { SubtitleSelector, getMockSubtitles } from './SubtitleSelector'
+import { SubtitleSelector } from './SubtitleSelector'
 
 interface Values extends FormikValues {
   autoplay: boolean
@@ -58,13 +60,14 @@ export function VideoBlockEditorSettings({
 }: VideoBlockEditorSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
+  const subtitleData = useVideoSubtitles(selectedBlock?.videoId)
   const initialValues: Values = {
     autoplay: selectedBlock?.autoplay ?? true,
     muted: selectedBlock?.muted ?? true,
     startAt: secondsToTimeFormat(selectedBlock?.startAt ?? 0),
     endAt: secondsToTimeFormat(selectedBlock?.endAt ?? 0),
     objectFit: selectedBlock?.objectFit ?? ObjectFit.fill,
-    subtitle: null
+    subtitle: subtitleData?.selectedLanguage ?? null
   }
   const { values, errors, handleChange, setFieldValue } = useFormik<Values>({
     initialValues,
@@ -138,9 +141,12 @@ export function VideoBlockEditorSettings({
           </Typography>
           <SubtitleSelector
             selectedSubtitle={values.subtitle}
-            availableLanguages={getMockSubtitles(selectedBlock?.title)}
-            onChange={async (subtitle) => {
-              await setFieldValue('subtitle', subtitle)
+            availableLanguages={
+              subtitleData?.tracks.map((track) => track.displayName) ?? []
+            }
+            onChange={(subtitle) => {
+              void setFieldValue('subtitle', subtitle)
+              console.log('Subtitle language changed:', subtitle ?? 'Off')
               // TODO: Include subtitle in backend update when backend support is added
             }}
             disabled={selectedBlock == null}

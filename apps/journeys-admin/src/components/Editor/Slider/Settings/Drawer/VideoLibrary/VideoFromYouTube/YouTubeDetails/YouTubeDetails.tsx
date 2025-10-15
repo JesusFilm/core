@@ -16,6 +16,10 @@ import CheckIcon from '@core/shared/ui/icons/Check'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { parseISO8601Duration } from '../../../../../../../../libs/parseISO8601Duration'
 import { SubtitleToggle } from '../../SubtitleToggle'
+import {
+  SubtitleTrack,
+  useVideoSubtitleActions
+} from '../../VideoSubtitleProvider'
 import { VideoDescription } from '../../VideoDescription'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 import type { YoutubeVideo, YoutubeVideosData } from '../VideoFromYouTube'
@@ -42,8 +46,15 @@ export function YouTubeDetails({
   const { t } = useTranslation('apps-journeys-admin')
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player | null>(null)
+  const hiddenVideoRef = useRef<HTMLVideoElement>(null)
+  const hiddenPlayerRef = useRef<Player | null>(null)
+  const subtitleExtractionAttempted = useRef(false)
   const [playing, setPlaying] = useState(false)
   const [subtitleEnabled, setSubtitleEnabled] = useState(false)
+  const [subtitleTracks, setSubtitleTracks] = useState<SubtitleTrack[]>([])
+  const [subtitlesLoading, setSubtitlesLoading] = useState(true)
+  const { setSubtitleTracks: setContextSubtitleTracks } =
+    useVideoSubtitleActions()
   const { data, error } = useSWR<YoutubeVideo>(
     () => (open ? id : null),
     fetcher
@@ -71,12 +82,9 @@ export function YouTubeDetails({
 
   const videoDescription = data?.snippet.description ?? ''
 
-  // TODO: This is for testing purposes only - will be replaced with actual subtitle availability check
-  // Currently providing subtitles only for "Çoğu Çay" video to test the "no available subtitles" state
-  const hasSubtitles = data?.snippet.title === 'Çoğu Çay'
-
+  // Create visible player
   useEffect(() => {
-    if (videoRef.current != null) {
+    if (videoRef.current != null && data != null) {
       playerRef.current = videojs(videoRef.current, {
         ...defaultVideoJsOptions,
         fluid: true,
@@ -87,12 +95,116 @@ export function YouTubeDetails({
         setPlaying(true)
       })
     }
+
+    return () => {
+      if (playerRef.current != null) {
+        playerRef.current.dispose()
+        playerRef.current = null
+      }
+    }
   }, [data])
+
+  // Create hidden player for subtitle extraction
+  useEffect(() => {
+    if (hiddenVideoRef.current != null && data != null && open) {
+      setSubtitlesLoading(true)
+      subtitleExtractionAttempted.current = false
+
+      hiddenPlayerRef.current = videojs(hiddenVideoRef.current, {
+        ...defaultVideoJsOptions,
+        fluid: true,
+        controls: false,
+        muted: true,
+        autoplay: true,
+        youtube: {
+          cc_load_policy: 1,
+          cc_lang_pref: 'en'
+        }
+      })
+
+      const extractSubtitles = (): void => {
+        if (subtitleExtractionAttempted.current) return
+        subtitleExtractionAttempted.current = true
+
+        try {
+          const ytPlayer = (hiddenPlayerRef.current?.tech_ as any)?.ytPlayer
+          if (ytPlayer != null) {
+            const tracklist = ytPlayer.getOption?.('captions', 'tracklist')
+
+            if (Array.isArray(tracklist) && tracklist.length > 0) {
+              const tracks: SubtitleTrack[] = tracklist.map((track: any) => ({
+                languageCode: track.languageCode ?? track.id ?? '',
+                displayName:
+                  track.displayName ??
+                  track.label ??
+                  track.languageCode ??
+                  'Unknown'
+              }))
+              setSubtitleTracks(tracks)
+              setContextSubtitleTracks(id, tracks)
+            }
+          }
+        } catch (error) {
+          console.error('[YouTubeDetails] Error extracting subtitles:', error)
+        } finally {
+          setSubtitlesLoading(false)
+          // Cleanup hidden player
+          if (hiddenPlayerRef.current != null) {
+            hiddenPlayerRef.current.pause()
+            hiddenPlayerRef.current.dispose()
+            hiddenPlayerRef.current = null
+          }
+        }
+      }
+
+      hiddenPlayerRef.current.on('playing', extractSubtitles)
+
+      // Fallback timeout
+      const subtitleTimeout = setTimeout(() => {
+        if (!subtitleExtractionAttempted.current) {
+          subtitleExtractionAttempted.current = true
+          setSubtitlesLoading(false)
+          // Cleanup hidden player
+          if (hiddenPlayerRef.current != null) {
+            hiddenPlayerRef.current.pause()
+            hiddenPlayerRef.current.dispose()
+            hiddenPlayerRef.current = null
+          }
+        }
+      }, 3000)
+
+      return () => {
+        clearTimeout(subtitleTimeout)
+        if (hiddenPlayerRef.current != null) {
+          hiddenPlayerRef.current.dispose()
+          hiddenPlayerRef.current = null
+        }
+      }
+    }
+  }, [data, open, id, setContextSubtitleTracks])
 
   const loading = data == null && error == null
 
   return (
     <Stack spacing={4} sx={{ p: 6 }} data-testid="YoutubeDetails">
+      {/* Hidden video player for subtitle extraction - positioned off-screen */}
+      <Box
+        sx={{
+          position: 'absolute',
+          left: -9999,
+          width: 1,
+          height: 1,
+          overflow: 'hidden'
+        }}
+      >
+        <video ref={hiddenVideoRef} className="video-js" playsInline>
+          <source
+            src={`https://www.youtube.com/watch?v=${id}`}
+            type="video/youtube"
+          />
+        </video>
+      </Box>
+
       {loading ? (
         <>
           <Skeleton variant="rectangular" width="100%" sx={{ borderRadius: 2 }}>
@@ -161,7 +273,8 @@ export function YouTubeDetails({
           <SubtitleToggle
             subtitleEnabled={subtitleEnabled}
             onSubtitleToggle={handleSubtitleToggle}
-            hasSubtitles={hasSubtitles}
+            hasSubtitles={subtitleTracks.length > 0}
+            loading={subtitlesLoading}
             disabled={loading}
           />
         </>
@@ -176,7 +289,7 @@ export function YouTubeDetails({
           startIcon={<CheckIcon />}
           onClick={handleSelect}
           size="small"
-          disabled={loading}
+          disabled={loading || subtitlesLoading}
           sx={{ backgroundColor: 'secondary.dark' }}
         >
           {t('Select')}

@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Tooltip from '@mui/material/Tooltip'
@@ -11,13 +12,15 @@ export interface SubtitleToggleProps {
   onSubtitleToggle: (enabled: boolean) => void
   hasSubtitles?: boolean
   disabled?: boolean
+  loading?: boolean
 }
 
 export function SubtitleToggle({
   subtitleEnabled,
   onSubtitleToggle,
   hasSubtitles = true,
-  disabled = false
+  disabled = false,
+  loading = false
 }: SubtitleToggleProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [showTooltip, setShowTooltip] = useState(false)
@@ -91,12 +94,18 @@ export function SubtitleToggle({
           }
         }}
       >
-        <Switch
-          checked={subtitleEnabled && hasSubtitles}
-          onChange={handleSubtitleToggle}
-          disabled={disabled}
-          inputProps={{ 'aria-label': t('Enable Subtitles') }}
-        />
+        <Box>
+          {loading ? (
+            <CircularProgress size={24} sx={{ m: 1.25 }} />
+          ) : (
+            <Switch
+              checked={subtitleEnabled && hasSubtitles}
+              onChange={handleSubtitleToggle}
+              disabled={disabled}
+              inputProps={{ 'aria-label': t('Enable Subtitles') }}
+            />
+          )}
+        </Box>
       </Tooltip>
     </Stack>
   )
