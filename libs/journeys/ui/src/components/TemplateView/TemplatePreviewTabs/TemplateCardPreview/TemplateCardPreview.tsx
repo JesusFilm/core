@@ -126,8 +126,6 @@ export function TemplateCardPreview({
 
   const slidesToRender: Array<TreeBlock<StepBlock>> | undefined = take(steps, 7)
 
-  console.log('auth user - CARD PREVIEW', authUser)
-
   return steps != null ? (
     <StyledSwiper
       modules={[Mousewheel, FreeMode, A11y]}
