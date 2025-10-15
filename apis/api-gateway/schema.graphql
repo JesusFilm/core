@@ -495,6 +495,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoCreate(input: VideoCreateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoUpdate(input: VideoUpdateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoDelete(id: ID!) : Video! @join__field(graph: API_MEDIA) 
+  videoPublishChildren(id: ID!) : VideoPublishChildrenResult! @join__field(graph: API_MEDIA) 
+  videoPublishChildrenAndLanguages(id: ID!) : VideoPublishChildrenAndLanguagesResult! @join__field(graph: API_MEDIA) 
   videoDescriptionCreate(input: VideoTranslationCreateInput!) : VideoDescription! @join__field(graph: API_MEDIA) 
   videoDescriptionUpdate(input: VideoTranslationUpdateInput!) : VideoDescription! @join__field(graph: API_MEDIA) 
   videoDescriptionDelete(id: ID!) : VideoDescription! @join__field(graph: API_MEDIA) 
@@ -2920,6 +2922,20 @@ type VideoOrigin @join__type(graph: API_MEDIA)  {
   id: ID!
   name: String!
   description: String
+}
+
+type VideoPublishChildrenAndLanguagesResult @join__type(graph: API_MEDIA)  {
+  parentId: ID
+  publishedChildIds: [ID!]
+  publishedChildrenCount: Int
+  publishedVariantIds: [ID!]
+  publishedVariantsCount: Int
+}
+
+type VideoPublishChildrenResult @join__type(graph: API_MEDIA)  {
+  parentId: ID
+  publishedChildIds: [ID!]
+  publishedChildrenCount: Int
 }
 
 type VideoSnippet @join__type(graph: API_MEDIA)  {

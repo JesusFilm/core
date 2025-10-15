@@ -243,6 +243,8 @@ type Mutation {
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
   videoDelete(id: ID!): Video!
+  videoPublishChildren(id: ID!): VideoPublishChildrenResult!
+  videoPublishChildrenAndLanguages(id: ID!): VideoPublishChildrenAndLanguagesResult!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
   videoDescriptionUpdate(input: VideoTranslationUpdateInput!): VideoDescription!
   videoDescriptionDelete(id: ID!): VideoDescription!
@@ -1025,6 +1027,20 @@ type VideoOrigin {
   id: ID!
   name: String!
   description: String
+}
+
+type VideoPublishChildrenAndLanguagesResult {
+  parentId: ID
+  publishedChildIds: [ID!]
+  publishedChildrenCount: Int
+  publishedVariantIds: [ID!]
+  publishedVariantsCount: Int
+}
+
+type VideoPublishChildrenResult {
+  parentId: ID
+  publishedChildIds: [ID!]
+  publishedChildrenCount: Int
 }
 
 enum VideoRedirectType {

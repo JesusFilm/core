@@ -4,8 +4,8 @@ import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { useParams, usePathname, useRouter } from 'next/navigation'
-import { ReactNode, useEffect, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { ReactNode, use, useEffect, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 import Plus2 from '@core/shared/ui/icons/Plus2'
@@ -32,9 +32,14 @@ const GET_EDITIONS = graphql(`
   }
 `)
 
-export default function EditionsPage({ children }: EditionsPageProps) {
+interface EditionsPageProps {
+  children: ReactNode
+  params: Promise<{ videoId: string }>
+}
+
+export default function EditionsPage({ children, params }: EditionsPageProps) {
   const router = useRouter()
-  const { videoId } = useParams<{ videoId: string }>()
+  const { videoId } = use(params)
   const pathname = usePathname()
   const [reloadOnPathChange, setReloadOnPathChange] = useState(false)
   const { data, refetch } = useQuery(GET_EDITIONS, {

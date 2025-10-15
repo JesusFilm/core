@@ -3,16 +3,16 @@
 import { useMutation } from '@apollo/client'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, use } from 'react'
 
 import { graphql } from '@core/shared/gql'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 interface CitationDeletePageProps {
-  params: {
+  params: Promise<{
     videoId: string
     citationId: string
-  }
+  }>
 }
 
 const DELETE_BIBLE_CITATION = graphql(`
@@ -22,8 +22,10 @@ const DELETE_BIBLE_CITATION = graphql(`
 `)
 
 export default function CitationDeletePage({
-  params: { videoId, citationId }
+  params
 }: CitationDeletePageProps): ReactElement {
+  const { videoId, citationId } =
+    (params as any)?.then != null ? use(params as any) : (params as any)
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const [deleteBibleCitation, { loading: deleteLoading }] = useMutation(

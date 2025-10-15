@@ -32,7 +32,7 @@ describe('Audio Variant Download Page', () => {
   it('should redirect to the variant page with correct path', () => {
     render(
       <DownloadPage
-        params={{ videoId: mockVideoId, variantId: mockVariantId }}
+        params={Promise.resolve({ videoId: mockVideoId, variantId: mockVariantId })}
       />
     )
 
@@ -46,7 +46,7 @@ describe('Audio Variant Download Page', () => {
   it('should render an empty fragment (no visible UI)', () => {
     const { container } = render(
       <DownloadPage
-        params={{ videoId: mockVideoId, variantId: mockVariantId }}
+        params={Promise.resolve({ videoId: mockVideoId, variantId: mockVariantId })}
       />
     )
 

@@ -2,22 +2,24 @@
 
 import CircularProgress from '@mui/material/CircularProgress'
 import { useRouter } from 'next/navigation'
-import { ReactElement, Suspense } from 'react'
+import { ReactElement, Suspense, use } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { CitationForm } from '../_CitationForm/CitationForm'
 
 interface CitationEditPageProps {
-  params: {
+  params: Promise<{
     videoId: string
     citationId: string
-  }
+  }>
 }
 
 export default function CitationEditPage({
-  params: { videoId, citationId }
+  params
 }: CitationEditPageProps): ReactElement {
+  const { videoId, citationId } =
+    (params as any)?.then != null ? use(params as any) : (params as any)
   const router = useRouter()
   return (
     <Dialog
