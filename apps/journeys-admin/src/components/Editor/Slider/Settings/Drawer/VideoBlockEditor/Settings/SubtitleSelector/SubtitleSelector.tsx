@@ -14,39 +14,6 @@ export interface SubtitleSelectorProps {
   disabled?: boolean
 }
 
-const getMockSubtitles = (videoTitle?: string | null): string[] => {
-  if (videoTitle === 'Çoğu Çay') {
-    return [
-      'English',
-      'Spanish',
-      'French',
-      'German',
-      'Portuguese',
-      'Italian',
-      'Dutch',
-      'Russian',
-      'Chinese',
-      'Japanese',
-      'Korean',
-      'Arabic',
-      'Hindi',
-      'Turkish',
-      'Polish',
-      'Swedish',
-      'Norwegian',
-      'Danish',
-      'Finnish',
-      'Greek',
-      'Hebrew',
-      'Thai',
-      'Vietnamese',
-      'Indonesian',
-      'Romanian'
-    ]
-  }
-  return []
-}
-
 export function SubtitleSelector({
   selectedSubtitle,
   availableLanguages,
@@ -159,5 +126,3 @@ export function SubtitleSelector({
     </Stack>
   )
 }
-
-export { getMockSubtitles }
