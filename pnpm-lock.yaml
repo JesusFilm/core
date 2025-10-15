@@ -1059,6 +1059,9 @@ importers:
       nx-mcp:
         specifier: ^0.6.0
         version: 0.6.3
+      openai:
+        specifier: ^4.77.0
+        version: 4.104.0(encoding@0.1.13)(ws@8.18.1)(zod@3.25.76)
       pino-pretty:
         specifier: ^13.0.0
         version: 13.0.0
@@ -18166,6 +18169,18 @@ packages:
   open@8.4.2:
     resolution: {integrity: sha512-7x81NCL719oNbsq/3mh+hVrAWmFuEYUqrq/Iw3kUzH8ReypT9QQ0BLoJS7/G9k6N81XjW4qHWtjWwe/9eLy1EQ==}
     engines: {node: '>=12'}
+
+  openai@4.104.0:
+    resolution: {integrity: sha512-p99EFNsA/yX6UhVO93f5kJsDRLAg+CTA2RBqdHK4RtK8u5IJw32Hyb2dTGKbnnFmnuoBv5r7Z2CURI9sGZpSuA==}
+    hasBin: true
+    peerDependencies:
+      ws: ^8.18.0
+      zod: ^3.23.8
+    peerDependenciesMeta:
+      ws:
+        optional: true
+      zod:
+        optional: true
 
   openapi-to-graphql@2.2.5:
     resolution: {integrity: sha512-HlCCs/D7wMtraNZVYR8fgqv2Fr4afWgWKVf38uwwMEdhTuVHadn+1ILYfmZV6AdejFw7ViQpjNGVRcdrN2wzFg==}
@@ -46224,6 +46239,21 @@ snapshots:
       define-lazy-prop: 2.0.0
       is-docker: 2.2.1
       is-wsl: 2.2.0
+
+  openai@4.104.0(encoding@0.1.13)(ws@8.18.1)(zod@3.25.76):
+    dependencies:
+      '@types/node': 18.19.86
+      '@types/node-fetch': 2.6.13
+      abort-controller: 3.0.0
+      agentkeepalive: 4.5.0
+      form-data-encoder: 1.7.2
+      formdata-node: 4.4.1
+      node-fetch: 2.7.0(encoding@0.1.13)
+    optionalDependencies:
+      ws: 8.18.1
+      zod: 3.25.76
+    transitivePeerDependencies:
+      - encoding
 
   openapi-to-graphql@2.2.5(encoding@0.1.13)(graphql@15.3.0):
     dependencies:

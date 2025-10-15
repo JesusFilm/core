@@ -980,7 +980,6 @@ export default function NewPage() {
   const [selectedOutputs, setSelectedOutputs] = useState<SelectedOutputsMap>({})
   const [isTilesContainerHovered, setIsTilesContainerHovered] = useState<boolean>(false)
 
-  const [openaiApiKey, setOpenaiApiKey] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [unsplashApiKey, setUnsplashApiKey] = useState('')
   const [textContent, setTextContent] = useState('')
@@ -1093,16 +1092,9 @@ export default function NewPage() {
     }
   }, [])
 
-  // Load OpenAI API key from localStorage on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedOpenAIApiKey = localStorage.getItem(
-        'jesus-film-studio-openai-api-key'
-      )
-      if (savedOpenAIApiKey) {
-        setOpenaiApiKey(savedOpenAIApiKey)
-      }
-
+      localStorage.removeItem('jesus-film-studio-openai-api-key')
       const savedUnsplashApiKey = localStorage.getItem(
         'jesus-film-studio-unsplash-api-key'
       )
@@ -1111,13 +1103,6 @@ export default function NewPage() {
       }
     }
   }, [])
-
-  // Save OpenAI API key to localStorage when it changes
-  useEffect(() => {
-    if (typeof window !== 'undefined' && openaiApiKey) {
-      localStorage.setItem('jesus-film-studio-openai-api-key', openaiApiKey)
-    }
-  }, [openaiApiKey])
 
   // Save Unsplash API key to localStorage when it changes
   useEffect(() => {
@@ -1650,16 +1635,45 @@ Guidelines:
     }
   }
 
+  const extractTextFromResponse = (result: any): string => {
+    if (!result) {
+      return ''
+    }
+
+    if (typeof result.output_text === 'string' && result.output_text.trim().length > 0) {
+      return result.output_text
+    }
+
+    if (Array.isArray(result.output)) {
+      for (const item of result.output) {
+        const content = item?.content
+        if (Array.isArray(content)) {
+          const textPart = content.find(
+            (part: any) => part?.type === 'output_text' && typeof part?.text === 'string'
+          )
+          if (textPart?.text?.trim()) {
+            return textPart.text
+          }
+        }
+      }
+    }
+
+    return ''
+  }
+
+  const accumulateUsage = (usage: any) => {
+    if (!usage) return
+
+    setTotalTokensUsed((prev) => ({
+      input: prev.input + (usage.input_tokens ?? 0),
+      output: prev.output + (usage.output_tokens ?? 0)
+    }))
+  }
+
   const processContentWithAI = async () => {
     const currentValue = textareaRef.current?.value || ''
     if (!currentValue.trim()) {
       console.warn('Please enter some content to process.')
-      return
-    }
-
-    if (!openaiApiKey) {
-      console.warn('Please set your OpenAI API key in settings first.')
-      setIsSettingsOpen(true)
       return
     }
 
@@ -1679,60 +1693,45 @@ Guidelines:
         content: currentUserMessage
       })
 
-      const response = await fetch(
-        'https://api.openai.com/v1/chat/completions',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${openaiApiKey}`
-          },
-          body: JSON.stringify({
-            model: 'gpt-5-nano',
-            messages: messages
-            //   max_completion_tokens: 2000,
-            //   temperature: 0.9,
-          })
-        }
-      )
+      const response = await fetch('/api/ai/respond', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'gpt-5-nano',
+          messages
+          // max_output_tokens: 2000,
+          // temperature: 0.9,
+        })
+      })
 
       if (!response.ok) {
-        throw new Error('Failed to process content')
+        const errorMessage = await response.text()
+        throw new Error(errorMessage || 'Failed to process content')
       }
 
       const data = await response.json()
       const processedContent =
-        data.choices[0]?.message?.content || 'No response generated'
+        extractTextFromResponse(data) || 'No response generated'
       setAiResponse(processedContent)
       const parsedSteps = parseGeneratedSteps(processedContent)
       setEditableSteps(parsedSteps)
 
       // Track token usage
-      if (data.usage) {
-        setTotalTokensUsed((prev) => ({
-          input: prev.input + (data.usage.prompt_tokens || 0),
-          output: prev.output + (data.usage.completion_tokens || 0)
-        }))
-      }
+      accumulateUsage(data.usage)
     } catch (error) {
       console.error('Error processing content:', error)
       // Restore previous response if API call failed
       setAiResponse(previousResponse)
       setEditableSteps(previousSteps)
-      console.error(
-        'Failed to process content. Please check your API key and try again.'
-      )
+      console.error('Failed to process content via the AI proxy. Please try again.')
     } finally {
       setIsProcessing(false)
     }
   }
 
   const analyzeImageWithAI = async (imageSrc: string, imageIndex: number) => {
-    if (!openaiApiKey) {
-      console.warn('OpenAI API key not set, skipping image analysis')
-      return
-    }
-
     // Mark as analyzing
     setImageAnalysisResults((prev) => {
       const updated = [...prev]
@@ -1753,52 +1752,44 @@ Guidelines:
     })
 
     try {
-      const response = await fetch(
-        'https://api.openai.com/v1/chat/completions',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${openaiApiKey}`
-          },
-          body: JSON.stringify({
-            model: 'gpt-4o-mini', // Using gpt-4o-mini for vision capabilities
-            messages: [
-              { role: 'system', content: IMAGE_ANALYSIS_PROMPT },
-              {
-                role: 'user',
-                content: [
-                  { type: 'text', text: 'Analyze this image:' },
-                  {
-                    type: 'image_url',
-                    image_url: {
-                      url: imageSrc,
-                      detail: 'high' // High detail for better OCR and analysis
-                    }
+      const response = await fetch('/api/ai/respond', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini', // Using gpt-4o-mini for vision capabilities
+          messages: [
+            { role: 'system', content: IMAGE_ANALYSIS_PROMPT },
+            {
+              role: 'user',
+              content: [
+                { type: 'text', text: 'Analyze this image:' },
+                {
+                  type: 'image_url',
+                  image_url: {
+                    url: imageSrc,
+                    detail: 'high' // High detail for better OCR and analysis
                   }
-                ]
-              }
-            ],
-            max_tokens: 1000,
-            temperature: 0.1 // Low temperature for more consistent analysis
-          })
-        }
-      )
+                }
+              ]
+            }
+          ],
+          max_tokens: 1000,
+          temperature: 0.1 // Low temperature for more consistent analysis
+        })
+      })
 
       if (!response.ok) {
-        throw new Error('Failed to analyze image')
+        const errorMessage = await response.text()
+        throw new Error(errorMessage || 'Failed to analyze image')
       }
 
       const data = await response.json()
-      let analysisText = data.choices[0]?.message?.content || '{}'
+      let analysisText = extractTextFromResponse(data) || '{}'
 
       // Track token usage
-      if (data.usage) {
-        setTotalTokensUsed((prev) => ({
-          input: prev.input + (data.usage.prompt_tokens || 0),
-          output: prev.output + (data.usage.completion_tokens || 0)
-        }))
-      }
+      accumulateUsage(data.usage)
 
       // Extract JSON from markdown code block if present
       if (analysisText.includes('```json') || analysisText.includes('```')) {
@@ -1820,7 +1811,7 @@ Guidelines:
         }
       } catch (parseError) {
         console.error('Failed to parse analysis response:', parseError)
-        console.error('Raw response:', data.choices[0]?.message?.content)
+        console.error('Raw response:', analysisText)
         analysisResult = {
           contentType: 'other',
           extractedText: '',
@@ -1852,8 +1843,7 @@ Guidelines:
           imageSrc,
           contentType: 'error',
           extractedText: '',
-          detailedDescription:
-            'Failed to analyze image. Please check your API key.',
+          detailedDescription: 'Failed to analyze image. Please try again.',
           confidence: 'low',
           contentIdeas: [],
           isAnalyzing: false
@@ -2538,23 +2528,11 @@ Guidelines:
                     </DialogHeader>
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <label
-                          htmlFor="openai-api-key"
-                          className="text-sm font-medium"
-                        >
-                          OpenAI API Key
-                        </label>
-                        <Input
-                          id="openai-api-key"
-                          type="password"
-                          placeholder="Enter your OpenAI API key..."
-                          value={openaiApiKey}
-                          onChange={(e) => setOpenaiApiKey(e.target.value)}
-                          className="w-full"
-                        />
+                        <span className="text-sm font-medium">
+                          OpenAI Access
+                        </span>
                         <p className="text-xs text-muted-foreground">
-                          Your API key is required to process content with
-                          OpenAI. It will be stored locally in your browser.
+                          Responses are now powered by a secure, server-managed OpenAI connection. No personal API key is required.
                         </p>
                       </div>
                       <div className="space-y-2">
@@ -2738,9 +2716,7 @@ Guidelines:
                             ) : (
                               <div className="text-center py-8 text-muted-foreground">
                                 <p>
-                                  No analysis available. Please configure your
-                                  OpenAI API key in settings to enable image
-                                  analysis.
+                                  No analysis available. Try again once the AI proxy finishes processing, or re-run the analysis.
                                 </p>
                               </div>
                             )}
