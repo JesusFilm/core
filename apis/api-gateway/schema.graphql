@@ -495,6 +495,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   videoCreate(input: VideoCreateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoUpdate(input: VideoUpdateInput!) : Video! @join__field(graph: API_MEDIA) 
   videoDelete(id: ID!) : Video! @join__field(graph: API_MEDIA) 
+  fixVideoLanguages(videoId: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   videoDescriptionCreate(input: VideoTranslationCreateInput!) : VideoDescription! @join__field(graph: API_MEDIA) 
   videoDescriptionUpdate(input: VideoTranslationUpdateInput!) : VideoDescription! @join__field(graph: API_MEDIA) 
   videoDescriptionDelete(id: ID!) : VideoDescription! @join__field(graph: API_MEDIA) 
