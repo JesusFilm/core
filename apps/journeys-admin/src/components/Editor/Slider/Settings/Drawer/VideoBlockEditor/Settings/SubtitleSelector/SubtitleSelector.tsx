@@ -81,15 +81,7 @@ export function SubtitleSelector({
   const displayValue = selectedSubtitle ?? 'off'
 
   return (
-    <Stack direction="column" spacing={2}>
-      <Typography
-        variant="subtitle2"
-        sx={{
-          color: disabled || hasNoSubtitles ? 'action.disabled' : undefined
-        }}
-      >
-        {t('Subtitles')}
-      </Typography>
+    <Stack direction="column" spacing={1}>
       <Select
         value={displayValue}
         onChange={handleChange}
