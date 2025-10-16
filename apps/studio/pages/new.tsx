@@ -12,6 +12,7 @@ import {
   Image as ImageIcon,
   Info,
   Instagram,
+  Layers,
   Loader2,
   MessageCircle,
   MessageSquare,
@@ -230,8 +231,11 @@ const steps = [
   { id: 3, title: 'Output', description: 'Select output formats' }
 ]
 
-const chatContextOptions = [
-  { text: 'Start a conversation', emoji: '💬' },
+const START_FROM_SCRATCH_OPTION = 'Start from scratch'
+
+const contextDetailOptions: Record<string, Array<{ text: string; emoji: string }>> = {
+  'Chat/Comments': [
+    { text: 'Start a conversation', emoji: '💬' },
   { text: 'Reconnect', emoji: '🙋‍♂️' },
   { text: 'Invite to talk more', emoji: '💭' },
   { text: "Say you're sorry", emoji: '🙇' },
@@ -239,7 +243,35 @@ const chatContextOptions = [
   { text: 'Share your story', emoji: '📝' },
   { text: 'Share a verse', emoji: '📖' },
   { text: 'Offer a prayer', emoji: '🤲' }
-]
+  ],
+  'Social Media': [
+    { text: 'Create a social post design', emoji: '🖼️' },
+    { text: 'Design a carousel series', emoji: '🧩' },
+    { text: 'Plan a short-form video', emoji: '🎬' },
+    { text: 'Write captions for reels & stories', emoji: '✍️' },
+    { text: 'Map a community engagement idea', emoji: '📣' }
+  ],
+  Website: [
+    { text: 'Create an embeddable carousel', emoji: '🧷' },
+    { text: 'Build a simple landing page', emoji: '🖥️' },
+    { text: 'Lay out a page with sections', emoji: '📐' },
+    { text: 'Draft copy for featured designs', emoji: '📝' }
+  ],
+  Print: [
+    { text: 'Design church invite cards', emoji: '⛪' },
+    { text: 'Create outreach flyers', emoji: '📣' },
+    { text: 'Make shareable cards', emoji: '💌' },
+    { text: 'Generate QR code posters', emoji: '🔗' },
+    { text: 'Print sticker sheets', emoji: '🏷️' }
+  ],
+  'Real Life': [
+    { text: 'Write discussion questions', emoji: '❓' },
+    { text: 'Plan life application ideas', emoji: '🧭' },
+    { text: 'Outline a short sermon', emoji: '🎙️' },
+    { text: 'Prepare a group lesson', emoji: '👥' },
+    { text: 'Create a family devotion', emoji: '🏠' }
+  ]
+}
 
 // Removed - now using proper conversation history instead of RAG
 
@@ -3210,7 +3242,7 @@ Guidelines:
                         >
                           {!(collapsedTiles && !isTilesContainerHovered) && (
                             <div className="p-3" data-id="Tile-SocialMedia-Icon">
-                              <Users
+                              <Layers
                                 className={`w-8 h-8 ${
                                   selectedContext === 'Social Media'
                                     ? 'text-white drop-shadow-lg'
