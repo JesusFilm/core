@@ -1441,6 +1441,12 @@ Guidelines:
             )
             .filter((keyword) => keyword.length > 0)
             .slice(0, 3)
+        : typeof step?.keywords === 'string'
+        ? step.keywords
+            .split(',')
+            .map((keyword) => keyword.trim())
+            .filter((keyword) => keyword.length > 0)
+            .slice(0, 3)
         : []
 
       const rawTitle =
@@ -1770,8 +1776,8 @@ Guidelines:
     }
   }
 
-  const processContentWithAI = async () => {
-    const currentValue = textareaRef.current?.value || ''
+  const processContentWithAI = async (inputText?: string) => {
+    const currentValue = inputText || textareaRef.current?.value || ''
     if (!currentValue.trim()) {
       console.warn('Please enter some content to process.')
       return
@@ -1818,9 +1824,21 @@ Guidelines:
       const parsedSteps = parseGeneratedSteps(processedContent)
       setEditableSteps(parsedSteps)
 
-      // Save session after AI response is processed
+      // Track token usage first
+      const tokenUsage = data.usage ? {
+        input: data.usage.input_tokens ?? 0,
+        output: data.usage.output_tokens ?? 0
+      } : { input: 0, output: 0 }
+
+      // Update total tokens
+      setTotalTokensUsed((prev) => ({
+        input: prev.input + tokenUsage.input,
+        output: prev.output + tokenUsage.output
+      }))
+
+      // Save session after AI response is processed with correct token usage
       const sessionId = userInputStorage.saveCurrentSession({
-        textContent,
+        textContent: currentValue,
         images: imageAttachments,
         aiResponse: processedContent,
         aiSteps: parsedSteps,
@@ -1832,14 +1850,11 @@ Guidelines:
           confidence: result.confidence,
           contentIdeas: result.contentIdeas
         })),
-        tokensUsed: { ...totalTokensUsed }
+        tokensUsed: tokenUsage
       })
       // Set this as the current session for future token tracking
       setCurrentSessionId(sessionId)
       setSavedSessions(userInputStorage.getAllSessions())
-
-      // Track token usage
-      accumulateUsage(data.usage)
     } catch (error) {
       console.error('Error processing content:', error)
       // Restore previous response if API call failed
@@ -2051,15 +2066,28 @@ Guidelines:
       step.content,
       `Step ${stepIndex + 1}`
     )
-    console.log(
-      `🖼️ Loading Unsplash images for Step ${
-        stepIndex + 1
-      }: "${heading}" using first keyword: "${step.keywords[0]}"`
-    )
 
     try {
-      // Use only the first keyword and get multiple images
-      const images = await searchUnsplash(step.keywords[0], 12)
+      let images: string[] = []
+
+      // Try each keyword until we find results
+      for (let i = 0; i < step.keywords.length; i++) {
+        const keyword = step.keywords[i]
+        console.log(
+          `🖼️ Loading Unsplash images for Step ${
+            stepIndex + 1
+          }: "${heading}" using keyword ${i + 1}/${step.keywords.length}: "${keyword}"`
+        )
+
+        images = await searchUnsplash(keyword, 12)
+
+        if (images.length > 0) {
+          console.log(`✅ Found ${images.length} images for Step ${stepIndex + 1} using keyword: "${keyword}"`)
+          break
+        } else {
+          console.log(`❌ No images found for Step ${stepIndex + 1} using keyword: "${keyword}". Trying next keyword...`)
+        }
+      }
 
       console.log(`📸 Completed loading ${images.length} images for Step ${stepIndex + 1}`)
 
@@ -2212,7 +2240,7 @@ Guidelines:
     if (currentValue.trim() && !isProcessing) {
       // Update textContent state before processing
       setTextContent(currentValue)
-      await processContentWithAI()
+      await processContentWithAI(currentValue)
     }
   }
 
@@ -2333,6 +2361,11 @@ Guidelines:
 
     // Set current session ID for token tracking
     setCurrentSessionId(session.id)
+
+    // Set token usage for display
+    if (session.tokensUsed) {
+      setTotalTokensUsed(session.tokensUsed)
+    }
 
     // Clear draft since we're loading a saved session
     userInputStorage.clearDraft()
