@@ -29,9 +29,9 @@ import {
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { ImageSource } from '../../../Drawer/ImageSource'
 import { Accordion } from '../../Properties/Accordion'
-import { IMAGE_BLOCK_UPDATE } from '../../Properties/blocks/Image/Options/ImageOptions'
-import { ZoomImage } from '../../Properties/blocks/Card/BackgroundMedia/Image/ZoomImage'
 import { FocalPoint } from '../../Properties/blocks/Card/BackgroundMedia/Image/FocalPoint'
+import { ZoomImage } from '../../Properties/blocks/Card/BackgroundMedia/Image/ZoomImage'
+import { IMAGE_BLOCK_UPDATE } from '../../Properties/blocks/Image/Options/ImageOptions'
 
 export const LOGO_BLOCK_CREATE = gql`
   ${IMAGE_FIELDS}

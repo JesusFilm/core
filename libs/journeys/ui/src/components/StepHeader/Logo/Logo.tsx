@@ -2,9 +2,9 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import { useRouter } from 'next/router'
 import { ReactElement, ReactNode } from 'react'
-import { NextImage } from '@core/shared/ui/NextImage'
 
 import DiamondIcon from '@core/shared/ui/icons/Diamond'
+import { NextImage } from '@core/shared/ui/NextImage'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 
