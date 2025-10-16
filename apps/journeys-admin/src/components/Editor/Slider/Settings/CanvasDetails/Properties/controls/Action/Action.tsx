@@ -37,11 +37,9 @@ export function Action(): ReactElement {
   const emailActionRef = useRef<TextFieldFormRef | null>(null)
 
   // Add addtional types here to use this component for that block
-  const selectedBlock = stateSelectedBlock as
-    | TreeBlock<ButtonBlock>
-    | TreeBlock<SignUpBlock>
-    | TreeBlock<VideoBlock>
-    | undefined
+  const selectedBlock = stateSelectedBlock as TreeBlock<
+    ButtonBlock | VideoBlock | SignUpBlock
+  >
   const [action, setAction] = useState<ActionValue>(
     getAction(t, selectedBlock?.action?.__typename).value
   )

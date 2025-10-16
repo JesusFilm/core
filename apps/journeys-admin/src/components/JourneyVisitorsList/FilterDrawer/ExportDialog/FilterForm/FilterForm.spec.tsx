@@ -25,6 +25,7 @@ describe('FilterForm', () => {
     expect(screen.getByLabelText('Chat Open')).toBeInTheDocument()
     expect(screen.getByLabelText('Text Submission')).toBeInTheDocument()
     expect(screen.getByLabelText('Poll Selection')).toBeInTheDocument()
+    expect(screen.getByLabelText('Multiselect Submission')).toBeInTheDocument()
     expect(screen.getByLabelText('Button Click')).toBeInTheDocument()
     expect(screen.getByLabelText('Subscription')).toBeInTheDocument()
 
@@ -35,6 +36,7 @@ describe('FilterForm', () => {
     expect(screen.getByLabelText('All')).toBeChecked()
     expect(screen.getByLabelText('Journey Start')).toBeChecked()
     expect(screen.getByLabelText('Video Interactions')).toBeChecked()
+    expect(screen.getByLabelText('Multiselect Submission')).toBeChecked()
   })
 
   it('handles "Select All" checkbox correctly', () => {
@@ -46,12 +48,14 @@ describe('FilterForm', () => {
     expect(selectAllCheckbox).not.toBeChecked()
     expect(screen.getByLabelText('Journey Start')).not.toBeChecked()
     expect(screen.getByLabelText('Video Interactions')).not.toBeChecked()
+    expect(screen.getByLabelText('Multiselect Submission')).not.toBeChecked()
 
     // Check all again
     fireEvent.click(selectAllCheckbox)
     expect(selectAllCheckbox).toBeChecked()
     expect(screen.getByLabelText('Journey Start')).toBeChecked()
     expect(screen.getByLabelText('Video Interactions')).toBeChecked()
+    expect(screen.getByLabelText('Multiselect Submission')).toBeChecked()
   })
 
   it('expands and collapses video events section', async () => {
@@ -113,6 +117,7 @@ describe('FilterForm', () => {
         EventType.ChatOpenEvent,
         EventType.TextResponseSubmissionEvent,
         EventType.RadioQuestionSubmissionEvent,
+        EventType.MultiselectSubmissionEvent,
         EventType.ButtonClickEvent,
         EventType.SignUpSubmissionEvent,
         EventType.VideoStartEvent,

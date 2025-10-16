@@ -67,9 +67,7 @@ export function Label(): ReactElement {
     state: { undo }
   } = useCommand()
 
-  const selectedBlock = state.selectedBlock as
-    | TreeBlock<TextResponseBlock>
-    | undefined
+  const selectedBlock = state.selectedBlock as TreeBlock<TextResponseBlock>
   const [value, setValue] = useState(selectedBlock?.label ?? '')
   const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
   const hideLabel = selectedBlock?.hideLabel ?? false

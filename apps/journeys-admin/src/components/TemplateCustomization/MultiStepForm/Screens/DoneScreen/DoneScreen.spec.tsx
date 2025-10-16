@@ -276,8 +276,8 @@ describe('DoneScreen', () => {
   it('does not navigate when journey has no id', () => {
     const journeyWithoutId = {
       ...journey,
-      id: null
-    } as any
+      id: null as unknown as string
+    }
 
     render(
       <MockedProvider mocks={[getCustomDomainsMock]}>
