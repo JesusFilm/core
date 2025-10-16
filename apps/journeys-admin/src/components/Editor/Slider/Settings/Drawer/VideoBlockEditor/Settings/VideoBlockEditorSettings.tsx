@@ -34,6 +34,7 @@ import {
 } from '../../../../../../../../__generated__/globalTypes'
 
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
+import { SubtitleSelector, getMockSubtitles } from './SubtitleSelector'
 
 interface Values extends FormikValues {
   autoplay: boolean
@@ -41,6 +42,7 @@ interface Values extends FormikValues {
   startAt: string
   endAt: string
   objectFit: ObjectFit
+  subtitle: string | null
 }
 
 interface VideoBlockEditorSettingsProps {
@@ -61,7 +63,8 @@ export function VideoBlockEditorSettings({
     muted: selectedBlock?.muted ?? true,
     startAt: secondsToTimeFormat(selectedBlock?.startAt ?? 0),
     endAt: secondsToTimeFormat(selectedBlock?.endAt ?? 0),
-    objectFit: selectedBlock?.objectFit ?? ObjectFit.fill
+    objectFit: selectedBlock?.objectFit ?? ObjectFit.fill,
+    subtitle: null
   }
   const { values, errors, handleChange, setFieldValue } = useFormik<Values>({
     initialValues,
@@ -105,8 +108,9 @@ export function VideoBlockEditorSettings({
           preventDuplicate: true
         })
       } else {
+        const { subtitle, ...videoBlockValues } = values
         await onChange({
-          ...values,
+          ...videoBlockValues,
           startAt: convertedStartAt,
           endAt: convertedEndAt
         })
@@ -117,8 +121,34 @@ export function VideoBlockEditorSettings({
   })
 
   return (
-    <Box sx={{ px: 4, width: '100%' }} data-testid="VideoBlockEditorSettings">
+    <Box
+      sx={{ px: 4, pt: 2, width: '100%' }}
+      data-testid="VideoBlockEditorSettings"
+    >
       <Stack direction="column" spacing={6}>
+        {/* Subtitles */}
+        <Stack direction="column" spacing={4}>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              color: selectedBlock == null ? 'action.disabled' : undefined
+            }}
+          >
+            {t('Subtitles')}
+          </Typography>
+          <SubtitleSelector
+            selectedSubtitle={values.subtitle}
+            availableLanguages={getMockSubtitles(selectedBlock?.title)}
+            onChange={async (subtitle) => {
+              await setFieldValue('subtitle', subtitle)
+              // TODO: Include subtitle in backend update when backend support is added
+            }}
+            disabled={selectedBlock == null}
+          />
+          <Divider />
+        </Stack>
+
+        {/* Timing */}
         <Stack direction="column" spacing={2}>
           <Typography
             variant="subtitle2"
@@ -175,6 +205,8 @@ export function VideoBlockEditorSettings({
             />
           </Stack>
         </Stack>
+
+        {/* Aspect ratio */}
         <Stack direction="column" spacing={2}>
           <Stack>
             <Typography
@@ -240,6 +272,8 @@ export function VideoBlockEditorSettings({
             </ToggleButton>
           </ToggleButtonGroup>
         </Stack>
+
+        {/* Autoplay */}
         <Stack direction="column" spacing={4}>
           <Stack direction="row" justifyContent="space-between">
             <Stack direction="column">

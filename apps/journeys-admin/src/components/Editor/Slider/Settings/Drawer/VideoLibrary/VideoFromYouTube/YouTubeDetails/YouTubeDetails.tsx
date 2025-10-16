@@ -1,8 +1,8 @@
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Box from '@mui/system/Box'
 import { useTranslation } from 'next-i18next'
 import fetch from 'node-fetch'
 import { ReactElement, useEffect, useRef, useState } from 'react'
@@ -15,6 +15,7 @@ import CheckIcon from '@core/shared/ui/icons/Check'
 
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { parseISO8601Duration } from '../../../../../../../../libs/parseISO8601Duration'
+import { SubtitleToggle } from '../../SubtitleToggle'
 import { VideoDescription } from '../../VideoDescription'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 import type { YoutubeVideo, YoutubeVideosData } from '../VideoFromYouTube'
@@ -42,6 +43,7 @@ export function YouTubeDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player | null>(null)
   const [playing, setPlaying] = useState(false)
+  const [subtitleEnabled, setSubtitleEnabled] = useState(false)
   const { data, error } = useSWR<YoutubeVideo>(
     () => (open ? id : null),
     fetcher
@@ -56,6 +58,10 @@ export function YouTubeDetails({
     })
   }
 
+  const handleSubtitleToggle = (enabled: boolean): void => {
+    setSubtitleEnabled(enabled)
+  }
+
   const time =
     data != null ? parseISO8601Duration(data.contentDetails.duration) : 0
   const duration =
@@ -64,6 +70,10 @@ export function YouTubeDetails({
       : new Date(time * 1000).toISOString().substring(11, 19)
 
   const videoDescription = data?.snippet.description ?? ''
+
+  // TODO: This is for testing purposes only - will be replaced with actual subtitle availability check
+  // Currently providing subtitles only for "Çoğu Çay" video to test the "no available subtitles" state
+  const hasSubtitles = data?.snippet.title === 'Çoğu Çay'
 
   useEffect(() => {
     if (videoRef.current != null) {
@@ -148,6 +158,12 @@ export function YouTubeDetails({
               <VideoDescription videoDescription={videoDescription} />
             </Box>
           </Box>
+          <SubtitleToggle
+            subtitleEnabled={subtitleEnabled}
+            onSubtitleToggle={handleSubtitleToggle}
+            hasSubtitles={hasSubtitles}
+            disabled={loading}
+          />
         </>
       )}
       <Stack
