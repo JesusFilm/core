@@ -72,7 +72,8 @@ import {
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious
+  CarouselPrevious,
+  type CarouselApi
 } from '@/components/ui/carousel'
 
 // Dynamic imports for components to avoid hydration issues
@@ -1060,9 +1061,79 @@ export default function NewPage() {
   const [showTestimonialBackground, setShowTestimonialBackground] =
     useState(true)
   const [isGeneratingDesign, setIsGeneratingDesign] = useState(false)
+  const bibleVerses = useMemo(
+    () => [
+      {
+        reference: 'Isaiah 40:31',
+        text:
+          'But they who wait for the LORD shall renew their strength; they shall mount up with wings like eagles; they shall run and not be weary; they shall walk and not faint.'
+      },
+      {
+        reference: 'Philippians 4:6-7',
+        text:
+          'Do not be anxious about anything, but in everything by prayer and supplication with thanksgiving let your requests be made known to God. And the peace of God, which surpasses all understanding, will guard your hearts and your minds in Christ Jesus.'
+      },
+      {
+        reference: 'Romans 15:13',
+        text:
+          'May the God of hope fill you with all joy and peace in believing, so that by the power of the Holy Spirit you may abound in hope.'
+      },
+      {
+        reference: 'Psalm 46:1-2',
+        text:
+          'God is our refuge and strength, a very present help in trouble. Therefore we will not fear though the earth gives way.'
+      },
+      {
+        reference: 'John 16:33',
+        text:
+          'In the world you will have tribulation. But take heart; I have overcome the world.'
+      }
+    ],
+    []
+  )
+  const [verseCarouselApi, setVerseCarouselApi] =
+    useState<CarouselApi | null>(null)
+  const [activeVerseIndex, setActiveVerseIndex] = useState(0)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const hasGeneratedContent = aiResponse.trim().length > 0
+
+  useEffect(() => {
+    const api = verseCarouselApi
+    if (!api) return
+
+    const handleSelect = () => {
+      setActiveVerseIndex(api.selectedScrollSnap())
+    }
+
+    handleSelect()
+    api.on('select', handleSelect)
+    api.on('reInit', handleSelect)
+
+    return () => {
+      api.off('select', handleSelect)
+      api.off('reInit', handleSelect)
+    }
+  }, [verseCarouselApi])
+
+  useEffect(() => {
+    const api = verseCarouselApi
+    if (!api) return
+
+    if (!isProcessing) {
+      api.scrollTo(0)
+      setActiveVerseIndex(0)
+      return
+    }
+
+    const interval = window.setInterval(() => {
+      api.scrollNext()
+    }, 6000)
+
+    return () => {
+      window.clearInterval(interval)
+    }
+  }, [verseCarouselApi, isProcessing])
 
   // Toggle X-ray mode (Cmd+Shift+X) to show minimalistic component labels from data-id
   useEffect(() => {
@@ -2575,6 +2646,56 @@ Guidelines:
       <Head data-id="Head">
         <title>Create New Content | Studio | Jesus Film Project</title>
       </Head>
+      <Dialog open={isProcessing}>
+        <DialogContent
+          className="sm:max-w-lg"
+          aria-describedby="waiting-verses-description"
+        >
+          <DialogHeader className="space-y-2">
+            <DialogTitle className="flex items-center gap-2 text-xl font-semibold">
+              <Loader2 className="h-5 w-5 animate-spin text-primary" aria-hidden="true" />
+              Preparing your response
+            </DialogTitle>
+            <DialogDescription id="waiting-verses-description">
+              Take a moment to reflect on these scriptures while we craft your plan.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4">
+            <Carousel opts={{ loop: true }} setApi={setVerseCarouselApi} className="w-full">
+              <CarouselContent>
+                {bibleVerses.map(({ reference, text }) => (
+                  <CarouselItem key={reference}>
+                    <div className="flex flex-col items-center gap-4 rounded-lg border bg-muted/40 px-6 py-8 text-center shadow-sm">
+                      <p className="text-base leading-relaxed text-foreground md:text-lg">
+                        &ldquo;{text}&rdquo;
+                      </p>
+                      <span className="text-sm font-semibold uppercase tracking-wide text-primary/80">
+                        {reference}
+                      </span>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="left-2" />
+              <CarouselNext className="right-2" />
+            </Carousel>
+            <div className="mt-4 flex justify-center gap-2">
+              {bibleVerses.map((verse, index) => (
+                <button
+                  key={verse.reference}
+                  type="button"
+                  onClick={() => verseCarouselApi?.scrollTo(index)}
+                  className={`h-2 w-2 rounded-full transition-colors ${
+                    index === activeVerseIndex ? 'bg-primary' : 'bg-muted-foreground/40'
+                  }`}
+                  aria-label={`Show verse ${verse.reference}`}
+                  aria-pressed={index === activeVerseIndex}
+                />
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
       <div className="min-h-screen bg-stone-100 text-foreground" data-id="PageRoot">
         <header className="border-b border-border bg-background backdrop-blur" data-id="Header">
           <div className="container mx-auto px-4 py-6" data-id="HeaderContainer">
