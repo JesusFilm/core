@@ -146,7 +146,6 @@ export function VideoBlockEditorSettings({
             }
             onChange={(subtitle) => {
               void setFieldValue('subtitle', subtitle)
-              console.log('Subtitle language changed:', subtitle ?? 'Off')
               // TODO: Include subtitle in backend update when backend support is added
             }}
             disabled={selectedBlock == null}
