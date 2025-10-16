@@ -57,6 +57,8 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_acti
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action = StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action_NavigateToBlockAction | StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action_LinkAction | StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action_EmailAction | StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action_ChatAction | StepBlockRestoreFromSocialPreview_blockRestore_ButtonBlock_action_PhoneAction;
@@ -192,6 +194,8 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock_action = StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock_action_NavigateToBlockAction | StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock_action_LinkAction | StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock_action_EmailAction | StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock_action_ChatAction | StepBlockRestoreFromSocialPreview_blockRestore_RadioOptionBlock_action_PhoneAction;
@@ -260,6 +264,8 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_SignUpBlock_acti
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type StepBlockRestoreFromSocialPreview_blockRestore_SignUpBlock_action = StepBlockRestoreFromSocialPreview_blockRestore_SignUpBlock_action_NavigateToBlockAction | StepBlockRestoreFromSocialPreview_blockRestore_SignUpBlock_action_LinkAction | StepBlockRestoreFromSocialPreview_blockRestore_SignUpBlock_action_EmailAction | StepBlockRestoreFromSocialPreview_blockRestore_SignUpBlock_action_ChatAction | StepBlockRestoreFromSocialPreview_blockRestore_SignUpBlock_action_PhoneAction;
@@ -445,6 +451,8 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_actio
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_action = StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_action_NavigateToBlockAction | StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_action_LinkAction | StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_action_EmailAction | StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_action_ChatAction | StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_action_PhoneAction;
@@ -565,6 +573,8 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBloc
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock_triggerAction = StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock_triggerAction_LinkAction | StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock_triggerAction_EmailAction | StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock_triggerAction_ChatAction | StepBlockRestoreFromSocialPreview_blockRestore_VideoTriggerBlock_triggerAction_PhoneAction;

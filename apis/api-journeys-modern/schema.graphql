@@ -1257,6 +1257,8 @@ type PhoneAction implements Action
   phone: String!
   countryCode: String!
   contactAction: ContactActionType!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input PhoneActionInput {
@@ -1264,6 +1266,8 @@ input PhoneActionInput {
   phone: String!
   countryCode: String!
   contactAction: ContactActionType = call
+  customizable: Boolean
+  parentStepId: String
 }
 
 input PlausibleStatsAggregateFilter {

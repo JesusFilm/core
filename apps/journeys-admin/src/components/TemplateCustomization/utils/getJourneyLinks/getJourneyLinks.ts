@@ -114,6 +114,14 @@ export function getJourneyLinks(
           customizable = action.customizable
         }
         break
+      case 'PhoneAction':
+        if (action.customizable === true) {
+          url = action.phone
+          parentStepId = action.parentStepId ?? null
+          linkType = 'url'
+          customizable = action.customizable
+        }
+        break
       case 'ChatAction':
         if (action.customizable === true) {
           url = action.chatUrl

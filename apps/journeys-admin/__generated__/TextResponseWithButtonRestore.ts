@@ -57,6 +57,8 @@ export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_P
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_textResponse_ButtonBlock_action = TextResponseWithButtonRestore_textResponse_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_EmailAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_ChatAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_PhoneAction;
@@ -192,6 +194,8 @@ export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_act
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action = TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_EmailAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_ChatAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_PhoneAction;
@@ -260,6 +264,8 @@ export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_P
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_textResponse_SignUpBlock_action = TextResponseWithButtonRestore_textResponse_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_EmailAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_ChatAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_PhoneAction;
@@ -435,6 +441,8 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_Ph
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_textResponse_VideoBlock_action = TextResponseWithButtonRestore_textResponse_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_EmailAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_ChatAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_PhoneAction;
@@ -555,6 +563,8 @@ export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_tr
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_EmailAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_ChatAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -622,6 +632,8 @@ export interface TextResponseWithButtonRestore_button_ButtonBlock_action_PhoneAc
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_button_ButtonBlock_action = TextResponseWithButtonRestore_button_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_button_ButtonBlock_action_EmailAction | TextResponseWithButtonRestore_button_ButtonBlock_action_ChatAction | TextResponseWithButtonRestore_button_ButtonBlock_action_PhoneAction;
@@ -757,6 +769,8 @@ export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_Ph
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_button_RadioOptionBlock_action = TextResponseWithButtonRestore_button_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_EmailAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_ChatAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_PhoneAction;
@@ -825,6 +839,8 @@ export interface TextResponseWithButtonRestore_button_SignUpBlock_action_PhoneAc
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_button_SignUpBlock_action = TextResponseWithButtonRestore_button_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_button_SignUpBlock_action_EmailAction | TextResponseWithButtonRestore_button_SignUpBlock_action_ChatAction | TextResponseWithButtonRestore_button_SignUpBlock_action_PhoneAction;
@@ -1000,6 +1016,8 @@ export interface TextResponseWithButtonRestore_button_VideoBlock_action_PhoneAct
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_button_VideoBlock_action = TextResponseWithButtonRestore_button_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_button_VideoBlock_action_EmailAction | TextResponseWithButtonRestore_button_VideoBlock_action_ChatAction | TextResponseWithButtonRestore_button_VideoBlock_action_PhoneAction;
@@ -1120,6 +1138,8 @@ export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerA
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_EmailAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_ChatAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -1187,6 +1207,8 @@ export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_Phon
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_startIcon_ButtonBlock_action = TextResponseWithButtonRestore_startIcon_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_EmailAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_ChatAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_PhoneAction;
@@ -1322,6 +1344,8 @@ export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action = TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_EmailAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_ChatAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_PhoneAction;
@@ -1390,6 +1414,8 @@ export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_Phon
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_startIcon_SignUpBlock_action = TextResponseWithButtonRestore_startIcon_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_EmailAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_ChatAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_PhoneAction;
@@ -1565,6 +1591,8 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_Phone
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_startIcon_VideoBlock_action = TextResponseWithButtonRestore_startIcon_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_EmailAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_ChatAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_PhoneAction;
@@ -1685,6 +1713,8 @@ export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_trigg
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_EmailAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_ChatAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_PhoneAction;
@@ -1752,6 +1782,8 @@ export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_PhoneA
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_endIcon_ButtonBlock_action = TextResponseWithButtonRestore_endIcon_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_EmailAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_ChatAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_PhoneAction;
@@ -1887,6 +1919,8 @@ export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_P
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action = TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_EmailAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_ChatAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_PhoneAction;
@@ -1955,6 +1989,8 @@ export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_PhoneA
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_endIcon_SignUpBlock_action = TextResponseWithButtonRestore_endIcon_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_EmailAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_ChatAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_PhoneAction;
@@ -2130,6 +2166,8 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_PhoneAc
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_endIcon_VideoBlock_action = TextResponseWithButtonRestore_endIcon_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_EmailAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_ChatAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_PhoneAction;
@@ -2250,6 +2288,8 @@ export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_trigger
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_EmailAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_ChatAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_PhoneAction;

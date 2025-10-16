@@ -3094,9 +3094,11 @@ export type PhoneAction = Action & {
   __typename?: 'PhoneAction';
   contactAction: ContactActionType;
   countryCode: Scalars['String']['output'];
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   gtmEventName?: Maybe<Scalars['String']['output']>;
   parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
+  parentStepId?: Maybe<Scalars['String']['output']>;
   phone: Scalars['String']['output'];
 };
 
