@@ -2414,7 +2414,7 @@ Guidelines:
         JSON.stringify(metadata)
       )
 
-      await router.push('/')
+      await router.push('/edit')
     } catch (error) {
       console.error('Failed to create Polotno design from AI content:', error)
       alert(
