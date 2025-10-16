@@ -144,8 +144,8 @@ export function VideoBlockEditorSettings({
             availableLanguages={
               subtitleData?.tracks.map((track) => track.displayName) ?? []
             }
-            onChange={(subtitle) => {
-              void setFieldValue('subtitle', subtitle)
+            onChange={async (subtitle) => {
+              await setFieldValue('subtitle', subtitle)
               // TODO: Include subtitle in backend update when backend support is added
             }}
             disabled={selectedBlock == null}

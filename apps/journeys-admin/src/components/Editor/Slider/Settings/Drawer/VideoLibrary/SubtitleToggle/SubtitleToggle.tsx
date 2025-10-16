@@ -94,18 +94,16 @@ export function SubtitleToggle({
           }
         }}
       >
-        <Box>
-          {loading ? (
-            <CircularProgress size={24} sx={{ m: 1.25 }} />
-          ) : (
-            <Switch
-              checked={subtitleEnabled && hasSubtitles}
-              onChange={handleSubtitleToggle}
-              disabled={disabled}
-              inputProps={{ 'aria-label': t('Enable Subtitles') }}
-            />
-          )}
-        </Box>
+        {loading ? (
+          <CircularProgress size={24} sx={{ m: 1.25 }} />
+        ) : (
+          <Switch
+            checked={subtitleEnabled && hasSubtitles}
+            onChange={handleSubtitleToggle}
+            disabled={disabled}
+            inputProps={{ 'aria-label': t('Enable Subtitles') }}
+          />
+        )}
       </Tooltip>
     </Stack>
   )
