@@ -158,7 +158,8 @@ export enum ButtonAction {
     NavigateToBlockAction = "NavigateToBlockAction",
     LinkAction = "LinkAction",
     EmailAction = "EmailAction",
-    PhoneAction = "PhoneAction"
+    PhoneAction = "PhoneAction",
+    ChatAction = "ChatAction"
 }
 
 export enum MessagePlatform {
@@ -926,6 +927,17 @@ export class PhoneAction implements Action {
     phone: string;
     countryCode: string;
     contactAction: ContactActionType;
+}
+
+export class ChatAction implements Action {
+    __typename?: 'ChatAction';
+    parentBlockId: string;
+    parentBlock: Block;
+    gtmEventName?: Nullable<string>;
+    chatUrl: string;
+    target?: Nullable<string>;
+    customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
 }
 
 export class Journey {
