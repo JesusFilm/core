@@ -2,10 +2,15 @@ import { PolotnoContainer, SidePanelWrap, WorkspaceWrap } from 'polotno';
 import { Workspace } from 'polotno/canvas/workspace';
 import { unstable_setAnimationsEnabled } from 'polotno/config';
 import { createStore } from 'polotno/model/store';
+import type { StoreType } from 'polotno/model/store';
 import { PagesTimeline } from 'polotno/pages-timeline';
+import { DEFAULT_SECTIONS, SidePanel } from 'polotno/side-panel';
 import { Toolbar } from 'polotno/toolbar/toolbar';
 import { ZoomButtons } from 'polotno/toolbar/zoom-buttons';
+import Image from 'next/image';
 import React, { useEffect } from 'react';
+
+import { CustomTemplatesPanel } from './custom-templates-panel';
 
 // Enable animations
 unstable_setAnimationsEnabled(true);
@@ -19,6 +24,19 @@ const store = createStore({
   showCredit: true,
 });
 // Don't preload initial state - let useEffect handle loading
+
+const customSidePanelSections = DEFAULT_SECTIONS.map((section) => {
+  if (section.name !== 'templates') {
+    return section;
+  }
+
+  return {
+    ...section,
+    Panel: ({ store }: { store: StoreType }) => (
+      <CustomTemplatesPanel store={store} />
+    ),
+  };
+});
 
 export const Editor = () => {
   useEffect(() => {
@@ -59,10 +77,13 @@ export const Editor = () => {
     <div className="bp5-navbar" 
         style={{  position: 'fixed', top: 0, left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}
         >
-          <img
+          <Image
             src="/jesusfilm-sign.svg"
             alt="Jesus Film Project"
+            width={180}
+            height={32}
             style={{ width: 'auto', height: 'auto', maxHeight: '24px' }}
+            priority
           />
           <h1 style={{ fontSize: '21px', fontWeight: 'bold', color: '#333', margin: 0 }}>Studio</h1>
         </div>
@@ -86,7 +107,11 @@ export const Editor = () => {
         `
       }} />
       <SidePanelWrap>
-        {/* <SidePanel store={store} /> */}
+        <SidePanel
+          store={store}
+          sections={customSidePanelSections}
+          defaultSection="templates"
+        />
       </SidePanelWrap>
       <WorkspaceWrap>
         <Toolbar store={store} downloadButtonEnabled />
