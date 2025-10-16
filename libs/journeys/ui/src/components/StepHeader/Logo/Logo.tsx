@@ -40,14 +40,14 @@ export function Logo(): ReactElement {
       <NextImage
         src={logo.src ?? ''}
         alt={logo.alt}
-        width={44}
-        height={44}
+        width={300}
+        height={300}
         layout="intrinsic"
         objectFit="cover"
         sx={{
-          borderRadius: '50%'
-          // transform: `scale(${(scale ?? 100) / 100})`,
-          //     transformOrigin: `${focalLeft}% ${focalTop}%`,
+          borderRadius: '50%',
+          transform: `scale(${(logo.scale ?? 100) / 100})`,
+          transformOrigin: `${logo.focalLeft}% ${logo.focalTop}%`
         }}
       />
     </Box>
