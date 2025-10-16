@@ -120,6 +120,7 @@
   "Headline": "Headline",
   "Secondary Text": "Secondary Text",
   "Social Post View": "Social Post View",
+  "Error fetching analytics": "เกิดข้อผิดพลาดในการดึงข้อมูลการวิเคราะห์",
   "Analytics Overlay": "การซ้อนทับข้อมูลการวิเคราะห์",
   "Zoom in": "Zoom in",
   "Zoom out": "Zoom out",
