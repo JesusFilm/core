@@ -1126,7 +1126,6 @@ export default function NewPage() {
     return handlers
   }, [editableSteps.length]) // Only recreate when step count changes
 
-
   // Close context menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -1198,7 +1197,7 @@ export default function NewPage() {
   const loadImagesWhenVisible = (step: GeneratedStepContent, stepIndex: number) => {
     const accessKey = unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
     if (accessKey && accessKey.length >= 40 && step.keywords && step.keywords.length > 0) {
-      loadUnsplashImagesForStep(step, stepIndex)
+      void loadUnsplashImagesForStep(step, stepIndex)
     }
   }
 
@@ -2148,7 +2147,7 @@ Guidelines:
 
   const handleSubmit = async () => {
     const currentValue = textareaRef.current?.value || ''
-    if (currentValue.trim()) {
+    if (currentValue.trim() && !isProcessing) {
       // Update textContent state before processing
       setTextContent(currentValue)
       await processContentWithAI()
@@ -2491,7 +2490,7 @@ Guidelines:
           onClick={(e) => {
             e.preventDefault()
             e.stopPropagation()
-            handleCopyStep({ content: isEditing ? localContent : content }, stepIndex)
+            void handleCopyStep({ content: isEditing ? localContent : content }, stepIndex)
           }}
           onMouseDown={(e) => e.preventDefault()}
           title={copiedStepIndex === stepIndex ? "Copied!" : "Copy content"}
@@ -3034,8 +3033,6 @@ Guidelines:
           {/* Step 1: Content */}
           {currentStep === 1 && (
             <>
-        
-
               <div className={`max-w-4xl mx-auto transition-all duration-500 ease-in-out}`} suppressHydrationWarning data-id="Step1Container">
                 <Card className="bg-transparent border-0 shadow-none">
                    
@@ -3494,8 +3491,9 @@ Guidelines:
                         </div>
                         {/* Run button - bottom right */}
                         <button
-                          onClick={handleSubmit}
-                          disabled={!textareaRef.current?.value?.trim() || isProcessing}
+                          onClick={() => {
+                            void handleSubmit()
+                          }}
                           className="absolute bottom-3 right-3 px-4 py-2 text-sm font-medium text-white rounded-full bg-primary hover:bg-primary/90 transition-colors group cursor-pointer"
                         >
                           {isProcessing ? (
