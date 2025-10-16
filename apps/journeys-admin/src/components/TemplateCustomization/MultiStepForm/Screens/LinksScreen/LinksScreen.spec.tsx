@@ -20,8 +20,15 @@ import {
   BlockActionLinkUpdate,
   BlockActionLinkUpdateVariables
 } from '../../../../../../__generated__/BlockActionLinkUpdate'
+import { MessagePlatform } from '../../../../../../__generated__/globalTypes'
+import {
+  JourneyChatButtonUpdate,
+  JourneyChatButtonUpdateVariables
+} from '../../../../../../__generated__/JourneyChatButtonUpdate'
 import { BLOCK_ACTION_EMAIL_UPDATE } from '../../../../../libs/useBlockActionEmailUpdateMutation'
 import { BLOCK_ACTION_LINK_UPDATE } from '../../../../../libs/useBlockActionLinkUpdateMutation'
+import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/ChatOption/Details/Details'
+import { JourneyLink } from '../../../utils/getJourneyLinks'
 
 import { LinksScreen } from './LinksScreen'
 
@@ -288,14 +295,12 @@ describe('LinksScreen', () => {
 
     // Change URL field
     const urlGroup = screen.getByLabelText('Edit Primary')
-    const urlInput = within(urlGroup).getByRole('textbox') as HTMLInputElement
+    const urlInput = within(urlGroup).getByRole('textbox')
     fireEvent.change(urlInput, { target: { value: 'https://changed.com' } })
 
     // Change Email field
     const emailGroup = screen.getByLabelText('Edit Email Link')
-    const emailInput = within(emailGroup).getByRole(
-      'textbox'
-    ) as HTMLInputElement
+    const emailInput = within(emailGroup).getByRole('textbox')
     fireEvent.change(emailInput, { target: { value: 'changed@example.com' } })
 
     // TODO: uncomment this when chat buttons are added to duplicate api

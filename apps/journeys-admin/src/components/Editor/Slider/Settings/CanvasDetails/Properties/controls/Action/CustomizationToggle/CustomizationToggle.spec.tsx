@@ -248,6 +248,38 @@ describe('CustomizationToggle', () => {
     const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
     expect(toggle).toBeChecked()
   })
+  it('renders toggle for ChatAction and reflects checked state', () => {
+    const selectedBlock = {
+      id: 'button-5',
+      __typename: 'ButtonBlock',
+      action: {
+        __typename: 'ChatAction',
+        chatUrl: 'https://chat.example.com',
+        customizable: true,
+        parentStepId: 'step-5'
+      }
+    } as unknown as TreeBlock<ButtonBlock>
+    const selectedStep = {
+      id: 'step-5',
+      __typename: 'StepBlock',
+      parentBlockId: 'journeyId',
+      parentOrder: 0,
+      locked: false,
+      slug: 'slug'
+    } as unknown as TreeBlock<StepBlock>
+
+    render(
+      <EditorProvider initialState={{ selectedBlock, selectedStep }}>
+        <CustomizationToggle />
+      </EditorProvider>
+    )
+
+    expect(screen.getByText('Needs Customization')).toBeInTheDocument()
+    const toggle = screen.getByRole('checkbox', {
+      name: 'Toggle customizable'
+    })
+    expect(toggle).toBeChecked()
+  })
 
   it('handles toggle change for PhoneAction', () => {
     // Clear any previous mock overrides and restore the global mock
@@ -285,9 +317,10 @@ describe('CustomizationToggle', () => {
       </EditorProvider>
     )
 
-    const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
+    const toggle = screen.getByRole('checkbox', {
+      name: 'Toggle customizable'
+    })
     fireEvent.click(toggle)
-
     expect(mockAddAction).toHaveBeenCalledWith(
       expect.objectContaining({
         blockId: 'button-6',
@@ -298,6 +331,90 @@ describe('CustomizationToggle', () => {
           contactAction: ContactActionType.call,
           customizable: true,
           parentStepId: 'step-6'
+        })
+      })
+    )
+  })
+  it('renders toggle for ChatAction and reflects unchecked state', () => {
+    const selectedBlock = {
+      id: 'button-6',
+      __typename: 'ButtonBlock',
+      action: {
+        __typename: 'ChatAction',
+        chatUrl: 'https://chat.example.com',
+        customizable: false,
+        parentStepId: 'step-6'
+      }
+    } as unknown as TreeBlock<ButtonBlock>
+
+    const selectedStep = {
+      id: 'step-6',
+      __typename: 'StepBlock',
+      parentBlockId: 'journeyId',
+      parentOrder: 0,
+      locked: false,
+      slug: 'slug'
+    } as unknown as TreeBlock<StepBlock>
+
+    render(
+      <EditorProvider initialState={{ selectedBlock, selectedStep }}>
+        <CustomizationToggle />
+      </EditorProvider>
+    )
+
+    expect(screen.getByText('Needs Customization')).toBeInTheDocument()
+    const toggle = screen.getByRole('checkbox', {
+      name: 'Toggle customizable'
+    })
+    expect(toggle).not.toBeChecked()
+  })
+  it('dispatches addAction on ChatAction toggle change', () => {
+    const addAction = jest.fn()
+    jest
+      .spyOn(
+        require('../../../../../../../utils/useActionCommand'),
+        'useActionCommand'
+      )
+      .mockReturnValue({ addAction })
+
+    const selectedBlock = {
+      id: 'button-7',
+      __typename: 'ButtonBlock',
+      action: {
+        __typename: 'ChatAction',
+        chatUrl: 'https://chat.example.com',
+        customizable: false,
+        parentStepId: 'step-7'
+      }
+    } as unknown as TreeBlock<ButtonBlock>
+    const selectedStep = {
+      id: 'step-7',
+      __typename: 'StepBlock',
+      parentBlockId: 'journeyId',
+      parentOrder: 0,
+      locked: false,
+      slug: 'slug'
+    } as unknown as TreeBlock<StepBlock>
+
+    render(
+      <EditorProvider initialState={{ selectedBlock, selectedStep }}>
+        <CustomizationToggle />
+      </EditorProvider>
+    )
+
+    const toggle = screen.getByRole('checkbox', {
+      name: 'Toggle customizable'
+    })
+    fireEvent.click(toggle)
+
+    expect(addAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        blockId: 'button-7',
+        action: expect.objectContaining({
+          __typename: 'ChatAction',
+          chatUrl: 'https://chat.example.com',
+          customizable: true,
+          parentStepId: 'step-7'
         })
       })
     )

@@ -34,6 +34,15 @@ export interface ActionFields_EmailAction {
   parentStepId: string | null;
 }
 
+export interface ActionFields_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface ActionFields_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -45,4 +54,4 @@ export interface ActionFields_PhoneAction {
   parentStepId: string | null;
 }
 
-export type ActionFields = ActionFields_NavigateToBlockAction | ActionFields_LinkAction | ActionFields_EmailAction | ActionFields_PhoneAction;
+export type ActionFields = ActionFields_NavigateToBlockAction | ActionFields_LinkAction | ActionFields_EmailAction | ActionFields_ChatAction | ActionFields_PhoneAction;

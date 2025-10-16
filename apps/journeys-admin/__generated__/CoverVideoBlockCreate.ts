@@ -85,6 +85,15 @@ export interface CoverVideoBlockCreate_videoBlockCreate_action_EmailAction {
   parentStepId: string | null;
 }
 
+export interface CoverVideoBlockCreate_videoBlockCreate_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface CoverVideoBlockCreate_videoBlockCreate_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -96,7 +105,7 @@ export interface CoverVideoBlockCreate_videoBlockCreate_action_PhoneAction {
   parentStepId: string | null;
 }
 
-export type CoverVideoBlockCreate_videoBlockCreate_action = CoverVideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | CoverVideoBlockCreate_videoBlockCreate_action_LinkAction | CoverVideoBlockCreate_videoBlockCreate_action_EmailAction | CoverVideoBlockCreate_videoBlockCreate_action_PhoneAction;
+export type CoverVideoBlockCreate_videoBlockCreate_action = CoverVideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | CoverVideoBlockCreate_videoBlockCreate_action_LinkAction | CoverVideoBlockCreate_videoBlockCreate_action_EmailAction | CoverVideoBlockCreate_videoBlockCreate_action_ChatAction | CoverVideoBlockCreate_videoBlockCreate_action_PhoneAction;
 
 export interface CoverVideoBlockCreate_videoBlockCreate {
   __typename: "VideoBlock";

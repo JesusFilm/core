@@ -9,6 +9,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
+import { blockActionChatUpdateMock } from '../../../../../../../../libs/useBlockActionChatUpdateMutation/useBlockActionChatUpdateMutation.mock'
 import { BLOCK_ACTION_DELETE } from '../../../../../../../../libs/useBlockActionDeleteMutation/useBlockActionDeleteMutation'
 import { blockActionEmailUpdateMock } from '../../../../../../../../libs/useBlockActionEmailUpdateMutation/useBlockActionEmailUpdateMutation.mock'
 import { blockActionLinkUpdateMock } from '../../../../../../../../libs/useBlockActionLinkUpdateMutation/useBlockActionLinkUpdateMutation.mock'
@@ -49,6 +50,16 @@ describe('Action', () => {
     }
   } as TreeBlock<ButtonBlock>
 
+  const buttonBlockWithChatAction = {
+    ...selectedBlock,
+    action: {
+      __typename: 'ChatAction',
+      chatUrl: 'https://chat.example.com',
+      customizable: false,
+      parentStepId: selectedStep?.id
+    }
+  } as TreeBlock<ButtonBlock>
+
   it('shows no action by default', () => {
     const { getByText } = render(
       <MockedProvider>
@@ -83,6 +94,20 @@ describe('Action', () => {
     fireEvent.click(getByRole('option', { name: 'URL/Website' }))
     await waitFor(() =>
       expect(getByText('Paste URL here...')).toBeInTheDocument()
+    )
+  })
+
+  it('shows chat input text box when Chat is selected', async () => {
+    const { getByRole, getByText } = render(
+      <MockedProvider>
+        <Action />
+      </MockedProvider>
+    )
+    fireEvent.mouseDown(getByRole('combobox'))
+    await waitFor(() => expect(getByText('Selected Card')).toBeInTheDocument())
+    fireEvent.click(getByRole('option', { name: 'Chat' }))
+    await waitFor(() =>
+      expect(getByText('Paste chat URL here...')).toBeInTheDocument()
     )
   })
 
@@ -190,37 +215,23 @@ describe('Action', () => {
     })
   })
 
-  it('shows focus text input on select change to email or url', async () => {
-    const { getByRole } = render(
+  it('shows customization toggle when Chat is selected', async () => {
+    const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
           {
             request: {
-              ...blockActionEmailUpdateMock.request,
+              ...blockActionChatUpdateMock.request,
               variables: {
                 id: 'button1.id',
                 input: {
-                  email: 'test@example.com',
+                  chatUrl: 'https://chat.example.com',
                   customizable: false,
                   parentStepId: 'step1.id'
                 }
               }
             },
-            result: blockActionEmailUpdateMock.result
-          },
-          {
-            request: {
-              ...blockActionLinkUpdateMock.request,
-              variables: {
-                id: 'button1.id',
-                input: {
-                  url: 'https://example.com',
-                  customizable: false,
-                  parentStepId: 'step1.id'
-                }
-              }
-            },
-            result: blockActionLinkUpdateMock.result
+            result: blockActionChatUpdateMock.result
           }
         ]}
       >
@@ -232,7 +243,7 @@ describe('Action', () => {
         >
           <EditorProvider
             initialState={{
-              selectedBlock: buttonBlockWithEmailAction,
+              selectedBlock: buttonBlockWithChatAction,
               selectedStep
             }}
           >
@@ -244,28 +255,19 @@ describe('Action', () => {
 
     fireEvent.mouseDown(getByRole('combobox'))
     await waitFor(() =>
-      expect(getByRole('option', { name: 'URL/Website' })).toBeInTheDocument()
+      expect(getByRole('option', { name: 'Chat' })).toBeInTheDocument()
     )
-    await userEvent.click(getByRole('option', { name: 'URL/Website' }))
+    fireEvent.click(getByRole('option', { name: 'Chat' }))
 
-    await waitFor(() =>
-      expect(getByRole('textbox', { name: 'Paste URL here...' })).toHaveFocus()
-    )
-
-    fireEvent.mouseDown(getByRole('combobox'))
-    await waitFor(() =>
-      expect(getByRole('option', { name: 'Email' })).toBeInTheDocument()
-    )
-    await userEvent.click(getByRole('option', { name: 'Email' }))
-
-    await waitFor(() =>
+    await waitFor(() => {
+      expect(getByText('Needs Customization')).toBeInTheDocument()
       expect(
-        getByRole('textbox', { name: 'Paste Email here...' })
-      ).toHaveFocus()
-    )
+        getByRole('checkbox', { name: 'Toggle customizable' })
+      ).toBeInTheDocument()
+    })
   })
 
-  it('should filter out LinkAction and EmailAction options for submit buttons', async () => {
+  it('should filter out LinkAction, EmailAction, and ChatAction options for submit buttons', async () => {
     const submitButtonBlock = {
       ...selectedBlock,
       submitEnabled: true
@@ -283,6 +285,7 @@ describe('Action', () => {
 
     expect(screen.queryByText('URL/Website')).not.toBeInTheDocument()
     expect(screen.queryByText('Send Email')).not.toBeInTheDocument()
+    expect(screen.queryByText('Chat')).not.toBeInTheDocument()
 
     expect(screen.getByRole('option', { name: 'None' })).toBeInTheDocument()
     expect(

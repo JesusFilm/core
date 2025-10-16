@@ -89,6 +89,15 @@ export interface CardVideoRestore_video_VideoBlock_action_EmailAction {
   parentStepId: string | null;
 }
 
+export interface CardVideoRestore_video_VideoBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface CardVideoRestore_video_VideoBlock_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -100,7 +109,7 @@ export interface CardVideoRestore_video_VideoBlock_action_PhoneAction {
   parentStepId: string | null;
 }
 
-export type CardVideoRestore_video_VideoBlock_action = CardVideoRestore_video_VideoBlock_action_NavigateToBlockAction | CardVideoRestore_video_VideoBlock_action_LinkAction | CardVideoRestore_video_VideoBlock_action_EmailAction | CardVideoRestore_video_VideoBlock_action_PhoneAction;
+export type CardVideoRestore_video_VideoBlock_action = CardVideoRestore_video_VideoBlock_action_NavigateToBlockAction | CardVideoRestore_video_VideoBlock_action_LinkAction | CardVideoRestore_video_VideoBlock_action_EmailAction | CardVideoRestore_video_VideoBlock_action_ChatAction | CardVideoRestore_video_VideoBlock_action_PhoneAction;
 
 export interface CardVideoRestore_video_VideoBlock {
   __typename: "VideoBlock";

@@ -34,6 +34,15 @@ export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_EmailActio
   parentStepId: string | null;
 }
 
+export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -45,7 +54,7 @@ export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_PhoneActio
   parentStepId: string | null;
 }
 
-export type RadioOptionBlockCreate_radioOptionBlockCreate_action = RadioOptionBlockCreate_radioOptionBlockCreate_action_NavigateToBlockAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_LinkAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_EmailAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_PhoneAction;
+export type RadioOptionBlockCreate_radioOptionBlockCreate_action = RadioOptionBlockCreate_radioOptionBlockCreate_action_NavigateToBlockAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_LinkAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_EmailAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_ChatAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_PhoneAction;
 
 export interface RadioOptionBlockCreate_radioOptionBlockCreate {
   __typename: "RadioOptionBlock";

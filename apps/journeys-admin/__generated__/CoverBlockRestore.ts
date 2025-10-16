@@ -90,6 +90,15 @@ export interface CoverBlockRestore_blockRestore_VideoBlock_action_EmailAction {
   parentStepId: string | null;
 }
 
+export interface CoverBlockRestore_blockRestore_VideoBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface CoverBlockRestore_blockRestore_VideoBlock_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -101,7 +110,7 @@ export interface CoverBlockRestore_blockRestore_VideoBlock_action_PhoneAction {
   parentStepId: string | null;
 }
 
-export type CoverBlockRestore_blockRestore_VideoBlock_action = CoverBlockRestore_blockRestore_VideoBlock_action_NavigateToBlockAction | CoverBlockRestore_blockRestore_VideoBlock_action_LinkAction | CoverBlockRestore_blockRestore_VideoBlock_action_EmailAction | CoverBlockRestore_blockRestore_VideoBlock_action_PhoneAction;
+export type CoverBlockRestore_blockRestore_VideoBlock_action = CoverBlockRestore_blockRestore_VideoBlock_action_NavigateToBlockAction | CoverBlockRestore_blockRestore_VideoBlock_action_LinkAction | CoverBlockRestore_blockRestore_VideoBlock_action_EmailAction | CoverBlockRestore_blockRestore_VideoBlock_action_ChatAction | CoverBlockRestore_blockRestore_VideoBlock_action_PhoneAction;
 
 export interface CoverBlockRestore_blockRestore_VideoBlock {
   __typename: "VideoBlock";

@@ -107,6 +107,7 @@ export type BlockDuplicateIdMap = {
 
 export type BlockUpdateActionInput = {
   blockId?: InputMaybe<Scalars['String']['input']>;
+  chatUrl?: InputMaybe<Scalars['String']['input']>;
   countryCode?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
@@ -127,6 +128,7 @@ export type Browser = {
 };
 
 export enum ButtonAction {
+  ChatAction = 'ChatAction',
   EmailAction = 'EmailAction',
   LinkAction = 'LinkAction',
   NavigateToBlockAction = 'NavigateToBlockAction',
@@ -216,12 +218,22 @@ export type ButtonClickEvent = Event & {
 };
 
 export type ButtonClickEventCreateInput = {
+  /** Action type of the button when it was clicked */
   action?: InputMaybe<ButtonAction>;
+  /**
+   * The label for each corresponding action, mapping below:
+   * NavigateToBlockAction - StepName (generated in client) of the StepBlock
+   * LinkAction - url of the link
+   */
   actionValue?: InputMaybe<Scalars['String']['input']>;
   blockId: Scalars['ID']['input'];
+  /** ID should be unique Event UUID (Provided for optimistic mutation result matching) */
   id?: InputMaybe<Scalars['ID']['input']>;
+  /** stepName of the parent stepBlock */
   label?: InputMaybe<Scalars['String']['input']>;
+  /** id of the parent stepBlock */
   stepId?: InputMaybe<Scalars['ID']['input']>;
+  /** label of the button */
   value?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -297,6 +309,25 @@ export type CardBlockUpdateInput = {
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
+};
+
+export type ChatAction = Action & {
+  __typename?: 'ChatAction';
+  chatUrl: Scalars['String']['output'];
+  customizable?: Maybe<Scalars['Boolean']['output']>;
+  gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock: Block;
+  parentBlockId: Scalars['ID']['output'];
+  parentStepId?: Maybe<Scalars['String']['output']>;
+  target?: Maybe<Scalars['String']['output']>;
+};
+
+export type ChatActionInput = {
+  chatUrl: Scalars['String']['input'];
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
+  gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  parentStepId?: InputMaybe<Scalars['String']['input']>;
+  target?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ChatButton = {
@@ -565,6 +596,7 @@ export enum EventType {
   ButtonClickEvent = 'ButtonClickEvent',
   ChatOpenEvent = 'ChatOpenEvent',
   JourneyViewEvent = 'JourneyViewEvent',
+  MultiselectSubmissionEvent = 'MultiselectSubmissionEvent',
   RadioQuestionSubmissionEvent = 'RadioQuestionSubmissionEvent',
   SignUpSubmissionEvent = 'SignUpSubmissionEvent',
   StepNextEvent = 'StepNextEvent',
@@ -1542,6 +1574,7 @@ export type Mutation = {
   /** blockRestore is used for redo/undo */
   blockRestore: Array<Block>;
   blockUpdateAction: Action;
+  blockUpdateChatAction: ChatAction;
   blockUpdateEmailAction: EmailAction;
   blockUpdateLinkAction: LinkAction;
   blockUpdateNavigateToBlockAction: NavigateToBlockAction;
@@ -1811,6 +1844,13 @@ export type MutationBlockRestoreArgs = {
 export type MutationBlockUpdateActionArgs = {
   id: Scalars['ID']['input'];
   input: BlockUpdateActionInput;
+};
+
+
+export type MutationBlockUpdateChatActionArgs = {
+  id: Scalars['ID']['input'];
+  input: ChatActionInput;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 

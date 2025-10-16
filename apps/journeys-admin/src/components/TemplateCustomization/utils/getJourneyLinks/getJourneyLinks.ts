@@ -122,6 +122,14 @@ export function getJourneyLinks(
           customizable = action.customizable
         }
         break
+      case 'ChatAction':
+        if (action.customizable === true) {
+          url = action.chatUrl
+          parentStepId = action.parentStepId ?? null
+          linkType = 'url'
+          customizable = action.customizable
+        }
+        break
       default:
         url = null
     }

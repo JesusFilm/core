@@ -146,6 +146,15 @@ export interface MenuBlockCreate_button1_action_EmailAction {
   parentStepId: string | null;
 }
 
+export interface MenuBlockCreate_button1_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface MenuBlockCreate_button1_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -157,7 +166,7 @@ export interface MenuBlockCreate_button1_action_PhoneAction {
   parentStepId: string | null;
 }
 
-export type MenuBlockCreate_button1_action = MenuBlockCreate_button1_action_NavigateToBlockAction | MenuBlockCreate_button1_action_LinkAction | MenuBlockCreate_button1_action_EmailAction | MenuBlockCreate_button1_action_PhoneAction;
+export type MenuBlockCreate_button1_action = MenuBlockCreate_button1_action_NavigateToBlockAction | MenuBlockCreate_button1_action_LinkAction | MenuBlockCreate_button1_action_EmailAction | MenuBlockCreate_button1_action_ChatAction | MenuBlockCreate_button1_action_PhoneAction;
 
 export interface MenuBlockCreate_button1_settings {
   __typename: "ButtonBlockSettings";
@@ -208,6 +217,15 @@ export interface MenuBlockCreate_button2_action_EmailAction {
   parentStepId: string | null;
 }
 
+export interface MenuBlockCreate_button2_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface MenuBlockCreate_button2_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -219,7 +237,7 @@ export interface MenuBlockCreate_button2_action_PhoneAction {
   parentStepId: string | null;
 }
 
-export type MenuBlockCreate_button2_action = MenuBlockCreate_button2_action_NavigateToBlockAction | MenuBlockCreate_button2_action_LinkAction | MenuBlockCreate_button2_action_EmailAction | MenuBlockCreate_button2_action_PhoneAction;
+export type MenuBlockCreate_button2_action = MenuBlockCreate_button2_action_NavigateToBlockAction | MenuBlockCreate_button2_action_LinkAction | MenuBlockCreate_button2_action_EmailAction | MenuBlockCreate_button2_action_ChatAction | MenuBlockCreate_button2_action_PhoneAction;
 
 export interface MenuBlockCreate_button2_settings {
   __typename: "ButtonBlockSettings";
@@ -270,6 +288,15 @@ export interface MenuBlockCreate_button3_action_EmailAction {
   parentStepId: string | null;
 }
 
+export interface MenuBlockCreate_button3_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface MenuBlockCreate_button3_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -281,7 +308,7 @@ export interface MenuBlockCreate_button3_action_PhoneAction {
   parentStepId: string | null;
 }
 
-export type MenuBlockCreate_button3_action = MenuBlockCreate_button3_action_NavigateToBlockAction | MenuBlockCreate_button3_action_LinkAction | MenuBlockCreate_button3_action_EmailAction | MenuBlockCreate_button3_action_PhoneAction;
+export type MenuBlockCreate_button3_action = MenuBlockCreate_button3_action_NavigateToBlockAction | MenuBlockCreate_button3_action_LinkAction | MenuBlockCreate_button3_action_EmailAction | MenuBlockCreate_button3_action_ChatAction | MenuBlockCreate_button3_action_PhoneAction;
 
 export interface MenuBlockCreate_button3_settings {
   __typename: "ButtonBlockSettings";

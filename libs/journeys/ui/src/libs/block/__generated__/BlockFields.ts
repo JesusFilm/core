@@ -41,6 +41,15 @@ export interface BlockFields_ButtonBlock_action_EmailAction {
   parentStepId: string | null;
 }
 
+export interface BlockFields_ButtonBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface BlockFields_ButtonBlock_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -52,7 +61,7 @@ export interface BlockFields_ButtonBlock_action_PhoneAction {
   parentStepId: string | null;
 }
 
-export type BlockFields_ButtonBlock_action = BlockFields_ButtonBlock_action_NavigateToBlockAction | BlockFields_ButtonBlock_action_LinkAction | BlockFields_ButtonBlock_action_EmailAction | BlockFields_ButtonBlock_action_PhoneAction;
+export type BlockFields_ButtonBlock_action = BlockFields_ButtonBlock_action_NavigateToBlockAction | BlockFields_ButtonBlock_action_LinkAction | BlockFields_ButtonBlock_action_EmailAction | BlockFields_ButtonBlock_action_ChatAction | BlockFields_ButtonBlock_action_PhoneAction;
 
 export interface BlockFields_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -169,6 +178,15 @@ export interface BlockFields_RadioOptionBlock_action_EmailAction {
   parentStepId: string | null;
 }
 
+export interface BlockFields_RadioOptionBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface BlockFields_RadioOptionBlock_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -180,7 +198,7 @@ export interface BlockFields_RadioOptionBlock_action_PhoneAction {
   parentStepId: string | null;
 }
 
-export type BlockFields_RadioOptionBlock_action = BlockFields_RadioOptionBlock_action_NavigateToBlockAction | BlockFields_RadioOptionBlock_action_LinkAction | BlockFields_RadioOptionBlock_action_EmailAction | BlockFields_RadioOptionBlock_action_PhoneAction;
+export type BlockFields_RadioOptionBlock_action = BlockFields_RadioOptionBlock_action_NavigateToBlockAction | BlockFields_RadioOptionBlock_action_LinkAction | BlockFields_RadioOptionBlock_action_EmailAction | BlockFields_RadioOptionBlock_action_ChatAction | BlockFields_RadioOptionBlock_action_PhoneAction;
 
 export interface BlockFields_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -230,6 +248,15 @@ export interface BlockFields_SignUpBlock_action_EmailAction {
   parentStepId: string | null;
 }
 
+export interface BlockFields_SignUpBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface BlockFields_SignUpBlock_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -241,7 +268,7 @@ export interface BlockFields_SignUpBlock_action_PhoneAction {
   parentStepId: string | null;
 }
 
-export type BlockFields_SignUpBlock_action = BlockFields_SignUpBlock_action_NavigateToBlockAction | BlockFields_SignUpBlock_action_LinkAction | BlockFields_SignUpBlock_action_EmailAction | BlockFields_SignUpBlock_action_PhoneAction;
+export type BlockFields_SignUpBlock_action = BlockFields_SignUpBlock_action_NavigateToBlockAction | BlockFields_SignUpBlock_action_LinkAction | BlockFields_SignUpBlock_action_EmailAction | BlockFields_SignUpBlock_action_ChatAction | BlockFields_SignUpBlock_action_PhoneAction;
 
 export interface BlockFields_SignUpBlock {
   __typename: "SignUpBlock";
@@ -398,6 +425,15 @@ export interface BlockFields_VideoBlock_action_EmailAction {
   parentStepId: string | null;
 }
 
+export interface BlockFields_VideoBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface BlockFields_VideoBlock_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -409,7 +445,7 @@ export interface BlockFields_VideoBlock_action_PhoneAction {
   parentStepId: string | null;
 }
 
-export type BlockFields_VideoBlock_action = BlockFields_VideoBlock_action_NavigateToBlockAction | BlockFields_VideoBlock_action_LinkAction | BlockFields_VideoBlock_action_EmailAction | BlockFields_VideoBlock_action_PhoneAction;
+export type BlockFields_VideoBlock_action = BlockFields_VideoBlock_action_NavigateToBlockAction | BlockFields_VideoBlock_action_LinkAction | BlockFields_VideoBlock_action_EmailAction | BlockFields_VideoBlock_action_ChatAction | BlockFields_VideoBlock_action_PhoneAction;
 
 export interface BlockFields_VideoBlock {
   __typename: "VideoBlock";
@@ -511,6 +547,15 @@ export interface BlockFields_VideoTriggerBlock_triggerAction_EmailAction {
   parentStepId: string | null;
 }
 
+export interface BlockFields_VideoTriggerBlock_triggerAction_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface BlockFields_VideoTriggerBlock_triggerAction_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -522,7 +567,7 @@ export interface BlockFields_VideoTriggerBlock_triggerAction_PhoneAction {
   parentStepId: string | null;
 }
 
-export type BlockFields_VideoTriggerBlock_triggerAction = BlockFields_VideoTriggerBlock_triggerAction_NavigateToBlockAction | BlockFields_VideoTriggerBlock_triggerAction_LinkAction | BlockFields_VideoTriggerBlock_triggerAction_EmailAction | BlockFields_VideoTriggerBlock_triggerAction_PhoneAction;
+export type BlockFields_VideoTriggerBlock_triggerAction = BlockFields_VideoTriggerBlock_triggerAction_NavigateToBlockAction | BlockFields_VideoTriggerBlock_triggerAction_LinkAction | BlockFields_VideoTriggerBlock_triggerAction_EmailAction | BlockFields_VideoTriggerBlock_triggerAction_ChatAction | BlockFields_VideoTriggerBlock_triggerAction_PhoneAction;
 
 export interface BlockFields_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";

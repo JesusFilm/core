@@ -14,8 +14,8 @@ import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRe
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
 import {
-  TEXT_RESPONSE_LABEL_UPDATE,
-  TEXT_RESPONSE_HIDE_LABEL_UPDATE
+  TEXT_RESPONSE_HIDE_LABEL_UPDATE,
+  TEXT_RESPONSE_LABEL_UPDATE
 } from './Label'
 
 import { Label } from '.'

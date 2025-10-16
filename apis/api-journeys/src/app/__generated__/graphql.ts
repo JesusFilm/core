@@ -158,7 +158,8 @@ export enum ButtonAction {
     NavigateToBlockAction = "NavigateToBlockAction",
     LinkAction = "LinkAction",
     EmailAction = "EmailAction",
-    PhoneAction = "PhoneAction"
+    PhoneAction = "PhoneAction",
+    ChatAction = "ChatAction"
 }
 
 export enum MessagePlatform {
@@ -510,13 +511,6 @@ export class CustomDomainCreateInput {
 export class CustomDomainUpdateInput {
     journeyCollectionId?: Nullable<string>;
     routeAllTeamJourneys?: Nullable<boolean>;
-}
-
-export class ChatOpenEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    value?: Nullable<MessagePlatform>;
 }
 
 export class JourneyViewEventCreateInput {
@@ -937,6 +931,17 @@ export class PhoneAction implements Action {
     parentStepId?: Nullable<string>;
 }
 
+export class ChatAction implements Action {
+    __typename?: 'ChatAction';
+    parentBlockId: string;
+    parentBlock: Block;
+    gtmEventName?: Nullable<string>;
+    chatUrl: string;
+    target?: Nullable<string>;
+    customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
+}
+
 export class Journey {
     __typename?: 'Journey';
     blocks?: Nullable<Block[]>;
@@ -1137,8 +1142,6 @@ export abstract class IMutation {
     abstract customDomainDelete(id: string): CustomDomain | Promise<CustomDomain>;
 
     abstract customDomainCheck(id: string): CustomDomainCheck | Promise<CustomDomainCheck>;
-
-    abstract chatOpenEventCreate(input: ChatOpenEventCreateInput): ChatOpenEvent | Promise<ChatOpenEvent>;
 
     abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): Nullable<JourneyViewEvent> | Promise<Nullable<JourneyViewEvent>>;
 

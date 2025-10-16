@@ -34,6 +34,15 @@ export interface SignUpBlockCreate_signUpBlockCreate_action_EmailAction {
   parentStepId: string | null;
 }
 
+export interface SignUpBlockCreate_signUpBlockCreate_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface SignUpBlockCreate_signUpBlockCreate_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -45,7 +54,7 @@ export interface SignUpBlockCreate_signUpBlockCreate_action_PhoneAction {
   parentStepId: string | null;
 }
 
-export type SignUpBlockCreate_signUpBlockCreate_action = SignUpBlockCreate_signUpBlockCreate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockCreate_action_LinkAction | SignUpBlockCreate_signUpBlockCreate_action_EmailAction | SignUpBlockCreate_signUpBlockCreate_action_PhoneAction;
+export type SignUpBlockCreate_signUpBlockCreate_action = SignUpBlockCreate_signUpBlockCreate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockCreate_action_LinkAction | SignUpBlockCreate_signUpBlockCreate_action_EmailAction | SignUpBlockCreate_signUpBlockCreate_action_ChatAction | SignUpBlockCreate_signUpBlockCreate_action_PhoneAction;
 
 export interface SignUpBlockCreate_signUpBlockCreate {
   __typename: "SignUpBlock";
@@ -92,6 +101,15 @@ export interface SignUpBlockCreate_signUpBlockUpdate_action_EmailAction {
   parentStepId: string | null;
 }
 
+export interface SignUpBlockCreate_signUpBlockUpdate_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface SignUpBlockCreate_signUpBlockUpdate_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -103,7 +121,7 @@ export interface SignUpBlockCreate_signUpBlockUpdate_action_PhoneAction {
   parentStepId: string | null;
 }
 
-export type SignUpBlockCreate_signUpBlockUpdate_action = SignUpBlockCreate_signUpBlockUpdate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockUpdate_action_LinkAction | SignUpBlockCreate_signUpBlockUpdate_action_EmailAction | SignUpBlockCreate_signUpBlockUpdate_action_PhoneAction;
+export type SignUpBlockCreate_signUpBlockUpdate_action = SignUpBlockCreate_signUpBlockUpdate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockUpdate_action_LinkAction | SignUpBlockCreate_signUpBlockUpdate_action_EmailAction | SignUpBlockCreate_signUpBlockUpdate_action_ChatAction | SignUpBlockCreate_signUpBlockUpdate_action_PhoneAction;
 
 export interface SignUpBlockCreate_signUpBlockUpdate {
   __typename: "SignUpBlock";

@@ -88,6 +88,17 @@ describe('getJourneyLinks', () => {
             customizable: true,
             parentStepId: 'step-6'
           }
+        },
+        {
+          __typename: 'ButtonBlock',
+          id: 'btn-4',
+          label: 'Chat Support',
+          action: {
+            __typename: 'ChatAction',
+            chatUrl: 'https://chat.example.com',
+            customizable: true,
+            parentStepId: 'step-6'
+          }
         }
       ]
     } as unknown as Journey
@@ -131,6 +142,14 @@ describe('getJourneyLinks', () => {
         linkType: 'url',
         url: '+1234567890',
         label: 'Call us',
+        parentStepId: 'step-6',
+        customizable: true
+      },
+      {
+        id: 'btn-4',
+        linkType: 'url',
+        url: 'https://chat.example.com',
+        label: 'Chat Support',
         parentStepId: 'step-6',
         customizable: true
       }

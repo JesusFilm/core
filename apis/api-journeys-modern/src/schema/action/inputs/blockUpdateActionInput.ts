@@ -10,6 +10,7 @@ export const BlockUpdateActionInput = builder.inputType(
       phone: t.string({ required: false }),
       countryCode: t.string({ required: false }),
       target: t.string({ required: false }),
+      chatUrl: t.string({ required: false }),
       blockId: t.string({ required: false })
     })
   }
