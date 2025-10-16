@@ -1,11 +1,19 @@
-import { PolotnoContainer, SidePanelWrap, WorkspaceWrap } from 'polotno';
+import {
+  PolotnoContainer,
+  SidePanel,
+  SidePanelWrap,
+  WorkspaceWrap,
+} from 'polotno';
 import { Workspace } from 'polotno/canvas/workspace';
 import { unstable_setAnimationsEnabled } from 'polotno/config';
 import { createStore } from 'polotno/model/store';
 import { PagesTimeline } from 'polotno/pages-timeline';
+import { DEFAULT_SECTIONS } from 'polotno/side-panel';
 import { Toolbar } from 'polotno/toolbar/toolbar';
 import { ZoomButtons } from 'polotno/toolbar/zoom-buttons';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
+
+import { JesusFilmVideosSection } from './editor/sections/JesusFilmVideosSection';
 
 // Enable animations
 unstable_setAnimationsEnabled(true);
@@ -21,6 +29,20 @@ const store = createStore({
 // Don't preload initial state - let useEffect handle loading
 
 export const Editor = () => {
+  const sidePanelSections = useMemo(() => {
+    const baseSections = [...DEFAULT_SECTIONS];
+
+    if (!baseSections.find((section) => section.name === JesusFilmVideosSection.name)) {
+      const photosIndex = baseSections.findIndex(
+        (section) => section.name === 'photos'
+      );
+      const insertIndex = photosIndex >= 0 ? photosIndex + 1 : baseSections.length;
+      baseSections.splice(insertIndex, 0, JesusFilmVideosSection);
+    }
+
+    return baseSections;
+  }, []);
+
   useEffect(() => {
     const loadDesign = async () => {
       const getDefaultDesign = () => JSON.parse(initialState);
@@ -86,7 +108,7 @@ export const Editor = () => {
         `
       }} />
       <SidePanelWrap>
-        {/* <SidePanel store={store} /> */}
+        <SidePanel store={store} sections={sidePanelSections} />
       </SidePanelWrap>
       <WorkspaceWrap>
         <Toolbar store={store} downloadButtonEnabled />
