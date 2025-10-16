@@ -1,4 +1,5 @@
 import {
+  ArrowUpRight,
   Bot,
   Camera,
   Check,
@@ -3610,31 +3611,51 @@ export default function NewPage() {
                     {/* Context detail options */}
                     {selectedContextOptions.length > 0 && (
                       <div className="mb-8">
-                        {/* Regular options in flex wrap */}
-                        <div className="flex flex-wrap gap-3 mb-4">
-                          {selectedContextOptions.map((option, index) => (
-                            <div
-                              key={option.text}
-                              className={`relative w-fit px-4 py-2 border rounded-xl cursor-pointer hover:bg-white hover:scale-102 transition-all duration-300 ${
-                                selectedContextDetail === option.text
-                                  ? 'border-blue-500 bg-blue-50'
-                                  : 'border-gray-300 hover:border-gray-400'
-                              }`}
-                              style={{
-                                animationDelay: `${index * 0.1}s`,
-                                animationFillMode: 'forwards'
-                              }}
-                              onClick={() => setSelectedContextDetail(option.text)}
-                            >
-                              <div className="flex items-center gap-2">
-                                <span className="text-lg">{option.emoji}</span>
-                                <p className="text-sm text-gray-800 leading-relaxed">
-                                  {option.text}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                        <Carousel className="relative w-full" opts={{ align: 'start' }}>
+                          <CarouselContent>
+                            {selectedContextOptions.map((option, index) => {
+                              const isSelected = selectedContextDetail === option.text
+
+                              return (
+                                <CarouselItem
+                                  key={option.text}
+                                  className="basis-3/4 sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
+                                  style={{
+                                    animationDelay: `${index * 0.1}s`,
+                                    animationFillMode: 'forwards'
+                                  }}
+                                >
+                                  <button
+                                    type="button"
+                                    onClick={() => setSelectedContextDetail(option.text)}
+                                    className={`group relative flex h-full w-full flex-col justify-between rounded-2xl border bg-white/70 p-4 text-left transition-all duration-300 ${
+                                      isSelected
+                                        ? 'border-blue-500 shadow-lg ring-2 ring-blue-200/60'
+                                        : 'border-gray-200 hover:border-blue-400 hover:bg-blue-50/60 hover:shadow-md'
+                                    }`}
+                                    aria-pressed={isSelected}
+                                  >
+                                    <ArrowUpRight
+                                      className={`absolute right-4 top-4 h-4 w-4 transition-colors ${
+                                        isSelected
+                                          ? 'text-blue-500'
+                                          : 'text-muted-foreground group-hover:text-blue-500'
+                                      }`}
+                                    />
+                                    <span className="text-3xl" aria-hidden="true">
+                                      {option.emoji}
+                                    </span>
+                                    <span className="mt-auto text-sm font-semibold leading-snug text-gray-900 line-clamp-4">
+                                      {option.text}
+                                    </span>
+                                  </button>
+                                </CarouselItem>
+                              )
+                            })}
+                          </CarouselContent>
+                          <CarouselPrevious className="-left-6 hidden md:flex" />
+                          <CarouselNext className="-right-6 hidden md:flex" />
+                        </Carousel>
                       </div>
                     )}
 
