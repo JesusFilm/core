@@ -36,7 +36,7 @@ export function AnalyticsOverlaySwitch(): ReactElement {
       })
     },
     onError: (_) => {
-      enqueueSnackbar(`${t('Error fetching analytics')}`, {
+      enqueueSnackbar(t('Error fetching analytics'), {
         variant: 'error',
         preventDuplicate: true
       })
