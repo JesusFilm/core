@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import { useRouter } from 'next/router'
 import { ReactElement, ReactNode } from 'react'
+import { NextImage } from '@core/shared/ui/NextImage'
 
 import DiamondIcon from '@core/shared/ui/icons/Diamond'
 
@@ -24,17 +25,32 @@ export function Logo(): ReactElement {
 
   const children: ReactNode = showLogo ? (
     <Box
-      component="img"
-      src={logo.src ?? ''}
-      alt={logo.alt}
-      onClick={handleHomeClick}
       sx={{
-        borderRadius: '100%',
         width: 44,
         height: 44,
-        objectFit: 'cover'
+        borderRadius: '50%',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer'
       }}
-    />
+      onClick={handleHomeClick}
+    >
+      <NextImage
+        src={logo.src ?? ''}
+        alt={logo.alt}
+        width={44}
+        height={44}
+        layout="intrinsic"
+        objectFit="cover"
+        sx={{
+          borderRadius: '50%'
+          // transform: `scale(${(scale ?? 100) / 100})`,
+          //     transformOrigin: `${focalLeft}% ${focalTop}%`,
+        }}
+      />
+    </Box>
   ) : showEmpty ? (
     <Box
       data-testid="empty-logo"
@@ -60,5 +76,5 @@ export function Logo(): ReactElement {
     </IconButton>
   )
 
-  return children
+  return <Box sx={{ width: 44, height: 44 }}>{children}</Box>
 }
