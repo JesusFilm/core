@@ -11,6 +11,15 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn()
 }))
 
+jest.mock('next/legacy/image', () => ({
+  __esModule: true,
+  default: jest.fn(
+    ({ priority, blurDataURL, objectFit, objectPosition, ...props }) => {
+      return <img {...props} />
+    }
+  )
+}))
+
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('Logo', () => {
