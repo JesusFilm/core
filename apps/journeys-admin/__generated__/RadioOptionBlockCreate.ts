@@ -3,14 +3,14 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { RadioOptionBlockCreateInput, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { RadioOptionBlockCreateInput, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: RadioOptionBlockCreate
 // ====================================================
 
-export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_PhoneAction {
-  __typename: "PhoneAction";
+export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_ChatAction {
+  __typename: "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -40,7 +40,16 @@ export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_EmailActio
   parentStepId: string | null;
 }
 
-export type RadioOptionBlockCreate_radioOptionBlockCreate_action = RadioOptionBlockCreate_radioOptionBlockCreate_action_PhoneAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_NavigateToBlockAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_LinkAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_EmailAction;
+export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type RadioOptionBlockCreate_radioOptionBlockCreate_action = RadioOptionBlockCreate_radioOptionBlockCreate_action_ChatAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_NavigateToBlockAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_LinkAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_EmailAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_PhoneAction;
 
 export interface RadioOptionBlockCreate_radioOptionBlockCreate {
   __typename: "RadioOptionBlock";

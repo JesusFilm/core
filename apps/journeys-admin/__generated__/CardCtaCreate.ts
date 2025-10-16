@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockCreateInput, TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
+import { ImageBlockCreateInput, TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardCtaCreate
@@ -68,8 +68,8 @@ export interface CardCtaCreate_title {
   settings: CardCtaCreate_title_settings | null;
 }
 
-export interface CardCtaCreate_button1_action_PhoneAction {
-  __typename: "PhoneAction";
+export interface CardCtaCreate_button1_action_ChatAction {
+  __typename: "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -99,7 +99,16 @@ export interface CardCtaCreate_button1_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardCtaCreate_button1_action = CardCtaCreate_button1_action_PhoneAction | CardCtaCreate_button1_action_NavigateToBlockAction | CardCtaCreate_button1_action_LinkAction | CardCtaCreate_button1_action_EmailAction;
+export interface CardCtaCreate_button1_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type CardCtaCreate_button1_action = CardCtaCreate_button1_action_ChatAction | CardCtaCreate_button1_action_NavigateToBlockAction | CardCtaCreate_button1_action_LinkAction | CardCtaCreate_button1_action_EmailAction | CardCtaCreate_button1_action_PhoneAction;
 
 export interface CardCtaCreate_button1_settings {
   __typename: "ButtonBlockSettings";
@@ -145,8 +154,8 @@ export interface CardCtaCreate_endIcon1 {
   iconColor: IconColor | null;
 }
 
-export interface CardCtaCreate_button1Update_action_PhoneAction {
-  __typename: "PhoneAction";
+export interface CardCtaCreate_button1Update_action_ChatAction {
+  __typename: "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -176,7 +185,16 @@ export interface CardCtaCreate_button1Update_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardCtaCreate_button1Update_action = CardCtaCreate_button1Update_action_PhoneAction | CardCtaCreate_button1Update_action_NavigateToBlockAction | CardCtaCreate_button1Update_action_LinkAction | CardCtaCreate_button1Update_action_EmailAction;
+export interface CardCtaCreate_button1Update_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type CardCtaCreate_button1Update_action = CardCtaCreate_button1Update_action_ChatAction | CardCtaCreate_button1Update_action_NavigateToBlockAction | CardCtaCreate_button1Update_action_LinkAction | CardCtaCreate_button1Update_action_EmailAction | CardCtaCreate_button1Update_action_PhoneAction;
 
 export interface CardCtaCreate_button1Update_settings {
   __typename: "ButtonBlockSettings";
@@ -202,8 +220,8 @@ export interface CardCtaCreate_button1Update {
   settings: CardCtaCreate_button1Update_settings | null;
 }
 
-export interface CardCtaCreate_button2_action_PhoneAction {
-  __typename: "PhoneAction";
+export interface CardCtaCreate_button2_action_ChatAction {
+  __typename: "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -233,7 +251,16 @@ export interface CardCtaCreate_button2_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardCtaCreate_button2_action = CardCtaCreate_button2_action_PhoneAction | CardCtaCreate_button2_action_NavigateToBlockAction | CardCtaCreate_button2_action_LinkAction | CardCtaCreate_button2_action_EmailAction;
+export interface CardCtaCreate_button2_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type CardCtaCreate_button2_action = CardCtaCreate_button2_action_ChatAction | CardCtaCreate_button2_action_NavigateToBlockAction | CardCtaCreate_button2_action_LinkAction | CardCtaCreate_button2_action_EmailAction | CardCtaCreate_button2_action_PhoneAction;
 
 export interface CardCtaCreate_button2_settings {
   __typename: "ButtonBlockSettings";
@@ -279,8 +306,8 @@ export interface CardCtaCreate_endIcon2 {
   iconColor: IconColor | null;
 }
 
-export interface CardCtaCreate_button2Update_action_PhoneAction {
-  __typename: "PhoneAction";
+export interface CardCtaCreate_button2Update_action_ChatAction {
+  __typename: "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -310,7 +337,16 @@ export interface CardCtaCreate_button2Update_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardCtaCreate_button2Update_action = CardCtaCreate_button2Update_action_PhoneAction | CardCtaCreate_button2Update_action_NavigateToBlockAction | CardCtaCreate_button2Update_action_LinkAction | CardCtaCreate_button2Update_action_EmailAction;
+export interface CardCtaCreate_button2Update_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type CardCtaCreate_button2Update_action = CardCtaCreate_button2Update_action_ChatAction | CardCtaCreate_button2Update_action_NavigateToBlockAction | CardCtaCreate_button2Update_action_LinkAction | CardCtaCreate_button2Update_action_EmailAction | CardCtaCreate_button2Update_action_PhoneAction;
 
 export interface CardCtaCreate_button2Update_settings {
   __typename: "ButtonBlockSettings";
@@ -336,8 +372,8 @@ export interface CardCtaCreate_button2Update {
   settings: CardCtaCreate_button2Update_settings | null;
 }
 
-export interface CardCtaCreate_button3_action_PhoneAction {
-  __typename: "PhoneAction";
+export interface CardCtaCreate_button3_action_ChatAction {
+  __typename: "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -367,7 +403,16 @@ export interface CardCtaCreate_button3_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardCtaCreate_button3_action = CardCtaCreate_button3_action_PhoneAction | CardCtaCreate_button3_action_NavigateToBlockAction | CardCtaCreate_button3_action_LinkAction | CardCtaCreate_button3_action_EmailAction;
+export interface CardCtaCreate_button3_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type CardCtaCreate_button3_action = CardCtaCreate_button3_action_ChatAction | CardCtaCreate_button3_action_NavigateToBlockAction | CardCtaCreate_button3_action_LinkAction | CardCtaCreate_button3_action_EmailAction | CardCtaCreate_button3_action_PhoneAction;
 
 export interface CardCtaCreate_button3_settings {
   __typename: "ButtonBlockSettings";
@@ -413,8 +458,8 @@ export interface CardCtaCreate_endIcon3 {
   iconColor: IconColor | null;
 }
 
-export interface CardCtaCreate_button3Update_action_PhoneAction {
-  __typename: "PhoneAction";
+export interface CardCtaCreate_button3Update_action_ChatAction {
+  __typename: "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
 }
@@ -444,7 +489,16 @@ export interface CardCtaCreate_button3Update_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CardCtaCreate_button3Update_action = CardCtaCreate_button3Update_action_PhoneAction | CardCtaCreate_button3Update_action_NavigateToBlockAction | CardCtaCreate_button3Update_action_LinkAction | CardCtaCreate_button3Update_action_EmailAction;
+export interface CardCtaCreate_button3Update_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type CardCtaCreate_button3Update_action = CardCtaCreate_button3Update_action_ChatAction | CardCtaCreate_button3Update_action_NavigateToBlockAction | CardCtaCreate_button3Update_action_LinkAction | CardCtaCreate_button3Update_action_EmailAction | CardCtaCreate_button3Update_action_PhoneAction;
 
 export interface CardCtaCreate_button3Update_settings {
   __typename: "ButtonBlockSettings";
