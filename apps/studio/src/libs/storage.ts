@@ -52,6 +52,10 @@ class UserInputStorage {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
     } catch (error) {
       console.error('Failed to save data:', error)
+      // If it's a quota exceeded error, suggest running cleanup
+      if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+        console.warn('localStorage quota exceeded. Try running cleanup: userInputStorage.cleanupImageData()')
+      }
     }
   }
 
@@ -61,6 +65,9 @@ class UserInputStorage {
 
   // Save current session data
   saveCurrentSession(data: Omit<UserInputData, 'id' | 'timestamp'>): string {
+    // Automatically cleanup images from previous sessions to prevent quota exceeded errors
+    this.cleanupImageData()
+
     const sessionData: UserInputData = {
       ...data,
       id: this.generateId(),
@@ -131,6 +138,41 @@ class UserInputStorage {
 
     localStorage.removeItem(STORAGE_KEY)
     localStorage.removeItem(CURRENT_SESSION_KEY)
+  }
+
+  // Cleanup images from all sessions while preserving analysis data
+  cleanupImageData(): { sessionsProcessed: number; imagesRemoved: number; spaceSaved: number } {
+    const existingData = this.getStoredData()
+    let imagesRemoved = 0
+    let spaceSaved = 0
+
+    const cleanedData = existingData.map(session => {
+      if (session.images && session.images.length > 0) {
+        // Calculate space saved (rough estimate)
+        const imagesSize = JSON.stringify(session.images).length
+        spaceSaved += imagesSize
+        imagesRemoved += session.images.length
+
+        // Return session with images cleared but analysis data preserved
+        return {
+          ...session,
+          images: [] // Clear the images array
+        }
+      }
+      return session
+    })
+
+    // Only save if there were changes
+    if (imagesRemoved > 0) {
+      this.saveStoredData(cleanedData)
+      console.log(`Storage cleanup completed: ${imagesRemoved} images removed from ${existingData.length} sessions, ~${Math.round(spaceSaved / 1024)}KB saved`)
+    }
+
+    return {
+      sessionsProcessed: existingData.length,
+      imagesRemoved,
+      spaceSaved
+    }
   }
 
   // Auto-save current working data (for draft-like functionality)
@@ -210,3 +252,6 @@ class UserInputStorage {
 }
 
 export const userInputStorage = new UserInputStorage()
+
+// Export the class for testing
+export { UserInputStorage }
