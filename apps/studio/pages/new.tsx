@@ -470,6 +470,15 @@ type TextElementConfig = {
   lineHeight: number
 }
 
+type ImageElementConfig = {
+  id: string
+  src: string
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
 const createTextElement = ({
   id,
   text,
@@ -537,6 +546,63 @@ const createTextElement = ({
   backgroundPadding: 0.5
 })
 
+const createImageElement = ({
+  id,
+  src,
+  x,
+  y,
+  width,
+  height
+}: ImageElementConfig) => ({
+  id,
+  type: 'image',
+  name: '',
+  opacity: 1,
+  visible: true,
+  selectable: true,
+  removable: true,
+  alwaysOnTop: false,
+  showInExport: true,
+  x,
+  y,
+  width,
+  height,
+  rotation: 0,
+  animations: [],
+  blurEnabled: false,
+  blurRadius: 10,
+  brightnessEnabled: false,
+  brightness: 0,
+  sepiaEnabled: false,
+  grayscaleEnabled: false,
+  filters: {},
+  shadowEnabled: false,
+  shadowBlur: 5,
+  shadowOffsetX: 0,
+  shadowOffsetY: 0,
+  shadowColor: 'black',
+  shadowOpacity: 1,
+  draggable: true,
+  resizable: true,
+  contentEditable: false,
+  styleEditable: true,
+  src,
+  cropX: 0,
+  cropY: 0,
+  cropWidth: 1,
+  cropHeight: 1,
+  flipX: false,
+  flipY: false,
+  borderRadius: 0,
+  backgroundEnabled: false,
+  backgroundColor: '#FFFFFF',
+  backgroundOpacity: 1,
+  backgroundCornerRadius: 0.5,
+  backgroundPadding: 0.5,
+  keepRatio: true,
+  cornerRadius: 0
+})
+
 const createPolotnoDesignFromContent = ({
   rawContent,
   selectedOutputs,
@@ -595,7 +661,8 @@ const createPolotnoDesignFromContent = ({
         content,
         body: bodyContent,
         keywords: keywords.slice(0, 5),
-        mediaPrompt
+        mediaPrompt,
+        selectedImageUrl: (step as any).selectedImageUrl
       }
     })
     .filter(Boolean) as Array<{
@@ -604,6 +671,7 @@ const createPolotnoDesignFromContent = ({
       body: string
       keywords: string[]
       mediaPrompt: string
+      selectedImageUrl?: string
     }>
 
   const hasStructuredSteps = normalizedSteps.length > 0
@@ -625,7 +693,7 @@ const createPolotnoDesignFromContent = ({
           lineHeight: 1.2
         })
 
-        const elements = [headingElement]
+        const elements: any[] = [headingElement]
 
         if (step.content) {
           elements.push(
@@ -642,6 +710,20 @@ const createPolotnoDesignFromContent = ({
               fontWeight: 'normal',
               fill: '#374151',
               lineHeight: 1.4
+            })
+          )
+        }
+
+        // Add selected image if available
+        if (step.selectedImageUrl) {
+          elements.push(
+            createImageElement({
+              id: generateElementId('image'),
+              src: step.selectedImageUrl,
+              x: width * 0.1,
+              y: height * 0.5,
+              width: width * 0.8,
+              height: height * 0.25
             })
           )
         }
@@ -1552,19 +1634,30 @@ Guidelines:
     })
   }, [])
 
+  const handleImageSelection = useCallback((stepIndex: number, imageUrl: string) => {
+    setEditableSteps((prev) => {
+      if (!prev[stepIndex]) return prev
+      const updated = [...prev]
+      updated[stepIndex] = { ...updated[stepIndex], selectedImageUrl: imageUrl }
+      return updated
+    })
+  }, [])
+
   // Memoized component for steps to prevent re-renders from tile hover states
   const StepsList = React.memo(({
     editableSteps,
     editingStepIndices,
     stepHandlers,
     copiedStepIndex,
-    unsplashImages
+    unsplashImages,
+    onImageSelection
   }: {
     editableSteps: GeneratedStepContent[]
     editingStepIndices: Set<number>
     stepHandlers: Record<number, { onContentChange: (value: string) => void; onFocus: () => void }>
     copiedStepIndex: number | null
     unsplashImages: Record<string, string[]>
+    onImageSelection: (stepIndex: number, imageUrl: string) => void
   }) => {
     return (
       <>
@@ -1638,25 +1731,41 @@ Guidelines:
                         }
 
                         if (stepImages.length > 0) {
+                          const selectedImageUrl = step.selectedImageUrl
                           return (
                             <Carousel className="w-full relative">
                               <CarouselContent>
                                 {stepImages.map(
-                                  (imageUrl, imageIndex) => (
-                                    <CarouselItem
-                                      key={`${index}-${imageIndex}-img`}
-                                      className="basis-1/6 mr-2"
-                                    >
-                                      <div className="relative aspect-square  mx-auto overflow-hidden rounded-lg border">
-                                        <Image
-                                          src={imageUrl}
-                                          alt={`${heading} inspiration`}
-                                          fill
-                                          className="object-cover"
-                                        />
-                                      </div>
-                                    </CarouselItem>
-                                  )
+                                  (imageUrl, imageIndex) => {
+                                    const isSelected = selectedImageUrl === imageUrl
+                                    return (
+                                      <CarouselItem
+                                        key={`${index}-${imageIndex}-img`}
+                                        className="basis-1/6 mr-2"
+                                      >
+                                        <div
+                                          className={`relative aspect-square mx-auto overflow-hidden rounded-lg border cursor-pointer transition-all duration-200 ${
+                                            isSelected
+                                              ? 'ring-2 ring-blue-500 ring-offset-2'
+                                              : 'hover:ring-2 hover:ring-blue-300 hover:ring-offset-2'
+                                          }`}
+                                          onClick={() => onImageSelection(index, imageUrl)}
+                                        >
+                                          <Image
+                                            src={imageUrl}
+                                            alt={`${heading} inspiration`}
+                                            fill
+                                            className="object-cover"
+                                          />
+                                          {isSelected && (
+                                            <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
+                                              <Check className="w-6 h-6 text-white drop-shadow-lg" />
+                                            </div>
+                                          )}
+                                        </div>
+                                      </CarouselItem>
+                                    )
+                                  }
                                 )}
                               </CarouselContent>
 
@@ -4762,6 +4871,7 @@ Guidelines:
                                 stepHandlers={stepHandlers}
                                 copiedStepIndex={copiedStepIndex}
                                 unsplashImages={unsplashImages}
+                                onImageSelection={handleImageSelection}
                               />
                             </div>
                           </>
