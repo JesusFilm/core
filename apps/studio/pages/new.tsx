@@ -33,6 +33,7 @@ import {
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -3190,17 +3191,31 @@ Guidelines:
                           </p>
                           <p>
                             {session.images.length} images •{' '}
-                            {session.aiResponse
-                              ? `Has AI response${session.tokensUsed && (session.tokensUsed.input > 0 || session.tokensUsed.output > 0) ? ` • Tokens: ${(() => {
-                                  const total = session.tokensUsed!.input + session.tokensUsed!.output
-                                  if (total >= 1000000) {
-                                    return `${(total / 1000000).toFixed(1)}M`
-                                  } else if (total >= 1000) {
-                                    return `${(total / 1000).toFixed(1)}K`
-                                  }
-                                  return total.toLocaleString()
-                                })()} • $${(session.tokensUsed.input / 1000000) * 0.05 + (session.tokensUsed.output / 1000000) * 0.4 >= 0.01 ? ((session.tokensUsed.input / 1000000) * 0.05 + (session.tokensUsed.output / 1000000) * 0.4).toFixed(3) : '0.000'}` : ''}`
-                              : 'No AI response'}
+                              {session.aiResponse
+                                ? `Has AI response${(() => {
+                                    const tokens = session.tokensUsed
+                                    if (!tokens) return ''
+                                    const hasTokens = tokens.input > 0 || tokens.output > 0
+                                    if (!hasTokens) return ''
+
+                                    const total = tokens.input + tokens.output
+                                    const formattedTotal = (() => {
+                                      if (total >= 1000000) {
+                                        return `${(total / 1000000).toFixed(1)}M`
+                                      }
+                                      if (total >= 1000) {
+                                        return `${(total / 1000).toFixed(1)}K`
+                                      }
+                                      return total.toLocaleString()
+                                    })()
+
+                                    const cost =
+                                      (tokens.input / 1000000) * 0.05 + (tokens.output / 1000000) * 0.4
+                                    const formattedCost = cost >= 0.01 ? cost.toFixed(3) : '0.000'
+
+                                    return ` • Tokens: ${formattedTotal} • $${formattedCost}`
+                                  })()}`
+                                : 'No AI response'}
                           </p>
                         </div>
                       </div>
@@ -3293,9 +3308,11 @@ Guidelines:
                           isAnimationStopped={isAnimationStopped}
                         />
                       </CardTitle>
-                      <Button variant="link" size="sm" className="">
-                        <HelpCircle className="h-4 w-4" />
-                        How it works
+                      <Button variant="link" size="sm" asChild className="">
+                        <Link href="/studio" className="inline-flex items-center gap-2">
+                          <HelpCircle className="h-4 w-4" />
+                          How it works
+                        </Link>
                       </Button>
                     </div>
                   </CardHeader>
