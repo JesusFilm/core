@@ -229,20 +229,51 @@ const steps = [
   { id: 3, title: 'Output', description: 'Select output formats' }
 ]
 
-const chatContextOptions = [
-  { text: 'Start a conversation', emoji: '💬' },
-  { text: 'Reconnect with someone', emoji: '👥' },
-  { text: 'Invite someone to talk more', emoji: '💭' },
-  { text: 'Say you\'re sorry', emoji: '🙏' },
-  { text: 'Encourage a friend', emoji: '✋' },
-  { text: 'Share your story', emoji: '📝' },
-  { text: 'Tell what God\'s done (testimony)', emoji: '👑' },
-  { text: 'Share a verse', emoji: '📖' },
-  { text: 'Offer a prayer', emoji: '🤲' },
-  { text: 'Send a video', emoji: '🎥' },
-  { text: 'Recommend a podcast', emoji: '🎧' },
-  { text: 'Share a book or article', emoji: '📚' }
-]
+const START_FROM_SCRATCH_OPTION = 'Start from scratch'
+
+const contextDetailOptions: Record<string, Array<{ text: string; emoji: string }>> = {
+  'Chat/Comments': [
+    { text: 'Start a conversation', emoji: '💬' },
+    { text: 'Reconnect with someone', emoji: '👥' },
+    { text: 'Invite someone to talk more', emoji: '💭' },
+    { text: "Say you're sorry", emoji: '🙏' },
+    { text: 'Encourage a friend', emoji: '✋' },
+    { text: 'Share your story', emoji: '📝' },
+    { text: "Tell what God's done (testimony)", emoji: '👑' },
+    { text: 'Share a verse', emoji: '📖' },
+    { text: 'Offer a prayer', emoji: '🤲' },
+    { text: 'Send a video', emoji: '🎥' },
+    { text: 'Recommend a podcast', emoji: '🎧' },
+    { text: 'Share a book or article', emoji: '📚' }
+  ],
+  'Social Media': [
+    { text: 'Create a social post design', emoji: '🖼️' },
+    { text: 'Design a carousel series', emoji: '🧩' },
+    { text: 'Plan a short-form video', emoji: '🎬' },
+    { text: 'Write captions for reels & stories', emoji: '✍️' },
+    { text: 'Map a community engagement idea', emoji: '📣' }
+  ],
+  Website: [
+    { text: 'Create an embeddable carousel', emoji: '🧷' },
+    { text: 'Build a simple landing page', emoji: '🖥️' },
+    { text: 'Lay out a page with sections', emoji: '📐' },
+    { text: 'Draft copy for featured designs', emoji: '📝' }
+  ],
+  Print: [
+    { text: 'Design church invite cards', emoji: '⛪' },
+    { text: 'Create outreach flyers', emoji: '📣' },
+    { text: 'Make shareable cards', emoji: '💌' },
+    { text: 'Generate QR code posters', emoji: '🔗' },
+    { text: 'Print sticker sheets', emoji: '🏷️' }
+  ],
+  'Real Life': [
+    { text: 'Write discussion questions', emoji: '❓' },
+    { text: 'Plan life application ideas', emoji: '🧭' },
+    { text: 'Outline a short sermon', emoji: '🎙️' },
+    { text: 'Prepare a group lesson', emoji: '👥' },
+    { text: 'Create a family devotion', emoji: '🏠' }
+  ]
+}
 
 // Removed - now using proper conversation history instead of RAG
 
@@ -970,7 +1001,8 @@ export default function NewPage() {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedContext, setSelectedContext] = useState<string>('')
-  const [selectedChatContext, setSelectedChatContext] = useState<string>('')
+  const [selectedContextDetail, setSelectedContextDetail] =
+    useState<string>('')
   const [collapsedTiles, setCollapsedTiles] = useState<boolean>(false)
   const [isContextContainerHidden, setIsContextContainerHidden] = useState<boolean>(false)
   const highlightedCategoryRef = useRef<string>('')
@@ -979,6 +1011,9 @@ export default function NewPage() {
   const [isAnimationStopped, setIsAnimationStopped] = useState<boolean>(false)
   const [selectedOutputs, setSelectedOutputs] = useState<SelectedOutputsMap>({})
   const [isTilesContainerHovered, setIsTilesContainerHovered] = useState<boolean>(false)
+
+  const selectedContextOptions =
+    contextDetailOptions[selectedContext] ?? []
 
   const [openaiApiKey, setOpenaiApiKey] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -1163,8 +1198,8 @@ export default function NewPage() {
 
   // Collapse tiles when a chat context is selected
   useEffect(() => {
-    setCollapsedTiles(selectedChatContext !== '')
-  }, [selectedChatContext])
+    setCollapsedTiles(selectedContextDetail !== '')
+  }, [selectedContextDetail])
 
   // Auto-resize textarea
   const adjustTextareaHeight = () => {
@@ -1266,6 +1301,7 @@ export default function NewPage() {
 
   const handleContextChange = (context: string) => {
     setSelectedContext(context)
+    setSelectedContextDetail('')
     setIsContextContainerHidden(true)
     highlightedCategoryRef.current = '' // Stop automatic highlight animation when a tile is selected
     setIsAnimationStopped(true) // Stop the rotating text animation
@@ -3302,16 +3338,16 @@ Guidelines:
                       </div>
                     </div>
 
-                    {/* Chat Context Options - shown when Chat/Comments is selected */}
-                    {selectedContext === 'Chat/Comments' && (
+                    {/* Context detail options */}
+                    {selectedContextOptions.length > 0 && (
                       <div className="mb-8">
                         {/* Regular options in flex wrap */}
                         <div className="flex flex-wrap gap-3 mb-4">
-                          {chatContextOptions.map((option, index) => (
+                          {selectedContextOptions.map((option, index) => (
                             <div
                               key={option.text}
                               className={`relative w-fit px-4 py-2 border rounded-xl cursor-pointer hover:bg-white hover:scale-102 transition-all duration-300 ${
-                                selectedChatContext === option.text
+                                selectedContextDetail === option.text
                                   ? 'border-blue-500 bg-blue-50'
                                   : 'border-gray-300 hover:border-gray-400'
                               }`}
@@ -3319,7 +3355,7 @@ Guidelines:
                                 animationDelay: `${index * 0.1}s`,
                                 animationFillMode: 'forwards'
                               }}
-                              onClick={() => setSelectedChatContext(option.text)}
+                              onClick={() => setSelectedContextDetail(option.text)}
                             >
                               <div className="flex items-center gap-2">
                                 <span className="text-lg">{option.emoji}</span>
@@ -3335,20 +3371,22 @@ Guidelines:
                         <div className="flex justify-start">
                           <div
                             className={`relative w-fit px-4 py-2 border rounded-xl cursor-pointer hover:bg-white hover:scale-102 transition-all duration-300 ${
-                              selectedChatContext === 'Start from scratch'
+                              selectedContextDetail === START_FROM_SCRATCH_OPTION
                                 ? 'border-blue-500 bg-blue-50'
                                 : 'border-gray-300 hover:border-gray-400'
                             }`}
                             style={{
-                              animationDelay: `${chatContextOptions.length * 0.1}s`,
+                              animationDelay: `${selectedContextOptions.length * 0.1}s`,
                               animationFillMode: 'forwards'
                             }}
-                            onClick={() => setSelectedChatContext('Start from scratch')}
+                            onClick={() =>
+                              setSelectedContextDetail(START_FROM_SCRATCH_OPTION)
+                            }
                           >
                             <div className="flex items-center gap-2">
                               <span className="text-lg">➕</span>
                               <p className="text-sm text-gray-800 leading-relaxed">
-                                Start from scratch
+                                {START_FROM_SCRATCH_OPTION}
                               </p>
                             </div>
                           </div>
@@ -3356,7 +3394,7 @@ Guidelines:
                       </div>
                     )}
 
-                    <div data-testid="section-prompt" className={`relative ${selectedChatContext ? '' : 'hidden'} bg-white rounded-3xl shadow-xl `} suppressHydrationWarning>
+                    <div data-testid="section-prompt" className={`relative ${selectedContextDetail ? '' : 'hidden'} bg-white rounded-3xl shadow-xl `} suppressHydrationWarning>
                       {/* <label className="text-sm font-medium mb-2 block">Text Content</label> */}
                       <div className="relative">
                         {/* Image Attachments Carousel - inside textarea */}
