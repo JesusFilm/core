@@ -3105,7 +3105,9 @@ export type PhoneAction = Action & {
 export type PhoneActionInput = {
   contactAction?: InputMaybe<ContactActionType>;
   countryCode: Scalars['String']['input'];
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  parentStepId?: InputMaybe<Scalars['String']['input']>;
   phone: Scalars['String']['input'];
 };
 
