@@ -1,5 +1,5 @@
 import {
-  ArrowUpRight,
+  ArrowUp,
   Bot,
   Camera,
   Check,
@@ -283,43 +283,43 @@ const contextSystemPrompts: Record<string, string> = {
     'Support real-world ministry efforts beyond digital channels. Offer actionable steps for events, discipleship moments, pastoral care, missions, or community service. Provide talking points, activity ideas, and tangible follow-up resources that equip Christians, missionaries, and pastors. Encourage cultural sensitivity and spiritual discernment, and use media prompts to inspire helpful reference visuals, handouts, or props.'
 }
 
-const contextDetailOptions: Record<string, Array<{ text: string; emoji: string }>> = {
+const contextDetailOptions: Record<string, Array<{ text: string; emoji: string; prompt: string }>> = {
   'Conversations': [
-    { text: 'Start a conversation', emoji: '💬' },
-  { text: 'Reconnect', emoji: '🙋‍♂️' },
-  { text: 'Invite to talk more', emoji: '💭' },
-  { text: "Say you're sorry", emoji: '🙇' },
-  { text: 'Encourage a friend', emoji: '🙌' },
-  { text: 'Share your story', emoji: '📝' },
-  { text: 'Share a verse', emoji: '📖' },
-  { text: 'Offer a prayer', emoji: '🤲' }
+    { text: 'Start a conversation', prompt: 'Start a friendly chat with someone I haven\'t talked to in a while, without sounding forced.', emoji: '💬' },
+    { text: 'Reconnect', prompt: 'Reach out to someone I\'ve lost touch with and express genuine interest in their life.', emoji: '🙋‍♂️' },
+    { text: 'Invite to talk more', prompt: 'Invite someone to continue our conversation and deepen our connection.', emoji: '💭' },
+    { text: "Say you're sorry", prompt: 'Apologize sincerely for something I\'ve done wrong and seek reconciliation.', emoji: '🙇' },
+    { text: 'Encourage a friend', prompt: 'Offer words of encouragement and support to someone going through a difficult time.', emoji: '🙌' },
+    { text: 'Share your story', prompt: 'Share a personal testimony or experience that could inspire or help others.', emoji: '📝' },
+    { text: 'Share a verse', prompt: 'Share a meaningful Bible verse that relates to the current situation.', emoji: '📖' },
+    { text: 'Offer a prayer', prompt: 'Offer to pray for someone or share a prayer that addresses their needs.', emoji: '🤲' }
   ],
   'Social Media': [
-    { text: 'Create a social post design', emoji: '🖼️' },
-    { text: 'Design a carousel series', emoji: '🧩' },
-    { text: 'Plan a short-form video', emoji: '🎬' },
-    { text: 'Write captions for reels & stories', emoji: '✍️' },
-    { text: 'Map a community engagement idea', emoji: '📣' }
+    { text: 'Create a social post design', prompt: 'Design an engaging social media post that captures attention and communicates a clear message.', emoji: '🖼️' },
+    { text: 'Design a carousel series', prompt: 'Create a multi-slide carousel that tells a story or presents information progressively.', emoji: '🧩' },
+    { text: 'Plan a short-form video', prompt: 'Plan a brief, impactful video content for platforms like Instagram Reels or TikTok.', emoji: '🎬' },
+    { text: 'Write captions for reels & stories', prompt: 'Write compelling captions that complement short-form video content.', emoji: '✍️' },
+    { text: 'Map a community engagement idea', prompt: 'Develop an idea for engaging with the community through social media initiatives.', emoji: '📣' }
   ],
   Website: [
-    { text: 'Create an embeddable carousel', emoji: '🧷' },
-    { text: 'Build a simple landing page', emoji: '🖥️' },
-    { text: 'Lay out a page with sections', emoji: '📐' },
-    { text: 'Draft copy for featured designs', emoji: '📝' }
+    { text: 'Create an embeddable carousel', prompt: 'Design a carousel component that can be easily embedded in websites.', emoji: '🧷' },
+    { text: 'Build a simple landing page', prompt: 'Create an effective landing page that converts visitors into engaged users.', emoji: '🖥️' },
+    { text: 'Lay out a page with sections', prompt: 'Structure a webpage with clear, organized sections for optimal user experience.', emoji: '📐' },
+    { text: 'Draft copy for featured designs', prompt: 'Write persuasive copy highlighting key design elements and benefits.', emoji: '📝' }
   ],
   Print: [
-    { text: 'Design church invite cards', emoji: '⛪' },
-    { text: 'Create outreach flyers', emoji: '📣' },
-    { text: 'Make shareable cards', emoji: '💌' },
-    { text: 'Generate QR code posters', emoji: '🔗' },
-    { text: 'Print sticker sheets', emoji: '🏷️' }
+    { text: 'Design church invite cards', prompt: 'Create attractive invitation cards for church events with clear details and compelling visuals.', emoji: '⛪' },
+    { text: 'Create outreach flyers', prompt: 'Design informative flyers to promote church programs and community outreach.', emoji: '📣' },
+    { text: 'Make shareable cards', prompt: 'Create cards with inspirational messages or Bible verses that people can easily share.', emoji: '💌' },
+    { text: 'Generate QR code posters', prompt: 'Design posters featuring QR codes that link to online resources or event registration.', emoji: '🔗' },
+    { text: 'Print sticker sheets', prompt: 'Create sheets of stickers with church branding, Bible verses, or motivational messages.', emoji: '🏷️' }
   ],
   'Real Life': [
-    { text: 'Write discussion questions', emoji: '❓' },
-    { text: 'Plan life application ideas', emoji: '🧭' },
-    { text: 'Outline a short sermon', emoji: '🎙️' },
-    { text: 'Prepare a group lesson', emoji: '👥' },
-    { text: 'Create a family devotion', emoji: '🏠' }
+    { text: 'Write discussion questions', prompt: 'Create thoughtful questions to facilitate meaningful group discussions about faith topics.', emoji: '❓' },
+    { text: 'Plan life application ideas', prompt: 'Develop practical ways to apply biblical principles to everyday life situations.', emoji: '🧭' },
+    { text: 'Outline a short sermon', prompt: 'Structure a brief, focused message with clear main points and practical applications.', emoji: '🎙️' },
+    { text: 'Prepare a group lesson', prompt: 'Create an engaging lesson plan for small group Bible study or discipleship.', emoji: '👥' },
+    { text: 'Create a family devotion', prompt: 'Design a family-focused spiritual activity with Bible reading and discussion.', emoji: '🏠' }
   ]
 }
 
@@ -1185,6 +1185,7 @@ export default function NewPage() {
     ideaIndex: number
   } | null>(null)
   const [animatingTextarea, setAnimatingTextarea] = useState(false)
+  const [hidingSuggestionsCarousel, setHidingSuggestionsCarousel] = useState(false)
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
   const [hiddenSuggestions, setHiddenSuggestions] = useState<Set<string>>(
     new Set()
@@ -1459,6 +1460,7 @@ export default function NewPage() {
     setIsContextContainerHidden(true)
     setHighlightedCategory('') // Stop automatic highlight animation when a tile is selected
     setIsAnimationStopped(true) // Stop the rotating text animation
+    setHidingSuggestionsCarousel(false) // Show suggestions carousel when switching contexts
   }, [])
 
   // Memoized callback to prevent unnecessary re-renders of RotatingText
@@ -3076,6 +3078,7 @@ export default function NewPage() {
                                   return (
                                     <div
                                       key={ideaIndex}
+                                      data-id="SuggestionTile"
                                       className={`relative p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-white hover:border-gray-300 hover:shadow-sm ${
                                         animatingSuggestion?.analysisIndex ===
                                           analysisIndex &&
@@ -3559,6 +3562,7 @@ export default function NewPage() {
 
                         {/* Real Life */}
                         <div
+                          data-id="Tile-RealLife"
                           className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
                             selectedContext === 'Real Life'
                               ? 'bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-600 border-rose-500'
@@ -3608,58 +3612,7 @@ export default function NewPage() {
                       </div>
                     </div>
 
-                    {/* Context detail options */}
-                    {selectedContextOptions.length > 0 && (
-                      <div className="mb-8">
-                        <Carousel className="relative w-full" opts={{ align: 'start' }}>
-                          <CarouselContent>
-                            {selectedContextOptions.map((option, index) => {
-                              const isSelected = selectedContextDetail === option.text
-
-                              return (
-                                <CarouselItem
-                                  key={option.text}
-                                  className="basis-3/4 sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
-                                  style={{
-                                    animationDelay: `${index * 0.1}s`,
-                                    animationFillMode: 'forwards'
-                                  }}
-                                >
-                                  <button
-                                    type="button"
-                                    onClick={() => setSelectedContextDetail(option.text)}
-                                    className={`group relative flex h-full w-full flex-col justify-between rounded-2xl border bg-white/70 p-4 text-left transition-all duration-300 ${
-                                      isSelected
-                                        ? 'border-blue-500 shadow-lg ring-2 ring-blue-200/60'
-                                        : 'border-gray-200 hover:border-blue-400 hover:bg-blue-50/60 hover:shadow-md'
-                                    }`}
-                                    aria-pressed={isSelected}
-                                  >
-                                    <ArrowUpRight
-                                      className={`absolute right-4 top-4 h-4 w-4 transition-colors ${
-                                        isSelected
-                                          ? 'text-blue-500'
-                                          : 'text-muted-foreground group-hover:text-blue-500'
-                                      }`}
-                                    />
-                                    <span className="text-3xl" aria-hidden="true">
-                                      {option.emoji}
-                                    </span>
-                                    <span className="mt-auto text-sm font-semibold leading-snug text-gray-900 line-clamp-4">
-                                      {option.text}
-                                    </span>
-                                  </button>
-                                </CarouselItem>
-                              )
-                            })}
-                          </CarouselContent>
-                          <CarouselPrevious className="-left-6 hidden md:flex" />
-                          <CarouselNext className="-right-6 hidden md:flex" />
-                        </Carousel>
-                      </div>
-                    )}
-
-                    <div data-testid="section-prompt" className={`relative ${selectedContext ? '' : 'hidden'} bg-white rounded-3xl shadow-xl `} suppressHydrationWarning>
+                    <div data-testid="section-prompt" data-id="PromptBlock" className={`relative ${selectedContext ? '' : 'hidden'} bg-white rounded-3xl shadow-xl `} suppressHydrationWarning>
                       {/* <label className="text-sm font-medium mb-2 block">Text Content</label> */}
                       <div className="relative">
                         {/* Image Attachments Carousel - inside textarea */}
@@ -3849,6 +3802,7 @@ export default function NewPage() {
                                       return (
                                         <div
                                           key={`${imageIndex}-${ideaIndex}`}
+                                          data-id="SuggestionTile"
                                           className={`relative w-fit px-4 py-2 border border-gray-300 rounded-xl cursor-pointer hover:bg-white hover:scale-102 ${
                                             animatingSuggestion?.analysisIndex ===
                                               imageIndex &&
@@ -5014,6 +4968,86 @@ export default function NewPage() {
               </div>
             </>
           )}
+
+          {/* Context detail options */}
+
+            {selectedContextOptions.length > 0 && (
+              <div className={`mb-8 max-w-4xl mx-auto px-6 transition-all duration-500 ease-out ${
+                hidingSuggestionsCarousel ? 'opacity-0 max-h-0 overflow-hidden' : 'opacity-100 max-h-96'
+              }`}>
+                <Carousel data-id="SuggestionTilesContainer" className="relative w-full" opts={{ align: 'start' }}>
+                  <CarouselContent>
+                    {selectedContextOptions.map((option, index) => {
+                      const isSelected = selectedContextDetail === option.text
+
+                      return (
+                        <CarouselItem
+                          key={option.text}
+                          className="basis-3/4 sm:basis-1/2 md:basis-1/3 lg:basis-1/5 xl:basis-1/5 py-2"
+                          style={{
+                            animationDelay: `${index * 0.1}s`,
+                            animationFillMode: 'forwards'
+                          }}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedContextDetail(option.text)
+
+                              // Append prompt to the top of textarea with empty line
+                              const currentValue = textareaRef.current?.value || ''
+                              const newText = option.prompt + '\n\n' + currentValue
+
+                              setTextContent(newText)
+
+                              // Update textarea value directly
+                              if (textareaRef.current) {
+                                textareaRef.current.value = newText
+                                // Focus the textarea
+                                textareaRef.current.focus()
+                                // Position cursor at the end
+                                textareaRef.current.setSelectionRange(newText.length, newText.length)
+                              }
+
+                              // Trigger textarea animation
+                              setAnimatingTextarea(true)
+                              setTimeout(() => {
+                                setAnimatingTextarea(false)
+                              }, 800)
+
+                              // Hide suggestions carousel with animation
+                              setHidingSuggestionsCarousel(true)
+                            }}
+                            className={`group relative flex h-full w-full flex-col justify-between rounded-2xl border-2 p-4 text-left transition-all duration-300 cursor-pointer hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:border-transparent aspect-square ${
+                              isSelected
+                                ? 'border-primary shadow-lg ring-2 ring-primary/60'
+                                : 'border-gray-200 hover:border-white hover:shadow-md'
+                            }`}
+                            aria-pressed={isSelected}
+                          >
+                            <ArrowUp
+                              className={`absolute right-4 top-4 h-4 w-4 transition-colors ${
+                                isSelected
+                                  ? 'text-primary'
+                                  : 'text-muted-foreground group-hover:text-primary'
+                              }`}
+                            />
+                            <span className="text-4xl" aria-hidden="true">
+                              {option.emoji}
+                            </span>
+                            <span className="mt-auto text-sm font-semibold text-balance leading-snug text-gray-900 line-clamp-4">
+                              {option.text}
+                            </span>
+                          </button>
+                        </CarouselItem>
+                      )
+                    })}
+                  </CarouselContent>
+                  <CarouselPrevious className="-left-6 hidden md:flex" />
+                  <CarouselNext className="-right-6 hidden md:flex" />
+                </Carousel>
+              </div>
+            )}
 
           {/* Step 2: Style */}
           {currentStep === 2 && (
