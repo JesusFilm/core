@@ -234,7 +234,7 @@ const steps = [
 const START_FROM_SCRATCH_OPTION = 'Start from scratch'
 
 const contextDetailOptions: Record<string, Array<{ text: string; emoji: string }>> = {
-  'Chat/Comments': [
+  'Conversations': [
     { text: 'Start a conversation', emoji: '💬' },
   { text: 'Reconnect', emoji: '🙋‍♂️' },
   { text: 'Invite to talk more', emoji: '💭' },
@@ -1010,6 +1010,8 @@ export default function NewPage() {
   const [selectedOutputs, setSelectedOutputs] = useState<SelectedOutputsMap>({})
   const [isTilesContainerHovered, setIsTilesContainerHovered] = useState<boolean>(false)
 
+  const selectedContextOptions =
+    contextDetailOptions[selectedContext] ?? []
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isSessionsOpen, setIsSessionsOpen] = useState(false)
@@ -3451,7 +3453,7 @@ Guidelines:
                       </div>
                     )}
 
-                    <div data-testid="section-prompt" className={`relative ${selectedContextDetail ? '' : 'hidden'} bg-white rounded-3xl shadow-xl `} suppressHydrationWarning>
+                    <div data-testid="section-prompt" className={`relative ${selectedContext ? '' : 'hidden'} bg-white rounded-3xl shadow-xl `} suppressHydrationWarning>
                       {/* <label className="text-sm font-medium mb-2 block">Text Content</label> */}
                       <div className="relative">
                         {/* Image Attachments Carousel - inside textarea */}
