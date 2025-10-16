@@ -39,6 +39,12 @@ const ACTION_CONFIG = {
     nodeIdPrefix: 'PhoneNode',
     xPosition: LINK_NODE_WIDTH_GAP_LEFT,
     isPositionedAction: true
+  },
+  ChatAction: {
+    nodeType: 'Chat',
+    nodeIdPrefix: 'ChatNode',
+    xPosition: LINK_NODE_WIDTH_GAP_LEFT,
+    isPositionedAction: true
   }
 } as const
 
@@ -185,35 +191,6 @@ export function transformSteps(
       nodes.push({
         id: nodeId,
         type: config.nodeType,
-        data: {},
-        position,
-        parentNode: step.id,
-        draggable: false
-      })
-    }
-
-    if (block.action.__typename === 'ChatAction') {
-      edges.push({
-        id: `${block.id}->ChatNode-${block.id}`,
-        source: step.id,
-        sourceHandle: block.id,
-        target: `ChatNode-${block.id}`,
-        ...defaultEdgeProps
-      })
-
-      // Calculate position
-      const position = {
-        x: config.xPosition,
-        y:
-          STEP_NODE_CARD_HEIGHT +
-          ACTION_BUTTON_HEIGHT * (blockIndex + 1) +
-          (priorAction ? LINK_NODE_HEIGHT_GAP * actionCount : 0)
-      }
-
-      // Create node
-      nodes.push({
-        id: `ChatNode-${block.id}`,
-        type: 'Chat',
         data: {},
         position,
         parentNode: step.id,
