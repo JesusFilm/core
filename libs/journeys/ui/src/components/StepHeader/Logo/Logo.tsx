@@ -45,7 +45,6 @@ export function Logo(): ReactElement {
         layout="intrinsic"
         objectFit="cover"
         sx={{
-          borderRadius: '50%',
           transform: `scale(${(logo.scale ?? 100) / 100})`,
           transformOrigin: `${logo.focalLeft}% ${logo.focalTop}%`
         }}
