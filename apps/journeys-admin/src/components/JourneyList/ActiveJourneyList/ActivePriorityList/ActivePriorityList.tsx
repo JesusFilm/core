@@ -1,4 +1,4 @@
-import { ApolloQueryResult, OperationVariables } from '@apollo/client'
+import { ObservableQuery, OperationVariables } from '@apollo/client'
 import Grid from '@mui/material/Grid'
 import { User } from 'next-firebase-auth'
 import { ReactElement, useMemo } from 'react'
@@ -21,7 +21,7 @@ interface ActivePriorityListProps {
   sortOrder?: SortOrder
   refetch?: (
     variables?: Partial<OperationVariables> | undefined
-  ) => Promise<ApolloQueryResult<GetAdminJourneys>>
+  ) => Promise<ObservableQuery.Result<GetAdminJourneys>>
   user?: User
 }
 

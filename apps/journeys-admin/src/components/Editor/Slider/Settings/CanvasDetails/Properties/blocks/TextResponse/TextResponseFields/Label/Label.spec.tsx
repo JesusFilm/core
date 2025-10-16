@@ -1,5 +1,6 @@
 import { ApolloLink } from '@apollo/client'
-import { MockLink, MockedProvider } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import DebounceLink from 'apollo-link-debounce'
@@ -119,7 +120,7 @@ describe('Edit Label field', () => {
 
   it('should display label value', () => {
     render(
-      <MockedProvider mocks={[mockLabelUpdate1]} addTypename={false}>
+      <MockedProvider mocks={[mockLabelUpdate1]}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <Label />
         </EditorProvider>
@@ -132,7 +133,7 @@ describe('Edit Label field', () => {
 
   it('should not be able to type beyond max character limit', () => {
     render(
-      <MockedProvider mocks={[mockLabelUpdate1]} addTypename={false}>
+      <MockedProvider mocks={[mockLabelUpdate1]}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <Label />
         </EditorProvider>
@@ -150,7 +151,7 @@ describe('Edit Label field', () => {
     ])
 
     render(
-      <MockedProvider link={link} addTypename={false}>
+      <MockedProvider link={link}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <Label />
         </EditorProvider>
@@ -169,7 +170,7 @@ describe('Edit Label field', () => {
     ])
 
     render(
-      <MockedProvider link={link} addTypename={false}>
+      <MockedProvider link={link}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <CommandUndoItem variant="button" />
           <Label />
@@ -192,7 +193,7 @@ describe('Edit Label field', () => {
     ])
 
     render(
-      <MockedProvider link={link} addTypename={false}>
+      <MockedProvider link={link}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <CommandUndoItem variant="button" />
           <CommandRedoItem variant="button" />
@@ -219,7 +220,7 @@ describe('Edit Label field', () => {
     ])
 
     render(
-      <MockedProvider link={link} addTypename={false}>
+      <MockedProvider link={link}>
         <EditorProvider initialState={{}}>
           <Label />
         </EditorProvider>
@@ -238,7 +239,7 @@ describe('Edit Label field', () => {
     ])
 
     render(
-      <MockedProvider link={link} addTypename={false}>
+      <MockedProvider link={link}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <Label />
         </EditorProvider>
@@ -274,7 +275,7 @@ describe('Edit Label field', () => {
     }
 
     render(
-      <MockedProvider mocks={[mockHideLabelUpdate]} addTypename={false}>
+      <MockedProvider mocks={[mockHideLabelUpdate]}>
         <EditorProvider initialState={{ selectedBlock: block }}>
           <Label />
         </EditorProvider>
@@ -344,7 +345,7 @@ describe('Edit Label field', () => {
     } as unknown as Journey
 
     render(
-      <MockedProvider mocks={[mockLabelUpdate1]} addTypename={false}>
+      <MockedProvider mocks={[mockLabelUpdate1]}>
         <JourneyProvider
           value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}
         >

@@ -1,11 +1,6 @@
-import {
-  NoInfer,
-  QueryHookOptions,
-  QueryResult,
-  gql,
-  useQuery
-} from '@apollo/client'
-import { useState } from 'react'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
+import { useEffect, useState } from 'react'
 import { Edge, Node } from 'reactflow'
 
 import {
@@ -143,31 +138,31 @@ export interface JourneyAnalytics {
 }
 
 export function useJourneyAnalyticsQuery(
-  options?: Omit<
-    QueryHookOptions<
+  options: Omit<
+    useQuery.Options<
       NoInfer<GetJourneyAnalytics>,
       NoInfer<GetJourneyAnalyticsVariables>
     >,
     'onCompleted'
   > & { onCompleted?: (data: JourneyAnalytics | undefined) => void }
 ): Omit<
-  QueryResult<GetJourneyAnalytics, GetJourneyAnalyticsVariables>,
+  useQuery.Result<GetJourneyAnalytics, GetJourneyAnalyticsVariables>,
   'data'
 > & { data: JourneyAnalytics | undefined } {
   const [data, setData] = useState<JourneyAnalytics | undefined>()
   const query = useQuery<GetJourneyAnalytics, GetJourneyAnalyticsVariables>(
     GET_JOURNEY_ANALYTICS,
-    {
-      ...options,
-      onCompleted: (data) => {
-        const journeyAnalytics = transformJourneyAnalytics(
-          options?.variables?.id,
-          data
-        )
-        setData(journeyAnalytics)
-        options?.onCompleted?.(journeyAnalytics)
-      }
-    }
+    options
   )
+  useEffect(() => {
+    if (query.data != null) {
+      const journeyAnalytics = transformJourneyAnalytics(
+        options?.variables?.id,
+        query.data
+      )
+      setData(journeyAnalytics)
+      options?.onCompleted?.(journeyAnalytics)
+    }
+  }, [query.data])
   return { ...query, data }
 }

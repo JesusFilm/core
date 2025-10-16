@@ -1,8 +1,8 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
-import { graphql } from '@core/shared/gql'
+import { ResultOf, graphql } from '@core/shared/gql'
 
 export const videoBlockYouTubeSchema = z.object({
   videoId: z
@@ -57,7 +57,7 @@ export async function fetchFieldsFromMux(videoId: string): Promise<
       endAt: number
     }
 > {
-  const httpLink = createHttpLink({
+  const httpLink = new HttpLink({
     uri: process.env.GATEWAY_URL,
     headers: {
       'x-graphql-client-name': 'api-journeys',
@@ -66,15 +66,19 @@ export async function fetchFieldsFromMux(videoId: string): Promise<
   })
   const apollo = new ApolloClient({
     link: httpLink,
-    cache: new InMemoryCache()
+    cache: new InMemoryCache(),
+    clientAwareness: {
+      name: 'api-journeys',
+      version: process.env.SERVICE_VERSION ?? ''
+    }
   })
 
-  const { data } = await apollo.query({
+  const { data } = await apollo.query<ResultOf<typeof GET_MUX_VIDEO_QUERY>>({
     query: GET_MUX_VIDEO_QUERY,
     variables: { id: videoId }
   })
 
-  if (data.getMuxVideo == null) {
+  if (data?.getMuxVideo == null) {
     throw new GraphQLError('videoId cannot be found on Mux', {
       extensions: { code: 'NOT_FOUND' }
     })

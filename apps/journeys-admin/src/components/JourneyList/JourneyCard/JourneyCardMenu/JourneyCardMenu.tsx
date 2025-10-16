@@ -1,4 +1,4 @@
-import { ApolloQueryResult } from '@apollo/client'
+import { ObservableQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
@@ -73,7 +73,7 @@ export interface JourneyCardMenuProps {
   slug: string
   published: boolean
   template?: boolean
-  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  refetch?: () => Promise<ObservableQuery.Result<GetAdminJourneys>>
   journey?: Journey
   hovered?: boolean
   onMenuClose?: () => void

@@ -1,5 +1,5 @@
 // import { MockedProvider } from '@apollo/client/testing'
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import noop from 'lodash/noop'
 
@@ -31,7 +31,7 @@ const CustomDomainDialogsStory: Meta<typeof CustomDomainDialog> = {
   title: 'Journeys-Admin/Team/CustomDomain/CustomDomainDialog'
 }
 
-const getAdminJourneysMock: MockedResponse<
+const getAdminJourneysMock: MockLink.MockedResponse<
   GetAdminJourneys,
   GetAdminJourneysVariables
 > = {
@@ -49,7 +49,7 @@ const getAdminJourneysMock: MockedResponse<
   }
 }
 
-const getCustomDomainMockEmpty: MockedResponse<GetCustomDomains> = {
+const getCustomDomainMockEmpty: MockLink.MockedResponse<GetCustomDomains> = {
   request: {
     query: GET_CUSTOM_DOMAINS,
     variables: {
@@ -63,7 +63,7 @@ const getCustomDomainMockEmpty: MockedResponse<GetCustomDomains> = {
   }
 }
 
-const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
+const getLastActiveTeamIdAndTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
   {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
@@ -89,7 +89,7 @@ const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeam
     }
   }
 
-const checkCustomDomainMock: MockedResponse<CheckCustomDomain> = {
+const checkCustomDomainMock: MockLink.MockedResponse<CheckCustomDomain> = {
   request: {
     query: CHECK_CUSTOM_DOMAIN,
     variables: {

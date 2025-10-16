@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
@@ -81,7 +82,7 @@ describe('TextScreen', () => {
 
   it('submits only when values changed and calls handleNext', async () => {
     const handleNext = jest.fn()
-    const journeyCustomizationFieldUpdate: MockedResponse<
+    const journeyCustomizationFieldUpdate: MockLink.MockedResponse<
       JourneyCustomizationFieldUpdate,
       JourneyCustomizationFieldUpdateVariables
     > = {

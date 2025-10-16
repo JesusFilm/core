@@ -1,4 +1,5 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
@@ -10,7 +11,7 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 
@@ -127,7 +128,7 @@ function JourneyVisitorsPage({
   const [sortSetting, setSortSetting] = useState<'date' | 'duration'>('date')
 
   const { data: userRoleData } = useUserRoleQuery()
-  const { fetchMore, loading } = useQuery<GetJourneyVisitors>(
+  const { fetchMore, loading, data } = useQuery<GetJourneyVisitors>(
     GET_JOURNEY_VISITORS,
     {
       variables: {
@@ -141,14 +142,17 @@ function JourneyVisitorsPage({
         },
         first: 100,
         sort: sortSetting
-      },
-      onCompleted: (data) => {
-        setVisitorEdges(data.visitors.edges)
-        setHasNextPage(data.visitors.pageInfo.hasNextPage)
-        setEndCursor(data.visitors.pageInfo.endCursor)
       }
     }
   )
+
+  useEffect(() => {
+    if (data == null) return
+    setVisitorEdges(data.visitors.edges)
+    setHasNextPage(data.visitors.pageInfo.hasNextPage)
+    setEndCursor(data.visitors.pageInfo.endCursor)
+  }, [data])
+
   const { data: userTeamsData } = useUserTeamsAndInvitesQuery(
     journey?.team != null
       ? {
@@ -167,7 +171,7 @@ function JourneyVisitorsPage({
           after: endCursor
         }
       })
-      if (response.data.visitors.edges != null) {
+      if (response.data?.visitors?.edges != null) {
         setVisitorEdges([...visitorEdges, ...response.data.visitors.edges])
         setHasNextPage(response.data.visitors.pageInfo.hasNextPage)
         setEndCursor(response.data.visitors.pageInfo.endCursor)
@@ -345,7 +349,7 @@ export const getServerSideProps = withUserTokenSSR({
       }
     })
 
-    journey = data?.journey
+    journey = data?.journey ?? null
   } catch (_) {
     return {
       redirect: {
