@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
+import { graphql } from '@core/shared/gql'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
@@ -18,18 +19,20 @@ import { MessageChatIcon } from '../../../libs/MessageChatIcon'
 import { JourneyPlausibleEvents, keyify } from '../../../libs/plausibleHelpers'
 import { getJourneyRTL } from '../../../libs/rtl'
 
-import {
-  ChatButtonEventCreate,
-  ChatButtonEventCreateVariables
-} from './__generated__/ChatButtonEventCreate'
+import { ResultOf, VariablesOf } from '@core/shared/gql'
 
-export const CHAT_BUTTON_EVENT_CREATE = gql`
+export const CHAT_BUTTON_EVENT_CREATE = graphql(`
   mutation ChatButtonEventCreate($input: ChatOpenEventCreateInput!) {
     chatOpenEventCreate(input: $input) {
       id
     }
   }
-`
+`)
+
+type ChatButtonEventCreate = ResultOf<typeof CHAT_BUTTON_EVENT_CREATE>
+type ChatButtonEventCreateVariables = VariablesOf<
+  typeof CHAT_BUTTON_EVENT_CREATE
+>
 
 export function ChatButtons(): ReactElement {
   const plausible = usePlausible<JourneyPlausibleEvents>()

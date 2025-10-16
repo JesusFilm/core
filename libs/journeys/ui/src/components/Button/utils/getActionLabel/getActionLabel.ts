@@ -2,10 +2,10 @@ import { TOptions } from 'i18next'
 
 import { TreeBlock } from '../../../../libs/block'
 import { getStepHeading } from '../../../../libs/getStepHeading'
-import { ButtonFields_action } from '../../__generated__/ButtonFields'
+import type { ButtonFields } from '../../buttonFields'
 
 export function getActionLabel(
-  action: ButtonFields_action | null,
+  action: ButtonFields['action'] | null,
   treeBlocks?: TreeBlock[],
   t?: (str: string, options?: TOptions) => string
 ): string | undefined {

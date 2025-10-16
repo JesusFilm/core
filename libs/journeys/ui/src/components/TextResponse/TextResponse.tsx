@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client'
+import { graphql } from '@core/shared/gql'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
@@ -14,13 +14,13 @@ import { useEditor } from '../../libs/EditorProvider'
 import { useJourney } from '../../libs/JourneyProvider'
 import { TextField } from '../TextField'
 
-import { TextResponseFields } from './__generated__/TextResponseFields'
+import type { TextResponseFields } from './textResponseFields'
 import { getTextResponseValues } from './utils/getTextResponseValues'
 
 /**
  * GraphQL mutation for creating a text response submission event.
  */
-export const TEXT_RESPONSE_SUBMISSION_EVENT_CREATE = gql`
+export const TEXT_RESPONSE_SUBMISSION_EVENT_CREATE = graphql(`
   mutation TextResponseSubmissionEventCreate(
     $input: TextResponseSubmissionEventCreateInput!
   ) {
@@ -28,7 +28,7 @@ export const TEXT_RESPONSE_SUBMISSION_EVENT_CREATE = gql`
       id
     }
   }
-`
+`)
 
 interface TextResponseProps extends TreeBlock<TextResponseFields> {
   editableSubmitLabel?: ReactElement

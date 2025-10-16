@@ -1,6 +1,6 @@
-import { gql } from '@apollo/client'
+import { FragmentOf, graphql } from '@core/shared/gql'
 
-export const IMAGE_FIELDS = gql`
+export const IMAGE_FIELDS = graphql(`
   fragment ImageFields on ImageBlock {
     id
     parentBlockId
@@ -14,4 +14,6 @@ export const IMAGE_FIELDS = gql`
     focalTop
     focalLeft
   }
-`
+`)
+
+export type ImageFields = FragmentOf<typeof IMAGE_FIELDS>

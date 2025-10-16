@@ -1,22 +1,18 @@
-import {
-  FetchResult,
-  MutationHookOptions,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { FetchResult, MutationHookOptions, useMutation } from '@apollo/client'
+import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 
-import {
-  UpdateLastActiveTeamId,
-  UpdateLastActiveTeamIdVariables
-} from './__generated__/UpdateLastActiveTeamId'
+export type UpdateLastActiveTeamId = ResultOf<typeof UPDATE_LAST_ACTIVE_TEAM_ID>
+export type UpdateLastActiveTeamIdVariables = VariablesOf<
+  typeof UPDATE_LAST_ACTIVE_TEAM_ID
+>
 
-export const UPDATE_LAST_ACTIVE_TEAM_ID = gql`
+export const UPDATE_LAST_ACTIVE_TEAM_ID = graphql(`
   mutation UpdateLastActiveTeamId($input: JourneyProfileUpdateInput!) {
     journeyProfileUpdate(input: $input) {
       id
     }
   }
-`
+`)
 
 export function useUpdateLastActiveTeamIdMutation(
   options?: MutationHookOptions<

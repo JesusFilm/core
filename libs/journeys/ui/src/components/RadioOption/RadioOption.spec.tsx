@@ -3,9 +3,9 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import type { JourneyFields as Journey } from '../../libs/JourneyProvider/journeyFields'
 
-import { RadioOptionFields } from './__generated__/RadioOptionFields'
+import type { RadioOptionFields } from './radioOptionFields'
 
 import { RadioOption } from '.'
 

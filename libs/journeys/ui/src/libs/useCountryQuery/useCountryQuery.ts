@@ -1,8 +1,10 @@
-import { QueryResult, gql, useQuery } from '@apollo/client'
+import { QueryResult, useQuery } from '@apollo/client'
+import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 
-import { GetCountry, GetCountryVariables } from './__generated__/GetCountry'
+export type GetCountry = ResultOf<typeof GET_COUNTRY>
+export type GetCountryVariables = VariablesOf<typeof GET_COUNTRY>
 
-export const GET_COUNTRY = gql`
+export const GET_COUNTRY = graphql(`
   query GetCountry($countryId: ID!) {
     country(id: $countryId) {
       id
@@ -23,7 +25,7 @@ export const GET_COUNTRY = gql`
       }
     }
   }
-`
+`)
 
 export function useCountryQuery(
   variables: GetCountryVariables

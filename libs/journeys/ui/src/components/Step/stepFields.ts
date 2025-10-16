@@ -1,6 +1,6 @@
-import { gql } from '@apollo/client'
+import { FragmentOf, graphql } from '@core/shared/gql'
 
-export const STEP_FIELDS = gql`
+export const STEP_FIELDS = graphql(`
   fragment StepFields on StepBlock {
     id
     parentBlockId
@@ -9,4 +9,6 @@ export const STEP_FIELDS = gql`
     nextBlockId
     slug
   }
-`
+`)
+
+export type StepFields = FragmentOf<typeof STEP_FIELDS>

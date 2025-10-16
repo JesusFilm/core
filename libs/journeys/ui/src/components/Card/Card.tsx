@@ -1,4 +1,5 @@
-import { ApolloError, gql, useMutation } from '@apollo/client'
+import { ApolloError, useMutation } from '@apollo/client'
+import { graphql } from '@core/shared/gql'
 import Paper from '@mui/material/Paper'
 import { styled, useTheme } from '@mui/material/styles'
 import { sendGTMEvent } from '@next/third-parties/google'
@@ -15,36 +16,37 @@ import { getTextResponseLabel } from '../../libs/getTextResponseLabel'
 import { useJourney } from '../../libs/JourneyProvider'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
-import { ImageFields } from '../Image/__generated__/ImageFields'
-import { StepFields } from '../Step/__generated__/StepFields'
-import { TextResponseSubmissionEventCreate } from '../TextResponse/__generated__/TextResponseSubmissionEventCreate'
+import type { ImageFields } from '../Image/imageFields'
+import type { BlockFields } from '../../libs/block/blockFields'
+type StepFields = Extract<BlockFields, { __typename: 'StepBlock' }>
+import { ResultOf, VariablesOf } from '@core/shared/gql'
 import { TEXT_RESPONSE_SUBMISSION_EVENT_CREATE } from '../TextResponse/TextResponse'
-import { VideoFields } from '../Video/__generated__/VideoFields'
+import type { VideoFields } from '../Video/videoFields'
 
-import { CardFields } from './__generated__/CardFields'
+import type { CardFields } from './cardFields'
 import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
 import { getFormInitialValues } from './utils/getFormInitialValues'
 import { getTextResponseBlocks } from './utils/getTextResponseBlocks'
 import { getValidationSchema } from './utils/getValidationSchema/getValidationSchema'
 
-export const STEP_NEXT_EVENT_CREATE = gql`
+export const STEP_NEXT_EVENT_CREATE = graphql(`
   mutation StepNextEventCreate($input: StepNextEventCreateInput!) {
     stepNextEventCreate(input: $input) {
       id
     }
   }
-`
+`)
 
-export const STEP_PREVIOUS_EVENT_CREATE = gql`
+export const STEP_PREVIOUS_EVENT_CREATE = graphql(`
   mutation StepPreviousEventCreate($input: StepPreviousEventCreateInput!) {
     stepPreviousEventCreate(input: $input) {
       id
     }
   }
-`
+`)
 
-interface CardProps extends TreeBlock<CardFields> {
+type CardProps = TreeBlock<CardFields> & {
   wrappers?: WrappersProps
 }
 
@@ -73,21 +75,29 @@ const StyledForm = styled(Form)(() => ({}))
  *
  * @returns {ReactElement} The rendered Card component
  */
-export function Card({
-  id,
-  children,
-  backgroundColor,
-  backdropBlur,
-  coverBlockId,
-  fullscreen,
-  wrappers
-}: CardProps): ReactElement {
+export function Card(props: CardProps): ReactElement {
+  const { wrappers } = props
+  const cardBlock = props as unknown as TreeBlock<CardFields>
+  const id = (cardBlock as any).id as string
+  const children = (cardBlock as any).children as TreeBlock[]
+  const backgroundColor = (cardBlock as any).backgroundColor as
+    | string
+    | undefined
+  const backdropBlur = (cardBlock as any).backdropBlur as number | undefined
+  const coverBlockId = (cardBlock as any).coverBlockId as string | undefined
+  const fullscreen = (cardBlock as any).fullscreen as boolean | undefined
   const { enqueueSnackbar } = useSnackbar()
 
-  const [textResponseSubmissionEventCreate] =
-    useMutation<TextResponseSubmissionEventCreate>(
-      TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
-    )
+  type TextResponseSubmissionEventCreate = ResultOf<
+    typeof TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
+  >
+  type TextResponseSubmissionEventCreateVariables = VariablesOf<
+    typeof TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
+  >
+  const [textResponseSubmissionEventCreate] = useMutation<
+    TextResponseSubmissionEventCreate,
+    TextResponseSubmissionEventCreateVariables
+  >(TEXT_RESPONSE_SUBMISSION_EVENT_CREATE)
 
   const { t } = useTranslation('journeys-ui')
   const theme = useTheme()
@@ -109,49 +119,53 @@ export function Card({
       ?.setAttribute('content', cardColor)
   }, [cardColor])
 
-  const coverBlock = children.find(
+  const coverBlock = (children as unknown as Array<TreeBlock<any>>).find(
     (block) =>
       block.id === coverBlockId &&
       (block.__typename === 'ImageBlock' || block.__typename === 'VideoBlock')
   ) as TreeBlock<ImageFields | VideoFields> | undefined
 
   const videoBlock =
-    coverBlock?.__typename === 'VideoBlock' ? coverBlock : undefined
+    (coverBlock as any)?.__typename === 'VideoBlock'
+      ? (coverBlock as TreeBlock<VideoFields>)
+      : undefined
 
   const imageBlock =
-    coverBlock?.__typename === 'ImageBlock' ? coverBlock : undefined
+    (coverBlock as any)?.__typename === 'ImageBlock'
+      ? (coverBlock as unknown as TreeBlock<ImageFields>)
+      : undefined
 
-  const blurUrl = useMemo(
-    () =>
-      imageBlock != null
-        ? blurImage(imageBlock.blurhash, cardColor)
-        : undefined,
-    [imageBlock, cardColor]
-  )
+  const blurUrl = useMemo(() => {
+    const bh = (imageBlock as unknown as { blurhash?: string })?.blurhash
+    return imageBlock != null && bh != null
+      ? blurImage(bh, cardColor)
+      : undefined
+  }, [imageBlock, cardColor])
 
-  const renderedChildren = children
+  const typedChildren = children as unknown as Array<TreeBlock<any>>
+  const renderedChildren = (typedChildren as Array<TreeBlock<any>>)
     .filter(({ id }) => id !== coverBlockId)
     .map((block) => (
       <BlockRenderer block={block} wrappers={wrappers} key={block.id} />
     ))
 
   const hasFullscreenVideo =
-    children.find(
+    typedChildren.find(
       (child) => child.__typename === 'VideoBlock' && child.id !== coverBlockId
     ) != null
 
   const formikInitialValues = useMemo(
-    () => getFormInitialValues(children),
+    () => getFormInitialValues(children as unknown as TreeBlock[]),
     [children]
   )
 
   const validationSchema = useMemo(
-    () => getValidationSchema(children, t),
+    () => getValidationSchema(children as unknown as TreeBlock[], t),
     [children, t]
   )
 
   const textResponseBlocks = useMemo(
-    () => getTextResponseBlocks(children),
+    () => getTextResponseBlocks(children as unknown as TreeBlock[]),
     [children]
   )
 
@@ -170,16 +184,23 @@ export function Card({
     const { resetForm } = formikHelpers
     if (variant !== 'default' && variant !== 'embed') return
 
-    const submissionPromises = textResponseBlocks.map((block) => {
-      const blockId = block.id
+    const submissionPromises = (
+      textResponseBlocks as Array<TreeBlock<any>>
+    ).map((block) => {
+      const blockId = (block as any).id as string
       const responseValue = values[blockId]
       if (!responseValue || responseValue?.trim() === '')
         return Promise.resolve(null)
 
       const heading =
         activeBlock != null
-          ? (getTextResponseLabel(block) ??
-            getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t))
+          ? (getTextResponseLabel(block as unknown as TreeBlock<any>) ??
+            getStepHeading(
+              (activeBlock as any).id as string,
+              (activeBlock as any).children as unknown as Array<TreeBlock<any>>,
+              treeBlocks as unknown as Array<TreeBlock<any>>,
+              t
+            ))
           : t('None')
       const id = uuidv4()
       return textResponseSubmissionEventCreate({
@@ -187,7 +208,7 @@ export function Card({
           input: {
             id,
             blockId,
-            stepId: activeBlock?.id,
+            stepId: (activeBlock as any)?.id,
             label: heading,
             value: responseValue
           }

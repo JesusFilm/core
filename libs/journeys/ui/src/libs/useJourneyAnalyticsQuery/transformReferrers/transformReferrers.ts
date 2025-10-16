@@ -1,6 +1,9 @@
 import type { Edge, Node } from 'reactflow'
 
-import type { GetJourneyAnalytics_journeyReferrer as JourneyReferrer } from '../__generated__/GetJourneyAnalytics'
+export type JourneyReferrer = {
+  property: string
+  visitors: number | null
+}
 
 interface OtherSource {
   property: 'other sources'

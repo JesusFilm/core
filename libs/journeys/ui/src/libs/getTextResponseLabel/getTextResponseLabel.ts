@@ -1,4 +1,3 @@
-import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../libs/block/__generated__/BlockFields'
 import { TreeBlock } from '../block'
 
 /**
@@ -9,7 +8,7 @@ import { TreeBlock } from '../block'
  */
 
 export function getTextResponseLabel(
-  block: TreeBlock<TextResponseBlock>
+  block: TreeBlock<{ label: string }>
 ): string | null {
   return block.label.trim() !== '' ? block.label : null
 }

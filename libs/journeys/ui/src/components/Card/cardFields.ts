@@ -1,6 +1,6 @@
-import { gql } from '@apollo/client'
+import { FragmentOf, graphql } from '@core/shared/gql'
 
-export const CARD_FIELDS = gql`
+export const CARD_FIELDS = graphql(`
   fragment CardFields on CardBlock {
     id
     parentBlockId
@@ -12,4 +12,6 @@ export const CARD_FIELDS = gql`
     themeName
     fullscreen
   }
-`
+`)
+
+export type CardFields = FragmentOf<typeof CARD_FIELDS>

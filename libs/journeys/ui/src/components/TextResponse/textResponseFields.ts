@@ -1,6 +1,6 @@
-import { gql } from '@apollo/client'
+import { FragmentOf, graphql } from '@core/shared/gql'
 
-export const TEXT_RESPONSE_FIELDS = gql`
+export const TEXT_RESPONSE_FIELDS = graphql(`
   fragment TextResponseFields on TextResponseBlock {
     id
     parentBlockId
@@ -15,4 +15,6 @@ export const TEXT_RESPONSE_FIELDS = gql`
     integrationId
     hideLabel
   }
-`
+`)
+
+export type TextResponseFields = FragmentOf<typeof TEXT_RESPONSE_FIELDS>

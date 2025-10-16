@@ -1,22 +1,16 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { MutationHookOptions, MutationTuple, useMutation } from '@apollo/client'
+import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 
-import {
-  JourneyDuplicate,
-  JourneyDuplicateVariables
-} from './__generated__/JourneyDuplicate'
+export type JourneyDuplicate = ResultOf<typeof JOURNEY_DUPLICATE>
+export type JourneyDuplicateVariables = VariablesOf<typeof JOURNEY_DUPLICATE>
 
-export const JOURNEY_DUPLICATE = gql`
+export const JOURNEY_DUPLICATE = graphql(`
   mutation JourneyDuplicate($id: ID!, $teamId: ID!) {
     journeyDuplicate(id: $id, teamId: $teamId) {
       id
     }
   }
-`
+`)
 
 export function useJourneyDuplicateMutation(
   options?: MutationHookOptions<JourneyDuplicate, JourneyDuplicateVariables>
@@ -31,11 +25,11 @@ export function useJourneyDuplicateMutation(
               adminJourneys(existingAdminJourneyRefs = []) {
                 const duplicatedJourneyRef = cache.writeFragment({
                   data: data.journeyDuplicate,
-                  fragment: gql`
+                  fragment: graphql(`
                     fragment DuplicatedJourney on Journey {
                       id
                     }
-                  `
+                  `)
                 })
                 return [...existingAdminJourneyRefs, duplicatedJourneyRef]
               }

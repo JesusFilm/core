@@ -1,8 +1,8 @@
-import { gql } from '@apollo/client'
+import { FragmentOf, graphql } from '@core/shared/gql'
 
 import { ACTION_FIELDS } from '../../libs/action/actionFields'
 
-export const VIDEO_FIELDS = gql`
+export const VIDEO_FIELDS = graphql(`
   ${ACTION_FIELDS}
   fragment VideoFields on VideoBlock {
     id
@@ -56,4 +56,6 @@ export const VIDEO_FIELDS = gql`
       ...ActionFields
     }
   }
-`
+`)
+
+export type VideoFields = FragmentOf<typeof VIDEO_FIELDS>

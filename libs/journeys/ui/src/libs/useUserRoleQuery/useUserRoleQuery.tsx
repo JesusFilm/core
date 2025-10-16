@@ -1,15 +1,16 @@
-import { QueryResult, gql, useQuery } from '@apollo/client'
+import { QueryResult, useQuery } from '@apollo/client'
+import { ResultOf, graphql } from '@core/shared/gql'
 
-import { GetUserRole } from './__generated__/GetUserRole'
+export type GetUserRole = ResultOf<typeof GET_USER_ROLE>
 
-export const GET_USER_ROLE = gql`
+export const GET_USER_ROLE = graphql(`
   query GetUserRole {
     getUserRole {
       id
       roles
     }
   }
-`
+`)
 
 export function useUserRoleQuery(): QueryResult<GetUserRole> {
   const query = useQuery<GetUserRole>(GET_USER_ROLE)

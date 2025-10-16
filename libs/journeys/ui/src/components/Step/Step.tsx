@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
+import { graphql } from '@core/shared/gql'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
@@ -15,19 +16,19 @@ import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 
-import { StepFields } from './__generated__/StepFields'
+import type { StepFields } from './stepFields'
 import {
   StepViewEventCreate,
   StepViewEventCreateVariables
 } from './__generated__/StepViewEventCreate'
 
-export const STEP_VIEW_EVENT_CREATE = gql`
+export const STEP_VIEW_EVENT_CREATE = graphql(`
   mutation StepViewEventCreate($input: StepViewEventCreateInput!) {
     stepViewEventCreate(input: $input) {
       id
     }
   }
-`
+`)
 
 interface StepProps extends TreeBlock<StepFields> {
   wrappers?: WrappersProps

@@ -1,6 +1,6 @@
-import { gql } from '@apollo/client'
+import { FragmentOf, graphql } from '@core/shared/gql'
 
-export const ICON_FIELDS = gql`
+export const ICON_FIELDS = graphql(`
   fragment IconFields on IconBlock {
     id
     parentBlockId
@@ -9,4 +9,6 @@ export const ICON_FIELDS = gql`
     iconSize: size
     iconColor: color
   }
-`
+`)
+
+export type IconFields = FragmentOf<typeof ICON_FIELDS>

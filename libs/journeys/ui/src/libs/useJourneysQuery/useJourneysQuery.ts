@@ -2,13 +2,15 @@ import {
   NoInfer,
   QueryHookOptions,
   QueryResult,
-  gql,
   useQuery
 } from '@apollo/client'
 
-import { GetJourneys, GetJourneysVariables } from './__generated__/GetJourneys'
+import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 
-export const GET_JOURNEYS = gql`
+export type GetJourneys = ResultOf<typeof GET_JOURNEYS>
+export type GetJourneysVariables = VariablesOf<typeof GET_JOURNEYS>
+
+export const GET_JOURNEYS = graphql(`
   query GetJourneys($where: JourneysFilter) {
     journeys(where: $where) {
       id
@@ -67,7 +69,7 @@ export const GET_JOURNEYS = gql`
       }
     }
   }
-`
+`)
 
 export function useJourneysQuery(
   options?: QueryHookOptions<

@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
+import { graphql } from '@core/shared/gql'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
@@ -14,9 +15,9 @@ import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { RadioOption } from '../RadioOption'
-import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
+import type { RadioOptionFields } from '../RadioOption/radioOptionFields'
 
-import { RadioQuestionFields } from './__generated__/RadioQuestionFields'
+import type { RadioQuestionFields } from './radioQuestionFields'
 import {
   RadioQuestionSubmissionEventCreate,
   RadioQuestionSubmissionEventCreateVariables
@@ -24,7 +25,7 @@ import {
 import { GridVariant } from './GridVariant'
 import { ListVariant } from './ListVariant'
 
-export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
+export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = graphql(`
   mutation RadioQuestionSubmissionEventCreate(
     $input: RadioQuestionSubmissionEventCreateInput!
   ) {
@@ -32,7 +33,7 @@ export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
       id
     }
   }
-`
+`)
 
 interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
   uuid?: () => string

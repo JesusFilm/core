@@ -1,4 +1,5 @@
-import { ApolloError, gql, useMutation } from '@apollo/client'
+import { ApolloError, useMutation } from '@apollo/client'
+import { graphql } from '@core/shared/gql'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import { SxProps } from '@mui/system/styleFunctionSx'
@@ -12,7 +13,13 @@ import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { object, string } from 'yup'
 
-import { SignUpSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
+type SignUpSubmissionEventCreateInput = {
+  id?: string | null
+  blockId: string
+  stepId?: string | null
+  name: string
+  email: string
+}
 import { handleAction } from '../../libs/action'
 import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
@@ -22,16 +29,27 @@ import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
 import { Icon } from '../Icon'
-import { IconFields } from '../Icon/__generated__/IconFields'
+import type { IconFields } from '../Icon/iconFields'
 import { TextField } from '../TextField'
 
-import { SignUpFields } from './__generated__/SignUpFields'
-import {
-  SignUpSubmissionEventCreate,
-  SignUpSubmissionEventCreateVariables
-} from './__generated__/SignUpSubmissionEventCreate'
+type ActionUnion =
+  | { __typename: 'NavigateToBlockAction'; blockId: string }
+  | { __typename: 'LinkAction'; url: string }
+  | { __typename: 'EmailAction'; email: string }
+  | { __typename: 'PhoneAction'; phone: string }
+  | { __typename: 'ChatAction' }
+  | null
 
-export const SIGN_UP_SUBMISSION_EVENT_CREATE = gql`
+type SignUpFields = {
+  __typename: 'SignUpBlock'
+  id: string
+  submitIconId: string | null
+  submitLabel?: string | null
+  action?: ActionUnion
+}
+import { ResultOf, VariablesOf } from '@core/shared/gql'
+
+export const SIGN_UP_SUBMISSION_EVENT_CREATE = graphql(`
   mutation SignUpSubmissionEventCreate(
     $input: SignUpSubmissionEventCreateInput!
   ) {
@@ -39,8 +57,14 @@ export const SIGN_UP_SUBMISSION_EVENT_CREATE = gql`
       id
     }
   }
-`
-interface SignUpProps extends TreeBlock<SignUpFields> {
+`)
+type SignUpSubmissionEventCreate = ResultOf<
+  typeof SIGN_UP_SUBMISSION_EVENT_CREATE
+>
+type SignUpSubmissionEventCreateVariables = VariablesOf<
+  typeof SIGN_UP_SUBMISSION_EVENT_CREATE
+>
+type SignUpProps = TreeBlock<SignUpFields> & {
   uuid?: () => string
   editableSubmitLabel?: ReactElement
   sx?: SxProps
@@ -51,21 +75,22 @@ interface SignUpFormValues {
   email: string
 }
 
-export const SignUp = ({
-  id: blockId,
-  uuid = uuidv4,
-  submitIconId,
-  // Use translated string when i18n is in
-  submitLabel,
-  editableSubmitLabel,
-  action,
-  children,
-  sx,
-  ...props
-}: SignUpProps): ReactElement => {
+export const SignUp = (props: SignUpProps): ReactElement => {
+  const {
+    id: blockId,
+    uuid = uuidv4,
+    submitIconId,
+    submitLabel,
+    editableSubmitLabel,
+    action,
+    children,
+    sx
+  } = props
   const { t } = useTranslation('libs-journeys-ui')
 
-  const submitIcon = children.find((block) => block.id === submitIconId) as
+  const submitIcon = (
+    children as unknown as Array<TreeBlock<IconFields> | any>
+  ).find((block: any) => block.id === submitIconId) as
     | TreeBlock<IconFields>
     | undefined
 
@@ -73,7 +98,7 @@ export const SignUp = ({
   const { variant, journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const { blockHistory, treeBlocks } = useBlocks()
-  const activeBlock = blockHistory[blockHistory.length - 1]
+  const activeBlock = blockHistory[blockHistory.length - 1] as TreeBlock<any>
 
   const heading =
     activeBlock != null
@@ -122,7 +147,16 @@ export const SignUp = ({
                 stepId: input.stepId ?? '',
                 event: 'signupSubmit',
                 blockId: input.blockId,
-                target: action
+                target:
+                  action?.__typename === 'LinkAction'
+                    ? action.url
+                    : action?.__typename === 'NavigateToBlockAction'
+                      ? action.blockId
+                      : action?.__typename === 'EmailAction'
+                        ? action.email
+                        : action?.__typename === 'PhoneAction'
+                          ? action.phone
+                          : undefined
               }),
               simpleKey: keyify({
                 stepId: input.stepId ?? '',
@@ -163,8 +197,8 @@ export const SignUp = ({
         onSubmit={(values) => {
           if (selectedBlock === undefined) {
             void onSubmitHandler(values).then(() => {
-              const nextStepSlug = getNextStepSlug(journey, action)
-              handleAction(router, action, nextStepSlug)
+              const nextStepSlug = getNextStepSlug(journey, action as any)
+              handleAction(router, action as any, nextStepSlug)
             })
           }
         }}

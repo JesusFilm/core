@@ -21,7 +21,7 @@ import { ReactElement, createElement } from 'react'
 
 import { IconName } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
-import { BlockFields_IconBlock as IconBlock } from '../../libs/block/__generated__/BlockFields'
+import type { IconFields as IconBlock } from './iconFields'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 

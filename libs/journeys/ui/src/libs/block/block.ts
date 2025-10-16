@@ -1,7 +1,8 @@
 import { makeVar, useReactiveVar } from '@apollo/client'
 import { useCallback } from 'react'
 
-import { BlockFields_StepBlock as StepFields } from './__generated__/BlockFields'
+import type { BlockFields } from './blockFields'
+type StepFields = Extract<BlockFields, { __typename: 'StepBlock' }>
 import type { TreeBlock } from './TreeBlock'
 
 export const blockHistoryVar = makeVar<TreeBlock[]>([])

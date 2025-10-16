@@ -16,7 +16,8 @@ import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { TreeBlock, useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
-import { VideoFields_mediaVideo } from '../__generated__/VideoFields'
+import type { VideoFields } from '../videoFields'
+type VideoFields_mediaVideo = NonNullable<VideoFields['mediaVideo']>
 import { getMuxMetadata } from '../utils/getMuxMetadata'
 import VideoJsPlayer from '../utils/videoJsTypes'
 

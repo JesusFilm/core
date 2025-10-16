@@ -1,16 +1,19 @@
 import {
   SubscriptionHookOptions,
-  gql,
   useApolloClient,
   useSubscription
 } from '@apollo/client'
 
-import {
-  JourneyAiTranslateCreateSubscription,
-  JourneyAiTranslateCreateSubscriptionVariables
-} from './__generated__/JourneyAiTranslateCreateSubscription'
+import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 
-export const JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION = gql`
+export type JourneyAiTranslateCreateSubscription = ResultOf<
+  typeof JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION
+>
+export type JourneyAiTranslateCreateSubscriptionVariables = VariablesOf<
+  typeof JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION
+>
+
+export const JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION = graphql(`
   subscription JourneyAiTranslateCreateSubscription(
     $journeyId: ID!
     $name: String!
@@ -38,7 +41,6 @@ export const JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION = gql`
         updatedAt
         blocks {
           id
-          __typename
           ... on TypographyBlock {
             content
           }
@@ -56,7 +58,7 @@ export const JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION = gql`
       }
     }
   }
-`
+`)
 
 // Helper function to update the cache with translated journey data
 export function updateCacheWithTranslatedJourney(
@@ -72,7 +74,7 @@ export function updateCacheWithTranslatedJourney(
         __typename: 'Journey',
         id: translatedJourney.id
       }),
-      fragment: gql`
+      fragment: graphql(`
         fragment TranslatedJourney on Journey {
           id
           title
@@ -97,15 +99,14 @@ export function updateCacheWithTranslatedJourney(
             }
           }
         }
-      `,
+      `),
       data: {
         id: translatedJourney.id,
         title: translatedJourney.title,
         description: translatedJourney.description,
         languageId: translatedJourney.languageId,
         updatedAt: translatedJourney.updatedAt,
-        blocks: translatedJourney.blocks,
-        __typename: 'Journey'
+        blocks: translatedJourney.blocks
       }
     })
 

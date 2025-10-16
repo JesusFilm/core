@@ -1,4 +1,4 @@
-import {
+import type {
   ButtonClickEventCreateInput,
   ChatOpenEventCreateInput,
   RadioQuestionSubmissionEventCreateInput,
@@ -15,12 +15,7 @@ import {
   VideoProgressEventCreateInput,
   VideoStartEventCreateInput
 } from '../../../__generated__/globalTypes'
-import {
-  BlockFields_ButtonBlock_action,
-  BlockFields_RadioOptionBlock_action,
-  BlockFields_SignUpBlock_action,
-  BlockFields_VideoBlock_action
-} from '../block/__generated__/BlockFields'
+import type { BlockFields } from '../block/blockFields'
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -121,10 +116,10 @@ export function reverseKeyify(key: string): {
 }
 
 type Action =
-  | BlockFields_ButtonBlock_action
-  | BlockFields_RadioOptionBlock_action
-  | BlockFields_SignUpBlock_action
-  | BlockFields_VideoBlock_action
+  | Extract<BlockFields, { __typename: 'ButtonBlock' }>['action']
+  | Extract<BlockFields, { __typename: 'RadioOptionBlock' }>['action']
+  | Extract<BlockFields, { __typename: 'SignUpBlock' }>['action']
+  | Extract<BlockFields, { __typename: 'VideoBlock' }>['action']
 
 export function getTargetEventKey(action?: Action | null): string {
   if (action == null) return ''

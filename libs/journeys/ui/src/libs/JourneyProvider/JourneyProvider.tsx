@@ -1,6 +1,6 @@
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 
-import { JourneyFields as Journey } from './__generated__/JourneyFields'
+import type { JourneyFields as Journey } from './journeyFields'
 
 export interface JourneyProviderContext {
   journey?: Journey

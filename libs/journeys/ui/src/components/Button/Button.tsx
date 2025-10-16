@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
+import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 import Box from '@mui/material/Box'
 import MuiButton from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -10,12 +11,14 @@ import { usePlausible } from 'next-plausible'
 import { MouseEvent, ReactElement, useMemo } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import type {
+  ButtonClickEventCreateInput,
+  ChatOpenEventCreateInput
+} from '../../../__generated__/globalTypes'
 import {
   ButtonAction,
   ButtonAlignment,
-  ButtonClickEventCreateInput,
-  ButtonVariant,
-  ChatOpenEventCreateInput
+  ButtonVariant
 } from '../../../__generated__/globalTypes'
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
@@ -27,36 +30,35 @@ import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { Icon } from '../Icon'
-import { IconFields } from '../Icon/__generated__/IconFields'
+import type { IconFields } from '../Icon/iconFields'
 
-import {
-  ButtonClickEventCreate,
-  ButtonClickEventCreateVariables
-} from './__generated__/ButtonClickEventCreate'
-import { ButtonFields } from './__generated__/ButtonFields'
-import {
-  ChatOpenEventCreate,
-  ChatOpenEventCreateVariables
-} from './__generated__/ChatOpenEventCreate'
+import type { ButtonFields } from './buttonFields'
 import { findMessagePlatform } from './utils/findMessagePlatform'
 import { getActionLabel } from './utils/getActionLabel'
 import { getLinkActionGoal } from './utils/getLinkActionGoal'
 
-export const BUTTON_CLICK_EVENT_CREATE = gql`
+export const BUTTON_CLICK_EVENT_CREATE = graphql(`
   mutation ButtonClickEventCreate($input: ButtonClickEventCreateInput!) {
     buttonClickEventCreate(input: $input) {
       id
     }
   }
-`
+`)
 
-export const CHAT_OPEN_EVENT_CREATE = gql`
+export const CHAT_OPEN_EVENT_CREATE = graphql(`
   mutation ChatOpenEventCreate($input: ChatOpenEventCreateInput!) {
     chatOpenEventCreate(input: $input) {
       id
     }
   }
-`
+`)
+
+type ButtonClickEventCreate = ResultOf<typeof BUTTON_CLICK_EVENT_CREATE>
+type ButtonClickEventCreateVariables = VariablesOf<
+  typeof BUTTON_CLICK_EVENT_CREATE
+>
+type ChatOpenEventCreate = ResultOf<typeof CHAT_OPEN_EVENT_CREATE>
+type ChatOpenEventCreateVariables = VariablesOf<typeof CHAT_OPEN_EVENT_CREATE>
 
 export interface ButtonProps extends TreeBlock<ButtonFields> {
   editableLabel?: ReactElement
@@ -185,7 +187,16 @@ export function Button({
               stepId: input.stepId ?? '',
               event: 'buttonClick',
               blockId: input.blockId,
-              target: action
+              target:
+                action?.__typename === 'LinkAction'
+                  ? action.url
+                  : action?.__typename === 'NavigateToBlockAction'
+                    ? action.blockId
+                    : action?.__typename === 'EmailAction'
+                      ? action.email
+                      : action?.__typename === 'PhoneAction'
+                        ? action.phone
+                        : undefined
             }),
             simpleKey: keyify({
               stepId: input.stepId ?? '',
@@ -222,7 +233,16 @@ export function Button({
               stepId: input.stepId ?? '',
               event: 'chatButtonClick',
               blockId: input.blockId,
-              target: action
+              target:
+                action?.__typename === 'LinkAction'
+                  ? action.url
+                  : action?.__typename === 'NavigateToBlockAction'
+                    ? action.blockId
+                    : action?.__typename === 'EmailAction'
+                      ? action.email
+                      : action?.__typename === 'PhoneAction'
+                        ? action.phone
+                        : undefined
             }),
             simpleKey: keyify({
               stepId: input.stepId ?? '',

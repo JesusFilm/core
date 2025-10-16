@@ -1,6 +1,6 @@
-import { gql } from '@apollo/client'
+import { FragmentOf, graphql } from '@core/shared/gql'
 
-export const ACTION_FIELDS = gql`
+export const ACTION_FIELDS = graphql(`
   fragment ActionFields on Action {
     parentBlockId
     gtmEventName
@@ -23,4 +23,6 @@ export const ACTION_FIELDS = gql`
       contactAction
     }
   }
-`
+`)
+
+export type ActionFields = FragmentOf<typeof ACTION_FIELDS>

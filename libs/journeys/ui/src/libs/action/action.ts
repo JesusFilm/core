@@ -3,7 +3,7 @@ import { NextRouter } from 'next/dist/client/router'
 import { ContactActionType } from '../../../__generated__/globalTypes'
 import { nextActiveBlock } from '../block'
 
-import { ActionFields } from './__generated__/ActionFields'
+import type { ActionFields } from '../action/actionFields'
 
 export function handleAction(
   router: NextRouter,

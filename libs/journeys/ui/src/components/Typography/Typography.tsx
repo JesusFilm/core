@@ -4,7 +4,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '../../libs/block'
 import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
-import { TypographyFields } from './__generated__/TypographyFields'
+import type { TypographyFields } from './typographyFields'
 
 export interface TypographyProps extends TreeBlock<TypographyFields> {
   editableContent?: ReactElement

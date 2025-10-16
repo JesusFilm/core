@@ -1,9 +1,9 @@
-import { QueryResult, gql, useQuery } from '@apollo/client'
+import { QueryResult, useQuery } from '@apollo/client'
 import { useMemo } from 'react'
 
-import { GetTags, GetTags_tags as Tag } from './__generated__/GetTags'
+import { ResultOf, graphql } from '@core/shared/gql'
 
-export const GET_TAGS = gql`
+export const GET_TAGS = graphql(`
   query GetTags {
     tags {
       id
@@ -15,8 +15,10 @@ export const GET_TAGS = gql`
       }
     }
   }
-`
+`)
 
+type GetTags = ResultOf<typeof GET_TAGS>
+type Tag = NonNullable<GetTags['tags']>[number]
 type ChildTag = Tag & { parentId: string }
 
 export function useTagsQuery(): QueryResult<GetTags> & {

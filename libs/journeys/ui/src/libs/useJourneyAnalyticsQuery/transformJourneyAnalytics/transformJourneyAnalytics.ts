@@ -2,16 +2,11 @@ import replace from 'lodash/replace'
 
 import { messagePlatforms } from '../../../components/Button/utils/findMessagePlatform'
 import { JourneyPlausibleEvents, reverseKeyify } from '../../plausibleHelpers'
-import {
-  GetJourneyAnalytics,
-  GetJourneyAnalytics_journeyActionsSums as JourneyActionsSums,
-  GetJourneyAnalytics_journeyStepsActions as JourneyStepsAction,
-  GetJourneyAnalytics_journeyVisitorsPageExits as JourneyVisitorsPageExit
-} from '../__generated__/GetJourneyAnalytics'
 import { transformReferrers } from '../transformReferrers'
-import {
-  type JourneyAnalytics,
-  type StepStat
+import type {
+  JourneyAnalytics,
+  StepStat,
+  GetJourneyAnalytics
 } from '../useJourneyAnalyticsQuery'
 
 const ACTION_EVENTS: Array<keyof JourneyPlausibleEvents> = [
@@ -121,7 +116,7 @@ function getStepId(property: string, journeyId: string): string {
 }
 
 function getJourneyEvents(
-  journeyStepsActions: JourneyStepsAction[] | JourneyActionsSums[]
+  journeyStepsActions: Array<{ property: string; visitors: number | null }>
 ): PlausibleEvent[] {
   const journeyEvents: PlausibleEvent[] = []
   journeyStepsActions.forEach((action) => {
@@ -136,7 +131,10 @@ function getJourneyEvents(
 }
 
 function getStepExits(
-  journeyVisitorsPageExits: JourneyVisitorsPageExit[],
+  journeyVisitorsPageExits: Array<{
+    property: string
+    visitors: number | null
+  }>,
   journeyId: string
 ): Array<{ id: string; visitors: number }> {
   const stepExits = journeyVisitorsPageExits.map((page) => {

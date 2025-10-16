@@ -5,29 +5,54 @@ import { useFormikContext } from 'formik'
 import { usePlausible } from 'next-plausible'
 import { v4 as uuidv4 } from 'uuid'
 
-import {
-  ButtonAlignment,
-  ButtonColor,
-  ButtonSize,
-  ButtonVariant,
-  ContactActionType,
-  IconColor,
-  IconName,
-  IconSize,
-  MessagePlatform
-} from '../../../__generated__/globalTypes'
+// Local test-only enum shims (replace __generated__/globalTypes)
+const ButtonAlignment = {
+  left: 'left',
+  center: 'center',
+  right: 'right',
+  justify: 'justify'
+} as const
+const ButtonColor = {
+  primary: 'primary',
+  secondary: 'secondary',
+  error: 'error',
+  inherit: 'inherit'
+} as const
+const ButtonSize = { small: 'small', medium: 'medium', large: 'large' } as const
+const ButtonVariant = {
+  contained: 'contained',
+  outlined: 'outlined',
+  text: 'text'
+} as const
+const ContactActionType = { call: 'call', text: 'text' } as const
+const IconColor = {
+  primary: 'primary',
+  secondary: 'secondary',
+  error: 'error',
+  inherit: 'inherit',
+  action: 'action',
+  disabled: 'disabled'
+} as const
+const IconSize = {
+  sm: 'sm',
+  md: 'md',
+  lg: 'lg',
+  xl: 'xl',
+  inherit: 'inherit'
+} as const
+const IconName = { CheckCircleRounded: 'CheckCircleRounded' } as const
+const MessagePlatform = { facebook: 'facebook' } as const
 import { handleAction } from '../../libs/action'
 import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
-import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
+import type { BlockFields } from '../../libs/block/blockFields'
+type StepBlock = Extract<BlockFields, { __typename: 'StepBlock' }>
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import type { JourneyFields as Journey } from '../../libs/JourneyProvider/journeyFields'
 import { keyify } from '../../libs/plausibleHelpers'
 
-import {
-  ButtonFields,
-  ButtonFields_action,
-  ButtonFields_action_LinkAction as LinkAction
-} from './__generated__/ButtonFields'
+import type { ButtonFields } from './buttonFields'
+type ButtonFields_action = NonNullable<ButtonFields['action']>
+type LinkAction = Extract<ButtonFields_action, { __typename: 'LinkAction' }>
 import { BUTTON_CLICK_EVENT_CREATE, CHAT_OPEN_EVENT_CREATE } from './Button'
 import { GoalType } from './utils/getLinkActionGoal'
 

@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
+import { graphql } from '@core/shared/gql'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { usePlausible } from 'next-plausible'
 import { ReactElement, useEffect } from 'react'
@@ -18,85 +19,61 @@ import {
 import { useBlocks } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
-import { VideoTriggerFields_triggerAction } from '../VideoTrigger/__generated__/VideoTriggerFields'
+import type { VideoTriggerFields } from '../VideoTrigger/videoTriggerFields'
 
-import {
-  VideoCollapseEventCreate,
-  VideoCollapseEventCreateVariables
-} from './__generated__/VideoCollapseEventCreate'
-import {
-  VideoCompleteEventCreate,
-  VideoCompleteEventCreateVariables
-} from './__generated__/VideoCompleteEventCreate'
-import {
-  VideoExpandEventCreate,
-  VideoExpandEventCreateVariables
-} from './__generated__/VideoExpandEventCreate'
-import {
-  VideoPauseEventCreate,
-  VideoPauseEventCreateVariables
-} from './__generated__/VideoPauseEventCreate'
-import {
-  VideoPlayEventCreate,
-  VideoPlayEventCreateVariables
-} from './__generated__/VideoPlayEventCreate'
-import {
-  VideoProgressEventCreate,
-  VideoProgressEventCreateVariables
-} from './__generated__/VideoProgressEventCreate'
-import { VideoStartEventCreate } from './__generated__/VideoStartEventCreate'
+import { ResultOf, VariablesOf } from '@core/shared/gql'
 
-export const VIDEO_START_EVENT_CREATE = gql`
+export const VIDEO_START_EVENT_CREATE = graphql(`
   mutation VideoStartEventCreate($input: VideoStartEventCreateInput!) {
     videoStartEventCreate(input: $input) {
       id
     }
   }
-`
+`)
 
-export const VIDEO_PLAY_EVENT_CREATE = gql`
+export const VIDEO_PLAY_EVENT_CREATE = graphql(`
   mutation VideoPlayEventCreate($input: VideoPlayEventCreateInput!) {
     videoPlayEventCreate(input: $input) {
       id
     }
   }
-`
-export const VIDEO_PAUSE_EVENT_CREATE = gql`
+`)
+export const VIDEO_PAUSE_EVENT_CREATE = graphql(`
   mutation VideoPauseEventCreate($input: VideoPauseEventCreateInput!) {
     videoPauseEventCreate(input: $input) {
       id
     }
   }
-`
-export const VIDEO_COMPLETE_EVENT_CREATE = gql`
+`)
+export const VIDEO_COMPLETE_EVENT_CREATE = graphql(`
   mutation VideoCompleteEventCreate($input: VideoCompleteEventCreateInput!) {
     videoCompleteEventCreate(input: $input) {
       id
     }
   }
-`
+`)
 
-export const VIDEO_EXPAND_EVENT_CREATE = gql`
+export const VIDEO_EXPAND_EVENT_CREATE = graphql(`
   mutation VideoExpandEventCreate($input: VideoExpandEventCreateInput!) {
     videoExpandEventCreate(input: $input) {
       id
     }
   }
-`
-export const VIDEO_COLLAPSE_EVENT_CREATE = gql`
+`)
+export const VIDEO_COLLAPSE_EVENT_CREATE = graphql(`
   mutation VideoCollapseEventCreate($input: VideoCollapseEventCreateInput!) {
     videoCollapseEventCreate(input: $input) {
       id
     }
   }
-`
-export const VIDEO_PROGRESS_EVENT_CREATE = gql`
+`)
+export const VIDEO_PROGRESS_EVENT_CREATE = graphql(`
   mutation VideoProgressEventCreate($input: VideoProgressEventCreateInput!) {
     videoProgressEventCreate(input: $input) {
       id
     }
   }
-`
+`)
 
 export interface VideoEventsProps {
   player: Player
@@ -106,7 +83,7 @@ export interface VideoEventsProps {
   videoId: string
   startAt: number | null
   endAt: number | null
-  action: VideoTriggerFields_triggerAction | null
+  action: VideoTriggerFields['triggerAction'] | null
 }
 
 export function VideoEvents({
@@ -119,6 +96,32 @@ export function VideoEvents({
   endAt,
   action
 }: VideoEventsProps): ReactElement {
+  type VideoStartEventCreate = ResultOf<typeof VIDEO_START_EVENT_CREATE>
+  type VideoPlayEventCreate = ResultOf<typeof VIDEO_PLAY_EVENT_CREATE>
+  type VideoPlayEventCreateVariables = VariablesOf<
+    typeof VIDEO_PLAY_EVENT_CREATE
+  >
+  type VideoPauseEventCreate = ResultOf<typeof VIDEO_PAUSE_EVENT_CREATE>
+  type VideoPauseEventCreateVariables = VariablesOf<
+    typeof VIDEO_PAUSE_EVENT_CREATE
+  >
+  type VideoExpandEventCreate = ResultOf<typeof VIDEO_EXPAND_EVENT_CREATE>
+  type VideoExpandEventCreateVariables = VariablesOf<
+    typeof VIDEO_EXPAND_EVENT_CREATE
+  >
+  type VideoCollapseEventCreate = ResultOf<typeof VIDEO_COLLAPSE_EVENT_CREATE>
+  type VideoCollapseEventCreateVariables = VariablesOf<
+    typeof VIDEO_COLLAPSE_EVENT_CREATE
+  >
+  type VideoProgressEventCreate = ResultOf<typeof VIDEO_PROGRESS_EVENT_CREATE>
+  type VideoProgressEventCreateVariables = VariablesOf<
+    typeof VIDEO_PROGRESS_EVENT_CREATE
+  >
+  type VideoCompleteEventCreate = ResultOf<typeof VIDEO_COMPLETE_EVENT_CREATE>
+  type VideoCompleteEventCreateVariables = VariablesOf<
+    typeof VIDEO_COMPLETE_EVENT_CREATE
+  >
+
   const [videoStartEventCreate, { called: calledStart }] =
     useMutation<VideoStartEventCreate>(VIDEO_START_EVENT_CREATE)
   const [videoPlayEventCreate] = useMutation<

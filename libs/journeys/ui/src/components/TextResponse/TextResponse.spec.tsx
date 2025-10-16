@@ -7,7 +7,7 @@ import { ReactElement } from 'react'
 import type { TreeBlock } from '../../libs/block'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 
-import { TextResponseFields } from './__generated__/TextResponseFields'
+import type { TextResponseFields } from './textResponseFields'
 import { TextResponse } from './TextResponse'
 
 jest.mock('formik', () => ({

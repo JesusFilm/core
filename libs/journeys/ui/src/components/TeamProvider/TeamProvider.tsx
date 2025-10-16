@@ -1,4 +1,5 @@
-import { OperationVariables, QueryResult, gql, useQuery } from '@apollo/client'
+import { OperationVariables, QueryResult, useQuery } from '@apollo/client'
+import { ResultOf, graphql } from '@core/shared/gql'
 import { sendGTMEvent } from '@next/third-parties/google'
 import {
   ReactElement,
@@ -8,10 +9,10 @@ import {
   useState
 } from 'react'
 
-import {
-  GetLastActiveTeamIdAndTeams,
-  GetLastActiveTeamIdAndTeams_teams as Team
-} from './__generated__/GetLastActiveTeamIdAndTeams'
+type GetLastActiveTeamIdAndTeams = ResultOf<
+  typeof GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+>
+type Team = NonNullable<GetLastActiveTeamIdAndTeams['teams']>[number]
 
 interface Context {
   query: QueryResult<GetLastActiveTeamIdAndTeams, OperationVariables>
@@ -33,7 +34,7 @@ interface TeamProviderProps {
   children: ReactNode
 }
 
-export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = gql`
+export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = graphql(`
   query GetLastActiveTeamIdAndTeams {
     getJourneyProfile {
       id
@@ -60,7 +61,7 @@ export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = gql`
       }
     }
   }
-`
+`)
 
 export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   const [activeTeamId, setActiveTeamId] = useState<string | null | undefined>(

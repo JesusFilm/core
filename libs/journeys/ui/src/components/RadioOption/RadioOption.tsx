@@ -6,8 +6,7 @@ import type { TreeBlock } from '../../libs/block'
 import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { useJourney } from '../../libs/JourneyProvider'
 import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
-
-import { RadioOptionFields } from './__generated__/RadioOptionFields'
+import type { RadioOptionFields } from './radioOptionFields'
 import { GridVariant } from './GridVariant/GridVariant'
 import { ListVariant } from './ListVariant/ListVariant'
 

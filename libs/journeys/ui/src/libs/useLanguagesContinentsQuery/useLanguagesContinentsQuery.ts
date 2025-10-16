@@ -2,14 +2,14 @@ import {
   LazyQueryResultTuple,
   OperationVariables,
   QueryResult,
-  gql,
   useLazyQuery,
   useQuery
 } from '@apollo/client'
+import { ResultOf, graphql } from '@core/shared/gql'
 
-import { GetLanguagesContinents } from './__generated__/GetLanguagesContinents'
+export type GetLanguagesContinents = ResultOf<typeof GET_LANGUAGES_CONTINENTS>
 
-export const GET_LANGUAGES_CONTINENTS = gql`
+export const GET_LANGUAGES_CONTINENTS = graphql(`
   query GetLanguagesContinents {
     languages {
       id
@@ -25,7 +25,7 @@ export const GET_LANGUAGES_CONTINENTS = gql`
       }
     }
   }
-`
+`)
 
 export function useLanguagesContinentsQuery(): QueryResult<GetLanguagesContinents> {
   return useQuery<GetLanguagesContinents>(GET_LANGUAGES_CONTINENTS)

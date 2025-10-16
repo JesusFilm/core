@@ -1,5 +1,9 @@
-import { ActionFields as Action } from '../action/__generated__/ActionFields'
-import { BlockFields_ButtonBlock_action as ButtonBlockAction } from '../block/__generated__/BlockFields'
+import type { ActionFields as Action } from '../action/actionFields'
+import type { BlockFields } from '../block/blockFields'
+type ButtonBlockAction = Extract<
+  BlockFields,
+  { __typename: 'ButtonBlock' }
+>['action']
 
 import { getTargetEventKey } from './plausibleHelpers'
 

@@ -1,11 +1,8 @@
-import { QueryResult, gql, useQuery } from '@apollo/client'
+import { QueryResult, useQuery } from '@apollo/client'
 
-import {
-  GetLanguages,
-  GetLanguagesVariables
-} from './__generated__/GetLanguages'
+import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
 
-export const GET_LANGUAGES = gql`
+export const GET_LANGUAGES = graphql(`
   query GetLanguages($languageId: ID, $where: LanguagesFilter) {
     languages(limit: 5000, where: $where) {
       id
@@ -16,7 +13,10 @@ export const GET_LANGUAGES = gql`
       }
     }
   }
-`
+`)
+
+export type GetLanguages = ResultOf<typeof GET_LANGUAGES>
+export type GetLanguagesVariables = VariablesOf<typeof GET_LANGUAGES>
 
 export function useLanguagesQuery(
   variables?: GetLanguagesVariables

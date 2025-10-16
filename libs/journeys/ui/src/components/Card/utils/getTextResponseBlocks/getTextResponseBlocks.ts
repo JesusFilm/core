@@ -1,5 +1,9 @@
 import { TreeBlock } from '../../../../libs/block'
-import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../libs/block/__generated__/BlockFields'
+import type { BlockFields } from '../../../../libs/block/blockFields'
+type TextResponseBlock = Extract<
+  BlockFields,
+  { __typename: 'TextResponseBlock' }
+>
 
 /**
  * Find all TextResponse blocks in the card children

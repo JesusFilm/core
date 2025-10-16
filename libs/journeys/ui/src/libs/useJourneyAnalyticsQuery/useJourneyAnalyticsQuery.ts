@@ -2,19 +2,21 @@ import {
   NoInfer,
   QueryHookOptions,
   QueryResult,
-  gql,
   useQuery
 } from '@apollo/client'
 import { useState } from 'react'
 import { Edge, Node } from 'reactflow'
 
-import {
-  GetJourneyAnalytics,
-  GetJourneyAnalyticsVariables
-} from './__generated__/GetJourneyAnalytics'
+import { ResultOf, VariablesOf, graphql } from '@core/shared/gql'
+
 import { transformJourneyAnalytics } from './transformJourneyAnalytics'
 
-export const GET_JOURNEY_ANALYTICS = gql`
+export type GetJourneyAnalytics = ResultOf<typeof GET_JOURNEY_ANALYTICS>
+export type GetJourneyAnalyticsVariables = VariablesOf<
+  typeof GET_JOURNEY_ANALYTICS
+>
+
+export const GET_JOURNEY_ANALYTICS = graphql(`
   query GetJourneyAnalytics(
     $id: ID!
     $period: String
@@ -120,7 +122,7 @@ export const GET_JOURNEY_ANALYTICS = gql`
       }
     }
   }
-`
+`)
 
 type SumEventMap = Map<string, number>
 
@@ -159,10 +161,11 @@ export function useJourneyAnalyticsQuery(
     GET_JOURNEY_ANALYTICS,
     {
       ...options,
-      onCompleted: (data) => {
+      onCompleted: (raw) => {
+        // transform expects the generated shape; 'raw' matches the query result shape
         const journeyAnalytics = transformJourneyAnalytics(
           options?.variables?.id,
-          data
+          raw as unknown as GetJourneyAnalytics
         )
         setData(journeyAnalytics)
         options?.onCompleted?.(journeyAnalytics)
