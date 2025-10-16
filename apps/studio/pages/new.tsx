@@ -1017,6 +1017,7 @@ export default function NewPage() {
     ideaIndex: number
   } | null>(null)
   const [animatingTextarea, setAnimatingTextarea] = useState(false)
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
   const [hiddenSuggestions, setHiddenSuggestions] = useState<Set<string>>(
     new Set()
   )
@@ -1705,10 +1706,31 @@ Guidelines:
   const accumulateUsage = (usage: any) => {
     if (!usage) return
 
+    const newTokens = {
+      input: usage.input_tokens ?? 0,
+      output: usage.output_tokens ?? 0
+    }
+
     setTotalTokensUsed((prev) => ({
-      input: prev.input + (usage.input_tokens ?? 0),
-      output: prev.output + (usage.output_tokens ?? 0)
+      input: prev.input + newTokens.input,
+      output: prev.output + newTokens.output
     }))
+
+    // Update current session with new token usage
+    if (currentSessionId) {
+      const currentSession = userInputStorage.getAllSessions().find(session => session.id === currentSessionId)
+      if (currentSession) {
+        const existingTokens = currentSession.tokensUsed || { input: 0, output: 0 }
+        userInputStorage.updateSession(currentSessionId, {
+          tokensUsed: {
+            input: existingTokens.input + newTokens.input,
+            output: existingTokens.output + newTokens.output
+          }
+        })
+        // Update the saved sessions list to reflect the changes
+        setSavedSessions(userInputStorage.getAllSessions())
+      }
+    }
   }
 
   const processContentWithAI = async () => {
@@ -1760,7 +1782,7 @@ Guidelines:
       setEditableSteps(parsedSteps)
 
       // Save session after AI response is processed
-      userInputStorage.saveCurrentSession({
+      const sessionId = userInputStorage.saveCurrentSession({
         textContent,
         images: imageAttachments,
         aiResponse: processedContent,
@@ -1772,8 +1794,11 @@ Guidelines:
           detailedDescription: result.detailedDescription,
           confidence: result.confidence,
           contentIdeas: result.contentIdeas
-        }))
+        })),
+        tokensUsed: { ...totalTokensUsed }
       })
+      // Set this as the current session for future token tracking
+      setCurrentSessionId(sessionId)
       setSavedSessions(userInputStorage.getAllSessions())
 
       // Track token usage
@@ -2268,6 +2293,9 @@ Guidelines:
         isAnalyzing: false
       }))
     )
+
+    // Set current session ID for token tracking
+    setCurrentSessionId(session.id)
 
     // Clear draft since we're loading a saved session
     userInputStorage.clearDraft()
@@ -2984,7 +3012,15 @@ Guidelines:
                           <p>
                             {session.images.length} images •{' '}
                             {session.aiResponse
-                              ? 'Has AI response'
+                              ? `Has AI response${session.tokensUsed && (session.tokensUsed.input > 0 || session.tokensUsed.output > 0) ? ` • Tokens: ${(() => {
+                                  const total = session.tokensUsed!.input + session.tokensUsed!.output
+                                  if (total >= 1000000) {
+                                    return `${(total / 1000000).toFixed(1)}M`
+                                  } else if (total >= 1000) {
+                                    return `${(total / 1000).toFixed(1)}K`
+                                  }
+                                  return total.toLocaleString()
+                                })()} • $${(session.tokensUsed.input / 1000000) * 0.05 + (session.tokensUsed.output / 1000000) * 0.4 >= 0.01 ? ((session.tokensUsed.input / 1000000) * 0.05 + (session.tokensUsed.output / 1000000) * 0.4).toFixed(3) : '0.000'}` : ''}`
                               : 'No AI response'}
                           </p>
                         </div>

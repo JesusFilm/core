@@ -22,6 +22,10 @@ export interface UserInputData {
   aiResponse?: string // The enhanced content from OpenAI text processing
   aiSteps?: GeneratedStepContent[]
   imageAnalysisResults: ImageAnalysisResult[]
+  tokensUsed?: {
+    input: number
+    output: number
+  }
 }
 
 const STORAGE_KEY = 'jesus-film-studio-user-inputs'
