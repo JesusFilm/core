@@ -130,28 +130,31 @@ export function VideoBlockEditorSettings({
     >
       <Stack direction="column" spacing={6}>
         {/* Subtitles */}
-        <Stack direction="column" spacing={4}>
-          <Typography
-            variant="subtitle2"
-            sx={{
-              color: selectedBlock == null ? 'action.disabled' : undefined
-            }}
-          >
-            {t('Subtitles')}
-          </Typography>
-          <SubtitleSelector
-            selectedSubtitle={values.subtitle}
-            availableLanguages={
-              subtitleData?.tracks.map((track) => track.displayName) ?? []
-            }
-            onChange={async (subtitle) => {
-              await setFieldValue('subtitle', subtitle)
-              // TODO: Include subtitle in backend update when backend support is added
-            }}
-            disabled={selectedBlock == null}
-          />
-          <Divider />
-        </Stack>
+        {/* Only show subtitles for YouTube source, MUX and Internal not yet supported*/}
+        {selectedBlock?.source === VideoBlockSource.youTube && (
+          <Stack direction="column" spacing={4}>
+            <Typography
+              variant="subtitle2"
+              sx={{
+                color: selectedBlock == null ? 'action.disabled' : undefined
+              }}
+            >
+              {t('Subtitles')}
+            </Typography>
+            <SubtitleSelector
+              selectedSubtitle={values.subtitle}
+              availableLanguages={
+                subtitleData?.tracks.map((track) => track.displayName) ?? []
+              }
+              onChange={async (subtitle) => {
+                await setFieldValue('subtitle', subtitle)
+                // TODO: Include subtitle in backend update when backend support is added
+              }}
+              disabled={selectedBlock == null}
+            />
+            <Divider />
+          </Stack>
+        )}
 
         {/* Timing */}
         <Stack direction="column" spacing={2}>
