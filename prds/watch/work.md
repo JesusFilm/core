@@ -130,3 +130,34 @@
 
 - Consider showing a brief tooltip on first visit explaining the Skip control for accessibility.
 - Evaluate whether skip interactions should emit analytics distinct from autoplay completions.
+
+# Polotno Jesus Film Video Library Panel
+
+## Goals
+
+- [x] Mirror Polotno's built-in Pexels video browser with a Jesus Film Project data source.
+- [x] Add a custom side panel section that surfaces catalog search with infinite scrolling.
+- [x] Normalize video assets so selections drop playable Jesus Film media onto the canvas.
+
+## Obstacles
+
+- Existing lint configuration enforces strict absolute import ordering across libraries and types.
+- Apollo GraphQL endpoint requires constructing paginated POST bodies instead of URL queries expected by `useInfiniteAPI`.
+
+## Resolutions
+
+- Let `useInfiniteAPI` consume JSON-encoded keys to support POST fetches while keeping the hook's pagination helpers.
+- Normalized GraphQL results into the structure Polotno's `VideosGrid` expects, including poster thumbnails and preferred download URLs.
+
+## Test Coverage
+
+- `pnpm dlx nx lint studio` *(fails: pre-existing lint violations in apps/studio/pages/new.tsx)*
+
+## User Flows
+
+- Open Studio → Side panel shows "Jesus Film" tab → query videos → infinite scroll loads more results → drag or click adds the selected Jesus Film clip onto the canvas.
+
+## Follow-up Ideas
+
+- Allow selecting alternate Jesus Film languages when populating the panel.
+- Cache search responses locally to reduce repeated GraphQL requests during long editing sessions.
