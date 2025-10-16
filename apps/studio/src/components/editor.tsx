@@ -1,11 +1,15 @@
+import Image from 'next/image';
 import { PolotnoContainer, SidePanelWrap, WorkspaceWrap } from 'polotno';
 import { Workspace } from 'polotno/canvas/workspace';
 import { unstable_setAnimationsEnabled } from 'polotno/config';
 import { createStore } from 'polotno/model/store';
 import { PagesTimeline } from 'polotno/pages-timeline';
+import { DEFAULT_SECTIONS, SidePanel } from 'polotno/side-panel';
 import { Toolbar } from 'polotno/toolbar/toolbar';
 import { ZoomButtons } from 'polotno/toolbar/zoom-buttons';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
+
+import { FaithQuotesSection } from './FaithQuotesSection';
 
 // Enable animations
 unstable_setAnimationsEnabled(true);
@@ -21,6 +25,11 @@ const store = createStore({
 // Don't preload initial state - let useEffect handle loading
 
 export const Editor = () => {
+  const sections = useMemo(
+    () => [FaithQuotesSection, ...DEFAULT_SECTIONS],
+    []
+  );
+
   useEffect(() => {
     const loadDesign = async () => {
       const getDefaultDesign = () => JSON.parse(initialState);
@@ -56,16 +65,38 @@ export const Editor = () => {
 
   return (
     <>
-    <div className="bp5-navbar" 
-        style={{  position: 'fixed', top: 0, left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}
-        >
-          <img
-            src="/jesusfilm-sign.svg"
-            alt="Jesus Film Project"
-            style={{ width: 'auto', height: 'auto', maxHeight: '24px' }}
-          />
-          <h1 style={{ fontSize: '21px', fontWeight: 'bold', color: '#333', margin: 0 }}>Studio</h1>
-        </div>
+    <div
+      className="bp5-navbar"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '12px',
+      }}
+    >
+      <Image
+        src="/jesusfilm-sign.svg"
+        alt="Jesus Film Project"
+        width={160}
+        height={24}
+        style={{ width: 'auto', height: 'auto', maxHeight: '24px' }}
+        priority
+      />
+      <h1
+        style={{
+          fontSize: '21px',
+          fontWeight: 'bold',
+          color: '#333',
+          margin: 0,
+        }}
+      >
+        Studio
+      </h1>
+    </div>
     <PolotnoContainer style={{ width: '100vw', height: '100vh', paddingTop: '51px' }}>
       <link
         rel="stylesheet"
@@ -86,7 +117,11 @@ export const Editor = () => {
         `
       }} />
       <SidePanelWrap>
-        {/* <SidePanel store={store} /> */}
+        <SidePanel
+          store={store}
+          sections={sections}
+          defaultSection="faith-quotes"
+        />
       </SidePanelWrap>
       <WorkspaceWrap>
         <Toolbar store={store} downloadButtonEnabled />
