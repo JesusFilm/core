@@ -1542,9 +1542,11 @@ export default function NewPage() {
 
   const normalizeGeneratedSteps = (
     steps: Array<Partial<GeneratedStepContent> & { title?: string }>
-  ): GeneratedStepContent[] =>
-    steps.map((step) => {
-      const normalizedKeywords = Array.isArray(step?.keywords)
+  ): GeneratedStepContent[] => {
+    const globallyUsedKeywords = new Set<string>()
+
+    return steps.map((step) => {
+      const rawKeywords = Array.isArray(step?.keywords)
         ? step.keywords
             .map((keyword) =>
               typeof keyword === 'string'
@@ -1552,14 +1554,27 @@ export default function NewPage() {
                 : String(keyword ?? '').trim()
             )
             .filter((keyword) => keyword.length > 0)
-            .slice(0, 3)
         : typeof step?.keywords === 'string'
         ? step.keywords
             .split(',')
             .map((keyword) => keyword.trim())
             .filter((keyword) => keyword.length > 0)
-            .slice(0, 3)
         : []
+
+      const stepUsedKeywords = new Set<string>()
+      const normalizedKeywords: string[] = []
+
+      for (const keyword of rawKeywords) {
+        const normalized = keyword.toLowerCase()
+        if (stepUsedKeywords.has(normalized)) continue
+        if (globallyUsedKeywords.has(normalized)) continue
+
+        stepUsedKeywords.add(normalized)
+        globallyUsedKeywords.add(normalized)
+        normalizedKeywords.push(keyword)
+
+        if (normalizedKeywords.length >= 3) break
+      }
 
       const rawTitle =
         typeof step?.title === 'string' ? step.title.trim() : ''
@@ -1592,6 +1607,7 @@ export default function NewPage() {
         mediaPrompt
       }
     })
+  }
 
   const parseGeneratedSteps = (rawContent: string): GeneratedStepContent[] => {
     if (!rawContent) return []
