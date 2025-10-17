@@ -1170,6 +1170,13 @@ export default function NewPage() {
   >([])
   const [isDragOver, setIsDragOver] = useState(false)
   const [showContextMenu, setShowContextMenu] = useState(false)
+  const [isPersonaDialogOpen, setIsPersonaDialogOpen] = useState(false)
+  const [personaSettings, setPersonaSettings] = useState({
+    personaName: '',
+    audienceDescription: '',
+    tone: '',
+    goals: ''
+  })
   const [savedSessions, setSavedSessions] = useState<UserInputData[]>([])
   const [totalTokensUsed, setTotalTokensUsed] = useState({
     input: 0,
@@ -1194,6 +1201,7 @@ export default function NewPage() {
     useState(true)
   const [isGeneratingDesign, setIsGeneratingDesign] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const cameraInputRef = useRef<HTMLInputElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const hasGeneratedContent = aiResponse.trim().length > 0
 
@@ -2361,6 +2369,40 @@ export default function NewPage() {
       // You could add this to attachments or handle it differently
       console.log(`Link to site: ${url} - This feature can be implemented further`)
     }
+  }
+
+  const handleOpenCamera = () => {
+    setShowContextMenu(false)
+    cameraInputRef.current?.click()
+  }
+
+  const handleCameraChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files
+    if (files && files.length > 0) {
+      processFiles(files)
+    }
+
+    if (cameraInputRef.current) {
+      cameraInputRef.current.value = ''
+    }
+  }
+
+  const handlePersonaFieldChange = (
+    field: keyof typeof personaSettings
+  ) =>
+    (
+      event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+      const value = event.target.value
+      setPersonaSettings((prev) => ({
+        ...prev,
+        [field]: value
+      }))
+    }
+
+  const handlePersonaSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setIsPersonaDialogOpen(false)
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -3721,19 +3763,132 @@ export default function NewPage() {
                             </div>
                           )}
                         </div>
-                        {/* Run button - bottom right */}
-                        <button
-                          onClick={() => {
-                            void handleSubmit()
-                          }}
-                          className="absolute bottom-3 right-3 px-4 py-2 text-sm font-medium text-white rounded-full bg-primary hover:bg-primary/90 transition-colors group cursor-pointer"
+                        {/* Action buttons - bottom right */}
+                        <Dialog
+                          open={isPersonaDialogOpen}
+                          onOpenChange={setIsPersonaDialogOpen}
                         >
-                          {isProcessing ? (
-                            <AnimatedLoadingText />
-                          ) : (
-                            <>{aiResponse.trim() ? 'Retry' : 'Run'}&nbsp;&nbsp;&nbsp;&nbsp;⌘ + ↵</>
-                          )}
-                        </button>
+                          <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                            <DialogTrigger asChild>
+                              <button
+                                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-full border border-border bg-background text-foreground shadow-sm transition-colors hover:bg-muted cursor-pointer"
+                                type="button"
+                              >
+                                <Users className="w-4 h-4" />
+                                <span>Persona</span>
+                              </button>
+                            </DialogTrigger>
+                            <button
+                              onClick={handlePhotosAndFiles}
+                              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-sm transition-colors hover:bg-muted cursor-pointer"
+                              title="Upload images"
+                              type="button"
+                            >
+                              <ImageIcon className="w-4 h-4" />
+                              <span className="sr-only">Upload images</span>
+                            </button>
+                            <button
+                              onClick={handleOpenCamera}
+                              className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-full border border-border bg-background text-foreground shadow-sm transition-colors hover:bg-muted cursor-pointer"
+                              title="Capture with camera"
+                              type="button"
+                            >
+                              <Camera className="w-4 h-4" />
+                              <span>Camera</span>
+                            </button>
+                            <button
+                              onClick={() => {
+                                void handleSubmit()
+                              }}
+                              className="px-4 py-2 text-sm font-medium text-white rounded-full bg-primary hover:bg-primary/90 transition-colors group cursor-pointer"
+                              type="button"
+                            >
+                              {isProcessing ? (
+                                <AnimatedLoadingText />
+                              ) : (
+                                <>{aiResponse.trim() ? 'Retry' : 'Run'}&nbsp;&nbsp;&nbsp;&nbsp;⌘ + ↵</>
+                              )}
+                            </button>
+                          </div>
+                          <DialogContent className="sm:max-w-[480px]">
+                            <DialogHeader>
+                              <DialogTitle>Persona settings</DialogTitle>
+                              <DialogDescription>
+                                Define the audience or persona preferences that should guide the generated content.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <form className="grid gap-4" onSubmit={handlePersonaSubmit}>
+                              <div className="grid gap-1">
+                                <label
+                                  className="text-sm font-medium text-muted-foreground"
+                                  htmlFor="persona-name"
+                                >
+                                  Persona name
+                                </label>
+                                <Input
+                                  id="persona-name"
+                                  value={personaSettings.personaName}
+                                  onChange={handlePersonaFieldChange('personaName')}
+                                  placeholder="e.g. Youth Pastor, College Student"
+                                />
+                              </div>
+                              <div className="grid gap-1">
+                                <label
+                                  className="text-sm font-medium text-muted-foreground"
+                                  htmlFor="persona-audience"
+                                >
+                                  Audience description
+                                </label>
+                                <Textarea
+                                  id="persona-audience"
+                                  value={personaSettings.audienceDescription}
+                                  onChange={handlePersonaFieldChange('audienceDescription')}
+                                  placeholder="Who are you speaking to? Include demographics, background, or interests."
+                                  rows={3}
+                                />
+                              </div>
+                              <div className="grid gap-1">
+                                <label
+                                  className="text-sm font-medium text-muted-foreground"
+                                  htmlFor="persona-tone"
+                                >
+                                  Tone or style preferences
+                                </label>
+                                <Input
+                                  id="persona-tone"
+                                  value={personaSettings.tone}
+                                  onChange={handlePersonaFieldChange('tone')}
+                                  placeholder="e.g. Warm and encouraging, Bold and direct"
+                                />
+                              </div>
+                              <div className="grid gap-1">
+                                <label
+                                  className="text-sm font-medium text-muted-foreground"
+                                  htmlFor="persona-goals"
+                                >
+                                  Goals or desired response
+                                </label>
+                                <Textarea
+                                  id="persona-goals"
+                                  value={personaSettings.goals}
+                                  onChange={handlePersonaFieldChange('goals')}
+                                  placeholder="What do you want the audience to think, feel, or do?"
+                                  rows={3}
+                                />
+                              </div>
+                              <div className="flex justify-end gap-2 pt-2">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  onClick={() => setIsPersonaDialogOpen(false)}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button type="submit">Save persona</Button>
+                              </div>
+                            </form>
+                          </DialogContent>
+                        </Dialog>
                       </div>
                     </div>
                     {/* Hidden file input */}
@@ -3743,6 +3898,14 @@ export default function NewPage() {
                       multiple
                       accept="image/*"
                       onChange={handleFileChange}
+                      className="hidden"
+                    />
+                    <input
+                      ref={cameraInputRef}
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      onChange={handleCameraChange}
                       className="hidden"
                     />
 
