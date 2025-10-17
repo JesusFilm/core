@@ -520,13 +520,21 @@ type TextElementConfig = {
   lineHeight: number
 }
 
-type ImageElementConfig = {
+type MediaElementConfig = {
   id: string
   src: string
-  x: number
-  y: number
   width: number
   height: number
+  type?: 'image' | 'video'
+  x?: number
+  y?: number
+}
+
+type OverlayElementConfig = {
+  id: string
+  width: number
+  height: number
+  opacity?: number
 }
 
 const createTextElement = ({
@@ -596,25 +604,96 @@ const createTextElement = ({
   backgroundPadding: 0.5
 })
 
-const createImageElement = ({
+const createMediaElement = ({
   id,
   src,
-  x,
-  y,
   width,
-  height
-}: ImageElementConfig) => ({
+  height,
+  type = 'image',
+  x = 0,
+  y = 0
+}: MediaElementConfig) => {
+  const base = {
+    id,
+    type: type === 'video' ? 'video' : 'image',
+    name: '',
+    opacity: 1,
+    visible: true,
+    selectable: true,
+    removable: true,
+    alwaysOnTop: false,
+    showInExport: true,
+    x,
+    y,
+    width,
+    height,
+    rotation: 0,
+    animations: [],
+    blurEnabled: false,
+    blurRadius: 10,
+    brightnessEnabled: false,
+    brightness: 0,
+    sepiaEnabled: false,
+    grayscaleEnabled: false,
+    filters: {},
+    shadowEnabled: false,
+    shadowBlur: 5,
+    shadowOffsetX: 0,
+    shadowOffsetY: 0,
+    shadowColor: 'black',
+    shadowOpacity: 1,
+    draggable: true,
+    resizable: true,
+    contentEditable: false,
+    styleEditable: true,
+    src,
+    cropX: 0,
+    cropY: 0,
+    cropWidth: 1,
+    cropHeight: 1,
+    flipX: false,
+    flipY: false,
+    borderRadius: 0,
+    backgroundEnabled: false,
+    backgroundColor: '#FFFFFF',
+    backgroundOpacity: 1,
+    backgroundCornerRadius: 0.5,
+    backgroundPadding: 0.5,
+    keepRatio: false,
+    cornerRadius: 0
+  }
+
+  if (type === 'video') {
+    return {
+      ...base,
+      duration: 0,
+      startTime: 0,
+      endTime: 1,
+      volume: 1
+    }
+  }
+
+  return base
+}
+
+const createOverlayElement = ({
   id,
-  type: 'image',
+  width,
+  height,
+  opacity = 0.55
+}: OverlayElementConfig) => ({
+  id,
+  type: 'figure',
+  subType: 'rect',
   name: '',
-  opacity: 1,
+  opacity,
   visible: true,
-  selectable: true,
+  selectable: false,
   removable: true,
   alwaysOnTop: false,
   showInExport: true,
-  x,
-  y,
+  x: 0,
+  y: 0,
   width,
   height,
   rotation: 0,
@@ -632,24 +711,14 @@ const createImageElement = ({
   shadowOffsetY: 0,
   shadowColor: 'black',
   shadowOpacity: 1,
-  draggable: true,
-  resizable: true,
+  draggable: false,
+  resizable: false,
   contentEditable: false,
   styleEditable: true,
-  src,
-  cropX: 0,
-  cropY: 0,
-  cropWidth: 1,
-  cropHeight: 1,
-  flipX: false,
-  flipY: false,
-  borderRadius: 0,
-  backgroundEnabled: false,
-  backgroundColor: '#FFFFFF',
-  backgroundOpacity: 1,
-  backgroundCornerRadius: 0.5,
-  backgroundPadding: 0.5,
-  keepRatio: true,
+  fill: 'rgba(15, 23, 42, 0.75)',
+  dash: [],
+  strokeWidth: 0,
+  stroke: 'rgba(15, 23, 42, 0)',
   cornerRadius: 0
 })
 
@@ -712,7 +781,8 @@ const createPolotnoDesignFromContent = ({
         body: bodyContent,
         keywords: keywords.slice(0, 5),
         mediaPrompt,
-        selectedImageUrl: (step as any).selectedImageUrl
+        selectedImageUrl: (step as any).selectedImageUrl,
+        selectedVideoUrl: (step as any).selectedVideoUrl
       }
     })
     .filter(Boolean) as Array<{
@@ -722,6 +792,7 @@ const createPolotnoDesignFromContent = ({
       keywords: string[]
       mediaPrompt: string
       selectedImageUrl?: string
+      selectedVideoUrl?: string
     }>
 
   const hasStructuredSteps = normalizedSteps.length > 0
@@ -739,11 +810,33 @@ const createPolotnoDesignFromContent = ({
           align: 'center',
           fontFamily: 'Playfair Display',
           fontWeight: 'bold',
-          fill: '#1f2933',
+          fill: '#ffffff',
           lineHeight: 1.2
         })
 
-        const elements: any[] = [headingElement]
+        const elements: any[] = []
+
+        const mediaUrl = step.selectedVideoUrl ?? step.selectedImageUrl
+        if (mediaUrl) {
+          elements.push(
+            createMediaElement({
+              id: generateElementId('media'),
+              src: mediaUrl,
+              width,
+              height,
+              type: step.selectedVideoUrl ? 'video' : 'image'
+            })
+          )
+          elements.push(
+            createOverlayElement({
+              id: generateElementId('overlay'),
+              width,
+              height
+            })
+          )
+        }
+
+        elements.push(headingElement)
 
         if (step.content) {
           elements.push(
@@ -758,51 +851,8 @@ const createPolotnoDesignFromContent = ({
               align: 'left',
               fontFamily: 'Inter',
               fontWeight: 'normal',
-              fill: '#374151',
+              fill: '#ffffff',
               lineHeight: 1.4
-            })
-          )
-        }
-
-        // Add selected image if available
-        if (step.selectedImageUrl) {
-          elements.push(
-            createImageElement({
-              id: generateElementId('image'),
-              src: step.selectedImageUrl,
-              x: width * 0.1,
-              y: height * 0.5,
-              width: width * 0.8,
-              height: height * 0.25
-            })
-          )
-        }
-
-        const metaLines: string[] = []
-
-        if (step.keywords.length > 0) {
-          metaLines.push(`Keywords: ${step.keywords.join(', ')}`)
-        }
-
-        if (step.mediaPrompt) {
-          metaLines.push(`Visual prompt: ${step.mediaPrompt}`)
-        }
-
-        if (metaLines.length > 0) {
-          elements.push(
-            createTextElement({
-              id: generateElementId('meta'),
-              text: metaLines.join('\n'),
-              x: width * 0.1,
-              y: height * 0.8,
-              width: width * 0.8,
-              height: height * 0.15,
-              fontSize: Math.max(22, width * 0.028),
-              align: 'left',
-              fontFamily: 'Inter',
-              fontWeight: 'normal',
-              fill: '#4b5563',
-              lineHeight: 1.3
             })
           )
         }
@@ -811,7 +861,7 @@ const createPolotnoDesignFromContent = ({
           id: generateElementId('page'),
           name: step.heading.slice(0, 40) || `Step ${index + 1}`,
           children: elements,
-          background: '#f8fafc',
+          background: '#0f172a',
           bleed: 0,
           duration: 5000,
           width,
@@ -838,7 +888,7 @@ const createPolotnoDesignFromContent = ({
             align: 'center',
             fontFamily: 'Playfair Display',
             fontWeight: 'bold',
-            fill: '#1f2933',
+            fill: '#ffffff',
             lineHeight: 1.2
           })
 
@@ -857,7 +907,7 @@ const createPolotnoDesignFromContent = ({
                 align: 'left',
                 fontFamily: 'Inter',
                 fontWeight: 'normal',
-                fill: '#374151',
+                fill: '#ffffff',
                 lineHeight: 1.4
               })
             )
@@ -867,7 +917,7 @@ const createPolotnoDesignFromContent = ({
             id: generateElementId('page'),
             name: `Page ${index + 1}`,
             children: elements,
-            background: '#f8fafc',
+            background: '#0f172a',
             bleed: 0,
             duration: 5000,
             width,

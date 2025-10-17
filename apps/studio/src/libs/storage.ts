@@ -13,6 +13,7 @@ export interface GeneratedStepContent {
   keywords: string[]
   mediaPrompt: string
   selectedImageUrl?: string
+  selectedVideoUrl?: string
 }
 
 export interface UserInputData {
