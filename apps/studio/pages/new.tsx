@@ -3,6 +3,7 @@ import {
   Bot,
   Camera,
   Check,
+  Clock,
   Copy,
   Crown,
   Facebook,
@@ -37,6 +38,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { InstantSearch, useSearchBox } from 'react-instantsearch'
+
+import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
+import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
 import { Accordion } from '../src/components/ui/accordion'
 import { Button } from '../src/components/ui/button'
@@ -65,6 +70,7 @@ import {
 import { Textarea } from '../src/components/ui/textarea'
 import {
   type GeneratedStepContent,
+  type StepSelectedVideo,
   type UserInputData,
   userInputStorage
 } from '../src/libs/storage'
@@ -226,6 +232,214 @@ const FormatSelection = dynamic(
   }),
   { ssr: false }
 )
+
+interface VideoSearchContentProps {
+  onSelect: (video: StepSelectedVideo) => void
+  selectedVideoId?: string
+}
+
+const VIDEO_SOURCE_LABELS: Record<string, string> = {
+  internal: 'Jesus Film Library',
+  youTube: 'YouTube',
+  cloudflare: 'Cloudflare',
+  mux: 'Mux'
+}
+
+function formatVideoDuration(duration?: number): string | null {
+  if (duration == null || Number.isNaN(duration) || duration <= 0) return null
+
+  const totalSeconds = Math.floor(duration)
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
+
+  if (hours > 0) {
+    return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds
+      .toString()
+      .padStart(2, '0')}`
+  }
+
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`
+}
+
+function VideoSearchContent({
+  onSelect,
+  selectedVideoId
+}: VideoSearchContentProps) {
+  const { refine, query } = useSearchBox()
+  const { items, loading, showMore, isLastPage, noResults, sendEvent } =
+    useAlgoliaVideos()
+
+  const handleSelect = (video: (typeof items)[number]) => {
+    sendEvent('click', [video], 'Studio Step Video Selected')
+    onSelect({
+      id: video.id,
+      title: video.title,
+      description: video.description,
+      image: video.image,
+      duration: video.duration,
+      slug: video.slug,
+      source: video.source
+    })
+  }
+
+  const renderDescription = (description?: string) => {
+    if (description == null || description.trim().length === 0) return null
+    return description.length > 160
+      ? `${description.slice(0, 157)}…`
+      : description
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="relative">
+        <Input
+          value={query}
+          onChange={(event) => refine(event.target.value)}
+          placeholder="Search Watch videos"
+          className="pl-9"
+        />
+        <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+      </div>
+      <div className="grid max-h-[45vh] gap-4 overflow-y-auto pr-1 sm:grid-cols-2">
+        {items.map((video) => {
+          const durationLabel = formatVideoDuration(video.duration)
+          const description = renderDescription(video.description)
+
+          return (
+            <button
+              key={video.id}
+              type="button"
+              onClick={() => handleSelect(video)}
+              className={`group flex flex-col overflow-hidden rounded-xl border bg-background text-left transition-all ${
+                selectedVideoId === video.id
+                  ? 'border-primary ring-2 ring-primary/30'
+                  : 'border-border hover:border-primary/50 hover:shadow-md'
+              }`}
+            >
+              <div className="relative aspect-video w-full overflow-hidden bg-muted">
+                {video.image ? (
+                  <Image
+                    src={video.image}
+                    alt={video.title ?? 'Video thumbnail'}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+                    No thumbnail
+                  </div>
+                )}
+                {durationLabel != null && (
+                  <span className="absolute bottom-2 right-2 rounded bg-black/70 px-2 py-0.5 text-xs font-medium text-white">
+                    {durationLabel}
+                  </span>
+                )}
+                {selectedVideoId === video.id && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-primary/25 backdrop-blur-sm">
+                    <Check className="h-8 w-8 text-primary-foreground drop-shadow-lg" />
+                  </div>
+                )}
+              </div>
+              <div className="space-y-1 p-4">
+                <p className="text-sm font-semibold text-foreground">
+                  {video.title ?? 'Untitled video'}
+                </p>
+                {description != null && (
+                  <p className="text-xs text-muted-foreground">{description}</p>
+                )}
+              </div>
+            </button>
+          )
+        })}
+        {items.length === 0 && !loading && !noResults && (
+          <div className="col-span-full rounded-lg border border-dashed border-border bg-muted/20 p-6 text-center text-sm text-muted-foreground">
+            Start typing to search the Watch library.
+          </div>
+        )}
+      </div>
+      {loading && (
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Loading videos…
+        </div>
+      )}
+      {noResults && !loading && (
+        <div className="rounded-lg border border-dashed border-border bg-muted/20 p-6 text-center text-sm text-muted-foreground">
+          No videos matched your search. Try a different phrase.
+        </div>
+      )}
+      {!isLastPage && !loading && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="self-center"
+          onClick={() => showMore()}
+        >
+          Load more
+        </Button>
+      )}
+    </div>
+  )
+}
+
+interface VideoSelectionDialogProps {
+  open: boolean
+  onClose: () => void
+  onSelect: (video: StepSelectedVideo) => void
+  selectedVideoId?: string
+  stepTitle?: string
+}
+
+function VideoSelectionDialog({
+  open,
+  onClose,
+  onSelect,
+  selectedVideoId,
+  stepTitle
+}: VideoSelectionDialogProps) {
+  const searchClient = useInstantSearchClient()
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        if (!value) onClose()
+      }}
+    >
+      <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden">
+        <DialogHeader>
+          <DialogTitle>Select a Watch Video</DialogTitle>
+          <DialogDescription>
+            {stepTitle != null && stepTitle.length > 0
+              ? `Choose a video from the Watch library to pair with “${stepTitle}”.`
+              : 'Choose a video from the Watch library to pair with this step.'}
+          </DialogDescription>
+        </DialogHeader>
+        {indexName === '' ? (
+          <div className="rounded-lg border border-dashed border-border bg-muted/20 p-6 text-sm text-muted-foreground">
+            Algolia search is not configured for this environment.
+          </div>
+        ) : (
+          open && (
+            <InstantSearch
+              searchClient={searchClient}
+              indexName={indexName}
+              stalledSearchDelay={300}
+            >
+              <VideoSearchContent
+                onSelect={onSelect}
+                selectedVideoId={selectedVideoId}
+              />
+            </InstantSearch>
+          )
+        )}
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 const steps = [
   { id: 1, title: 'Content', description: 'What do you want to share?' },
@@ -1151,6 +1365,8 @@ export default function NewPage() {
   const [textContent, setTextContent] = useState('')
   const [aiResponse, setAiResponse] = useState('')
   const [editableSteps, setEditableSteps] = useState<GeneratedStepContent[]>([])
+  const [videoPickerStepIndex, setVideoPickerStepIndex] =
+    useState<number | null>(null)
   const [copiedStepIndex, setCopiedStepIndex] = useState<number | null>(null)
   const [editingStepIndices, setEditingStepIndices] = useState<Set<number>>(new Set())
   const [isProcessing, setIsProcessing] = useState(false)
@@ -1193,6 +1409,15 @@ export default function NewPage() {
   const [showTestimonialBackground, setShowTestimonialBackground] =
     useState(true)
   const [isGeneratingDesign, setIsGeneratingDesign] = useState(false)
+
+  useEffect(() => {
+    if (
+      videoPickerStepIndex != null &&
+      (videoPickerStepIndex < 0 || videoPickerStepIndex >= editableSteps.length)
+    ) {
+      setVideoPickerStepIndex(null)
+    }
+  }, [videoPickerStepIndex, editableSteps.length])
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const hasGeneratedContent = aiResponse.trim().length > 0
@@ -1586,10 +1811,66 @@ export default function NewPage() {
       const mediaPrompt =
         typeof step?.mediaPrompt === 'string' ? step.mediaPrompt.trim() : ''
 
+      const selectedImageUrl =
+        typeof (step as { selectedImageUrl?: unknown })?.selectedImageUrl === 'string'
+          ? (step as { selectedImageUrl?: string }).selectedImageUrl?.trim()
+          : undefined
+
+      const rawSelectedVideo = (step as { selectedVideo?: unknown })?.selectedVideo
+      let selectedVideo: StepSelectedVideo | undefined
+      if (rawSelectedVideo != null && typeof rawSelectedVideo === 'object') {
+        const rawId =
+          'id' in rawSelectedVideo
+            ? String((rawSelectedVideo as { id?: string | number }).id ?? '')
+            : ''
+        const normalizedId = rawId.trim()
+
+        if (normalizedId !== '') {
+          const durationValue = (() => {
+            const duration = (rawSelectedVideo as { duration?: number | string }).duration
+            if (typeof duration === 'number') return duration
+            if (typeof duration === 'string') {
+              const parsed = Number(duration)
+              return Number.isFinite(parsed) ? parsed : undefined
+            }
+            return undefined
+          })()
+
+          selectedVideo = {
+            id: normalizedId,
+            title:
+              typeof (rawSelectedVideo as { title?: string }).title === 'string'
+                ? (rawSelectedVideo as { title: string }).title
+                : undefined,
+            description:
+              typeof (rawSelectedVideo as { description?: string }).description === 'string'
+                ? (rawSelectedVideo as { description: string }).description
+                : undefined,
+            image:
+              typeof (rawSelectedVideo as { image?: string }).image === 'string'
+                ? (rawSelectedVideo as { image: string }).image
+                : undefined,
+            duration: durationValue,
+            slug: (() => {
+              const rawSlug = (rawSelectedVideo as { slug?: unknown }).slug
+              if (typeof rawSlug !== 'string') return undefined
+              const trimmed = rawSlug.trim()
+              return trimmed === '' ? undefined : trimmed
+            })(),
+            source:
+              typeof (rawSelectedVideo as { source?: string }).source === 'string'
+                ? (rawSelectedVideo as { source: string }).source
+                : undefined
+          }
+        }
+      }
+
       return {
         content,
         keywords: normalizedKeywords,
-        mediaPrompt
+        mediaPrompt,
+        ...(selectedImageUrl ? { selectedImageUrl } : {}),
+        ...(selectedVideo ? { selectedVideo } : {})
       }
     })
 
@@ -1673,6 +1954,37 @@ export default function NewPage() {
     })
   }, [])
 
+  const handleVideoSelection = useCallback(
+    (stepIndex: number | null, video: StepSelectedVideo) => {
+      if (stepIndex == null) return
+
+      setEditableSteps((prev) => {
+        if (!prev[stepIndex]) return prev
+        const updated = [...prev]
+        updated[stepIndex] = { ...updated[stepIndex], selectedVideo: video }
+        return updated
+      })
+    },
+    []
+  )
+
+  const handleVideoClear = useCallback((stepIndex: number) => {
+    setEditableSteps((prev) => {
+      if (!prev[stepIndex]) return prev
+      const updated = [...prev]
+      updated[stepIndex] = { ...updated[stepIndex], selectedVideo: undefined }
+      return updated
+    })
+  }, [])
+
+  const handleVideoPickerOpen = useCallback((stepIndex: number) => {
+    setVideoPickerStepIndex(stepIndex)
+  }, [])
+
+  const handleVideoPickerClose = useCallback(() => {
+    setVideoPickerStepIndex(null)
+  }, [])
+
   // Memoized component for steps to prevent re-renders from tile hover states
   const StepsList = React.memo(({
     editableSteps,
@@ -1680,7 +1992,9 @@ export default function NewPage() {
     stepHandlers,
     copiedStepIndex,
     unsplashImages,
-    onImageSelection
+    onImageSelection,
+    onVideoSelect,
+    onVideoClear
   }: {
     editableSteps: GeneratedStepContent[]
     editingStepIndices: Set<number>
@@ -1688,6 +2002,8 @@ export default function NewPage() {
     copiedStepIndex: number | null
     unsplashImages: Record<string, string[]>
     onImageSelection: (stepIndex: number, imageUrl: string) => void
+    onVideoSelect: (stepIndex: number) => void
+    onVideoClear: (stepIndex: number) => void
   }) => {
     return (
       <>
@@ -1699,6 +2015,23 @@ export default function NewPage() {
           const cardKey = heading
             ? `${heading}-${index}`
             : `step-${index}`
+
+          const videoDescription =
+            typeof step.selectedVideo?.description === 'string'
+              ? step.selectedVideo.description.length > 160
+                ? `${step.selectedVideo.description.slice(0, 157)}…`
+                : step.selectedVideo.description
+              : undefined
+
+          const videoDurationLabel =
+            typeof step.selectedVideo?.duration === 'number'
+              ? formatVideoDuration(step.selectedVideo.duration)
+              : null
+          const sourceLabel =
+            step.selectedVideo?.source != null
+              ? VIDEO_SOURCE_LABELS[step.selectedVideo.source] ??
+                step.selectedVideo.source
+              : undefined
 
           // Intersection observer for lazy loading images
           const { ref: cardRef } = useIntersectionObserver(
@@ -1832,6 +2165,88 @@ export default function NewPage() {
                       Add keywords to unlock image inspiration.
                     </p>
                   )}
+                </div>
+                <div className="space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h4 className="text-sm font-medium">Watch Video</h4>
+                    {step.selectedVideo != null && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onVideoClear(index)}
+                      >
+                        Remove
+                      </Button>
+                    )}
+                  </div>
+                  {step.selectedVideo != null ? (
+                    <div className="flex flex-col gap-3 rounded-lg border border-border bg-background/70 p-4 sm:flex-row">
+                      <div className="relative aspect-video w-full overflow-hidden rounded-md bg-muted sm:w-40">
+                        {step.selectedVideo.image ? (
+                          <Image
+                            src={step.selectedVideo.image}
+                            alt={`${heading} video thumbnail`}
+                            fill
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+                            No thumbnail
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex min-w-0 flex-1 flex-col gap-1 text-sm">
+                        <span className="font-semibold text-foreground">
+                          {step.selectedVideo.title ?? 'Untitled video'}
+                        </span>
+                        {videoDescription != null && (
+                          <span className="text-xs text-muted-foreground">
+                            {videoDescription}
+                          </span>
+                        )}
+                        {(videoDurationLabel != null || sourceLabel != null) && (
+                          <div className="flex flex-wrap items-center gap-2 pt-1">
+                            {videoDurationLabel != null && (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground">
+                                <Clock className="h-3 w-3" />
+                                {videoDurationLabel}
+                              </span>
+                            )}
+                            {sourceLabel != null && (
+                              <span className="inline-flex items-center rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground">
+                                {sourceLabel}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Select a Jesus Film video to pair with this step.
+                    </p>
+                  )}
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant={step.selectedVideo ? 'secondary' : 'outline'}
+                      size="sm"
+                      onClick={() => onVideoSelect(index)}
+                    >
+                      {step.selectedVideo ? 'Change Video' : 'Select Video'}
+                    </Button>
+                    {step.selectedVideo != null && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onVideoClear(index)}
+                      >
+                        Clear Selection
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </CardContent>
               </Card>
@@ -4890,6 +5305,8 @@ export default function NewPage() {
                                 copiedStepIndex={copiedStepIndex}
                                 unsplashImages={unsplashImages}
                                 onImageSelection={handleImageSelection}
+                                onVideoSelect={handleVideoPickerOpen}
+                                onVideoClear={handleVideoClear}
                               />
                             </div>
                           </>
@@ -5175,6 +5592,27 @@ export default function NewPage() {
           )}
 
         </main>
+        <VideoSelectionDialog
+          open={videoPickerStepIndex !== null}
+          selectedVideoId={
+            videoPickerStepIndex != null
+              ? editableSteps[videoPickerStepIndex]?.selectedVideo?.id
+              : undefined
+          }
+          stepTitle={
+            videoPickerStepIndex != null
+              ? deriveHeadingFromContent(
+                  editableSteps[videoPickerStepIndex]?.content ?? '',
+                  `Step ${videoPickerStepIndex + 1}`
+                )
+              : undefined
+          }
+          onSelect={(video) => {
+            handleVideoSelection(videoPickerStepIndex, video)
+            handleVideoPickerClose()
+          }}
+          onClose={handleVideoPickerClose}
+        />
       </div>
     </>
   )

@@ -13,6 +13,17 @@ export interface GeneratedStepContent {
   keywords: string[]
   mediaPrompt: string
   selectedImageUrl?: string
+  selectedVideo?: StepSelectedVideo
+}
+
+export interface StepSelectedVideo {
+  id: string
+  title?: string
+  description?: string
+  image?: string
+  duration?: number
+  slug?: string
+  source?: string
 }
 
 export interface UserInputData {
@@ -194,7 +205,48 @@ class UserInputStorage {
                       .filter((keyword): keyword is string => Boolean(keyword))
                       .slice(0, 5)
                   : [],
-                mediaPrompt: step?.mediaPrompt || ''
+                mediaPrompt: step?.mediaPrompt || '',
+                selectedImageUrl:
+                  typeof step?.selectedImageUrl === 'string'
+                    ? step.selectedImageUrl
+                    : undefined,
+                selectedVideo:
+                  step?.selectedVideo != null && typeof step.selectedVideo === 'object'
+                    ? {
+                        id: String((step.selectedVideo as { id?: string | number }).id ?? ''),
+                        title:
+                          typeof (step.selectedVideo as { title?: string }).title === 'string'
+                            ? (step.selectedVideo as { title: string }).title
+                            : undefined,
+                        description:
+                          typeof (step.selectedVideo as { description?: string }).description === 'string'
+                            ? (step.selectedVideo as { description: string }).description
+                            : undefined,
+                        image:
+                          typeof (step.selectedVideo as { image?: string }).image === 'string'
+                            ? (step.selectedVideo as { image: string }).image
+                            : undefined,
+                        duration: (() => {
+                          const duration = (step.selectedVideo as { duration?: number | string }).duration
+                          if (typeof duration === 'number') return duration
+                          if (typeof duration === 'string') {
+                            const parsed = Number(duration)
+                            return Number.isFinite(parsed) ? parsed : undefined
+                          }
+                          return undefined
+                        })(),
+                        slug: (() => {
+                          const rawSlug = (step.selectedVideo as { slug?: unknown }).slug
+                          if (typeof rawSlug !== 'string') return undefined
+                          const trimmed = rawSlug.trim()
+                          return trimmed === '' ? undefined : trimmed
+                        })(),
+                        source:
+                          typeof (step.selectedVideo as { source?: string }).source === 'string'
+                            ? (step.selectedVideo as { source: string }).source
+                            : undefined
+                      }
+                    : undefined
               }))
             : [],
           imageAnalysisResults: Array.isArray(data.imageAnalysisResults)
