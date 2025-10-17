@@ -25,6 +25,7 @@ import {
   Settings,
   Sparkles,
   Twitter,
+  UploadCloud,
   Users,
   Video,
   X,
@@ -1156,7 +1157,12 @@ export default function NewPage() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [imageAttachments, setImageAttachments] = useState<string[]>([])
   const [unsplashImages, setUnsplashImages] = useState<Record<string, string[]>>({})
+  const [customStepImages, setCustomStepImages] = useState<Record<string, string[]>>({})
   const [loadingUnsplashSteps, setLoadingUnsplashSteps] = useState<Set<string>>(new Set())
+  const [uploadingStepImages, setUploadingStepImages] = useState<Set<string>>(new Set())
+  const [stepImageUploadErrors, setStepImageUploadErrors] = useState<
+    Record<string, string | null>
+  >({})
   const [imageAnalysisResults, setImageAnalysisResults] = useState<
     Array<{
       imageSrc: string
@@ -1195,7 +1201,9 @@ export default function NewPage() {
   const [isGeneratingDesign, setIsGeneratingDesign] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
-  const hasGeneratedContent = aiResponse.trim().length > 0
+  const hasUnsplashAccessKey = Boolean(
+    unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
+  )
 
   // Toggle X-ray mode (Cmd+Shift+X) to show minimalistic component labels from data-id
   useEffect(() => {
@@ -1673,6 +1681,162 @@ export default function NewPage() {
     })
   }, [])
 
+  const uploadCustomImageForStep = useCallback(
+    async (stepIndex: number, file: File) => {
+      const stepKey = `step-${stepIndex}`
+      const uploadKey = process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY
+
+      if (!uploadKey) {
+        setStepImageUploadErrors((prev) => ({
+          ...prev,
+          [stepKey]: 'Cloudflare upload key is not configured.'
+        }))
+        return
+      }
+
+      setUploadingStepImages((prev) => {
+        const next = new Set(prev)
+        next.add(stepKey)
+        return next
+      })
+      setStepImageUploadErrors((prev) => ({
+        ...prev,
+        [stepKey]: null
+      }))
+
+      try {
+        const gatewayUrl =
+          process.env.NEXT_PUBLIC_GATEWAY_URL ?? 'http://localhost:4000'
+
+        const response = await fetch(gatewayUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            query: `
+              mutation CreateCloudflareUploadByFile {
+                createCloudflareUploadByFile {
+                  uploadUrl
+                  id
+                }
+              }
+            `
+          }),
+          credentials: 'include'
+        })
+
+        if (!response.ok) {
+          throw new Error(
+            `Failed to request upload URL (status ${response.status}).`
+          )
+        }
+
+        const result = await response.json()
+        const uploadData = result?.data?.createCloudflareUploadByFile
+
+        if (!uploadData?.uploadUrl || !uploadData?.id) {
+          const graphQLError =
+            Array.isArray(result?.errors) && result.errors.length > 0
+              ? result.errors[0]?.message
+              : null
+
+          throw new Error(
+            graphQLError ?? 'Cloudflare upload URL was not provided.'
+          )
+        }
+
+        const formData = new FormData()
+        formData.append('file', file)
+
+        const uploadResponse = await fetch(uploadData.uploadUrl, {
+          method: 'POST',
+          body: formData
+        })
+
+        const uploadJson = await uploadResponse.json()
+
+        if (!uploadResponse.ok || uploadJson?.success === false) {
+          const errorMessage =
+            uploadJson?.errors?.[0]?.message ??
+            'Cloudflare upload failed. Please try again.'
+
+          throw new Error(errorMessage)
+        }
+
+        const assetId: string | undefined = uploadJson?.result?.id
+
+        if (!assetId) {
+          throw new Error('Cloudflare upload did not return an asset identifier.')
+        }
+
+        const publicUrl = `https://imagedelivery.net/${uploadKey}/${assetId}/public`
+
+        setCustomStepImages((prev) => ({
+          ...prev,
+          [stepKey]: [publicUrl, ...(prev[stepKey] ?? [])]
+        }))
+
+        setStepImageUploadErrors((prev) => {
+          const next = { ...prev }
+          delete next[stepKey]
+          return next
+        })
+
+        handleImageSelection(stepIndex, publicUrl)
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : 'Failed to upload image. Please try again.'
+
+        setStepImageUploadErrors((prev) => ({
+          ...prev,
+          [stepKey]: message
+        }))
+
+        console.error('Failed to upload custom image to Cloudflare:', error)
+      } finally {
+        setUploadingStepImages((prev) => {
+          const next = new Set(prev)
+          next.delete(stepKey)
+          return next
+        })
+      }
+    },
+    [handleImageSelection]
+  )
+
+  const handleCustomImageUploadClick = useCallback(
+    (stepIndex: number) => {
+      if (typeof window === 'undefined') return
+
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = 'image/*'
+      input.style.display = 'none'
+
+      input.onchange = (event) => {
+        const target = event.target as HTMLInputElement
+        const selectedFile = target.files?.[0]
+
+        if (selectedFile) {
+          void uploadCustomImageForStep(stepIndex, selectedFile)
+        }
+
+        input.remove()
+      }
+
+      input.addEventListener('blur', () => {
+        if (document.body.contains(input)) input.remove()
+      })
+
+      document.body.appendChild(input)
+      input.click()
+    },
+    [uploadCustomImageForStep]
+  )
+
   // Memoized component for steps to prevent re-renders from tile hover states
   const StepsList = React.memo(({
     editableSteps,
@@ -1680,14 +1844,24 @@ export default function NewPage() {
     stepHandlers,
     copiedStepIndex,
     unsplashImages,
-    onImageSelection
+    customStepImages,
+    uploadingStepImages,
+    stepImageUploadErrors,
+    hasUnsplashAccessKey,
+    onImageSelection,
+    onCustomImageUpload
   }: {
     editableSteps: GeneratedStepContent[]
     editingStepIndices: Set<number>
     stepHandlers: Record<number, { onContentChange: (value: string) => void; onFocus: () => void }>
     copiedStepIndex: number | null
     unsplashImages: Record<string, string[]>
+    customStepImages: Record<string, string[]>
+    uploadingStepImages: Set<string>
+    stepImageUploadErrors: Record<string, string | null>
+    hasUnsplashAccessKey: boolean
     onImageSelection: (stepIndex: number, imageUrl: string) => void
+    onCustomImageUpload: (stepIndex: number) => void
   }) => {
     return (
       <>
@@ -1746,84 +1920,131 @@ export default function NewPage() {
                     <div className="w-full">
                       {(() => {
                         const stepKey = `step-${index}`
-                        const stepImages = unsplashImages[stepKey] || []
-                        const isLoading = loadingUnsplashSteps.has(stepKey)
-                        const hasApiKey = unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
+                        const unsplashStepImages = unsplashImages[stepKey] || []
+                        const customImages = customStepImages[stepKey] || []
+                        const combinedImages = [...customImages, ...unsplashStepImages]
+                        const isLoadingUnsplash = loadingUnsplashSteps.has(stepKey)
+                        const isUploadingCustomImage = uploadingStepImages.has(stepKey)
+                        const uploadError = stepImageUploadErrors[stepKey] ?? null
+                        const selectedImageUrl = step.selectedImageUrl
+                        const showLoadingState =
+                          isLoadingUnsplash && combinedImages.length === 0
+                        const showMissingKeyState =
+                          combinedImages.length === 0 &&
+                          !hasUnsplashAccessKey &&
+                          !isUploadingCustomImage
+                        const showNoResultsState =
+                          combinedImages.length === 0 &&
+                          hasUnsplashAccessKey &&
+                          !isLoadingUnsplash &&
+                          !isUploadingCustomImage
 
-                        if (isLoading) {
-                          return (
-                            <div className="flex items-center justify-center py-8">
-                              <div className="text-sm text-muted-foreground">
-                                🔍 Searching for images...
-                              </div>
-                            </div>
-                          )
-                        }
-
-                        if (stepImages.length > 0) {
-                          const selectedImageUrl = step.selectedImageUrl
-                          return (
+                        return (
+                          <>
                             <Carousel className="w-full relative">
                               <CarouselContent>
-                                {stepImages.map(
-                                  (imageUrl, imageIndex) => {
-                                    const isSelected = selectedImageUrl === imageUrl
-                                    return (
-                                      <CarouselItem
-                                        key={`${index}-${imageIndex}-img`}
-                                        className="basis-1/6 mr-2"
+                                <CarouselItem
+                                  key={`${index}-upload`}
+                                  className="basis-1/6 mr-2"
+                                >
+                                  <button
+                                    type="button"
+                                    className="group flex w-full flex-col items-center text-center focus:outline-none"
+                                    onClick={() => onCustomImageUpload(index)}
+                                    disabled={isUploadingCustomImage}
+                                  >
+                                    <div
+                                      className={`relative mx-auto flex aspect-square w-full max-w-[120px] items-center justify-center overflow-hidden rounded-lg border border-dashed transition-colors ${
+                                        isUploadingCustomImage
+                                          ? 'border-primary bg-primary/10'
+                                          : 'border-muted-foreground/30 hover:border-primary'
+                                      }`}
+                                    >
+                                      {isUploadingCustomImage ? (
+                                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                                      ) : (
+                                        <UploadCloud className="h-6 w-6 text-muted-foreground group-hover:text-primary" />
+                                      )}
+                                    </div>
+                                    <span className="mt-2 text-xs font-medium text-muted-foreground group-hover:text-primary">
+                                      Upload custom image
+                                    </span>
+                                  </button>
+                                </CarouselItem>
+                                {combinedImages.map((imageUrl, imageIndex) => {
+                                  const isSelected = selectedImageUrl === imageUrl
+                                  return (
+                                    <CarouselItem
+                                      key={`${index}-${imageIndex}-img`}
+                                      className="basis-1/6 mr-2"
+                                    >
+                                      <div
+                                        className={`relative aspect-square mx-auto overflow-hidden rounded-lg border cursor-pointer transition-all duration-200 ${
+                                          isSelected
+                                            ? 'ring-2 ring-blue-500 ring-offset-2'
+                                            : 'hover:ring-2 hover:ring-blue-300 hover:ring-offset-2'
+                                        }`}
+                                        onClick={() => onImageSelection(index, imageUrl)}
                                       >
-                                        <div
-                                          className={`relative aspect-square mx-auto overflow-hidden rounded-lg border cursor-pointer transition-all duration-200 ${
-                                            isSelected
-                                              ? 'ring-2 ring-blue-500 ring-offset-2'
-                                              : 'hover:ring-2 hover:ring-blue-300 hover:ring-offset-2'
-                                          }`}
-                                          onClick={() => onImageSelection(index, imageUrl)}
-                                        >
-                                          <Image
-                                            src={imageUrl}
-                                            alt={`${heading} inspiration`}
-                                            fill
-                                            className="object-cover"
-                                          />
-                                          {isSelected && (
-                                            <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
-                                              <Check className="w-6 h-6 text-white drop-shadow-lg" />
-                                            </div>
-                                          )}
-                                        </div>
-                                      </CarouselItem>
-                                    )
-                                  }
-                                )}
+                                        <Image
+                                          src={imageUrl}
+                                          alt={`${heading} inspiration`}
+                                          fill
+                                          className="object-cover"
+                                        />
+                                        {isSelected && (
+                                          <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
+                                            <Check className="w-6 h-6 text-white drop-shadow-lg" />
+                                          </div>
+                                        )}
+                                      </div>
+                                    </CarouselItem>
+                                  )
+                                })}
                               </CarouselContent>
 
                               <CarouselPrevious />
                               <CarouselNext />
                             </Carousel>
-                          )
-                        }
 
-                        if (!hasApiKey) {
-                          return (
-                            <div className="text-sm text-muted-foreground py-4">
-                              <p className="mb-2">Add an Unsplash Access Key in Settings to see image inspiration.</p>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setIsSettingsOpen(true)}
-                              >
-                                Open Settings
-                              </Button>
-                            </div>
-                          )
-                        }
+                            {uploadError != null && (
+                              <p className="mt-2 text-sm text-destructive">{uploadError}</p>
+                            )}
 
-                        return (
-                          <div className="text-sm text-muted-foreground py-4">
-                            No images found for "{step.keywords[0]}". Try different keywords or check your Unsplash Access Key.
-                          </div>
+                            {isUploadingCustomImage && (
+                              <p className="mt-2 text-sm text-muted-foreground">
+                                Uploading image to Cloudflare...
+                              </p>
+                            )}
+
+                            {showLoadingState && (
+                              <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
+                                🔍 Searching for images...
+                              </div>
+                            )}
+
+                            {showMissingKeyState && (
+                              <div className="text-sm text-muted-foreground py-4">
+                                <p className="mb-2">
+                                  Add an Unsplash Access Key in Settings to see image inspiration.
+                                </p>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setIsSettingsOpen(true)}
+                                >
+                                  Open Settings
+                                </Button>
+                              </div>
+                            )}
+
+                            {showNoResultsState && (
+                              <div className="text-sm text-muted-foreground py-4">
+                                No images found for "{step.keywords[0]}". Try different keywords or
+                                check your Unsplash Access Key.
+                              </div>
+                            )}
+                          </>
                         )
                       })()}
                     </div>
@@ -4889,7 +5110,12 @@ export default function NewPage() {
                                 stepHandlers={stepHandlers}
                                 copiedStepIndex={copiedStepIndex}
                                 unsplashImages={unsplashImages}
+                                customStepImages={customStepImages}
+                                uploadingStepImages={uploadingStepImages}
+                                stepImageUploadErrors={stepImageUploadErrors}
+                                hasUnsplashAccessKey={hasUnsplashAccessKey}
                                 onImageSelection={handleImageSelection}
+                                onCustomImageUpload={handleCustomImageUploadClick}
                               />
                             </div>
                           </>
