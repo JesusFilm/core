@@ -20,7 +20,9 @@ const ACTION_EVENTS: Array<keyof JourneyPlausibleEvents> = [
   'textResponseSubmit',
   'signupSubmit',
   'radioQuestionSubmit',
-  'videoComplete',
+  // VideoTrigger and VideoComplete can double up with each other
+  // only choose one of them
+  'videoTrigger',
   'chatButtonClick',
   'footerChatButtonClick'
 ]
@@ -126,8 +128,11 @@ function getJourneyEvents(
   const journeyEvents: PlausibleEvent[] = []
   journeyStepsActions.forEach((action) => {
     if (action.property === '(none)') return
+    const eventData = reverseKeyify(action.property)
+    if (eventData.event === 'videoComplete') return
+
     journeyEvents.push({
-      ...reverseKeyify(action.property),
+      ...eventData,
       events: action.visitors ?? 0
     })
   })
@@ -159,11 +164,18 @@ function getLinkClicks(journeyEvents: PlausibleEvent[]): {
 
   journeyEvents.forEach((plausibleEvent) => {
     const { event, target, events } = plausibleEvent
-    if (target != null && target.includes('link')) {
+    if (
+      target != null &&
+      (target.includes('link:') || target.includes('chat:'))
+    ) {
       const isChatLink = messagePlatforms.find(({ url }) =>
         target.includes(url)
       )
-      if (isChatLink != null || event === 'footerChatButtonClick') {
+      if (
+        isChatLink != null ||
+        event === 'footerChatButtonClick' ||
+        target.includes('chat:')
+      ) {
         chatsStarted += events
       } else {
         linksVisited += events
@@ -179,9 +191,9 @@ function getLinkClicks(journeyEvents: PlausibleEvent[]): {
       chatsStarted += events
     }
 
-    // Include videoComplete events that trigger phone actions
+    // Include videoTrigger events that trigger phone actions
     if (
-      event === 'videoComplete' &&
+      event === 'videoTrigger' &&
       target != null &&
       target.includes('phone:')
     ) {

@@ -367,6 +367,14 @@ export interface CardBlockUpdateInput {
   themeName?: ThemeName | null;
 }
 
+export interface ChatActionInput {
+  gtmEventName?: string | null;
+  chatUrl: string;
+  target?: string | null;
+  customizable?: boolean | null;
+  parentStepId?: string | null;
+}
+
 export interface ChatButtonCreateInput {
   link?: string | null;
   platform?: MessagePlatform | null;

@@ -25,6 +25,10 @@ describe('actions', () => {
           label: 'translation_Email'
         },
         {
+          value: 'ChatAction',
+          label: 'translation_Chat'
+        },
+        {
           value: 'PhoneAction',
           label: 'translation_Phone'
         }
@@ -49,6 +53,16 @@ describe('actions', () => {
       expect(result).toEqual({
         value: 'None',
         label: 'translation_None'
+      })
+    })
+
+    it('should return ChatAction when value is ChatAction', () => {
+      const t = jest.fn().mockImplementation((key) => `translation_${key}`)
+      const value = 'ChatAction'
+      const result = getAction(t as unknown as TFunction, value)
+      expect(result).toEqual({
+        value: 'ChatAction',
+        label: 'translation_Chat'
       })
     })
   })
