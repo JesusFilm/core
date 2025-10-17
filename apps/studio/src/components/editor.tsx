@@ -1,17 +1,6 @@
-import {
-  Bot,
-  Check,
-  Copy,
-  HelpCircle,
-  History,
-  Image as ImageIcon,
-  Info,
-  Loader2,
-  Settings,
-  Sparkles,
-  X
-} from 'lucide-react'
+import { History, Settings } from 'lucide-react'
 import Head from 'next/head'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { PolotnoContainer, SidePanelWrap, WorkspaceWrap } from 'polotno';
 import { Workspace } from 'polotno/canvas/workspace';
@@ -21,6 +10,12 @@ import { PagesTimeline } from 'polotno/pages-timeline';
 import { Toolbar } from 'polotno/toolbar/toolbar';
 import { ZoomButtons } from 'polotno/toolbar/zoom-buttons';
 import React, { useEffect, useState } from 'react';
+
+import {
+  type ImageAnalysisResult,
+  type UserInputData,
+  userInputStorage
+} from '../libs/storage'
 
 import { Button } from './ui/button'
 import {
@@ -32,13 +27,6 @@ import {
   DialogTrigger
 } from './ui/dialog'
 import { Input } from './ui/input'
-import { Textarea } from './ui/textarea'
-
-import {
-  type GeneratedStepContent,
-  type UserInputData,
-  userInputStorage
-} from '../libs/storage'
 
 // Enable animations
 unstable_setAnimationsEnabled(true);
@@ -53,6 +41,29 @@ const store = createStore({
 });
 // Don't preload initial state - let useEffect handle loading
 
+const summarizeTokens = (tokens?: { input: number; output: number }) => {
+  if (!tokens) return null;
+  const total = tokens.input + tokens.output;
+  if (total <= 0) return null;
+
+  const formattedTotal =
+    total >= 1_000_000
+      ? `${(total / 1_000_000).toFixed(1)}M`
+      : total >= 1_000
+        ? `${(total / 1_000).toFixed(1)}K`
+        : total.toLocaleString();
+
+  const estimatedCost = Math.max(
+    (tokens.input / 1_000_000) * 0.05 + (tokens.output / 1_000_000) * 0.4,
+    0.01
+  ).toFixed(2);
+
+  return {
+    formattedTotal,
+    estimatedCost,
+  };
+};
+
 export const Editor = () => {
   const router = useRouter()
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -65,21 +76,15 @@ export const Editor = () => {
   })
   const [isTokensUpdated, setIsTokensUpdated] = useState(false)
   const [selectedImageForDetails, setSelectedImageForDetails] = useState<number | null>(null)
-  const [imageAnalysisResults, setImageAnalysisResults] = useState<Array<{
-    imageSrc: string
-    contentType: string
-    extractedText: string
-    detailedDescription: string
-    confidence: string
-    contentIdeas: string[]
-    isAnalyzing: boolean
-  }>>([])
+  const [imageAnalysisResults, setImageAnalysisResults] = useState<ImageAnalysisResult[]>([])
   const [showAllIdeas, setShowAllIdeas] = useState(false)
   const [animatingSuggestion, setAnimatingSuggestion] = useState<{
     analysisIndex: number
     ideaIndex: number
   } | null>(null)
   const [hiddenSuggestions, setHiddenSuggestions] = useState<Set<string>>(new Set())
+
+  const tokenSummary = summarizeTokens(totalTokensUsed)
 
   // Helper function to get the content type for the header
   const getContentTypeForHeader = () => {
@@ -106,8 +111,19 @@ export const Editor = () => {
   }
 
   const loadSession = (session: UserInputData) => {
-    // Implementation would go here if needed
     console.log('Loading session:', session)
+    const nextAnalysis = Array.isArray(session.imageAnalysisResults)
+      ? session.imageAnalysisResults
+      : []
+    setImageAnalysisResults(nextAnalysis)
+    setSelectedImageForDetails(null)
+    setTotalTokensUsed(
+      session.tokensUsed ?? {
+        input: 0,
+        output: 0
+      }
+    )
+    setIsSessionsOpen(false)
   }
 
   const deleteSession = (sessionId: string) => {
@@ -199,7 +215,7 @@ export const Editor = () => {
                     onClick={() => router.push('/')}
                     className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
                   >
-                    <img
+                    <Image
                       src="/jesusfilm-sign.svg"
                       alt="Jesus Film Project"
                       width={24}
@@ -220,7 +236,7 @@ export const Editor = () => {
                 </div>
               </div>
               <div className="flex items-center gap-4" data-id="HeaderActions">
-                {(totalTokensUsed.input > 0 || totalTokensUsed.output > 0) && (
+                {tokenSummary && (
                   <div
                     className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm transition-colors duration-300 ${
                       isTokensUpdated ? 'bg-red-500 text-white' : 'bg-muted'
@@ -233,18 +249,7 @@ export const Editor = () => {
                     >
                       Tokens:
                     </span>
-                    <span className="font-medium">
-                      {(() => {
-                        const total =
-                          totalTokensUsed.input + totalTokensUsed.output
-                        if (total >= 1000000) {
-                          return `${(total / 1000000).toFixed(1)}M`
-                        } else if (total >= 1000) {
-                          return `${(total / 1000).toFixed(1)}K`
-                        }
-                        return total.toLocaleString()
-                      })()}
-                    </span>
+                    <span className="font-medium">{tokenSummary.formattedTotal}</span>
                     <span
                       className={
                         isTokensUpdated ? 'text-white' : 'text-muted-foreground'
@@ -252,14 +257,7 @@ export const Editor = () => {
                     >
                       •
                     </span>
-                    <span className="font-medium">
-                      $
-                      {Math.max(
-                        (totalTokensUsed.input / 1000000) * 0.05 +
-                          (totalTokensUsed.output / 1000000) * 0.4,
-                        0.01
-                      ).toFixed(2)}
-                    </span>
+                    <span className="font-medium">${tokenSummary.estimatedCost}</span>
                   </div>
                 )}
                 <Button
@@ -357,13 +355,20 @@ export const Editor = () => {
                             {/* Image preview */}
                             <div className="flex justify-center">
                               <div className="w-64 h-64 rounded-lg overflow-hidden bg-muted border">
-                                <img
-                                  src={analysis?.imageSrc}
-                                  alt={`Image ${selectedImageForDetails + 1}`}
-                                  width={256}
-                                  height={256}
-                                  className="w-full h-full object-cover"
-                                />
+                                {analysis?.imageSrc ? (
+                                  <Image
+                                    src={analysis.imageSrc}
+                                    alt={`Image ${selectedImageForDetails + 1}`}
+                                    width={256}
+                                    height={256}
+                                    className="h-full w-full object-cover"
+                                    unoptimized
+                                  />
+                                ) : (
+                                  <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+                                    No image available
+                                  </div>
+                                )}
                               </div>
                             </div>
 
@@ -503,13 +508,20 @@ export const Editor = () => {
                             )}
                             <div className="flex items-center gap-2">
                               <div className="w-8 h-8 rounded-full overflow-hidden bg-muted border flex-shrink-0">
-                                <img
-                                  src={analysis.imageSrc}
-                                  alt={`Image ${analysisIndex + 1}`}
-                                  width={32}
-                                  height={32}
-                                  className="w-full h-full object-cover"
-                                />
+                                {analysis.imageSrc ? (
+                                  <Image
+                                    src={analysis.imageSrc}
+                                    alt={`Image ${analysisIndex + 1}`}
+                                    width={32}
+                                    height={32}
+                                    className="h-full w-full object-cover"
+                                    unoptimized
+                                  />
+                                ) : (
+                                  <div className="flex h-full w-full items-center justify-center text-[10px] text-muted-foreground">
+                                    N/A
+                                  </div>
+                                )}
                               </div>
                               <span className="text-sm font-medium text-muted-foreground">
                                 Ideas from Image {analysisIndex + 1}
@@ -589,17 +601,27 @@ export const Editor = () => {
                           </p>
                           <p>
                             {session.images.length} images •{' '}
-                            {session.aiResponse
-                              ? `Has AI response${session.tokensUsed && (session.tokensUsed.input > 0 || session.tokensUsed.output > 0) ? ` • Tokens: ${(() => {
-                                  const total = session.tokensUsed!.input + session.tokensUsed!.output
-                                  if (total >= 1000000) {
-                                    return `${(total / 1000000).toFixed(1)}M`
-                                  } else if (total >= 1000) {
-                                    return `${(total / 1000).toFixed(1)}K`
-                                  }
-                                  return total.toLocaleString()
-                                })()} • $${(session.tokensUsed.input / 1000000) * 0.05 + (session.tokensUsed.output / 1000000) * 0.4 >= 0.01 ? ((session.tokensUsed.input / 1000000) * 0.05 + (session.tokensUsed.output / 1000000) * 0.4).toFixed(3) : '0.000'}` : ''}`
-                              : 'No AI response'}
+                            {session.aiResponse ? (
+                              <>
+                                Has AI response
+                                {(() => {
+                                  const sessionTokenSummary = summarizeTokens(
+                                    session.tokensUsed
+                                  )
+                                  if (!sessionTokenSummary) return null
+                                  return (
+                                    <>
+                                      {' '}
+                                      • Tokens: {sessionTokenSummary.formattedTotal}
+                                      {' '}
+                                      • ${sessionTokenSummary.estimatedCost}
+                                    </>
+                                  )
+                                })()}
+                              </>
+                            ) : (
+                              'No AI response'
+                            )}
                           </p>
                         </div>
                       </div>
