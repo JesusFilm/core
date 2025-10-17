@@ -92,5 +92,9 @@
   "Short Film": "ภาพยนตร์สั้น",
   "Behind The Scenes": "เบื้องหลัง",
   "Trailer": "ตัวอย่างภาพยนตร์",
-  "Available in {{count}} languages._other": "มีให้บริการใน {{count}} ภาษา"
+  "Available in {{count}} languages._other": "มีให้บริการใน {{count}} ภาษา",
+  "localeSuggestion": {
+    "message": "We noticed your browser prefers {{localeName}}. Would you like to view the site in this language?",
+    "action": "Switch to {{localeName}}"
+  }
 }
