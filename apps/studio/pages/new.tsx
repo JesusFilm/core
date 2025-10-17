@@ -1,5 +1,6 @@
 import {
   ArrowUp,
+  Book,
   Bot,
   Camera,
   Check,
@@ -87,6 +88,7 @@ import { useImageAnalysis } from '../src/hooks/useImageAnalysis'
 import { useNewPageSession } from '../src/hooks/useNewPageSession'
 import { useUnsplashMedia } from '../src/hooks/useUnsplashMedia'
 import {
+  type ConversationMap,
   type GeneratedStepContent,
   type ImageAnalysisResult,
   type UserInputData,
@@ -242,6 +244,222 @@ const FormatSelection = dynamic(
   }),
   { ssr: false }
 )
+
+const steps = [
+  { id: 1, title: 'Content', description: 'What do you want to share?' },
+  { id: 2, title: 'Style', description: 'Choose your design style' },
+  { id: 3, title: 'Output', description: 'Select output formats' }
+]
+
+const START_FROM_SCRATCH_OPTION = 'Start from scratch'
+
+const BASE_SYSTEM_PROMPT = `You are a content creation assistant for Jesus Film Project. Based on the user's devotional content, create an engaging and shareable version that:
+
+1. Maintains the core spiritual message
+2. Makes it suitable for social media sharing
+3. Encourages reflection and engagement
+4. Keeps it concise and impactful
+5. Uses warm, inviting language`
+
+const REFINEMENT_INSTRUCTIONS = `When refining or improving content, consider:
+- Previous AI responses may show patterns in content style and messaging
+- Maintain consistency with your previous suggestions
+- Build upon rather than contradict earlier improvements
+- If no previous context is available, proceed with standard enhancement`
+
+const DEFAULT_OUTPUT_FORMAT_INSTRUCTIONS = `Provide the response as JSON with this structure:
+{
+  "steps": [
+    {
+      "content": "# Short label for the step (max 6 words)\\n\\nMarkdown-formatted instagram sotry or messages copy for this step",
+      "keywords": "singleword-keyword, singleword-keyword, singleword-keyword",
+      "mediaPrompt": "≤150 character prompt for an image/video generator"
+    }
+  ]
+}`
+
+const CONVERSATION_OUTPUT_FORMAT_INSTRUCTIONS = `Provide the response as JSON with this structure:
+{
+  "conversationMap": {
+    "idealPath": [
+      {
+        "stage": "Short stage label (max 5 words)",
+        "guideMessage": "2-3 sentence message for the ministry guide to say in warm, empathetic tone.",
+        "responderCue": "Expected short reply or reaction from the responder. Use null if not applicable.",
+        "purpose": "Why this exchange matters. Use null if redundant.",
+        "scriptureSupport": "Optional scripture reference or encouragement. Use null if not needed."
+      }
+    ],
+    "responderScenarios": [
+      {
+        "scenario": "Short description of the responder's posture (max 7 words)",
+        "responderMessage": "Example of what they might say or do.",
+        "guideResponse": "How the guide should reply with empathy, gospel connection, and next question in 2-3 sentences.",
+        "nextStep": "Suggested follow-up move that keeps conversation going. Use null if already covered.",
+        "scriptureSupport": "Optional scripture reference or promise. Use null if not needed."
+      }
+    ]
+  }
+}`
+
+const DEFAULT_RESPONSE_GUIDELINES = `Guidelines:
+- Include 7-12 sequential steps tailored to the user's request.
+- Keep the core spiritual message while making each step social-ready.
+- Provide three exactly single-word keywords per step that is suitable for Unsplash image searches.
+- The mediaPrompt should align with the step's tone and visuals.
+- Use markdown formatting inside the content field when helpful.
+- Begin each content field with a level-one markdown heading that states the step's short label (e.g., "# Let Your Light Shine") followed by a blank line.`
+
+const CONVERSATION_RESPONSE_GUIDELINES = `Guidelines:
+- Map an ideal path of 6-9 guide-led conversation moves that gently progress toward gospel hope.
+- After each guide move, include what the responder might say or feel when relevant.
+- Finish each guide move with purpose notes and scripture support when it naturally reinforces the moment.
+- Provide 4-6 common responder scenarios with empathetic guide replies that keep the dialogue open.
+- Do not include design instructions, media prompts, or image keywords.
+- Keep tone pastoral, patient, and people-first.`
+
+const contextSystemPrompts: Record<string, string> = {
+  default:
+    'Default to producing ministry-ready resources that can flex between digital and in-person sharing when no specific context is selected. Provide balanced guidance that keeps the content adaptable.',
+  'Conversations':
+    'Guide one-on-one or small group conversations that gently introduce gospel truths. Produce a conversation map with an ideal guide-led path and empathetic responses to common responder situations. Emphasize listening, questions, prayerful transitions, and Scripture when natural. Avoid design instructions and image keywords in this mode.',
+  'Social Media':
+    'Operate like a Canva-style designer for social media campaigns. Treat each step as a templated design idea for stories, carousels, reels, or feed posts. Suggest layout direction, color palettes, typography moods, and short, scroll-stopping copy. Keep platform conventions (vertical ratios, accessibility, alt-text) in mind and tailor media prompts to energetic, template-friendly visuals.',
+  Website:
+    'Act as a simple website builder focused on ministry landing pages. Outline hero messaging, section structure, calls to action, and follow-up pathways that help visitors take the next spiritual step. Provide guidance on responsive layout, navigation clarity, and content hierarchy. Recommend imagery that builds trust and a welcoming digital doorway, and craft media prompts for cohesive hero or section artwork.',
+  Print:
+    'Serve as a Canva-style designer producing print-ready assets that will be downloaded as PDFs. Include details about page sizes, margin or bleed considerations when helpful, and ensure copy remains legible in physical formats. Suggest tangible distribution ideas such as flyers, postcards, or posters. Shape media prompts around high-resolution artwork that reproduces cleanly when printed.',
+  'Real Life':
+    'Support real-world ministry efforts beyond digital channels. Offer actionable steps for events, discipleship moments, pastoral care, missions, or community service. Provide talking points, activity ideas, and tangible follow-up resources that equip Christians, missionaries, and pastors. Encourage cultural sensitivity and spiritual discernment, and use media prompts to inspire helpful reference visuals, handouts, or props.'
+}
+
+const getOutputFormatInstructions = (context: string): string =>
+  context === 'Conversations'
+    ? CONVERSATION_OUTPUT_FORMAT_INSTRUCTIONS
+    : DEFAULT_OUTPUT_FORMAT_INSTRUCTIONS
+
+const getResponseGuidelines = (context: string): string =>
+  context === 'Conversations'
+    ? CONVERSATION_RESPONSE_GUIDELINES
+    : DEFAULT_RESPONSE_GUIDELINES
+
+const contextDetailOptions: Record<string, Array<{ text: string; emoji: string; prompt: string }>> = {
+  'Conversations': [
+    { text: 'Start a conversation', prompt: 'Start a friendly chat with someone I haven\'t talked to in a while, without sounding forced.', emoji: '💬' },
+    { text: 'Reconnect', prompt: 'Reach out to someone I\'ve lost touch with and express genuine interest in their life.', emoji: '🙋‍♂️' },
+    { text: 'Invite to talk more', prompt: 'Invite someone to continue our conversation and deepen our connection.', emoji: '💭' },
+    { text: "Say you're sorry", prompt: 'Apologize sincerely for something I\'ve done wrong and seek reconciliation.', emoji: '🙇' },
+    { text: 'Encourage a friend', prompt: 'Offer words of encouragement and support to someone going through a difficult time.', emoji: '🙌' },
+    { text: 'Share your story', prompt: 'Share a personal testimony or experience that could inspire or help others.', emoji: '📝' },
+    { text: 'Share a verse', prompt: 'Share a meaningful Bible verse that relates to the current situation.', emoji: '📖' },
+    { text: 'Offer a prayer', prompt: 'Offer to pray for someone or share a prayer that addresses their needs.', emoji: '🤲' }
+  ],
+  'Social Media': [
+    { text: 'Create a social post design', prompt: 'Design an engaging social media post that captures attention and communicates a clear message.', emoji: '🖼️' },
+    { text: 'Design a carousel series', prompt: 'Create a multi-slide carousel that tells a story or presents information progressively.', emoji: '🧩' },
+    { text: 'Plan a short-form video', prompt: 'Plan a brief, impactful video content for platforms like Instagram Reels or TikTok.', emoji: '🎬' },
+    { text: 'Write captions for reels & stories', prompt: 'Write compelling captions that complement short-form video content.', emoji: '✍️' },
+    { text: 'Map a community engagement idea', prompt: 'Develop an idea for engaging with the community through social media initiatives.', emoji: '📣' }
+  ],
+  Website: [
+    { text: 'Create an embeddable carousel', prompt: 'Design a carousel component that can be easily embedded in websites.', emoji: '🧷' },
+    { text: 'Build a simple landing page', prompt: 'Create an effective landing page that converts visitors into engaged users.', emoji: '🖥️' },
+    { text: 'Lay out a page with sections', prompt: 'Structure a webpage with clear, organized sections for optimal user experience.', emoji: '📐' },
+    { text: 'Draft copy for featured designs', prompt: 'Write persuasive copy highlighting key design elements and benefits.', emoji: '📝' }
+  ],
+  Print: [
+    { text: 'Design church invite cards', prompt: 'Create attractive invitation cards for church events with clear details and compelling visuals.', emoji: '⛪' },
+    { text: 'Create outreach flyers', prompt: 'Design informative flyers to promote church programs and community outreach.', emoji: '📣' },
+    { text: 'Make shareable cards', prompt: 'Create cards with inspirational messages or Bible verses that people can easily share.', emoji: '💌' },
+    { text: 'Generate QR code posters', prompt: 'Design posters featuring QR codes that link to online resources or event registration.', emoji: '🔗' },
+    { text: 'Print sticker sheets', prompt: 'Create sheets of stickers with church branding, Bible verses, or motivational messages.', emoji: '🏷️' }
+  ],
+  'Real Life': [
+    { text: 'Write discussion questions', prompt: 'Create thoughtful questions to facilitate meaningful group discussions about faith topics.', emoji: '❓' },
+    { text: 'Plan life application ideas', prompt: 'Develop practical ways to apply biblical principles to everyday life situations.', emoji: '🧭' },
+    { text: 'Outline a short sermon', prompt: 'Structure a brief, focused message with clear main points and practical applications.', emoji: '🎙️' },
+    { text: 'Prepare a group lesson', prompt: 'Create an engaging lesson plan for small group Bible study or discipleship.', emoji: '👥' },
+    { text: 'Create a family devotion', prompt: 'Design a family-focused spiritual activity with Bible reading and discussion.', emoji: '🏠' }
+  ]
+}
+
+// Removed - now using proper conversation history instead of RAG
+
+const IMAGE_ANALYSIS_PROMPT = `You are an expert at analyzing content images from religious and spiritual point of view for our digital ai tool that helps the user create content for social media and private gospel sharing using images, text or video. Your task is to generate gospel-focused content ideas that help private conversations or social media followers consider God, Gospel, and Salvation. Each idea should be a practical, actionable suggestion based on the image content.  Gospel-centered content ideas inspired by this image. Each idea should connect naturally to the visual, point people toward God, the Gospel, and Salvation, and be practical for sharing in private conversations or on social media. Keep ideas specific, actionable, and matched to what our Canva-like design tool can create (e.g., Instagram stories, carousels, social posts, simple videos, or printable PDFs).
+  content ideas inspired by this image. Each idea should connect 
+  naturally to the visual, point people toward God, the Gospel, and 
+  Salvation, and be practical for sharing in private conversations or 
+  on social media. Keep ideas specific, actionable, and matched to 
+  what our Canva-like design tool can create (e.g., Instagram 
+  stories, carousels, social posts, simple videos, or printable PDFs).
+
+Analyze this image and provide a detailed response in the following JSON format:
+
+{
+  "contentType": "One of: devotional, bible, church_service_slide, sermon_notes, scripture_verse, worship_image, religious_artwork, nature_spiritual, community_event, ministry_activity, personal_message, comment, email, news_article, other",
+  "extractedText": "Any text visible in the image - perform OCR and extract all readable text exactly as it appears",
+  "detailedDescription": "If there's no text, provide a detailed description of the image including: composition, colors, mood, setting, any people/objects/symbols, artistic style, and spiritual/religious elements",
+  "confidence": "Overall confidence in the analysis (high/medium/low)",
+  "contentIdeas": ["First gospel-focused content idea as a string inspired by the image and most appropriate for the image content (10 words max)", "Second gospel-focused content idea as a string inspired by the image and most appropriate for the image content (10 words max)", "Third gospel-focused content idea as a string inspired by the image and most appropriate for the image content (10 words max)"]
+}
+
+Content type definitions:
+- devotional: Images designed for daily devotionals, quiet time, spiritual reflection
+- bible: Illustrations or photos depicting bible stories, characters, or scenes
+- church_service_slide: PowerPoint slides or presentation slides used in church services
+- sermon_notes: Notes or outlines from sermons, preaching materials, study guides
+- scripture_verse: Images containing bible verses, often with decorative backgrounds
+- worship_image: Images related to worship, praise, music ministry
+- religious_artwork: Paintings, drawings, or artistic representations with religious themes
+- nature_spiritual: Nature scenes used for spiritual purposes or contemplation
+- community_event: Photos of church events, gatherings, fellowship activities
+- ministry_activity: Images showing ministry work, outreach, service projects
+- personal_message: Screenshot of a private conversation that users needs help with to lean it to gospel and bible truth
+- comment: Comments on social media, discussions, or feedback
+- email: Email communications, newsletters, or correspondence
+- news_article: Some intereste based on current events artivle that user uploads as context for his outreach effort
+- other: Any other type of religious/spiritual content not covered above
+
+Be thorough and accurate in your analysis.`
+
+// Category-specific sharing options
+const categorySharingOptions = {
+  'Conversations': [
+    'in a text with your friends',
+    'in a group chat with your family',
+    'in a prayer group on WhatsApp',
+    'in YouTube comments',
+    'in a private message to someone in need'
+  ],
+  'Social Media': [
+    'on your Instagram stories',
+    "in your church's Facebook group",
+    'in your Twitter/X post',
+    'on your TikTok feed',
+    'with your colleagues on LinkedIn'
+  ],
+  Website: [
+    "on your church's website",
+    'in your ministry blog post',
+    'in your online testimony page',
+    'in your podcast website',
+    'on your nonprofit homepage'
+  ],
+  Print: [
+    'in a printed church bulletin',
+    'on a flyer for your community event',
+    'in your devotional journal',
+    'on a Bible study handout',
+    'in your published book/article'
+  ],
+  'Real Life': [
+    'in a sermon at your church',
+    'in a small group Bible study',
+    'in a conversation with a neighbor',
+    'during a conference or retreat',
+    'at a youth group meeting'
+  ]
+}
 
 type SelectedOutputsMap = Record<string, string[]>
 
@@ -1072,6 +1290,7 @@ export default function NewPage() {
     isNetworkError: boolean
   } | null>(null)
   const [editableSteps, setEditableSteps] = useState<GeneratedStepContent[]>([])
+  const [conversationMap, setConversationMap] = useState<ConversationMap | null>(null)
   const [copiedStepIndex, setCopiedStepIndex] = useState<number | null>(null)
   const [editingStepIndices, setEditingStepIndices] = useState<Set<number>>(new Set())
   const [isProcessing, setIsProcessing] = useState(false)
@@ -1228,6 +1447,33 @@ export default function NewPage() {
     return handlers
   }, [editableSteps.length]) // Only recreate when step count changes
 
+<<<<<<< HEAD
+=======
+  const conversationMapForDisplay = useMemo<ConversationMap>(
+    () =>
+      conversationMap ?? {
+        idealPath: [],
+        responderScenarios: []
+      },
+    [conversationMap]
+  )
+
+  // Close context menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        showContextMenu &&
+        !(event.target as Element).closest('.context-menu-container')
+      ) {
+        setShowContextMenu(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showContextMenu])
+
+>>>>>>> ac9a803ff (feat(studio): render conversation map for conversations mode)
   // Load saved data on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -1277,6 +1523,8 @@ export default function NewPage() {
 
   // Intersection Observer for lazy loading Unsplash images
   const loadImagesWhenVisible = (step: GeneratedStepContent, stepIndex: number) => {
+    if (selectedContext === 'Conversations') return
+
     const accessKey = unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
     if (accessKey && accessKey.length >= 40 && step.keywords && step.keywords.length > 0) {
       void loadUnsplashImagesForStep(step, stepIndex)
@@ -1373,6 +1621,7 @@ export default function NewPage() {
     setHighlightedCategory('') // Stop automatic highlight animation when a tile is selected
     setIsAnimationStopped(true) // Stop the rotating text animation
     setHidingSuggestionsCarousel(false) // Show suggestions carousel when switching contexts
+    setConversationMap(null)
   }, [])
 
   // Memoized callback to prevent unnecessary re-renders of RotatingText
@@ -1403,12 +1652,15 @@ export default function NewPage() {
     const contextPrompt =
       contextSystemPrompts[selectedContext] ?? contextSystemPrompts.default
 
+    const outputInstructions = getOutputFormatInstructions(selectedContext)
+    const responseGuidelines = getResponseGuidelines(selectedContext)
+
     let systemPrompt = [
       BASE_SYSTEM_PROMPT,
       REFINEMENT_INSTRUCTIONS,
       `Context focus:\n${contextPrompt}`,
-      OUTPUT_FORMAT_INSTRUCTIONS,
-      RESPONSE_GUIDELINES
+      outputInstructions,
+      responseGuidelines
     ].join('\n\n')
 
     // Add image analysis context if available
@@ -1508,8 +1760,78 @@ export default function NewPage() {
       }
     })
 
-  const parseGeneratedSteps = (rawContent: string): GeneratedStepContent[] => {
-    if (!rawContent) return []
+  const normalizeConversationMap = (rawData: any): ConversationMap => {
+    const ensureString = (value: any): string =>
+      typeof value === 'string' ? value.trim() : ''
+
+    const ensureNullableString = (value: any): string | null => {
+      if (typeof value !== 'string') return null
+      const trimmed = value.trim()
+      return trimmed.length > 0 ? trimmed : null
+    }
+
+    const idealPathSource = Array.isArray(rawData?.idealPath)
+      ? rawData.idealPath
+      : []
+
+    const normalizedIdealPath = idealPathSource
+      .map((item, index) => {
+        const guideMessage = ensureString(item?.guideMessage)
+        if (!guideMessage) return null
+
+        const stage = ensureString(item?.stage)
+
+        return {
+          stage: stage || `Stage ${index + 1}`,
+          guideMessage,
+          responderCue: ensureNullableString(item?.responderCue),
+          purpose: ensureNullableString(item?.purpose),
+          scriptureSupport: ensureNullableString(item?.scriptureSupport)
+        }
+      })
+      .filter((item): item is ConversationMap['idealPath'][number] => item !== null)
+
+    const scenariosSource = Array.isArray(rawData?.responderScenarios)
+      ? rawData.responderScenarios
+      : []
+
+    const normalizedScenarios = scenariosSource
+      .map((item, index) => {
+        const responderMessage = ensureString(item?.responderMessage)
+        const guideResponse = ensureString(item?.guideResponse)
+
+        if (!responderMessage || !guideResponse) return null
+
+        const scenarioLabel = ensureString(item?.scenario)
+
+        return {
+          scenario: scenarioLabel || `Scenario ${index + 1}`,
+          responderMessage,
+          guideResponse,
+          nextStep: ensureNullableString(item?.nextStep),
+          scriptureSupport: ensureNullableString(item?.scriptureSupport)
+        }
+      })
+      .filter((item): item is ConversationMap['responderScenarios'][number] => item !== null)
+
+    return {
+      idealPath: normalizedIdealPath,
+      responderScenarios: normalizedScenarios
+    }
+  }
+
+  const parseGeneratedResponse = (
+    rawContent: string
+  ): { steps: GeneratedStepContent[]; conversationMap?: ConversationMap } => {
+    if (!rawContent) {
+      return {
+        steps: [],
+        conversationMap:
+          selectedContext === 'Conversations'
+            ? normalizeConversationMap({})
+            : undefined
+      }
+    }
 
     let preparedContent = rawContent.trim()
     const codeBlockMatch = preparedContent.match(/```(?:json)?\s*([\s\S]*?)```/i)
@@ -1519,6 +1841,19 @@ export default function NewPage() {
 
     try {
       const parsed = JSON.parse(preparedContent)
+
+      if (selectedContext === 'Conversations') {
+        const conversationData =
+          parsed?.conversationMap && typeof parsed.conversationMap === 'object'
+            ? parsed.conversationMap
+            : parsed
+
+        return {
+          steps: [],
+          conversationMap: normalizeConversationMap(conversationData)
+        }
+      }
+
       const stepsArray = Array.isArray(parsed?.steps)
         ? parsed.steps
         : Array.isArray(parsed)
@@ -1526,13 +1861,28 @@ export default function NewPage() {
           : []
 
       if (Array.isArray(stepsArray) && stepsArray.length > 0) {
-        return normalizeGeneratedSteps(stepsArray as GeneratedStepContent[])
+        return { steps: normalizeGeneratedSteps(stepsArray as GeneratedStepContent[]) }
+      }
+
+      if (parsed?.steps && typeof parsed.steps === 'string') {
+        try {
+          const nestedSteps = JSON.parse(parsed.steps)
+          if (Array.isArray(nestedSteps) && nestedSteps.length > 0) {
+            return { steps: normalizeGeneratedSteps(nestedSteps) }
+          }
+        } catch (nestedError) {
+          console.warn('Failed to parse nested steps JSON:', nestedError)
+        }
       }
     } catch (error) {
       console.warn(
         'Failed to parse structured multi-step content. Falling back to default format.',
         error
       )
+    }
+
+    if (selectedContext === 'Conversations') {
+      return { steps: [], conversationMap: normalizeConversationMap({}) }
     }
 
     const fallbackSteps: GeneratedStepContent[] = []
@@ -1558,16 +1908,18 @@ export default function NewPage() {
     }
 
     if (fallbackSteps.length > 0) {
-      return normalizeGeneratedSteps(fallbackSteps)
+      return { steps: normalizeGeneratedSteps(fallbackSteps) }
     }
 
-    return normalizeGeneratedSteps([
-      {
-        content: rawContent.trim(),
-        keywords: [],
-        mediaPrompt: ''
-      }
-    ])
+    return {
+      steps: normalizeGeneratedSteps([
+        {
+          content: rawContent.trim(),
+          keywords: [],
+          mediaPrompt: ''
+        }
+      ])
+    }
   }
 
   const handleStepContentChange = useCallback((index: number, value: string) => {
@@ -1651,6 +2003,205 @@ export default function NewPage() {
     )
   })
 
+  const ConversationMapView = React.memo(({ map }: { map: ConversationMap }) => {
+    const [copiedItemId, setCopiedItemId] = useState<string | null>(null)
+
+    useEffect(() => {
+      if (copiedItemId === null) return
+      const timeout = setTimeout(() => setCopiedItemId(null), 2000)
+      return () => clearTimeout(timeout)
+    }, [copiedItemId])
+
+    const copyText = useCallback(async (id: string, text: string) => {
+      if (!text) return
+      try {
+        if (typeof navigator !== 'undefined' && navigator.clipboard) {
+          await navigator.clipboard.writeText(text)
+          setCopiedItemId(id)
+        }
+      } catch (error) {
+        console.error('Failed to copy conversation text:', error)
+      }
+    }, [])
+
+    const renderIdealPath = () => {
+      if (!map.idealPath || map.idealPath.length === 0) {
+        return (
+          <div className="text-sm text-muted-foreground border border-dashed border-border rounded-2xl p-6 bg-muted/40">
+            The AI will map an ideal set of guide-led messages once you provide context above.
+          </div>
+        )
+      }
+
+      return map.idealPath.map((step, index) => {
+        const stageId = `ideal-${index}`
+        const stageCopyText = [
+          `Stage: ${step.stage}`,
+          `Guide: ${step.guideMessage}`,
+          step.responderCue ? `Expected responder: ${step.responderCue}` : '',
+          step.purpose ? `Purpose: ${step.purpose}` : '',
+          step.scriptureSupport ? `Scripture: ${step.scriptureSupport}` : ''
+        ]
+          .filter(Boolean)
+          .join('\n')
+
+        const isCopied = copiedItemId === stageId
+
+        return (
+          <div
+            key={stageId}
+            className="bg-white border border-border rounded-3xl shadow-sm px-6 py-6 space-y-4"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <div className="text-xs uppercase tracking-wide text-muted-foreground">Step {index + 1}</div>
+                <div className="text-lg font-semibold text-foreground">{step.stage}</div>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => copyText(stageId, stageCopyText)}
+                title={isCopied ? 'Copied!' : 'Copy this exchange'}
+              >
+                {isCopied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="shrink-0 rounded-full bg-blue-600 text-white text-[11px] font-semibold px-3 py-1 uppercase tracking-wide">
+                  Guide
+                </div>
+                <div className="rounded-2xl bg-blue-50 text-blue-900 px-4 py-3 shadow-inner">
+                  {step.guideMessage}
+                </div>
+              </div>
+              {step.responderCue && (
+                <div className="flex items-start gap-3 justify-end">
+                  <div className="rounded-2xl bg-stone-200 text-stone-900 px-4 py-3 shadow-inner max-w-xl">
+                    {step.responderCue}
+                  </div>
+                  <div className="shrink-0 rounded-full bg-stone-400 text-white text-[11px] font-semibold px-3 py-1 uppercase tracking-wide">
+                    Responder
+                  </div>
+                </div>
+              )}
+              <div className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-2">
+                {step.purpose && (
+                  <div className="flex items-start gap-2">
+                    <MessageCircle className="h-4 w-4 mt-0.5 text-blue-500" />
+                    <span>
+                      <span className="font-semibold text-foreground">Purpose:&nbsp;</span>
+                      {step.purpose}
+                    </span>
+                  </div>
+                )}
+                {step.scriptureSupport && (
+                  <div className="flex items-start gap-2">
+                    <Book className="h-4 w-4 mt-0.5 text-amber-600" />
+                    <span>
+                      <span className="font-semibold text-foreground">Scripture:&nbsp;</span>
+                      {step.scriptureSupport}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )
+      })
+    }
+
+    const renderResponderScenarios = () => {
+      if (!map.responderScenarios || map.responderScenarios.length === 0) {
+        return (
+          <div className="text-sm text-muted-foreground border border-dashed border-border rounded-2xl p-6 bg-muted/40">
+            Once the ideal path is set, the assistant will suggest how to respond when the other person hesitates, gets curious, or has questions.
+          </div>
+        )
+      }
+
+      return map.responderScenarios.map((scenario, index) => {
+        const scenarioId = `scenario-${index}`
+        const scenarioCopyText = [
+          `Scenario: ${scenario.scenario}`,
+          `Responder: ${scenario.responderMessage}`,
+          `Guide: ${scenario.guideResponse}`,
+          scenario.nextStep ? `Next step: ${scenario.nextStep}` : '',
+          scenario.scriptureSupport ? `Scripture: ${scenario.scriptureSupport}` : ''
+        ]
+          .filter(Boolean)
+          .join('\n')
+
+        const isCopied = copiedItemId === scenarioId
+
+        return (
+          <Card key={scenarioId} className="border-border shadow-sm">
+            <CardHeader className="flex flex-row items-start justify-between gap-4">
+              <div>
+                <CardTitle className="text-base font-semibold text-foreground">
+                  Common Scenario {index + 1}: {scenario.scenario}
+                </CardTitle>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => copyText(scenarioId, scenarioCopyText)}
+                title={isCopied ? 'Copied!' : 'Copy this response'}
+              >
+                {isCopied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              <div>
+                <span className="font-semibold text-foreground">Responder says:&nbsp;</span>
+                {scenario.responderMessage}
+              </div>
+              <div>
+                <span className="font-semibold text-foreground">Guide response:&nbsp;</span>
+                {scenario.guideResponse}
+              </div>
+              {scenario.nextStep && (
+                <div>
+                  <span className="font-semibold text-foreground">Next step:&nbsp;</span>
+                  {scenario.nextStep}
+                </div>
+              )}
+              {scenario.scriptureSupport && (
+                <div className="text-muted-foreground">
+                  <span className="font-semibold text-foreground">Scripture:&nbsp;</span>
+                  {scenario.scriptureSupport}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )
+      })
+    }
+
+    return (
+      <div className="space-y-10">
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <MessageSquare className="h-5 w-5 text-blue-600" />
+            <h3 className="text-lg font-semibold">Ideal Conversation Path</h3>
+          </div>
+          <div className="space-y-6">{renderIdealPath()}</div>
+        </section>
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <HelpCircle className="h-5 w-5 text-violet-600" />
+            <h3 className="text-lg font-semibold">Responder Scenarios</h3>
+          </div>
+          <div className="space-y-4">{renderResponderScenarios()}</div>
+        </section>
+      </div>
+    )
+  })
+
   const handleCopyStep = async (
     step: GeneratedStepContent,
     index: number
@@ -1705,6 +2256,7 @@ export default function NewPage() {
     updateTokens(currentSessionId, newTokens)
   }
 
+<<<<<<< HEAD
   const handleAiError = useCallback(
     (_error: unknown, { isNetworkError }: { isNetworkError: boolean }) => {
       setAiError({
@@ -1712,6 +2264,30 @@ export default function NewPage() {
         message: isNetworkError
           ? 'We had trouble reaching the Studio AI service. Check your connection and try again.'
           : 'Something went wrong while generating content. Please try again.'
+=======
+  const processContentWithAI = async (inputText?: string) => {
+    const currentValue = inputText || textareaRef.current?.value || ''
+    if (!currentValue.trim()) {
+      console.warn('Please enter some content to process.')
+      return
+    }
+
+    setIsProcessing(true)
+    const previousResponse = aiResponse
+    const previousSteps = editableSteps
+    const previousConversationMap = conversationMap
+    setAiResponse('')
+
+    try {
+      // Build conversation history for proper chat context
+      const messages = buildConversationHistory()
+
+      // Add the current user input (or refinement request)
+      const currentUserMessage = currentValue.trim()
+      messages.push({
+        role: 'user',
+        content: currentUserMessage
+>>>>>>> ac9a803ff (feat(studio): render conversation map for conversations mode)
       })
     },
     [setAiError]
@@ -1741,6 +2317,7 @@ export default function NewPage() {
     prompt: IMAGE_ANALYSIS_PROMPT
   })
 
+<<<<<<< HEAD
   const { loadUnsplashImagesForStep, testUnsplashAPI } =
     useUnsplashMedia({
       unsplashApiKey,
@@ -1749,6 +2326,79 @@ export default function NewPage() {
       setLoadingUnsplashSteps,
       setIsSettingsOpen,
       deriveHeadingFromContent
+=======
+      const data = await response.json()
+      const processedContent =
+        extractTextFromResponse(data) || 'No response generated'
+      setAiResponse(processedContent)
+      const { steps: parsedSteps, conversationMap: parsedConversationMap } =
+        parseGeneratedResponse(processedContent)
+      setEditableSteps(parsedSteps)
+      setConversationMap(parsedConversationMap ?? null)
+
+      // Track token usage first
+      const tokenUsage = data.usage ? {
+        input: data.usage.input_tokens ?? 0,
+        output: data.usage.output_tokens ?? 0
+      } : { input: 0, output: 0 }
+
+      // Update total tokens
+      setTotalTokensUsed((prev) => ({
+        input: prev.input + tokenUsage.input,
+        output: prev.output + tokenUsage.output
+      }))
+
+      // Save session after AI response is processed with correct token usage
+      const sessionId = userInputStorage.saveCurrentSession({
+        textContent: currentValue,
+        images: imageAttachments,
+        aiResponse: processedContent,
+        aiSteps: parsedSteps,
+        conversationMap: parsedConversationMap ?? null,
+        imageAnalysisResults: imageAnalysisResults.map((result) => ({
+          imageSrc: result.imageSrc,
+          contentType: result.contentType,
+          extractedText: result.extractedText,
+          detailedDescription: result.detailedDescription,
+          confidence: result.confidence,
+          contentIdeas: result.contentIdeas
+        })),
+        tokensUsed: tokenUsage
+      })
+      // Set this as the current session for future token tracking
+      setCurrentSessionId(sessionId)
+      setSavedSessions(userInputStorage.getAllSessions())
+    } catch (error) {
+      console.error('Error processing content:', error)
+      // Restore previous response if API call failed
+      setAiResponse(previousResponse)
+      setEditableSteps(previousSteps)
+      setConversationMap(previousConversationMap)
+      console.error('Failed to process content via the AI proxy. Please try again.')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  const analyzeImageWithAI = async (imageSrc: string, imageIndex: number) => {
+    // Mark as analyzing
+    setImageAnalysisResults((prev) => {
+      const updated = [...prev]
+      if (!updated[imageIndex]) {
+        updated[imageIndex] = {
+          imageSrc,
+          contentType: '',
+          extractedText: '',
+          detailedDescription: '',
+          confidence: '',
+          contentIdeas: [],
+          isAnalyzing: true
+        }
+      } else {
+        updated[imageIndex].isAnalyzing = true
+      }
+      return updated
+>>>>>>> ac9a803ff (feat(studio): render conversation map for conversations mode)
     })
 
   // Expose test function to window for debugging
@@ -1987,8 +2637,29 @@ export default function NewPage() {
   }
 
   const loadSession = (session: UserInputData) => {
+<<<<<<< HEAD
     // Start loading animation immediately
     setLoadingSession(session.id)
+=======
+    setTextContent(session.textContent)
+    setImageAttachments(session.images)
+    setAiResponse(session.aiResponse || '')
+    setEditableSteps(
+      session.aiSteps ? normalizeGeneratedSteps(session.aiSteps) : []
+    )
+    setConversationMap(session.conversationMap ?? null)
+    // Set textarea value directly
+    if (textareaRef.current) {
+      textareaRef.current.value = session.textContent
+    }
+    setImageAnalysisResults(
+      session.imageAnalysisResults.map((result) => ({
+        ...result,
+        contentIdeas: result.contentIdeas || [],
+        isAnalyzing: false
+      }))
+    )
+>>>>>>> ac9a803ff (feat(studio): render conversation map for conversations mode)
 
     // After loading animation delay, load the session and collapse
     setTimeout(() => {
@@ -4574,6 +5245,7 @@ export default function NewPage() {
                           </Card>
                         </Accordion>
 
+<<<<<<< HEAD
                         {editableSteps.length > 0 && (
                           <>
                             <div id="parsed-multi-step-content" className="flex flex-wrap items-center justify-between gap-2">
@@ -4591,18 +5263,35 @@ export default function NewPage() {
                                   )}
                                 </p>
                               
+=======
+                        {selectedContext === 'Conversations' ? (
+                          <div className="space-y-4">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <label className="text-sm font-medium">Conversation Map</label>
+>>>>>>> ac9a803ff (feat(studio): render conversation map for conversations mode)
                             </div>
-                            <div className="grid gap-6">
-                              <StepsList
-                                editableSteps={editableSteps}
-                                editingStepIndices={editingStepIndices}
-                                stepHandlers={stepHandlers}
-                                copiedStepIndex={copiedStepIndex}
-                                unsplashImages={unsplashImages}
-                                onImageSelection={handleImageSelection}
-                              />
-                            </div>
-                          </>
+                            <ConversationMapView map={conversationMapForDisplay} />
+                          </div>
+                        ) : (
+                          editableSteps.length > 0 && (
+                            <>
+                              <div className="flex flex-wrap items-center justify-between gap-2">
+                                <label className="text-sm font-medium">
+                                  Parsed Multi-Step Content
+                                </label>
+                              </div>
+                              <div className="grid gap-6">
+                                <StepsList
+                                  editableSteps={editableSteps}
+                                  editingStepIndices={editingStepIndices}
+                                  stepHandlers={stepHandlers}
+                                  copiedStepIndex={copiedStepIndex}
+                                  unsplashImages={unsplashImages}
+                                  onImageSelection={handleImageSelection}
+                                />
+                              </div>
+                            </>
+                          )
                         )}
                       </div>
                     )}
