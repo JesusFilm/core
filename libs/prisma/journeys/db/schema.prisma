@@ -545,6 +545,7 @@ model Block {
   image                      String?
   duration                   Int?
   objectFit                  VideoBlockObjectFit?
+  subtitleLanguage           String?
   triggerStart               Int?
   x                          Int?
   y                          Int?
