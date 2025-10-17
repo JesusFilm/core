@@ -23,6 +23,7 @@ import {
   Printer,
   Search,
   Settings,
+  Trash2,
   Sparkles,
   Twitter,
   Users,
@@ -1208,6 +1209,8 @@ export default function NewPage() {
   const [imageAttachments, setImageAttachments] = useState<string[]>([])
   const [unsplashImages, setUnsplashImages] = useState<Record<string, string[]>>({})
   const [loadingUnsplashSteps, setLoadingUnsplashSteps] = useState<Set<string>>(new Set())
+  const [loadingSession, setLoadingSession] = useState<string | null>(null)
+  const [isCollapsing, setIsCollapsing] = useState(false)
   const [imageAnalysisResults, setImageAnalysisResults] = useState<
     Array<{
       imageSrc: string
@@ -2531,41 +2534,89 @@ export default function NewPage() {
   }
 
   const loadSession = (session: UserInputData) => {
-    setTextContent(session.textContent)
-    setImageAttachments(session.images)
-    setAiResponse(session.aiResponse || '')
-    setEditableSteps(
-      session.aiSteps ? normalizeGeneratedSteps(session.aiSteps) : []
-    )
-    // Set textarea value directly
-    if (textareaRef.current) {
-      textareaRef.current.value = session.textContent
-    }
-    setImageAnalysisResults(
-      session.imageAnalysisResults.map((result) => ({
-        ...result,
-        contentIdeas: result.contentIdeas || [],
-        isAnalyzing: false
-      }))
-    )
+    // Start loading animation immediately
+    setLoadingSession(session.id)
 
-    // Set current session ID for token tracking
-    setCurrentSessionId(session.id)
+    // After loading animation delay, load the session and collapse
+    setTimeout(() => {
+      // Stop loading animation
+      setLoadingSession(null)
 
-    // Set token usage for display
-    if (session.tokensUsed) {
-      setTotalTokensUsed(session.tokensUsed)
-    }
+      // Start collapsing animation
+      setIsCollapsing(true)
 
-    // Clear draft since we're loading a saved session
-    userInputStorage.clearDraft()
+      // After collapse animation completes, hide the section
+      setTimeout(() => {
+        setIsSessionsOpen(false)
+        setIsCollapsing(false)
+      }, 500) // Match the CSS transition duration
+
+      // Load session data
+      setTextContent(session.textContent)
+      setImageAttachments(session.images)
+      setAiResponse(session.aiResponse || '')
+      setEditableSteps(
+        session.aiSteps ? normalizeGeneratedSteps(session.aiSteps) : []
+      )
+      // Set textarea value directly
+      if (textareaRef.current) {
+        textareaRef.current.value = session.textContent
+      }
+      setImageAnalysisResults(
+        session.imageAnalysisResults.map((result) => ({
+          ...result,
+          contentIdeas: result.contentIdeas || [],
+          isAnalyzing: false
+        }))
+      )
+
+      // Set current session ID for token tracking
+      setCurrentSessionId(session.id)
+
+      // Set token usage for display
+      if (session.tokensUsed) {
+        setTotalTokensUsed(session.tokensUsed)
+      }
+
+      // Clear draft since we're loading a saved session
+      userInputStorage.clearDraft()
+
+      // Scroll to "Parsed Multi-Step Content" section
+      setTimeout(() => {
+        const element = document.getElementById('parsed-multi-step-content')
+        if (element) {
+          // Custom smooth scroll with slower animation
+          const elementTop = element.getBoundingClientRect().top
+          const startPosition = window.pageYOffset
+          const distance = elementTop - 20 // Small offset from top
+          const duration = 800 // 800ms for slower scroll
+          let startTime: number | null = null
+
+          const animation = (currentTime: number) => {
+            if (startTime === null) startTime = currentTime
+            const timeElapsed = currentTime - startTime
+            const progress = Math.min(timeElapsed / duration, 1)
+
+            // Easing function for smoother animation
+            const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+            const run = easeInOutCubic(progress)
+
+            window.scrollTo(0, startPosition + distance * run)
+
+            if (timeElapsed < duration) {
+              requestAnimationFrame(animation)
+            }
+          }
+
+          requestAnimationFrame(animation)
+        }
+      }, 300)
+    }, 800) // 0.8 second loading animation
   }
 
   const deleteSession = (sessionId: string) => {
-    if (confirm('Are you sure you want to delete this session?')) {
-      userInputStorage.deleteSession(sessionId)
-      setSavedSessions(userInputStorage.getAllSessions())
-    }
+    userInputStorage.deleteSession(sessionId)
+    setSavedSessions(userInputStorage.getAllSessions())
   }
 
   const styleOptions = [
@@ -3250,16 +3301,32 @@ export default function NewPage() {
 
         {/* Previous Sessions */}
         {isSessionsOpen && savedSessions.length > 0 && (
-          <div className="max-w-4xl mx-auto mb-8">
+          <div className={`max-w-4xl mx-auto mb-8 transition-all duration-500 ease-in-out ${
+            isCollapsing ? 'opacity-0 scale-95 transform' : 'opacity-100 scale-100'
+          }`}>
             <div className="border border-muted rounded-lg p-4">
               <div className="flex items-center gap-2 mb-4">
                 <History className="w-4 h-4 text-muted-foreground" />
                 <span className="text-sm font-medium text-muted-foreground">Previous Sessions</span>
               </div>
               <div className="space-y-3">
-                {savedSessions.map((session) => (
-                  <Card key={session.id} className="p-3 border-muted">
-                    <div className="flex items-start justify-between">
+                {savedSessions.map((session, index) => (
+                  <React.Fragment key={session.id}>
+                    <Card
+                      className={`group p-3 relative border-muted bg-transparent shadow-none hover:bg-white hover:shadow-md hover:-my-3 hover:py-7 hover:z-10 transition-padding duration-200 ease-out cursor-pointer ${
+                        loadingSession === session.id ? 'bg-muted/30' : ''
+                      }`}
+                      onClick={() => !loadingSession && loadSession(session)}
+                    >
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0 text-center min-w-0">
+                        <div className="text-sm font-semibold text-muted-foreground leading-tight">
+                          {new Date(session.timestamp).getDate()}
+                        </div>
+                        <div className="text-xs text-muted-foreground uppercase tracking-wider">
+                          {new Date(session.timestamp).toLocaleString('default', { month: 'short' })}
+                        </div>
+                      </div>
                       <div className="flex-1 min-w-0">
                         <div className="mb-1">
                           <h4 className="font-medium text-sm truncate">
@@ -3268,58 +3335,61 @@ export default function NewPage() {
                         </div>
                         <div className="text-xs text-muted-foreground space-y-0.5">
                           <p>
-                            {new Date(session.timestamp).toLocaleString()}
-                          </p>
-                          <p>
-                            {session.images.length} images •{' '}
-                              {session.aiResponse
-                                ? `Has AI response${(() => {
-                                    const tokens = session.tokensUsed
-                                    if (!tokens) return ''
-                                    const hasTokens = tokens.input > 0 || tokens.output > 0
-                                    if (!hasTokens) return ''
+                            {session.images.length > 0
+                              ? `${session.images.length} images • `
+                              : `${new Date(session.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • `}
+                              {(() => {
+                                const tokens = session.tokensUsed
+                                if (!tokens) return ''
+                                const hasTokens = tokens.input > 0 || tokens.output > 0
+                                if (!hasTokens) return ''
 
-                                    const total = tokens.input + tokens.output
-                                    const formattedTotal = (() => {
-                                      if (total >= 1000000) {
-                                        return `${(total / 1000000).toFixed(1)}M`
-                                      }
-                                      if (total >= 1000) {
-                                        return `${(total / 1000).toFixed(1)}K`
-                                      }
-                                      return total.toLocaleString()
-                                    })()
+                                const total = tokens.input + tokens.output
+                                const formattedTotal = (() => {
+                                  if (total >= 1000000) {
+                                    return `${(total / 1000000).toFixed(1)}M`
+                                  }
+                                  if (total >= 1000) {
+                                    return `${(total / 1000).toFixed(1)}K`
+                                  }
+                                  return total.toLocaleString()
+                                })()
 
-                                    const cost =
-                                      (tokens.input / 1000000) * 0.05 + (tokens.output / 1000000) * 0.4
-                                    const formattedCost = cost >= 0.01 ? cost.toFixed(3) : '0.000'
+                                const cost =
+                                  (tokens.input / 1000000) * 0.05 + (tokens.output / 1000000) * 0.4
+                                const formattedCost = cost >= 0.01 ? cost.toFixed(2) : '0.00'
 
-                                    return ` • Tokens: ${formattedTotal} • $${formattedCost}`
-                                  })()}`
-                                : 'No AI response'}
+                                return `Tokens: ${formattedTotal} • $${formattedCost}`
+                              })()}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 ml-3">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => loadSession(session)}
-                          className="h-7 px-2 text-xs"
-                        >
-                          Load
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => deleteSession(session.id)}
-                          className="h-7 px-2 text-xs text-primary hover:text-primary"
-                        >
-                          Delete
-                        </Button>
+                        {loadingSession === session.id ? (
+                          <div className="flex items-center gap-2 px-2 py-1">
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                            <span className="text-xs text-muted-foreground">Loading...</span>
+                          </div>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={(e) => {
+                              e.stopPropagation() // Prevent triggering the card click
+                              deleteSession(session.id)
+                            }}
+                            className="invisible group-hover:visible h-7 px-2 text-xs text-primary hover:!bg-primary hover:text-white"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        )}
                       </div>
                     </div>
-                  </Card>
+                    </Card>
+                    {index < savedSessions.length - 1 && (
+                      <hr className="border-stone-600/10 my-2 mx-4 z-1 relative" />
+                    )}
+                  </React.Fragment>
                 ))}
               </div>
             </div>
@@ -4928,7 +4998,7 @@ export default function NewPage() {
 
                         {editableSteps.length > 0 && (
                           <>
-                            <div className="flex flex-wrap items-center justify-between gap-2">
+                            <div id="parsed-multi-step-content" className="flex flex-wrap items-center justify-between gap-2">
                               <label className="text-sm font-medium">
                                 Parsed Multi-Step Content
                               </label>
