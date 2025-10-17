@@ -243,6 +243,14 @@ const BASE_SYSTEM_PROMPT = `You are a content creation assistant for Jesus Film 
 4. Keeps it concise and impactful
 5. Uses warm, inviting language`
 
+const APOLOGIST_PROMPT_VERSION = 'v2025-10-17'
+
+const APOLOGIST_INTEGRATION_PROMPT = `Apologist.ai Integration:
+- Recognize moments when audiences may wrestle with faith objections, questions, or the need for conversational follow-up.
+- Recommend a specific Apologist.ai resource (https://apologist.ai) or search phrase that equips the audience to explore that topic further.
+- Frame the recommendation pastorally—highlight Apologist.ai as a trusted conversational companion for deeper apologetics exploration.
+- Keep references succinct so they fit naturally within step content or accompanying media prompts.`
+
 const REFINEMENT_INSTRUCTIONS = `When refining or improving content, consider:
 - Previous AI responses may show patterns in content style and messaging
 - Maintain consistency with your previous suggestions
@@ -1495,6 +1503,7 @@ export default function NewPage() {
       BASE_SYSTEM_PROMPT,
       REFINEMENT_INSTRUCTIONS,
       `Context focus:\n${contextPrompt}`,
+      APOLOGIST_INTEGRATION_PROMPT,
       OUTPUT_FORMAT_INSTRUCTIONS,
       RESPONSE_GUIDELINES
     ].join('\n\n')
@@ -1945,7 +1954,12 @@ export default function NewPage() {
         },
         body: JSON.stringify({
           model: 'gpt-5-nano',
-          messages
+          messages,
+          metadata: {
+            integration: 'apologist-ai',
+            feature: 'studio-step-content',
+            apologistPromptVersion: APOLOGIST_PROMPT_VERSION
+          }
           // max_output_tokens: 2000,
           // temperature: 0.9,
         })
