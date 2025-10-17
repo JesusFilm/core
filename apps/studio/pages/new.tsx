@@ -20,6 +20,7 @@ import {
   Palette,
   Paperclip,
   Plus,
+  Play,
   Printer,
   Search,
   Settings,
@@ -65,6 +66,7 @@ import {
 import { Textarea } from '../src/components/ui/textarea'
 import {
   type GeneratedStepContent,
+  type SelectedVideo,
   type UserInputData,
   userInputStorage
 } from '../src/libs/storage'
@@ -76,6 +78,71 @@ import {
   CarouselNext,
   CarouselPrevious
 } from '@/components/ui/carousel'
+
+type PexelsVideoResult = SelectedVideo & { previewUrl?: string }
+
+const normalizeSelectedVideo = (video: unknown): SelectedVideo | undefined => {
+  if (!video || typeof video !== 'object') return undefined
+
+  const candidate = video as Partial<SelectedVideo> & Record<string, unknown>
+
+  const primaryUrl =
+    typeof candidate.videoUrl === 'string' && candidate.videoUrl.trim().length > 0
+      ? candidate.videoUrl.trim()
+      : typeof candidate.url === 'string' && candidate.url.trim().length > 0
+        ? candidate.url.trim()
+        : ''
+
+  if (!primaryUrl) return undefined
+
+  const thumbnailUrl =
+    typeof candidate.thumbnailUrl === 'string' && candidate.thumbnailUrl.trim().length > 0
+      ? candidate.thumbnailUrl.trim()
+      : ''
+
+  const id = (() => {
+    if (typeof candidate.id === 'string' && candidate.id.trim().length > 0) {
+      return candidate.id.trim()
+    }
+    if (typeof candidate.id === 'number' && Number.isFinite(candidate.id)) {
+      return String(candidate.id)
+    }
+    return primaryUrl
+  })()
+
+  const url =
+    typeof candidate.url === 'string' && candidate.url.trim().length > 0
+      ? candidate.url.trim()
+      : primaryUrl
+
+  const duration = (() => {
+    if (typeof candidate.duration === 'number' && Number.isFinite(candidate.duration)) {
+      return candidate.duration
+    }
+    if (candidate.duration != null) {
+      const parsed = Number.parseFloat(String(candidate.duration))
+      if (Number.isFinite(parsed)) return parsed
+    }
+    return undefined
+  })()
+
+  return {
+    id,
+    url,
+    videoUrl: primaryUrl,
+    thumbnailUrl,
+    source: 'pexels',
+    ...(duration !== undefined ? { duration } : {})
+  }
+}
+
+const formatDuration = (seconds: number): string => {
+  if (!Number.isFinite(seconds)) return '0:00'
+  const totalSeconds = Math.max(0, Math.round(seconds))
+  const minutes = Math.floor(totalSeconds / 60)
+  const remaining = totalSeconds % 60
+  return `${minutes}:${remaining.toString().padStart(2, '0')}`
+}
 
 // Dynamic imports for components to avoid hydration issues
 const AnimatedLoadingText = dynamic(
@@ -712,7 +779,8 @@ const createPolotnoDesignFromContent = ({
         body: bodyContent,
         keywords: keywords.slice(0, 5),
         mediaPrompt,
-        selectedImageUrl: (step as any).selectedImageUrl
+        selectedImageUrl: (step as any).selectedImageUrl,
+        selectedVideo: normalizeSelectedVideo((step as any).selectedVideo)
       }
     })
     .filter(Boolean) as Array<{
@@ -722,6 +790,7 @@ const createPolotnoDesignFromContent = ({
       keywords: string[]
       mediaPrompt: string
       selectedImageUrl?: string
+      selectedVideo?: SelectedVideo
     }>
 
   const hasStructuredSteps = normalizedSteps.length > 0
@@ -786,6 +855,11 @@ const createPolotnoDesignFromContent = ({
 
         if (step.mediaPrompt) {
           metaLines.push(`Visual prompt: ${step.mediaPrompt}`)
+        }
+
+        if (step.selectedVideo) {
+          const videoReference = step.selectedVideo.url || step.selectedVideo.videoUrl
+          metaLines.push(`Video inspiration: ${videoReference}`)
         }
 
         if (metaLines.length > 0) {
@@ -1148,6 +1222,7 @@ export default function NewPage() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isSessionsOpen, setIsSessionsOpen] = useState(false)
   const [unsplashApiKey, setUnsplashApiKey] = useState('')
+  const [pexelsApiKey, setPexelsApiKey] = useState('')
   const [textContent, setTextContent] = useState('')
   const [aiResponse, setAiResponse] = useState('')
   const [editableSteps, setEditableSteps] = useState<GeneratedStepContent[]>([])
@@ -1157,6 +1232,8 @@ export default function NewPage() {
   const [imageAttachments, setImageAttachments] = useState<string[]>([])
   const [unsplashImages, setUnsplashImages] = useState<Record<string, string[]>>({})
   const [loadingUnsplashSteps, setLoadingUnsplashSteps] = useState<Set<string>>(new Set())
+  const [pexelsVideos, setPexelsVideos] = useState<Record<string, PexelsVideoResult[]>>({})
+  const [loadingPexelsSteps, setLoadingPexelsSteps] = useState<Set<string>>(new Set())
   const [imageAnalysisResults, setImageAnalysisResults] = useState<
     Array<{
       imageSrc: string
@@ -1326,6 +1403,12 @@ export default function NewPage() {
       if (savedUnsplashApiKey) {
         setUnsplashApiKey(savedUnsplashApiKey)
       }
+      const savedPexelsApiKey = localStorage.getItem(
+        'jesus-film-studio-pexels-api-key'
+      )
+      if (savedPexelsApiKey) {
+        setPexelsApiKey(savedPexelsApiKey)
+      }
     }
   }, [])
 
@@ -1335,6 +1418,13 @@ export default function NewPage() {
       localStorage.setItem('jesus-film-studio-unsplash-api-key', unsplashApiKey)
     }
   }, [unsplashApiKey])
+
+  // Save Pexels API key to localStorage when it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined' && pexelsApiKey) {
+      localStorage.setItem('jesus-film-studio-pexels-api-key', pexelsApiKey)
+    }
+  }, [pexelsApiKey])
 
   // Intersection Observer hook for lazy loading
   const useIntersectionObserver = (callback: () => void, options?: IntersectionObserverInit) => {
@@ -1363,11 +1453,18 @@ export default function NewPage() {
     return { ref: setElement }
   }
 
-  // Intersection Observer for lazy loading Unsplash images
-  const loadImagesWhenVisible = (step: GeneratedStepContent, stepIndex: number) => {
-    const accessKey = unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
-    if (accessKey && accessKey.length >= 40 && step.keywords && step.keywords.length > 0) {
+  // Intersection Observer for lazy loading external media suggestions
+  const loadMediaWhenVisible = (step: GeneratedStepContent, stepIndex: number) => {
+    if (!step.keywords || step.keywords.length === 0) return
+
+    const unsplashKey = unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
+    if (unsplashKey && unsplashKey.length >= 40) {
       void loadUnsplashImagesForStep(step, stepIndex)
+    }
+
+    const pexelsKey = pexelsApiKey || process.env.PEXELS_API_KEY
+    if (pexelsKey && pexelsKey.length >= 20) {
+      void loadPexelsVideosForStep(step, stepIndex)
     }
   }
 
@@ -1586,10 +1683,21 @@ export default function NewPage() {
       const mediaPrompt =
         typeof step?.mediaPrompt === 'string' ? step.mediaPrompt.trim() : ''
 
+      const selectedImageUrl =
+        typeof (step as GeneratedStepContent)?.selectedImageUrl === 'string'
+          ? (step as GeneratedStepContent).selectedImageUrl
+          : undefined
+
+      const selectedVideo = normalizeSelectedVideo(
+        (step as Partial<GeneratedStepContent>)?.selectedVideo
+      )
+
       return {
         content,
         keywords: normalizedKeywords,
-        mediaPrompt
+        mediaPrompt,
+        ...(selectedImageUrl ? { selectedImageUrl } : {}),
+        ...(selectedVideo ? { selectedVideo } : {})
       }
     })
 
@@ -1673,21 +1781,46 @@ export default function NewPage() {
     })
   }, [])
 
+  const handleVideoSelection = useCallback(
+    (stepIndex: number, video: PexelsVideoResult) => {
+      setEditableSteps((prev) => {
+        if (!prev[stepIndex]) return prev
+        const updated = [...prev]
+        const normalizedVideo = normalizeSelectedVideo(video)
+        if (!normalizedVideo) return prev
+        updated[stepIndex] = {
+          ...updated[stepIndex],
+          selectedVideo: normalizedVideo
+        }
+        return updated
+      })
+    },
+    []
+  )
+
   // Memoized component for steps to prevent re-renders from tile hover states
-  const StepsList = React.memo(({
+  const StepsList = React.memo(({ 
     editableSteps,
     editingStepIndices,
     stepHandlers,
     copiedStepIndex,
     unsplashImages,
-    onImageSelection
+    pexelsVideos,
+    onImageSelection,
+    onVideoSelection,
+    loadingPexelsSteps,
+    loadingUnsplashSteps
   }: {
     editableSteps: GeneratedStepContent[]
     editingStepIndices: Set<number>
     stepHandlers: Record<number, { onContentChange: (value: string) => void; onFocus: () => void }>
     copiedStepIndex: number | null
     unsplashImages: Record<string, string[]>
+    pexelsVideos: Record<string, PexelsVideoResult[]>
     onImageSelection: (stepIndex: number, imageUrl: string) => void
+    onVideoSelection: (stepIndex: number, video: PexelsVideoResult) => void
+    loadingPexelsSteps: Set<string>
+    loadingUnsplashSteps: Set<string>
   }) => {
     return (
       <>
@@ -1699,10 +1832,11 @@ export default function NewPage() {
           const cardKey = heading
             ? `${heading}-${index}`
             : `step-${index}`
+          const selectedVideo = normalizeSelectedVideo(step.selectedVideo)
 
-          // Intersection observer for lazy loading images
+          // Intersection observer for lazy loading media assets
           const { ref: cardRef } = useIntersectionObserver(
-            () => loadImagesWhenVisible(step, index),
+            () => loadMediaWhenVisible(step, index),
             { threshold: 0.1 }
           )
 
@@ -1830,6 +1964,114 @@ export default function NewPage() {
                   ) : (
                     <p className="text-sm text-muted-foreground">
                       Add keywords to unlock image inspiration.
+                    </p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium">Video Inspiration</h4>
+                  {step.keywords.length > 0 ? (
+                    <div className="w-full">
+                      {(() => {
+                        const stepKey = `step-${index}`
+                        const videosForStep = pexelsVideos[stepKey] || []
+                        const isLoadingVideos = loadingPexelsSteps.has(stepKey)
+                        const hasVideoKey = pexelsApiKey || process.env.PEXELS_API_KEY
+
+                        if (isLoadingVideos) {
+                          return (
+                            <div className="flex items-center justify-center py-8">
+                              <div className="text-sm text-muted-foreground">
+                                🎬 Searching for videos...
+                              </div>
+                            </div>
+                          )
+                        }
+
+                        if (videosForStep.length > 0) {
+                          return (
+                            <Carousel className="w-full relative">
+                              <CarouselContent>
+                                {videosForStep.map((video, videoIndex) => {
+                                  const isSelected = selectedVideo?.videoUrl === video.videoUrl
+                                  return (
+                                    <CarouselItem
+                                      key={`${index}-${videoIndex}-video`}
+                                      className="basis-1/3 mr-2"
+                                    >
+                                      <div
+                                        className={`relative aspect-video mx-auto overflow-hidden rounded-lg border cursor-pointer transition-all duration-200 ${
+                                          isSelected
+                                            ? 'ring-2 ring-blue-500 ring-offset-2'
+                                            : 'hover:ring-2 hover:ring-blue-300 hover:ring-offset-2'
+                                        }`}
+                                        onClick={() => onVideoSelection(index, video)}
+                                      >
+                                        <div
+                                          className="absolute inset-0"
+                                          style={{
+                                            backgroundImage: video.thumbnailUrl
+                                              ? `url(${video.thumbnailUrl})`
+                                              : undefined,
+                                            backgroundSize: 'cover',
+                                            backgroundPosition: 'center'
+                                          }}
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/30" />
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-white">
+                                          <Play className="h-6 w-6 drop-shadow-lg" />
+                                          <span className="text-xs font-medium uppercase tracking-wide">
+                                            Select Video
+                                          </span>
+                                        </div>
+                                        {isSelected && (
+                                          <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
+                                            <Check className="w-6 h-6 text-white drop-shadow-lg" />
+                                          </div>
+                                        )}
+                                        {video.duration && (
+                                          <div className="absolute bottom-2 right-2 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-medium text-white">
+                                            {formatDuration(video.duration)}
+                                          </div>
+                                        )}
+                                      </div>
+                                    </CarouselItem>
+                                  )
+                                })}
+                              </CarouselContent>
+
+                              <CarouselPrevious />
+                              <CarouselNext />
+                            </Carousel>
+                          )
+                        }
+
+                        if (!hasVideoKey) {
+                          return (
+                            <div className="text-sm text-muted-foreground py-4">
+                              <p className="mb-2">
+                                Add a Pexels API Key in Settings to see video inspiration.
+                              </p>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setIsSettingsOpen(true)}
+                              >
+                                Open Settings
+                              </Button>
+                            </div>
+                          )
+                        }
+
+                        return (
+                          <div className="text-sm text-muted-foreground py-4">
+                            No videos found for "{step.keywords[0]}". Try different keywords or check your Pexels API Key.
+                          </div>
+                        )
+                      })()}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Add keywords to unlock video inspiration.
                     </p>
                   )}
                 </div>
@@ -2192,6 +2434,102 @@ export default function NewPage() {
     }
   }
 
+  const searchPexelsVideos = async (
+    query: string,
+    perPage: number = 6
+  ): Promise<PexelsVideoResult[]> => {
+    const accessKey = pexelsApiKey || process.env.PEXELS_API_KEY
+
+    console.log('🔑 Pexels API Key debug:', {
+      pexelsApiKey: pexelsApiKey ? `***${pexelsApiKey.slice(-4)}` : 'not set',
+      envVar: process.env.PEXELS_API_KEY
+        ? `***${process.env.PEXELS_API_KEY.slice(-4)}`
+        : 'not set',
+      query
+    })
+
+    if (!accessKey) {
+      console.error('❌ PEXELS_API_KEY not found in environment variables or settings')
+      return []
+    }
+
+    try {
+      const apiUrl = `https://api.pexels.com/videos/search?query=${encodeURIComponent(query)}&per_page=${perPage}&orientation=portrait`
+      console.log('🌐 Making Pexels request to:', apiUrl)
+
+      const response = await fetch(apiUrl, {
+        headers: {
+          Authorization: accessKey
+        }
+      })
+
+      if (!response.ok) {
+        console.error('❌ Pexels API error:', response.status, response.statusText)
+        const errorText = await response.text()
+        console.error('❌ Error response body:', errorText)
+        return []
+      }
+
+      const data = await response.json()
+
+      const videos: PexelsVideoResult[] = Array.isArray(data.videos)
+        ? data.videos
+            .map((video: any) => {
+              const videoFiles = Array.isArray(video?.video_files)
+                ? video.video_files.filter((file: any) => typeof file?.link === 'string')
+                : []
+
+              if (videoFiles.length === 0) return null
+
+              const sortedFiles = videoFiles.sort((a: any, b: any) => {
+                const aHeight = typeof a?.height === 'number' ? a.height : Number.MAX_SAFE_INTEGER
+                const bHeight = typeof b?.height === 'number' ? b.height : Number.MAX_SAFE_INTEGER
+                return aHeight - bHeight
+              })
+
+              const previewFile = sortedFiles[0]
+              const preferredFile =
+                sortedFiles.find((file: any) => file?.quality === 'hd' && (file?.height ?? 0) <= 1080) ??
+                sortedFiles[sortedFiles.length - 1]
+
+              const resolvedVideoUrl = String(preferredFile?.link || '')
+              if (!resolvedVideoUrl) return null
+
+              const resolvedPreviewUrl = String(previewFile?.link || resolvedVideoUrl)
+              const thumbnail =
+                typeof video?.image === 'string' && video.image.length > 0
+                  ? video.image
+                  : Array.isArray(video?.video_pictures) && video.video_pictures.length > 0
+                    ? String(video.video_pictures[0]?.picture || '')
+                    : ''
+
+              const duration =
+                typeof video?.duration === 'number' && Number.isFinite(video.duration)
+                  ? video.duration
+                  : undefined
+
+              return {
+                id: String(video?.id ?? resolvedVideoUrl),
+                url: typeof video?.url === 'string' && video.url.length > 0 ? video.url : resolvedVideoUrl,
+                videoUrl: resolvedVideoUrl,
+                previewUrl: resolvedPreviewUrl,
+                thumbnailUrl: thumbnail,
+                source: 'pexels' as const,
+                ...(duration !== undefined ? { duration } : {})
+              }
+            })
+            .filter(Boolean) as PexelsVideoResult[]
+        : []
+
+      console.log(`🎞️ Pexels Response for "${query}": ${videos.length} videos found`)
+
+      return videos
+    } catch (error) {
+      console.error('💥 Failed to search Pexels:', error)
+      return []
+    }
+  }
+
   const loadUnsplashImagesForStep = async (step: GeneratedStepContent, stepIndex: number) => {
     if (!step.keywords.length) return
 
@@ -2246,6 +2584,48 @@ export default function NewPage() {
     }
   }
 
+  const loadPexelsVideosForStep = async (step: GeneratedStepContent, stepIndex: number) => {
+    if (!step.keywords.length) return
+
+    const stepKey = `step-${stepIndex}`
+    if (pexelsVideos[stepKey] || loadingPexelsSteps.has(stepKey)) return
+
+    const accessKey = pexelsApiKey || process.env.PEXELS_API_KEY
+    if (!accessKey) return
+
+    setLoadingPexelsSteps(prev => new Set(prev).add(stepKey))
+
+    try {
+      let videos: PexelsVideoResult[] = []
+
+      for (let i = 0; i < step.keywords.length; i++) {
+        const keyword = step.keywords[i]
+        console.log(
+          `🎞️ Loading Pexels videos for Step ${stepIndex + 1}: "${keyword}" (${i + 1}/${step.keywords.length})`
+        )
+        videos = await searchPexelsVideos(keyword, 9)
+
+        if (videos.length > 0) {
+          console.log(`✅ Found ${videos.length} videos for Step ${stepIndex + 1} using keyword "${keyword}"`)
+          break
+        }
+      }
+
+      setPexelsVideos(prev => ({
+        ...prev,
+        [stepKey]: videos
+      }))
+    } catch (error) {
+      console.error('Failed to load Pexels videos for step:', error)
+    } finally {
+      setLoadingPexelsSteps(prev => {
+        const next = new Set(prev)
+        next.delete(stepKey)
+        return next
+      })
+    }
+  }
+
   // Debug function to test Unsplash API
   const testUnsplashAPI = async () => {
     console.log('🧪 Testing Unsplash API...')
@@ -2266,12 +2646,31 @@ export default function NewPage() {
     }
   }
 
+  const testPexelsAPI = async () => {
+    console.log('🧪 Testing Pexels API...')
+
+    if (!pexelsApiKey && !process.env.PEXELS_API_KEY) {
+      console.warn('No Pexels API Key found. Please enter one in Settings.')
+      setIsSettingsOpen(true)
+      return
+    }
+
+    const testResult = await searchPexelsVideos('test', 1)
+
+    if (testResult.length > 0) {
+      console.log(`✅ Pexels API working! Found ${testResult.length} test video(s).`)
+    } else {
+      console.warn('❌ Pexels API test failed. Check your API Key in Settings.')
+    }
+  }
+
   // Expose test function to window for debugging
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      (window as any).testUnsplashAPI = testUnsplashAPI
+      ;(window as any).testUnsplashAPI = testUnsplashAPI
+      ;(window as any).testPexelsAPI = testPexelsAPI
     }
-  }, [])
+  }, [testUnsplashAPI, testPexelsAPI])
 
   const processFiles = (files: FileList | File[]) => {
     const fileArray = Array.from(files)
@@ -2877,6 +3276,54 @@ export default function NewPage() {
                             variant="outline"
                             size="sm"
                             onClick={testUnsplashAPI}
+                            className="ml-4 whitespace-nowrap"
+                          >
+                            Test Key
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label
+                          htmlFor="pexels-api-key"
+                          className="text-sm font-medium"
+                        >
+                          Pexels API Key
+                        </label>
+                        <Input
+                          id="pexels-api-key"
+                          type="password"
+                          placeholder="Enter your Pexels API Key..."
+                          value={pexelsApiKey}
+                          onChange={(e) => setPexelsApiKey(e.target.value)}
+                          className={`w-full ${
+                            pexelsApiKey && pexelsApiKey.length < 32
+                              ? 'border-red-500'
+                              : ''
+                          }`}
+                        />
+                        {pexelsApiKey && pexelsApiKey.length < 32 && (
+                          <p className="text-xs text-red-600 mt-1">
+                            API Key appears shorter than expected. Pexels keys are typically 32+ characters.
+                          </p>
+                        )}
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs text-muted-foreground">
+                            Your Pexels API Key is used to fetch video inspiration. Get one from{' '}
+                            <a
+                              href="https://www.pexels.com/api/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary hover:underline"
+                            >
+                              Pexels Developers
+                            </a>
+                            . It will be stored locally in your browser.
+                          </p>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={testPexelsAPI}
                             className="ml-4 whitespace-nowrap"
                           >
                             Test Key
@@ -4889,7 +5336,11 @@ export default function NewPage() {
                                 stepHandlers={stepHandlers}
                                 copiedStepIndex={copiedStepIndex}
                                 unsplashImages={unsplashImages}
+                                pexelsVideos={pexelsVideos}
                                 onImageSelection={handleImageSelection}
+                                onVideoSelection={handleVideoSelection}
+                                loadingPexelsSteps={loadingPexelsSteps}
+                                loadingUnsplashSteps={loadingUnsplashSteps}
                               />
                             </div>
                           </>
