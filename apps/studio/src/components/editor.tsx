@@ -1,17 +1,6 @@
-import {
-  Bot,
-  Check,
-  Copy,
-  HelpCircle,
-  History,
-  Image as ImageIcon,
-  Info,
-  Loader2,
-  Settings,
-  Sparkles,
-  X
-} from 'lucide-react'
+import { History, Settings } from 'lucide-react'
 import Head from 'next/head'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { PolotnoContainer, SidePanelWrap, WorkspaceWrap } from 'polotno';
 import { Workspace } from 'polotno/canvas/workspace';
@@ -21,6 +10,11 @@ import { PagesTimeline } from 'polotno/pages-timeline';
 import { Toolbar } from 'polotno/toolbar/toolbar';
 import { ZoomButtons } from 'polotno/toolbar/zoom-buttons';
 import React, { useEffect, useState } from 'react';
+
+import {
+  type UserInputData,
+  userInputStorage
+} from '../libs/storage'
 
 import { Button } from './ui/button'
 import {
@@ -32,13 +26,6 @@ import {
   DialogTrigger
 } from './ui/dialog'
 import { Input } from './ui/input'
-import { Textarea } from './ui/textarea'
-
-import {
-  type GeneratedStepContent,
-  type UserInputData,
-  userInputStorage
-} from '../libs/storage'
 
 // Enable animations
 unstable_setAnimationsEnabled(true);
@@ -59,13 +46,13 @@ export const Editor = () => {
   const [isSessionsOpen, setIsSessionsOpen] = useState(false)
   const [unsplashApiKey, setUnsplashApiKey] = useState('')
   const [savedSessions, setSavedSessions] = useState<UserInputData[]>([])
-  const [totalTokensUsed, setTotalTokensUsed] = useState({
+  const [totalTokensUsed] = useState({
     input: 0,
     output: 0
   })
   const [isTokensUpdated, setIsTokensUpdated] = useState(false)
   const [selectedImageForDetails, setSelectedImageForDetails] = useState<number | null>(null)
-  const [imageAnalysisResults, setImageAnalysisResults] = useState<Array<{
+  const [imageAnalysisResults] = useState<Array<{
     imageSrc: string
     contentType: string
     extractedText: string
@@ -199,12 +186,13 @@ export const Editor = () => {
                     onClick={() => router.push('/')}
                     className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
                   >
-                    <img
+                    <Image
                       src="/jesusfilm-sign.svg"
                       alt="Jesus Film Project"
                       width={24}
                       height={24}
                       className="h-6 w-auto"
+                      priority
                     />
                     <span className="text-2xl font-bold text-foreground">Studio</span>
                   </button>
@@ -357,13 +345,18 @@ export const Editor = () => {
                             {/* Image preview */}
                             <div className="flex justify-center">
                               <div className="w-64 h-64 rounded-lg overflow-hidden bg-muted border">
-                                <img
-                                  src={analysis?.imageSrc}
-                                  alt={`Image ${selectedImageForDetails + 1}`}
-                                  width={256}
-                                  height={256}
-                                  className="w-full h-full object-cover"
-                                />
+                                {analysis?.imageSrc ? (
+                                  <Image
+                                    src={analysis.imageSrc}
+                                    alt={`Image ${selectedImageForDetails + 1}`}
+                                    width={256}
+                                    height={256}
+                                    className="w-full h-full object-cover"
+                                    unoptimized
+                                  />
+                                ) : (
+                                  <div className="w-full h-full bg-muted" aria-hidden="true" />
+                                )}
                               </div>
                             </div>
 
@@ -503,13 +496,18 @@ export const Editor = () => {
                             )}
                             <div className="flex items-center gap-2">
                               <div className="w-8 h-8 rounded-full overflow-hidden bg-muted border flex-shrink-0">
-                                <img
-                                  src={analysis.imageSrc}
-                                  alt={`Image ${analysisIndex + 1}`}
-                                  width={32}
-                                  height={32}
-                                  className="w-full h-full object-cover"
-                                />
+                                {analysis.imageSrc ? (
+                                  <Image
+                                    src={analysis.imageSrc}
+                                    alt={`Image ${analysisIndex + 1}`}
+                                    width={32}
+                                    height={32}
+                                    className="w-full h-full object-cover"
+                                    unoptimized
+                                  />
+                                ) : (
+                                  <div className="w-full h-full bg-muted" aria-hidden="true" />
+                                )}
                               </div>
                               <span className="text-sm font-medium text-muted-foreground">
                                 Ideas from Image {analysisIndex + 1}
@@ -574,56 +572,79 @@ export const Editor = () => {
                 <span className="text-sm font-medium text-muted-foreground">Previous Sessions</span>
               </div>
               <div className="space-y-3">
-                {savedSessions.map((session) => (
-                  <div key={session.id} className="p-3 border-muted">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 min-w-0">
-                        <div className="mb-1">
-                          <h4 className="font-medium text-sm truncate">
-                            {session.textContent.substring(0, 60)}...
-                          </h4>
+                {savedSessions.map((session) => {
+                  const tokens = session.tokensUsed
+                  let tokensSummary = ''
+
+                  if (tokens) {
+                    const total = tokens.input + tokens.output
+                    if (total > 0) {
+                      const formattedTotal = (() => {
+                        if (total >= 1000000) {
+                          return `${(total / 1000000).toFixed(1)}M`
+                        }
+                        if (total >= 1000) {
+                          return `${(total / 1000).toFixed(1)}K`
+                        }
+                        return total.toLocaleString()
+                      })()
+
+                      const estimatedCost =
+                        (tokens.input / 1000000) * 0.05 +
+                        (tokens.output / 1000000) * 0.4
+
+                      const formattedCost =
+                        estimatedCost >= 0.01
+                          ? estimatedCost.toFixed(3)
+                          : '0.000'
+
+                      tokensSummary = ` • Tokens: ${formattedTotal} • $${formattedCost}`
+                    }
+                  }
+
+                  return (
+                    <div key={session.id} className="p-3 border-muted">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <div className="mb-1">
+                            <h4 className="font-medium text-sm truncate">
+                              {session.textContent.substring(0, 60)}...
+                            </h4>
+                          </div>
+                          <div className="text-xs text-muted-foreground space-y-0.5">
+                            <p>
+                              {new Date(session.timestamp).toLocaleString()}
+                            </p>
+                            <p>
+                              {session.images.length} images •{' '}
+                              {session.aiResponse
+                                ? `Has AI response${tokensSummary}`
+                                : 'No AI response'}
+                            </p>
+                          </div>
                         </div>
-                        <div className="text-xs text-muted-foreground space-y-0.5">
-                          <p>
-                            {new Date(session.timestamp).toLocaleString()}
-                          </p>
-                          <p>
-                            {session.images.length} images •{' '}
-                            {session.aiResponse
-                              ? `Has AI response${session.tokensUsed && (session.tokensUsed.input > 0 || session.tokensUsed.output > 0) ? ` • Tokens: ${(() => {
-                                  const total = session.tokensUsed!.input + session.tokensUsed!.output
-                                  if (total >= 1000000) {
-                                    return `${(total / 1000000).toFixed(1)}M`
-                                  } else if (total >= 1000) {
-                                    return `${(total / 1000).toFixed(1)}K`
-                                  }
-                                  return total.toLocaleString()
-                                })()} • $${(session.tokensUsed.input / 1000000) * 0.05 + (session.tokensUsed.output / 1000000) * 0.4 >= 0.01 ? ((session.tokensUsed.input / 1000000) * 0.05 + (session.tokensUsed.output / 1000000) * 0.4).toFixed(3) : '0.000'}` : ''}`
-                              : 'No AI response'}
-                          </p>
+                        <div className="flex items-center gap-2 ml-3">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => loadSession(session)}
+                            className="h-7 px-2 text-xs"
+                          >
+                            Load
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => deleteSession(session.id)}
+                            className="h-7 px-2 text-xs text-primary hover:text-primary"
+                          >
+                            Delete
+                          </Button>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-2 ml-3">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => loadSession(session)}
-                          className="h-7 px-2 text-xs"
-                        >
-                          Load
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => deleteSession(session.id)}
-                          className="h-7 px-2 text-xs text-primary hover:text-primary"
-                        >
-                          Delete
-                        </Button>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
           </div>

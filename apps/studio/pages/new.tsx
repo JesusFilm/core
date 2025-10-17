@@ -233,8 +233,6 @@ const steps = [
   { id: 3, title: 'Output', description: 'Select output formats' }
 ]
 
-const START_FROM_SCRATCH_OPTION = 'Start from scratch'
-
 const BASE_SYSTEM_PROMPT = `You are a content creation assistant for Jesus Film Project. Based on the user's devotional content, create an engaging and shareable version that:
 
 1. Maintains the core spiritual message
@@ -1195,7 +1193,6 @@ export default function NewPage() {
   const [isGeneratingDesign, setIsGeneratingDesign] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
-  const hasGeneratedContent = aiResponse.trim().length > 0
 
   // Toggle X-ray mode (Cmd+Shift+X) to show minimalistic component labels from data-id
   useEffect(() => {
@@ -1212,7 +1209,9 @@ export default function NewPage() {
           await navigator.clipboard.writeText(text)
           return
         }
-      } catch {}
+      } catch (error) {
+        console.warn('Falling back to textarea copy for clipboard support.', error)
+      }
       const textarea = document.createElement('textarea')
       textarea.value = text
       textarea.style.position = 'fixed'
@@ -2127,7 +2126,7 @@ export default function NewPage() {
     }
   }
 
-  const searchUnsplash = async (query: string, perPage: number = 3): Promise<string[]> => {
+  const searchUnsplash = async (query: string, perPage = 3): Promise<string[]> => {
     const accessKey = unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
 
     console.log('🔑 API Key debug:', {
@@ -2164,8 +2163,8 @@ export default function NewPage() {
             console.error('💡 SOLUTION: Get a new Access Key from https://unsplash.com/developers')
             console.warn('Please check your Unsplash Access Key in Settings and get a new one from https://unsplash.com/developers if needed.')
           }
-        } catch (e) {
-          // Error text is not JSON, continue with generic error
+        } catch (parseError) {
+          console.warn('Received non-JSON error response from Unsplash.', parseError)
         }
 
         return []
@@ -2234,6 +2233,21 @@ export default function NewPage() {
         ...prev,
         [stepKey]: images
       }))
+
+      if (images.length > 0) {
+        setEditableSteps(prev => {
+          const targetStep = prev[stepIndex]
+          if (!targetStep || targetStep.selectedImageUrl) return prev
+
+          const updatedSteps = [...prev]
+          updatedSteps[stepIndex] = {
+            ...targetStep,
+            selectedImageUrl: images[0]
+          }
+
+          return updatedSteps
+        })
+      }
     } catch (error) {
       console.error('Failed to load Unsplash images for step:', error)
     } finally {
