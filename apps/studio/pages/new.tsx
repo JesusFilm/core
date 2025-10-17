@@ -77,6 +77,91 @@ import {
   CarouselPrevious
 } from '@/components/ui/carousel'
 
+type StepImageCarouselProps = {
+  stepIndex: number
+  heading: string
+  images: string[]
+  selectedImageUrl?: string
+  onSelectImage: (stepIndex: number, imageUrl: string) => void
+}
+
+const StepImageCarousel = React.memo(
+  ({
+    stepIndex,
+    heading,
+    images,
+    selectedImageUrl,
+    onSelectImage
+  }: StepImageCarouselProps) => {
+    const handleImageSelection = React.useCallback(
+      (imageUrl: string) => {
+        onSelectImage(stepIndex, imageUrl)
+      },
+      [onSelectImage, stepIndex]
+    )
+
+    const imageItems = React.useMemo(
+      () =>
+        images.map((imageUrl, imageIndex) => {
+          const isSelected = selectedImageUrl === imageUrl
+
+          return (
+            <CarouselItem key={`${stepIndex}-${imageIndex}-img`} className="basis-1/6 mr-2">
+              <div
+                className={`relative aspect-square mx-auto overflow-hidden rounded-lg border cursor-pointer transition-all duration-200 ${
+                  isSelected
+                    ? 'ring-2 ring-blue-500 ring-offset-2'
+                    : 'hover:ring-2 hover:ring-blue-300 hover:ring-offset-2'
+                }`}
+                onClick={() => handleImageSelection(imageUrl)}
+              >
+                <Image
+                  src={imageUrl}
+                  alt={`${heading} inspiration`}
+                  fill
+                  loading="lazy"
+                  sizes="(max-width: 768px) 50vw, 16vw"
+                  className="object-cover"
+                />
+                {isSelected && (
+                  <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
+                    <Check className="w-6 h-6 text-white drop-shadow-lg" />
+                  </div>
+                )}
+              </div>
+            </CarouselItem>
+          )
+        }),
+      [handleImageSelection, heading, images, selectedImageUrl, stepIndex]
+    )
+
+    return (
+      <Carousel className="w-full relative">
+        <CarouselContent>{imageItems}</CarouselContent>
+
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
+    )
+  },
+  (prev, next) => {
+    if (prev.stepIndex !== next.stepIndex) return false
+    if (prev.selectedImageUrl !== next.selectedImageUrl) return false
+    if (prev.heading !== next.heading) return false
+    if (prev.images.length !== next.images.length) return false
+
+    for (let i = 0; i < prev.images.length; i += 1) {
+      if (prev.images[i] !== next.images[i]) {
+        return false
+      }
+    }
+
+    return prev.onSelectImage === next.onSelectImage
+  }
+)
+
+StepImageCarousel.displayName = 'StepImageCarousel'
+
 // Dynamic imports for components to avoid hydration issues
 const AnimatedLoadingText = dynamic(
   () => Promise.resolve(() => (
@@ -1761,47 +1846,14 @@ export default function NewPage() {
                         }
 
                         if (stepImages.length > 0) {
-                          const selectedImageUrl = step.selectedImageUrl
                           return (
-                            <Carousel className="w-full relative">
-                              <CarouselContent>
-                                {stepImages.map(
-                                  (imageUrl, imageIndex) => {
-                                    const isSelected = selectedImageUrl === imageUrl
-                                    return (
-                                      <CarouselItem
-                                        key={`${index}-${imageIndex}-img`}
-                                        className="basis-1/6 mr-2"
-                                      >
-                                        <div
-                                          className={`relative aspect-square mx-auto overflow-hidden rounded-lg border cursor-pointer transition-all duration-200 ${
-                                            isSelected
-                                              ? 'ring-2 ring-blue-500 ring-offset-2'
-                                              : 'hover:ring-2 hover:ring-blue-300 hover:ring-offset-2'
-                                          }`}
-                                          onClick={() => onImageSelection(index, imageUrl)}
-                                        >
-                                          <Image
-                                            src={imageUrl}
-                                            alt={`${heading} inspiration`}
-                                            fill
-                                            className="object-cover"
-                                          />
-                                          {isSelected && (
-                                            <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
-                                              <Check className="w-6 h-6 text-white drop-shadow-lg" />
-                                            </div>
-                                          )}
-                                        </div>
-                                      </CarouselItem>
-                                    )
-                                  }
-                                )}
-                              </CarouselContent>
-
-                              <CarouselPrevious />
-                              <CarouselNext />
-                            </Carousel>
+                            <StepImageCarousel
+                              stepIndex={index}
+                              heading={heading}
+                              images={stepImages}
+                              selectedImageUrl={step.selectedImageUrl}
+                              onSelectImage={onImageSelection}
+                            />
                           )
                         }
 
