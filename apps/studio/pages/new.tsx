@@ -1157,6 +1157,9 @@ export default function NewPage() {
   const [imageAttachments, setImageAttachments] = useState<string[]>([])
   const [unsplashImages, setUnsplashImages] = useState<Record<string, string[]>>({})
   const [loadingUnsplashSteps, setLoadingUnsplashSteps] = useState<Set<string>>(new Set())
+  const [openAiImages, setOpenAiImages] = useState<Record<string, string[]>>({})
+  const [loadingOpenAiSteps, setLoadingOpenAiSteps] = useState<Set<string>>(new Set())
+  const [openAiImageErrors, setOpenAiImageErrors] = useState<Record<string, string>>({})
   const [imageAnalysisResults, setImageAnalysisResults] = useState<
     Array<{
       imageSrc: string
@@ -1673,14 +1676,132 @@ export default function NewPage() {
     })
   }, [])
 
+  const buildImagePromptForStep = useCallback(
+    (step: GeneratedStepContent, stepIndex: number) => {
+      const trimmedPrompt = typeof step.mediaPrompt === 'string' ? step.mediaPrompt.trim() : ''
+      if (trimmedPrompt) {
+        return trimmedPrompt
+      }
+
+      const heading = deriveHeadingFromContent(
+        step.content,
+        `Step ${stepIndex + 1}`
+      )
+      const body = deriveBodyFromContent(step.content)
+      const keywords = Array.isArray(step.keywords)
+        ? step.keywords.filter((keyword) => typeof keyword === 'string' && keyword.trim().length > 0)
+        : []
+
+      const promptParts = [heading, body]
+      if (keywords.length > 0) {
+        promptParts.push(`Keywords: ${keywords.join(', ')}`)
+      }
+
+      return promptParts
+        .map((part) => part?.trim())
+        .filter((part) => Boolean(part && part.length > 0))
+        .join('\n')
+    },
+    []
+  )
+
+  const generateOpenAiImageForStep = useCallback(
+    async (step: GeneratedStepContent, stepIndex: number) => {
+      const stepKey = `step-${stepIndex}`
+      const prompt = buildImagePromptForStep(step, stepIndex)
+
+      if (!prompt) {
+        setOpenAiImageErrors((prev) => ({
+          ...prev,
+          [stepKey]: 'No visual prompt available for this step yet.'
+        }))
+        return
+      }
+
+      setLoadingOpenAiSteps((prev) => {
+        const next = new Set(prev)
+        next.add(stepKey)
+        return next
+      })
+
+      setOpenAiImageErrors((prev) => {
+        if (!prev[stepKey]) return prev
+        const { [stepKey]: _removed, ...rest } = prev
+        return rest
+      })
+
+      try {
+        const response = await fetch('/api/ai/generate-image', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ prompt })
+        })
+
+        if (!response.ok) {
+          const errorText = await response.text()
+          throw new Error(errorText || 'Failed to generate image.')
+        }
+
+        const data = (await response.json()) as { images?: unknown }
+        const images = Array.isArray(data?.images)
+          ? (data.images.filter((url): url is string => typeof url === 'string' && url.length > 0))
+          : []
+
+        if (images.length === 0) {
+          throw new Error('No image returned from OpenAI.')
+        }
+
+        setOpenAiImages((prev) => ({
+          ...prev,
+          [stepKey]: images
+        }))
+
+        const [firstImage] = images
+
+        if (firstImage) {
+          setEditableSteps((prev) => {
+            const existingStep = prev[stepIndex]
+            if (!existingStep || existingStep.selectedImageUrl === firstImage) {
+              return prev
+            }
+
+            const updated = [...prev]
+            updated[stepIndex] = { ...existingStep, selectedImageUrl: firstImage }
+            return updated
+          })
+        }
+      } catch (error) {
+        console.error('Failed to generate image with OpenAI:', error)
+        setOpenAiImageErrors((prev) => ({
+          ...prev,
+          [stepKey]: 'Failed to generate image. Please try again.'
+        }))
+      } finally {
+        setLoadingOpenAiSteps((prev) => {
+          const next = new Set(prev)
+          next.delete(stepKey)
+          return next
+        })
+      }
+    },
+    [buildImagePromptForStep]
+  )
+
   // Memoized component for steps to prevent re-renders from tile hover states
-  const StepsList = React.memo(({
+  const StepsList = React.memo(({ 
     editableSteps,
     editingStepIndices,
     stepHandlers,
     copiedStepIndex,
     unsplashImages,
-    onImageSelection
+    onImageSelection,
+    openAiImages,
+    onGenerateAiImage,
+    loadingOpenAiSteps,
+    openAiImageErrors,
+    getAiPromptForStep
   }: {
     editableSteps: GeneratedStepContent[]
     editingStepIndices: Set<number>
@@ -1688,6 +1809,11 @@ export default function NewPage() {
     copiedStepIndex: number | null
     unsplashImages: Record<string, string[]>
     onImageSelection: (stepIndex: number, imageUrl: string) => void
+    openAiImages: Record<string, string[]>
+    onGenerateAiImage: (step: GeneratedStepContent, stepIndex: number) => Promise<void> | void
+    loadingOpenAiSteps: Set<string>
+    openAiImageErrors: Record<string, string>
+    getAiPromptForStep: (step: GeneratedStepContent, stepIndex: number) => string
   }) => {
     return (
       <>
@@ -1699,6 +1825,8 @@ export default function NewPage() {
           const cardKey = heading
             ? `${heading}-${index}`
             : `step-${index}`
+          const aiPrompt = getAiPromptForStep(step, index)
+          const canGenerateAi = aiPrompt.trim().length > 0
 
           // Intersection observer for lazy loading images
           const { ref: cardRef } = useIntersectionObserver(
@@ -1729,7 +1857,7 @@ export default function NewPage() {
                 </div>
                 <div className="space-y-2">
                   <h4 className="text-sm font-medium">Image Inspiration</h4>
-                  {step.keywords.length > 0 && (
+                  {(step.keywords.length > 0 || canGenerateAi) && (
                     <div className="flex flex-wrap gap-2 mb-4">
                       {step.keywords.map((keyword, keywordIndex) => (
                         <span
@@ -1742,94 +1870,181 @@ export default function NewPage() {
                       ))}
                     </div>
                   )}
-                  {step.keywords.length > 0 ? (
+                  {step.keywords.length > 0 || canGenerateAi ? (
                     <div className="w-full">
                       {(() => {
                         const stepKey = `step-${index}`
                         const stepImages = unsplashImages[stepKey] || []
-                        const isLoading = loadingUnsplashSteps.has(stepKey)
+                        const aiImagesForStep = openAiImages[stepKey] || []
+                        const isUnsplashLoading = loadingUnsplashSteps.has(stepKey)
+                        const isAiGenerating = loadingOpenAiSteps.has(stepKey)
                         const hasApiKey = unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
+                        const aiError = openAiImageErrors[stepKey]
+                        const unsplashAttempted = Object.prototype.hasOwnProperty.call(unsplashImages, stepKey)
+                        const combinedImages = [...aiImagesForStep, ...stepImages]
+                        const selectedImageUrl = step.selectedImageUrl
+                        const shouldShowCarousel = canGenerateAi || combinedImages.length > 0 || isUnsplashLoading
 
-                        if (isLoading) {
-                          return (
-                            <div className="flex items-center justify-center py-8">
-                              <div className="text-sm text-muted-foreground">
-                                🔍 Searching for images...
+                        if (!shouldShowCarousel) {
+                          if (!hasApiKey) {
+                            return (
+                              <div className="text-sm text-muted-foreground py-4">
+                                <p className="mb-2">Add an Unsplash Access Key in Settings to see image inspiration.</p>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setIsSettingsOpen(true)}
+                                >
+                                  Open Settings
+                                </Button>
                               </div>
+                            )
+                          }
+
+                          return (
+                            <div className="text-sm text-muted-foreground py-4">
+                              No images found for "{step.keywords[0] || heading}". Try different keywords or adjust the visual prompt.
                             </div>
                           )
                         }
 
-                        if (stepImages.length > 0) {
-                          const selectedImageUrl = step.selectedImageUrl
-                          return (
+                        return (
+                          <div className="space-y-3">
                             <Carousel className="w-full relative">
                               <CarouselContent>
-                                {stepImages.map(
-                                  (imageUrl, imageIndex) => {
-                                    const isSelected = selectedImageUrl === imageUrl
-                                    return (
-                                      <CarouselItem
-                                        key={`${index}-${imageIndex}-img`}
-                                        className="basis-1/6 mr-2"
+                                <CarouselItem className="basis-1/6 mr-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      if (isAiGenerating || !canGenerateAi) return
+                                      void onGenerateAiImage(step, index)
+                                    }}
+                                    className="group relative flex h-full w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-primary/40 bg-primary/5 px-4 py-6 text-center transition-all duration-200 hover:border-primary hover:bg-primary/10"
+                                    disabled={isAiGenerating || !canGenerateAi}
+                                  >
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                      {isAiGenerating ? (
+                                        <Loader2 className="h-6 w-6 animate-spin" />
+                                      ) : (
+                                        <Sparkles className="h-6 w-6" />
+                                      )}
+                                    </div>
+                                    <div className="space-y-1">
+                                      <p className="text-xs font-medium">Generate with AI</p>
+                                      <p className="text-[10px] text-muted-foreground">
+                                        {isAiGenerating ? 'Creating image...' : 'Use the AI prompt for this step'}
+                                      </p>
+                                    </div>
+                                  </button>
+                                </CarouselItem>
+                                {aiImagesForStep.map((imageUrl, imageIndex) => {
+                                  const isSelected = selectedImageUrl === imageUrl
+                                  const isDataUrl = typeof imageUrl === 'string' && imageUrl.startsWith('data:')
+                                  return (
+                                    <CarouselItem
+                                      key={`${index}-ai-${imageIndex}`}
+                                      className="basis-1/6 mr-2"
+                                    >
+                                      <div
+                                        className={`relative aspect-square mx-auto overflow-hidden rounded-lg border cursor-pointer transition-all duration-200 ${
+                                          isSelected
+                                            ? 'ring-2 ring-blue-500 ring-offset-2'
+                                            : 'hover:ring-2 hover:ring-blue-300 hover:ring-offset-2'
+                                        }`}
+                                        onClick={() => onImageSelection(index, imageUrl)}
                                       >
-                                        <div
-                                          className={`relative aspect-square mx-auto overflow-hidden rounded-lg border cursor-pointer transition-all duration-200 ${
-                                            isSelected
-                                              ? 'ring-2 ring-blue-500 ring-offset-2'
-                                              : 'hover:ring-2 hover:ring-blue-300 hover:ring-offset-2'
-                                          }`}
-                                          onClick={() => onImageSelection(index, imageUrl)}
-                                        >
-                                          <Image
-                                            src={imageUrl}
-                                            alt={`${heading} inspiration`}
-                                            fill
-                                            className="object-cover"
-                                          />
-                                          {isSelected && (
-                                            <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
-                                              <Check className="w-6 h-6 text-white drop-shadow-lg" />
-                                            </div>
-                                          )}
+                                        <Image
+                                          src={imageUrl}
+                                          alt={`${heading} AI inspiration`}
+                                          fill
+                                          className="object-cover"
+                                          unoptimized={isDataUrl}
+                                        />
+                                        <div className="absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+                                          AI
                                         </div>
-                                      </CarouselItem>
-                                    )
-                                  }
+                                        {isSelected && (
+                                          <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
+                                            <Check className="w-6 h-6 text-white drop-shadow-lg" />
+                                          </div>
+                                        )}
+                                      </div>
+                                    </CarouselItem>
+                                  )
+                                })}
+                                {stepImages.map((imageUrl, imageIndex) => {
+                                  const isSelected = selectedImageUrl === imageUrl
+                                  return (
+                                    <CarouselItem
+                                      key={`${index}-unsplash-${imageIndex}`}
+                                      className="basis-1/6 mr-2"
+                                    >
+                                      <div
+                                        className={`relative aspect-square mx-auto overflow-hidden rounded-lg border cursor-pointer transition-all duration-200 ${
+                                          isSelected
+                                            ? 'ring-2 ring-blue-500 ring-offset-2'
+                                            : 'hover:ring-2 hover:ring-blue-300 hover:ring-offset-2'
+                                        }`}
+                                        onClick={() => onImageSelection(index, imageUrl)}
+                                      >
+                                        <Image
+                                          src={imageUrl}
+                                          alt={`${heading} inspiration`}
+                                          fill
+                                          className="object-cover"
+                                        />
+                                        <div className="absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+                                          Unsplash
+                                        </div>
+                                        {isSelected && (
+                                          <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
+                                            <Check className="w-6 h-6 text-white drop-shadow-lg" />
+                                          </div>
+                                        )}
+                                      </div>
+                                    </CarouselItem>
+                                  )
+                                })}
+                                {isUnsplashLoading && stepImages.length === 0 && (
+                                  <CarouselItem className="basis-1/6 mr-2">
+                                    <div className="flex h-full w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-muted-foreground/40 bg-muted/40 p-4 text-center text-xs text-muted-foreground">
+                                      <Loader2 className="h-5 w-5 animate-spin" />
+                                      <span>Searching Unsplash…</span>
+                                    </div>
+                                  </CarouselItem>
                                 )}
                               </CarouselContent>
 
                               <CarouselPrevious />
                               <CarouselNext />
                             </Carousel>
-                          )
-                        }
-
-                        if (!hasApiKey) {
-                          return (
-                            <div className="text-sm text-muted-foreground py-4">
-                              <p className="mb-2">Add an Unsplash Access Key in Settings to see image inspiration.</p>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setIsSettingsOpen(true)}
-                              >
-                                Open Settings
-                              </Button>
-                            </div>
-                          )
-                        }
-
-                        return (
-                          <div className="text-sm text-muted-foreground py-4">
-                            No images found for "{step.keywords[0]}". Try different keywords or check your Unsplash Access Key.
+                            {aiError && (
+                              <p className="text-xs text-destructive">{aiError}</p>
+                            )}
+                            {!hasApiKey && (
+                              <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                                <span>Add an Unsplash Access Key in Settings to see image inspiration.</span>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setIsSettingsOpen(true)}
+                                >
+                                  Open Settings
+                                </Button>
+                              </div>
+                            )}
+                            {hasApiKey && !isUnsplashLoading && stepImages.length === 0 && unsplashAttempted && (
+                              <p className="text-xs text-muted-foreground">
+                                No Unsplash images found for "{step.keywords[0] || heading}". Try different keywords or adjust the prompt.
+                              </p>
+                            )}
                           </div>
                         )
                       })()}
                     </div>
                   ) : (
                     <p className="text-sm text-muted-foreground">
-                      Add keywords to unlock image inspiration.
+                      Add keywords or a visual prompt to unlock image inspiration.
                     </p>
                   )}
                 </div>
@@ -4890,6 +5105,11 @@ export default function NewPage() {
                                 copiedStepIndex={copiedStepIndex}
                                 unsplashImages={unsplashImages}
                                 onImageSelection={handleImageSelection}
+                                openAiImages={openAiImages}
+                                onGenerateAiImage={generateOpenAiImageForStep}
+                                loadingOpenAiSteps={loadingOpenAiSteps}
+                                openAiImageErrors={openAiImageErrors}
+                                getAiPromptForStep={buildImagePromptForStep}
                               />
                             </div>
                           </>
