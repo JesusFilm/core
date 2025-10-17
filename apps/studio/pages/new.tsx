@@ -1781,112 +1781,6 @@ export default function NewPage() {
                     {step.mediaPrompt || 'No prompt provided.'}
                   </p>
                 </div>
-                <div className="space-y-2">
-                  <h4 className="text-sm font-medium">Image Inspiration</h4>
-                  {step.keywords.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {step.keywords.map((keyword, keywordIndex) => (
-                        <span
-                          key={`${keyword}-${keywordIndex}`}
-                          className="text-xs px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center gap-1"
-                        >
-                          <Search className="h-3 w-3" />
-                          {keyword}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                  {step.keywords.length > 0 ? (
-                    <div className="w-full">
-                      {(() => {
-                        const stepKey = `step-${index}`
-                        const stepImages = unsplashImages[stepKey] || []
-                        const isLoading = loadingUnsplashSteps.has(stepKey)
-                        const hasApiKey = unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
-
-                        if (isLoading) {
-                          return (
-                            <div className="flex items-center justify-center py-8">
-                              <div className="text-sm text-muted-foreground">
-                                🔍 Searching for images...
-                              </div>
-                            </div>
-                          )
-                        }
-
-                        if (stepImages.length > 0) {
-                          const selectedImageUrl = step.selectedImageUrl
-                          return (
-                            <Carousel className="w-full relative">
-                              <CarouselContent>
-                                {stepImages.map(
-                                  (imageUrl, imageIndex) => {
-                                    const isSelected = selectedImageUrl === imageUrl
-                                    return (
-                                      <CarouselItem
-                                        key={`${index}-${imageIndex}-img`}
-                                        className="basis-1/6 mr-2"
-                                      >
-                                        <div
-                                          className={`relative aspect-square mx-auto overflow-hidden rounded-lg border cursor-pointer transition-all duration-200 ${
-                                            isSelected
-                                              ? 'ring-2 ring-blue-500 ring-offset-2'
-                                              : 'hover:ring-2 hover:ring-blue-300 hover:ring-offset-2'
-                                          }`}
-                                          onClick={() => onImageSelection(index, imageUrl)}
-                                        >
-                                          <Image
-                                            src={imageUrl}
-                                            alt={`${heading} inspiration`}
-                                            fill
-                                            className="object-cover"
-                                          />
-                                          {isSelected && (
-                                            <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
-                                              <Check className="w-6 h-6 text-white drop-shadow-lg" />
-                                            </div>
-                                          )}
-                                        </div>
-                                      </CarouselItem>
-                                    )
-                                  }
-                                )}
-                              </CarouselContent>
-
-                              <CarouselPrevious />
-                              <CarouselNext />
-                            </Carousel>
-                          )
-                        }
-
-                        if (!hasApiKey) {
-                          return (
-                            <div className="text-sm text-muted-foreground py-4">
-                              <p className="mb-2">Add an Unsplash Access Key in Settings to see image inspiration.</p>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setIsSettingsOpen(true)}
-                              >
-                                Open Settings
-                              </Button>
-                            </div>
-                          )
-                        }
-
-                        return (
-                          <div className="text-sm text-muted-foreground py-4">
-                            No images found for "{step.keywords[0]}". Try different keywords or check your Unsplash Access Key.
-                          </div>
-                        )
-                      })()}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      Add keywords to unlock image inspiration.
-                    </p>
-                  )}
-                </div>
               </CardContent>
               </Card>
             </div>
@@ -3418,10 +3312,10 @@ export default function NewPage() {
                 <Card className="bg-transparent border-0 shadow-none">
                    
                   <CardHeader
-                  className={`relative w-full transition-all duration-500 ease-out ${
+                  className={`relative w-full transition-[max-height] duration-700 ease-out pt-0 ${
                     isContextContainerHidden
-                      ? 'opacity-0 max-h-0 py-0 pointer-events-none'
-                      : 'opacity-100 max-h-full  '
+                      ? 'opacity-0 max-h-0 py-0 pointer-events-none pt-10'
+                      : 'opacity-100 max-h-100  '
                   }`}>
                     <div className="flex items-start justify-between gap-8 mb-4" data-id="HeroRow">
                       <blockquote className="text-xl font-medium text-stone-950 text-balance w-full text-center z-30 animate-bible-quote-appear py-12" data-id="Verse">
