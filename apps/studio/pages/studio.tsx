@@ -2,6 +2,7 @@ import { ArrowRight, Camera, MessageCircle, Sparkles, Video, Waves } from 'lucid
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
+import type { ReactElement } from 'react'
 
 import { Button } from '../src/components/ui/button'
 import { cn } from '../src/libs/cn/cn'
@@ -49,7 +50,7 @@ const processSteps = [
 
 const inputTypes = ['Text', 'Image', 'Video', 'Quote', 'Link', 'Audio Note']
 
-export default function StudioLandingPage(): JSX.Element {
+export default function StudioLandingPage(): ReactElement {
   return (
     <>
       <Head>

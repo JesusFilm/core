@@ -37,6 +37,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { ReactElement } from 'react'
 
 import { Accordion } from '../src/components/ui/accordion'
 import { Button } from '../src/components/ui/button'
@@ -232,8 +233,6 @@ const steps = [
   { id: 2, title: 'Style', description: 'Choose your design style' },
   { id: 3, title: 'Output', description: 'Select output formats' }
 ]
-
-const START_FROM_SCRATCH_OPTION = 'Start from scratch'
 
 const BASE_SYSTEM_PROMPT = `You are a content creation assistant for Jesus Film Project. Based on the user's devotional content, create an engaging and shareable version that:
 
@@ -1195,8 +1194,6 @@ export default function NewPage() {
   const [isGeneratingDesign, setIsGeneratingDesign] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
-  const hasGeneratedContent = aiResponse.trim().length > 0
-
   // Toggle X-ray mode (Cmd+Shift+X) to show minimalistic component labels from data-id
   useEffect(() => {
     const getPageRoot = (): Element =>
@@ -1212,7 +1209,9 @@ export default function NewPage() {
           await navigator.clipboard.writeText(text)
           return
         }
-      } catch {}
+      } catch (error) {
+        console.warn('Falling back to execCommand clipboard copy:', error)
+      }
       const textarea = document.createElement('textarea')
       textarea.value = text
       textarea.style.position = 'fixed'
@@ -1541,11 +1540,14 @@ export default function NewPage() {
   }
 
   const normalizeGeneratedSteps = (
-    steps: Array<Partial<GeneratedStepContent> & { title?: string }>
+    steps: Array<
+      Partial<GeneratedStepContent> & { title?: string; keywords?: string | string[] }
+    >
   ): GeneratedStepContent[] =>
     steps.map((step) => {
-      const normalizedKeywords = Array.isArray(step?.keywords)
-        ? step.keywords
+      const keywordsValue = step?.keywords as string | string[] | undefined
+      const normalizedKeywords = Array.isArray(keywordsValue)
+        ? keywordsValue
             .map((keyword) =>
               typeof keyword === 'string'
                 ? keyword.trim()
@@ -1553,8 +1555,8 @@ export default function NewPage() {
             )
             .filter((keyword) => keyword.length > 0)
             .slice(0, 3)
-        : typeof step?.keywords === 'string'
-        ? step.keywords
+        : typeof keywordsValue === 'string'
+        ? keywordsValue
             .split(',')
             .map((keyword) => keyword.trim())
             .filter((keyword) => keyword.length > 0)
@@ -2164,7 +2166,7 @@ export default function NewPage() {
             console.error('💡 SOLUTION: Get a new Access Key from https://unsplash.com/developers')
             console.warn('Please check your Unsplash Access Key in Settings and get a new one from https://unsplash.com/developers if needed.')
           }
-        } catch (e) {
+        } catch {
           // Error text is not JSON, continue with generic error
         }
 
@@ -2635,7 +2637,7 @@ export default function NewPage() {
               const renderMarkdown = (text: string) => {
                 // Split by lines and process each line
                 const lines = text.split('\n')
-                const elements: JSX.Element[] = []
+                const elements: ReactElement[] = []
                 let key = 0
 
                 for (let i = 0; i < lines.length; i++) {
@@ -2719,7 +2721,7 @@ export default function NewPage() {
         )}
         <Button
           type="button"
-          variant="transparent"
+          variant="ghost"
           size="sm"
           className={`absolute top-2 right-2 gap-1 h-8 w-8 p-0 opacity-60 hover:opacity-100 transition-opacity ${
             copiedStepIndex === stepIndex ? '' : ''
@@ -2727,7 +2729,14 @@ export default function NewPage() {
           onClick={(e) => {
             e.preventDefault()
             e.stopPropagation()
-            void handleCopyStep({ content: isEditing ? localContent : content }, stepIndex)
+            void handleCopyStep(
+              {
+                content: isEditing ? localContent : content,
+                keywords: [],
+                mediaPrompt: ''
+              },
+              stepIndex
+            )
           }}
           onMouseDown={(e) => e.preventDefault()}
           title={copiedStepIndex === stepIndex ? "Copied!" : "Copy content"}
@@ -3907,7 +3916,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Instagram',
                                     'Story / Reel / IGTV (Vertical): 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -3942,7 +3951,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Instagram',
                                     'Feed Post (Square): 1080 × 1080 px (1:1)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -3977,7 +3986,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Instagram',
                                     'Feed Post (Landscape): 1080 × 608 px (~16:9)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4023,7 +4032,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Facebook',
                                     'Feed Video (Landscape): 1200 × 630 px (~1.91:1)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4058,7 +4067,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Facebook',
                                     'Feed Video (Square): 1080 × 1080 px (1:1)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4093,7 +4102,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Facebook',
                                     'Vertical Video: 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4128,7 +4137,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Facebook',
                                     'Cover Video: 820 × 462 px (16:9 cinematic crop)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4172,7 +4181,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'YouTube',
                                     'Standard Video: 1920 × 1080 px (16:9 Full HD)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4207,7 +4216,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'YouTube',
                                     'Shorts (Vertical): 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4242,7 +4251,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'YouTube',
                                     '4K UHD: 3840 × 2160 px (16:9)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4286,7 +4295,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'LinkedIn',
                                     'Feed Video (Landscape): 1200 × 627 px (~1.91:1)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4321,7 +4330,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'LinkedIn',
                                     'Feed Video (Square): 1080 × 1080 px (1:1)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4356,7 +4365,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'LinkedIn',
                                     'Stories (Vertical): 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4402,7 +4411,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Twitter',
                                     'Landscape Video: 1600 × 900 px (16:9)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4437,7 +4446,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Twitter',
                                     'Square Video: 1080 × 1080 px (1:1)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4470,7 +4479,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Twitter',
                                     'Vertical Video: 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4516,7 +4525,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'TikTok',
                                     'Standard Vertical Video: 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4568,7 +4577,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Pinterest',
                                     'Standard Pin Video: 1000 × 1500 px (2:3)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4603,7 +4612,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Pinterest',
                                     'Square Video: 1000 × 1000 px (1:1)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4636,7 +4645,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Pinterest',
                                     'Vertical Video: 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4682,7 +4691,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Snapchat',
                                     'Standard Vertical Video: 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4728,7 +4737,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Universal',
                                     'Full HD: 1920 × 1080 px (16:9)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4761,7 +4770,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Universal',
                                     '4K UHD: 3840 × 2160 px (16:9)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4794,7 +4803,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Universal',
                                     'Vertical HD: 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4827,7 +4836,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Universal',
                                     'Square HD: 1080 × 1080 px (1:1)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -5150,7 +5159,7 @@ export default function NewPage() {
                                       handleOutputChange(
                                         category,
                                         option.name,
-                                        checked as boolean
+                                        checked
                                       )
                                     }
                                   />

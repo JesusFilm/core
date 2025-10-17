@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import OpenAI from 'openai'
 import type {
+  ResponseCreateParamsNonStreaming,
   ResponseInput,
   ResponseInputMessageContentList
 } from 'openai/resources/responses/responses'
@@ -21,10 +22,20 @@ type ChatMessage = {
   content: string | ChatContentItem[]
 }
 
+type ResponseMessageContent = ResponseInputMessageContentList[number]
+
+const isResponseMessageContent = (
+  item: ChatContentItem
+): item is ResponseMessageContent =>
+  typeof item === 'object' &&
+  item !== null &&
+  'type' in item &&
+  (item.type === 'input_text' || item.type === 'input_image')
+
 const toInputText = (text: unknown) =>
   typeof text === 'string' ? text : JSON.stringify(text)
 
-const toInputImage = (item: Record<string, any>) => {
+const toInputImage = (item: Record<string, any>): ResponseMessageContent => {
   const { image_url, detail } = item
 
   if (typeof image_url === 'string') {
@@ -61,7 +72,7 @@ const normalizeContent = (
     return toInputText(content)
   }
 
-  return content.map((item) => {
+  return content.map<ResponseMessageContent>((item) => {
     if (typeof item === 'string') {
       return {
         type: 'input_text' as const,
@@ -69,7 +80,7 @@ const normalizeContent = (
       }
     }
 
-    if (item?.type === 'input_text' || item?.type === 'input_image') {
+    if (isResponseMessageContent(item)) {
       return item
     }
 
@@ -109,31 +120,35 @@ const normalizeMessages = (messages: ChatMessage[]): ResponseInput =>
     }
   })
 
-const pickOptionalFields = (body: Record<string, any>) => {
-  const allowedFields = [
-    'audio',
-    'input',
+type OptionalPayloadFields = Partial<
+  Omit<ResponseCreateParamsNonStreaming, 'input' | 'model' | 'max_output_tokens'>
+>
+
+const pickOptionalFields = (body: Record<string, unknown>): OptionalPayloadFields => {
+  const allowedFields: Array<keyof OptionalPayloadFields> = [
+    'background',
+    'include',
     'instructions',
     'metadata',
-    'modalities',
-    'output_format',
     'parallel_tool_calls',
-    'presence_penalty',
+    'previous_response_id',
     'reasoning',
-    'response_format',
+    'service_tier',
     'store',
+    'stream',
     'temperature',
-    'tool_config',
+    'text',
+    'tool_choice',
     'tools',
-    'frequency_penalty',
-    'top_k',
     'top_p',
+    'truncation',
     'user'
-  ] as const
+  ]
 
-  return allowedFields.reduce<Record<string, any>>((accumulator, field) => {
-    if (body[field] !== undefined) {
-      accumulator[field] = body[field]
+  return allowedFields.reduce<OptionalPayloadFields>((accumulator, field) => {
+    const value = body[field as string]
+    if (value !== undefined) {
+      accumulator[field] = value as never
     }
     return accumulator
   }, {})
@@ -154,27 +169,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     const { model = 'gpt-4o', messages, max_tokens, max_output_tokens } = req.body ?? {}
 
-    const payload: Record<string, any> = pickOptionalFields(req.body ?? {})
+    const optionalFields = pickOptionalFields(req.body ?? {})
 
+    let input: ResponseCreateParamsNonStreaming['input'] | undefined
     if (Array.isArray(messages)) {
-      payload.input = normalizeMessages(messages as ChatMessage[])
-    } else if (payload.input === undefined) {
-      if (typeof req.body?.input === 'string' && req.body.input.trim() !== '') {
-        payload.input = req.body.input
-      } else {
-        res.status(400).json({ error: 'Request body must include messages or input.' })
-        return
-      }
+      input = normalizeMessages(messages as ChatMessage[])
+    } else if (typeof req.body?.input === 'string' && req.body.input.trim() !== '') {
+      input = req.body.input
     }
 
-    const normalizedInput = payload.input
-    if (Array.isArray(normalizedInput)) {
-      if (normalizedInput.length === 0) {
+    if (input === undefined) {
+      res.status(400).json({ error: 'Request body must include messages or input.' })
+      return
+    }
+
+    if (Array.isArray(input)) {
+      if (input.length === 0) {
         res.status(400).json({ error: 'Provided input is empty.' })
         return
       }
-    } else if (typeof normalizedInput === 'string') {
-      if (normalizedInput.trim().length === 0) {
+    } else if (typeof input === 'string') {
+      if (input.trim().length === 0) {
         res.status(400).json({ error: 'Provided input is empty.' })
         return
       }
@@ -183,7 +198,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return
     }
 
-    payload.model = model
+    const payload: ResponseCreateParamsNonStreaming = {
+      model,
+      input,
+      ...optionalFields
+    }
 
     if (typeof max_output_tokens === 'number') {
       payload.max_output_tokens = max_output_tokens
