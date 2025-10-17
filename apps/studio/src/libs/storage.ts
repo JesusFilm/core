@@ -8,11 +8,21 @@ export interface ImageAnalysisResult {
   isAnalyzing?: boolean
 }
 
+export interface SelectedVideo {
+  id: string
+  url: string
+  videoUrl: string
+  thumbnailUrl: string
+  source: 'pexels'
+  duration?: number
+}
+
 export interface GeneratedStepContent {
   content: string
   keywords: string[]
   mediaPrompt: string
   selectedImageUrl?: string
+  selectedVideo?: SelectedVideo
 }
 
 export interface UserInputData {
@@ -194,7 +204,12 @@ class UserInputStorage {
                       .filter((keyword): keyword is string => Boolean(keyword))
                       .slice(0, 5)
                   : [],
-                mediaPrompt: step?.mediaPrompt || ''
+                mediaPrompt: step?.mediaPrompt || '',
+                selectedImageUrl:
+                  typeof step?.selectedImageUrl === 'string'
+                    ? step.selectedImageUrl
+                    : undefined,
+                selectedVideo: sanitizeSelectedVideo(step?.selectedVideo)
               }))
             : [],
           imageAnalysisResults: Array.isArray(data.imageAnalysisResults)
@@ -255,3 +270,56 @@ export const userInputStorage = new UserInputStorage()
 
 // Export the class for testing
 export { UserInputStorage }
+
+function sanitizeSelectedVideo(video: unknown): SelectedVideo | undefined {
+  if (!video || typeof video !== 'object') return undefined
+
+  const candidate = video as Partial<SelectedVideo> & Record<string, unknown>
+  const explicitVideoUrl =
+    typeof candidate.videoUrl === 'string' && candidate.videoUrl.trim().length > 0
+      ? candidate.videoUrl.trim()
+      : typeof candidate.url === 'string' && candidate.url.trim().length > 0
+        ? candidate.url.trim()
+        : ''
+
+  if (!explicitVideoUrl) return undefined
+
+  const thumbnailUrl =
+    typeof candidate.thumbnailUrl === 'string' && candidate.thumbnailUrl.trim().length > 0
+      ? candidate.thumbnailUrl.trim()
+      : ''
+
+  const resolvedId = (() => {
+    if (typeof candidate.id === 'string' && candidate.id.trim().length > 0) {
+      return candidate.id.trim()
+    }
+    if (typeof candidate.id === 'number' && Number.isFinite(candidate.id)) {
+      return String(candidate.id)
+    }
+    const fallback = explicitVideoUrl || thumbnailUrl
+    return fallback ? fallback : ''
+  })()
+
+  const duration = (() => {
+    if (typeof candidate.duration === 'number' && Number.isFinite(candidate.duration)) {
+      return candidate.duration
+    }
+    if (candidate.duration != null) {
+      const parsed = Number.parseFloat(String(candidate.duration))
+      if (Number.isFinite(parsed)) return parsed
+    }
+    return undefined
+  })()
+
+  return {
+    id: resolvedId,
+    url:
+      typeof candidate.url === 'string' && candidate.url.trim().length > 0
+        ? candidate.url.trim()
+        : explicitVideoUrl,
+    videoUrl: explicitVideoUrl,
+    thumbnailUrl,
+    source: 'pexels',
+    ...(duration !== undefined ? { duration } : {})
+  }
+}

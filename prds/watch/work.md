@@ -130,3 +130,34 @@
 
 - Consider showing a brief tooltip on first visit explaining the Skip control for accessibility.
 - Evaluate whether skip interactions should emit analytics distinct from autoplay completions.
+
+# Pexels Video Inspiration
+
+## Goals
+
+- [x] Surface curated Pexels video suggestions alongside Unsplash imagery during step review.
+- [x] Allow editors to store a selected video per step for downstream design context.
+- [x] Capture and persist the required Pexels API credential in Studio settings.
+
+## Obstacles
+
+- Existing media loaders only targeted Unsplash imagery, so lazy-loading hooks and persistence logic were image-specific.
+- Pexels responses contain multiple file variants without an obvious "best" rendition for preview and download.
+
+## Resolutions
+
+- Extended the shared media loader to fan out to both Unsplash and Pexels, gating requests behind available API keys.
+- Normalized Pexels video metadata (duration, thumbnails, preferred stream) so selections can be compared and saved consistently.
+
+## Test Coverage
+
+- `pnpm dlx nx lint studio` *(fails due to pre-existing lint issues in studio editor component)*
+
+## User Flows
+
+- Reviewer scrolls a generated step → carousel fetches Pexels results → user taps a thumbnail → selection badge confirms chosen video.
+
+## Follow-up Ideas
+
+- Reuse selected Pexels previews inside canvas exports so the chosen motion asset is visible beyond metadata.
+- Consider lightweight hover playback using the stored preview URLs once bandwidth constraints are evaluated.
