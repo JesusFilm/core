@@ -15,6 +15,27 @@ export interface GeneratedStepContent {
   selectedImageUrl?: string
 }
 
+export interface ConversationGuideStep {
+  stage: string
+  guideMessage: string
+  responderCue: string | null
+  purpose: string | null
+  scriptureSupport: string | null
+}
+
+export interface ConversationResponderScenario {
+  scenario: string
+  responderMessage: string
+  guideResponse: string
+  nextStep: string | null
+  scriptureSupport: string | null
+}
+
+export interface ConversationMap {
+  idealPath: ConversationGuideStep[]
+  responderScenarios: ConversationResponderScenario[]
+}
+
 export interface UserInputData {
   id: string
   timestamp: number
@@ -22,6 +43,7 @@ export interface UserInputData {
   images: string[] // Array of image data URLs
   aiResponse?: string // The enhanced content from OpenAI text processing
   aiSteps?: GeneratedStepContent[]
+  conversationMap?: ConversationMap | null
   imageAnalysisResults: ImageAnalysisResult[]
   tokensUsed?: {
     input: number
@@ -197,6 +219,7 @@ class UserInputStorage {
                 mediaPrompt: step?.mediaPrompt || ''
               }))
             : [],
+          conversationMap: data.conversationMap ?? null,
           imageAnalysisResults: Array.isArray(data.imageAnalysisResults)
             ? data.imageAnalysisResults.map(result => ({
                 imageSrc: result?.imageSrc || '',
