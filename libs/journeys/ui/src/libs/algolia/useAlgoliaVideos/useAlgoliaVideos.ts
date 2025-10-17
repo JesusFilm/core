@@ -10,6 +10,7 @@ interface Video {
   description?: string
   image?: string
   duration?: number
+  slug?: string
   source: VideoBlockSource
 }
 
@@ -39,6 +40,7 @@ export function transformItemsDefault(items: AlgoliaVideo[]): Video[] {
     description: videoVariant.description[0],
     image: videoVariant.image,
     duration: videoVariant.duration,
+    slug: videoVariant.slug,
     source: VideoBlockSource.internal
   }))
 }
