@@ -8,11 +8,20 @@ export interface ImageAnalysisResult {
   isAnalyzing?: boolean
 }
 
+export interface StepVideoAttachment {
+  muxUploadId: string
+  muxAssetId: string
+  muxPlaybackId: string
+  duration?: number | null
+  filename?: string
+}
+
 export interface GeneratedStepContent {
   content: string
   keywords: string[]
   mediaPrompt: string
   selectedImageUrl?: string
+  video?: StepVideoAttachment
 }
 
 export interface UserInputData {
@@ -194,7 +203,18 @@ class UserInputStorage {
                       .filter((keyword): keyword is string => Boolean(keyword))
                       .slice(0, 5)
                   : [],
-                mediaPrompt: step?.mediaPrompt || ''
+                mediaPrompt: step?.mediaPrompt || '',
+                selectedImageUrl: step?.selectedImageUrl || undefined,
+                video:
+                  step?.video != null
+                    ? {
+                        muxUploadId: step.video.muxUploadId,
+                        muxAssetId: step.video.muxAssetId,
+                        muxPlaybackId: step.video.muxPlaybackId,
+                        duration: step.video.duration ?? null,
+                        filename: step.video.filename || undefined
+                      }
+                    : undefined
               }))
             : [],
           imageAnalysisResults: Array.isArray(data.imageAnalysisResults)

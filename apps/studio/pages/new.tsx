@@ -1,4 +1,5 @@
 import {
+  AlertTriangle,
   ArrowUp,
   Bot,
   Camera,
@@ -37,6 +38,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { UpChunk } from '@mux/upchunk'
 
 import { Accordion } from '../src/components/ui/accordion'
 import { Button } from '../src/components/ui/button'
@@ -65,6 +67,7 @@ import {
 import { Textarea } from '../src/components/ui/textarea'
 import {
   type GeneratedStepContent,
+  type StepVideoAttachment,
   type UserInputData,
   userInputStorage
 } from '../src/libs/storage'
@@ -1589,9 +1592,30 @@ export default function NewPage() {
       return {
         content,
         keywords: normalizedKeywords,
-        mediaPrompt
+        mediaPrompt,
+        video: (step as GeneratedStepContent).video
       }
     })
+
+  type StepVideoUploadState = {
+    status: 'idle' | 'uploading' | 'processing' | 'ready' | 'error'
+    progress?: number
+    filename?: string
+    errorMessage?: string
+    muxUploadId?: string
+  }
+
+  const persistStepsToStorage = useCallback(
+    (updatedSteps: GeneratedStepContent[]) => {
+      if (!currentSessionId) return
+
+      userInputStorage.updateSession(currentSessionId, { aiSteps: updatedSteps })
+      setSavedSessions(userInputStorage.getAllSessions())
+    },
+    [currentSessionId]
+  )
+
+  const MAX_VIDEO_FILE_SIZE = 1000 * 1024 * 1024 // 1GB
 
   const parseGeneratedSteps = (rawContent: string): GeneratedStepContent[] => {
     if (!rawContent) return []
@@ -1674,7 +1698,7 @@ export default function NewPage() {
   }, [])
 
   // Memoized component for steps to prevent re-renders from tile hover states
-  const StepsList = React.memo(({
+  const StepsList = React.memo(({ 
     editableSteps,
     editingStepIndices,
     stepHandlers,
@@ -1689,6 +1713,209 @@ export default function NewPage() {
     unsplashImages: Record<string, string[]>
     onImageSelection: (stepIndex: number, imageUrl: string) => void
   }) => {
+    const [videoUploadStates, setVideoUploadStates] = useState<Record<number, StepVideoUploadState>>({})
+    const isMountedRef = useRef(true)
+    useEffect(() => {
+      return () => {
+        isMountedRef.current = false
+      }
+    }, [])
+
+    const updateStepVideo = (index: number, video?: StepVideoAttachment) => {
+      let nextSteps: GeneratedStepContent[] | null = null
+      setEditableSteps((prev) => {
+        if (!prev[index]) return prev
+        const updated = [...prev]
+        const step = { ...updated[index] }
+        if (video) {
+          step.video = video
+        } else {
+          delete (step as { video?: StepVideoAttachment }).video
+        }
+        updated[index] = step
+        nextSteps = updated
+        return updated
+      })
+
+      if (nextSteps) {
+        persistStepsToStorage(nextSteps)
+      }
+    }
+
+    const clearVideoUploadState = (stepIndex: number) => {
+      setVideoUploadStates((prev) => {
+        const { [stepIndex]: _removed, ...rest } = prev
+        return rest
+      })
+    }
+
+    const validateVideoFile = (file: File): string | null => {
+      if (!file.type.startsWith('video/')) {
+        return 'Please choose a valid video file.'
+      }
+      if (file.size > MAX_VIDEO_FILE_SIZE) {
+        return 'Video must be 1GB or smaller.'
+      }
+      return null
+    }
+
+    const pollMuxStatus = async (
+      stepIndex: number,
+      uploadId: string,
+      filename: string
+    ) => {
+      const maxAttempts = 60
+      const delayMs = 2000
+      for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+        if (!isMountedRef.current) return
+        const response = await fetch(
+          `/api/mux/status?id=${encodeURIComponent(uploadId)}`
+        )
+        const payload = await response.json()
+        if (!response.ok) {
+          throw new Error(payload?.error ?? 'Failed to check upload status')
+        }
+
+        const video = payload?.video as {
+          assetId?: string | null
+          playbackId?: string | null
+          readyToStream?: boolean
+          duration?: number | null
+        }
+
+        if (video?.readyToStream && video.assetId && video.playbackId) {
+          const attachment: StepVideoAttachment = {
+            muxUploadId: uploadId,
+            muxAssetId: video.assetId,
+            muxPlaybackId: video.playbackId,
+            duration: video.duration,
+            filename
+          }
+          updateStepVideo(stepIndex, attachment)
+          setVideoUploadStates((prev) => ({
+            ...prev,
+            [stepIndex]: { status: 'ready', filename, muxUploadId: uploadId }
+          }))
+          return
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, delayMs))
+      }
+
+      throw new Error('Mux is still processing this video. Please try again shortly.')
+    }
+
+    const handleVideoFileSelection = async (
+      stepIndex: number,
+      file: File
+    ): Promise<void> => {
+      const validationError = validateVideoFile(file)
+      if (validationError) {
+        setVideoUploadStates((prev) => ({
+          ...prev,
+          [stepIndex]: {
+            status: 'error',
+            filename: file.name,
+            errorMessage: validationError
+          }
+        }))
+        return
+      }
+
+      const filename = file.name
+      setVideoUploadStates((prev) => ({
+        ...prev,
+        [stepIndex]: { status: 'uploading', progress: 0, filename }
+      }))
+
+      try {
+        const createResponse = await fetch('/api/mux/create-upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: filename })
+        })
+        const createPayload = await createResponse.json()
+        if (!createResponse.ok) {
+          throw new Error(createPayload?.error ?? 'Failed to create Mux upload')
+        }
+
+        const { uploadId, uploadUrl } = createPayload as {
+          uploadId?: string
+          uploadUrl?: string
+        }
+
+        if (!uploadId || !uploadUrl) {
+          throw new Error('Missing upload details from server')
+        }
+
+        await new Promise<void>((resolve, reject) => {
+          const upload = UpChunk.createUpload({
+            file,
+            endpoint: uploadUrl,
+            chunkSize: 5120
+          })
+
+          upload.on('error', (error) => {
+            const message =
+              (error as { detail?: string })?.detail ?? 'Mux upload failed'
+            reject(new Error(message))
+          })
+
+          upload.on('progress', (event) => {
+            setVideoUploadStates((prev) => ({
+              ...prev,
+              [stepIndex]: {
+                status: 'uploading',
+                progress: Math.round(event.detail),
+                filename,
+                muxUploadId: uploadId
+              }
+            }))
+          })
+
+          upload.on('success', () => resolve())
+        })
+
+        setVideoUploadStates((prev) => ({
+          ...prev,
+          [stepIndex]: {
+            status: 'processing',
+            progress: 100,
+            filename,
+            muxUploadId: uploadId
+          }
+        }))
+
+        await pollMuxStatus(stepIndex, uploadId, filename)
+      } catch (error) {
+        console.error('Mux upload failed:', error)
+        setVideoUploadStates((prev) => ({
+          ...prev,
+          [stepIndex]: {
+            status: 'error',
+            filename,
+            errorMessage:
+              error instanceof Error
+                ? error.message
+                : 'Video upload failed. Please try again.'
+          }
+        }))
+      }
+    }
+
+    const handleRemoveVideo = (stepIndex: number) => {
+      updateStepVideo(stepIndex)
+      clearVideoUploadState(stepIndex)
+    }
+
+    const openVideoFilePicker = (stepIndex: number) => {
+      if (typeof window === 'undefined') return
+      const input = document.getElementById(
+        `step-${stepIndex}-video-upload`
+      ) as HTMLInputElement | null
+      input?.click()
+    }
+
     return (
       <>
         {editableSteps.map((step, index) => {
@@ -1709,7 +1936,7 @@ export default function NewPage() {
           return (
             <div key={cardKey} ref={cardRef}>
               <Card className="bg-transparent shadow-none">
-              <CardContent className="space-y-4">
+                <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <StepContentRenderer
                     content={step.content}
@@ -1833,7 +2060,132 @@ export default function NewPage() {
                     </p>
                   )}
                 </div>
-              </CardContent>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <h4 className="text-sm font-medium">Step Video</h4>
+                    {(step.video || videoUploadStates[index]?.status === 'error') && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 px-2 text-xs"
+                        onClick={() => handleRemoveVideo(index)}
+                        disabled={videoUploadStates[index]?.status === 'uploading'}
+                      >
+                        Remove
+                      </Button>
+                    )}
+                  </div>
+                  {(() => {
+                    const uploadState = videoUploadStates[index]
+                    if (
+                      uploadState?.status === 'uploading' ||
+                      uploadState?.status === 'processing'
+                    ) {
+                      return (
+                        <div className="space-y-3 rounded-lg border border-dashed border-primary/40 bg-primary/5 p-4">
+                          <div className="flex items-center gap-2 text-sm font-medium text-primary">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            {uploadState.status === 'uploading'
+                              ? 'Uploading video…'
+                              : 'Processing video…'}
+                          </div>
+                          <div className="h-2 rounded-full bg-muted">
+                            <div
+                              className="h-2 rounded-full bg-primary transition-all"
+                              style={{
+                                width: `${Math.min(
+                                  100,
+                                  Math.round(uploadState.progress ?? 0)
+                                )}%`
+                              }}
+                            />
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {uploadState.filename}
+                          </p>
+                        </div>
+                      )
+                    }
+
+                    if (uploadState?.status === 'error') {
+                      return (
+                        <div className="flex gap-2 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                          <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium">Video upload failed</p>
+                            <p className="text-xs text-red-600">
+                              {uploadState.errorMessage ??
+                                'Please try again with a different file.'}
+                            </p>
+                          </div>
+                        </div>
+                      )
+                    }
+
+                    if (step.video?.muxPlaybackId) {
+                      return (
+                        <div className="space-y-3">
+                          <div className="overflow-hidden rounded-lg border border-border">
+                            <video
+                              controls
+                              className="w-full"
+                              poster={`https://image.mux.com/${step.video.muxPlaybackId}/thumbnail.jpg`}
+                            >
+                              <source
+                                src={`https://stream.mux.com/${step.video.muxPlaybackId}/medium.mp4`}
+                                type="video/mp4"
+                              />
+                              Your browser does not support the video tag.
+                            </video>
+                          </div>
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>{step.video.filename ?? 'Uploaded video'}</span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-7 px-2 text-xs"
+                              onClick={() => openVideoFilePicker(index)}
+                            >
+                              Replace video
+                            </Button>
+                          </div>
+                        </div>
+                      )
+                    }
+
+                    return (
+                      <div className="flex flex-col items-start gap-3 rounded-lg border border-dashed border-muted-foreground/40 p-4 text-sm text-muted-foreground">
+                        <p>Attach a short clip for this step. MP4 or MOV up to 1GB.</p>
+                        <div className="flex flex-col gap-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openVideoFilePicker(index)}
+                          >
+                            Upload video
+                          </Button>
+                          <span className="text-xs text-muted-foreground">
+                            Uses the same Mux upload flow from Journeys Admin and Videos Admin.
+                          </span>
+                        </div>
+                      </div>
+                    )
+                  })()}
+                  <input
+                    id={`step-${index}-video-upload`}
+                    type="file"
+                    accept="video/*"
+                    className="hidden"
+                    onChange={(event) => {
+                      const file = event.target.files?.[0]
+                      if (file) {
+                        void handleVideoFileSelection(index, file)
+                      }
+                      event.target.value = ''
+                    }}
+                  />
+                </div>
+                </CardContent>
               </Card>
             </div>
           )
