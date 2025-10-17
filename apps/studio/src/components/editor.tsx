@@ -22,6 +22,12 @@ import { Toolbar } from 'polotno/toolbar/toolbar';
 import { ZoomButtons } from 'polotno/toolbar/zoom-buttons';
 import React, { useEffect, useState } from 'react';
 
+import {
+  type GeneratedStepContent,
+  type UserInputData,
+  userInputStorage
+} from '../libs/storage'
+
 import { Button } from './ui/button'
 import {
   Dialog,
@@ -33,12 +39,6 @@ import {
 } from './ui/dialog'
 import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
-
-import {
-  type GeneratedStepContent,
-  type UserInputData,
-  userInputStorage
-} from '../libs/storage'
 
 // Enable animations
 unstable_setAnimationsEnabled(true);
@@ -591,7 +591,7 @@ export const Editor = () => {
                             {session.images.length} images •{' '}
                             {session.aiResponse
                               ? `Has AI response${session.tokensUsed && (session.tokensUsed.input > 0 || session.tokensUsed.output > 0) ? ` • Tokens: ${(() => {
-                                  const total = session.tokensUsed!.input + session.tokensUsed!.output
+                                  const total = session.tokensUsed.input + session.tokensUsed.output
                                   if (total >= 1000000) {
                                     return `${(total / 1000000).toFixed(1)}M`
                                   } else if (total >= 1000) {
