@@ -12,8 +12,6 @@ export interface PrayerCarouselProps {
   onCollapseComplete?: () => void
 }
 
-const SLIDE_INTERVAL = 6000
-
 export function PrayerCarousel({
   isActive,
   onCollapseComplete
@@ -64,10 +62,17 @@ export function PrayerCarousel({
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
   const collapseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [progress, setProgress] = useState(0)
   const [isProgressAnimating, setIsProgressAnimating] = useState(false)
   const progressFrameRef = useRef<number | null>(null)
+
+  const handlePrevious = () => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
+  }
+
+  const handleNext = () => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length)
+  }
 
   useEffect(() => {
     if (isActive) {
@@ -93,27 +98,6 @@ export function PrayerCarousel({
       }
     }
   }, [isActive, onCollapseComplete])
-
-  useEffect(() => {
-    if (!isActive) {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-        intervalRef.current = null
-      }
-      return
-    }
-
-    intervalRef.current = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length)
-    }, SLIDE_INTERVAL)
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-        intervalRef.current = null
-      }
-    }
-  }, [isActive, slides.length])
 
   useEffect(() => {
     if (!isActive || !isVisible) {
@@ -199,33 +183,55 @@ export function PrayerCarousel({
           })}
         </div>
         <div className="mt-8 flex items-center justify-center gap-4">
-          {slides.map((_, index) => {
-            const isCurrent = index === currentSlide && isVisible
+          {slides.length > 1 && (
+            <button
+              type="button"
+              onClick={handlePrevious}
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-amber-200/80 bg-white/80 text-amber-600 transition hover:bg-amber-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60"
+              aria-label="Previous slide"
+            >
+              ‹
+            </button>
+          )}
+          <div className="flex items-center gap-4">
+            {slides.map((_, index) => {
+              const isCurrent = index === currentSlide && isVisible
 
-            if (isCurrent) {
+              if (isCurrent) {
+                return (
+                  <div
+                    key={index}
+                    className="relative h-1.5 w-16 overflow-hidden rounded-full bg-amber-500/20"
+                  >
+                    <span
+                      className="absolute inset-y-0 left-0 rounded-full bg-amber-500"
+                      style={{
+                        width: `${progress}%`,
+                        transition: isProgressAnimating ? 'width 800ms ease' : 'none'
+                      }}
+                    />
+                  </div>
+                )
+              }
+
               return (
-                <div
+                <span
                   key={index}
-                  className="relative h-1.5 w-16 overflow-hidden rounded-full bg-amber-500/20"
-                >
-                  <span
-                    className="absolute inset-y-0 left-0 rounded-full bg-amber-500"
-                    style={{
-                      width: `${progress}%`,
-                      transition: isProgressAnimating ? `width ${SLIDE_INTERVAL}ms linear` : 'none'
-                    }}
-                  />
-                </div>
+                  className="h-2 w-2 rounded-full bg-amber-400/40 transition-colors"
+                />
               )
-            }
-
-            return (
-              <span
-                key={index}
-                className="h-2 w-2 rounded-full bg-amber-400/40 transition-colors"
-              />
-            )
-          })}
+            })}
+          </div>
+          {slides.length > 1 && (
+            <button
+              type="button"
+              onClick={handleNext}
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-amber-200/80 bg-white/80 text-amber-600 transition hover:bg-amber-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60"
+              aria-label="Next slide"
+            >
+              ›
+            </button>
+          )}
         </div>
       </div>
     </div>
