@@ -65,6 +65,9 @@ export function PrayerCarousel({
   const [isVisible, setIsVisible] = useState(false)
   const collapseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [progress, setProgress] = useState(0)
+  const [isProgressAnimating, setIsProgressAnimating] = useState(false)
+  const progressFrameRef = useRef<number | null>(null)
 
   useEffect(() => {
     if (isActive) {
@@ -111,6 +114,38 @@ export function PrayerCarousel({
       }
     }
   }, [isActive, slides.length])
+
+  useEffect(() => {
+    if (!isActive || !isVisible) {
+      if (progressFrameRef.current != null) {
+        cancelAnimationFrame(progressFrameRef.current)
+        progressFrameRef.current = null
+      }
+      setIsProgressAnimating(false)
+      setProgress(0)
+      return
+    }
+
+    if (progressFrameRef.current != null) {
+      cancelAnimationFrame(progressFrameRef.current)
+    }
+
+    setIsProgressAnimating(false)
+    setProgress(0)
+
+    progressFrameRef.current = requestAnimationFrame(() => {
+      setIsProgressAnimating(true)
+      setProgress(100)
+      progressFrameRef.current = null
+    })
+
+    return () => {
+      if (progressFrameRef.current != null) {
+        cancelAnimationFrame(progressFrameRef.current)
+        progressFrameRef.current = null
+      }
+    }
+  }, [currentSlide, isActive, isVisible])
 
   return (
     <div
@@ -166,18 +201,41 @@ export function PrayerCarousel({
             )
           })}
         </div>
-        <div className="mt-6 flex items-center justify-center gap-2">
-          {slides.map((_, index) => (
-            <span
-              key={index}
-              className="h-1 rounded-full transition-all duration-500"
-              style={{
-                width: index === currentSlide && isVisible ? '44px' : '16px',
-                backgroundColor:
-                  index === currentSlide && isVisible ? 'rgb(217 119 6)' : 'rgba(245, 158, 11, 0.35)'
-              }}
-            />
-          ))}
+        <div className="mt-8 flex items-center justify-center gap-3">
+          {slides.map((_, index) => {
+            const isCurrent = index === currentSlide && isVisible
+            const isLast = index === slides.length - 1
+
+            return (
+              <div key={index} className="flex items-center gap-3">
+                <span
+                  className="h-2 w-2 rounded-full transition-colors"
+                  style={{
+                    backgroundColor: isCurrent ? 'rgb(217 119 6)' : 'rgba(245, 158, 11, 0.35)',
+                    boxShadow: isCurrent ? '0 0 0 4px rgba(217, 119, 6, 0.15)' : undefined
+                  }}
+                />
+                {!isLast && (
+                  <div
+                    className="relative h-1.5 w-16 overflow-hidden rounded-full"
+                    style={{
+                      backgroundColor: isCurrent
+                        ? 'rgba(217, 119, 6, 0.25)'
+                        : 'rgba(245, 158, 11, 0.18)'
+                    }}
+                  >
+                    <span
+                      className="absolute inset-y-0 left-0 rounded-full bg-amber-500"
+                      style={{
+                        width: isCurrent ? `${progress}%` : '0%',
+                        transition: isCurrent && isProgressAnimating ? `width ${SLIDE_INTERVAL}ms linear` : 'none'
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
       </div>
     </div>

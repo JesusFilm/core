@@ -3762,12 +3762,6 @@ export default function NewPage() {
                             <>{aiResponse.trim() ? 'Retry' : 'Run'}&nbsp;&nbsp;&nbsp;&nbsp;⌘ + ↵</>
                           )}
                         </button>
-                        {shouldRenderPrayerCarousel && (
-                          <PrayerCarousel
-                            isActive={isProcessing}
-                            onCollapseComplete={handlePrayerCarouselCollapsed}
-                          />
-                        )}
                       </div>
                     </div>
                     {/* Hidden file input */}
@@ -3775,13 +3769,20 @@ export default function NewPage() {
                       ref={fileInputRef}
                       type="file"
                       multiple
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      className="hidden"
-                    />
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
 
-                    {/* Content Ideas Grid */}
-                    {imageAnalysisResults.some(
+                {shouldRenderPrayerCarousel && (
+                  <PrayerCarousel
+                    isActive={isProcessing}
+                    onCollapseComplete={handlePrayerCarouselCollapsed}
+                  />
+                )}
+
+                {/* Content Ideas Grid */}
+                {imageAnalysisResults.some(
                       (result) =>
                         result.contentIdeas &&
                         result.contentIdeas.length > 0 &&
