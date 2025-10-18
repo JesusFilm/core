@@ -1196,6 +1196,38 @@ export default function NewPage() {
   const selectedContextOptions =
     contextDetailOptions[selectedContext] ?? []
 
+  const selectedDetailOption = useMemo(() => {
+    if (!selectedContextDetail) {
+      return null
+    }
+
+    const options = contextDetailOptions[selectedContext] ?? []
+    return (
+      options.find((option) => option.text === selectedContextDetail) ?? null
+    )
+  }, [selectedContext, selectedContextDetail])
+
+  const parsedContentHeadingSuffix = useMemo(() => {
+    const parts: string[] = []
+
+    if (selectedContext) {
+      parts.push(selectedContext.toLowerCase())
+    }
+
+    if (selectedContextDetail) {
+      const normalizedDetail =
+        selectedContextDetail.charAt(0).toLowerCase() +
+        selectedContextDetail.slice(1)
+      parts.push(normalizedDetail)
+    }
+
+    if (parts.length === 0) {
+      return ''
+    }
+
+    return parts.join(', ')
+  }, [selectedContext, selectedContextDetail])
+
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isSessionsOpen, setIsSessionsOpen] = useState(false)
   const [unsplashApiKey, setUnsplashApiKey] = useState('')
@@ -4902,8 +4934,25 @@ export default function NewPage() {
                         {editableSteps.length > 0 && (
                           <>
                             <div id="parsed-multi-step-content" className="flex flex-wrap items-center justify-between gap-2">
-                              <label className="text-sm font-medium">
-                                Parsed Multi-Step Content
+                              <label className="flex items-center gap-3 text-sm font-medium">
+                                {selectedDetailOption?.emoji && (
+                                  <span
+                                    className="text-4xl leading-none sm:text-5xl"
+                                    aria-hidden="true"
+                                  >
+                                    {selectedDetailOption.emoji}
+                                  </span>
+                                )}
+                                <span>
+                                  Parsed Multi-Step Content
+                                  {parsedContentHeadingSuffix && (
+                                    <span className="text-muted-foreground">
+                                      {' ('}
+                                      {parsedContentHeadingSuffix}
+                                      {')'}
+                                    </span>
+                                  )}
+                                </span>
                               </label>
                             </div>
                             <div className="grid gap-6">
