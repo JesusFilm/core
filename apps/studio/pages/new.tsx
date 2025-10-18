@@ -18,7 +18,6 @@ import {
   MessageCircle,
   MessageSquare,
   Palette,
-  Paperclip,
   Plus,
   Printer,
   Search,
@@ -1169,7 +1168,6 @@ export default function NewPage() {
     }>
   >([])
   const [isDragOver, setIsDragOver] = useState(false)
-  const [showContextMenu, setShowContextMenu] = useState(false)
   const [isPersonaDialogOpen, setIsPersonaDialogOpen] = useState(false)
   const [personaSettings, setPersonaSettings] = useState({
     personaName: '',
@@ -1303,21 +1301,6 @@ export default function NewPage() {
 
     return handlers
   }, [editableSteps.length]) // Only recreate when step count changes
-
-  // Close context menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        showContextMenu &&
-        !(event.target as Element).closest('.context-menu-container')
-      ) {
-        setShowContextMenu(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [showContextMenu])
 
   // Load saved data on mount
   useEffect(() => {
@@ -2352,27 +2335,7 @@ export default function NewPage() {
     setImageAnalysisResults((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const handleFileSelect = () => {
-    setShowContextMenu(!showContextMenu)
-  }
-
-  const handlePhotosAndFiles = () => {
-    setShowContextMenu(false)
-    fileInputRef.current?.click()
-  }
-
-  const handleLinkToSite = () => {
-    setShowContextMenu(false)
-    // For now, just show a placeholder - you could implement URL input dialog here
-    const url = prompt('Enter website URL:')
-    if (url) {
-      // You could add this to attachments or handle it differently
-      console.log(`Link to site: ${url} - This feature can be implemented further`)
-    }
-  }
-
   const handleOpenCamera = () => {
-    setShowContextMenu(false)
     cameraInputRef.current?.click()
   }
 
@@ -3733,36 +3696,19 @@ export default function NewPage() {
                           }}
                         />
 
-                        {/* Plus icon - bottom left */}
-                        <div className="absolute bottom-3 left-3 context-menu-container">
+                        {/* Camera button - bottom left */}
+                        <div className="absolute bottom-3 left-3">
                           <button
-                            onClick={handleFileSelect}
-                            className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors group cursor-pointer"
-                            title="More options"
+                            onClick={handleOpenCamera}
+                            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-full border-2 border-border bg-transparent text-foreground hover:bg-muted/30 transition-colors cursor-pointer"
+                            title="Add image"
+                            type="button"
                           >
-                            <Plus className="w-4 h-4 text-muted-foreground group-hover:text-foreground" />
+                            <Camera className="w-4 h-4" />
+                            <span>Add Image</span>
                           </button>
-
-                          {/* Context Menu */}
-                          {showContextMenu && (
-                            <div className="absolute bottom-full left-0 mb-2 bg-popover border border-border rounded-lg shadow-lg p-1 min-w-[200px] z-50">
-                              <button
-                                onClick={handlePhotosAndFiles}
-                                className="w-full flex items-center justify-start gap-3 px-3 py-2 text-sm rounded-md hover:bg-muted transition-colors cursor-pointer"
-                              >
-                                <Paperclip className="w-4 h-4 text-muted-foreground" />
-                                <span className="text-left">Add photos</span>
-                              </button>
-                              <button
-                                onClick={handleLinkToSite}
-                                className="w-full flex items-center justify-start gap-3 px-3 py-2 text-sm rounded-md hover:bg-muted transition-colors cursor-pointer"
-                              >
-                                <Globe className="w-4 h-4 text-muted-foreground" />
-                                <span className="text-left">Link to site</span>
-                              </button>
-                            </div>
-                          )}
                         </div>
+
                         {/* Action buttons - bottom right */}
                         <Dialog
                           open={isPersonaDialogOpen}
@@ -3771,31 +3717,13 @@ export default function NewPage() {
                           <div className="absolute bottom-3 right-3 flex items-center gap-2">
                             <DialogTrigger asChild>
                               <button
-                                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-full border border-border bg-background text-foreground shadow-sm transition-colors hover:bg-muted cursor-pointer"
+                                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-full border-2 border-border bg-transparent text-foreground hover:bg-muted/30 transition-colors cursor-pointer"
                                 type="button"
                               >
                                 <Users className="w-4 h-4" />
                                 <span>Persona</span>
                               </button>
                             </DialogTrigger>
-                            <button
-                              onClick={handlePhotosAndFiles}
-                              className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-foreground shadow-sm transition-colors hover:bg-muted cursor-pointer"
-                              title="Upload images"
-                              type="button"
-                            >
-                              <ImageIcon className="w-4 h-4" />
-                              <span className="sr-only">Upload images</span>
-                            </button>
-                            <button
-                              onClick={handleOpenCamera}
-                              className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-full border border-border bg-background text-foreground shadow-sm transition-colors hover:bg-muted cursor-pointer"
-                              title="Capture with camera"
-                              type="button"
-                            >
-                              <Camera className="w-4 h-4" />
-                              <span>Camera</span>
-                            </button>
                             <button
                               onClick={() => {
                                 void handleSubmit()
