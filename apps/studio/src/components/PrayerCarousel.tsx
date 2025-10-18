@@ -149,7 +149,7 @@ export function PrayerCarousel({
 
   return (
     <div
-      className="mt-6 overflow-hidden rounded-3xl border border-amber-200/70 bg-gradient-to-br from-amber-50 via-white to-rose-50 shadow-lg transition-all duration-700 ease-out"
+      className="mt-6 overflow-hidden rounded-3xl border border-amber-200/70 bg-gradient-to-br from-amber-50 via-white to-rose-50 transition-all duration-700 ease-out"
       style={{
         maxHeight: isVisible ? 360 : 0,
         opacity: isVisible ? 1 : 0,
@@ -183,12 +183,9 @@ export function PrayerCarousel({
                   </p>
                 )}
                 {Array.isArray(slide.bullets) && slide.bullets.length > 0 && (
-                  <ul className="space-y-2 text-sm leading-relaxed text-amber-900/80 md:text-base">
+                  <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-amber-900/80 marker:text-amber-500 md:text-base">
                     {slide.bullets.map((item) => (
-                      <li key={item} className="flex items-start gap-2">
-                        <span className="mt-1 inline-flex h-1.5 w-1.5 flex-shrink-0 rounded-full bg-amber-500" />
-                        <span>{item}</span>
-                      </li>
+                      <li key={item}>{item}</li>
                     ))}
                   </ul>
                 )}
@@ -201,39 +198,32 @@ export function PrayerCarousel({
             )
           })}
         </div>
-        <div className="mt-8 flex items-center justify-center gap-3">
+        <div className="mt-8 flex items-center justify-center gap-4">
           {slides.map((_, index) => {
             const isCurrent = index === currentSlide && isVisible
-            const isLast = index === slides.length - 1
+
+            if (isCurrent) {
+              return (
+                <div
+                  key={index}
+                  className="relative h-1.5 w-16 overflow-hidden rounded-full bg-amber-500/20"
+                >
+                  <span
+                    className="absolute inset-y-0 left-0 rounded-full bg-amber-500"
+                    style={{
+                      width: `${progress}%`,
+                      transition: isProgressAnimating ? `width ${SLIDE_INTERVAL}ms linear` : 'none'
+                    }}
+                  />
+                </div>
+              )
+            }
 
             return (
-              <div key={index} className="flex items-center gap-3">
-                <span
-                  className="h-2 w-2 rounded-full transition-colors"
-                  style={{
-                    backgroundColor: isCurrent ? 'rgb(217 119 6)' : 'rgba(245, 158, 11, 0.35)',
-                    boxShadow: isCurrent ? '0 0 0 4px rgba(217, 119, 6, 0.15)' : undefined
-                  }}
-                />
-                {!isLast && (
-                  <div
-                    className="relative h-1.5 w-16 overflow-hidden rounded-full"
-                    style={{
-                      backgroundColor: isCurrent
-                        ? 'rgba(217, 119, 6, 0.25)'
-                        : 'rgba(245, 158, 11, 0.18)'
-                    }}
-                  >
-                    <span
-                      className="absolute inset-y-0 left-0 rounded-full bg-amber-500"
-                      style={{
-                        width: isCurrent ? `${progress}%` : '0%',
-                        transition: isCurrent && isProgressAnimating ? `width ${SLIDE_INTERVAL}ms linear` : 'none'
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
+              <span
+                key={index}
+                className="h-2 w-2 rounded-full bg-amber-400/40 transition-colors"
+              />
             )
           })}
         </div>
