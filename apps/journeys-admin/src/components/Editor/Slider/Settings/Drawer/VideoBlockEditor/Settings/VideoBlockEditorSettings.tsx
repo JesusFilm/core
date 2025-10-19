@@ -38,7 +38,6 @@ import { SubtitleSelector } from './SubtitleSelector'
 
 const fetchSubtitles = async (videoSource: string): Promise<string[]> => {
   // Fake fetch function - returns hardcoded subtitle ISO codes
-  console.log('videoSource:', videoSource)
   if (videoSource.includes('Jot4_WAwatU')) {
     return ['en', 'es', 'fr', 'de', 'tr']
   }
@@ -89,7 +88,7 @@ export function VideoBlockEditorSettings({
     startAt: secondsToTimeFormat(selectedBlock?.startAt ?? 0),
     endAt: secondsToTimeFormat(selectedBlock?.endAt ?? 0),
     objectFit: selectedBlock?.objectFit ?? ObjectFit.fill,
-    subtitle: null
+    subtitle: selectedBlock?.subtitleLanguage ?? null
   }
   const { values, errors, handleChange, setFieldValue } = useFormik<Values>({
     initialValues,
@@ -168,7 +167,9 @@ export function VideoBlockEditorSettings({
               availableLanguages={availableSubtitles}
               onChange={async (subtitle) => {
                 await setFieldValue('subtitle', subtitle)
-                // TODO: Include subtitle in backend update when backend support is added
+                await onChange({
+                  subtitleLanguage: subtitle === 'OFF' ? null : subtitle
+                })
               }}
               disabled={selectedBlock == null}
             />
