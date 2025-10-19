@@ -9,12 +9,6 @@ import { ContactActionType } from "./../../../../__generated__/globalTypes";
 // GraphQL fragment: VideoTriggerFields
 // ====================================================
 
-export interface VideoTriggerFields_triggerAction_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface VideoTriggerFields_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -40,6 +34,15 @@ export interface VideoTriggerFields_triggerAction_EmailAction {
   parentStepId: string | null;
 }
 
+export interface VideoTriggerFields_triggerAction_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface VideoTriggerFields_triggerAction_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -49,7 +52,7 @@ export interface VideoTriggerFields_triggerAction_PhoneAction {
   contactAction: ContactActionType;
 }
 
-export type VideoTriggerFields_triggerAction = VideoTriggerFields_triggerAction_ChatAction | VideoTriggerFields_triggerAction_NavigateToBlockAction | VideoTriggerFields_triggerAction_LinkAction | VideoTriggerFields_triggerAction_EmailAction | VideoTriggerFields_triggerAction_PhoneAction;
+export type VideoTriggerFields_triggerAction = VideoTriggerFields_triggerAction_NavigateToBlockAction | VideoTriggerFields_triggerAction_LinkAction | VideoTriggerFields_triggerAction_EmailAction | VideoTriggerFields_triggerAction_ChatAction | VideoTriggerFields_triggerAction_PhoneAction;
 
 export interface VideoTriggerFields {
   __typename: "VideoTriggerBlock";

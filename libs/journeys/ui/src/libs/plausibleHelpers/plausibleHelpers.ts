@@ -82,6 +82,8 @@ export function generateActionTargetKey(action: Action): string {
       return `link:${action.url}`
     case 'EmailAction':
       return `email:${action.email}`
+    case 'ChatAction':
+      return `chat:${action.chatUrl}`
     case 'PhoneAction':
       return `phone:${action.phone}`
     default:

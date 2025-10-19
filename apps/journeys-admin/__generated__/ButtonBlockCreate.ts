@@ -9,12 +9,6 @@ import { ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, B
 // GraphQL mutation operation: ButtonBlockCreate
 // ====================================================
 
-export interface ButtonBlockCreate_buttonBlockCreate_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface ButtonBlockCreate_buttonBlockCreate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -40,6 +34,15 @@ export interface ButtonBlockCreate_buttonBlockCreate_action_EmailAction {
   parentStepId: string | null;
 }
 
+export interface ButtonBlockCreate_buttonBlockCreate_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface ButtonBlockCreate_buttonBlockCreate_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -49,7 +52,7 @@ export interface ButtonBlockCreate_buttonBlockCreate_action_PhoneAction {
   contactAction: ContactActionType;
 }
 
-export type ButtonBlockCreate_buttonBlockCreate_action = ButtonBlockCreate_buttonBlockCreate_action_ChatAction | ButtonBlockCreate_buttonBlockCreate_action_NavigateToBlockAction | ButtonBlockCreate_buttonBlockCreate_action_LinkAction | ButtonBlockCreate_buttonBlockCreate_action_EmailAction | ButtonBlockCreate_buttonBlockCreate_action_PhoneAction;
+export type ButtonBlockCreate_buttonBlockCreate_action = ButtonBlockCreate_buttonBlockCreate_action_NavigateToBlockAction | ButtonBlockCreate_buttonBlockCreate_action_LinkAction | ButtonBlockCreate_buttonBlockCreate_action_EmailAction | ButtonBlockCreate_buttonBlockCreate_action_ChatAction | ButtonBlockCreate_buttonBlockCreate_action_PhoneAction;
 
 export interface ButtonBlockCreate_buttonBlockCreate_settings {
   __typename: "ButtonBlockSettings";
@@ -95,12 +98,6 @@ export interface ButtonBlockCreate_endIcon {
   iconColor: IconColor | null;
 }
 
-export interface ButtonBlockCreate_buttonBlockUpdate_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface ButtonBlockCreate_buttonBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -126,6 +123,15 @@ export interface ButtonBlockCreate_buttonBlockUpdate_action_EmailAction {
   parentStepId: string | null;
 }
 
+export interface ButtonBlockCreate_buttonBlockUpdate_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface ButtonBlockCreate_buttonBlockUpdate_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -135,7 +141,7 @@ export interface ButtonBlockCreate_buttonBlockUpdate_action_PhoneAction {
   contactAction: ContactActionType;
 }
 
-export type ButtonBlockCreate_buttonBlockUpdate_action = ButtonBlockCreate_buttonBlockUpdate_action_ChatAction | ButtonBlockCreate_buttonBlockUpdate_action_NavigateToBlockAction | ButtonBlockCreate_buttonBlockUpdate_action_LinkAction | ButtonBlockCreate_buttonBlockUpdate_action_EmailAction | ButtonBlockCreate_buttonBlockUpdate_action_PhoneAction;
+export type ButtonBlockCreate_buttonBlockUpdate_action = ButtonBlockCreate_buttonBlockUpdate_action_NavigateToBlockAction | ButtonBlockCreate_buttonBlockUpdate_action_LinkAction | ButtonBlockCreate_buttonBlockUpdate_action_EmailAction | ButtonBlockCreate_buttonBlockUpdate_action_ChatAction | ButtonBlockCreate_buttonBlockUpdate_action_PhoneAction;
 
 export interface ButtonBlockCreate_buttonBlockUpdate_settings {
   __typename: "ButtonBlockSettings";
