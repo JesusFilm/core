@@ -1484,6 +1484,7 @@ export class VideoBlock implements Block {
     duration?: Nullable<number>;
     action?: Nullable<Action>;
     objectFit?: Nullable<VideoBlockObjectFit>;
+    subtitleLanguage?: Nullable<string>;
 }
 
 export class VideoTriggerBlock implements Block {
