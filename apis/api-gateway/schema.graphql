@@ -1246,7 +1246,7 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
-  subtitleLanguage: String
+  subtitleLanguageId: String @join__field(graph: API_JOURNEYS_MODERN) 
   mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
@@ -4696,7 +4696,7 @@ input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   autoplay: Boolean
   fullsize: Boolean
   posterBlockId: ID
-  subtitleLanguage: String
+  subtitleLanguageId: String
 }
 
 input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4714,7 +4714,7 @@ input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   muted: Boolean
   autoplay: Boolean
   fullsize: Boolean
-  subtitleLanguage: String
+  subtitleLanguageId: String
   """
   internal source: videoId and videoVariantLanguageId required
     youTube source: videoId required

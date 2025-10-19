@@ -69,9 +69,10 @@ builder.mutationField('videoBlockUpdate', (t) =>
           if (input.videoId != null) {
             input = {
               ...input,
-              subtitleLanguage: isChangingSource
+              subtitleLanguageId: isChangingSource
                 ? null
-                : (input?.subtitleLanguage ?? block?.subtitleLanguage),
+                : (input?.subtitleLanguageId ??
+                  (block as any)?.subtitleLanguageId),
               ...(await fetchFieldsFromYouTube(input.videoId))
             }
           }
@@ -87,9 +88,10 @@ builder.mutationField('videoBlockUpdate', (t) =>
             description: null,
             image: null,
             duration: null,
-            subtitleLanguage: isChangingSource
+            subtitleLanguageId: isChangingSource
               ? null
-              : (input?.subtitleLanguage ?? block?.subtitleLanguage)
+              : (input?.subtitleLanguageId ??
+                (block as any)?.subtitleLanguageId)
           }
           break
         case 'mux':
@@ -100,9 +102,10 @@ builder.mutationField('videoBlockUpdate', (t) =>
           if (input.videoId != null) {
             input = {
               ...input,
-              subtitleLanguage: isChangingSource
+              subtitleLanguageId: isChangingSource
                 ? null
-                : (input?.subtitleLanguage ?? block?.subtitleLanguage),
+                : (input?.subtitleLanguageId ??
+                  (block as any)?.subtitleLanguageId),
               ...(await fetchFieldsFromMux(input.videoId))
             }
           }
