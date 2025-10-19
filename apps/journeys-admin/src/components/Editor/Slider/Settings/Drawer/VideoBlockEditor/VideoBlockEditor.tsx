@@ -9,7 +9,6 @@ import {
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/BlockFields'
 import { VideoBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
-import { VideoSubtitleProvider } from '../VideoLibrary/VideoSubtitleProvider'
 
 import { Source } from './Source'
 
@@ -37,7 +36,7 @@ export function VideoBlockEditor({
   const videoBlock = selectedBlock as VideoBlock
 
   return (
-    <VideoSubtitleProvider>
+    <>
       <Box sx={{ p: 4, pt: 0 }} data-testid="VideoBlockEditor">
         <Source selectedBlock={selectedBlock} onChange={onChange} />
       </Box>
@@ -50,6 +49,6 @@ export function VideoBlockEditor({
           />
         </Box>
       )}
-    </VideoSubtitleProvider>
+    </>
   )
 }
