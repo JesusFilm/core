@@ -173,6 +173,7 @@ export interface CoverVideoBlockCreate_videoBlockCreate {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: string | null;
   mediaVideo: CoverVideoBlockCreate_videoBlockCreate_mediaVideo | null;
   /**
    * action that should be performed when the video ends

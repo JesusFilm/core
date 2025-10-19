@@ -517,6 +517,7 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: string | null;
   mediaVideo: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

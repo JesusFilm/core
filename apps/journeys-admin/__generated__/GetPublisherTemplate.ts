@@ -521,6 +521,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: string | null;
   mediaVideo: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

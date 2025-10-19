@@ -391,6 +391,7 @@ export interface CardIntroCreate_video {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: string | null;
   mediaVideo: CardIntroCreate_video_mediaVideo | null;
   /**
    * action that should be performed when the video ends
