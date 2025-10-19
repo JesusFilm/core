@@ -1208,24 +1208,16 @@ export default function NewPage() {
   }, [selectedContext, selectedContextDetail])
 
   const parsedContentHeadingSuffix = useMemo(() => {
-    const parts: string[] = []
-
-    if (selectedContext) {
-      parts.push(selectedContext.toLowerCase())
-    }
-
-    if (selectedContextDetail) {
-      const normalizedDetail =
-        selectedContextDetail.charAt(0).toLowerCase() +
-        selectedContextDetail.slice(1)
-      parts.push(normalizedDetail)
-    }
-
-    if (parts.length === 0) {
+    if (!selectedContext || !selectedContextDetail) {
       return ''
     }
 
-    return parts.join(', ')
+    // Remove "Plan " prefix and add "a " prefix for the detail
+    const modifiedDetail = selectedContextDetail.startsWith('Plan ')
+      ? ' a ' + selectedContextDetail.slice(5).toLowerCase()
+      : selectedContextDetail.charAt(0).toLowerCase() + selectedContextDetail.slice(1)
+
+    return `${modifiedDetail} for ${selectedContext.toLowerCase()}`
   }, [selectedContext, selectedContextDetail])
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -4934,26 +4926,20 @@ export default function NewPage() {
                         {editableSteps.length > 0 && (
                           <>
                             <div id="parsed-multi-step-content" className="flex flex-wrap items-center justify-between gap-2">
-                              <label className="flex items-center gap-3 text-sm font-medium">
-                                {selectedDetailOption?.emoji && (
-                                  <span
-                                    className="text-4xl leading-none sm:text-5xl"
-                                    aria-hidden="true"
-                                  >
-                                    {selectedDetailOption.emoji}
-                                  </span>
-                                )}
-                                <span>
-                                  Parsed Multi-Step Content
+                              <div className="flex flex-row gap-2">
+                                <h3 className="flex items-center text-2xl font-medium">
+                                Content draft
+                                </h3>
+                                </div>
+                                <p>
+                                  
                                   {parsedContentHeadingSuffix && (
-                                    <span className="text-muted-foreground">
-                                      {' ('}
-                                      {parsedContentHeadingSuffix}
-                                      {')'}
+                                    <span className="text-muted-foreground text-sm font-normal">
+                                      {selectedDetailOption.emoji} Task:  {parsedContentHeadingSuffix}
                                     </span>
                                   )}
-                                </span>
-                              </label>
+                                </p>
+                              
                             </div>
                             <div className="grid gap-6">
                               <StepsList
