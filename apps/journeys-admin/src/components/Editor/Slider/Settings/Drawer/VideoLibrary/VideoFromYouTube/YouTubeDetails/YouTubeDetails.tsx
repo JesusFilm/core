@@ -15,7 +15,7 @@ import CheckIcon from '@core/shared/ui/icons/Check'
 
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { parseISO8601Duration } from '../../../../../../../../libs/parseISO8601Duration'
-import { SubtitleToggle } from '../../SubtitleToggle'
+import { SubtitlePreviewToggle } from '../../SubtitlePreviewToggle'
 import { VideoDescription } from '../../VideoDescription'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 import type { YoutubeVideo, YoutubeVideosData } from '../VideoFromYouTube'
@@ -162,7 +162,7 @@ export function YouTubeDetails({
               <VideoDescription videoDescription={videoDescription} />
             </Box>
           </Box>
-          <SubtitleToggle
+          <SubtitlePreviewToggle
             subtitleEnabled={subtitleEnabled}
             onSubtitleToggle={handleSubtitleToggle}
             hasSubtitles={false}

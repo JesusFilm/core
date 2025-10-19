@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
-export interface SubtitleToggleProps {
+export interface SubtitlePreviewToggleProps {
   subtitleEnabled: boolean
   onSubtitleToggle: (enabled: boolean) => void
   hasSubtitles?: boolean
@@ -15,13 +15,13 @@ export interface SubtitleToggleProps {
   loading?: boolean
 }
 
-export function SubtitleToggle({
+export function SubtitlePreviewToggle({
   subtitleEnabled,
   onSubtitleToggle,
   hasSubtitles = true,
   disabled = false,
   loading = false
-}: SubtitleToggleProps): ReactElement {
+}: SubtitlePreviewToggleProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [showTooltip, setShowTooltip] = useState(false)
 
