@@ -3,6 +3,8 @@ import { prismaMock } from '../../../../test/prismaMock'
 import { Action, ability } from '../../../lib/auth/ability'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
+import { fetchFieldsFromYouTube } from './service'
+
 jest.mock('../../../lib/auth/ability', () => ({
   Action: { Update: 'update' },
   ability: jest.fn(),
@@ -12,6 +14,16 @@ jest.mock('../../../lib/auth/ability', () => ({
 jest.mock('../../../lib/auth/fetchBlockWithJourneyAcl', () => ({
   fetchBlockWithJourneyAcl: jest.fn()
 }))
+
+jest.mock('./service', () => {
+  return {
+    ...jest.requireActual('./service'),
+    fetchFieldsFromYouTube: jest.fn()
+  }
+})
+
+const mockFetchFieldsFromYouTube =
+  fetchFieldsFromYouTube as jest.MockedFunction<typeof fetchFieldsFromYouTube>
 
 describe('videoBlockUpdate', () => {
   const mockUser = { id: 'userId' }
@@ -39,6 +51,7 @@ describe('videoBlockUpdate', () => {
         videoVariantLanguageId
         posterBlockId
         parentBlockId
+        subtitleLanguage
       }
     }
   `)
@@ -117,6 +130,81 @@ describe('videoBlockUpdate', () => {
         videoBlockUpdate: expect.objectContaining({
           id,
           journeyId: 'journeyId'
+        })
+      }
+    })
+  })
+
+  it('clears the subtitle language when changing the source', async () => {
+    const inputWithSubtitleLanguage = {
+      ...input,
+      source: 'youTube',
+      videoId: 'dQw4w9WgXcQ'
+    }
+
+    const mockResultFromYouTube = {
+      title: 'YT Title',
+      description: 'YT Desc',
+      image: 'img-url',
+      duration: 3723
+    }
+
+    mockFetchFieldsFromYouTube.mockResolvedValue(mockResultFromYouTube)
+    fetchBlockWithJourneyAcl.mockResolvedValue({
+      id,
+      journeyId: 'journeyId',
+      journey: { id: 'journeyId' },
+      source: 'internal',
+      ...input
+    })
+    mockAbility.mockReturnValue(true)
+
+    const tx = {
+      block: {
+        update: jest.fn().mockResolvedValue({
+          id,
+          journeyId: 'journeyId',
+          typename: 'VideoBlock',
+          source: 'internal',
+          ...input
+        })
+      },
+      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+    }
+    prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
+
+    const result = await authClient({
+      document: VIDEO_BLOCK_UPDATE,
+      variables: { id, input: inputWithSubtitleLanguage }
+    })
+
+    // no direct fetch call; ACL helper used internally
+    expect(mockAbility).toHaveBeenCalledWith(
+      Action.Update,
+      { subject: 'Journey', object: { id: 'journeyId' } },
+      expect.any(Object)
+    )
+    expect(tx.block.update).toHaveBeenCalledWith({
+      data: {
+        ...inputWithSubtitleLanguage,
+        ...mockResultFromYouTube,
+        subtitleLanguage: null
+      },
+      include: { action: true },
+      where: { id: 'blockId' }
+    })
+    expect(tx.journey.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'journeyId' }
+      })
+    )
+
+    expect(result).toEqual({
+      data: {
+        videoBlockUpdate: expect.objectContaining({
+          id,
+          journeyId: 'journeyId',
+          subtitleLanguage: null
         })
       }
     })

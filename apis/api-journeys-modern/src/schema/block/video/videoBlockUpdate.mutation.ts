@@ -39,7 +39,6 @@ builder.mutationField('videoBlockUpdate', (t) =>
       const { id, input: initialInput } = args
 
       const block = await fetchBlockWithJourneyAcl(id)
-
       // Check permissions using ACL
       if (
         !ability(
@@ -55,6 +54,12 @@ builder.mutationField('videoBlockUpdate', (t) =>
 
       let input = { ...initialInput }
 
+      // used to clear the subtitle language when changing the source
+      const isChangingSource =
+        initialInput.source != null &&
+        block.source != null &&
+        initialInput.source !== block.source
+
       switch (initialInput.source ?? block.source) {
         case 'youTube':
           videoBlockYouTubeSchema.parse({
@@ -64,6 +69,9 @@ builder.mutationField('videoBlockUpdate', (t) =>
           if (input.videoId != null) {
             input = {
               ...input,
+              subtitleLanguage: isChangingSource
+                ? null
+                : (input?.subtitleLanguage ?? block?.subtitleLanguage),
               ...(await fetchFieldsFromYouTube(input.videoId))
             }
           }
@@ -78,7 +86,10 @@ builder.mutationField('videoBlockUpdate', (t) =>
             title: null,
             description: null,
             image: null,
-            duration: null
+            duration: null,
+            subtitleLanguage: isChangingSource
+              ? null
+              : (input?.subtitleLanguage ?? block?.subtitleLanguage)
           }
           break
         case 'mux':
@@ -89,6 +100,9 @@ builder.mutationField('videoBlockUpdate', (t) =>
           if (input.videoId != null) {
             input = {
               ...input,
+              subtitleLanguage: isChangingSource
+                ? null
+                : (input?.subtitleLanguage ?? block?.subtitleLanguage),
               ...(await fetchFieldsFromMux(input.videoId))
             }
           }

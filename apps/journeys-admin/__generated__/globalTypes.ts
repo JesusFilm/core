@@ -837,6 +837,7 @@ export interface VideoBlockCreateInput {
   autoplay?: boolean | null;
   fullsize?: boolean | null;
   posterBlockId?: string | null;
+  subtitleLanguage?: string | null;
 }
 
 export interface VideoBlockUpdateInput {
@@ -854,6 +855,7 @@ export interface VideoBlockUpdateInput {
   muted?: boolean | null;
   autoplay?: boolean | null;
   fullsize?: boolean | null;
+  subtitleLanguage?: string | null;
   source?: VideoBlockSource | null;
 }
 
