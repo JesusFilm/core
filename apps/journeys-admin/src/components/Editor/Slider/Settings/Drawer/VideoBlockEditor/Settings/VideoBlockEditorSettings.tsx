@@ -11,7 +11,7 @@ import { FormikValues, useFormik } from 'formik'
 import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -33,10 +33,17 @@ import {
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
 
-import { useVideoSubtitles } from '../../VideoLibrary/VideoSubtitleProvider'
-
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 import { SubtitleSelector } from './SubtitleSelector'
+
+const fetchSubtitles = async (videoSource: string): Promise<string[]> => {
+  // Fake fetch function - returns hardcoded subtitle ISO codes
+  console.log('videoSource:', videoSource)
+  if (videoSource.includes('Jot4_WAwatU')) {
+    return ['en', 'es', 'fr', 'de', 'tr']
+  }
+  return []
+}
 
 interface Values extends FormikValues {
   autoplay: boolean
@@ -60,14 +67,29 @@ export function VideoBlockEditorSettings({
 }: VideoBlockEditorSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const subtitleData = useVideoSubtitles(selectedBlock?.videoId)
+  const [availableSubtitles, setAvailableSubtitles] = useState<string[]>([])
+
+  useEffect(() => {
+    const loadSubtitles = async (): Promise<void> => {
+      if (selectedBlock?.videoId != null) {
+        const videoSource = `https://www.youtube.com/watch?v=${selectedBlock.videoId}`
+        const subtitles = await fetchSubtitles(videoSource)
+        setAvailableSubtitles(subtitles)
+      } else {
+        setAvailableSubtitles([])
+      }
+    }
+
+    void loadSubtitles()
+  }, [selectedBlock?.videoId])
+
   const initialValues: Values = {
     autoplay: selectedBlock?.autoplay ?? true,
     muted: selectedBlock?.muted ?? true,
     startAt: secondsToTimeFormat(selectedBlock?.startAt ?? 0),
     endAt: secondsToTimeFormat(selectedBlock?.endAt ?? 0),
     objectFit: selectedBlock?.objectFit ?? ObjectFit.fill,
-    subtitle: subtitleData?.selectedLanguage ?? null
+    subtitle: null
   }
   const { values, errors, handleChange, setFieldValue } = useFormik<Values>({
     initialValues,
@@ -143,9 +165,7 @@ export function VideoBlockEditorSettings({
             </Typography>
             <SubtitleSelector
               selectedSubtitle={values.subtitle}
-              availableLanguages={
-                subtitleData?.tracks.map((track) => track.displayName) ?? []
-              }
+              availableLanguages={availableSubtitles}
               onChange={async (subtitle) => {
                 await setFieldValue('subtitle', subtitle)
                 // TODO: Include subtitle in backend update when backend support is added
