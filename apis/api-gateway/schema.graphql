@@ -4708,7 +4708,7 @@ input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   autoplay: Boolean
   fullsize: Boolean
   posterBlockId: ID
-  subtitleLanguageId: String
+  subtitleLanguageId: ID
 }
 
 input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4726,7 +4726,7 @@ input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   muted: Boolean
   autoplay: Boolean
   fullsize: Boolean
-  subtitleLanguageId: String
+  subtitleLanguageId: ID
   """
   internal source: videoId and videoVariantLanguageId required
     youTube source: videoId required

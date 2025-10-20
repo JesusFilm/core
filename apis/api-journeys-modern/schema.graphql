@@ -1986,7 +1986,7 @@ input VideoBlockCreateInput {
   autoplay: Boolean
   fullsize: Boolean
   posterBlockId: ID
-  subtitleLanguageId: String
+  subtitleLanguageId: ID
 }
 
 enum VideoBlockObjectFit {
@@ -2017,7 +2017,7 @@ input VideoBlockUpdateInput {
   muted: Boolean
   autoplay: Boolean
   fullsize: Boolean
-  subtitleLanguageId: String
+  subtitleLanguageId: ID
 
   """
   internal source: videoId and videoVariantLanguageId required
