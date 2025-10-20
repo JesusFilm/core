@@ -1068,6 +1068,10 @@ export default function NewPage() {
   const [unsplashApiKey, setUnsplashApiKey] = useState('')
   const [textContent, setTextContent] = useState('')
   const [aiResponse, setAiResponse] = useState('')
+  const [aiError, setAiError] = useState<{
+    message: string
+    isNetworkError: boolean
+  } | null>(null)
   const [editableSteps, setEditableSteps] = useState<GeneratedStepContent[]>([])
   const [copiedStepIndex, setCopiedStepIndex] = useState<number | null>(null)
   const [editingStepIndices, setEditingStepIndices] = useState<Set<number>>(new Set())
@@ -1703,6 +1707,18 @@ export default function NewPage() {
     updateTokens(currentSessionId, newTokens)
   }
 
+  const handleAiError = useCallback(
+    (_error: unknown, { isNetworkError }: { isNetworkError: boolean }) => {
+      setAiError({
+        isNetworkError,
+        message: isNetworkError
+          ? 'We had trouble reaching the Studio AI service. Check your connection and try again.'
+          : 'Something went wrong while generating content. Please try again.'
+      })
+    },
+    [setAiError]
+  )
+
   const { processContentWithAI } = useAiContent({
     textareaRef,
     aiResponse,
@@ -1716,7 +1732,8 @@ export default function NewPage() {
     setEditableSteps,
     setIsProcessing,
     saveSession,
-    updateTokens
+    updateTokens,
+    onError: handleAiError
   })
 
   const { analyzeImageWithAI } = useImageAnalysis({
@@ -1868,6 +1885,7 @@ export default function NewPage() {
 
     const currentValue = textareaRef.current?.value || ''
     if (currentValue.trim() && !isProcessing) {
+      setAiError(null)
       // Update textContent state before processing
       setTextContent(currentValue)
       await processContentWithAI(currentValue)
@@ -3382,6 +3400,28 @@ export default function NewPage() {
                         </Dialog>
                       </div>
                     </div>
+                    {aiError && (
+                      <div
+                        className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-400/40 dark:bg-amber-500/10 dark:text-amber-100"
+                        role="status"
+                        aria-live="polite"
+                      >
+                        <span>{aiError.message}</span>
+                        {aiError.isNetworkError && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setAiError(null)
+                              void handleSubmit()
+                            }}
+                            disabled={isProcessing}
+                          >
+                            Retry
+                          </Button>
+                        )}
+                      </div>
+                    )}
                     {/* Hidden file input */}
                     <input
                       ref={fileInputRef}
