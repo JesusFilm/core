@@ -261,10 +261,7 @@ describe('journeyVisitorExport', () => {
       }
     })
 
-    expect(result).toHaveProperty(
-      'data.journeyVisitorExport',
-      'Date\n\n'
-    )
+    expect(result).toHaveProperty('data.journeyVisitorExport', 'Date\n\n')
 
     expect(prismaMock.event.findMany).toHaveBeenCalledWith({
       where: {
@@ -458,10 +455,7 @@ describe('journeyVisitorExport', () => {
       }
     })
 
-    expect(result).toHaveProperty(
-      'data.journeyVisitorExport',
-      'Date\n\n'
-    )
+    expect(result).toHaveProperty('data.journeyVisitorExport', 'Date\n\n')
   })
 
   it('should error when journey is not found', async () => {
