@@ -278,8 +278,14 @@ builder.queryField('journeyVisitorExport', (t) => {
 
         // Follow each chain from start to end
         startSteps.forEach((startStep) => {
+          const visitedIds = new Set<string>()
           let current: StepBlock | undefined = startStep
           while (current != null) {
+            if (visitedIds.has(current.id)) {
+              break
+            }
+            visitedIds.add(current.id)
+            
             if (!stepNavigationOrder.has(current.id)) {
               stepNavigationOrder.set(current.id, orderCounter++)
             }
