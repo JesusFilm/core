@@ -424,10 +424,7 @@ describe('journeyVisitorExport', () => {
       }
     })
 
-    expect(result).toHaveProperty(
-      'data.journeyVisitorExport',
-      'Date\n\n'
-    )
+    expect(result).toHaveProperty('data.journeyVisitorExport', 'Date\n\n')
   })
 
   it('should handle empty results gracefully', async () => {

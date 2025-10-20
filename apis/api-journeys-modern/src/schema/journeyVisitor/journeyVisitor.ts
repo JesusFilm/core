@@ -285,7 +285,7 @@ builder.queryField('journeyVisitorExport', (t) => {
               break
             }
             visitedIds.add(current.id)
-            
+
             if (!stepNavigationOrder.has(current.id)) {
               stepNavigationOrder.set(current.id, orderCounter++)
             }
