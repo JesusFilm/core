@@ -283,7 +283,9 @@ builder.queryField('journeyVisitorExport', (t) => {
             if (!stepNavigationOrder.has(current.id)) {
               stepNavigationOrder.set(current.id, orderCounter++)
             }
-            current = current.nextBlockId ? stepMap.get(current.nextBlockId) : undefined
+            current = current.nextBlockId
+              ? stepMap.get(current.nextBlockId)
+              : undefined
           }
         })
 
