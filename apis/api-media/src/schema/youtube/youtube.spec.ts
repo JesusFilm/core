@@ -224,6 +224,25 @@ describe('youtube', () => {
       expect(data).toHaveProperty('data.getYouTubeClosedCaptionLanguageIds', [])
     })
 
+    it('should throw error when api key is missing', async () => {
+      // Clear the API key
+      delete process.env.FIREBASE_API_KEY
+
+      const data = await client({
+        document: GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS,
+        variables: { videoId: 'test-video-id' }
+      })
+
+      expect(data).toHaveProperty('errors', [
+        expect.objectContaining({
+          message: 'YouTube API key is not configured',
+          extensions: {
+            code: 'INTERNAL_SERVER_ERROR'
+          }
+        })
+      ])
+    })
+
     it('should return mock data when YouTube API quota is exceeded in non-production', async () => {
       const mockError = {
         response: {

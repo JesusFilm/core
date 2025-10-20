@@ -104,9 +104,17 @@ builder.queryFields((t) => ({
       videoId: t.arg.id({ required: true })
     },
     resolve: async (_root, { videoId }) => {
+      // Validate FIREBASE_API_KEY is present and non-empty
+      const apiKey = process.env.FIREBASE_API_KEY
+      if (!apiKey || apiKey.trim() === '') {
+        throw new GraphQLError('YouTube API key is not configured', {
+          extensions: { code: 'INTERNAL_SERVER_ERROR' }
+        })
+      }
+
       const query = new URLSearchParams({
         part: 'snippet',
-        key: process.env.FIREBASE_API_KEY ?? '',
+        key: apiKey,
         videoId: videoId
       }).toString()
 
@@ -177,7 +185,7 @@ builder.queryFields((t) => ({
           }
         })
         data = result.data
-      } catch (error) {
+      } catch (_error) {
         throw new GraphQLError('Failed to fetch languages from gateway', {
           extensions: { code: 'INTERNAL_SERVER_ERROR' }
         })
