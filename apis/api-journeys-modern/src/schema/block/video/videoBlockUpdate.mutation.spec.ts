@@ -51,7 +51,7 @@ describe('videoBlockUpdate', () => {
         videoVariantLanguageId
         posterBlockId
         parentBlockId
-        subtitleLanguage
+        subtitleLanguageId
       }
     }
   `)
@@ -188,7 +188,7 @@ describe('videoBlockUpdate', () => {
       data: {
         ...inputWithSubtitleLanguage,
         ...mockResultFromYouTube,
-        subtitleLanguage: null
+        subtitleLanguageId: null
       },
       include: { action: true },
       where: { id: 'blockId' }
@@ -204,7 +204,7 @@ describe('videoBlockUpdate', () => {
         videoBlockUpdate: expect.objectContaining({
           id,
           journeyId: 'journeyId',
-          subtitleLanguage: null
+          subtitleLanguageId: null
         })
       }
     })

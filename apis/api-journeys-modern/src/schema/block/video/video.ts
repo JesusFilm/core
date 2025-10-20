@@ -69,7 +69,7 @@ youTube source: videoId, title, description, and duration present`,
       nullable: true,
       resolve: (block) => block.fullsize ?? false
     }),
-    subtitleLanguage: t.exposeString('subtitleLanguage', {
+    subtitleLanguageId: t.exposeString('subtitleLanguageId', {
       nullable: true
     }),
     action: t.relation('action'),
