@@ -1,4 +1,42 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
+
+function usePrefersReducedMotion() {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const handleChange = (event: MediaQueryListEvent) => {
+      setPrefersReducedMotion(event.matches)
+    }
+
+    setPrefersReducedMotion(query.matches)
+
+    if (typeof query.addEventListener === 'function') {
+      query.addEventListener('change', handleChange)
+      return () => {
+        query.removeEventListener('change', handleChange)
+      }
+    }
+
+    query.addListener(handleChange)
+    return () => {
+      query.removeListener(handleChange)
+    }
+  }, [])
+
+  return prefersReducedMotion
+}
 
 type PrayerSlide = {
   title: string
@@ -17,6 +55,10 @@ export function PrayerCarousel({
   onCollapseComplete
 }: PrayerCarouselProps) {
   const SLIDE_DURATION = 8000
+  const prefersReducedMotion = usePrefersReducedMotion()
+  const carouselId = useId()
+  const slidesRegionId = `${carouselId}-slides`
+  const indicatorRegionId = `${carouselId}-indicators`
   const slides = useMemo<PrayerSlide[]>(
     () => [
       {
@@ -68,22 +110,22 @@ export function PrayerCarousel({
   const progressFrameRef = useRef<number | null>(null)
   const autoAdvanceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const clearAutoAdvance = () => {
+  const clearAutoAdvance = useCallback(() => {
     if (autoAdvanceTimeoutRef.current) {
       clearTimeout(autoAdvanceTimeoutRef.current)
       autoAdvanceTimeoutRef.current = null
     }
-  }
+  }, [])
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     clearAutoAdvance()
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
-  }
+  }, [clearAutoAdvance, slides.length])
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     clearAutoAdvance()
     setCurrentSlide((prev) => (prev + 1) % slides.length)
-  }
+  }, [clearAutoAdvance, slides.length])
 
   useEffect(() => {
     if (isActive) {
@@ -124,16 +166,19 @@ export function PrayerCarousel({
 
     if (progressFrameRef.current != null) {
       cancelAnimationFrame(progressFrameRef.current)
+      progressFrameRef.current = null
     }
 
     setIsProgressAnimating(false)
-    setProgress(0)
+    setProgress(prefersReducedMotion ? 100 : 0)
 
-    progressFrameRef.current = requestAnimationFrame(() => {
-      setIsProgressAnimating(true)
-      setProgress(100)
-      progressFrameRef.current = null
-    })
+    if (!prefersReducedMotion) {
+      progressFrameRef.current = requestAnimationFrame(() => {
+        setIsProgressAnimating(true)
+        setProgress(100)
+        progressFrameRef.current = null
+      })
+    }
 
     clearAutoAdvance()
     autoAdvanceTimeoutRef.current = setTimeout(() => {
@@ -148,7 +193,38 @@ export function PrayerCarousel({
       }
       clearAutoAdvance()
     }
-  }, [currentSlide, isActive, isVisible, slides.length, SLIDE_DURATION])
+  }, [
+    currentSlide,
+    isActive,
+    isVisible,
+    prefersReducedMotion,
+    slides.length,
+    SLIDE_DURATION,
+    clearAutoAdvance
+  ])
+
+  useEffect(() => {
+    if (!isActive || !isVisible) {
+      return
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault()
+        handlePrevious()
+      }
+
+      if (event.key === 'ArrowRight') {
+        event.preventDefault()
+        handleNext()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [handleNext, handlePrevious, isActive, isVisible])
 
   return (
     <div
@@ -161,7 +237,13 @@ export function PrayerCarousel({
       }}
     >
       <div className="px-6 md:px-10">
-        <div className="relative min-h-[180px]">
+        <div
+          className="relative min-h-[180px]"
+          id={slidesRegionId}
+          role="group"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {slides.map((slide, index) => {
             const isCurrent = index === currentSlide
             return (
@@ -201,18 +283,24 @@ export function PrayerCarousel({
             )
           })}
         </div>
-        <div className="mt-8 flex items-center justify-center gap-4">
+        <div
+          className="mt-8 flex items-center justify-center gap-4"
+          id={indicatorRegionId}
+          role="group"
+          aria-label="Prayer focus slides"
+        >
           {slides.length > 1 && (
             <button
               type="button"
               onClick={handlePrevious}
               className="flex h-8 w-8 items-center justify-center rounded-full border border-amber-200/80 bg-white/80 text-amber-600 transition hover:bg-amber-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60"
               aria-label="Previous slide"
+              aria-controls={slidesRegionId}
             >
               ‹
             </button>
           )}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4" aria-hidden>
             {slides.map((_, index) => {
               const isCurrent = index === currentSlide && isVisible
 
@@ -226,10 +314,12 @@ export function PrayerCarousel({
                       className="absolute inset-y-0 left-0 rounded-full bg-amber-500"
                       style={{
                         width: `${progress}%`,
-                        transition: isProgressAnimating
+                        transition:
+                          isProgressAnimating && !prefersReducedMotion
                           ? `width ${SLIDE_DURATION}ms linear`
                           : 'none'
                       }}
+                      aria-hidden
                     />
                   </div>
                 )
@@ -239,6 +329,7 @@ export function PrayerCarousel({
                 <span
                   key={index}
                   className="h-2 w-2 rounded-full bg-amber-400/40 transition-colors"
+                  aria-hidden
                 />
               )
             })}
@@ -249,6 +340,7 @@ export function PrayerCarousel({
               onClick={handleNext}
               className="flex h-8 w-8 items-center justify-center rounded-full border border-amber-200/80 bg-white/80 text-amber-600 transition hover:bg-amber-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60"
               aria-label="Next slide"
+              aria-controls={slidesRegionId}
             >
               ›
             </button>
