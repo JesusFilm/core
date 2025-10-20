@@ -48,6 +48,13 @@ import {
   CardHeader,
   CardTitle
 } from '../src/components/ui/card'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+} from '../src/components/ui/carousel'
 import { Checkbox } from '../src/components/ui/checkbox'
 import {
   Dialog,
@@ -66,18 +73,26 @@ import {
 } from '../src/components/ui/tabs'
 import { Textarea } from '../src/components/ui/textarea'
 import {
+  categorySharingOptions,
+  contextDetailOptions,
+  contextSystemPrompts,
+  IMAGE_ANALYSIS_PROMPT,
+  OUTPUT_FORMAT_INSTRUCTIONS,
+  REFINEMENT_INSTRUCTIONS,
+  RESPONSE_GUIDELINES,
+  steps,
+  BASE_SYSTEM_PROMPT
+} from '../src/config/new-page'
+import { useAiContent } from '../src/hooks/useAiContent'
+import { useImageAnalysis } from '../src/hooks/useImageAnalysis'
+import { useNewPageSession } from '../src/hooks/useNewPageSession'
+import { useUnsplashMedia } from '../src/hooks/useUnsplashMedia'
+import {
   type GeneratedStepContent,
+  type ImageAnalysisResult,
   type UserInputData,
   userInputStorage
 } from '../src/libs/storage'
-
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious
-} from '@/components/ui/carousel'
 
 // Dynamic imports for components to avoid hydration issues
 const AnimatedLoadingText = dynamic(
@@ -228,178 +243,6 @@ const FormatSelection = dynamic(
   }),
   { ssr: false }
 )
-
-const steps = [
-  { id: 1, title: 'Content', description: 'What do you want to share?' },
-  { id: 2, title: 'Style', description: 'Choose your design style' },
-  { id: 3, title: 'Output', description: 'Select output formats' }
-]
-
-const BASE_SYSTEM_PROMPT = `You are a content creation assistant for Jesus Film Project. Based on the user's devotional content, create an engaging and shareable version that:
-
-1. Maintains the core spiritual message
-2. Makes it suitable for social media sharing
-3. Encourages reflection and engagement
-4. Keeps it concise and impactful
-5. Uses warm, inviting language`
-
-const REFINEMENT_INSTRUCTIONS = `When refining or improving content, consider:
-- Previous AI responses may show patterns in content style and messaging
-- Maintain consistency with your previous suggestions
-- Build upon rather than contradict earlier improvements
-- If no previous context is available, proceed with standard enhancement`
-
-const OUTPUT_FORMAT_INSTRUCTIONS = `Provide the response as JSON with this structure:
-{
-  "steps": [
-    {
-      "content": "# Short label for the step (max 6 words)\\n\\nMarkdown-formatted instagram sotry or messages copy for this step",
-      "keywords": "singleword-keyword, singleword-keyword, singleword-keyword",
-      "mediaPrompt": "≤150 character prompt for an image/video generator"
-    }
-  ]
-}`
-
-const RESPONSE_GUIDELINES = `Guidelines:
-- Include 7-12 sequential steps tailored to the user's request.
-- Keep the core spiritual message while making each step social-ready.
-- Provide three exactly single-word keywords per step that is suitable for Unsplash image searches.
-- The mediaPrompt should align with the step's tone and visuals.
-- Use markdown formatting inside the content field when helpful.
-- Begin each content field with a level-one markdown heading that states the step's short label (e.g., "# Let Your Light Shine") followed by a blank line.`
-
-const contextSystemPrompts: Record<string, string> = {
-  default:
-    'Default to producing ministry-ready resources that can flex between digital and in-person sharing when no specific context is selected. Provide balanced guidance that keeps the content adaptable.',
-  'Conversations':
-    'Guide one-on-one or small group conversations that gently introduce gospel truths. Provide step-by-step talk tracks, reflective questions, prayer suggestions, and gracious transitions. Emphasize empathy, listening, and Scripture references when natural. Align media prompts with visuals that feel personal, calm, and suitable for private messaging.',
-  'Social Media':
-    'Operate like a Canva-style designer for social media campaigns. Treat each step as a templated design idea for stories, carousels, reels, or feed posts. Suggest layout direction, color palettes, typography moods, and short, scroll-stopping copy. Keep platform conventions (vertical ratios, accessibility, alt-text) in mind and tailor media prompts to energetic, template-friendly visuals.',
-  Website:
-    'Act as a simple website builder focused on ministry landing pages. Outline hero messaging, section structure, calls to action, and follow-up pathways that help visitors take the next spiritual step. Provide guidance on responsive layout, navigation clarity, and content hierarchy. Recommend imagery that builds trust and a welcoming digital doorway, and craft media prompts for cohesive hero or section artwork.',
-  Print:
-    'Serve as a Canva-style designer producing print-ready assets that will be downloaded as PDFs. Include details about page sizes, margin or bleed considerations when helpful, and ensure copy remains legible in physical formats. Suggest tangible distribution ideas such as flyers, postcards, or posters. Shape media prompts around high-resolution artwork that reproduces cleanly when printed.',
-  'Real Life':
-    'Support real-world ministry efforts beyond digital channels. Offer actionable steps for events, discipleship moments, pastoral care, missions, or community service. Provide talking points, activity ideas, and tangible follow-up resources that equip Christians, missionaries, and pastors. Encourage cultural sensitivity and spiritual discernment, and use media prompts to inspire helpful reference visuals, handouts, or props.'
-}
-
-const contextDetailOptions: Record<string, Array<{ text: string; emoji: string; prompt: string }>> = {
-  'Conversations': [
-    { text: 'Start a conversation', prompt: 'Start a friendly chat with someone I haven\'t talked to in a while, without sounding forced.', emoji: '💬' },
-    { text: 'Reconnect', prompt: 'Reach out to someone I\'ve lost touch with and express genuine interest in their life.', emoji: '🙋‍♂️' },
-    { text: 'Invite to talk more', prompt: 'Invite someone to continue our conversation and deepen our connection.', emoji: '💭' },
-    { text: "Say you're sorry", prompt: 'Apologize sincerely for something I\'ve done wrong and seek reconciliation.', emoji: '🙇' },
-    { text: 'Encourage a friend', prompt: 'Offer words of encouragement and support to someone going through a difficult time.', emoji: '🙌' },
-    { text: 'Share your story', prompt: 'Share a personal testimony or experience that could inspire or help others.', emoji: '📝' },
-    { text: 'Share a verse', prompt: 'Share a meaningful Bible verse that relates to the current situation.', emoji: '📖' },
-    { text: 'Offer a prayer', prompt: 'Offer to pray for someone or share a prayer that addresses their needs.', emoji: '🤲' }
-  ],
-  'Social Media': [
-    { text: 'Create a social post design', prompt: 'Design an engaging social media post that captures attention and communicates a clear message.', emoji: '🖼️' },
-    { text: 'Design a carousel series', prompt: 'Create a multi-slide carousel that tells a story or presents information progressively.', emoji: '🧩' },
-    { text: 'Plan a short-form video', prompt: 'Plan a brief, impactful video content for platforms like Instagram Reels or TikTok.', emoji: '🎬' },
-    { text: 'Write captions for reels & stories', prompt: 'Write compelling captions that complement short-form video content.', emoji: '✍️' },
-    { text: 'Map a community engagement idea', prompt: 'Develop an idea for engaging with the community through social media initiatives.', emoji: '📣' }
-  ],
-  Website: [
-    { text: 'Create an embeddable carousel', prompt: 'Design a carousel component that can be easily embedded in websites.', emoji: '🧷' },
-    { text: 'Build a simple landing page', prompt: 'Create an effective landing page that converts visitors into engaged users.', emoji: '🖥️' },
-    { text: 'Lay out a page with sections', prompt: 'Structure a webpage with clear, organized sections for optimal user experience.', emoji: '📐' },
-    { text: 'Draft copy for featured designs', prompt: 'Write persuasive copy highlighting key design elements and benefits.', emoji: '📝' }
-  ],
-  Print: [
-    { text: 'Design church invite cards', prompt: 'Create attractive invitation cards for church events with clear details and compelling visuals.', emoji: '⛪' },
-    { text: 'Create outreach flyers', prompt: 'Design informative flyers to promote church programs and community outreach.', emoji: '📣' },
-    { text: 'Make shareable cards', prompt: 'Create cards with inspirational messages or Bible verses that people can easily share.', emoji: '💌' },
-    { text: 'Generate QR code posters', prompt: 'Design posters featuring QR codes that link to online resources or event registration.', emoji: '🔗' },
-    { text: 'Print sticker sheets', prompt: 'Create sheets of stickers with church branding, Bible verses, or motivational messages.', emoji: '🏷️' }
-  ],
-  'Real Life': [
-    { text: 'Write discussion questions', prompt: 'Create thoughtful questions to facilitate meaningful group discussions about faith topics.', emoji: '❓' },
-    { text: 'Plan life application ideas', prompt: 'Develop practical ways to apply biblical principles to everyday life situations.', emoji: '🧭' },
-    { text: 'Outline a short sermon', prompt: 'Structure a brief, focused message with clear main points and practical applications.', emoji: '🎙️' },
-    { text: 'Prepare a group lesson', prompt: 'Create an engaging lesson plan for small group Bible study or discipleship.', emoji: '👥' },
-    { text: 'Create a family devotion', prompt: 'Design a family-focused spiritual activity with Bible reading and discussion.', emoji: '🏠' }
-  ]
-}
-
-// Removed - now using proper conversation history instead of RAG
-
-const IMAGE_ANALYSIS_PROMPT = `You are an expert at analyzing content images from religious and spiritual point of view for our digital ai tool that helps the user create content for social media and private gospel sharing using images, text or video. Your task is to generate gospel-focused content ideas that help private conversations or social media followers consider God, Gospel, and Salvation. Each idea should be a practical, actionable suggestion based on the image content.  Gospel-centered content ideas inspired by this image. Each idea should connect naturally to the visual, point people toward God, the Gospel, and Salvation, and be practical for sharing in private conversations or on social media. Keep ideas specific, actionable, and matched to what our Canva-like design tool can create (e.g., Instagram stories, carousels, social posts, simple videos, or printable PDFs).
-  content ideas inspired by this image. Each idea should connect 
-  naturally to the visual, point people toward God, the Gospel, and 
-  Salvation, and be practical for sharing in private conversations or 
-  on social media. Keep ideas specific, actionable, and matched to 
-  what our Canva-like design tool can create (e.g., Instagram 
-  stories, carousels, social posts, simple videos, or printable PDFs).
-
-Analyze this image and provide a detailed response in the following JSON format:
-
-{
-  "contentType": "One of: devotional, bible, church_service_slide, sermon_notes, scripture_verse, worship_image, religious_artwork, nature_spiritual, community_event, ministry_activity, personal_message, comment, email, news_article, other",
-  "extractedText": "Any text visible in the image - perform OCR and extract all readable text exactly as it appears",
-  "detailedDescription": "If there's no text, provide a detailed description of the image including: composition, colors, mood, setting, any people/objects/symbols, artistic style, and spiritual/religious elements",
-  "confidence": "Overall confidence in the analysis (high/medium/low)",
-  "contentIdeas": ["First gospel-focused content idea as a string inspired by the image and most appropriate for the image content (10 words max)", "Second gospel-focused content idea as a string inspired by the image and most appropriate for the image content (10 words max)", "Third gospel-focused content idea as a string inspired by the image and most appropriate for the image content (10 words max)"]
-}
-
-Content type definitions:
-- devotional: Images designed for daily devotionals, quiet time, spiritual reflection
-- bible: Illustrations or photos depicting bible stories, characters, or scenes
-- church_service_slide: PowerPoint slides or presentation slides used in church services
-- sermon_notes: Notes or outlines from sermons, preaching materials, study guides
-- scripture_verse: Images containing bible verses, often with decorative backgrounds
-- worship_image: Images related to worship, praise, music ministry
-- religious_artwork: Paintings, drawings, or artistic representations with religious themes
-- nature_spiritual: Nature scenes used for spiritual purposes or contemplation
-- community_event: Photos of church events, gatherings, fellowship activities
-- ministry_activity: Images showing ministry work, outreach, service projects
-- personal_message: Screenshot of a private conversation that users needs help with to lean it to gospel and bible truth
-- comment: Comments on social media, discussions, or feedback
-- email: Email communications, newsletters, or correspondence
-- news_article: Some intereste based on current events artivle that user uploads as context for his outreach effort
-- other: Any other type of religious/spiritual content not covered above
-
-Be thorough and accurate in your analysis.`
-
-// Category-specific sharing options
-const categorySharingOptions = {
-  'Conversations': [
-    'in a text with your friends',
-    'in a group chat with your family',
-    'in a prayer group on WhatsApp',
-    'in YouTube comments',
-    'in a private message to someone in need'
-  ],
-  'Social Media': [
-    'on your Instagram stories',
-    "in your church's Facebook group",
-    'in your Twitter/X post',
-    'on your TikTok feed',
-    'with your colleagues on LinkedIn'
-  ],
-  Website: [
-    "on your church's website",
-    'in your ministry blog post',
-    'in your online testimony page',
-    'in your podcast website',
-    'on your nonprofit homepage'
-  ],
-  Print: [
-    'in a printed church bulletin',
-    'on a flyer for your community event',
-    'in your devotional journal',
-    'on a Bible study handout',
-    'in your published book/article'
-  ],
-  'Real Life': [
-    'in a sermon at your church',
-    'in a small group Bible study',
-    'in a conversation with a neighbor',
-    'during a conference or retreat',
-    'at a youth group meeting'
-  ]
-}
 
 type SelectedOutputsMap = Record<string, string[]>
 
@@ -1234,17 +1077,7 @@ export default function NewPage() {
   const [loadingUnsplashSteps, setLoadingUnsplashSteps] = useState<Set<string>>(new Set())
   const [loadingSession, setLoadingSession] = useState<string | null>(null)
   const [isCollapsing, setIsCollapsing] = useState(false)
-  const [imageAnalysisResults, setImageAnalysisResults] = useState<
-    Array<{
-      imageSrc: string
-      contentType: string
-      extractedText: string
-      detailedDescription: string
-      confidence: string
-      contentIdeas: string[]
-      isAnalyzing: boolean
-    }>
-  >([])
+  const [imageAnalysisResults, setImageAnalysisResults] = useState<ImageAnalysisResult[]>([])
   const [isDragOver, setIsDragOver] = useState(false)
   const [isPersonaDialogOpen, setIsPersonaDialogOpen] = useState(false)
   const [personaSettings, setPersonaSettings] = useState({
@@ -1253,12 +1086,19 @@ export default function NewPage() {
     tone: '',
     goals: ''
   })
-  const [savedSessions, setSavedSessions] = useState<UserInputData[]>([])
-  const [totalTokensUsed, setTotalTokensUsed] = useState({
-    input: 0,
-    output: 0
-  })
-  const [isTokensUpdated, setIsTokensUpdated] = useState(false)
+  const {
+    savedSessions,
+    refreshSavedSessions,
+    currentSessionId,
+    setCurrentSessionId,
+    totalTokensUsed,
+    setTotalTokensUsed,
+    isTokensUpdated,
+    setIsTokensUpdated,
+    saveSession,
+    updateTokens,
+    deleteSession
+  } = useNewPageSession()
   const [selectedImageForDetails, setSelectedImageForDetails] = useState<
     number | null
   >(null)
@@ -1269,7 +1109,6 @@ export default function NewPage() {
   } | null>(null)
   const [animatingTextarea, setAnimatingTextarea] = useState(false)
   const [hidingSuggestionsCarousel, setHidingSuggestionsCarousel] = useState(false)
-  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
   const [hiddenSuggestions, setHiddenSuggestions] = useState<Set<string>>(
     new Set()
   )
@@ -1381,11 +1220,6 @@ export default function NewPage() {
   }, [editableSteps.length]) // Only recreate when step count changes
 
   // Load saved data on mount
-  useEffect(() => {
-    const allSessions = userInputStorage.getAllSessions()
-    setSavedSessions(allSessions)
-  }, [])
-
   useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('jesus-film-studio-openai-api-key')
@@ -1859,378 +1693,44 @@ export default function NewPage() {
       output: usage.output_tokens ?? 0
     }
 
-    setTotalTokensUsed((prev) => ({
-      input: prev.input + newTokens.input,
-      output: prev.output + newTokens.output
-    }))
-
-    // Update current session with new token usage
-    if (currentSessionId) {
-      const currentSession = userInputStorage.getAllSessions().find(session => session.id === currentSessionId)
-      if (currentSession) {
-        const existingTokens = currentSession.tokensUsed || { input: 0, output: 0 }
-        userInputStorage.updateSession(currentSessionId, {
-          tokensUsed: {
-            input: existingTokens.input + newTokens.input,
-            output: existingTokens.output + newTokens.output
-          }
-        })
-        // Update the saved sessions list to reflect the changes
-        setSavedSessions(userInputStorage.getAllSessions())
-      }
-    }
+    updateTokens(currentSessionId, newTokens)
   }
 
-  const processContentWithAI = async (inputText?: string) => {
-    const currentValue = inputText || textareaRef.current?.value || ''
-    if (!currentValue.trim()) {
-      console.warn('Please enter some content to process.')
-      return
-    }
+  const { processContentWithAI } = useAiContent({
+    textareaRef,
+    aiResponse,
+    editableSteps,
+    imageAttachments,
+    imageAnalysisResults,
+    buildConversationHistory,
+    extractTextFromResponse,
+    parseGeneratedSteps,
+    setAiResponse,
+    setEditableSteps,
+    setIsProcessing,
+    saveSession,
+    updateTokens
+  })
 
-    setIsProcessing(true)
-    const previousResponse = aiResponse
-    const previousSteps = editableSteps
-    setAiResponse('')
 
-    try {
-      // Build conversation history for proper chat context
-      const messages = buildConversationHistory()
+  const { analyzeImageWithAI } = useImageAnalysis({
+    setImageAnalysisResults,
+    extractTextFromResponse,
+    accumulateUsage,
+    prompt: IMAGE_ANALYSIS_PROMPT
+  })
 
-      // Add the current user input (or refinement request)
-      const currentUserMessage = currentValue.trim()
-      messages.push({
-        role: 'user',
-        content: currentUserMessage
-      })
 
-      const response = await fetch('/api/ai/respond', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: 'gpt-5-nano',
-          messages
-          // max_output_tokens: 2000,
-          // temperature: 0.9,
-        })
-      })
-
-      if (!response.ok) {
-        const errorMessage = await response.text()
-        throw new Error(errorMessage || 'Failed to process content')
-      }
-
-      const data = await response.json()
-      const processedContent =
-        extractTextFromResponse(data) || 'No response generated'
-      setAiResponse(processedContent)
-      const parsedSteps = parseGeneratedSteps(processedContent)
-      setEditableSteps(parsedSteps)
-
-      // Track token usage first
-      const tokenUsage = data.usage ? {
-        input: data.usage.input_tokens ?? 0,
-        output: data.usage.output_tokens ?? 0
-      } : { input: 0, output: 0 }
-
-      // Update total tokens
-      setTotalTokensUsed((prev) => ({
-        input: prev.input + tokenUsage.input,
-        output: prev.output + tokenUsage.output
-      }))
-
-      // Save session after AI response is processed with correct token usage
-      const sessionId = userInputStorage.saveCurrentSession({
-        textContent: currentValue,
-        images: imageAttachments,
-        aiResponse: processedContent,
-        aiSteps: parsedSteps,
-        imageAnalysisResults: imageAnalysisResults.map((result) => ({
-          imageSrc: result.imageSrc,
-          contentType: result.contentType,
-          extractedText: result.extractedText,
-          detailedDescription: result.detailedDescription,
-          confidence: result.confidence,
-          contentIdeas: result.contentIdeas
-        })),
-        tokensUsed: tokenUsage
-      })
-      // Set this as the current session for future token tracking
-      setCurrentSessionId(sessionId)
-      setSavedSessions(userInputStorage.getAllSessions())
-    } catch (error) {
-      console.error('Error processing content:', error)
-      // Restore previous response if API call failed
-      setAiResponse(previousResponse)
-      setEditableSteps(previousSteps)
-      console.error('Failed to process content via the AI proxy. Please try again.')
-    } finally {
-      setIsProcessing(false)
-    }
-  }
-
-  const analyzeImageWithAI = async (imageSrc: string, imageIndex: number) => {
-    // Mark as analyzing
-    setImageAnalysisResults((prev) => {
-      const updated = [...prev]
-      if (!updated[imageIndex]) {
-        updated[imageIndex] = {
-          imageSrc,
-          contentType: '',
-          extractedText: '',
-          detailedDescription: '',
-          confidence: '',
-          contentIdeas: [],
-          isAnalyzing: true
-        }
-      } else {
-        updated[imageIndex].isAnalyzing = true
-      }
-      return updated
+  const { searchUnsplash, loadUnsplashImagesForStep, testUnsplashAPI } =
+    useUnsplashMedia({
+      unsplashApiKey,
+      unsplashImages,
+      setUnsplashImages,
+      setLoadingUnsplashSteps,
+      setIsSettingsOpen,
+      deriveHeadingFromContent
     })
 
-    try {
-      const response = await fetch('/api/ai/respond', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini', // Using gpt-4o-mini for vision capabilities
-          messages: [
-            { role: 'system', content: IMAGE_ANALYSIS_PROMPT },
-            {
-              role: 'user',
-              content: [
-                { type: 'text', text: 'Analyze this image:' },
-                {
-                  type: 'image_url',
-                  image_url: {
-                    url: imageSrc,
-                    detail: 'high' // High detail for better OCR and analysis
-                  }
-                }
-              ]
-            }
-          ],
-          max_tokens: 1000,
-          temperature: 0.1 // Low temperature for more consistent analysis
-        })
-      })
-
-      if (!response.ok) {
-        const errorMessage = await response.text()
-        throw new Error(errorMessage || 'Failed to analyze image')
-      }
-
-      const data = await response.json()
-      let analysisText = extractTextFromResponse(data) || '{}'
-
-      // Track token usage
-      accumulateUsage(data.usage)
-
-      // Extract JSON from markdown code block if present
-      if (analysisText.includes('```json') || analysisText.includes('```')) {
-        const jsonMatch = analysisText.match(
-          /```\s*(?:json)?\s*([\s\S]*?)\s*```/
-        )
-        if (jsonMatch && jsonMatch[1]) {
-          analysisText = jsonMatch[1].trim()
-        }
-      }
-
-      // Parse the JSON response
-      let analysisResult
-      try {
-        analysisResult = JSON.parse(analysisText)
-        // Ensure contentIdeas is always an array
-        if (!Array.isArray(analysisResult.contentIdeas)) {
-          analysisResult.contentIdeas = []
-        }
-      } catch (parseError) {
-        console.error('Failed to parse analysis response:', parseError)
-        console.error('Raw response:', analysisText)
-        analysisResult = {
-          contentType: 'other',
-          extractedText: '',
-          detailedDescription: 'Failed to analyze image',
-          confidence: 'low',
-          contentIdeas: []
-        }
-      }
-
-      // Update the analysis results
-      setImageAnalysisResults((prev) => {
-        const updated = [...prev]
-        updated[imageIndex] = {
-          imageSrc,
-          contentType: analysisResult.contentType || 'other',
-          extractedText: analysisResult.extractedText || '',
-          detailedDescription: analysisResult.detailedDescription || '',
-          confidence: analysisResult.confidence || 'low',
-          contentIdeas: analysisResult.contentIdeas || [],
-          isAnalyzing: false
-        }
-        return updated
-      })
-    } catch (error) {
-      console.error('Error analyzing image:', error)
-      setImageAnalysisResults((prev) => {
-        const updated = [...prev]
-        updated[imageIndex] = {
-          imageSrc,
-          contentType: 'error',
-          extractedText: '',
-          detailedDescription: 'Failed to analyze image. Please try again.',
-          confidence: 'low',
-          contentIdeas: [],
-          isAnalyzing: false
-        }
-        return updated
-      })
-    }
-  }
-
-  const searchUnsplash = async (query: string, perPage: number = 3): Promise<string[]> => {
-    const accessKey = unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
-
-    console.log('🔑 API Key debug:', {
-      unsplashApiKey: unsplashApiKey ? `***${unsplashApiKey.slice(-4)}` : 'not set',
-      envVar: process.env.UNSPLASH_ACCESS_KEY ? `***${process.env.UNSPLASH_ACCESS_KEY.slice(-4)}` : 'not set',
-      accessKey: accessKey ? `***${accessKey.slice(-4)}` : 'not set',
-      query
-    })
-
-    if (!accessKey) {
-      console.error('❌ UNSPLASH_ACCESS_KEY not found in environment variables or settings')
-      return []
-    }
-
-    try {
-      // Try query parameter approach first to debug
-      const apiUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=${perPage}&content_filter=high&orientation=squarish&client_id=${accessKey}`
-      console.log('🌐 Making API request to:', apiUrl.replace(accessKey, `***${accessKey.slice(-4)}`))
-
-      const response = await fetch(apiUrl)
-
-      console.log('📡 Response status:', response.status, response.statusText)
-
-      if (!response.ok) {
-        console.error('❌ Unsplash API error:', response.status, response.statusText)
-        const errorText = await response.text()
-        console.error('❌ Error response body:', errorText)
-
-        // Check for common error patterns
-        try {
-          const errorData = JSON.parse(errorText)
-          if (errorData.errors && errorData.errors.includes('OAuth error: The access token is invalid')) {
-            console.error('❌ INVALID API KEY: The Unsplash Access Key you entered is invalid.')
-            console.error('💡 SOLUTION: Get a new Access Key from https://unsplash.com/developers')
-            console.warn('Please check your Unsplash Access Key in Settings and get a new one from https://unsplash.com/developers if needed.')
-          }
-        } catch {
-          // Error text is not JSON, continue with generic error
-        }
-
-        return []
-      }
-
-      const data = await response.json()
-      console.log(`✅ Unsplash Response for "${query}": ${data.results?.length || 0} images found`)
-
-      if (data.results && data.results.length > 0) {
-        console.log('🖼️ First image details:', {
-          id: data.results[0].id,
-          description: data.results[0].description,
-          url: data.results[0].urls?.regular
-        })
-      }
-
-      const imageUrls = data.results?.map((photo: any) => photo.urls?.regular).filter(Boolean) || []
-      console.log(`📸 Extracted ${imageUrls.length} image URLs for "${query}"`)
-
-      return imageUrls
-    } catch (error) {
-      console.error('💥 Failed to search Unsplash:', error)
-      return []
-    }
-  }
-
-  const loadUnsplashImagesForStep = async (step: GeneratedStepContent, stepIndex: number) => {
-    if (!step.keywords.length) return
-
-    const stepKey = `step-${stepIndex}`
-    if (unsplashImages[stepKey]) return // Already loaded
-
-    // Set loading state
-    setLoadingUnsplashSteps(prev => new Set(prev).add(stepKey))
-
-    const heading = deriveHeadingFromContent(
-      step.content,
-      `Step ${stepIndex + 1}`
-    )
-
-    try {
-      let images: string[] = []
-
-      // Try each keyword until we find results
-      for (let i = 0; i < step.keywords.length; i++) {
-        const keyword = step.keywords[i]
-        console.log(
-          `🖼️ Loading Unsplash images for Step ${
-            stepIndex + 1
-          }: "${heading}" using keyword ${i + 1}/${step.keywords.length}: "${keyword}"`
-        )
-
-        images = await searchUnsplash(keyword, 12)
-
-        if (images.length > 0) {
-          console.log(`✅ Found ${images.length} images for Step ${stepIndex + 1} using keyword: "${keyword}"`)
-          break
-        } else {
-          console.log(`❌ No images found for Step ${stepIndex + 1} using keyword: "${keyword}". Trying next keyword...`)
-        }
-      }
-
-      console.log(`📸 Completed loading ${images.length} images for Step ${stepIndex + 1}`)
-
-      setUnsplashImages(prev => ({
-        ...prev,
-        [stepKey]: images
-      }))
-    } catch (error) {
-      console.error('Failed to load Unsplash images for step:', error)
-    } finally {
-      // Remove loading state
-      setLoadingUnsplashSteps(prev => {
-        const newSet = new Set(prev)
-        newSet.delete(stepKey)
-        return newSet
-      })
-    }
-  }
-
-  // Debug function to test Unsplash API
-  const testUnsplashAPI = async () => {
-    console.log('🧪 Testing Unsplash API...')
-
-    if (!unsplashApiKey && !process.env.UNSPLASH_ACCESS_KEY) {
-      console.warn('No Unsplash Access Key found. Please enter one in Settings.')
-      setIsSettingsOpen(true)
-      return
-    }
-
-    const testResult = await searchUnsplash('test', 1)
-    console.log('🧪 Test result:', testResult)
-
-    if (testResult.length > 0) {
-      console.log(`✅ Unsplash API working! Found ${testResult.length} test image(s).`)
-    } else {
-      console.warn('❌ Unsplash API test failed. Check your Access Key in Settings.')
-    }
-  }
 
   // Expose test function to window for debugging
   useEffect(() => {
@@ -2538,11 +2038,6 @@ export default function NewPage() {
         }
       }, 300)
     }, 800) // 0.8 second loading animation
-  }
-
-  const deleteSession = (sessionId: string) => {
-    userInputStorage.deleteSession(sessionId)
-    setSavedSessions(userInputStorage.getAllSessions())
   }
 
   const styleOptions = [
