@@ -11,7 +11,7 @@ import { LanguageMap } from './LanguageMap'
 
 export function SectionLanguageMap(): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const { points, isLoading, error } = useLanguageMap()
+  const { points, isLoading, error, retry } = useLanguageMap()
 
   const hasData = points.length > 0
   const uniqueLanguagesCount = useMemo(() => {
@@ -63,9 +63,23 @@ export function SectionLanguageMap(): ReactElement {
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center px-6 text-center text-sm text-white/70">
-              {error != null && !isLoading
-                ? t('We had trouble loading the language map. Please try again later.')
-                : t('Loading language coverage…')}
+              {error != null && !isLoading ? (
+                <div className="flex flex-col items-center gap-4">
+                  <p className="max-w-sm text-balance">
+                    {t('We had trouble loading the language map. Please try again later.')}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={retry}
+                    disabled={isLoading}
+                    className="rounded-full border border-white/30 px-5 py-2 text-sm font-medium text-white transition hover:border-white/60 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {t('Try again')}
+                  </button>
+                </div>
+              ) : (
+                t('Loading language coverage…')
+              )}
             </div>
           )}
         </div>
