@@ -48,6 +48,13 @@ import {
   CardHeader,
   CardTitle
 } from '../src/components/ui/card'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+} from '../src/components/ui/carousel'
 import { Checkbox } from '../src/components/ui/checkbox'
 import {
   Dialog,
@@ -70,14 +77,6 @@ import {
   type UserInputData,
   userInputStorage
 } from '../src/libs/storage'
-
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious
-} from '@/components/ui/carousel'
 
 // Dynamic imports for components to avoid hydration issues
 const AnimatedLoadingText = dynamic(
@@ -369,7 +368,7 @@ const categorySharingOptions = {
     'in a group chat with your family',
     'in a prayer group on WhatsApp',
     'in YouTube comments',
-    'in a private message to someone in need'
+    'in a private message'
   ],
   'Social Media': [
     'on your Instagram stories',
@@ -387,7 +386,7 @@ const categorySharingOptions = {
   ],
   Print: [
     'in a printed church bulletin',
-    'on a flyer for your community event',
+    'on a flyer for your event',
     'in your devotional journal',
     'on a Bible study handout',
     'in your published book/article'
