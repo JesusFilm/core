@@ -609,7 +609,92 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'Date,What is your name?,Select an option\n,Question 1 Card,Question 2 Card\n2024-01-15,John Doe,Option A\n'
+      'Date,What is your name?,Poll\n,Question 1 Card,Question 2 Card\n2024-01-15,John Doe,Option A\n'
+    )
+  })
+
+  it('should use "Multiselect" as header for RadioMultiselectBlock types', async () => {
+    prismaMock.journey.findUnique.mockResolvedValueOnce({
+      id: 'journey1',
+      team: { userTeams: [{ userId: mockUser.id, role: 'manager' }] },
+      userJourneys: [],
+      blocks: [
+        {
+          id: 'step1',
+          typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: null,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'card1',
+          typename: 'CardBlock',
+          parentBlockId: 'step1',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'typography1',
+          typename: 'TypographyBlock',
+          parentBlockId: 'card1',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: 'Choose Your Options'
+        },
+        {
+          id: 'block1',
+          typename: 'RadioMultiselectBlock',
+          parentBlockId: 'card1',
+          parentOrder: 1,
+          nextBlockId: null,
+          action: null,
+          content: null
+        }
+      ]
+    } as any)
+
+    prismaMock.event.findMany.mockResolvedValueOnce([
+      {
+        blockId: 'block1',
+        label: 'Select multiple options'
+      } as any
+    ])
+    prismaMock.journeyVisitor.findMany.mockResolvedValueOnce([
+      {
+        id: 'jv1',
+        createdAt: new Date('2024-01-20T00:00:00Z'),
+        events: [
+          {
+            blockId: 'block1',
+            label: 'Select multiple options',
+            value: 'Option 1',
+            typename: 'MultiselectSubmissionEvent'
+          } as any,
+          {
+            blockId: 'block1',
+            label: 'Select multiple options',
+            value: 'Option 2',
+            typename: 'MultiselectSubmissionEvent'
+          } as any
+        ]
+      } as any
+    ])
+
+    const result = await authClient({
+      document: JOURNEY_VISITOR_EXPORT_QUERY,
+      variables: {
+        journeyId: 'journey1'
+      }
+    })
+
+    expect(result).toHaveProperty(
+      'data.journeyVisitorExport',
+      'Date,Multiselect\n,Choose Your Options\n2024-01-20,Option 1; Option 2\n'
     )
   })
 })

@@ -507,6 +507,9 @@ builder.queryField('journeyVisitorExport', (t) => {
         // Build two header rows manually
         const firstHeaderRow = columns.map((col) => {
           if (col.key === 'date') return 'Date'
+          // For Poll and Multiselect blocks, use the block type name
+          if (col.typename === 'RadioQuestionBlock') return 'Poll'
+          if (col.typename === 'RadioMultiselectBlock') return 'Multiselect'
           // Use the label from the event (e.g., "What is your name?")
           return col.label
         })
