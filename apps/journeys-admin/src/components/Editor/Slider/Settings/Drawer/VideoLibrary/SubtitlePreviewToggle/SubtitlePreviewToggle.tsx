@@ -10,7 +10,7 @@ import { ReactElement, useState } from 'react'
 export interface SubtitlePreviewToggleProps {
   subtitleEnabled: boolean
   onSubtitleToggle: (enabled: boolean) => void
-  hasSubtitles?: boolean
+  subtitleLanguage: string | null
   disabled?: boolean
   loading?: boolean
 }
@@ -18,12 +18,14 @@ export interface SubtitlePreviewToggleProps {
 export function SubtitlePreviewToggle({
   subtitleEnabled,
   onSubtitleToggle,
-  hasSubtitles = true,
+  subtitleLanguage,
   disabled = false,
   loading = false
 }: SubtitlePreviewToggleProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [showTooltip, setShowTooltip] = useState(false)
+
+  const hasSubtitles = subtitleLanguage != null
 
   const handleSubtitleToggle = (): void => {
     if (hasSubtitles) {
@@ -55,12 +57,20 @@ export function SubtitlePreviewToggle({
             subtitleEnabled && hasSubtitles ? 'text.primary' : 'text.secondary'
         }}
       >
-        {t('Enable Subtitles')}
+        {t('Preview with Subtitles')}
       </Typography>
       <Tooltip
-        open={showTooltip}
-        title={t('This video does not have any subtitles.')}
+        open={!hasSubtitles ? showTooltip : false}
+        title={t('No subtitles available')}
         placement="top"
+        onOpen={() => {
+          if (!hasSubtitles) {
+            setShowTooltip(true)
+          }
+        }}
+        onClose={() => {
+          setShowTooltip(false)
+        }}
         PopperProps={{
           container: () =>
             document.querySelector('.MuiDrawer-paper') || document.body,
@@ -100,8 +110,8 @@ export function SubtitlePreviewToggle({
           <Switch
             checked={subtitleEnabled && hasSubtitles}
             onChange={handleSubtitleToggle}
-            disabled={disabled}
-            inputProps={{ 'aria-label': t('Enable Subtitles') }}
+            disabled={disabled || !hasSubtitles}
+            inputProps={{ 'aria-label': t('Preview with Subtitles') }}
           />
         )}
       </Tooltip>

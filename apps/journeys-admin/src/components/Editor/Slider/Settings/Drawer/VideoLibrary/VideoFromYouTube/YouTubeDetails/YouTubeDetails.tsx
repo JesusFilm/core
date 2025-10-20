@@ -37,8 +37,12 @@ const fetcher = async (id: string): Promise<YoutubeVideo> => {
 export function YouTubeDetails({
   open,
   id,
-  onSelect
-}: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {
+  onSelect,
+  activeVideoBlock
+}: Pick<
+  VideoDetailsProps,
+  'open' | 'id' | 'onSelect' | 'activeVideoBlock'
+>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player | null>(null)
@@ -48,6 +52,9 @@ export function YouTubeDetails({
     () => (open ? id : null),
     fetcher
   )
+
+  // Get subtitle language from the active video block
+  const subtitleLanguage = activeVideoBlock?.subtitleLanguage ?? null
 
   const handleSelect = (): void => {
     onSelect({
@@ -71,11 +78,22 @@ export function YouTubeDetails({
 
   const videoDescription = data?.snippet.description ?? ''
 
-  // Create visible player
+  // Create visible player (only recreate when data or subtitleLanguage changes)
   useEffect(() => {
     if (videoRef.current != null && data != null) {
+      const youtubeOptions =
+        subtitleLanguage != null
+          ? {
+              youtube: {
+                cc_load_policy: 1,
+                cc_lang_pref: subtitleLanguage
+              }
+            }
+          : {}
+
       playerRef.current = videojs(videoRef.current, {
         ...defaultVideoJsOptions,
+        ...youtubeOptions,
         fluid: true,
         controls: true,
         poster: data?.snippet?.thumbnails?.default?.url ?? undefined
@@ -91,7 +109,28 @@ export function YouTubeDetails({
         playerRef.current = null
       }
     }
-  }, [data])
+  }, [data, subtitleLanguage])
+
+  // Toggle captions on/off without recreating the player
+  useEffect(() => {
+    if (playerRef.current != null && subtitleLanguage != null) {
+      const player = playerRef.current as any
+      // Access the YouTube player through video.js
+      if (player.tech_ && player.tech_.ytPlayer) {
+        const ytPlayer = player.tech_.ytPlayer
+        if (subtitleEnabled) {
+          // Enable captions
+          ytPlayer.loadModule?.('captions')
+          ytPlayer.setOption?.('captions', 'track', {
+            languageCode: subtitleLanguage
+          })
+        } else {
+          // Disable captions
+          ytPlayer.unloadModule?.('captions')
+        }
+      }
+    }
+  }, [subtitleEnabled, subtitleLanguage])
 
   const loading = data == null && error == null
 
@@ -165,8 +204,7 @@ export function YouTubeDetails({
           <SubtitlePreviewToggle
             subtitleEnabled={subtitleEnabled}
             onSubtitleToggle={handleSubtitleToggle}
-            hasSubtitles={false}
-            loading={false}
+            subtitleLanguage={subtitleLanguage}
             disabled={loading}
           />
         </>
