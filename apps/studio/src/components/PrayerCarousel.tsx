@@ -7,8 +7,8 @@ import {
   useState
 } from 'react'
 
-import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel'
-import type { CarouselApi } from '@/components/ui/carousel'
+import { Carousel, CarouselContent, CarouselItem } from './ui/carousel'
+import type { CarouselApi } from './ui/carousel'
 
 function usePrefersReducedMotion() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
