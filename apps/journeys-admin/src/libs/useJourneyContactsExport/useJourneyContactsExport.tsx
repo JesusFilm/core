@@ -22,7 +22,6 @@ export const GET_JOURNEY_VISITOR_EXPORT = graphql(`
 export interface ExportJourneyContactsParams {
   journeyId: string
   filter: VariablesOf<typeof GET_JOURNEY_VISITOR_EXPORT>['filter']
-  select: VariablesOf<typeof GET_JOURNEY_VISITOR_EXPORT>['select']
 }
 
 export function useJourneyContactsExport(): {
@@ -40,15 +39,13 @@ export function useJourneyContactsExport(): {
 
   async function exportJourneyContacts({
     journeyId,
-    filter,
-    select
+    filter
   }: ExportJourneyContactsParams): Promise<void> {
     try {
       const { data, error } = await getJourneyVisitorExport({
         variables: {
           journeyId,
           filter,
-          select
         }
       })
 

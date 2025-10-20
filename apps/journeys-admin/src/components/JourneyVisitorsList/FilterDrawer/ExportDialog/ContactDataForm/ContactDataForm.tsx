@@ -28,12 +28,10 @@ export function ContactDataForm({
     setSelectedFields(
       checked
         ? [
-            'name',
-            'email',
-            'phone',
             'RadioQuestionSubmissionEvent',
             'SignUpSubmissionEvent',
-            'TextResponseSubmissionEvent'
+            'TextResponseSubmissionEvent',
+            'MultiselectSubmissionEvent'
           ]
         : []
     )
@@ -48,12 +46,10 @@ export function ContactDataForm({
 
   useEffect(() => {
     setSelectedFields([
-      'name',
-      'email',
-      'phone',
       'RadioQuestionSubmissionEvent',
       'SignUpSubmissionEvent',
-      'TextResponseSubmissionEvent'
+      'TextResponseSubmissionEvent',
+      'MultiselectSubmissionEvent'
     ])
   }, [setSelectedFields])
 
@@ -61,26 +57,11 @@ export function ContactDataForm({
     <Stack>
       <FormGroup>
         <CheckboxOption
-          checked={selectedFields.length === 6}
+          checked={selectedFields.length === 7}
           onChange={handleSelectAll}
           label={t('All')}
         />
         <Divider sx={{ my: 1 }} />
-        <CheckboxOption
-          checked={selectedFields.includes('name')}
-          onChange={toggleField('name')}
-          label={t('Name')}
-        />
-        <CheckboxOption
-          checked={selectedFields.includes('email')}
-          onChange={toggleField('email')}
-          label={t('Email')}
-        />
-        <CheckboxOption
-          checked={selectedFields.includes('phone')}
-          onChange={toggleField('phone')}
-          label={t('Phone')}
-        />
         <CheckboxOption
           checked={selectedFields.includes('RadioQuestionSubmissionEvent')}
           onChange={toggleField('RadioQuestionSubmissionEvent')}
@@ -95,6 +76,11 @@ export function ContactDataForm({
           checked={selectedFields.includes('TextResponseSubmissionEvent')}
           onChange={toggleField('TextResponseSubmissionEvent')}
           label={t('Text Submission')}
+        />
+        <CheckboxOption
+          checked={selectedFields.includes('MultiselectSubmissionEvent')}
+          onChange={toggleField('MultiselectSubmissionEvent')}
+          label={t('Multiselect Selection(s)')}
         />
       </FormGroup>
     </Stack>
