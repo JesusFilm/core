@@ -47,6 +47,13 @@ import {
   CardHeader,
   CardTitle
 } from '../src/components/ui/card'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+} from '../src/components/ui/carousel'
 import { Checkbox } from '../src/components/ui/checkbox'
 import {
   Dialog,
@@ -69,14 +76,6 @@ import {
   type UserInputData,
   userInputStorage
 } from '../src/libs/storage'
-
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious
-} from '@/components/ui/carousel'
 
 // Dynamic imports for components to avoid hydration issues
 const AnimatedLoadingText = dynamic(
