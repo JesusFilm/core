@@ -1277,6 +1277,7 @@ export default function NewPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const cameraInputRef = useRef<HTMLInputElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
+  const pendingSessionIdRef = useRef<string | null>(null)
   // Toggle X-ray mode (Cmd+Shift+X) to show minimalistic component labels from data-id
   useEffect(() => {
     const getPageRoot = (): Element =>
@@ -2457,32 +2458,47 @@ export default function NewPage() {
     return 'content'
   }
 
-  const loadSession = (session: UserInputData) => {
-    // Start loading animation immediately
-    setLoadingSession(session.id)
+  const sessionScrollAnimation = useCallback((shouldScroll: boolean) => {
+    if (!shouldScroll) return
 
-    // After loading animation delay, load the session and collapse
-    setTimeout(() => {
-      // Stop loading animation
-      setLoadingSession(null)
+    const element = document.getElementById('parsed-multi-step-content')
+    if (!element) return
 
-      // Start collapsing animation
-      setIsCollapsing(true)
+    // Custom smooth scroll with slower animation
+    const elementTop = element.getBoundingClientRect().top
+    const startPosition = window.pageYOffset
+    const distance = elementTop - 20 // Small offset from top
+    const duration = 800 // 800ms for slower scroll
+    let startTime: number | null = null
 
-      // After collapse animation completes, hide the section
-      setTimeout(() => {
-        setIsSessionsOpen(false)
-        setIsCollapsing(false)
-      }, 500) // Match the CSS transition duration
+    const animation = (currentTime: number) => {
+      if (startTime === null) startTime = currentTime
+      const timeElapsed = currentTime - startTime
+      const progress = Math.min(timeElapsed / duration, 1)
 
-      // Load session data
+      // Easing function for smoother animation
+      const easeInOutCubic = (t: number) =>
+        t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+      const run = easeInOutCubic(progress)
+
+      window.scrollTo(0, startPosition + distance * run)
+
+      if (timeElapsed < duration) {
+        requestAnimationFrame(animation)
+      }
+    }
+
+    requestAnimationFrame(animation)
+  }, [])
+
+  const applySessionToState = useCallback(
+    (session: UserInputData, { shouldScroll = true }: { shouldScroll?: boolean } = {}) => {
       setTextContent(session.textContent)
       setImageAttachments(session.images)
       setAiResponse(session.aiResponse || '')
       setEditableSteps(
         session.aiSteps ? normalizeGeneratedSteps(session.aiSteps) : []
       )
-      // Set textarea value directly
       if (textareaRef.current) {
         textareaRef.current.value = session.textContent
       }
@@ -2494,49 +2510,92 @@ export default function NewPage() {
         }))
       )
 
-      // Set current session ID for token tracking
       setCurrentSessionId(session.id)
-
-      // Set token usage for display
       if (session.tokensUsed) {
         setTotalTokensUsed(session.tokensUsed)
+      } else {
+        setTotalTokensUsed({ input: 0, output: 0 })
       }
 
-      // Clear draft since we're loading a saved session
       userInputStorage.clearDraft()
 
-      // Scroll to "Parsed Multi-Step Content" section
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem(
+          'jesus-film-studio-current-session',
+          session.id
+        )
+      }
+
+      setTimeout(() => sessionScrollAnimation(shouldScroll), 300)
+    },
+    [normalizeGeneratedSteps, sessionScrollAnimation]
+  )
+
+  const loadSession = useCallback(
+    (
+      session: UserInputData,
+      {
+        skipAnimation = false,
+        shouldScrollToContent = true
+      }: { skipAnimation?: boolean; shouldScrollToContent?: boolean } = {}
+    ) => {
+      if (skipAnimation) {
+        setLoadingSession(null)
+        setIsCollapsing(false)
+        setIsSessionsOpen(false)
+        applySessionToState(session, { shouldScroll: shouldScrollToContent })
+        return
+      }
+
+      setLoadingSession(session.id)
+
       setTimeout(() => {
-        const element = document.getElementById('parsed-multi-step-content')
-        if (element) {
-          // Custom smooth scroll with slower animation
-          const elementTop = element.getBoundingClientRect().top
-          const startPosition = window.pageYOffset
-          const distance = elementTop - 20 // Small offset from top
-          const duration = 800 // 800ms for slower scroll
-          let startTime: number | null = null
+        setLoadingSession(null)
+        setIsCollapsing(true)
 
-          const animation = (currentTime: number) => {
-            if (startTime === null) startTime = currentTime
-            const timeElapsed = currentTime - startTime
-            const progress = Math.min(timeElapsed / duration, 1)
+        setTimeout(() => {
+          setIsSessionsOpen(false)
+          setIsCollapsing(false)
+        }, 500)
 
-            // Easing function for smoother animation
-            const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
-            const run = easeInOutCubic(progress)
+        applySessionToState(session, { shouldScroll: shouldScrollToContent })
+      }, 800)
+    },
+    [applySessionToState]
+  )
 
-            window.scrollTo(0, startPosition + distance * run)
+  useEffect(() => {
+    if (!router.isReady) return
 
-            if (timeElapsed < duration) {
-              requestAnimationFrame(animation)
-            }
-          }
+    const queryValue = router.query.sessionId
+    const sessionId = Array.isArray(queryValue) ? queryValue[0] : queryValue ?? null
 
-          requestAnimationFrame(animation)
-        }
-      }, 300)
-    }, 800) // 0.8 second loading animation
-  }
+    if (sessionId) {
+      pendingSessionIdRef.current = sessionId
+    } else {
+      pendingSessionIdRef.current = null
+    }
+  }, [router.isReady, router.query.sessionId])
+
+  useEffect(() => {
+    const targetSessionId = pendingSessionIdRef.current
+    if (!targetSessionId) return
+    if (!savedSessions.length) return
+
+    const sessionToLoad = savedSessions.find((session) => session.id === targetSessionId)
+    if (!sessionToLoad) return
+    if (currentSessionId === targetSessionId) {
+      pendingSessionIdRef.current = null
+      return
+    }
+
+    const shouldScroll = router.asPath.includes('#parsed-multi-step-content')
+    loadSession(sessionToLoad, {
+      skipAnimation: true,
+      shouldScrollToContent: shouldScroll
+    })
+    pendingSessionIdRef.current = null
+  }, [currentSessionId, loadSession, router, savedSessions])
 
   const deleteSession = (sessionId: string) => {
     userInputStorage.deleteSession(sessionId)
