@@ -18,7 +18,6 @@ import {
   MessageCircle,
   MessageSquare,
   Palette,
-  Paperclip,
   Plus,
   Printer,
   Search,
@@ -38,6 +37,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { ReactElement } from 'react'
 
 import { PrayerCarousel } from '../src/components/PrayerCarousel'
 import { Accordion } from '../src/components/ui/accordion'
@@ -234,8 +234,6 @@ const steps = [
   { id: 2, title: 'Style', description: 'Choose your design style' },
   { id: 3, title: 'Output', description: 'Select output formats' }
 ]
-
-const START_FROM_SCRATCH_OPTION = 'Start from scratch'
 
 const BASE_SYSTEM_PROMPT = `You are a content creation assistant for Jesus Film Project. Based on the user's devotional content, create an engaging and shareable version that:
 
@@ -1198,6 +1196,30 @@ export default function NewPage() {
   const selectedContextOptions =
     contextDetailOptions[selectedContext] ?? []
 
+  const selectedDetailOption = useMemo(() => {
+    if (!selectedContextDetail) {
+      return null
+    }
+
+    const options = contextDetailOptions[selectedContext] ?? []
+    return (
+      options.find((option) => option.text === selectedContextDetail) ?? null
+    )
+  }, [selectedContext, selectedContextDetail])
+
+  const parsedContentHeadingSuffix = useMemo(() => {
+    if (!selectedContext || !selectedContextDetail) {
+      return ''
+    }
+
+    // Remove "Plan " prefix and add "a " prefix for the detail
+    const modifiedDetail = selectedContextDetail.startsWith('Plan ')
+      ? ' a ' + selectedContextDetail.slice(5).toLowerCase()
+      : selectedContextDetail.charAt(0).toLowerCase() + selectedContextDetail.slice(1)
+
+    return `${modifiedDetail} for ${selectedContext.toLowerCase()}`
+  }, [selectedContext, selectedContextDetail])
+
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isSessionsOpen, setIsSessionsOpen] = useState(false)
   const [unsplashApiKey, setUnsplashApiKey] = useState('')
@@ -1224,7 +1246,13 @@ export default function NewPage() {
     }>
   >([])
   const [isDragOver, setIsDragOver] = useState(false)
-  const [showContextMenu, setShowContextMenu] = useState(false)
+  const [isPersonaDialogOpen, setIsPersonaDialogOpen] = useState(false)
+  const [personaSettings, setPersonaSettings] = useState({
+    personaName: '',
+    audienceDescription: '',
+    tone: '',
+    goals: ''
+  })
   const [savedSessions, setSavedSessions] = useState<UserInputData[]>([])
   const [totalTokensUsed, setTotalTokensUsed] = useState({
     input: 0,
@@ -1251,19 +1279,8 @@ export default function NewPage() {
     useState(true)
   const [isGeneratingDesign, setIsGeneratingDesign] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const cameraInputRef = useRef<HTMLInputElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
-  const hasGeneratedContent = aiResponse.trim().length > 0
-
-  useEffect(() => {
-    if (isProcessing) {
-      setShouldRenderPrayerCarousel(true)
-    }
-  }, [isProcessing])
-
-  const handlePrayerCarouselCollapsed = useCallback(() => {
-    setShouldRenderPrayerCarousel(false)
-  }, [])
-
   // Toggle X-ray mode (Cmd+Shift+X) to show minimalistic component labels from data-id
   useEffect(() => {
     const getPageRoot = (): Element =>
@@ -1279,7 +1296,9 @@ export default function NewPage() {
           await navigator.clipboard.writeText(text)
           return
         }
-      } catch {}
+      } catch (error) {
+        console.warn('Falling back to execCommand clipboard copy:', error)
+      }
       const textarea = document.createElement('textarea')
       textarea.value = text
       textarea.style.position = 'fixed'
@@ -1362,21 +1381,6 @@ export default function NewPage() {
 
     return handlers
   }, [editableSteps.length]) // Only recreate when step count changes
-
-  // Close context menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        showContextMenu &&
-        !(event.target as Element).closest('.context-menu-container')
-      ) {
-        setShowContextMenu(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [showContextMenu])
 
   // Load saved data on mount
   useEffect(() => {
@@ -1608,11 +1612,14 @@ export default function NewPage() {
   }
 
   const normalizeGeneratedSteps = (
-    steps: Array<Partial<GeneratedStepContent> & { title?: string }>
+    steps: Array<
+      Partial<GeneratedStepContent> & { title?: string; keywords?: string | string[] }
+    >
   ): GeneratedStepContent[] =>
     steps.map((step) => {
-      const normalizedKeywords = Array.isArray(step?.keywords)
-        ? step.keywords
+      const keywordsValue = step?.keywords as string | string[] | undefined
+      const normalizedKeywords = Array.isArray(keywordsValue)
+        ? keywordsValue
             .map((keyword) =>
               typeof keyword === 'string'
                 ? keyword.trim()
@@ -1620,8 +1627,8 @@ export default function NewPage() {
             )
             .filter((keyword) => keyword.length > 0)
             .slice(0, 3)
-        : typeof step?.keywords === 'string'
-        ? step.keywords
+        : typeof keywordsValue === 'string'
+        ? keywordsValue
             .split(',')
             .map((keyword) => keyword.trim())
             .filter((keyword) => keyword.length > 0)
@@ -2125,7 +2132,7 @@ export default function NewPage() {
             console.error('💡 SOLUTION: Get a new Access Key from https://unsplash.com/developers')
             console.warn('Please check your Unsplash Access Key in Settings and get a new one from https://unsplash.com/developers if needed.')
           }
-        } catch (e) {
+        } catch {
           // Error text is not JSON, continue with generic error
         }
 
@@ -2305,23 +2312,37 @@ export default function NewPage() {
     setImageAnalysisResults((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const handleFileSelect = () => {
-    setShowContextMenu(!showContextMenu)
+  const handleOpenCamera = () => {
+    cameraInputRef.current?.click()
   }
 
-  const handlePhotosAndFiles = () => {
-    setShowContextMenu(false)
-    fileInputRef.current?.click()
-  }
-
-  const handleLinkToSite = () => {
-    setShowContextMenu(false)
-    // For now, just show a placeholder - you could implement URL input dialog here
-    const url = prompt('Enter website URL:')
-    if (url) {
-      // You could add this to attachments or handle it differently
-      console.log(`Link to site: ${url} - This feature can be implemented further`)
+  const handleCameraChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files
+    if (files && files.length > 0) {
+      processFiles(files)
     }
+
+    if (cameraInputRef.current) {
+      cameraInputRef.current.value = ''
+    }
+  }
+
+  const handlePersonaFieldChange = (
+    field: keyof typeof personaSettings
+  ) =>
+    (
+      event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+      const value = event.target.value
+      setPersonaSettings((prev) => ({
+        ...prev,
+        [field]: value
+      }))
+    }
+
+  const handlePersonaSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setIsPersonaDialogOpen(false)
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -2644,7 +2665,7 @@ export default function NewPage() {
               const renderMarkdown = (text: string) => {
                 // Split by lines and process each line
                 const lines = text.split('\n')
-                const elements: JSX.Element[] = []
+                const elements: ReactElement[] = []
                 let key = 0
 
                 for (let i = 0; i < lines.length; i++) {
@@ -2728,7 +2749,7 @@ export default function NewPage() {
         )}
         <Button
           type="button"
-          variant="transparent"
+          variant="ghost"
           size="sm"
           className={`absolute top-2 right-2 gap-1 h-8 w-8 p-0 opacity-60 hover:opacity-100 transition-opacity ${
             copiedStepIndex === stepIndex ? '' : ''
@@ -2736,7 +2757,14 @@ export default function NewPage() {
           onClick={(e) => {
             e.preventDefault()
             e.stopPropagation()
-            void handleCopyStep({ content: isEditing ? localContent : content }, stepIndex)
+            void handleCopyStep(
+              {
+                content: isEditing ? localContent : content,
+                keywords: [],
+                mediaPrompt: ''
+              },
+              stepIndex
+            )
           }}
           onMouseDown={(e) => e.preventDefault()}
           title={copiedStepIndex === stepIndex ? "Copied!" : "Copy content"}
@@ -3719,49 +3747,127 @@ export default function NewPage() {
                           }}
                         />
 
-                        {/* Plus icon - bottom left */}
-                        <div className="absolute bottom-3 left-3 context-menu-container">
+                        {/* Camera button - bottom left */}
+                        <div className="absolute bottom-3 left-3">
                           <button
-                            onClick={handleFileSelect}
-                            className="p-2 rounded-full bg-muted hover:bg-muted/80 transition-colors group cursor-pointer"
-                            title="More options"
+                            onClick={handleOpenCamera}
+                            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-full border-2 border-border bg-transparent text-foreground hover:bg-muted/30 transition-colors cursor-pointer"
+                            title="Add image"
+                            type="button"
                           >
-                            <Plus className="w-4 h-4 text-muted-foreground group-hover:text-foreground" />
+                            <Camera className="w-4 h-4" />
+                            <span>Add Image</span>
                           </button>
-
-                          {/* Context Menu */}
-                          {showContextMenu && (
-                            <div className="absolute bottom-full left-0 mb-2 bg-popover border border-border rounded-lg shadow-lg p-1 min-w-[200px] z-50">
-                              <button
-                                onClick={handlePhotosAndFiles}
-                                className="w-full flex items-center justify-start gap-3 px-3 py-2 text-sm rounded-md hover:bg-muted transition-colors cursor-pointer"
-                              >
-                                <Paperclip className="w-4 h-4 text-muted-foreground" />
-                                <span className="text-left">Add photos</span>
-                              </button>
-                              <button
-                                onClick={handleLinkToSite}
-                                className="w-full flex items-center justify-start gap-3 px-3 py-2 text-sm rounded-md hover:bg-muted transition-colors cursor-pointer"
-                              >
-                                <Globe className="w-4 h-4 text-muted-foreground" />
-                                <span className="text-left">Link to site</span>
-                              </button>
-                            </div>
-                          )}
                         </div>
-                        {/* Run button - bottom right */}
-                        <button
-                          onClick={() => {
-                            void handleSubmit()
-                          }}
-                          className="absolute bottom-3 right-3 px-4 py-2 text-sm font-medium text-white rounded-full bg-primary hover:bg-primary/90 transition-colors group cursor-pointer"
+
+                        {/* Action buttons - bottom right */}
+                        <Dialog
+                          open={isPersonaDialogOpen}
+                          onOpenChange={setIsPersonaDialogOpen}
                         >
-                          {isProcessing ? (
-                            <AnimatedLoadingText />
-                          ) : (
-                            <>{aiResponse.trim() ? 'Retry' : 'Run'}&nbsp;&nbsp;&nbsp;&nbsp;⌘ + ↵</>
-                          )}
-                        </button>
+                          <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                            <DialogTrigger asChild>
+                              <button
+                                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-full border-2 border-border bg-transparent text-foreground hover:bg-muted/30 transition-colors cursor-pointer"
+                                type="button"
+                              >
+                                <Users className="w-4 h-4" />
+                                <span>Persona</span>
+                              </button>
+                            </DialogTrigger>
+                            <button
+                              onClick={() => {
+                                void handleSubmit()
+                              }}
+                              className="px-4 py-2 text-sm font-medium text-white rounded-full bg-primary hover:bg-primary/90 transition-colors group cursor-pointer"
+                              type="button"
+                            >
+                              {isProcessing ? (
+                                <AnimatedLoadingText />
+                              ) : (
+                                <>{aiResponse.trim() ? 'Retry' : 'Run'}&nbsp;&nbsp;&nbsp;&nbsp;⌘ + ↵</>
+                              )}
+                            </button>
+                          </div>
+                          <DialogContent className="sm:max-w-[480px]">
+                            <DialogHeader>
+                              <DialogTitle>Persona settings</DialogTitle>
+                              <DialogDescription>
+                                Define the audience or persona preferences that should guide the generated content.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <form className="grid gap-4" onSubmit={handlePersonaSubmit}>
+                              <div className="grid gap-1">
+                                <label
+                                  className="text-sm font-medium text-muted-foreground"
+                                  htmlFor="persona-name"
+                                >
+                                  Persona name
+                                </label>
+                                <Input
+                                  id="persona-name"
+                                  value={personaSettings.personaName}
+                                  onChange={handlePersonaFieldChange('personaName')}
+                                  placeholder="e.g. Youth Pastor, College Student"
+                                />
+                              </div>
+                              <div className="grid gap-1">
+                                <label
+                                  className="text-sm font-medium text-muted-foreground"
+                                  htmlFor="persona-audience"
+                                >
+                                  Audience description
+                                </label>
+                                <Textarea
+                                  id="persona-audience"
+                                  value={personaSettings.audienceDescription}
+                                  onChange={handlePersonaFieldChange('audienceDescription')}
+                                  placeholder="Who are you speaking to? Include demographics, background, or interests."
+                                  rows={3}
+                                />
+                              </div>
+                              <div className="grid gap-1">
+                                <label
+                                  className="text-sm font-medium text-muted-foreground"
+                                  htmlFor="persona-tone"
+                                >
+                                  Tone or style preferences
+                                </label>
+                                <Input
+                                  id="persona-tone"
+                                  value={personaSettings.tone}
+                                  onChange={handlePersonaFieldChange('tone')}
+                                  placeholder="e.g. Warm and encouraging, Bold and direct"
+                                />
+                              </div>
+                              <div className="grid gap-1">
+                                <label
+                                  className="text-sm font-medium text-muted-foreground"
+                                  htmlFor="persona-goals"
+                                >
+                                  Goals or desired response
+                                </label>
+                                <Textarea
+                                  id="persona-goals"
+                                  value={personaSettings.goals}
+                                  onChange={handlePersonaFieldChange('goals')}
+                                  placeholder="What do you want the audience to think, feel, or do?"
+                                  rows={3}
+                                />
+                              </div>
+                              <div className="flex justify-end gap-2 pt-2">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  onClick={() => setIsPersonaDialogOpen(false)}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button type="submit">Save persona</Button>
+                              </div>
+                            </form>
+                          </DialogContent>
+                        </Dialog>
                       </div>
                     </div>
                     {/* Hidden file input */}
@@ -3774,6 +3880,15 @@ export default function NewPage() {
                   className="hidden"
                 />
 
+                <input
+                  ref={cameraInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleCameraChange}
+                  className="hidden"
+                />
+                    
                 {shouldRenderPrayerCarousel && (
                   <PrayerCarousel
                     isActive={isProcessing}
@@ -3942,7 +4057,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Instagram',
                                     'Story / Reel / IGTV (Vertical): 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -3977,7 +4092,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Instagram',
                                     'Feed Post (Square): 1080 × 1080 px (1:1)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4012,7 +4127,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Instagram',
                                     'Feed Post (Landscape): 1080 × 608 px (~16:9)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4058,7 +4173,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Facebook',
                                     'Feed Video (Landscape): 1200 × 630 px (~1.91:1)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4093,7 +4208,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Facebook',
                                     'Feed Video (Square): 1080 × 1080 px (1:1)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4128,7 +4243,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Facebook',
                                     'Vertical Video: 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4163,7 +4278,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Facebook',
                                     'Cover Video: 820 × 462 px (16:9 cinematic crop)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4207,7 +4322,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'YouTube',
                                     'Standard Video: 1920 × 1080 px (16:9 Full HD)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4242,7 +4357,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'YouTube',
                                     'Shorts (Vertical): 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4277,7 +4392,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'YouTube',
                                     '4K UHD: 3840 × 2160 px (16:9)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4321,7 +4436,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'LinkedIn',
                                     'Feed Video (Landscape): 1200 × 627 px (~1.91:1)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4356,7 +4471,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'LinkedIn',
                                     'Feed Video (Square): 1080 × 1080 px (1:1)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4391,7 +4506,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'LinkedIn',
                                     'Stories (Vertical): 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4437,7 +4552,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Twitter',
                                     'Landscape Video: 1600 × 900 px (16:9)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4472,7 +4587,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Twitter',
                                     'Square Video: 1080 × 1080 px (1:1)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4505,7 +4620,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Twitter',
                                     'Vertical Video: 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4551,7 +4666,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'TikTok',
                                     'Standard Vertical Video: 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4603,7 +4718,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Pinterest',
                                     'Standard Pin Video: 1000 × 1500 px (2:3)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4638,7 +4753,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Pinterest',
                                     'Square Video: 1000 × 1000 px (1:1)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4671,7 +4786,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Pinterest',
                                     'Vertical Video: 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4717,7 +4832,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Snapchat',
                                     'Standard Vertical Video: 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4763,7 +4878,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Universal',
                                     'Full HD: 1920 × 1080 px (16:9)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4796,7 +4911,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Universal',
                                     '4K UHD: 3840 × 2160 px (16:9)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4829,7 +4944,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Universal',
                                     'Vertical HD: 1080 × 1920 px (9:16)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4862,7 +4977,7 @@ export default function NewPage() {
                                   handleOutputChange(
                                     'Universal',
                                     'Square HD: 1080 × 1080 px (1:1)',
-                                    checked as boolean
+                                    checked
                                   )
                                 }
                               />
@@ -4913,9 +5028,20 @@ export default function NewPage() {
                         {editableSteps.length > 0 && (
                           <>
                             <div id="parsed-multi-step-content" className="flex flex-wrap items-center justify-between gap-2">
-                              <label className="text-sm font-medium">
-                                Parsed Multi-Step Content
-                              </label>
+                              <div className="flex flex-row gap-2">
+                                <h3 className="flex items-center text-2xl font-medium">
+                                Content draft
+                                </h3>
+                                </div>
+                                <p>
+                                  
+                                  {parsedContentHeadingSuffix && (
+                                    <span className="text-muted-foreground text-sm font-normal">
+                                      {selectedDetailOption.emoji} Task:  {parsedContentHeadingSuffix}
+                                    </span>
+                                  )}
+                                </p>
+                              
                             </div>
                             <div className="grid gap-6">
                               <StepsList
@@ -5185,7 +5311,7 @@ export default function NewPage() {
                                       handleOutputChange(
                                         category,
                                         option.name,
-                                        checked as boolean
+                                        checked
                                       )
                                     }
                                   />
