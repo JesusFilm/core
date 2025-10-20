@@ -16,6 +16,7 @@ export function PrayerCarousel({
   isActive,
   onCollapseComplete
 }: PrayerCarouselProps) {
+  const SLIDE_DURATION = 8000
   const slides = useMemo<PrayerSlide[]>(
     () => [
       {
@@ -65,12 +66,22 @@ export function PrayerCarousel({
   const [progress, setProgress] = useState(0)
   const [isProgressAnimating, setIsProgressAnimating] = useState(false)
   const progressFrameRef = useRef<number | null>(null)
+  const autoAdvanceTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const clearAutoAdvance = () => {
+    if (autoAdvanceTimeoutRef.current) {
+      clearTimeout(autoAdvanceTimeoutRef.current)
+      autoAdvanceTimeoutRef.current = null
+    }
+  }
 
   const handlePrevious = () => {
+    clearAutoAdvance()
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
   }
 
   const handleNext = () => {
+    clearAutoAdvance()
     setCurrentSlide((prev) => (prev + 1) % slides.length)
   }
 
@@ -105,6 +116,7 @@ export function PrayerCarousel({
         cancelAnimationFrame(progressFrameRef.current)
         progressFrameRef.current = null
       }
+      clearAutoAdvance()
       setIsProgressAnimating(false)
       setProgress(0)
       return
@@ -123,13 +135,20 @@ export function PrayerCarousel({
       progressFrameRef.current = null
     })
 
+    clearAutoAdvance()
+    autoAdvanceTimeoutRef.current = setTimeout(() => {
+      autoAdvanceTimeoutRef.current = null
+      setCurrentSlide((prev) => (prev + 1) % slides.length)
+    }, SLIDE_DURATION)
+
     return () => {
       if (progressFrameRef.current != null) {
         cancelAnimationFrame(progressFrameRef.current)
         progressFrameRef.current = null
       }
+      clearAutoAdvance()
     }
-  }, [currentSlide, isActive, isVisible])
+  }, [currentSlide, isActive, isVisible, slides.length, SLIDE_DURATION])
 
   return (
     <div
@@ -207,7 +226,9 @@ export function PrayerCarousel({
                       className="absolute inset-y-0 left-0 rounded-full bg-amber-500"
                       style={{
                         width: `${progress}%`,
-                        transition: isProgressAnimating ? 'width 800ms ease' : 'none'
+                        transition: isProgressAnimating
+                          ? `width ${SLIDE_DURATION}ms linear`
+                          : 'none'
                       }}
                     />
                   </div>
