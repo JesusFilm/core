@@ -357,9 +357,7 @@ describe('ExportDialog', () => {
       expect(screen.getByLabelText('Poll Selection')).toBeChecked()
       expect(screen.getByLabelText('Subscription')).toBeChecked()
       expect(screen.getByLabelText('Text Submission')).toBeChecked()
-      expect(
-        screen.getByLabelText('Multiselect Selection(s)')
-      ).toBeChecked()
+      expect(screen.getByLabelText('Multiselect Selection(s)')).toBeChecked()
 
       fireEvent.click(screen.getByRole('button', { name: 'Export (CSV)' }))
       expect(mockExportJourneyContacts).toHaveBeenCalledWith({
