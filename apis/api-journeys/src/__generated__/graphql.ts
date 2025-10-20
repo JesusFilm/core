@@ -3412,6 +3412,7 @@ export type Query = {
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
   getUserRole?: Maybe<UserRole>;
+  getYouTubeClosedCaptionLanguageIds: Array<YouTubeLanguage>;
   hosts: Array<Host>;
   integrations: Array<Integration>;
   journey: Journey;
@@ -3613,6 +3614,11 @@ export type QueryGetMyMuxVideoArgs = {
 export type QueryGetMyMuxVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetYouTubeClosedCaptionLanguageIdsArgs = {
+  videoId: Scalars['ID']['input'];
 };
 
 
@@ -4987,7 +4993,7 @@ export type VideoBlock = Block & {
   source: VideoBlockSource;
   /** startAt dictates at which point of time the video should start playing */
   startAt?: Maybe<Scalars['Int']['output']>;
-  subtitleLanguage?: Maybe<Scalars['String']['output']>;
+  subtitleLanguageId?: Maybe<Scalars['ID']['output']>;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -5031,7 +5037,7 @@ export type VideoBlockCreateInput = {
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
   source?: InputMaybe<VideoBlockSource>;
   startAt?: InputMaybe<Scalars['Int']['input']>;
-  subtitleLanguage?: InputMaybe<Scalars['String']['input']>;
+  subtitleLanguageId?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['ID']['input']>;
   videoVariantLanguageId?: InputMaybe<Scalars['ID']['input']>;
@@ -5086,7 +5092,7 @@ export type VideoBlockUpdateInput = {
    */
   source?: InputMaybe<VideoBlockSource>;
   startAt?: InputMaybe<Scalars['Int']['input']>;
-  subtitleLanguage?: InputMaybe<Scalars['String']['input']>;
+  subtitleLanguageId?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['ID']['input']>;
   videoVariantLanguageId?: InputMaybe<Scalars['ID']['input']>;
@@ -5836,6 +5842,19 @@ export type YouTube = {
   id: Scalars['ID']['output'];
   primaryLanguageId?: Maybe<Scalars['ID']['output']>;
   source: VideoBlockSource;
+};
+
+export type YouTubeLanguage = {
+  __typename?: 'YouTubeLanguage';
+  bcp47?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Array<YouTubeLanguageName>>;
+};
+
+export type YouTubeLanguageName = {
+  __typename?: 'YouTubeLanguageName';
+  primary?: Maybe<Scalars['Boolean']['output']>;
+  value?: Maybe<Scalars['String']['output']>;
 };
 
 export type Youtube = {
