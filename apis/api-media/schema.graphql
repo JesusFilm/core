@@ -627,6 +627,7 @@ type Query {
   videoEdition(id: ID!): VideoEdition
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
+  getYouTubeClosedCaptionLanguageIds(videoId: ID!): [YouTubeLanguage!]!
   arclightApiKeys: [ArclightApiKey!]!
   arclightApiKeyByKey(key: String!): ArclightApiKey
 }
@@ -1294,6 +1295,17 @@ input VideosFilter {
   subtitleLanguageIds: [ID!]
   published: Boolean
   locked: Boolean
+}
+
+type YouTubeLanguage {
+  id: String
+  bcp47: String
+  name: [YouTubeLanguageName!]
+}
+
+type YouTubeLanguageName {
+  value: String
+  primary: Boolean
 }
 
 type Youtube
