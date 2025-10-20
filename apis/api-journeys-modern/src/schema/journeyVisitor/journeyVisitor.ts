@@ -208,7 +208,8 @@ builder.queryField('journeyVisitorExport', (t) => {
                 parentBlockId: true,
                 parentOrder: true,
                 nextBlockId: true,
-                action: true
+                action: true,
+                content: true
               }
             }
           }
@@ -391,10 +392,36 @@ builder.queryField('journeyVisitorExport', (t) => {
           return current as any
         }
 
-        function compareHeaders(
-          a: { blockId: string | null },
-          b: { blockId: string | null }
-        ): number {
+        function getCardHeading(blockId: string | null | undefined): string {
+          const cardBlock = getAncestorByType(blockId, 'CardBlock')
+          if (cardBlock == null) return ''
+          
+          // Find all TypographyBlock children of this card
+          const typographyBlocks = journeyBlocks
+            .filter((b: any) => 
+              b.typename === 'TypographyBlock' && 
+              b.parentBlockId === cardBlock.id
+            )
+            .sort((a: any, b: any) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
+          
+          // Get the first (highest order) typography block's content
+          if (typographyBlocks.length > 0) {
+            const firstTypography = typographyBlocks[0] as any
+            if (firstTypography.content != null) {
+              // Content is typically a string or JSON with text
+              if (typeof firstTypography.content === 'string') {
+                return firstTypography.content
+              }
+              if (typeof firstTypography.content === 'object' && firstTypography.content.text) {
+                return firstTypography.content.text
+              }
+            }
+          }
+          
+          return ''
+        }
+
+        function compareHeaders(a: { blockId: string | null }, b: { blockId: string | null }): number {
           // Derive sort keys
           const aCard = getAncestorByType(a.blockId, 'CardBlock')
           const bCard = getAncestorByType(b.blockId, 'CardBlock')
@@ -454,20 +481,35 @@ builder.queryField('journeyVisitorExport', (t) => {
           .sort(compareHeaders)
           .map((item) => ({
             key: `${item.blockId!}-${item.label!}`,
-            header: item.label!
+            label: item.label!,
+            blockId: item.blockId!,
+            typename: journeyBlocks.find((b: any) => b.id === item.blockId)?.typename ?? ''
           }))
 
         const columns = [
-          { key: 'date', header: 'Date' },
+          { key: 'date', label: 'Date', blockId: null, typename: '' },
           ...(filter?.typenames == null || filter.typenames.length > 0
             ? blockHeaders
             : [])
         ].filter((value) => value != null)
 
+        // Build two header rows manually
+        const firstHeaderRow = columns.map(col => {
+          if (col.key === 'date') return 'Date'
+          // Use the label from the event (e.g., "What is your name?")
+          return col.label
+        })
+
+        const secondHeaderRow = columns.map(col => {
+          if (col.key === 'date') return ''
+          // Get the highest order heading of the card
+          return getCardHeading(col.blockId)
+        })
+
         // Stream rows directly to CSV without collecting in memory
         const stringifier = stringify({
-          header: true,
-          columns
+          header: false,
+          columns: columns.map(col => ({ key: col.key }))
         })
 
         const onEndPromise = new Promise((resolve) => {
@@ -478,6 +520,10 @@ builder.queryField('journeyVisitorExport', (t) => {
         stringifier.on('data', (chunk) => {
           csvContent += chunk
         })
+
+        // Manually write the two header rows
+        stringifier.write(firstHeaderRow)
+        stringifier.write(secondHeaderRow)
 
         for await (const row of getJourneyVisitors(journeyId, eventWhere)) {
           stringifier.write(row)
