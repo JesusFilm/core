@@ -1,3 +1,4 @@
+import { gql, useLazyQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
@@ -14,6 +15,10 @@ import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import CheckIcon from '@core/shared/ui/icons/Check'
 
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
+import {
+  GetYouTubeClosedCaptionLanguageIds,
+  GetYouTubeClosedCaptionLanguageIds_getYouTubeClosedCaptionLanguageIds as YouTubeLanguage
+} from '../../../../../../../../../__generated__/GetYouTubeClosedCaptionLanguageIds'
 import { parseISO8601Duration } from '../../../../../../../../libs/parseISO8601Duration'
 import { SubtitlePreviewToggle } from '../../SubtitlePreviewToggle'
 import { VideoDescription } from '../../VideoDescription'
@@ -34,6 +39,19 @@ const fetcher = async (id: string): Promise<YoutubeVideo> => {
   return videosData.items[0] as YoutubeVideo
 }
 
+export const GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS = gql`
+  query GetYouTubeClosedCaptionLanguageIds($videoId: ID!) {
+    getYouTubeClosedCaptionLanguageIds(videoId: $videoId) {
+      id
+      bcp47
+      name {
+        value
+        primary
+      }
+    }
+  }
+`
+
 export function YouTubeDetails({
   open,
   id,
@@ -53,8 +71,33 @@ export function YouTubeDetails({
     fetcher
   )
 
-  // Get subtitle language from the active video block
-  const subtitleLanguage = activeVideoBlock?.subtitleLanguage ?? null
+  // Get subtitle language ID from the active video block
+  const subtitleLanguageId = activeVideoBlock?.subtitleLanguageId ?? null
+
+  // Fetch closed captions with cache-first policy to prevent duplicate API calls
+  const [getClosedCaptions, { data: captionsData }] =
+    useLazyQuery<GetYouTubeClosedCaptionLanguageIds>(
+      GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS,
+      {
+        fetchPolicy: 'cache-first',
+        nextFetchPolicy: 'cache-first'
+      }
+    )
+
+  // Fetch captions when component opens and we have a video ID
+  useEffect(() => {
+    if (open && id != null) {
+      void getClosedCaptions({
+        variables: { videoId: id }
+      })
+    }
+  }, [open, id, getClosedCaptions])
+
+  // Derive bcp47 code from caption data by matching subtitleLanguageId
+  const subtitleLanguageBcp47 =
+    captionsData?.getYouTubeClosedCaptionLanguageIds?.find(
+      (lang) => lang.id === subtitleLanguageId
+    )?.bcp47 ?? null
 
   const handleSelect = (): void => {
     onSelect({
@@ -78,15 +121,15 @@ export function YouTubeDetails({
 
   const videoDescription = data?.snippet.description ?? ''
 
-  // Create visible player (only recreate when data or subtitleLanguage changes)
+  // Create visible player (only recreate when data or subtitleLanguageBcp47 changes)
   useEffect(() => {
     if (videoRef.current != null && data != null) {
       const youtubeOptions =
-        subtitleLanguage != null
+        subtitleLanguageBcp47 != null
           ? {
               youtube: {
                 cc_load_policy: 1,
-                cc_lang_pref: subtitleLanguage
+                cc_lang_pref: subtitleLanguageBcp47
               }
             }
           : {}
@@ -109,11 +152,11 @@ export function YouTubeDetails({
         playerRef.current = null
       }
     }
-  }, [data, subtitleLanguage])
+  }, [data, subtitleLanguageBcp47])
 
   // Toggle captions on/off without recreating the player
   useEffect(() => {
-    if (playerRef.current != null && subtitleLanguage != null) {
+    if (playerRef.current != null && subtitleLanguageBcp47 != null) {
       const player = playerRef.current as any
       // Access the YouTube player through video.js
       if (player.tech_ && player.tech_.ytPlayer) {
@@ -122,7 +165,7 @@ export function YouTubeDetails({
           // Enable captions
           ytPlayer.loadModule?.('captions')
           ytPlayer.setOption?.('captions', 'track', {
-            languageCode: subtitleLanguage
+            languageCode: subtitleLanguageBcp47
           })
         } else {
           // Disable captions
@@ -130,7 +173,7 @@ export function YouTubeDetails({
         }
       }
     }
-  }, [subtitleEnabled, subtitleLanguage])
+  }, [subtitleEnabled, subtitleLanguageBcp47])
 
   const loading = data == null && error == null
 
@@ -204,7 +247,7 @@ export function YouTubeDetails({
           <SubtitlePreviewToggle
             subtitleEnabled={subtitleEnabled}
             onSubtitleToggle={handleSubtitleToggle}
-            subtitleLanguage={subtitleLanguage}
+            subtitleLanguageId={subtitleLanguageId}
             disabled={loading}
           />
         </>

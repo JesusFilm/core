@@ -10,7 +10,7 @@ import { ReactElement, useState } from 'react'
 export interface SubtitlePreviewToggleProps {
   subtitleEnabled: boolean
   onSubtitleToggle: (enabled: boolean) => void
-  subtitleLanguage: string | null
+  subtitleLanguageId: string | null
   disabled?: boolean
   loading?: boolean
 }
@@ -18,24 +18,27 @@ export interface SubtitlePreviewToggleProps {
 export function SubtitlePreviewToggle({
   subtitleEnabled,
   onSubtitleToggle,
-  subtitleLanguage,
+  subtitleLanguageId,
   disabled = false,
   loading = false
 }: SubtitlePreviewToggleProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [showTooltip, setShowTooltip] = useState(false)
 
-  const hasSubtitles = subtitleLanguage != null
+  const hasSubtitles = subtitleLanguageId != null
 
   const handleSubtitleToggle = (): void => {
     if (hasSubtitles) {
       onSubtitleToggle(!subtitleEnabled)
-    } else {
-      // Show tooltip when trying to toggle without available subtitles
+    }
+  }
+
+  const handleClickDisabled = (): void => {
+    if (!hasSubtitles) {
       setShowTooltip(true)
       setTimeout(() => {
         setShowTooltip(false)
-      }, 3000) // Hide tooltip after 3 seconds
+      }, 3000)
     }
   }
 
@@ -60,17 +63,9 @@ export function SubtitlePreviewToggle({
         {t('Preview with Subtitles')}
       </Typography>
       <Tooltip
-        open={!hasSubtitles ? showTooltip : false}
+        open={!hasSubtitles && showTooltip}
         title={t('No subtitles available')}
         placement="top"
-        onOpen={() => {
-          if (!hasSubtitles) {
-            setShowTooltip(true)
-          }
-        }}
-        onClose={() => {
-          setShowTooltip(false)
-        }}
         PopperProps={{
           container: () =>
             document.querySelector('.MuiDrawer-paper') || document.body,
@@ -104,16 +99,23 @@ export function SubtitlePreviewToggle({
           }
         }}
       >
-        {loading ? (
-          <CircularProgress size={24} sx={{ m: 1.25 }} />
-        ) : (
-          <Switch
-            checked={subtitleEnabled && hasSubtitles}
-            onChange={handleSubtitleToggle}
-            disabled={disabled || !hasSubtitles}
-            inputProps={{ 'aria-label': t('Preview with Subtitles') }}
-          />
-        )}
+        <Box
+          onClick={!hasSubtitles ? handleClickDisabled : undefined}
+          onMouseEnter={!hasSubtitles ? () => setShowTooltip(true) : undefined}
+          onMouseLeave={!hasSubtitles ? () => setShowTooltip(false) : undefined}
+          sx={{ display: 'inline-flex' }}
+        >
+          {loading ? (
+            <CircularProgress size={24} sx={{ m: 1.25 }} />
+          ) : (
+            <Switch
+              checked={subtitleEnabled && hasSubtitles}
+              onChange={handleSubtitleToggle}
+              disabled={disabled || !hasSubtitles}
+              inputProps={{ 'aria-label': t('Preview with Subtitles') }}
+            />
+          )}
+        </Box>
       </Tooltip>
     </Stack>
   )
