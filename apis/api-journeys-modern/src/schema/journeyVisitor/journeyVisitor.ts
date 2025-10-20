@@ -363,9 +363,7 @@ builder.queryField('journeyVisitorExport', (t) => {
           return current as any
         }
 
-        function getTopLevelChildUnderCard(
-          blockId: string | null | undefined
-        ):
+        function getTopLevelChildUnderCard(blockId: string | null | undefined):
           | {
               id: string
               typename: string
