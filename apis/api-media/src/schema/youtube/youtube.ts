@@ -104,22 +104,6 @@ builder.queryFields((t) => ({
       videoId: t.arg.id({ required: true })
     },
     resolve: async (_root, { videoId }) => {
-      if (process.env.NODE_ENV !== 'production') {
-        // Return mock data in development and staging
-        return [
-          {
-            id: '529',
-            bcp47: 'en',
-            name: [
-              {
-                value: 'English',
-                primary: true
-              }
-            ]
-          }
-        ]
-      }
-
       const query = new URLSearchParams({
         part: 'snippet',
         key: process.env.FIREBASE_API_KEY ?? '',
@@ -135,22 +119,22 @@ builder.queryFields((t) => ({
         // Handle YouTube API quota exceeded error specifically
         // if in staging or dev, return mock data.
         if (isAxiosError(error) && error.response?.status === 403) {
-          if (process.env.NODE_ENV !== 'production') {
-            return [
-              {
-                id: '529',
-                bcp47: 'en',
-                name: [
-                  {
-                    value: 'English',
-                    primary: true
-                  }
-                ]
-              }
-            ]
-          }
           const errorData = error.response?.data
           if (errorData?.error?.errors?.[0]?.reason === 'quotaExceeded') {
+            if (process.env.NODE_ENV !== 'production') {
+              return [
+                {
+                  id: '529',
+                  bcp47: 'en',
+                  name: [
+                    {
+                      value: 'English',
+                      primary: true
+                    }
+                  ]
+                }
+              ]
+            }
             throw new GraphQLError(
               'YouTube API quota exceeded. Please try again later.',
               {
@@ -159,7 +143,6 @@ builder.queryFields((t) => ({
             )
           }
         }
-
         throw new GraphQLError(
           'Failed to fetch YouTube closed caption language IDs',
           {
