@@ -283,66 +283,9 @@ export function PrayerCarousel({
         paddingBottom: isVisible ? '24px' : '0px'
       }}
     >
-      <div className="px-6 md:px-10">
-        <Carousel
-          className="relative"
-          opts={{ loop: true }}
-          setApi={(api) => {
-            setCarouselApi(api)
-          }}
-          aria-label="Prayer focus carousel"
-        >
-          <CarouselContent
-            id={slidesRegionId}
-            role="group"
-            aria-live="polite"
-            aria-atomic="true"
-            className="min-h-[180px]"
-          >
-            {slides.map((slide, index) => {
-              const isCurrent = index === currentSlide
-              return (
-                <CarouselItem key={slide.title} className="!pl-0">
-                  <div
-                    className="flex h-full flex-col justify-center gap-4"
-                    style={{
-                      opacity: isCurrent && isVisible ? 1 : 0,
-                      transform: isCurrent && isVisible ? 'translateY(0px)' : 'translateY(16px)',
-                      transition: 'opacity 600ms ease, transform 600ms ease'
-                    }}
-                    aria-hidden={!isCurrent || !isVisible}
-                  >
-                    <span className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-500/90">
-                      During this moment
-                    </span>
-                    <h3 className="text-xl font-semibold text-amber-900 md:text-2xl">
-                      {slide.title}
-                    </h3>
-                    {slide.body != null && (
-                      <p className="text-sm leading-relaxed text-amber-900/80 md:text-base">
-                        {slide.body}
-                      </p>
-                    )}
-                    {Array.isArray(slide.bullets) && slide.bullets.length > 0 && (
-                      <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-amber-900/80 marker:text-amber-500 md:text-base">
-                        {slide.bullets.map((item) => (
-                          <li key={item}>{item}</li>
-                        ))}
-                      </ul>
-                    )}
-                    {slide.reference != null && (
-                      <p className="text-xs font-medium uppercase tracking-[0.2em] text-amber-500/70">
-                        {slide.reference}
-                      </p>
-                    )}
-                  </div>
-                </CarouselItem>
-              )
-            })}
-          </CarouselContent>
-        </Carousel>
+      <div className="relative px-6 md:px-10">
         <div
-          className="mt-8 flex items-center justify-center gap-4"
+          className="absolute right-6 top-6 z-10 flex flex-row items-center justify-end gap-4 min-w-[380px]"
           id={indicatorRegionId}
           role="group"
           aria-label="Prayer focus slides"
@@ -366,7 +309,7 @@ export function PrayerCarousel({
                 return (
                   <div
                     key={index}
-                    className="relative h-1.5 w-16 overflow-hidden rounded-full bg-amber-500/20"
+                    className="relative h-1.5 w-12 overflow-hidden rounded-full bg-amber-500/20"
                   >
                     <span
                       className="absolute inset-y-0 left-0 rounded-full bg-amber-500"
@@ -404,6 +347,58 @@ export function PrayerCarousel({
             </button>
           )}
         </div>
+        <Carousel
+          className="relative"
+          opts={{ loop: true }}
+          setApi={(api) => {
+            setCarouselApi(api)
+          }}
+          aria-label="Prayer focus carousel"
+        >
+          <CarouselContent
+            id={slidesRegionId}
+            role="group"
+            aria-live="polite"
+            aria-atomic="true"
+            className="min-h-[180px]"
+          >
+            {slides.map((slide, index) => {
+              const isCurrent = index === currentSlide
+              return (
+                <CarouselItem key={slide.title}>
+                  <div
+                    className="flex h-full flex-col justify-center gap-4"
+                    aria-hidden={!isCurrent}
+                  >
+                    <span className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-500/90">
+                      During this moment
+                    </span>
+                    <h3 className="text-xl font-semibold text-amber-900 md:text-2xl">
+                      {slide.title}
+                    </h3>
+                    {slide.body != null && (
+                      <p className="text-sm leading-relaxed text-amber-900/80 md:text-base">
+                        {slide.body}
+                      </p>
+                    )}
+                    {Array.isArray(slide.bullets) && slide.bullets.length > 0 && (
+                      <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-amber-900/80 marker:text-amber-500 md:text-base">
+                        {slide.bullets.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    )}
+                    {slide.reference != null && (
+                      <p className="text-xs font-medium uppercase tracking-[0.2em] text-amber-500/70">
+                        {slide.reference}
+                      </p>
+                    )}
+                  </div>
+                </CarouselItem>
+              )
+            })}
+          </CarouselContent>
+        </Carousel>
       </div>
     </div>
   )
