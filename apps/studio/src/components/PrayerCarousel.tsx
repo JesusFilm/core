@@ -7,6 +7,9 @@ import {
   useState
 } from 'react'
 
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel'
+import type { CarouselApi } from '@/components/ui/carousel'
+
 function usePrefersReducedMotion() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
@@ -102,6 +105,7 @@ export function PrayerCarousel({
     []
   )
 
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
   const collapseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -119,13 +123,25 @@ export function PrayerCarousel({
 
   const handlePrevious = useCallback(() => {
     clearAutoAdvance()
+    if (carouselApi != null) {
+      carouselApi.scrollPrev()
+      return
+    }
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
-  }, [clearAutoAdvance, slides.length])
+  }, [carouselApi, clearAutoAdvance, slides.length])
 
   const handleNext = useCallback(() => {
     clearAutoAdvance()
+    if (carouselApi != null) {
+      if (carouselApi.canScrollNext()) {
+        carouselApi.scrollNext()
+      } else {
+        carouselApi.scrollTo(0)
+      }
+      return
+    }
     setCurrentSlide((prev) => (prev + 1) % slides.length)
-  }, [clearAutoAdvance, slides.length])
+  }, [carouselApi, clearAutoAdvance, slides.length])
 
   useEffect(() => {
     if (isActive) {
@@ -134,6 +150,9 @@ export function PrayerCarousel({
         collapseTimeoutRef.current = null
       }
       setCurrentSlide(0)
+      if (carouselApi != null) {
+        carouselApi.scrollTo(0)
+      }
       const frame = requestAnimationFrame(() => setIsVisible(true))
       return () => cancelAnimationFrame(frame)
     }
@@ -150,7 +169,7 @@ export function PrayerCarousel({
         collapseTimeoutRef.current = null
       }
     }
-  }, [isActive, onCollapseComplete])
+  }, [carouselApi, isActive, onCollapseComplete])
 
   useEffect(() => {
     if (!isActive || !isVisible) {
@@ -183,7 +202,15 @@ export function PrayerCarousel({
     clearAutoAdvance()
     autoAdvanceTimeoutRef.current = setTimeout(() => {
       autoAdvanceTimeoutRef.current = null
-      setCurrentSlide((prev) => (prev + 1) % slides.length)
+      if (carouselApi != null) {
+        if (carouselApi.canScrollNext()) {
+          carouselApi.scrollNext()
+        } else {
+          carouselApi.scrollTo(0)
+        }
+      } else {
+        setCurrentSlide((prev) => (prev + 1) % slides.length)
+      }
     }, SLIDE_DURATION)
 
     return () => {
@@ -194,6 +221,7 @@ export function PrayerCarousel({
       clearAutoAdvance()
     }
   }, [
+    carouselApi,
     currentSlide,
     isActive,
     isVisible,
@@ -226,6 +254,25 @@ export function PrayerCarousel({
     }
   }, [handleNext, handlePrevious, isActive, isVisible])
 
+  useEffect(() => {
+    if (carouselApi == null) {
+      return
+    }
+
+    const handleSelect = () => {
+      setCurrentSlide(carouselApi.selectedScrollSnap())
+    }
+
+    handleSelect()
+    carouselApi.on('select', handleSelect)
+    carouselApi.on('reInit', handleSelect)
+
+    return () => {
+      carouselApi.off('select', handleSelect)
+      carouselApi.off('reInit', handleSelect)
+    }
+  }, [carouselApi])
+
   return (
     <div
       className="mt-6 overflow-hidden rounded-3xl border border-amber-200/70 bg-gradient-to-br from-amber-50 via-white to-rose-50 transition-all duration-700 ease-out"
@@ -236,55 +283,9 @@ export function PrayerCarousel({
         paddingBottom: isVisible ? '24px' : '0px'
       }}
     >
-      <div className="px-6 md:px-10">
+      <div className="relative px-6 md:px-10">
         <div
-          className="relative min-h-[180px]"
-          id={slidesRegionId}
-          role="group"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {slides.map((slide, index) => {
-            const isCurrent = index === currentSlide
-            return (
-              <div
-                key={slide.title}
-                className="absolute inset-0 flex flex-col justify-center gap-4"
-                style={{
-                  opacity: isCurrent && isVisible ? 1 : 0,
-                  transform: isCurrent && isVisible ? 'translateY(0px)' : 'translateY(16px)',
-                  transition: 'opacity 600ms ease, transform 600ms ease'
-                }}
-              >
-                <span className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-500/90">
-                  During this moment
-                </span>
-                <h3 className="text-xl font-semibold text-amber-900 md:text-2xl">
-                  {slide.title}
-                </h3>
-                {slide.body != null && (
-                  <p className="text-sm leading-relaxed text-amber-900/80 md:text-base">
-                    {slide.body}
-                  </p>
-                )}
-                {Array.isArray(slide.bullets) && slide.bullets.length > 0 && (
-                  <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-amber-900/80 marker:text-amber-500 md:text-base">
-                    {slide.bullets.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                )}
-                {slide.reference != null && (
-                  <p className="text-xs font-medium uppercase tracking-[0.2em] text-amber-500/70">
-                    {slide.reference}
-                  </p>
-                )}
-              </div>
-            )
-          })}
-        </div>
-        <div
-          className="mt-8 flex items-center justify-center gap-4"
+          className="absolute right-6 top-6 z-10 flex flex-row items-center justify-end gap-4 min-w-[380px]"
           id={indicatorRegionId}
           role="group"
           aria-label="Prayer focus slides"
@@ -308,7 +309,7 @@ export function PrayerCarousel({
                 return (
                   <div
                     key={index}
-                    className="relative h-1.5 w-16 overflow-hidden rounded-full bg-amber-500/20"
+                    className="relative h-1.5 w-12 overflow-hidden rounded-full bg-amber-500/20"
                   >
                     <span
                       className="absolute inset-y-0 left-0 rounded-full bg-amber-500"
@@ -346,6 +347,58 @@ export function PrayerCarousel({
             </button>
           )}
         </div>
+        <Carousel
+          className="relative"
+          opts={{ loop: true }}
+          setApi={(api) => {
+            setCarouselApi(api)
+          }}
+          aria-label="Prayer focus carousel"
+        >
+          <CarouselContent
+            id={slidesRegionId}
+            role="group"
+            aria-live="polite"
+            aria-atomic="true"
+            className="min-h-[180px]"
+          >
+            {slides.map((slide, index) => {
+              const isCurrent = index === currentSlide
+              return (
+                <CarouselItem key={slide.title}>
+                  <div
+                    className="flex h-full flex-col justify-center gap-4"
+                    aria-hidden={!isCurrent}
+                  >
+                    <span className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-500/90">
+                      During this moment
+                    </span>
+                    <h3 className="text-xl font-semibold text-amber-900 md:text-2xl">
+                      {slide.title}
+                    </h3>
+                    {slide.body != null && (
+                      <p className="text-sm leading-relaxed text-amber-900/80 md:text-base">
+                        {slide.body}
+                      </p>
+                    )}
+                    {Array.isArray(slide.bullets) && slide.bullets.length > 0 && (
+                      <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-amber-900/80 marker:text-amber-500 md:text-base">
+                        {slide.bullets.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    )}
+                    {slide.reference != null && (
+                      <p className="text-xs font-medium uppercase tracking-[0.2em] text-amber-500/70">
+                        {slide.reference}
+                      </p>
+                    )}
+                  </div>
+                </CarouselItem>
+              )
+            })}
+          </CarouselContent>
+        </Carousel>
       </div>
     </div>
   )
