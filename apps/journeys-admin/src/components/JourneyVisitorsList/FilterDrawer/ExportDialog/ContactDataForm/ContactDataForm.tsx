@@ -57,7 +57,7 @@ export function ContactDataForm({
     <Stack>
       <FormGroup>
         <CheckboxOption
-          checked={selectedFields.length === 7}
+          checked={selectedFields.length === 4}
           onChange={handleSelectAll}
           label={t('All')}
         />
