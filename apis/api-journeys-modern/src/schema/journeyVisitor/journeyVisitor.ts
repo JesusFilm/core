@@ -106,6 +106,7 @@ interface JourneyVisitorExportRow {
   date: string
   [key: string]: string
 }
+
 async function* getJourneyVisitors(
   journeyId: string,
   eventWhere: Prisma.EventWhereInput,
@@ -152,15 +153,21 @@ async function* getJourneyVisitors(
       const row: JourneyVisitorExportRow = {
         date
       }
+      // Group events by blockId-label key and collect values deterministically
+      const eventValuesByKey = new Map<string, string[]>()
       journeyVisitor.events.forEach((event) => {
         if (event.blockId && event.label) {
           const key = `${event.blockId}-${event.label}`
-          if (row[key]) {
-            row[key] += `; ${event.value!}`
-          } else {
-            row[key] = event.value!
+          const eventValue = event.value ?? ''
+          if (!eventValuesByKey.has(key)) {
+            eventValuesByKey.set(key, [])
           }
+          eventValuesByKey.get(key)!.push(eventValue)
         }
+      })
+      // Join values with a fixed separator
+      eventValuesByKey.forEach((values, key) => {
+        row[key] = values.join('; ')
       })
       yield row
     }
