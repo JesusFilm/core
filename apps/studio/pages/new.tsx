@@ -22,8 +22,8 @@ import {
   Printer,
   Search,
   Settings,
-  Trash2,
   Sparkles,
+  Trash2,
   Twitter,
   Users,
   Video,
@@ -39,6 +39,7 @@ import { useRouter } from 'next/router'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
 
+import { PrayerCarousel } from '../src/components/PrayerCarousel'
 import { Accordion } from '../src/components/ui/accordion'
 import { Button } from '../src/components/ui/button'
 import {
@@ -1267,6 +1268,8 @@ export default function NewPage() {
     ideaIndex: number
   } | null>(null)
   const [animatingTextarea, setAnimatingTextarea] = useState(false)
+  const [shouldRenderPrayerCarousel, setShouldRenderPrayerCarousel] =
+    useState(false)
   const [hidingSuggestionsCarousel, setHidingSuggestionsCarousel] = useState(false)
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
   const [hiddenSuggestions, setHiddenSuggestions] = useState<Set<string>>(
@@ -3872,21 +3875,29 @@ export default function NewPage() {
                       ref={fileInputRef}
                       type="file"
                       multiple
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      className="hidden"
-                    />
-                    <input
-                      ref={cameraInputRef}
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      onChange={handleCameraChange}
-                      className="hidden"
-                    />
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
 
-                    {/* Content Ideas Grid */}
-                    {imageAnalysisResults.some(
+                <input
+                  ref={cameraInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleCameraChange}
+                  className="hidden"
+                />
+                    
+                {shouldRenderPrayerCarousel && (
+                  <PrayerCarousel
+                    isActive={isProcessing}
+                    onCollapseComplete={handlePrayerCarouselCollapsed}
+                  />
+                )}
+
+                {/* Content Ideas Grid */}
+                {imageAnalysisResults.some(
                       (result) =>
                         result.contentIdeas &&
                         result.contentIdeas.length > 0 &&
