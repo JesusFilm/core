@@ -73,15 +73,15 @@ import {
 } from '../src/components/ui/tabs'
 import { Textarea } from '../src/components/ui/textarea'
 import {
-  categorySharingOptions,
-  contextDetailOptions,
-  contextSystemPrompts,
+  BASE_SYSTEM_PROMPT,
   IMAGE_ANALYSIS_PROMPT,
   OUTPUT_FORMAT_INSTRUCTIONS,
   REFINEMENT_INSTRUCTIONS,
   RESPONSE_GUIDELINES,
-  steps,
-  BASE_SYSTEM_PROMPT
+  categorySharingOptions,
+  contextDetailOptions,
+  contextSystemPrompts,
+  steps
 } from '../src/config/new-page'
 import { useAiContent } from '../src/hooks/useAiContent'
 import { useImageAnalysis } from '../src/hooks/useImageAnalysis'
@@ -1078,6 +1078,13 @@ export default function NewPage() {
   const [loadingSession, setLoadingSession] = useState<string | null>(null)
   const [isCollapsing, setIsCollapsing] = useState(false)
   const [imageAnalysisResults, setImageAnalysisResults] = useState<ImageAnalysisResult[]>([])
+  const hasPendingImageAnalysis = useMemo(
+    () =>
+      imageAttachments.length > 0 &&
+      (imageAnalysisResults.length < imageAttachments.length ||
+        imageAnalysisResults.some((result) => result?.isAnalyzing)),
+    [imageAttachments, imageAnalysisResults]
+  )
   const [isDragOver, setIsDragOver] = useState(false)
   const [isPersonaDialogOpen, setIsPersonaDialogOpen] = useState(false)
   const [personaSettings, setPersonaSettings] = useState({
@@ -1712,14 +1719,12 @@ export default function NewPage() {
     updateTokens
   })
 
-
   const { analyzeImageWithAI } = useImageAnalysis({
     setImageAnalysisResults,
     extractTextFromResponse,
     accumulateUsage,
     prompt: IMAGE_ANALYSIS_PROMPT
   })
-
 
   const { searchUnsplash, loadUnsplashImagesForStep, testUnsplashAPI } =
     useUnsplashMedia({
@@ -1730,7 +1735,6 @@ export default function NewPage() {
       setIsSettingsOpen,
       deriveHeadingFromContent
     })
-
 
   // Expose test function to window for debugging
   useEffect(() => {
@@ -1855,6 +1859,13 @@ export default function NewPage() {
   }
 
   const handleSubmit = async () => {
+    if (hasPendingImageAnalysis) {
+      alert(
+        'Please wait for all attached images to finish analysis before running the AI prompt.'
+      )
+      return
+    }
+
     const currentValue = textareaRef.current?.value || ''
     if (currentValue.trim() && !isProcessing) {
       // Update textContent state before processing
@@ -3272,11 +3283,19 @@ export default function NewPage() {
                               onClick={() => {
                                 void handleSubmit()
                               }}
-                              className="px-4 py-2 text-sm font-medium text-white rounded-full bg-primary hover:bg-primary/90 transition-colors group cursor-pointer"
+                              className="px-4 py-2 text-sm font-medium text-white rounded-full bg-primary hover:bg-primary/90 transition-colors group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary/90"
                               type="button"
+                              disabled={isProcessing || hasPendingImageAnalysis}
+                              title={
+                                hasPendingImageAnalysis
+                                  ? 'Please wait for the attached images to finish analysis before running the AI prompt.'
+                                  : 'Run the AI prompt'
+                              }
                             >
                               {isProcessing ? (
                                 <AnimatedLoadingText />
+                              ) : hasPendingImageAnalysis ? (
+                                <>Analyzing images…</>
                               ) : (
                                 <>{aiResponse.trim() ? 'Retry' : 'Run'}&nbsp;&nbsp;&nbsp;&nbsp;⌘ + ↵</>
                               )}
