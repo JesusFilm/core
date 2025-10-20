@@ -1,4 +1,3 @@
-import { gql, useLazyQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -12,7 +11,7 @@ import { FormikValues, useFormik } from 'formik'
 import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -34,27 +33,14 @@ import {
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
 import {
-  GetYouTubeClosedCaptionLanguageIds,
-  GetYouTubeClosedCaptionLanguageIds_getYouTubeClosedCaptionLanguageIds as YouTubeLanguage
-} from '../../../../../../../../__generated__/GetYouTubeClosedCaptionLanguageIds'
+  useYouTubeClosedCaptions,
+  type YouTubeLanguage
+} from '../../../../../../../libs/useYouTubeClosedCaptions'
 
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 import { SubtitleSelector } from './SubtitleSelector'
 
 export type { YouTubeLanguage }
-
-export const GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS = gql`
-  query GetYouTubeClosedCaptionLanguageIds($videoId: ID!) {
-    getYouTubeClosedCaptionLanguageIds(videoId: $videoId) {
-      id
-      bcp47
-      name {
-        value
-        primary
-      }
-    }
-  }
-`
 
 interface Values extends FormikValues {
   autoplay: boolean
@@ -78,32 +64,12 @@ export function VideoBlockEditorSettings({
 }: VideoBlockEditorSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const [availableSubtitles, setAvailableSubtitles] = useState<
-    YouTubeLanguage[]
-  >([])
-  const [getClosedCaptions, { data: captionsData }] =
-    useLazyQuery<GetYouTubeClosedCaptionLanguageIds>(
-      GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS
-    )
 
-  useEffect(() => {
-    if (
-      selectedBlock?.videoId != null &&
-      selectedBlock?.source === VideoBlockSource.youTube
-    ) {
-      void getClosedCaptions({
-        variables: { videoId: selectedBlock.videoId }
-      })
-    } else {
-      setAvailableSubtitles([])
-    }
-  }, [selectedBlock?.videoId, selectedBlock?.source, getClosedCaptions])
-
-  useEffect(() => {
-    if (captionsData?.getYouTubeClosedCaptionLanguageIds != null) {
-      setAvailableSubtitles(captionsData.getYouTubeClosedCaptionLanguageIds)
-    }
-  }, [captionsData])
+  // Fetch closed captions using custom hook
+  const { languages: availableSubtitles } = useYouTubeClosedCaptions({
+    videoId: selectedBlock?.videoId,
+    enabled: selectedBlock?.source === VideoBlockSource.youTube
+  })
 
   const initialValues: Values = {
     autoplay: selectedBlock?.autoplay ?? true,
