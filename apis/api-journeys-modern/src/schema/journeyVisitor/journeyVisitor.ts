@@ -105,11 +105,7 @@ builder.asEntity(JourneyVisitorRef, {
 })
 
 interface JourneyVisitorExportRow {
-  id: string
-  createdAt: string
-  name: string
-  email: string
-  phone: string
+  date: string
   [key: string]: string
 }
 
@@ -137,20 +133,13 @@ async function* getJourneyVisitors(
       select: {
         id: true,
         createdAt: true,
-        visitor: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            phone: true
-          }
-        },
         events: {
           where: eventWhere,
           select: {
             blockId: true,
             label: true,
-            value: true
+            value: true,
+            typename: true
           },
           orderBy: {
             createdAt: 'asc'
@@ -165,12 +154,10 @@ async function* getJourneyVisitors(
     }
 
     for (const journeyVisitor of journeyVisitors) {
+      const date = journeyVisitor.createdAt.toISOString().split('T')[0]
+      
       const row: JourneyVisitorExportRow = {
-        id: journeyVisitor.visitor.id,
-        createdAt: journeyVisitor.createdAt.toISOString(),
-        name: journeyVisitor.visitor.name || '',
-        email: journeyVisitor.visitor.email || '',
-        phone: journeyVisitor.visitor.phone || ''
+        date
       }
 
       journeyVisitor.events.forEach((event) => {
@@ -216,10 +203,12 @@ builder.queryField('journeyVisitorExport', (t) => {
             userJourneys: true,
             blocks: {
               select: {
-                id: true
-              },
-              orderBy: {
-                updatedAt: 'asc'
+                id: true,
+                typename: true,
+                parentBlockId: true,
+                parentOrder: true,
+                nextBlockId: true,
+                action: true
               }
             }
           }
@@ -269,27 +258,152 @@ builder.queryField('journeyVisitorExport', (t) => {
           distinct: ['blockId', 'label']
         })
 
-        // TODO: sort blockIds based on order the block appears in the journey
-        const blockIds = journey.blocks.map((block) => block.id)
+        // Build a map of blocks for hierarchy lookups
+        const journeyBlocks = journey.blocks
+        const idToBlock = new Map(
+          journeyBlocks.map((b) => [b.id, b])
+        )
 
-        // Build headers: visitor info + dynamic block columns
+        // Build step columns based on navigation flow (similar to arrangeSteps)
+        interface StepBlock {
+          id: string
+          nextBlockId: string | null
+        }
+        const steps: StepBlock[] = journeyBlocks
+          .filter((b) => b.typename === 'StepBlock')
+          .map((b: any) => ({
+            id: b.id,
+            nextBlockId: b.nextBlockId
+          }))
+
+        function buildStepColumns(): string[][] {
+          const columns: string[][] = []
+          const unvisitedStepIds = new Set(steps.map((s) => s.id))
+
+          function visitStepId(id: string | null | undefined): StepBlock | undefined {
+            if (id == null || !unvisitedStepIds.has(id)) return undefined
+            unvisitedStepIds.delete(id)
+            return steps.find((s) => s.id === id)
+          }
+
+          function isDescendantBlock(blockId: string, stepId: string): boolean {
+            let current = idToBlock.get(blockId)
+            while (current != null) {
+              if (current.id === stepId) return true
+              current = current.parentBlockId != null ? idToBlock.get(current.parentBlockId) : undefined
+            }
+            return false
+          }
+
+          function getDescendants(step: StepBlock): StepBlock[] {
+            const descendants: StepBlock[] = []
+
+            // Get next step via nextBlockId
+            const nextStep = visitStepId(step.nextBlockId)
+            if (nextStep != null) descendants.push(nextStep)
+
+            // Get steps via NavigateToBlockAction from blocks within this step
+            const actionBlocks = journeyBlocks.filter(
+              (b: any) => 
+                b.action?.__typename === 'NavigateToBlockAction' &&
+                isDescendantBlock(b.id, step.id)
+            )
+            actionBlocks.forEach((block: any) => {
+              const targetStep = visitStepId(block.action?.blockId)
+              if (targetStep != null) descendants.push(targetStep)
+            })
+
+            return descendants
+          }
+
+          function processSteps(stepsToProcess: StepBlock[]): void {
+            if (stepsToProcess.length === 0) return
+            columns.push(stepsToProcess.map((s) => s.id))
+            const descendants = stepsToProcess.flatMap(getDescendants)
+            if (descendants.length > 0) processSteps(descendants)
+          }
+
+          // Process all unvisited steps
+          while (unvisitedStepIds.size > 0) {
+            const firstId = Array.from(unvisitedStepIds)[0]
+            const step = visitStepId(firstId)
+            if (step != null) processSteps([step])
+          }
+
+          return columns
+        }
+
+        const stepColumns = buildStepColumns()
+        const stepToColumnIndex = new Map<string, number>()
+        stepColumns.forEach((column, colIndex) => {
+          column.forEach((stepId) => stepToColumnIndex.set(stepId, colIndex))
+        })
+
+        function getAncestorByType(blockId: string | null | undefined, type: string): { id: string; typename: string; parentBlockId: string | null; parentOrder: number | null } | undefined {
+          let current = blockId != null ? idToBlock.get(blockId) : undefined
+          while (current != null && current.typename !== type) {
+            current = current.parentBlockId != null ? idToBlock.get(current.parentBlockId) : undefined
+          }
+          return current as any
+        }
+
+        function getTopLevelChildUnderCard(blockId: string | null | undefined): { id: string; typename: string; parentBlockId: string | null; parentOrder: number | null } | undefined {
+          let current = blockId != null ? idToBlock.get(blockId) : undefined
+          let parent = current?.parentBlockId != null ? idToBlock.get(current.parentBlockId) : undefined
+          // Climb until parent is a CardBlock; return the child right under Card
+          while (current != null && parent != null && parent.typename !== 'CardBlock') {
+            current = parent
+            parent = current.parentBlockId != null ? idToBlock.get(current.parentBlockId) : undefined
+          }
+          return current as any
+        }
+
+        function compareHeaders(a: { blockId: string | null }, b: { blockId: string | null }): number {
+          // Derive sort keys
+          const aCard = getAncestorByType(a.blockId, 'CardBlock')
+          const bCard = getAncestorByType(b.blockId, 'CardBlock')
+          const aStep = aCard?.parentBlockId != null ? getAncestorByType(aCard.parentBlockId, 'StepBlock') : undefined
+          const bStep = bCard?.parentBlockId != null ? getAncestorByType(bCard.parentBlockId, 'StepBlock') : undefined
+          const aChildUnderCard = getTopLevelChildUnderCard(a.blockId)
+          const bChildUnderCard = getTopLevelChildUnderCard(b.blockId)
+
+          // Step ordering by column index (flow-based)
+          const aColumnIndex = aStep != null ? (stepToColumnIndex.get(aStep.id) ?? Number.MAX_SAFE_INTEGER) : Number.MAX_SAFE_INTEGER
+          const bColumnIndex = bStep != null ? (stepToColumnIndex.get(bStep.id) ?? Number.MAX_SAFE_INTEGER) : Number.MAX_SAFE_INTEGER
+          if (aColumnIndex !== bColumnIndex) return aColumnIndex - bColumnIndex
+
+          // Within same column, sort by position in column
+          if (aStep != null && bStep != null && aColumnIndex === bColumnIndex && aColumnIndex !== Number.MAX_SAFE_INTEGER) {
+            const column = stepColumns[aColumnIndex]
+            const aRowIndex = column.indexOf(aStep.id)
+            const bRowIndex = column.indexOf(bStep.id)
+            if (aRowIndex !== bRowIndex) return aRowIndex - bRowIndex
+          }
+
+          // Card ordering within step (by parentOrder)
+          const aCardOrder = aCard?.parentOrder ?? Number.MAX_SAFE_INTEGER
+          const bCardOrder = bCard?.parentOrder ?? Number.MAX_SAFE_INTEGER
+          if (aCardOrder !== bCardOrder) return aCardOrder - bCardOrder
+
+          // Block ordering within card (by nearest child under card parentOrder)
+          const aBlockOrder = aChildUnderCard?.parentOrder ?? Number.MAX_SAFE_INTEGER
+          const bBlockOrder = bChildUnderCard?.parentOrder ?? Number.MAX_SAFE_INTEGER
+          if (aBlockOrder !== bBlockOrder) return aBlockOrder - bBlockOrder
+
+          // Finally, stable by blockId
+          return (a.blockId ?? '').localeCompare(b.blockId ?? '')
+        }
+
+        // Build headers: date + dynamic block columns grouped by Card and ordered by position
         const blockHeaders = blockHeadersResult
-          .sort(
-            (a, b) =>
-              blockIds.findIndex((blockId) => blockId === a.blockId) -
-              blockIds.findIndex((blockId) => blockId === b.blockId)
-          )
+          .sort(compareHeaders)
           .map((item) => ({
             key: `${item.blockId!}-${item.label!}`,
             header: item.label!
           }))
 
         const columns = [
-          { key: 'id' },
-          select?.createdAt !== false ? { key: 'createdAt' } : null,
-          select?.name !== false ? { key: 'name' } : null,
-          select?.email !== false ? { key: 'email' } : null,
-          select?.phone !== false ? { key: 'phone' } : null,
+          { key: 'date', header: 'Date' },
           ...(filter?.typenames == null || filter.typenames.length > 0
             ? blockHeaders
             : [])
