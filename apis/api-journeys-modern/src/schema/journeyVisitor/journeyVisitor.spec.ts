@@ -28,7 +28,7 @@ describe('journeyVisitorExport', () => {
     jest.clearAllMocks()
   })
 
-  it('should return CSV formatted string with visitor data and events', async () => {
+  it('should return CSV formatted string with two header rows and visitor data', async () => {
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       id: 'journey1',
       team: {
@@ -37,18 +37,44 @@ describe('journeyVisitorExport', () => {
       userJourneys: [],
       blocks: [
         {
-          id: 'blockFirst'
+          id: 'step1',
+          typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: null,
+          nextBlockId: null,
+          action: null,
+          content: null
         },
         {
-          id: 'blockLast'
+          id: 'card1',
+          typename: 'CardBlock',
+          parentBlockId: 'step1',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'typography1',
+          typename: 'TypographyBlock',
+          parentBlockId: 'card1',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: 'Welcome Card'
+        },
+        {
+          id: 'blockFirst',
+          typename: 'ButtonBlock',
+          parentBlockId: 'card1',
+          parentOrder: 1,
+          nextBlockId: null,
+          action: null,
+          content: null
         }
       ]
     } as any)
     prismaMock.event.findMany.mockResolvedValueOnce([
-      {
-        blockId: 'blockLast',
-        label: 'Text Response'
-      } as any,
       {
         blockId: 'blockFirst',
         label: 'Button Click'
@@ -58,17 +84,12 @@ describe('journeyVisitorExport', () => {
       {
         id: 'jv1',
         createdAt: new Date('2024-01-01T00:00:00Z'),
-        visitor: {
-          id: 'visitor1',
-          name: 'John Doe',
-          email: 'john@example.com',
-          phone: '+1234567890'
-        },
         events: [
           {
             blockId: 'blockFirst',
             label: 'Button Click',
-            value: 'Submit'
+            value: 'Submit',
+            typename: 'ButtonClickEvent'
           } as any
         ]
       } as any
@@ -81,9 +102,12 @@ describe('journeyVisitorExport', () => {
       }
     })
 
+    // First row: Date + event labels
+    // Second row: empty + card headings
+    // Third row+: visitor data
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'id,createdAt,name,email,phone,Button Click,Text Response\nvisitor1,2024-01-01T00:00:00.000Z,John Doe,john@example.com,+1234567890,Submit,\n'
+      'Date,Button Click\n,Welcome Card\n2024-01-01,Submit\n'
     )
   })
 
@@ -96,7 +120,13 @@ describe('journeyVisitorExport', () => {
       userJourneys: [],
       blocks: [
         {
-          id: 'block1'
+          id: 'block1',
+          typename: 'ButtonBlock',
+          parentBlockId: null,
+          parentOrder: null,
+          nextBlockId: null,
+          action: null,
+          content: null
         }
       ]
     } as any)
@@ -121,7 +151,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'id,createdAt,name,email,phone,Button Click\n'
+      'Date,Button Click\n,\n'
     )
 
     expect(prismaMock.event.findMany).toHaveBeenCalledWith({
@@ -139,7 +169,7 @@ describe('journeyVisitorExport', () => {
     })
   })
 
-  it('should not filter by typenames when empty array is provided but ignore headers', async () => {
+  it('should not filter by typenames when empty array is provided but ignore event headers', async () => {
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       id: 'journey1',
       team: {
@@ -148,7 +178,13 @@ describe('journeyVisitorExport', () => {
       userJourneys: [],
       blocks: [
         {
-          id: 'block1'
+          id: 'block1',
+          typename: 'ButtonBlock',
+          parentBlockId: null,
+          parentOrder: null,
+          nextBlockId: null,
+          action: null,
+          content: null
         }
       ]
     } as any)
@@ -162,17 +198,12 @@ describe('journeyVisitorExport', () => {
       {
         id: 'jv1',
         createdAt: new Date('2024-01-01T00:00:00Z'),
-        visitor: {
-          id: 'visitor1',
-          name: 'John Doe',
-          email: 'john@example.com',
-          phone: '+1234567890'
-        },
         events: [
           {
             blockId: 'block1',
             label: 'Button Click',
-            value: 'Submit'
+            value: 'Submit',
+            typename: 'ButtonClickEvent'
           } as any
         ]
       } as any
@@ -190,7 +221,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'id,createdAt,name,email,phone\nvisitor1,2024-01-01T00:00:00.000Z,John Doe,john@example.com,+1234567890\n'
+      'Date\n\n2024-01-01\n'
     )
 
     expect(prismaMock.event.findMany).toHaveBeenCalledWith({
@@ -232,7 +263,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'id,createdAt,name,email,phone\n'
+      'Date\n\n'
     )
 
     expect(prismaMock.event.findMany).toHaveBeenCalledWith({
@@ -262,7 +293,13 @@ describe('journeyVisitorExport', () => {
       userJourneys: [],
       blocks: [
         {
-          id: 'block1'
+          id: 'block1',
+          typename: 'ButtonBlock',
+          parentBlockId: null,
+          parentOrder: null,
+          nextBlockId: null,
+          action: null,
+          content: null
         }
       ]
     } as any)
@@ -277,22 +314,18 @@ describe('journeyVisitorExport', () => {
       {
         id: 'jv1',
         createdAt: new Date('2024-01-01T00:00:00Z'),
-        visitor: {
-          id: 'visitor1',
-          name: 'John Doe',
-          email: 'john@example.com',
-          phone: '+1234567890'
-        },
         events: [
           {
             blockId: 'block1',
             label: 'Button Click',
-            value: 'Submit'
+            value: 'Submit',
+            typename: 'ButtonClickEvent'
           } as any,
           {
             blockId: 'block1',
             label: 'Button Click',
-            value: 'Cancel'
+            value: 'Cancel',
+            typename: 'ButtonClickEvent'
           } as any
         ]
       } as any
@@ -307,11 +340,11 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'id,createdAt,name,email,phone,Button Click\nvisitor1,2024-01-01T00:00:00.000Z,John Doe,john@example.com,+1234567890,Submit; Cancel\n'
+      'Date,Button Click\n,\n2024-01-01,Submit; Cancel\n'
     )
   })
 
-  it('should handle multiple events for the same block with different labelss', async () => {
+  it('should handle multiple events for the same block with different labels', async () => {
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       id: 'journey1',
       team: {
@@ -320,7 +353,13 @@ describe('journeyVisitorExport', () => {
       userJourneys: [],
       blocks: [
         {
-          id: 'block1'
+          id: 'block1',
+          typename: 'ButtonBlock',
+          parentBlockId: null,
+          parentOrder: null,
+          nextBlockId: null,
+          action: null,
+          content: null
         }
       ]
     } as any)
@@ -339,22 +378,18 @@ describe('journeyVisitorExport', () => {
       {
         id: 'jv1',
         createdAt: new Date('2024-01-01T00:00:00Z'),
-        visitor: {
-          id: 'visitor1',
-          name: 'John Doe',
-          email: 'john@example.com',
-          phone: '+1234567890'
-        },
         events: [
           {
             blockId: 'block1',
             label: 'Button Click',
-            value: 'Submit'
+            value: 'Submit',
+            typename: 'ButtonClickEvent'
           } as any,
           {
             blockId: 'block1',
             label: 'Button Click New Label',
-            value: 'Cancel'
+            value: 'Cancel',
+            typename: 'ButtonClickEvent'
           } as any
         ]
       } as any
@@ -369,7 +404,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'id,createdAt,name,email,phone,Button Click,Button Click New Label\nvisitor1,2024-01-01T00:00:00.000Z,John Doe,john@example.com,+1234567890,Submit,Cancel\n'
+      'Date,Button Click,Button Click New Label\n,,\n2024-01-01,Submit,Cancel\n'
     )
   })
 
@@ -387,12 +422,6 @@ describe('journeyVisitorExport', () => {
       {
         id: 'jv1',
         createdAt: new Date('2024-01-01T00:00:00Z'),
-        visitor: {
-          id: 'visitor1',
-          name: 'John Doe',
-          email: 'john@example.com',
-          phone: '+1234567890'
-        },
         events: []
       } as any
     ])
@@ -406,44 +435,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'id,createdAt,name,email,phone\nvisitor1,2024-01-01T00:00:00.000Z,John Doe,john@example.com,+1234567890\n'
-    )
-  })
-
-  it('should handle visitor with no metadata', async () => {
-    prismaMock.journey.findUnique.mockResolvedValueOnce({
-      id: 'journey1',
-      team: {
-        userTeams: [{ userId: mockUser.id, role: 'manager' }]
-      },
-      userJourneys: [],
-      blocks: []
-    } as any)
-    prismaMock.event.findMany.mockResolvedValueOnce([])
-    prismaMock.journeyVisitor.findMany.mockResolvedValue([
-      {
-        id: 'jv1',
-        createdAt: new Date('2024-01-01T00:00:00Z'),
-        visitor: {
-          id: 'visitor1',
-          name: null,
-          email: null,
-          phone: null
-        },
-        events: []
-      } as any
-    ])
-
-    const result = await authClient({
-      document: JOURNEY_VISITOR_EXPORT_QUERY,
-      variables: {
-        journeyId: 'journey1'
-      }
-    })
-
-    expect(result).toHaveProperty(
-      'data.journeyVisitorExport',
-      'id,createdAt,name,email,phone\nvisitor1,2024-01-01T00:00:00.000Z,,,\n'
+      'Date\n\n2024-01-01\n'
     )
   })
 
@@ -468,7 +460,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'id,createdAt,name,email,phone\n'
+      'Date\n\n'
     )
   })
 
@@ -502,37 +494,128 @@ describe('journeyVisitorExport', () => {
     )
   })
 
-  it('should handle select argument', async () => {
+  it('should include card headings in second header row', async () => {
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       id: 'journey1',
       team: { userTeams: [{ userId: mockUser.id, role: 'manager' }] },
       userJourneys: [],
-      blocks: []
+      blocks: [
+        {
+          id: 'step1',
+          typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: null,
+          nextBlockId: 'step2',
+          action: null,
+          content: null
+        },
+        {
+          id: 'card1',
+          typename: 'CardBlock',
+          parentBlockId: 'step1',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'typography1',
+          typename: 'TypographyBlock',
+          parentBlockId: 'card1',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: 'Question 1 Card'
+        },
+        {
+          id: 'block1',
+          typename: 'TextResponseBlock',
+          parentBlockId: 'card1',
+          parentOrder: 1,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'step2',
+          typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: null,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'card2',
+          typename: 'CardBlock',
+          parentBlockId: 'step2',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'typography2',
+          typename: 'TypographyBlock',
+          parentBlockId: 'card2',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: 'Question 2 Card'
+        },
+        {
+          id: 'block2',
+          typename: 'RadioQuestionBlock',
+          parentBlockId: 'card2',
+          parentOrder: 1,
+          nextBlockId: null,
+          action: null,
+          content: null
+        }
+      ]
     } as any)
 
-    prismaMock.event.findMany.mockResolvedValueOnce([])
+    prismaMock.event.findMany.mockResolvedValueOnce([
+      {
+        blockId: 'block1',
+        label: 'What is your name?'
+      } as any,
+      {
+        blockId: 'block2',
+        label: 'Select an option'
+      } as any
+    ])
     prismaMock.journeyVisitor.findMany.mockResolvedValueOnce([
       {
         id: 'jv1',
-        createdAt: new Date('2024-01-01T00:00:00Z'),
-        visitor: {
-          id: 'visitor1',
-          name: 'John Doe',
-          email: 'john@example.com',
-          phone: '+1234567890'
-        },
-        events: []
+        createdAt: new Date('2024-01-15T00:00:00Z'),
+        events: [
+          {
+            blockId: 'block1',
+            label: 'What is your name?',
+            value: 'John Doe',
+            typename: 'TextResponseSubmissionEvent'
+          } as any,
+          {
+            blockId: 'block2',
+            label: 'Select an option',
+            value: 'Option A',
+            typename: 'RadioQuestionSubmissionEvent'
+          } as any
+        ]
       } as any
     ])
 
     const result = await authClient({
       document: JOURNEY_VISITOR_EXPORT_QUERY,
       variables: {
-        journeyId: 'journey1',
-        select: { createdAt: false, name: false, email: false, phone: false }
+        journeyId: 'journey1'
       }
     })
 
-    expect(result).toHaveProperty('data.journeyVisitorExport', 'id\nvisitor1\n')
+    expect(result).toHaveProperty(
+      'data.journeyVisitorExport',
+      'Date,What is your name?,Select an option\n,Question 1 Card,Question 2 Card\n2024-01-15,John Doe,Option A\n'
+    )
   })
 })
