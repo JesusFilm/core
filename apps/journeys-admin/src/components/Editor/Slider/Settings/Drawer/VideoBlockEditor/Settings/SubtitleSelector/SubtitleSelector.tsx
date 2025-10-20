@@ -7,15 +7,17 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo, useState } from 'react'
 
+import { YouTubeLanguage } from '../VideoBlockEditorSettings'
+
 export interface SubtitleSelectorProps {
-  selectedSubtitle: string | null
-  availableLanguages: string[]
-  onChange: (subtitle: string | null) => void
+  selectedSubtitleId: string | null
+  availableLanguages: YouTubeLanguage[]
+  onChange: (subtitleLanguageId: string | null) => void
   disabled?: boolean
 }
 
 export function SubtitleSelector({
-  selectedSubtitle,
+  selectedSubtitleId,
   availableLanguages,
   onChange,
   disabled = false
@@ -28,9 +30,15 @@ export function SubtitleSelector({
   const filteredLanguages = useMemo(() => {
     if (searchQuery === '') return availableLanguages
 
-    return availableLanguages.filter((language) =>
-      language.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    const lowerQuery = searchQuery.toLowerCase()
+    return availableLanguages.filter((language) => {
+      const primaryName = language.name?.find((n) => n.primary)?.value ?? ''
+      const bcp47 = language.bcp47 ?? ''
+      return (
+        primaryName.toLowerCase().includes(lowerQuery) ||
+        bcp47.toLowerCase().includes(lowerQuery)
+      )
+    })
   }, [availableLanguages, searchQuery])
 
   const handleChange = (event: SelectChangeEvent<string>): void => {
@@ -45,7 +53,18 @@ export function SubtitleSelector({
     setSearchQuery(event.target.value)
   }
 
-  const displayValue = selectedSubtitle ?? 'off'
+  const displayValue = selectedSubtitleId ?? 'off'
+
+  const getLanguageDisplayName = (language: YouTubeLanguage): string => {
+    const primaryName = language.name?.find((n) => n.primary)?.value
+    const nonPrimaryName = language.name?.find((n) => !n.primary)?.value
+
+    if (primaryName != null && nonPrimaryName != null) {
+      return `${primaryName} (${nonPrimaryName})`
+    }
+
+    return primaryName ?? nonPrimaryName ?? language.bcp47 ?? ''
+  }
 
   return (
     <Stack direction="column" spacing={1}>
@@ -77,7 +96,12 @@ export function SubtitleSelector({
           if (value === 'off') {
             return t('Off')
           }
-          return value
+          const selectedLanguage = availableLanguages.find(
+            (lang) => lang.id === value
+          )
+          return selectedLanguage != null
+            ? getLanguageDisplayName(selectedLanguage)
+            : value
         }}
         MenuProps={{
           autoFocus: false,
@@ -112,11 +136,14 @@ export function SubtitleSelector({
           </Box>
         )}
         <MenuItem value="off">{t('Off')}</MenuItem>
-        {filteredLanguages.map((language) => (
-          <MenuItem key={language} value={language}>
-            {language}
-          </MenuItem>
-        ))}
+        {filteredLanguages.map((language) => {
+          if (language.id == null) return null
+          return (
+            <MenuItem key={language.id} value={language.id}>
+              {getLanguageDisplayName(language)}
+            </MenuItem>
+          )
+        })}
       </Select>
       {hasNoSubtitles && (
         <Typography variant="caption" color="action.disabled">

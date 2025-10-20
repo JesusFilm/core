@@ -1,3 +1,4 @@
+import { gql, useLazyQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -32,17 +33,28 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
+import {
+  GetYouTubeClosedCaptionLanguageIds,
+  GetYouTubeClosedCaptionLanguageIds_getYouTubeClosedCaptionLanguageIds as YouTubeLanguage
+} from '../../../../../../../../__generated__/GetYouTubeClosedCaptionLanguageIds'
 
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 import { SubtitleSelector } from './SubtitleSelector'
 
-const fetchSubtitles = async (videoSource: string): Promise<string[]> => {
-  // Fake fetch function - returns hardcoded subtitle ISO codes
-  if (videoSource.includes('Jot4_WAwatU')) {
-    return ['en', 'es', 'fr', 'de', 'tr']
+export type { YouTubeLanguage }
+
+export const GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS = gql`
+  query GetYouTubeClosedCaptionLanguageIds($videoId: ID!) {
+    getYouTubeClosedCaptionLanguageIds(videoId: $videoId) {
+      id
+      bcp47
+      name {
+        value
+        primary
+      }
+    }
   }
-  return []
-}
+`
 
 interface Values extends FormikValues {
   autoplay: boolean
@@ -50,7 +62,7 @@ interface Values extends FormikValues {
   startAt: string
   endAt: string
   objectFit: ObjectFit
-  subtitle: string | null
+  subtitleLanguageId: string | null
 }
 
 interface VideoBlockEditorSettingsProps {
@@ -66,21 +78,32 @@ export function VideoBlockEditorSettings({
 }: VideoBlockEditorSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const [availableSubtitles, setAvailableSubtitles] = useState<string[]>([])
+  const [availableSubtitles, setAvailableSubtitles] = useState<
+    YouTubeLanguage[]
+  >([])
+  const [getClosedCaptions, { data: captionsData }] =
+    useLazyQuery<GetYouTubeClosedCaptionLanguageIds>(
+      GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS
+    )
 
   useEffect(() => {
-    const loadSubtitles = async (): Promise<void> => {
-      if (selectedBlock?.videoId != null) {
-        const videoSource = `https://www.youtube.com/watch?v=${selectedBlock.videoId}`
-        const subtitles = await fetchSubtitles(videoSource)
-        setAvailableSubtitles(subtitles)
-      } else {
-        setAvailableSubtitles([])
-      }
+    if (
+      selectedBlock?.videoId != null &&
+      selectedBlock?.source === VideoBlockSource.youTube
+    ) {
+      void getClosedCaptions({
+        variables: { videoId: selectedBlock.videoId }
+      })
+    } else {
+      setAvailableSubtitles([])
     }
+  }, [selectedBlock?.videoId, selectedBlock?.source, getClosedCaptions])
 
-    void loadSubtitles()
-  }, [selectedBlock?.videoId])
+  useEffect(() => {
+    if (captionsData?.getYouTubeClosedCaptionLanguageIds != null) {
+      setAvailableSubtitles(captionsData.getYouTubeClosedCaptionLanguageIds)
+    }
+  }, [captionsData])
 
   const initialValues: Values = {
     autoplay: selectedBlock?.autoplay ?? true,
@@ -88,7 +111,7 @@ export function VideoBlockEditorSettings({
     startAt: secondsToTimeFormat(selectedBlock?.startAt ?? 0),
     endAt: secondsToTimeFormat(selectedBlock?.endAt ?? 0),
     objectFit: selectedBlock?.objectFit ?? ObjectFit.fill,
-    subtitle: selectedBlock?.subtitleLanguage ?? null
+    subtitleLanguageId: selectedBlock?.subtitleLanguageId ?? null
   }
   const { values, errors, handleChange, setFieldValue } = useFormik<Values>({
     initialValues,
@@ -132,7 +155,7 @@ export function VideoBlockEditorSettings({
           preventDuplicate: true
         })
       } else {
-        const { subtitle, ...videoBlockValues } = values
+        const { subtitleLanguageId, ...videoBlockValues } = values
         await onChange({
           ...videoBlockValues,
           startAt: convertedStartAt,
@@ -163,12 +186,12 @@ export function VideoBlockEditorSettings({
               {t('Subtitles')}
             </Typography>
             <SubtitleSelector
-              selectedSubtitle={values.subtitle}
+              selectedSubtitleId={values.subtitleLanguageId}
               availableLanguages={availableSubtitles}
-              onChange={async (subtitle) => {
-                await setFieldValue('subtitle', subtitle)
+              onChange={async (subtitleLanguageId) => {
+                await setFieldValue('subtitleLanguageId', subtitleLanguageId)
                 await onChange({
-                  subtitleLanguage: subtitle === 'OFF' ? null : subtitle
+                  subtitleLanguageId
                 })
               }}
               disabled={selectedBlock == null}
