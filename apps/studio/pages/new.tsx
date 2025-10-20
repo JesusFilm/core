@@ -20,7 +20,6 @@ import {
   Palette,
   Plus,
   Printer,
-  Search,
   Settings,
   Sparkles,
   Trash2,
@@ -1078,7 +1077,7 @@ export default function NewPage() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [imageAttachments, setImageAttachments] = useState<string[]>([])
   const [unsplashImages, setUnsplashImages] = useState<Record<string, string[]>>({})
-  const [loadingUnsplashSteps, setLoadingUnsplashSteps] = useState<Set<string>>(new Set())
+  const [, setLoadingUnsplashSteps] = useState<Set<string>>(new Set())
   const [loadingSession, setLoadingSession] = useState<string | null>(null)
   const [isCollapsing, setIsCollapsing] = useState(false)
   const [imageAnalysisResults, setImageAnalysisResults] = useState<ImageAnalysisResult[]>([])
@@ -1099,7 +1098,6 @@ export default function NewPage() {
   })
   const {
     savedSessions,
-    refreshSavedSessions,
     currentSessionId,
     setCurrentSessionId,
     totalTokensUsed,
@@ -1743,7 +1741,7 @@ export default function NewPage() {
     prompt: IMAGE_ANALYSIS_PROMPT
   })
 
-  const { searchUnsplash, loadUnsplashImagesForStep, testUnsplashAPI } =
+  const { loadUnsplashImagesForStep, testUnsplashAPI } =
     useUnsplashMedia({
       unsplashApiKey,
       unsplashImages,
