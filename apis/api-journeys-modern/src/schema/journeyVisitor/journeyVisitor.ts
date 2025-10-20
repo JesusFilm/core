@@ -155,7 +155,7 @@ async function* getJourneyVisitors(
 
     for (const journeyVisitor of journeyVisitors) {
       const date = journeyVisitor.createdAt.toISOString().split('T')[0]
-      
+
       const row: JourneyVisitorExportRow = {
         date
       }
@@ -260,9 +260,7 @@ builder.queryField('journeyVisitorExport', (t) => {
 
         // Build a map of blocks for hierarchy lookups
         const journeyBlocks = journey.blocks
-        const idToBlock = new Map(
-          journeyBlocks.map((b) => [b.id, b])
-        )
+        const idToBlock = new Map(journeyBlocks.map((b) => [b.id, b]))
 
         // Build step columns based on navigation flow (similar to arrangeSteps)
         interface StepBlock {
@@ -280,7 +278,9 @@ builder.queryField('journeyVisitorExport', (t) => {
           const columns: string[][] = []
           const unvisitedStepIds = new Set(steps.map((s) => s.id))
 
-          function visitStepId(id: string | null | undefined): StepBlock | undefined {
+          function visitStepId(
+            id: string | null | undefined
+          ): StepBlock | undefined {
             if (id == null || !unvisitedStepIds.has(id)) return undefined
             unvisitedStepIds.delete(id)
             return steps.find((s) => s.id === id)
@@ -290,7 +290,10 @@ builder.queryField('journeyVisitorExport', (t) => {
             let current = idToBlock.get(blockId)
             while (current != null) {
               if (current.id === stepId) return true
-              current = current.parentBlockId != null ? idToBlock.get(current.parentBlockId) : undefined
+              current =
+                current.parentBlockId != null
+                  ? idToBlock.get(current.parentBlockId)
+                  : undefined
             }
             return false
           }
@@ -304,7 +307,7 @@ builder.queryField('journeyVisitorExport', (t) => {
 
             // Get steps via NavigateToBlockAction from blocks within this step
             const actionBlocks = journeyBlocks.filter(
-              (b: any) => 
+              (b: any) =>
                 b.action?.__typename === 'NavigateToBlockAction' &&
                 isDescendantBlock(b.id, step.id)
             )
@@ -339,41 +342,93 @@ builder.queryField('journeyVisitorExport', (t) => {
           column.forEach((stepId) => stepToColumnIndex.set(stepId, colIndex))
         })
 
-        function getAncestorByType(blockId: string | null | undefined, type: string): { id: string; typename: string; parentBlockId: string | null; parentOrder: number | null } | undefined {
+        function getAncestorByType(
+          blockId: string | null | undefined,
+          type: string
+        ):
+          | {
+              id: string
+              typename: string
+              parentBlockId: string | null
+              parentOrder: number | null
+            }
+          | undefined {
           let current = blockId != null ? idToBlock.get(blockId) : undefined
           while (current != null && current.typename !== type) {
-            current = current.parentBlockId != null ? idToBlock.get(current.parentBlockId) : undefined
+            current =
+              current.parentBlockId != null
+                ? idToBlock.get(current.parentBlockId)
+                : undefined
           }
           return current as any
         }
 
-        function getTopLevelChildUnderCard(blockId: string | null | undefined): { id: string; typename: string; parentBlockId: string | null; parentOrder: number | null } | undefined {
+        function getTopLevelChildUnderCard(
+          blockId: string | null | undefined
+        ):
+          | {
+              id: string
+              typename: string
+              parentBlockId: string | null
+              parentOrder: number | null
+            }
+          | undefined {
           let current = blockId != null ? idToBlock.get(blockId) : undefined
-          let parent = current?.parentBlockId != null ? idToBlock.get(current.parentBlockId) : undefined
+          let parent =
+            current?.parentBlockId != null
+              ? idToBlock.get(current.parentBlockId)
+              : undefined
           // Climb until parent is a CardBlock; return the child right under Card
-          while (current != null && parent != null && parent.typename !== 'CardBlock') {
+          while (
+            current != null &&
+            parent != null &&
+            parent.typename !== 'CardBlock'
+          ) {
             current = parent
-            parent = current.parentBlockId != null ? idToBlock.get(current.parentBlockId) : undefined
+            parent =
+              current.parentBlockId != null
+                ? idToBlock.get(current.parentBlockId)
+                : undefined
           }
           return current as any
         }
 
-        function compareHeaders(a: { blockId: string | null }, b: { blockId: string | null }): number {
+        function compareHeaders(
+          a: { blockId: string | null },
+          b: { blockId: string | null }
+        ): number {
           // Derive sort keys
           const aCard = getAncestorByType(a.blockId, 'CardBlock')
           const bCard = getAncestorByType(b.blockId, 'CardBlock')
-          const aStep = aCard?.parentBlockId != null ? getAncestorByType(aCard.parentBlockId, 'StepBlock') : undefined
-          const bStep = bCard?.parentBlockId != null ? getAncestorByType(bCard.parentBlockId, 'StepBlock') : undefined
+          const aStep =
+            aCard?.parentBlockId != null
+              ? getAncestorByType(aCard.parentBlockId, 'StepBlock')
+              : undefined
+          const bStep =
+            bCard?.parentBlockId != null
+              ? getAncestorByType(bCard.parentBlockId, 'StepBlock')
+              : undefined
           const aChildUnderCard = getTopLevelChildUnderCard(a.blockId)
           const bChildUnderCard = getTopLevelChildUnderCard(b.blockId)
 
           // Step ordering by column index (flow-based)
-          const aColumnIndex = aStep != null ? (stepToColumnIndex.get(aStep.id) ?? Number.MAX_SAFE_INTEGER) : Number.MAX_SAFE_INTEGER
-          const bColumnIndex = bStep != null ? (stepToColumnIndex.get(bStep.id) ?? Number.MAX_SAFE_INTEGER) : Number.MAX_SAFE_INTEGER
+          const aColumnIndex =
+            aStep != null
+              ? (stepToColumnIndex.get(aStep.id) ?? Number.MAX_SAFE_INTEGER)
+              : Number.MAX_SAFE_INTEGER
+          const bColumnIndex =
+            bStep != null
+              ? (stepToColumnIndex.get(bStep.id) ?? Number.MAX_SAFE_INTEGER)
+              : Number.MAX_SAFE_INTEGER
           if (aColumnIndex !== bColumnIndex) return aColumnIndex - bColumnIndex
 
           // Within same column, sort by position in column
-          if (aStep != null && bStep != null && aColumnIndex === bColumnIndex && aColumnIndex !== Number.MAX_SAFE_INTEGER) {
+          if (
+            aStep != null &&
+            bStep != null &&
+            aColumnIndex === bColumnIndex &&
+            aColumnIndex !== Number.MAX_SAFE_INTEGER
+          ) {
             const column = stepColumns[aColumnIndex]
             const aRowIndex = column.indexOf(aStep.id)
             const bRowIndex = column.indexOf(bStep.id)
@@ -386,8 +441,10 @@ builder.queryField('journeyVisitorExport', (t) => {
           if (aCardOrder !== bCardOrder) return aCardOrder - bCardOrder
 
           // Block ordering within card (by nearest child under card parentOrder)
-          const aBlockOrder = aChildUnderCard?.parentOrder ?? Number.MAX_SAFE_INTEGER
-          const bBlockOrder = bChildUnderCard?.parentOrder ?? Number.MAX_SAFE_INTEGER
+          const aBlockOrder =
+            aChildUnderCard?.parentOrder ?? Number.MAX_SAFE_INTEGER
+          const bBlockOrder =
+            bChildUnderCard?.parentOrder ?? Number.MAX_SAFE_INTEGER
           if (aBlockOrder !== bBlockOrder) return aBlockOrder - bBlockOrder
 
           // Finally, stable by blockId

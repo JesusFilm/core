@@ -45,7 +45,7 @@ export function useJourneyContactsExport(): {
       const { data, error } = await getJourneyVisitorExport({
         variables: {
           journeyId,
-          filter,
+          filter
         }
       })
 
