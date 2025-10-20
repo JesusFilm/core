@@ -173,7 +173,7 @@ export interface VideoBlockUpdate_videoBlockUpdate {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: string | null;
+  subtitleLanguageId: string | null;
   mediaVideo: VideoBlockUpdate_videoBlockUpdate_mediaVideo | null;
   /**
    * action that should be performed when the video ends

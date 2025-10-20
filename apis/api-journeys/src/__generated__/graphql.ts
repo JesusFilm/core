@@ -4987,7 +4987,7 @@ export type VideoBlock = Block & {
   source: VideoBlockSource;
   /** startAt dictates at which point of time the video should start playing */
   startAt?: Maybe<Scalars['Int']['output']>;
-  subtitleLanguage?: Maybe<Scalars['String']['output']>;
+  subtitleLanguageId?: Maybe<Scalars['String']['output']>;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -5031,7 +5031,7 @@ export type VideoBlockCreateInput = {
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
   source?: InputMaybe<VideoBlockSource>;
   startAt?: InputMaybe<Scalars['Int']['input']>;
-  subtitleLanguage?: InputMaybe<Scalars['String']['input']>;
+  subtitleLanguageId?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['ID']['input']>;
   videoVariantLanguageId?: InputMaybe<Scalars['ID']['input']>;
@@ -5086,7 +5086,7 @@ export type VideoBlockUpdateInput = {
    */
   source?: InputMaybe<VideoBlockSource>;
   startAt?: InputMaybe<Scalars['Int']['input']>;
-  subtitleLanguage?: InputMaybe<Scalars['String']['input']>;
+  subtitleLanguageId?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['ID']['input']>;
   videoVariantLanguageId?: InputMaybe<Scalars['ID']['input']>;

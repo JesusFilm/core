@@ -517,7 +517,7 @@ export interface MenuBlockRestore_stepRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: string | null;
+  subtitleLanguageId: string | null;
   mediaVideo: MenuBlockRestore_stepRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

@@ -507,7 +507,7 @@ export interface CardIntroRestore_subtitle_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: string | null;
+  subtitleLanguageId: string | null;
   mediaVideo: CardIntroRestore_subtitle_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -1073,7 +1073,7 @@ export interface CardIntroRestore_title_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: string | null;
+  subtitleLanguageId: string | null;
   mediaVideo: CardIntroRestore_title_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -1639,7 +1639,7 @@ export interface CardIntroRestore_body_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: string | null;
+  subtitleLanguageId: string | null;
   mediaVideo: CardIntroRestore_body_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -2205,7 +2205,7 @@ export interface CardIntroRestore_button_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: string | null;
+  subtitleLanguageId: string | null;
   mediaVideo: CardIntroRestore_button_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -2771,7 +2771,7 @@ export interface CardIntroRestore_startIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: string | null;
+  subtitleLanguageId: string | null;
   mediaVideo: CardIntroRestore_startIcon_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -3337,7 +3337,7 @@ export interface CardIntroRestore_endIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: string | null;
+  subtitleLanguageId: string | null;
   mediaVideo: CardIntroRestore_endIcon_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -3903,7 +3903,7 @@ export interface CardIntroRestore_video_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: string | null;
+  subtitleLanguageId: string | null;
   mediaVideo: CardIntroRestore_video_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
