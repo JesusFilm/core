@@ -1659,6 +1659,7 @@ const RotatingText = React.memo(({
 })
 
 export default function NewPage() {
+  const router = useRouter()
   const { isGeneratingDesign, generateDesign } = usePolotnoDesignNavigation()
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedContext, setSelectedContext] = useState<string>('')
