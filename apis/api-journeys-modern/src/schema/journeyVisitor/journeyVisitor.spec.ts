@@ -405,7 +405,7 @@ describe('journeyVisitorExport', () => {
     )
   })
 
-  it('should handle visitors with no events', async () => {
+  it('should not include visitors with no events', async () => {
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       id: 'journey1',
       team: {
@@ -415,13 +415,7 @@ describe('journeyVisitorExport', () => {
       blocks: []
     } as any)
     prismaMock.event.findMany.mockResolvedValueOnce([])
-    prismaMock.journeyVisitor.findMany.mockResolvedValue([
-      {
-        id: 'jv1',
-        createdAt: new Date('2024-01-01T00:00:00Z'),
-        events: []
-      } as any
-    ])
+    prismaMock.journeyVisitor.findMany.mockResolvedValue([])
 
     const result = await authClient({
       document: JOURNEY_VISITOR_EXPORT_QUERY,
@@ -432,7 +426,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'Date\n\n2024-01-01\n'
+      'Date\n\n'
     )
   })
 
