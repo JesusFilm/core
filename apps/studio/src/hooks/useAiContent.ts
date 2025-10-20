@@ -5,7 +5,35 @@ import type {
   GeneratedStepContent,
   ImageAnalysisResult
 } from '../libs/storage'
+
 import type { SaveSessionArgs } from './useNewPageSession'
+
+const isNetworkError = (error: unknown): boolean => {
+  if (error instanceof TypeError) {
+    const message = error.message?.toLowerCase?.() ?? ''
+    return (
+      message.includes('networkerror') ||
+      message.includes('failed to fetch') ||
+      message.includes('load failed')
+    )
+  }
+
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof (error as { message?: string }).message === 'string'
+  ) {
+    const message = (error as { message: string }).message.toLowerCase()
+    return (
+      message.includes('networkerror') ||
+      message.includes('failed to fetch') ||
+      message.includes('load failed')
+    )
+  }
+
+  return false
+}
 
 type ConversationMessage = {
   role: 'system' | 'user' | 'assistant'
@@ -26,6 +54,7 @@ type UseAiContentOptions = {
   setIsProcessing: Dispatch<SetStateAction<boolean>>
   saveSession: (data: SaveSessionArgs) => string
   updateTokens: (sessionId: string | null, usage: { input: number; output: number }) => void
+  onError?: (error: unknown, context: { isNetworkError: boolean }) => void
 }
 
 export const useAiContent = ({
@@ -41,7 +70,8 @@ export const useAiContent = ({
   setEditableSteps,
   setIsProcessing,
   saveSession,
-  updateTokens
+  updateTokens,
+  onError
 }: UseAiContentOptions) => {
   const processContentWithAI = useCallback(
     async (inputText?: string) => {
@@ -112,10 +142,21 @@ export const useAiContent = ({
 
         updateTokens(sessionId, tokenUsage)
       } catch (error) {
-        console.error('Error processing content:', error)
+        const networkError = isNetworkError(error)
+
+        if (networkError) {
+          console.warn('Network error while processing content. Ready for retry.', error)
+        } else {
+          console.error('Error processing content:', error)
+        }
+
         setAiResponse(previousResponse)
         setEditableSteps(previousSteps)
-        console.error('Failed to process content via the AI proxy. Please try again.')
+        if (!networkError) {
+          console.error('Failed to process content via the AI proxy. Please try again.')
+        }
+
+        onError?.(error, { isNetworkError: networkError })
       } finally {
         setIsProcessing(false)
       }
@@ -133,7 +174,8 @@ export const useAiContent = ({
       setEditableSteps,
       setIsProcessing,
       textareaRef,
-      updateTokens
+      updateTokens,
+      onError
     ]
   )
 
