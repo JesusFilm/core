@@ -1268,8 +1268,6 @@ export default function NewPage() {
     ideaIndex: number
   } | null>(null)
   const [animatingTextarea, setAnimatingTextarea] = useState(false)
-  const [shouldRenderPrayerCarousel, setShouldRenderPrayerCarousel] =
-    useState(false)
   const [hidingSuggestionsCarousel, setHidingSuggestionsCarousel] = useState(false)
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
   const [hiddenSuggestions, setHiddenSuggestions] = useState<Set<string>>(
@@ -3889,10 +3887,9 @@ export default function NewPage() {
                   className="hidden"
                 />
                     
-                {shouldRenderPrayerCarousel && (
+                {isProcessing && (
                   <PrayerCarousel
                     isActive={isProcessing}
-                    onCollapseComplete={handlePrayerCarouselCollapsed}
                   />
                 )}
 
