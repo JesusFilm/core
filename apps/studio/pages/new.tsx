@@ -367,7 +367,7 @@ const categorySharingOptions = {
     'in a group chat with your family',
     'in a prayer group on WhatsApp',
     'in YouTube comments',
-    'in a private message to someone in need'
+    'in a private message'
   ],
   'Social Media': [
     'on your Instagram stories',
@@ -385,7 +385,7 @@ const categorySharingOptions = {
   ],
   Print: [
     'in a printed church bulletin',
-    'on a flyer for your community event',
+    'on a flyer for your event',
     'in your devotional journal',
     'on a Bible study handout',
     'in your published book/article'
