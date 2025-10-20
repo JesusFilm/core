@@ -20,7 +20,6 @@ import {
   Palette,
   Plus,
   Printer,
-  Search,
   Settings,
   Sparkles,
   Trash2,
@@ -793,6 +792,644 @@ const createPolotnoDesignFromContent = ({
   }
 }
 
+type GenerateDesignParams = {
+  baseContent: string
+  selectedOutputs: SelectedOutputsMap
+  steps: GeneratedStepContent[]
+}
+
+const usePolotnoDesignNavigation = () => {
+  const router = useRouter()
+  const [isGeneratingDesign, setIsGeneratingDesign] = useState(false)
+
+  const generateDesign = useCallback(
+    async ({ baseContent, selectedOutputs, steps }: GenerateDesignParams) => {
+      if (typeof window === 'undefined') {
+        return
+      }
+
+      setIsGeneratingDesign(true)
+
+      try {
+        const { design, meta } = createPolotnoDesignFromContent({
+          rawContent: baseContent,
+          selectedOutputs,
+          steps
+        })
+
+        const timestamp = new Date().toISOString()
+        const previewSource = steps.length
+          ? steps
+              .map((step, index) => {
+                const content = step?.content?.trim() || ''
+                const heading = deriveHeadingFromContent(
+                  content,
+                  `Step ${index + 1}`
+                )
+                const body = deriveBodyFromContent(content)
+
+                if (body) {
+                  return `${heading}: ${body}`
+                }
+
+                if (content) {
+                  return `${heading}: ${content}`
+                }
+
+                return heading
+              })
+              .filter((section) => section.length > 0)
+              .join('\n\n')
+          : baseContent
+
+        const metadata = {
+          ...meta,
+          generatedAt: timestamp,
+          selectedOutputs,
+          contentPreview: previewSource.slice(0, 280)
+        }
+
+        window.localStorage.setItem(
+          'studio-polotno-design',
+          JSON.stringify(design)
+        )
+        window.localStorage.setItem(
+          'studio-polotno-design-meta',
+          JSON.stringify(metadata)
+        )
+
+        await router.push('/edit')
+      } catch (error) {
+        console.error('Failed to create Polotno design from AI content:', error)
+        alert(
+          'We were unable to prepare your designs for Studio. Please try again.'
+        )
+      } finally {
+        setIsGeneratingDesign(false)
+      }
+    },
+    [router]
+  )
+
+  return { isGeneratingDesign, generateDesign }
+}
+
+type ImageAnalysisDisplay = {
+  imageSrc: string
+  contentType: string
+  extractedText: string
+  detailedDescription: string
+  confidence: string
+  contentIdeas: string[]
+  isAnalyzing: boolean
+}
+
+type StudioHeaderProps = {
+  totalTokensUsed: { input: number; output: number }
+  isTokensUpdated: boolean
+  onToggleSessions: () => void
+  onOpenSettings: () => void
+}
+
+const StudioHeader = ({
+  totalTokensUsed,
+  isTokensUpdated,
+  onToggleSessions,
+  onOpenSettings
+}: StudioHeaderProps) => {
+  const hasTokenUsage =
+    totalTokensUsed.input > 0 || totalTokensUsed.output > 0
+
+  const formatTokenTotal = () => {
+    const total = totalTokensUsed.input + totalTokensUsed.output
+    if (total >= 1_000_000) {
+      return `${(total / 1_000_000).toFixed(1)}M`
+    }
+    if (total >= 1_000) {
+      return `${(total / 1_000).toFixed(1)}K`
+    }
+    return total.toLocaleString()
+  }
+
+  const estimatedCost = Math.max(
+    (totalTokensUsed.input / 1_000_000) * 0.05 +
+      (totalTokensUsed.output / 1_000_000) * 0.4,
+    0.01
+  ).toFixed(2)
+
+  return (
+    <header
+      className="border-b border-border bg-background backdrop-blur"
+      data-id="Header"
+    >
+      <div className="container mx-auto px-4 py-6" data-id="HeaderContainer">
+        <div className="flex items-center justify-between" data-id="HeaderRow">
+          <div className="flex items-center gap-4" data-id="HeaderBranding">
+            <Image
+              src="/jesusfilm-sign.svg"
+              alt="Jesus Film Project"
+              width={24}
+              height={24}
+              className="h-6 w-auto"
+            />
+            <h1 className="text-2xl font-bold text-foreground">Studio</h1>
+          </div>
+          <div className="flex items-center gap-4" data-id="HeaderActions">
+            {hasTokenUsage && (
+              <div
+                className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm transition-colors duration-300 ${
+                  isTokensUpdated ? 'bg-red-500 text-white' : 'bg-muted'
+                }`}
+              >
+                <span
+                  className={
+                    isTokensUpdated ? 'text-white' : 'text-muted-foreground'
+                  }
+                >
+                  Tokens:
+                </span>
+                <span className="font-medium">{formatTokenTotal()}</span>
+                <span
+                  className={
+                    isTokensUpdated ? 'text-white' : 'text-muted-foreground'
+                  }
+                >
+                  •
+                </span>
+                <span className="font-medium">${estimatedCost}</span>
+              </div>
+            )}
+            <Button
+              variant="ghost"
+              className="h-8 w-8 p-3 cursor-pointer hover:!bg-transparent group"
+              onClick={onToggleSessions}
+            >
+              <History className="!h-5 !w-5 group-hover:!text-primary transition-colors" />
+              <span className="sr-only">Sessions</span>
+            </Button>
+            <Button
+              variant="ghost"
+              className="h-8 w-8 p-3 cursor-pointer hover:!bg-transparent group"
+              onClick={onOpenSettings}
+            >
+              <Settings className="!h-5 !w-5 group-hover:!text-primary transition-colors" />
+              <span className="sr-only">Settings</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </header>
+  )
+}
+
+type StudioSettingsDialogProps = {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  unsplashApiKey: string
+  onUnsplashApiKeyChange: (value: string) => void
+  onTestUnsplashKey: () => void
+}
+
+const StudioSettingsDialog = ({
+  open,
+  onOpenChange,
+  unsplashApiKey,
+  onUnsplashApiKeyChange,
+  onTestUnsplashKey
+}: StudioSettingsDialogProps) => {
+  const isInvalidAccessKey =
+    Boolean(unsplashApiKey) && !/^[A-Za-z0-9_-]{40,80}$/.test(unsplashApiKey)
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Settings</DialogTitle>
+          <DialogDescription>
+            Configure your API keys and preferences.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <span className="text-sm font-medium">OpenAI Access</span>
+            <p className="text-xs text-muted-foreground">
+              Responses are now powered by a secure, server-managed OpenAI
+              connection. No personal API key is required.
+            </p>
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="unsplash-api-key" className="text-sm font-medium">
+              Unsplash Access Key
+            </label>
+            <Input
+              id="unsplash-api-key"
+              type="password"
+              placeholder="Enter your Unsplash Access Key..."
+              value={unsplashApiKey}
+              onChange={(event) => onUnsplashApiKeyChange(event.target.value)}
+              className={`w-full ${
+                isInvalidAccessKey ? 'border-red-500' : ''
+              }`}
+            />
+            {isInvalidAccessKey && (
+              <p className="text-xs text-red-600 mt-1">
+                Access Key appears to be invalid format. Should be 40-80
+                characters.
+              </p>
+            )}
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-muted-foreground">
+                Your Unsplash Access Key is used to fetch relevant images for
+                content steps. Get one from{' '}
+                <a
+                  href="https://unsplash.com/developers"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  Unsplash Developers
+                </a>
+                . It will be stored locally in your browser.
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={onTestUnsplashKey}
+                className="ml-4 whitespace-nowrap"
+              >
+                Test Key
+              </Button>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+type PreviousSessionsPanelProps = {
+  isOpen: boolean
+  isCollapsing: boolean
+  savedSessions: UserInputData[]
+  loadingSessionId: string | null
+  onLoadSession: (session: UserInputData) => void
+  onDeleteSession: (sessionId: string) => void
+}
+
+const PreviousSessionsPanel = ({
+  isOpen,
+  isCollapsing,
+  savedSessions,
+  loadingSessionId,
+  onLoadSession,
+  onDeleteSession
+}: PreviousSessionsPanelProps) => {
+  if (!isOpen || savedSessions.length === 0) {
+    return null
+  }
+
+  return (
+    <div
+      className={`max-w-4xl mx-auto mb-8 transition-all duration-500 ease-in-out ${
+        isCollapsing ? 'opacity-0 scale-95 transform' : 'opacity-100 scale-100'
+      }`}
+    >
+      <div className="border border-muted rounded-lg p-4">
+        <div className="flex items-center gap-2 mb-4">
+          <History className="w-4 h-4 text-muted-foreground" />
+          <span className="text-sm font-medium text-muted-foreground">
+            Previous Sessions
+          </span>
+        </div>
+        <div className="space-y-3">
+          {savedSessions.map((session, index) => {
+            const isLoading = loadingSessionId === session.id
+            const timestamp = new Date(session.timestamp)
+            const totalTokens = session.tokensUsed
+
+            const tokenSummary = (() => {
+              if (!totalTokens) {
+                return ''
+              }
+
+              const hasTokens =
+                totalTokens.input > 0 || totalTokens.output > 0
+              if (!hasTokens) {
+                return ''
+              }
+
+              const total = totalTokens.input + totalTokens.output
+              const formattedTotal = (() => {
+                if (total >= 1_000_000) {
+                  return `${(total / 1_000_000).toFixed(1)}M`
+                }
+                if (total >= 1_000) {
+                  return `${(total / 1_000).toFixed(1)}K`
+                }
+                return total.toLocaleString()
+              })()
+
+              const cost =
+                (totalTokens.input / 1_000_000) * 0.05 +
+                (totalTokens.output / 1_000_000) * 0.4
+
+              const formattedCost = cost >= 0.01 ? cost.toFixed(2) : '0.00'
+
+              return `Tokens: ${formattedTotal} • $${formattedCost}`
+            })()
+
+            return (
+              <React.Fragment key={session.id}>
+                <Card
+                  className={`group p-3 relative border-muted bg-transparent shadow-none hover:bg-white hover:shadow-md hover:-my-3 hover:py-7 hover:z-10 transition-padding duration-200 ease-out cursor-pointer ${
+                    isLoading ? 'bg-muted/30' : ''
+                  }`}
+                  onClick={() => {
+                    if (!isLoading) {
+                      onLoadSession(session)
+                    }
+                  }}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0 text-center min-w-0">
+                      <div className="text-sm font-semibold text-muted-foreground leading-tight">
+                        {timestamp.getDate()}
+                      </div>
+                      <div className="text-xs text-muted-foreground uppercase tracking-wider">
+                        {timestamp.toLocaleString('default', { month: 'short' })}
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="mb-1">
+                        <h4 className="font-medium text-sm truncate">
+                          {session.textContent.substring(0, 60)}...
+                        </h4>
+                      </div>
+                      <div className="text-xs text-muted-foreground space-y-0.5">
+                        <p>
+                          {session.images.length > 0
+                            ? `${session.images.length} images • `
+                            : `${timestamp.toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })} • `}
+                          {tokenSummary}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 ml-3">
+                      {isLoading ? (
+                        <div className="flex items-center gap-2 px-2 py-1">
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                          <span className="text-xs text-muted-foreground">
+                            Loading...
+                          </span>
+                        </div>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            onDeleteSession(session.id)
+                          }}
+                          className="invisible group-hover:visible h-7 px-2 text-xs text-primary hover:!bg-primary hover:text-white"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+                {index < savedSessions.length - 1 && (
+                  <hr className="border-stone-600/10 my-2 mx-4 z-1 relative" />
+                )}
+              </React.Fragment>
+            )
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+type ImageAnalysisDetailsDialogProps = {
+  selectedImageIndex: number | null
+  onClose: () => void
+  imageAnalysisResults: ImageAnalysisDisplay[]
+}
+
+const ImageAnalysisDetailsDialog = ({
+  selectedImageIndex,
+  onClose,
+  imageAnalysisResults
+}: ImageAnalysisDetailsDialogProps) => {
+  const open = selectedImageIndex !== null
+  const analysis =
+    selectedImageIndex !== null
+      ? imageAnalysisResults[selectedImageIndex]
+      : null
+
+  return (
+    <Dialog open={open} onOpenChange={(nextOpen) => !nextOpen && onClose()}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>AI Image Analysis Details</DialogTitle>
+          <DialogDescription>
+            Review the detected content, extracted text, and generated ideas
+            for this image.
+          </DialogDescription>
+        </DialogHeader>
+        {analysis ? (
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <div className="w-32 h-32 rounded-lg overflow-hidden border">
+                <Image
+                  src={analysis.imageSrc}
+                  alt="Selected analysis"
+                  width={128}
+                  height={128}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1 space-y-2">
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground">
+                    Content Type
+                  </h4>
+                  <p className="text-sm font-semibold capitalize">
+                    {analysis.contentType?.replace(/_/g, ' ') || 'Unknown'}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground">
+                    Confidence
+                  </h4>
+                  <p className="text-sm font-semibold">
+                    {analysis.confidence || 'Not available'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {analysis.extractedText && (
+              <div>
+                <h4 className="text-sm font-medium mb-2">Extracted Text:</h4>
+                <div className="p-3 bg-muted rounded-lg border">
+                  <p className="text-sm font-mono whitespace-pre-wrap">
+                    {analysis.extractedText}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {Array.isArray(analysis.contentIdeas) &&
+              analysis.contentIdeas.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Content Ideas:</h4>
+                  <div className="space-y-2">
+                    {analysis.contentIdeas.map((idea, index) => (
+                      <div
+                        key={index}
+                        className="text-xs px-3 py-2 bg-blue-50 text-blue-800 rounded-lg border border-blue-200"
+                      >
+                        {typeof idea === 'string' ? idea : JSON.stringify(idea)}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+            {analysis.detailedDescription && (
+              <div>
+                <h4 className="text-sm font-medium mb-2">
+                  Detailed Description:
+                </h4>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {analysis.detailedDescription}
+                </p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-muted-foreground">
+            <p>
+              No analysis available. Try again once the AI proxy finishes
+              processing, or re-run the analysis.
+            </p>
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+type AllContentIdeasDialogProps = {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  contentTypeLabel: string
+  imageAnalysisResults: ImageAnalysisDisplay[]
+  hiddenSuggestions: Set<string>
+  animatingSuggestion: { analysisIndex: number; ideaIndex: number } | null
+  onSuggestionSelected: (payload: {
+    analysisIndex: number
+    ideaIndex: number
+    idea: string
+  }) => void
+}
+
+const AllContentIdeasDialog = ({
+  open,
+  onOpenChange,
+  contentTypeLabel,
+  imageAnalysisResults,
+  hiddenSuggestions,
+  animatingSuggestion,
+  onSuggestionSelected
+}: AllContentIdeasDialogProps) => (
+  <Dialog open={open} onOpenChange={onOpenChange}>
+    <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+      <DialogHeader>
+        <DialogTitle>All Content Ideas for {contentTypeLabel}</DialogTitle>
+        <DialogDescription>
+          Click any idea below to add it to your content. These ideas are
+          tailored to your uploaded images.
+        </DialogDescription>
+      </DialogHeader>
+      <div className="space-y-6">
+        {imageAnalysisResults
+          .filter(
+            (result) =>
+              result.contentIdeas &&
+              result.contentIdeas.length > 0 &&
+              !result.isAnalyzing
+          )
+          .map((analysis, analysisIndex) => (
+            <div key={analysisIndex} className="space-y-3">
+              {analysisIndex > 0 && <hr className="border-border" />}
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-muted border flex-shrink-0">
+                  <Image
+                    src={analysis.imageSrc}
+                    alt={`Image ${analysisIndex + 1}`}
+                    width={32}
+                    height={32}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <span className="text-sm font-medium text-muted-foreground">
+                  Ideas from Image {analysisIndex + 1}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {Array.isArray(analysis.contentIdeas) &&
+                  analysis.contentIdeas.map((idea, ideaIndex) => {
+                    const ideaText =
+                      typeof idea === 'string'
+                        ? idea
+                        : JSON.stringify(idea)
+                    const suggestionKey = `modal-${analysisIndex}-${ideaIndex}`
+
+                    if (hiddenSuggestions.has(suggestionKey)) {
+                      return null
+                    }
+
+                    const isAnimating =
+                      animatingSuggestion?.analysisIndex === analysisIndex &&
+                      animatingSuggestion?.ideaIndex === ideaIndex
+
+                    return (
+                      <div
+                        key={ideaIndex}
+                        data-id="SuggestionTile"
+                        className={`relative p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-white hover:border-gray-300 hover:shadow-sm ${
+                          isAnimating
+                            ? 'animate-suggestion-disappear opacity-100'
+                            : 'transition-all duration-200'
+                        }`}
+                        onClick={() =>
+                          onSuggestionSelected({
+                            analysisIndex,
+                            ideaIndex,
+                            idea: ideaText
+                          })
+                        }
+                      >
+                        <p className="text-sm text-gray-800 leading-relaxed">
+                          {ideaText}
+                        </p>
+                      </div>
+                    )
+                  })}
+              </div>
+            </div>
+          ))}
+      </div>
+    </DialogContent>
+  </Dialog>
+)
+
 const RotatingText = React.memo(({
   onCategoryChange,
   hoveredCategory,
@@ -1022,7 +1659,7 @@ const RotatingText = React.memo(({
 })
 
 export default function NewPage() {
-  const router = useRouter()
+  const { isGeneratingDesign, generateDesign } = usePolotnoDesignNavigation()
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedContext, setSelectedContext] = useState<string>('')
   const [selectedContextDetail, setSelectedContextDetail] =
@@ -1077,7 +1714,9 @@ export default function NewPage() {
   const [loadingUnsplashSteps, setLoadingUnsplashSteps] = useState<Set<string>>(new Set())
   const [loadingSession, setLoadingSession] = useState<string | null>(null)
   const [isCollapsing, setIsCollapsing] = useState(false)
-  const [imageAnalysisResults, setImageAnalysisResults] = useState<ImageAnalysisResult[]>([])
+  const [imageAnalysisResults, setImageAnalysisResults] = useState<
+    ImageAnalysisDisplay[]
+  >([])
   const [isDragOver, setIsDragOver] = useState(false)
   const [isPersonaDialogOpen, setIsPersonaDialogOpen] = useState(false)
   const [personaSettings, setPersonaSettings] = useState({
@@ -1114,7 +1753,6 @@ export default function NewPage() {
   )
   const [showTestimonialBackground, setShowTestimonialBackground] =
     useState(true)
-  const [isGeneratingDesign, setIsGeneratingDesign] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const cameraInputRef = useRef<HTMLInputElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
@@ -1871,69 +2509,52 @@ export default function NewPage() {
       return
     }
 
-    if (typeof window === 'undefined') {
-      return
-    }
-
-    setIsGeneratingDesign(true)
-
-    try {
-      const { design, meta } = createPolotnoDesignFromContent({
-        rawContent: baseContent,
-        selectedOutputs,
-        steps: editableSteps
-      })
-      const timestamp = new Date().toISOString()
-      const previewSource =
-        editableSteps.length > 0
-          ? editableSteps
-              .map((step, index) => {
-                const content = step?.content?.trim() || ''
-                const heading = deriveHeadingFromContent(
-                  content,
-                  `Step ${index + 1}`
-                )
-                const body = deriveBodyFromContent(content)
-
-                if (body) {
-                  return `${heading}: ${body}`
-                }
-
-                if (content) {
-                  return `${heading}: ${content}`
-                }
-
-                return heading
-              })
-              .filter((section) => section.length > 0)
-              .join('\n\n')
-          : baseContent
-      const metadata = {
-        ...meta,
-        generatedAt: timestamp,
-        selectedOutputs,
-        contentPreview: previewSource.slice(0, 280)
-      }
-
-      window.localStorage.setItem(
-        'studio-polotno-design',
-        JSON.stringify(design)
-      )
-      window.localStorage.setItem(
-        'studio-polotno-design-meta',
-        JSON.stringify(metadata)
-      )
-
-      await router.push('/edit')
-    } catch (error) {
-      console.error('Failed to create Polotno design from AI content:', error)
-      alert(
-        'We were unable to prepare your designs for Studio. Please try again.'
-      )
-    } finally {
-      setIsGeneratingDesign(false)
-    }
+    await generateDesign({
+      baseContent,
+      selectedOutputs,
+      steps: editableSteps
+    })
   }
+
+  const handleSuggestionSelection = useCallback(
+    ({ analysisIndex, ideaIndex, idea }: {
+      analysisIndex: number
+      ideaIndex: number
+      idea: string
+    }) => {
+      setAnimatingSuggestion({ analysisIndex, ideaIndex })
+
+      setTimeout(() => {
+        setTextContent((currentText) => {
+          const newText = currentText ? `${currentText}\n\n${idea}` : idea
+          if (textareaRef.current) {
+            textareaRef.current.value = newText
+          }
+          return newText
+        })
+        setAnimatingTextarea(true)
+        setHiddenSuggestions((prev) => {
+          const updated = new Set(prev)
+          updated.add(`modal-${analysisIndex}-${ideaIndex}`)
+          return updated
+        })
+        setAnimatingSuggestion(null)
+
+        setTimeout(() => {
+          setAnimatingTextarea(false)
+          setShowAllIdeas(false)
+        }, 800)
+      }, 500)
+    },
+    [
+      setAnimatingSuggestion,
+      setTextContent,
+      textareaRef,
+      setAnimatingTextarea,
+      setHiddenSuggestions,
+      setShowAllIdeas
+    ]
+  )
 
   // Helper function to get the content type for the header
   const getContentTypeForHeader = () => {
@@ -2278,395 +2899,33 @@ export default function NewPage() {
         <title>Create New Content | Studio | Jesus Film Project</title>
       </Head>
       <div className="min-h-screen bg-stone-100 text-foreground" data-id="PageRoot">
-        <header className="border-b border-border bg-background backdrop-blur" data-id="Header">
-          <div className="container mx-auto px-4 py-6" data-id="HeaderContainer">
-            <div className="flex items-center justify-between" data-id="HeaderRow">
-              <div className="flex items-center gap-4" data-id="HeaderBranding">
-                <Image
-                  src="/jesusfilm-sign.svg"
-                  alt="Jesus Film Project"
-                  width={24}
-                  height={24}
-                  className="h-6 w-auto"
-                />
-                <h1 className="text-2xl font-bold text-foreground">Studio</h1>
-              </div>
-              <div className="flex items-center gap-4" data-id="HeaderActions">
-                {(totalTokensUsed.input > 0 || totalTokensUsed.output > 0) && (
-                  <div
-                    className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm transition-colors duration-300 ${
-                      isTokensUpdated ? 'bg-red-500 text-white' : 'bg-muted'
-                    }`}
-                  >
-                    <span
-                      className={
-                        isTokensUpdated ? 'text-white' : 'text-muted-foreground'
-                      }
-                    >
-                      Tokens:
-                    </span>
-                    <span className="font-medium">
-                      {(() => {
-                        const total =
-                          totalTokensUsed.input + totalTokensUsed.output
-                        if (total >= 1000000) {
-                          return `${(total / 1000000).toFixed(1)}M`
-                        } else if (total >= 1000) {
-                          return `${(total / 1000).toFixed(1)}K`
-                        }
-                        return total.toLocaleString()
-                      })()}
-                    </span>
-                    <span
-                      className={
-                        isTokensUpdated ? 'text-white' : 'text-muted-foreground'
-                      }
-                    >
-                      •
-                    </span>
-                    <span className="font-medium">
-                      $
-                      {Math.max(
-                        (totalTokensUsed.input / 1000000) * 0.05 +
-                          (totalTokensUsed.output / 1000000) * 0.4,
-                        0.01
-                      ).toFixed(2)}
-                    </span>
-                  </div>
-                )}
-                <Button
-                  variant="ghost"
-                  className="h-8 w-8 p-3 cursor-pointer hover:!bg-transparent group"
-                  onClick={() => setIsSessionsOpen(v => !v)}
-                >
-                  <History className="!h-5 !w-5 group-hover:!text-primary transition-colors" />
-                  <span className="sr-only">Sessions</span>
-                </Button>
-                <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
-                  <DialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="h-8 w-8 p-3 cursor-pointer hover:!bg-transparent group"
-                    >
-                      <Settings className="!h-5 !w-5 group-hover:!text-primary transition-colors" />
-                      <span className="sr-only">Settings</span>
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Settings</DialogTitle>
-                      <DialogDescription>
-                        Configure your API keys and preferences.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <span className="text-sm font-medium">
-                          OpenAI Access
-                        </span>
-                        <p className="text-xs text-muted-foreground">
-                          Responses are now powered by a secure, server-managed OpenAI connection. No personal API key is required.
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="unsplash-api-key"
-                          className="text-sm font-medium"
-                        >
-                          Unsplash Access Key
-                        </label>
-                        <Input
-                          id="unsplash-api-key"
-                          type="password"
-                          placeholder="Enter your Unsplash Access Key..."
-                          value={unsplashApiKey}
-                          onChange={(e) => setUnsplashApiKey(e.target.value)}
-                          className={`w-full ${unsplashApiKey && !/^[A-Za-z0-9_-]{40,80}$/.test(unsplashApiKey) ? 'border-red-500' : ''}`}
-                        />
-                        {unsplashApiKey && !/^[A-Za-z0-9_-]{40,80}$/.test(unsplashApiKey) && (
-                          <p className="text-xs text-red-600 mt-1">
-                            Access Key appears to be invalid format. Should be 40-80 characters.
-                          </p>
-                        )}
-                        <div className="flex items-center justify-between">
-                          <p className="text-xs text-muted-foreground">
-                            Your Unsplash Access Key is used to fetch relevant
-                            images for content steps. Get one from{' '}
-                            <a
-                              href="https://unsplash.com/developers"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-primary hover:underline"
-                            >
-                              Unsplash Developers
-                            </a>
-                            . It will be stored locally in your browser.
-                          </p>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={testUnsplashAPI}
-                            className="ml-4 whitespace-nowrap"
-                          >
-                            Test Key
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-
-                {/* AI Analysis Details Dialog */}
-                <Dialog
-                  open={selectedImageForDetails !== null}
-                  onOpenChange={() => setSelectedImageForDetails(null)}
-                >
-                  <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>AI Image Analysis Details</DialogTitle>
-                      <DialogDescription>
-                        Detailed analysis of the selected image by AI
-                      </DialogDescription>
-                    </DialogHeader>
-                    {selectedImageForDetails !== null &&
-                      (() => {
-                        const analysis =
-                          imageAnalysisResults[selectedImageForDetails]
-                        const imageSrc =
-                          imageAttachments[selectedImageForDetails]
-                        return (
-                          <div className="space-y-6">
-                            {/* Image preview */}
-                            <div className="flex justify-center">
-                              <div className="w-64 h-64 rounded-lg overflow-hidden bg-muted border">
-                                <Image
-                                  src={imageSrc}
-                                  alt={`Image ${selectedImageForDetails + 1}`}
-                                  width={256}
-                                  height={256}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            </div>
-
-                            {/* Analysis results */}
-                            {analysis?.isAnalyzing ? (
-                              <div className="flex items-center justify-center gap-2 py-8">
-                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                                <span>Analyzing image...</span>
-                              </div>
-                            ) : analysis ? (
-                              <div className="space-y-4">
-                                {/* Content type and confidence */}
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <span className="text-sm font-medium">
-                                    Content Type:
-                                  </span>
-                                  <span
-                                    className={`text-xs px-3 py-1 rounded-full ${
-                                      analysis.contentType === 'bible_picture'
-                                        ? 'bg-blue-100 text-blue-800'
-                                        : analysis.contentType ===
-                                            'devotional_picture'
-                                          ? 'bg-green-100 text-green-800'
-                                          : analysis.contentType ===
-                                              'church_service_slide'
-                                            ? 'bg-purple-100 text-purple-800'
-                                            : analysis.contentType ===
-                                                'scripture_verse'
-                                              ? 'bg-yellow-100 text-yellow-800'
-                                              : 'bg-gray-100 text-gray-800'
-                                    }`}
-                                  >
-                                    {analysis.contentType
-                                      .replace(/_/g, ' ')
-                                      .replace(/\b\w/g, (l) => l.toUpperCase())}
-                                  </span>
-                                  <span
-                                    className={`text-xs px-3 py-1 rounded-full ml-2 ${
-                                      analysis.confidence === 'high'
-                                        ? 'bg-green-100 text-green-800'
-                                        : analysis.confidence === 'medium'
-                                          ? 'bg-yellow-100 text-yellow-800'
-                                          : 'bg-primary/10 text-primary'
-                                    }`}
-                                  >
-                                    {analysis.confidence} confidence
-                                  </span>
-                                </div>
-
-                                {/* Extracted text */}
-                                {analysis.extractedText && (
-                                  <div>
-                                    <h4 className="text-sm font-medium mb-2">
-                                      Extracted Text:
-                                    </h4>
-                                    <div className="p-3 bg-muted rounded-lg border">
-                                      <p className="text-sm font-mono whitespace-pre-wrap">
-                                        {analysis.extractedText}
-                                      </p>
-                                    </div>
-                                  </div>
-                                )}
-
-                                {/* Content ideas */}
-                                {Array.isArray(analysis.contentIdeas) &&
-                                  analysis.contentIdeas.length > 0 && (
-                                    <div>
-                                      <h4 className="text-sm font-medium mb-2">
-                                        Content Ideas:
-                                      </h4>
-                                      <div className="space-y-2">
-                                        {analysis.contentIdeas.map(
-                                          (idea, ideaIndex) => (
-                                            <div
-                                              key={ideaIndex}
-                                              className="text-xs px-3 py-2 bg-blue-50 text-blue-800 rounded-lg border border-blue-200"
-                                            >
-                                              {typeof idea === 'string'
-                                                ? idea
-                                                : JSON.stringify(idea)}
-                                            </div>
-                                          )
-                                        )}
-                                      </div>
-                                    </div>
-                                  )}
-
-                                {/* Detailed description */}
-                                {analysis.detailedDescription && (
-                                  <div>
-                                    <h4 className="text-sm font-medium mb-2">
-                                      Detailed Description:
-                                    </h4>
-                                    <p className="text-sm text-muted-foreground leading-relaxed">
-                                      {analysis.detailedDescription}
-                                    </p>
-                                  </div>
-                                )}
-                              </div>
-                            ) : (
-                              <div className="text-center py-8 text-muted-foreground">
-                                <p>
-                                  No analysis available. Try again once the AI proxy finishes processing, or re-run the analysis.
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                        )
-                      })()}
-                  </DialogContent>
-                </Dialog>
-
-                {/* See All Ideas Dialog */}
-                <Dialog open={showAllIdeas} onOpenChange={setShowAllIdeas}>
-                  <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>
-                        All Content Ideas for {getContentTypeForHeader()}
-                      </DialogTitle>
-                      <DialogDescription>
-                        Click any idea below to add it to your content. These
-                        ideas are tailored to your uploaded images.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-6">
-                      {imageAnalysisResults
-                        .filter(
-                          (result) =>
-                            result.contentIdeas &&
-                            result.contentIdeas.length > 0 &&
-                            !result.isAnalyzing
-                        )
-                        .map((analysis, analysisIndex) => (
-                          <div key={analysisIndex} className="space-y-3">
-                            {analysisIndex > 0 && (
-                              <hr className="border-border" />
-                            )}
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-full overflow-hidden bg-muted border flex-shrink-0">
-                                <Image
-                                  src={analysis.imageSrc}
-                                  alt={`Image ${analysisIndex + 1}`}
-                                  width={32}
-                                  height={32}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                              <span className="text-sm font-medium text-muted-foreground">
-                                Ideas from Image {analysisIndex + 1}
-                              </span>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                              {Array.isArray(analysis.contentIdeas) &&
-                                analysis.contentIdeas.map((idea, ideaIndex) => {
-                                  const suggestionKey = `modal-${analysisIndex}-${ideaIndex}`
-                                  if (hiddenSuggestions.has(suggestionKey))
-                                    return null
-
-                                  return (
-                                    <div
-                                      key={ideaIndex}
-                                      data-id="SuggestionTile"
-                                      className={`relative p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-white hover:border-gray-300 hover:shadow-sm ${
-                                        animatingSuggestion?.analysisIndex ===
-                                          analysisIndex &&
-                                        animatingSuggestion?.ideaIndex ===
-                                          ideaIndex
-                                          ? 'animate-suggestion-disappear opacity-100'
-                                          : 'transition-all duration-200'
-                                      }`}
-                                      onClick={() => {
-                                        // Set animating state to start the disappear animation immediately
-                                        setAnimatingSuggestion({
-                                          analysisIndex,
-                                          ideaIndex
-                                        })
-
-                                        // After suggestion animation completes (500ms), add text and hide the suggestion
-                                        setTimeout(() => {
-                                          const currentText = textContent
-                                          const newText = currentText
-                                            ? `${currentText}\n\n${idea}`
-                                            : idea
-                                          setTextContent(newText)
-                                          // Update textarea value directly
-                                          if (textareaRef.current) {
-                                            textareaRef.current.value = newText
-                                          }
-                                          setAnimatingTextarea(true)
-                                          setHiddenSuggestions((prev) =>
-                                            new Set(prev).add(suggestionKey)
-                                          ) // Hide this suggestion permanently
-                                          setAnimatingSuggestion(null) // Clear animation state
-
-                                          // Reset textarea animation after it completes (800ms)
-                                          setTimeout(() => {
-                                            setAnimatingTextarea(false)
-                                            setShowAllIdeas(false) // Close modal after both animations complete
-                                          }, 800)
-                                        }, 500) // Match suggestion disappear animation duration
-                                      }}
-                                    >
-                                      <p className="text-sm text-gray-800 leading-relaxed">
-                                        {typeof idea === 'string'
-                                          ? idea
-                                          : JSON.stringify(idea)}
-                                      </p>
-                                    </div>
-                                  )
-                                })}
-                            </div>
-                          </div>
-                        ))}
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </div>
-          </div>
-        </header>
+        <StudioHeader
+          totalTokensUsed={totalTokensUsed}
+          isTokensUpdated={isTokensUpdated}
+          onToggleSessions={() => setIsSessionsOpen((value) => !value)}
+          onOpenSettings={() => setIsSettingsOpen(true)}
+        />
+        <StudioSettingsDialog
+          open={isSettingsOpen}
+          onOpenChange={setIsSettingsOpen}
+          unsplashApiKey={unsplashApiKey}
+          onUnsplashApiKeyChange={setUnsplashApiKey}
+          onTestUnsplashKey={testUnsplashAPI}
+        />
+        <ImageAnalysisDetailsDialog
+          selectedImageIndex={selectedImageForDetails}
+          onClose={() => setSelectedImageForDetails(null)}
+          imageAnalysisResults={imageAnalysisResults}
+        />
+        <AllContentIdeasDialog
+          open={showAllIdeas}
+          onOpenChange={setShowAllIdeas}
+          contentTypeLabel={getContentTypeForHeader()}
+          imageAnalysisResults={imageAnalysisResults}
+          hiddenSuggestions={hiddenSuggestions}
+          animatingSuggestion={animatingSuggestion}
+          onSuggestionSelected={handleSuggestionSelection}
+        />
 
         {/* Stepper */}
         <div className="border-b border-border bg-stone-100 hidden" data-id="Stepper">
@@ -2728,102 +2987,14 @@ export default function NewPage() {
         </div>
 
         {/* Previous Sessions */}
-        {isSessionsOpen && savedSessions.length > 0 && (
-          <div className={`max-w-4xl mx-auto mb-8 transition-all duration-500 ease-in-out ${
-            isCollapsing ? 'opacity-0 scale-95 transform' : 'opacity-100 scale-100'
-          }`}>
-            <div className="border border-muted rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <History className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-medium text-muted-foreground">Previous Sessions</span>
-              </div>
-              <div className="space-y-3">
-                {savedSessions.map((session, index) => (
-                  <React.Fragment key={session.id}>
-                    <Card
-                      className={`group p-3 relative border-muted bg-transparent shadow-none hover:bg-white hover:shadow-md hover:-my-3 hover:py-7 hover:z-10 transition-padding duration-200 ease-out cursor-pointer ${
-                        loadingSession === session.id ? 'bg-muted/30' : ''
-                      }`}
-                      onClick={() => !loadingSession && loadSession(session)}
-                    >
-                    <div className="flex items-center gap-4">
-                      <div className="flex-shrink-0 text-center min-w-0">
-                        <div className="text-sm font-semibold text-muted-foreground leading-tight">
-                          {new Date(session.timestamp).getDate()}
-                        </div>
-                        <div className="text-xs text-muted-foreground uppercase tracking-wider">
-                          {new Date(session.timestamp).toLocaleString('default', { month: 'short' })}
-                        </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="mb-1">
-                          <h4 className="font-medium text-sm truncate">
-                            {session.textContent.substring(0, 60)}...
-                          </h4>
-                        </div>
-                        <div className="text-xs text-muted-foreground space-y-0.5">
-                          <p>
-                            {session.images.length > 0
-                              ? `${session.images.length} images • `
-                              : `${new Date(session.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • `}
-                              {(() => {
-                                const tokens = session.tokensUsed
-                                if (!tokens) return ''
-                                const hasTokens = tokens.input > 0 || tokens.output > 0
-                                if (!hasTokens) return ''
-
-                                const total = tokens.input + tokens.output
-                                const formattedTotal = (() => {
-                                  if (total >= 1000000) {
-                                    return `${(total / 1000000).toFixed(1)}M`
-                                  }
-                                  if (total >= 1000) {
-                                    return `${(total / 1000).toFixed(1)}K`
-                                  }
-                                  return total.toLocaleString()
-                                })()
-
-                                const cost =
-                                  (tokens.input / 1000000) * 0.05 + (tokens.output / 1000000) * 0.4
-                                const formattedCost = cost >= 0.01 ? cost.toFixed(2) : '0.00'
-
-                                return `Tokens: ${formattedTotal} • $${formattedCost}`
-                              })()}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 ml-3">
-                        {loadingSession === session.id ? (
-                          <div className="flex items-center gap-2 px-2 py-1">
-                            <Loader2 className="w-3 h-3 animate-spin" />
-                            <span className="text-xs text-muted-foreground">Loading...</span>
-                          </div>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={(e) => {
-                              e.stopPropagation() // Prevent triggering the card click
-                              deleteSession(session.id)
-                            }}
-                            className="invisible group-hover:visible h-7 px-2 text-xs text-primary hover:!bg-primary hover:text-white"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                    </Card>
-                    {index < savedSessions.length - 1 && (
-                      <hr className="border-stone-600/10 my-2 mx-4 z-1 relative" />
-                    )}
-                  </React.Fragment>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
+        <PreviousSessionsPanel
+          isOpen={isSessionsOpen}
+          isCollapsing={isCollapsing}
+          savedSessions={savedSessions}
+          loadingSessionId={loadingSession}
+          onLoadSession={loadSession}
+          onDeleteSession={deleteSession}
+        />
         <main
           data-id="Main"
           className="container mx-auto px-4 py-6 relative"
