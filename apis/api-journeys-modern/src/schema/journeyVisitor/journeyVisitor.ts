@@ -84,7 +84,6 @@ export const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
     events: t.relation('events', { nullable: false })
   })
 })
-
 builder.asEntity(JourneyVisitorRef, {
   key: builder.selection<{ visitorId: string; journeyId: string }>(
     'visitorId journeyId'
@@ -103,12 +102,10 @@ builder.asEntity(JourneyVisitorRef, {
     })
   }
 })
-
 interface JourneyVisitorExportRow {
   date: string
   [key: string]: string
 }
-
 async function* getJourneyVisitors(
   journeyId: string,
   eventWhere: Prisma.EventWhereInput,
@@ -116,7 +113,6 @@ async function* getJourneyVisitors(
 ): AsyncGenerator<JourneyVisitorExportRow> {
   let offset = 0
   let hasMore = true
-
   while (hasMore) {
     const journeyVisitors = await prisma.journeyVisitor.findMany({
       where: {
@@ -147,19 +143,15 @@ async function* getJourneyVisitors(
         }
       }
     })
-
     if (journeyVisitors.length === 0) {
       hasMore = false
       break
     }
-
     for (const journeyVisitor of journeyVisitors) {
       const date = journeyVisitor.createdAt.toISOString().split('T')[0]
-
       const row: JourneyVisitorExportRow = {
         date
       }
-
       journeyVisitor.events.forEach((event) => {
         if (event.blockId && event.label) {
           const key = `${event.blockId}-${event.label}`
@@ -170,15 +162,12 @@ async function* getJourneyVisitors(
           }
         }
       })
-
       yield row
     }
-
     offset += batchSize
     hasMore = journeyVisitors.length === batchSize
   }
 }
-
 builder.queryField('journeyVisitorExport', (t) => {
   return t
     .withAuth({
@@ -214,13 +203,11 @@ builder.queryField('journeyVisitorExport', (t) => {
             }
           }
         })
-
         if (!journey) {
           throw new GraphQLError('Journey not found', {
             extensions: { code: 'NOT_FOUND' }
           })
         }
-
         if (
           !ability(Action.Export, subject('Journey', journey), context.user)
         ) {
@@ -228,17 +215,14 @@ builder.queryField('journeyVisitorExport', (t) => {
             extensions: { code: 'FORBIDDEN' }
           })
         }
-
         const eventWhere: Prisma.EventWhereInput = {
           journeyId: journeyId,
           blockId: { not: null },
           label: { not: null }
         }
-
         if (filter?.typenames && filter.typenames.length > 0) {
           eventWhere.typename = { in: filter.typenames }
         }
-
         if (filter?.periodRangeStart || filter?.periodRangeEnd) {
           eventWhere.createdAt = {}
           if (filter.periodRangeStart) {
@@ -248,7 +232,6 @@ builder.queryField('journeyVisitorExport', (t) => {
             eventWhere.createdAt.lte = filter.periodRangeEnd
           }
         }
-
         // Get unique blockId_label combinations for headers using Prisma
         const blockHeadersResult = await prisma.event.findMany({
           where: eventWhere,
@@ -258,90 +241,59 @@ builder.queryField('journeyVisitorExport', (t) => {
           },
           distinct: ['blockId', 'label']
         })
-
         // Build a map of blocks for hierarchy lookups
         const journeyBlocks = journey.blocks
         const idToBlock = new Map(journeyBlocks.map((b) => [b.id, b]))
 
-        // Build step columns based on navigation flow (similar to arrangeSteps)
+        // Build step navigation order
         interface StepBlock {
           id: string
           nextBlockId: string | null
+          parentOrder: number | null
         }
         const steps: StepBlock[] = journeyBlocks
           .filter((b) => b.typename === 'StepBlock')
           .map((b: any) => ({
             id: b.id,
-            nextBlockId: b.nextBlockId
+            nextBlockId: b.nextBlockId,
+            parentOrder: b.parentOrder
           }))
 
-        function buildStepColumns(): string[][] {
-          const columns: string[][] = []
-          const unvisitedStepIds = new Set(steps.map((s) => s.id))
+        // Build navigation order: find steps with no incoming links and follow nextBlockId chains
+        const stepMap = new Map(steps.map((s) => [s.id, s]))
+        const hasIncomingLink = new Set<string>()
 
-          function visitStepId(
-            id: string | null | undefined
-          ): StepBlock | undefined {
-            if (id == null || !unvisitedStepIds.has(id)) return undefined
-            unvisitedStepIds.delete(id)
-            return steps.find((s) => s.id === id)
+        // Find all steps that are targets of nextBlockId
+        steps.forEach((step) => {
+          if (step.nextBlockId) {
+            hasIncomingLink.add(step.nextBlockId)
           }
-
-          function isDescendantBlock(blockId: string, stepId: string): boolean {
-            let current = idToBlock.get(blockId)
-            while (current != null) {
-              if (current.id === stepId) return true
-              current =
-                current.parentBlockId != null
-                  ? idToBlock.get(current.parentBlockId)
-                  : undefined
-            }
-            return false
-          }
-
-          function getDescendants(step: StepBlock): StepBlock[] {
-            const descendants: StepBlock[] = []
-
-            // Get next step via nextBlockId
-            const nextStep = visitStepId(step.nextBlockId)
-            if (nextStep != null) descendants.push(nextStep)
-
-            // Get steps via NavigateToBlockAction from blocks within this step
-            const actionBlocks = journeyBlocks.filter(
-              (b: any) =>
-                b.action?.__typename === 'NavigateToBlockAction' &&
-                isDescendantBlock(b.id, step.id)
-            )
-            actionBlocks.forEach((block: any) => {
-              const targetStep = visitStepId(block.action?.blockId)
-              if (targetStep != null) descendants.push(targetStep)
-            })
-
-            return descendants
-          }
-
-          function processSteps(stepsToProcess: StepBlock[]): void {
-            if (stepsToProcess.length === 0) return
-            columns.push(stepsToProcess.map((s) => s.id))
-            const descendants = stepsToProcess.flatMap(getDescendants)
-            if (descendants.length > 0) processSteps(descendants)
-          }
-
-          // Process all unvisited steps
-          while (unvisitedStepIds.size > 0) {
-            const firstId = Array.from(unvisitedStepIds)[0]
-            const step = visitStepId(firstId)
-            if (step != null) processSteps([step])
-          }
-
-          return columns
-        }
-
-        const stepColumns = buildStepColumns()
-        const stepToColumnIndex = new Map<string, number>()
-        stepColumns.forEach((column, colIndex) => {
-          column.forEach((stepId) => stepToColumnIndex.set(stepId, colIndex))
         })
+
+        // Find steps with no incoming links (start points)
+        const startSteps = steps.filter((s) => !hasIncomingLink.has(s.id))
+
+        const stepNavigationOrder = new Map<string, number>()
+        let orderCounter = 0
+
+        // Follow each chain from start to end
+        startSteps.forEach((startStep) => {
+          let current: StepBlock | undefined = startStep
+          while (current != null) {
+            if (!stepNavigationOrder.has(current.id)) {
+              stepNavigationOrder.set(current.id, orderCounter++)
+            }
+            current = current.nextBlockId ? stepMap.get(current.nextBlockId) : undefined
+          }
+        })
+
+        // Add any remaining steps that aren't in a chain (sort by parentOrder as fallback)
+        steps
+          .filter((s) => !stepNavigationOrder.has(s.id))
+          .sort((a, b) => (a.parentOrder ?? 9999) - (b.parentOrder ?? 9999))
+          .forEach((step) => {
+            stepNavigationOrder.set(step.id, orderCounter++)
+          })
 
         function getAncestorByType(
           blockId: string | null | undefined,
@@ -363,7 +315,6 @@ builder.queryField('journeyVisitorExport', (t) => {
           }
           return current as any
         }
-
         function getTopLevelChildUnderCard(blockId: string | null | undefined):
           | {
               id: string
@@ -391,11 +342,9 @@ builder.queryField('journeyVisitorExport', (t) => {
           }
           return current as any
         }
-
         function getCardHeading(blockId: string | null | undefined): string {
           const cardBlock = getAncestorByType(blockId, 'CardBlock')
           if (cardBlock == null) return ''
-
           // Find all TypographyBlock children of this card
           const typographyBlocks = journeyBlocks
             .filter(
@@ -406,7 +355,6 @@ builder.queryField('journeyVisitorExport', (t) => {
             .sort(
               (a: any, b: any) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0)
             )
-
           // Get the first (highest order) typography block's content
           if (typographyBlocks.length > 0) {
             const firstTypography = typographyBlocks[0] as any
@@ -423,10 +371,8 @@ builder.queryField('journeyVisitorExport', (t) => {
               }
             }
           }
-
           return ''
         }
-
         function compareHeaders(
           a: { blockId: string | null },
           b: { blockId: string | null }
@@ -434,6 +380,7 @@ builder.queryField('journeyVisitorExport', (t) => {
           // Derive sort keys
           const aCard = getAncestorByType(a.blockId, 'CardBlock')
           const bCard = getAncestorByType(b.blockId, 'CardBlock')
+
           const aStep =
             aCard?.parentBlockId != null
               ? getAncestorByType(aCard.parentBlockId, 'StepBlock')
@@ -442,49 +389,42 @@ builder.queryField('journeyVisitorExport', (t) => {
             bCard?.parentBlockId != null
               ? getAncestorByType(bCard.parentBlockId, 'StepBlock')
               : undefined
+
           const aChildUnderCard = getTopLevelChildUnderCard(a.blockId)
           const bChildUnderCard = getTopLevelChildUnderCard(b.blockId)
 
-          // Step ordering by column index (flow-based)
-          const aColumnIndex =
+          // Step ordering by navigation flow order
+          const aStepOrder =
             aStep != null
-              ? (stepToColumnIndex.get(aStep.id) ?? Number.MAX_SAFE_INTEGER)
+              ? (stepNavigationOrder.get(aStep.id) ?? Number.MAX_SAFE_INTEGER)
               : Number.MAX_SAFE_INTEGER
-          const bColumnIndex =
+          const bStepOrder =
             bStep != null
-              ? (stepToColumnIndex.get(bStep.id) ?? Number.MAX_SAFE_INTEGER)
+              ? (stepNavigationOrder.get(bStep.id) ?? Number.MAX_SAFE_INTEGER)
               : Number.MAX_SAFE_INTEGER
-          if (aColumnIndex !== bColumnIndex) return aColumnIndex - bColumnIndex
-
-          // Within same column, sort by position in column
-          if (
-            aStep != null &&
-            bStep != null &&
-            aColumnIndex === bColumnIndex &&
-            aColumnIndex !== Number.MAX_SAFE_INTEGER
-          ) {
-            const column = stepColumns[aColumnIndex]
-            const aRowIndex = column.indexOf(aStep.id)
-            const bRowIndex = column.indexOf(bStep.id)
-            if (aRowIndex !== bRowIndex) return aRowIndex - bRowIndex
+          if (aStepOrder !== bStepOrder) {
+            return aStepOrder - bStepOrder
           }
 
           // Card ordering within step (by parentOrder)
           const aCardOrder = aCard?.parentOrder ?? Number.MAX_SAFE_INTEGER
           const bCardOrder = bCard?.parentOrder ?? Number.MAX_SAFE_INTEGER
-          if (aCardOrder !== bCardOrder) return aCardOrder - bCardOrder
+          if (aCardOrder !== bCardOrder) {
+            return aCardOrder - bCardOrder
+          }
 
           // Block ordering within card (by nearest child under card parentOrder)
           const aBlockOrder =
             aChildUnderCard?.parentOrder ?? Number.MAX_SAFE_INTEGER
           const bBlockOrder =
             bChildUnderCard?.parentOrder ?? Number.MAX_SAFE_INTEGER
-          if (aBlockOrder !== bBlockOrder) return aBlockOrder - bBlockOrder
+          if (aBlockOrder !== bBlockOrder) {
+            return aBlockOrder - bBlockOrder
+          }
 
           // Finally, stable by blockId
           return (a.blockId ?? '').localeCompare(b.blockId ?? '')
         }
-
         // Build headers: date + dynamic block columns grouped by Card and ordered by position
         const blockHeaders = blockHeadersResult
           .sort(compareHeaders)
@@ -496,7 +436,6 @@ builder.queryField('journeyVisitorExport', (t) => {
               journeyBlocks.find((b: any) => b.id === item.blockId)?.typename ??
               ''
           }))
-
         const columns = [
           { key: 'date', label: 'Date', blockId: null, typename: '' },
           ...(filter?.typenames == null || filter.typenames.length > 0
@@ -504,8 +443,9 @@ builder.queryField('journeyVisitorExport', (t) => {
             : [])
         ].filter((value) => value != null)
 
-        // Build two header rows manually
-        const firstHeaderRow = columns.map((col) => {
+        // Build header rows
+        // Row 1: Label/Type (Poll, Name, Response, etc)
+        const labelRow = columns.map((col) => {
           if (col.key === 'date') return 'Date'
           // For Poll and Multiselect blocks, use the block type name
           if (col.typename === 'RadioQuestionBlock') return 'Poll'
@@ -514,38 +454,34 @@ builder.queryField('journeyVisitorExport', (t) => {
           return col.label
         })
 
-        const secondHeaderRow = columns.map((col) => {
+        // Row 2: Card Heading
+        const cardHeadingRow = columns.map((col) => {
           if (col.key === 'date') return ''
           // Get the highest order heading of the card
           return getCardHeading(col.blockId)
         })
-
         // Stream rows directly to CSV without collecting in memory
         const stringifier = stringify({
           header: false,
           columns: columns.map((col) => ({ key: col.key }))
         })
-
         const onEndPromise = new Promise((resolve) => {
           stringifier.on('end', resolve)
         })
-
         let csvContent: string = ''
         stringifier.on('data', (chunk) => {
           csvContent += chunk
         })
 
         // Manually write the two header rows
-        stringifier.write(firstHeaderRow)
-        stringifier.write(secondHeaderRow)
+        stringifier.write(labelRow)
+        stringifier.write(cardHeadingRow)
 
         for await (const row of getJourneyVisitors(journeyId, eventWhere)) {
           stringifier.write(row)
         }
         stringifier.end()
-
         await onEndPromise
-
         return csvContent
       }
     })
