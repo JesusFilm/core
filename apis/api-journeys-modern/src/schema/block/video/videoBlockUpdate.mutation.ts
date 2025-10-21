@@ -78,8 +78,7 @@ builder.mutationField('videoBlockUpdate', (t) =>
               ...input,
               subtitleLanguageId: shouldClearSubtitleLanguage
                 ? null
-                : (input?.subtitleLanguageId ??
-                  (block as any)?.subtitleLanguageId),
+                : (input?.subtitleLanguageId ?? block?.subtitleLanguageId),
               ...(await fetchFieldsFromYouTube(input.videoId))
             }
           }
@@ -97,8 +96,7 @@ builder.mutationField('videoBlockUpdate', (t) =>
             duration: null,
             subtitleLanguageId: shouldClearSubtitleLanguage
               ? null
-              : (input?.subtitleLanguageId ??
-                (block as any)?.subtitleLanguageId)
+              : (input?.subtitleLanguageId ?? block?.subtitleLanguageId)
           }
           break
         case 'mux':
@@ -111,8 +109,7 @@ builder.mutationField('videoBlockUpdate', (t) =>
               ...input,
               subtitleLanguageId: shouldClearSubtitleLanguage
                 ? null
-                : (input?.subtitleLanguageId ??
-                  (block as any)?.subtitleLanguageId),
+                : (input?.subtitleLanguageId ?? block?.subtitleLanguageId),
               ...(await fetchFieldsFromMux(input.videoId))
             }
           }
