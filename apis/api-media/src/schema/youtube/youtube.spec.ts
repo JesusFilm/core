@@ -51,11 +51,6 @@ describe('youtube', () => {
       query GetYouTubeClosedCaptionLanguageIds($videoId: ID!) {
         getYouTubeClosedCaptionLanguageIds(videoId: $videoId) {
           id
-          bcp47
-          name {
-            value
-            primary
-          }
         }
       }
     `)
@@ -161,24 +156,10 @@ describe('youtube', () => {
 
       expect(data).toHaveProperty('data.getYouTubeClosedCaptionLanguageIds', [
         {
-          id: '529',
-          bcp47: 'en',
-          name: [
-            {
-              value: 'English',
-              primary: true
-            }
-          ]
+          id: '529'
         },
         {
-          id: '530',
-          bcp47: 'es',
-          name: [
-            {
-              value: 'Spanish',
-              primary: true
-            }
-          ]
+          id: '530'
         }
       ])
     })
@@ -269,14 +250,7 @@ describe('youtube', () => {
 
       expect(data).toHaveProperty('data.getYouTubeClosedCaptionLanguageIds', [
         {
-          id: '529',
-          bcp47: 'en',
-          name: [
-            {
-              value: 'English',
-              primary: true
-            }
-          ]
+          id: '529'
         }
       ])
     })

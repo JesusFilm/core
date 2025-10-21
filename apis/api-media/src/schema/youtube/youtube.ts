@@ -4,9 +4,10 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import axios, { isAxiosError } from 'axios'
 import { GraphQLError } from 'graphql'
 
-import { ResultOf, graphql } from '@core/shared/gql'
+import { graphql } from '@core/shared/gql'
 
 import { builder } from '../builder'
+import { Language } from '../language'
 import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
 
 interface YoutubeShape {
@@ -45,11 +46,6 @@ const GET_LANGUAGES_BY_BCP47 = graphql(`
   query GetLanguagesByBCP47($where: LanguagesFilter) {
     languages(where: $where) {
       id
-      bcp47
-      name {
-        value
-        primary
-      }
     }
   }
 `)
@@ -71,34 +67,9 @@ const createApolloClient = () => {
   })
 }
 
-const YouTubeLanguageName = builder.objectRef<{
-  value: string
-  primary: boolean
-}>('YouTubeLanguageName')
-YouTubeLanguageName.implement({
-  fields: (t) => ({
-    value: t.exposeString('value'),
-    primary: t.exposeBoolean('primary')
-  })
-})
-
-const YouTubeLanguage =
-  builder.objectRef<ResultOf<typeof GET_LANGUAGES_BY_BCP47>['languages'][0]>(
-    'YouTubeLanguage'
-  )
-YouTubeLanguage.implement({
-  fields: (t) => ({
-    id: t.exposeString('id'),
-    bcp47: t.exposeString('bcp47', { nullable: true }),
-    name: t.expose('name', {
-      type: [YouTubeLanguageName]
-    })
-  })
-})
-
 builder.queryFields((t) => ({
   getYouTubeClosedCaptionLanguageIds: t.field({
-    type: [YouTubeLanguage],
+    type: [Language],
     nullable: false,
     args: {
       videoId: t.arg.id({ required: true })
@@ -185,13 +156,16 @@ builder.queryFields((t) => ({
           }
         })
         data = result.data
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (_error) {
         throw new GraphQLError('Failed to fetch languages from gateway', {
           extensions: { code: 'INTERNAL_SERVER_ERROR' }
         })
       }
 
-      return data.languages
+      return data.languages.map((language) => ({
+        id: language.id
+      }))
     }
   })
 }))

@@ -879,7 +879,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
-  getYouTubeClosedCaptionLanguageIds(videoId: ID!) : [YouTubeLanguage!]! @join__field(graph: API_MEDIA) 
+  getYouTubeClosedCaptionLanguageIds(videoId: ID!) : [Language!]! @join__field(graph: API_MEDIA) 
   arclightApiKeys: [ArclightApiKey!]! @join__field(graph: API_MEDIA) 
   arclightApiKeyByKey(key: String!) : ArclightApiKey @join__field(graph: API_MEDIA) 
   me(input: MeInput) : User @join__field(graph: API_USERS) 
@@ -3035,17 +3035,6 @@ type VideoVariantDownload @join__type(graph: API_MEDIA)  {
   master video file version
   """
   version: Int!
-}
-
-type YouTubeLanguage @join__type(graph: API_MEDIA)  {
-  id: String
-  bcp47: String
-  name: [YouTubeLanguageName!]
-}
-
-type YouTubeLanguageName @join__type(graph: API_MEDIA)  {
-  value: String
-  primary: Boolean
 }
 
 type Youtube @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
