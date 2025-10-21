@@ -5,18 +5,17 @@ Test a journey by following the journey's selection buttons
 */
 test('journeys', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' })
-  // Wait for the page to be fully loaded
-  await page.waitForLoadState('load')
-  // fact or fiction page - click on on fact or fiction
-  await page.click('a[href="/fact-or-fiction"]')
+  // Wait for and click the Fact or Fiction entry using robust role-based locator
+  const factOrFictionLink = page.getByRole('link', { name: 'Fact or Fiction' })
+  await expect(factOrFictionLink).toBeVisible({ timeout: 60000 })
+  await factOrFictionLink.click()
   // test that user actually navigated to the choosen journey
   await expect(page).toHaveURL(/.*fact-or-fiction/)
   // Test Fact or Fiction screen
   await expect(
-    page
-      .getByRole('heading', { name: 'Fact or Fiction' })
-      .and(page.getByTestId('JourneysTypography'))
+    page.getByRole('heading', { name: 'Fact or Fiction' })
   ).toBeInViewport()
+  await expect(page.getByTestId('JourneysTypography')).toBeInViewport()
   await page.getByRole('button', { name: 'Explore Now' }).click()
   // Test Video Screen
   await page.getByTestId('ConductorNavigationButtonNext').click()
