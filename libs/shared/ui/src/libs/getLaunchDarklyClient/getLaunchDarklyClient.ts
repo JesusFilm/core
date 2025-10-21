@@ -8,10 +8,7 @@ let launchDarklyClient: LDClient
  */
 export async function getLaunchDarklyClient(user?: LDUser): Promise<LDClient> {
   if (launchDarklyClient == null) {
-    launchDarklyClient = init(process.env.LAUNCH_DARKLY_SDK_KEY ?? '', {
-      stream: false,
-      pollInterval: 60000 // Poll every 60 seconds
-    })
+    launchDarklyClient = init(process.env.LAUNCH_DARKLY_SDK_KEY ?? '')
   }
 
   await launchDarklyClient.waitForInitialization()
