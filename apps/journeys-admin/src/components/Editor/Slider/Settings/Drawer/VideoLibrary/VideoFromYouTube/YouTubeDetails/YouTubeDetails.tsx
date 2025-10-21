@@ -16,7 +16,6 @@ import CheckIcon from '@core/shared/ui/icons/Check'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { useYouTubeClosedCaptions } from '../../../../../../../../libs/useYouTubeClosedCaptions'
 import { parseISO8601Duration } from '../../../../../../../../libs/parseISO8601Duration'
-import { SubtitlePreviewToggle } from '../../SubtitlePreviewToggle'
 import { VideoDescription } from '../../VideoDescription'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 import type { YoutubeVideo, YoutubeVideosData } from '../VideoFromYouTube'
@@ -48,7 +47,6 @@ export function YouTubeDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player | null>(null)
   const [playing, setPlaying] = useState(false)
-  const [subtitleEnabled, setSubtitleEnabled] = useState(false)
   const { data, error } = useSWR<YoutubeVideo>(
     () => (open ? id : null),
     fetcher
@@ -75,10 +73,6 @@ export function YouTubeDetails({
       startAt: 0,
       endAt: time
     })
-  }
-
-  const handleSubtitleToggle = (enabled: boolean): void => {
-    setSubtitleEnabled(enabled)
   }
 
   const time =
@@ -113,33 +107,15 @@ export function YouTubeDetails({
 
       playerRef.current.on('playing', () => {
         setPlaying(true)
-      setPlayerState()
-      })      
-    }    
+        playerRef?.current?.tech_?.ytPlayer?.loadModule('captions')
+        playerRef?.current?.tech_?.ytPlayer?.setOption('captions', 'track', {
+          languageCode: subtitleLanguageBcp47
+        })
+      })
+    }
   }, [data, subtitleLanguageBcp47])
 
-  // Toggle captions on/off without recreating the player
-  useEffect(() => {
-    if (playerRef.current != null && subtitleLanguageBcp47 != null) {
-      const player = playerRef.current as any
-      if (player.tech_ && player.tech_.ytPlayer) {
-        setPlayerState()
-      }
-    }
-  }, [subtitleEnabled, subtitleLanguageBcp47])
-
   const loading = data == null && error == null
-
-  const setPlayerState = (): void => {
-    if (subtitleEnabled) {
-      playerRef?.current?.tech_?.ytPlayer?.loadModule('captions')
-      playerRef?.current?.tech_?.ytPlayer?.setOption('captions', 'track', {
-        languageCode: subtitleLanguageBcp47
-      })
-    } else {
-      playerRef?.current?.tech_?.ytPlayer?.unloadModule?.('captions')
-    }
-  }
 
   return (
     <Stack spacing={4} sx={{ p: 6 }} data-testid="YoutubeDetails">
@@ -208,12 +184,6 @@ export function YouTubeDetails({
               <VideoDescription videoDescription={videoDescription} />
             </Box>
           </Box>
-          <SubtitlePreviewToggle
-            subtitleEnabled={subtitleEnabled}
-            onSubtitleToggle={handleSubtitleToggle}
-            hasSubtitles={captionLanguages.length > 0}
-            disabled={loading}
-          />
         </>
       )}
       <Stack
