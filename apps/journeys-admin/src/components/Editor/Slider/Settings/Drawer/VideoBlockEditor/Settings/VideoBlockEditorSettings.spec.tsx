@@ -12,6 +12,42 @@ import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { VideoBlockEditorSettings } from '.'
 
+jest.mock('../../../../../../../libs/useYouTubeClosedCaptions', () => ({
+  useYouTubeClosedCaptions: jest.fn()
+}))
+
+const mockUseYouTubeClosedCaptions =
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  require('../../../../../../../libs/useYouTubeClosedCaptions')
+    .useYouTubeClosedCaptions as jest.Mock
+
+const mockYouTubeLanguages = [
+  {
+    id: 'lang-en',
+    bcp47: 'en',
+    name: [
+      {
+        value: 'English',
+        primary: true,
+        __typename: 'YouTubeLanguageName' as const
+      }
+    ],
+    __typename: 'YouTubeLanguage' as const
+  },
+  {
+    id: 'lang-es',
+    bcp47: 'es',
+    name: [
+      {
+        value: 'Spanish',
+        primary: true,
+        __typename: 'YouTubeLanguageName' as const
+      }
+    ],
+    __typename: 'YouTubeLanguage' as const
+  }
+]
+
 const video: TreeBlock = {
   id: 'video1.id',
   __typename: 'VideoBlock',
@@ -55,10 +91,23 @@ const video: TreeBlock = {
   },
   posterBlockId: null,
   children: [],
-  objectFit: null
+  objectFit: null,
+  subtitleLanguageId: null
 }
 
 describe('VideoBlockEditorSettings', () => {
+  beforeEach(() => {
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: [],
+      loading: false,
+      error: undefined
+    })
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('should disable fields when no selected block', () => {
     const { getByRole } = render(
       <ThemeProvider>
@@ -314,5 +363,115 @@ describe('VideoBlockEditorSettings', () => {
     expect(
       getByText('Start time has to be at least 3 seconds less than end time')
     ).toBeInTheDocument()
+  })
+
+  it('shows SubtitleSelector for YouTube videos', () => {
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: mockYouTubeLanguages,
+      loading: false,
+      error: undefined
+    })
+
+    const { getByText } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{
+                ...video,
+                source: VideoBlockSource.youTube,
+                videoId: 'test-youtube-id'
+              }}
+              posterBlock={null}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    expect(getByText('Subtitles')).toBeInTheDocument()
+  })
+
+  it('does not show SubtitleSelector for non-YouTube videos', () => {
+    const { queryByText } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{
+                ...video,
+                source: VideoBlockSource.internal
+              }}
+              posterBlock={null}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    expect(queryByText('Subtitles')).not.toBeInTheDocument()
+  })
+
+  it('SubtitleSelector is disabled when no selected block', () => {
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: mockYouTubeLanguages,
+      loading: false,
+      error: undefined
+    })
+
+    const { getByRole } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={null}
+              posterBlock={null}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    expect(getByRole('checkbox', { name: 'Autoplay' })).toBeDisabled()
+  })
+
+  it('calls onChange with subtitleLanguageId when subtitle is selected', async () => {
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: mockYouTubeLanguages,
+      loading: false,
+      error: undefined
+    })
+
+    const onChange = jest.fn()
+    const { getByRole } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{
+                ...video,
+                source: VideoBlockSource.youTube,
+                videoId: 'test-youtube-id'
+              }}
+              posterBlock={null}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    const combobox = getByRole('combobox')
+    fireEvent.mouseDown(combobox)
+    fireEvent.click(getByRole('option', { name: 'English' }))
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith({
+        subtitleLanguageId: 'lang-en'
+      })
+    })
   })
 })
