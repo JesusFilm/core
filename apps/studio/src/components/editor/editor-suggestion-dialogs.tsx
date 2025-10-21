@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import type { FC } from 'react'
 
+import { cn } from '../../libs/cn/cn'
 import type { ImageAnalysisResult } from '../../libs/storage'
 import { cn } from '../../libs/cn/cn'
 import {
