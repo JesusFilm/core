@@ -635,6 +635,17 @@ type IntegrationGoogle implements Integration
   accessSecretPart: String
 }
 
+input IntegrationGoogleCreateInput {
+  teamId: String!
+  code: String!
+  redirectUri: String!
+}
+
+input IntegrationGoogleUpdateInput {
+  code: String!
+  redirectUri: String!
+}
+
 type IntegrationGrowthSpaces implements Integration
   @shareable
 {
@@ -1240,6 +1251,8 @@ type Mutation {
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @override(from: "api-journeys")
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent! @override(from: "api-journeys")
+  integrationGoogleCreate(input: IntegrationGoogleCreateInput!): IntegrationGoogle!
+  integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!): IntegrationGoogle!
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!

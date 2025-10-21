@@ -5,26 +5,3 @@ type IntegrationGoogle implements Integration @shareable {
   accessId: String!
   accessSecretPart: String!
 }
-
-input IntegrationGoogleCreateInput {
-  teamId: String!
-  code: String!
-  redirectUri: String!
-}
-
-input IntegrationGoogleUpdateInput {
-  code: String!
-  redirectUri: String!
-}
-
-extend type Mutation {
-  integrationGoogleCreate(
-    input: IntegrationGoogleCreateInput!
-  ): IntegrationGoogle!
-  integrationGoogleUpdate(
-    id: ID!
-    input: IntegrationGoogleUpdateInput!
-  ): IntegrationGoogle!
-}
-
-

@@ -4,18 +4,18 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: IntegrationGrowthSpacesDelete
+// GraphQL mutation operation: IntegrationDelete
 // ====================================================
 
-export interface IntegrationGrowthSpacesDelete_integrationDelete {
+export interface IntegrationDelete_integrationDelete {
   __typename: "IntegrationGrowthSpaces" | "IntegrationGoogle";
   id: string;
 }
 
-export interface IntegrationGrowthSpacesDelete {
-  integrationDelete: IntegrationGrowthSpacesDelete_integrationDelete;
+export interface IntegrationDelete {
+  integrationDelete: IntegrationDelete_integrationDelete;
 }
 
-export interface IntegrationGrowthSpacesDeleteVariables {
+export interface IntegrationDeleteVariables {
   id: string;
 }

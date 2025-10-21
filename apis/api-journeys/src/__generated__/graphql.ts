@@ -834,12 +834,21 @@ export type Integration = {
   type: IntegrationType;
 };
 
+export type IntegrationGoogle = Integration & {
+  __typename?: 'IntegrationGoogle';
+  accessId?: Maybe<Scalars['String']['output']>;
+  accessSecretPart?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  team: Team;
+  type: IntegrationType;
+};
+
 export type IntegrationGrowthSpaces = Integration & {
   __typename?: 'IntegrationGrowthSpaces';
-  accessId: Scalars['String']['output'];
-  accessSecretPart: Scalars['String']['output'];
+  accessId?: Maybe<Scalars['String']['output']>;
+  accessSecretPart?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  routes: Array<IntegrationGrowthSpacesRoute>;
+  routes?: Maybe<Array<IntegrationGrowthSpacesRoute>>;
   team: Team;
   type: IntegrationType;
 };
@@ -852,8 +861,8 @@ export type IntegrationGrowthSpacesCreateInput = {
 
 export type IntegrationGrowthSpacesRoute = {
   __typename?: 'IntegrationGrowthSpacesRoute';
-  id: Scalars['String']['output'];
-  name: Scalars['String']['output'];
+  id?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
 };
 
 export type IntegrationGrowthSpacesUpdateInput = {
@@ -862,6 +871,7 @@ export type IntegrationGrowthSpacesUpdateInput = {
 };
 
 export enum IntegrationType {
+  Google = 'google',
   GrowthSpaces = 'growthSpaces'
 }
 

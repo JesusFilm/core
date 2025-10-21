@@ -467,6 +467,17 @@ export interface ImageBlockUpdateInput {
   focalLeft?: number | null;
 }
 
+export interface IntegrationGoogleCreateInput {
+  teamId: string;
+  code: string;
+  redirectUri: string;
+}
+
+export interface IntegrationGoogleUpdateInput {
+  code: string;
+  redirectUri: string;
+}
+
 export interface IntegrationGrowthSpacesCreateInput {
   accessId: string;
   accessSecret: string;

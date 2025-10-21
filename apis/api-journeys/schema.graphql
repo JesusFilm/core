@@ -2142,6 +2142,16 @@ input HostCreateInput {
   src2: String
 }
 
+type IntegrationGoogle implements Integration
+  @shareable
+{
+  id: ID!
+  team: Team!
+  type: IntegrationType!
+  accessId: String!
+  accessSecretPart: String!
+}
+
 type IntegrationGrowthSpaces implements Integration
   @shareable
 {
@@ -2172,6 +2182,7 @@ type IntegrationGrowthSpacesRoute
 }
 
 enum IntegrationType {
+  google
   growthSpaces
 }
 

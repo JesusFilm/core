@@ -402,6 +402,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   buttonClickEventCreate(input: ButtonClickEventCreateInput!) : ButtonClickEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   chatOpenEventCreate(input: ChatOpenEventCreateInput!) : ChatOpenEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!) : MultiselectSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  integrationGoogleCreate(input: IntegrationGoogleCreateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
+  integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
   journeySimpleUpdate(id: ID!, journey: Json!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -1760,6 +1762,14 @@ type Host @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODE
   src2: String
 }
 
+type IntegrationGoogle implements Integration @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Integration")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Integration")  {
+  id: ID!
+  team: Team!
+  type: IntegrationType!
+  accessId: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
+  accessSecretPart: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
+}
+
 type IntegrationGrowthSpaces implements Integration @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Integration")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Integration")  {
   id: ID!
   team: Team!
@@ -2395,14 +2405,6 @@ type Translation @join__type(graph: API_JOURNEYS)  {
   value: String!
   language: Language!
   primary: Boolean!
-}
-
-type IntegrationGoogle implements Integration @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Integration")  {
-  id: ID!
-  type: IntegrationType!
-  team: Team!
-  accessId: String
-  accessSecretPart: String
 }
 
 type JourneyAiTranslateProgress @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -3386,8 +3388,8 @@ enum ButtonAction @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURN
 }
 
 enum IntegrationType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  google @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   growthSpaces @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  google @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum UserJourneyRole @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4598,6 +4600,17 @@ input EmailActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   email: String!
   customizable: Boolean
   parentStepId: String
+}
+
+input IntegrationGoogleCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  teamId: String!
+  code: String!
+  redirectUri: String!
+}
+
+input IntegrationGoogleUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  code: String!
+  redirectUri: String!
 }
 
 input JourneyAiTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {
