@@ -146,7 +146,7 @@ export function SubtitleSelector({
         })}
       </Select>
       {hasNoSubtitles && (
-        <Typography variant="caption" color="action.disabled">
+        <Typography variant="caption" color="primary.main">
           {t('This video does not have any subtitles')}
         </Typography>
       )}
