@@ -210,6 +210,86 @@ describe('videoBlockUpdate', () => {
     })
   })
 
+  it('clears the subtitle language when changing videoId', async () => {
+    const inputWithNewVideoId = {
+      ...input,
+      videoId: 'newVideoId123',
+      source: 'internal'
+    }
+
+    fetchBlockWithJourneyAcl.mockResolvedValue({
+      id,
+      journeyId: 'journeyId',
+      journey: { id: 'journeyId' },
+      subtitleLanguageId: 'existingSubtitleLangId',
+      videoId: 'oldVideoId',
+      source: 'internal'
+    })
+    mockAbility.mockReturnValue(true)
+
+    const tx = {
+      block: {
+        update: jest.fn().mockResolvedValue({
+          id,
+          journeyId: 'journeyId',
+          typename: 'VideoBlock',
+          ...inputWithNewVideoId,
+          subtitleLanguageId: null
+        })
+      },
+      journey: { update: jest.fn().mockResolvedValue({ id: 'journeyId' }) }
+    }
+    prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
+
+    const result = await authClient({
+      document: VIDEO_BLOCK_UPDATE,
+      variables: { id, input: inputWithNewVideoId }
+    })
+
+    expect(mockAbility).toHaveBeenCalledWith(
+      Action.Update,
+      { subject: 'Journey', object: { id: 'journeyId' } },
+      expect.any(Object)
+    )
+    expect(tx.block.update).toHaveBeenCalledWith({
+      data: {
+        autoplay: true,
+        description: null,
+        duration: null,
+        endAt: 221,
+        fullsize: true,
+        image: null,
+        muted: false,
+        objectFit: 'fill',
+        parentBlockId: 'parentId',
+        posterBlockId: 'poster2',
+        source: 'internal',
+        startAt: 3,
+        subtitleLanguageId: null,
+        title: null,
+        videoId: 'newVideoId123',
+        videoVariantLanguageId: 'langId2'
+      },
+      include: { action: true },
+      where: { id: 'blockId' }
+    })
+    expect(tx.journey.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'journeyId' }
+      })
+    )
+
+    expect(result).toEqual({
+      data: {
+        videoBlockUpdate: expect.objectContaining({
+          id,
+          journeyId: 'journeyId',
+          subtitleLanguageId: null
+        })
+      }
+    })
+  })
+
   it('returns FORBIDDEN if unauthorized', async () => {
     fetchBlockWithJourneyAcl.mockResolvedValue({
       id,

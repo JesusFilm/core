@@ -20,7 +20,7 @@ export const VideoBlockUpdateInput = builder.inputType(
       muted: t.boolean({ required: false }),
       autoplay: t.boolean({ required: false }),
       fullsize: t.boolean({ required: false }),
-      subtitleLanguageId: t.string({ required: false }),
+      subtitleLanguageId: t.id({ required: false }),
       source: t.field({
         type: VideoBlockSource,
         required: false,

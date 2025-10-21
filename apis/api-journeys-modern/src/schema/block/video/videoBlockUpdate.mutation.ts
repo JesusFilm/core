@@ -54,11 +54,18 @@ builder.mutationField('videoBlockUpdate', (t) =>
 
       let input = { ...initialInput }
 
-      // used to clear the subtitle language when changing the source
       const isChangingSource =
         initialInput.source != null &&
         block.source != null &&
         initialInput.source !== block.source
+
+      const isChangingVideo =
+        initialInput.videoId != null &&
+        block.videoId != null &&
+        initialInput.videoId !== block.videoId
+
+      // used to clear the subtitle language when changing the source or video
+      const shouldClearSubtitleLanguage = isChangingSource || isChangingVideo
 
       switch (initialInput.source ?? block.source) {
         case 'youTube':
@@ -69,10 +76,9 @@ builder.mutationField('videoBlockUpdate', (t) =>
           if (input.videoId != null) {
             input = {
               ...input,
-              subtitleLanguageId: isChangingSource
+              subtitleLanguageId: shouldClearSubtitleLanguage
                 ? null
-                : (input?.subtitleLanguageId ??
-                  (block as any)?.subtitleLanguageId),
+                : (input?.subtitleLanguageId ?? block?.subtitleLanguageId),
               ...(await fetchFieldsFromYouTube(input.videoId))
             }
           }
@@ -88,10 +94,9 @@ builder.mutationField('videoBlockUpdate', (t) =>
             description: null,
             image: null,
             duration: null,
-            subtitleLanguageId: isChangingSource
+            subtitleLanguageId: shouldClearSubtitleLanguage
               ? null
-              : (input?.subtitleLanguageId ??
-                (block as any)?.subtitleLanguageId)
+              : (input?.subtitleLanguageId ?? block?.subtitleLanguageId)
           }
           break
         case 'mux':
@@ -102,10 +107,9 @@ builder.mutationField('videoBlockUpdate', (t) =>
           if (input.videoId != null) {
             input = {
               ...input,
-              subtitleLanguageId: isChangingSource
+              subtitleLanguageId: shouldClearSubtitleLanguage
                 ? null
-                : (input?.subtitleLanguageId ??
-                  (block as any)?.subtitleLanguageId),
+                : (input?.subtitleLanguageId ?? block?.subtitleLanguageId),
               ...(await fetchFieldsFromMux(input.videoId))
             }
           }

@@ -879,7 +879,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
-  getYouTubeClosedCaptionLanguageIds(videoId: ID!) : [YouTubeLanguage!]! @join__field(graph: API_MEDIA) 
+  getYouTubeClosedCaptionLanguageIds(videoId: ID!) : [Language!]! @join__field(graph: API_MEDIA) 
   arclightApiKeys: [ArclightApiKey!]! @join__field(graph: API_MEDIA) 
   arclightApiKeyByKey(key: String!) : ArclightApiKey @join__field(graph: API_MEDIA) 
   me(input: MeInput) : User @join__field(graph: API_USERS) 
@@ -3037,17 +3037,6 @@ type VideoVariantDownload @join__type(graph: API_MEDIA)  {
   version: Int!
 }
 
-type YouTubeLanguage @join__type(graph: API_MEDIA)  {
-  id: String
-  bcp47: String
-  name: [YouTubeLanguageName!]
-}
-
-type YouTubeLanguageName @join__type(graph: API_MEDIA)  {
-  value: String
-  primary: Boolean
-}
-
 type Youtube @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
   id: ID!
   primaryLanguageId: ID
@@ -4708,7 +4697,7 @@ input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   autoplay: Boolean
   fullsize: Boolean
   posterBlockId: ID
-  subtitleLanguageId: String
+  subtitleLanguageId: ID
 }
 
 input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4726,7 +4715,7 @@ input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   muted: Boolean
   autoplay: Boolean
   fullsize: Boolean
-  subtitleLanguageId: String
+  subtitleLanguageId: ID
   """
   internal source: videoId and videoVariantLanguageId required
     youTube source: videoId required
