@@ -448,6 +448,7 @@
   "Appears while video is loading": "Appears while video is loading",
   "Off": "Off",
   "Search by language": "Search by language",
+  "Subtitle language selector": "Subtitle language selector",
   "This video does not have any subtitles": "This video does not have any subtitles",
   "Start time has to be at least 3 seconds less than end time": "Start time has to be at least 3 seconds less than end time",
   "Start time has to be at least 3 seconds less than video duration {{ time }}": "Start time has to be at least 3 seconds less than video duration {{ time }}",

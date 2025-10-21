@@ -75,6 +75,7 @@ export function SubtitleSelector({
         variant="filled"
         fullWidth
         displayEmpty
+        aria-label={t('Subtitle language selector')}
         sx={{
           '& .MuiSelect-select': {
             display: 'flex',
