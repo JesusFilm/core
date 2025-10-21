@@ -5,8 +5,8 @@ Test a journey by following the journey's selection buttons
 */
 test('journeys', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' })
-  // Wait for and click the Fact or Fiction entry using robust role-based locator
-  const factOrFictionLink = page.getByRole('link', { name: 'Fact or Fiction' })
+  // Wait for and click the Fact or Fiction entry using a stable href-based locator
+  const factOrFictionLink = page.locator('a[href="/fact-or-fiction"]')
   await expect(factOrFictionLink).toBeVisible({ timeout: 60000 })
   await factOrFictionLink.click()
   // test that user actually navigated to the choosen journey
