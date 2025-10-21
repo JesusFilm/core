@@ -110,41 +110,36 @@ export function YouTubeDetails({
         controls: true,
         poster: data?.snippet?.thumbnails?.default?.url ?? undefined
       })
+
       playerRef.current.on('playing', () => {
         setPlaying(true)
-      })
-    }
-
-    return () => {
-      if (playerRef.current != null) {
-        playerRef.current.dispose()
-        playerRef.current = null
-      }
-    }
+      setPlayerState()
+      })      
+    }    
   }, [data, subtitleLanguageBcp47])
 
   // Toggle captions on/off without recreating the player
   useEffect(() => {
     if (playerRef.current != null && subtitleLanguageBcp47 != null) {
       const player = playerRef.current as any
-      // Access the YouTube player through video.js
       if (player.tech_ && player.tech_.ytPlayer) {
-        const ytPlayer = player.tech_.ytPlayer
-        if (subtitleEnabled) {
-          // Enable captions
-          ytPlayer.loadModule?.('captions')
-          ytPlayer.setOption?.('captions', 'track', {
-            languageCode: subtitleLanguageBcp47
-          })
-        } else {
-          // Disable captions
-          ytPlayer.unloadModule?.('captions')
-        }
+        setPlayerState()
       }
     }
   }, [subtitleEnabled, subtitleLanguageBcp47])
 
   const loading = data == null && error == null
+
+  const setPlayerState = (): void => {
+    if (subtitleEnabled) {
+      playerRef?.current?.tech_?.ytPlayer?.loadModule('captions')
+      playerRef?.current?.tech_?.ytPlayer?.setOption('captions', 'track', {
+        languageCode: subtitleLanguageBcp47
+      })
+    } else {
+      playerRef?.current?.tech_?.ytPlayer?.unloadModule?.('captions')
+    }
+  }
 
   return (
     <Stack spacing={4} sx={{ p: 6 }} data-testid="YoutubeDetails">
@@ -216,7 +211,7 @@ export function YouTubeDetails({
           <SubtitlePreviewToggle
             subtitleEnabled={subtitleEnabled}
             onSubtitleToggle={handleSubtitleToggle}
-            subtitleLanguageId={subtitleLanguageId}
+            hasSubtitles={captionLanguages.length > 0}
             disabled={loading}
           />
         </>

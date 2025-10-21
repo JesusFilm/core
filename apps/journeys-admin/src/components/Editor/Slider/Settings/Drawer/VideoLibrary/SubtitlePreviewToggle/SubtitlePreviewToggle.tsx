@@ -10,22 +10,20 @@ import { ReactElement, useState } from 'react'
 export interface SubtitlePreviewToggleProps {
   subtitleEnabled: boolean
   onSubtitleToggle: (enabled: boolean) => void
-  subtitleLanguageId: string | null
   disabled?: boolean
+  hasSubtitles: boolean
   loading?: boolean
 }
 
 export function SubtitlePreviewToggle({
   subtitleEnabled,
   onSubtitleToggle,
-  subtitleLanguageId,
+  hasSubtitles,
   disabled = false,
   loading = false
 }: SubtitlePreviewToggleProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [showTooltip, setShowTooltip] = useState(false)
-
-  const hasSubtitles = subtitleLanguageId != null
 
   const handleSubtitleToggle = (): void => {
     if (hasSubtitles) {
