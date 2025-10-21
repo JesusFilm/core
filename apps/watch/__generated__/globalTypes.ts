@@ -8,6 +8,7 @@
 //==============================================================
 
 export enum ButtonAction {
+  ChatAction = "ChatAction",
   EmailAction = "EmailAction",
   LinkAction = "LinkAction",
   NavigateToBlockAction = "NavigateToBlockAction",
@@ -37,6 +38,11 @@ export enum ButtonSize {
 export enum ButtonVariant {
   contained = "contained",
   outlined = "outlined",
+  text = "text",
+}
+
+export enum ContactActionType {
+  call = "call",
   text = "text",
 }
 
