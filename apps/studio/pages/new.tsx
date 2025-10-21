@@ -1,5 +1,6 @@
 import {
   ArrowUp,
+  Book,
   Bot,
   Camera,
   Check,
@@ -24,6 +25,7 @@ import {
   Sparkles,
   Trash2,
   Twitter,
+  User,
   Users,
   Video,
   X,
@@ -70,7 +72,6 @@ import {
   TabsList,
   TabsTrigger
 } from '../src/components/ui/tabs'
-import { Textarea } from '../src/components/ui/textarea'
 import {
   BASE_SYSTEM_PROMPT,
   IMAGE_ANALYSIS_PROMPT,
@@ -93,6 +94,14 @@ import {
   userInputStorage
 } from '../src/libs/storage'
 
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+} from '@/components/ui/carousel'
+import { AutoResizeTextarea } from '@/components/ui/textarea'
 // Dynamic imports for components to avoid hydration issues
 const AnimatedLoadingText = dynamic(
   () => Promise.resolve(() => (
@@ -1969,9 +1978,15 @@ export default function NewPage() {
 
   const ConversationMapView = React.memo(({ map }: { map: ConversationMap }) => {
     const [playedOptions, setPlayedOptions] = useState<Record<string, string[]>>({})
+    const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null)
+    const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
+    const [localMessageContent, setLocalMessageContent] = useState<string>('')
 
     useEffect(() => {
       setPlayedOptions({})
+      setCopiedMessageId(null)
+      setEditingMessageId(null)
+      setLocalMessageContent('')
     }, [map])
 
     const handleOptionSelect = useCallback((stepIndex: number, optionId: string) => {
@@ -1987,6 +2002,35 @@ export default function NewPage() {
           [stepKey]: [...existing, optionId]
         }
       })
+    }, [])
+
+    const handleCopyMessage = useCallback(async (content: string, messageId: string) => {
+      try {
+        if (typeof navigator !== 'undefined' && navigator?.clipboard) {
+          await navigator.clipboard.writeText(content)
+          setCopiedMessageId(messageId)
+          setTimeout(() => setCopiedMessageId(null), 2000)
+        } else {
+          throw new Error('Clipboard API unavailable')
+        }
+      } catch (error) {
+        console.error('Failed to copy message content:', error)
+        console.warn('Unable to copy content automatically. Please copy manually.')
+      }
+    }, [])
+
+    const handleMessageClick = useCallback((content: string, messageId: string) => {
+      setEditingMessageId(messageId)
+      setLocalMessageContent(content)
+    }, [])
+
+    const handleMessageBlur = useCallback(() => {
+      setEditingMessageId(null)
+      // TODO: Save changes to parent state if needed
+    }, [])
+
+    const handleMessageChange = useCallback((value: string) => {
+      setLocalMessageContent(value)
     }, [])
 
     const hasSteps = Array.isArray(map?.steps) && map.steps.length > 0
@@ -2023,9 +2067,9 @@ export default function NewPage() {
                 />
 
                 <header className="mb-4 space-y-1">
-                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Step {index + 1}:{' '}
-                    <span className="text-foreground normal-case">{step.title}</span>
+                  <div className="text-md font-light leading-tight uppercase tracking-wide text-muted-foreground">
+                    Step {index + 1}:<br />
+                    <span className="text-xl text-foreground normal-case font-semibold">{step.title}</span>
                   </div>
                   {step.purpose && (
                     <p className="text-sm text-muted-foreground">{step.purpose}</p>
@@ -2035,40 +2079,76 @@ export default function NewPage() {
                 <div className="space-y-4">
                   {step.scripture && (step.scripture.text || step.scripture.reference) && (
                     <div className="flex justify-start">
-                      <div className="space-y-2">
-                        <div className="text-xs uppercase font-semibold tracking-wide text-amber-700">
-                          Scripture
-                        </div>
-                        <div className="relative max-w-xl rounded-2xl bg-amber-100 text-amber-900 px-4 py-3 shadow-sm">
+                      <div className="space-y-3  w-full">
+                        <div className="relative w-full max-w-[400px] rounded-2xl bg-amber-100 text-amber-900 shadow-xl">
                           <span
                             aria-hidden="true"
                             className="absolute left-3 -bottom-1 h-3 w-3 rotate-45 bg-amber-100"
                           />
                           {step.scripture.text && (
-                            <p className="text-sm leading-relaxed whitespace-pre-line">{step.scripture.text}</p>
+                            <AutoResizeTextarea
+                              value={editingMessageId === `scripture-${index}` ? localMessageContent : `${step.scripture.text}${step.scripture.reference ? `\n\n${step.scripture.reference}` : ''}`}
+                              onChange={(e) => handleMessageChange(e.target.value)}
+                              onClick={() => handleMessageClick(`${step.scripture.text}${step.scripture.reference ? `\n\n${step.scripture.reference}` : ''}`, `scripture-${index}`)}
+                              onBlur={handleMessageBlur}
+                              readOnly={editingMessageId !== `scripture-${index}`}
+                              className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 text-sm leading-relaxed whitespace-pre-line"
+                              data-message-id={`scripture-${index}`}
+                            />
                           )}
-                          {step.scripture.reference && (
-                            <p className="mt-1 text-xs font-medium tracking-wide">
-                              {step.scripture.reference}
-                            </p>
-                          )}
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Book className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
+                            Scripture
+                          </span>
                         </div>
                       </div>
                     </div>
                   )}
 
-                  <div className="space-y-2">
-                    <div className="text-xs uppercase font-semibold tracking-wide text-blue-600 text-right pr-2">
-                      You
-                    </div>
+                  <div className="space-y-3">
                     <div className="flex justify-end">
-                      <div className="relative max-w-xl rounded-2xl bg-blue-600 text-white px-4 py-3 shadow-md">
+                      <div className="relative w-full max-w-[400px] rounded-2xl bg-[#098CFF] text-white shadow-xl group">
+                        <Button
+                          type="button"
+                          variant="transparent"
+                          size="sm"
+                          className="absolute top-2 right-2 gap-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            void handleCopyMessage(step.guideMessage, `guide-${index}`)
+                          }}
+                          onMouseDown={(e) => e.preventDefault()}
+                          title={copiedMessageId === `guide-${index}` ? "Copied!" : "Copy message"}
+                        >
+                          {copiedMessageId === `guide-${index}` ? (
+                            <Check className="h-3 w-3 text-green-300" />
+                          ) : (
+                            <Copy className="h-3 w-3" />
+                          )}
+                        </Button>
                         <span
                           aria-hidden="true"
-                          className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-blue-600"
+                          className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-[#098CFF]"
                         />
-                        <p className="text-sm leading-relaxed whitespace-pre-line">{step.guideMessage}</p>
+                        <AutoResizeTextarea
+                          value={editingMessageId === `guide-${index}` ? localMessageContent : step.guideMessage}
+                          onChange={(e) => handleMessageChange(e.target.value)}
+                          onClick={() => handleMessageClick(step.guideMessage, `guide-${index}`)}
+                          onBlur={handleMessageBlur}
+                          readOnly={editingMessageId !== `guide-${index}`}
+                          className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 px-4 py-3 rounded-2xl"
+                          data-message-id={`guide-${index}`}
+                        />
                       </div>
+                    </div>
+                    <div className="flex items-center justify-end space-x-2">
+                      <span className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
+                        You
+                      </span>
+                      <User className="w-4 h-4 text-muted-foreground" />
                     </div>
                   </div>
 
@@ -2126,36 +2206,69 @@ export default function NewPage() {
 
                         return (
                           <div key={option.id} className="space-y-3">
-                            <div className="space-y-2">
-                              <div className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
-                                Chatmate
-                              </div>
+                            <div className="space-y-3">
                               <div className="flex justify-start">
-                                <div className="relative max-w-xl rounded-2xl bg-muted text-foreground px-4 py-3 shadow-sm">
+                                <div className="relative w-1/2 rounded-2xl bg-white text-foreground px-4 py-3 shadow-xl">
                                   <span
                                     aria-hidden="true"
-                                    className="absolute left-3 -bottom-1 h-3 w-3 rotate-45 bg-muted"
+                                    className="absolute left-3 -bottom-1 h-3 w-3 rotate-45 bg-white"
                                   />
                                   <p className="text-sm leading-relaxed whitespace-pre-line">
                                     {option.responderMessage}
                                   </p>
                                 </div>
                               </div>
+                              <div className="flex items-center space-x-2">
+                                <Bot className="w-4 h-4 text-muted-foreground" />
+                                <span className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
+                                  Chatmate
+                                </span>
+                              </div>
                             </div>
 
                             {option.guideFollowUps.map((followUp, followUpIndex) => (
-                              <div key={`${option.id}-follow-${followUpIndex}`} className="space-y-2">
-                                <div className="text-xs uppercase font-semibold tracking-wide text-blue-600 text-right pr-2">
-                                  You
-                                </div>
+                              <div key={`${option.id}-follow-${followUpIndex}`} className="space-y-3">
                                 <div className="flex justify-end">
-                                  <div className="relative max-w-xl rounded-2xl bg-blue-600 text-white px-4 py-3 shadow-md">
+                                  <div className="relative w-1/2 rounded-2xl bg-[#098CFF] text-white shadow-xl group">
+                                    <Button
+                                      type="button"
+                                      variant="transparent"
+                                      size="sm"
+                                      className="absolute top-2 right-2 gap-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                      onClick={(e) => {
+                                        e.preventDefault()
+                                        e.stopPropagation()
+                                        void handleCopyMessage(followUp, `followup-${option.id}-${followUpIndex}`)
+                                      }}
+                                      onMouseDown={(e) => e.preventDefault()}
+                                      title={copiedMessageId === `followup-${option.id}-${followUpIndex}` ? "Copied!" : "Copy message"}
+                                    >
+                                      {copiedMessageId === `followup-${option.id}-${followUpIndex}` ? (
+                                        <Check className="h-3 w-3 text-green-300" />
+                                      ) : (
+                                        <Copy className="h-3 w-3" />
+                                      )}
+                                    </Button>
                                     <span
                                       aria-hidden="true"
-                                      className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-blue-600"
+                                      className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-[#098CFF]"
                                     />
-                                    <p className="text-sm leading-relaxed whitespace-pre-line">{followUp}</p>
+                                    <AutoResizeTextarea
+                                      value={editingMessageId === `followup-${option.id}-${followUpIndex}` ? localMessageContent : followUp}
+                                      onChange={(e) => handleMessageChange(e.target.value)}
+                                      onClick={() => handleMessageClick(followUp, `followup-${option.id}-${followUpIndex}`)}
+                                      onBlur={handleMessageBlur}
+                                      readOnly={editingMessageId !== `followup-${option.id}-${followUpIndex}`}
+                                      className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 px-4 py-3 rounded-2xl"
+                                      data-message-id={`followup-${option.id}-${followUpIndex}`}
+                                    />
                                   </div>
+                                </div>
+                                <div className="flex items-center justify-end space-x-2">
+                                  <span className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
+                                    You
+                                  </span>
+                                  <User className="w-4 h-4 text-muted-foreground" />
                                 </div>
                               </div>
                             ))}
@@ -2695,7 +2808,7 @@ export default function NewPage() {
     return (
       <div className={`relative ${className || ''}`}>
         {isEditing ? (
-          <Textarea
+          <AutoResizeTextarea
             value={localContent}
             onChange={(e) => setLocalContent(e.target.value)}
             onBlur={handleBlur}
@@ -2717,7 +2830,7 @@ export default function NewPage() {
 
                   // Headers
                   if (line.startsWith('# ')) {
-                    elements.push(<h1 key={key++} className="text-2xl font-bold mb-2 mt-4 first:mt-0">{line.substring(2)}</h1>)
+                    elements.push(<h1 key={key++} className="text-3xl font-bold mb-2 mt-4 first:mt-0">{line.substring(2)}</h1>)
                   } else if (line.startsWith('## ')) {
                     elements.push(<h2 key={key++} className="text-xl font-semibold mb-2 mt-3">{line.substring(3)}</h2>)
                   } else if (line.startsWith('### ')) {
@@ -3771,7 +3884,7 @@ export default function NewPage() {
                           </div>
                         )}
 
-                        <Textarea
+                        <AutoResizeTextarea
                           ref={textareaRef}
                           placeholder="Enter your text content here... You can also paste or drop images directly."
                           className={`relative shadow-none resize-none bg-transparent pr-12 pb-16 px-4 border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-base scrollbar-hide min-h-[200px] h-auto overflow-y-hidden ${
@@ -5088,7 +5201,7 @@ export default function NewPage() {
                             </CardHeader>
                             <CardContent>
                               <div className="space-y-2">
-                                <Textarea
+                                <AutoResizeTextarea
                                   value={aiResponse}
                                   readOnly
                                   className="min-h-[200px] whitespace-pre-wrap"
@@ -5253,7 +5366,7 @@ export default function NewPage() {
                             className={`group relative flex h-full w-full flex-col justify-between rounded-2xl border-2 p-4 text-left transition-all duration-300 cursor-pointer hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:border-transparent aspect-square ${
                               isSelected
                                 ? 'border-primary shadow-lg ring-2 ring-primary/60'
-                                : 'border-gray-200 hover:border-white hover:shadow-md'
+                                : 'border-gray-200 hover:border-white hover:'
                             }`}
                             aria-pressed={isSelected}
                           >
