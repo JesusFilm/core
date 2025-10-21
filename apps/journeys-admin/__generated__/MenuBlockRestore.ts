@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { JourneyUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: MenuBlockRestore
@@ -14,12 +14,6 @@ export interface MenuBlockRestore_stepRestore_MultiselectBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-}
-
-export interface MenuBlockRestore_stepRestore_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
 }
 
 export interface MenuBlockRestore_stepRestore_ButtonBlock_action_NavigateToBlockAction {
@@ -47,7 +41,25 @@ export interface MenuBlockRestore_stepRestore_ButtonBlock_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type MenuBlockRestore_stepRestore_ButtonBlock_action = MenuBlockRestore_stepRestore_ButtonBlock_action_PhoneAction | MenuBlockRestore_stepRestore_ButtonBlock_action_NavigateToBlockAction | MenuBlockRestore_stepRestore_ButtonBlock_action_LinkAction | MenuBlockRestore_stepRestore_ButtonBlock_action_EmailAction;
+export interface MenuBlockRestore_stepRestore_ButtonBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface MenuBlockRestore_stepRestore_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type MenuBlockRestore_stepRestore_ButtonBlock_action = MenuBlockRestore_stepRestore_ButtonBlock_action_NavigateToBlockAction | MenuBlockRestore_stepRestore_ButtonBlock_action_LinkAction | MenuBlockRestore_stepRestore_ButtonBlock_action_EmailAction | MenuBlockRestore_stepRestore_ButtonBlock_action_ChatAction | MenuBlockRestore_stepRestore_ButtonBlock_action_PhoneAction;
 
 export interface MenuBlockRestore_stepRestore_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -139,12 +151,6 @@ export interface MenuBlockRestore_stepRestore_ImageBlock {
   focalLeft: number | null;
 }
 
-export interface MenuBlockRestore_stepRestore_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface MenuBlockRestore_stepRestore_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -170,7 +176,25 @@ export interface MenuBlockRestore_stepRestore_RadioOptionBlock_action_EmailActio
   parentStepId: string | null;
 }
 
-export type MenuBlockRestore_stepRestore_RadioOptionBlock_action = MenuBlockRestore_stepRestore_RadioOptionBlock_action_PhoneAction | MenuBlockRestore_stepRestore_RadioOptionBlock_action_NavigateToBlockAction | MenuBlockRestore_stepRestore_RadioOptionBlock_action_LinkAction | MenuBlockRestore_stepRestore_RadioOptionBlock_action_EmailAction;
+export interface MenuBlockRestore_stepRestore_RadioOptionBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface MenuBlockRestore_stepRestore_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type MenuBlockRestore_stepRestore_RadioOptionBlock_action = MenuBlockRestore_stepRestore_RadioOptionBlock_action_NavigateToBlockAction | MenuBlockRestore_stepRestore_RadioOptionBlock_action_LinkAction | MenuBlockRestore_stepRestore_RadioOptionBlock_action_EmailAction | MenuBlockRestore_stepRestore_RadioOptionBlock_action_ChatAction | MenuBlockRestore_stepRestore_RadioOptionBlock_action_PhoneAction;
 
 export interface MenuBlockRestore_stepRestore_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -193,12 +217,6 @@ export interface MenuBlockRestore_stepRestore_RadioQuestionBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   gridView: boolean | null;
-}
-
-export interface MenuBlockRestore_stepRestore_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
 }
 
 export interface MenuBlockRestore_stepRestore_SignUpBlock_action_NavigateToBlockAction {
@@ -226,7 +244,25 @@ export interface MenuBlockRestore_stepRestore_SignUpBlock_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type MenuBlockRestore_stepRestore_SignUpBlock_action = MenuBlockRestore_stepRestore_SignUpBlock_action_PhoneAction | MenuBlockRestore_stepRestore_SignUpBlock_action_NavigateToBlockAction | MenuBlockRestore_stepRestore_SignUpBlock_action_LinkAction | MenuBlockRestore_stepRestore_SignUpBlock_action_EmailAction;
+export interface MenuBlockRestore_stepRestore_SignUpBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface MenuBlockRestore_stepRestore_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type MenuBlockRestore_stepRestore_SignUpBlock_action = MenuBlockRestore_stepRestore_SignUpBlock_action_NavigateToBlockAction | MenuBlockRestore_stepRestore_SignUpBlock_action_LinkAction | MenuBlockRestore_stepRestore_SignUpBlock_action_EmailAction | MenuBlockRestore_stepRestore_SignUpBlock_action_ChatAction | MenuBlockRestore_stepRestore_SignUpBlock_action_PhoneAction;
 
 export interface MenuBlockRestore_stepRestore_SignUpBlock {
   __typename: "SignUpBlock";
@@ -368,12 +404,6 @@ export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_YouTube {
 
 export type MenuBlockRestore_stepRestore_VideoBlock_mediaVideo = MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video | MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_MuxVideo | MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_YouTube;
 
-export interface MenuBlockRestore_stepRestore_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface MenuBlockRestore_stepRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -399,7 +429,25 @@ export interface MenuBlockRestore_stepRestore_VideoBlock_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type MenuBlockRestore_stepRestore_VideoBlock_action = MenuBlockRestore_stepRestore_VideoBlock_action_PhoneAction | MenuBlockRestore_stepRestore_VideoBlock_action_NavigateToBlockAction | MenuBlockRestore_stepRestore_VideoBlock_action_LinkAction | MenuBlockRestore_stepRestore_VideoBlock_action_EmailAction;
+export interface MenuBlockRestore_stepRestore_VideoBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface MenuBlockRestore_stepRestore_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type MenuBlockRestore_stepRestore_VideoBlock_action = MenuBlockRestore_stepRestore_VideoBlock_action_NavigateToBlockAction | MenuBlockRestore_stepRestore_VideoBlock_action_LinkAction | MenuBlockRestore_stepRestore_VideoBlock_action_EmailAction | MenuBlockRestore_stepRestore_VideoBlock_action_ChatAction | MenuBlockRestore_stepRestore_VideoBlock_action_PhoneAction;
 
 export interface MenuBlockRestore_stepRestore_VideoBlock {
   __typename: "VideoBlock";
@@ -476,12 +524,6 @@ export interface MenuBlockRestore_stepRestore_VideoBlock {
   action: MenuBlockRestore_stepRestore_VideoBlock_action | null;
 }
 
-export interface MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -507,7 +549,25 @@ export interface MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_Em
   parentStepId: string | null;
 }
 
-export type MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction = MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_PhoneAction | MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_LinkAction | MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_EmailAction;
+export interface MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction = MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_LinkAction | MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_EmailAction | MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_ChatAction | MenuBlockRestore_stepRestore_VideoTriggerBlock_triggerAction_PhoneAction;
 
 export interface MenuBlockRestore_stepRestore_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
