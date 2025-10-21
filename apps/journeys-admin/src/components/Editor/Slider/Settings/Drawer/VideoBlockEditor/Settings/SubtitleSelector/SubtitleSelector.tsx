@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo, useState } from 'react'
 
-import { YouTubeLanguage } from '../VideoBlockEditorSettings'
+import type { YouTubeLanguage } from '../VideoBlockEditorSettings'
 
 export interface SubtitleSelectorProps {
   selectedSubtitleId: string | null
