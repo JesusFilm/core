@@ -101,18 +101,7 @@ builder.queryFields((t) => ({
           const errorData = error.response?.data
           if (errorData?.error?.errors?.[0]?.reason === 'quotaExceeded') {
             if (process.env.NODE_ENV !== 'production') {
-              return [
-                {
-                  id: '529',
-                  bcp47: 'en',
-                  name: [
-                    {
-                      value: 'English',
-                      primary: true
-                    }
-                  ]
-                }
-              ]
+              return [{ id: '529' }]
             }
             throw new GraphQLError(
               'YouTube API quota exceeded. Please try again later.',
