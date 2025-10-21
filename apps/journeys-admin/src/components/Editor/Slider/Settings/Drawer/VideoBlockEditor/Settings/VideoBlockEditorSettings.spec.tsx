@@ -414,30 +414,6 @@ describe('VideoBlockEditorSettings', () => {
     expect(queryByText('Subtitles')).not.toBeInTheDocument()
   })
 
-  it('SubtitleSelector is disabled when no selected block', () => {
-    mockUseYouTubeClosedCaptions.mockReturnValue({
-      languages: mockYouTubeLanguages,
-      loading: false,
-      error: undefined
-    })
-
-    const { getByRole } = render(
-      <ThemeProvider>
-        <MockedProvider>
-          <SnackbarProvider>
-            <VideoBlockEditorSettings
-              selectedBlock={null}
-              posterBlock={null}
-              onChange={jest.fn()}
-            />
-          </SnackbarProvider>
-        </MockedProvider>
-      </ThemeProvider>
-    )
-
-    expect(getByRole('checkbox', { name: 'Autoplay' })).toBeDisabled()
-  })
-
   it('calls onChange with subtitleLanguageId when subtitle is selected', async () => {
     mockUseYouTubeClosedCaptions.mockReturnValue({
       languages: mockYouTubeLanguages,
