@@ -29,19 +29,33 @@ jest.mock('video.js', () => {
   return jest.fn(() => mockPlayer)
 })
 
+jest.mock('notistack', () => ({
+  useSnackbar: jest.fn(),
+  closeSnackbar: jest.fn()
+}))
+
 const mockUseYouTubeClosedCaptions = jest.requireMock(
   '../../../../../../../../libs/useYouTubeClosedCaptions'
 ).useYouTubeClosedCaptions
 
 const mockVideoJs = jest.requireMock('video.js')
 
+const mockUseSnackbar = jest.requireMock('notistack').useSnackbar
+const mockCloseSnackbar = jest.requireMock('notistack').closeSnackbar
+
 describe('YouTubeDetails', () => {
+  const mockEnqueueSnackbar = jest.fn()
+
   beforeEach(() => {
     jest.clearAllMocks()
     mockUseYouTubeClosedCaptions.mockReturnValue({
       languages: [],
       loading: false,
       error: undefined
+    })
+    mockUseSnackbar.mockReturnValue({
+      enqueueSnackbar: mockEnqueueSnackbar,
+      closeSnackbar: mockCloseSnackbar
     })
   })
 
@@ -321,5 +335,161 @@ describe('YouTubeDetails', () => {
 
     const container = getByTestId('YoutubeDetails')
     expect(container.querySelector('.MuiSkeleton-root')).toBeInTheDocument()
+  })
+
+  it('should show snackbar when captions are available but none selected', async () => {
+    mswServer.use(getVideosWithOffsetAndUrl)
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: [
+        { id: 'lang1', bcp47: 'en', name: { value: 'English', primary: true } },
+        { id: 'lang2', bcp47: 'es', name: { value: 'Spanish', primary: false } }
+      ],
+      loading: false,
+      error: undefined
+    })
+
+    const { getByRole } = render(
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(
+        getByRole('heading', { name: 'Blessing and Curse' })
+      ).toBeInTheDocument()
+    )
+
+    expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+      'Subtitles are available for this video',
+      expect.objectContaining({
+        variant: 'success',
+        preventDuplicate: true,
+        autoHideDuration: 4000
+      })
+    )
+  })
+
+  it('should not show snackbar when no captions are available', async () => {
+    mswServer.use(getVideosWithOffsetAndUrl)
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: [],
+      loading: false,
+      error: undefined
+    })
+
+    const { getByRole } = render(
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(
+        getByRole('heading', { name: 'Blessing and Curse' })
+      ).toBeInTheDocument()
+    )
+
+    expect(mockEnqueueSnackbar).not.toHaveBeenCalled()
+  })
+
+  it('should not show snackbar when captions are available and one is selected', async () => {
+    mswServer.use(getVideosWithOffsetAndUrl)
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: [
+        { id: 'lang1', bcp47: 'en', name: { value: 'English', primary: true } },
+        { id: 'lang2', bcp47: 'es', name: { value: 'Spanish', primary: false } }
+      ],
+      loading: false,
+      error: undefined
+    })
+
+    const activeVideoBlock = {
+      id: 'video1',
+      __typename: 'VideoBlock' as const,
+      parentBlockId: null,
+      parentOrder: 0,
+      muted: false,
+      autoplay: false,
+      startAt: 0,
+      endAt: null,
+      posterBlockId: null,
+      fullsize: false,
+      videoId: 'jQaeIJOA6J0',
+      videoVariantLanguageId: null,
+      source: VideoBlockSource.youTube,
+      title: null,
+      description: null,
+      image: null,
+      duration: null,
+      objectFit: null,
+      subtitleLanguageId: 'lang1',
+      mediaVideo: null,
+      action: null,
+      children: []
+    }
+
+    const { getByRole } = render(
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails
+            id="jQaeIJOA6J0"
+            open
+            onSelect={jest.fn()}
+            activeVideoBlock={activeVideoBlock}
+          />
+        </SWRConfig>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(
+        getByRole('heading', { name: 'Blessing and Curse' })
+      ).toBeInTheDocument()
+    )
+
+    expect(mockEnqueueSnackbar).not.toHaveBeenCalled()
+  })
+
+  it('should call closeSnackbar when dismiss button is clicked', async () => {
+    mswServer.use(getVideosWithOffsetAndUrl)
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: [
+        { id: 'lang1', bcp47: 'en', name: { value: 'English', primary: true } }
+      ],
+      loading: false,
+      error: undefined
+    })
+
+    const { getByRole } = render(
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(
+        getByRole('heading', { name: 'Blessing and Curse' })
+      ).toBeInTheDocument()
+    )
+
+    expect(mockEnqueueSnackbar).toHaveBeenCalled()
+
+    const enqueueCall = mockEnqueueSnackbar.mock.calls[0]
+    const snackbarOptions = enqueueCall[1]
+    const actionComponent = snackbarOptions.action('test-snackbar-id')
+
+    const { getByText } = render(actionComponent)
+    const dismissButton = getByText('Dismiss')
+
+    fireEvent.click(dismissButton)
+
+    expect(mockCloseSnackbar).toHaveBeenCalledWith('test-snackbar-id')
   })
 })

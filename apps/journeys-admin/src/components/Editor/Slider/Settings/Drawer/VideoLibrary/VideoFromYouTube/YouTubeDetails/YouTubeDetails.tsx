@@ -1,10 +1,12 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
+import Slide, { SlideProps } from '@mui/material/Slide'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import fetch from 'node-fetch'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
 import videojs from 'video.js'
@@ -114,6 +116,40 @@ export function YouTubeDetails({
       })
     }
   }, [data, subtitleLanguageBcp47])
+
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+  // Handle when subtitles are available but none selected
+  useEffect(() => {
+    if (
+      data != null &&
+      captionLanguages.length > 0 &&
+      subtitleLanguageId === null
+    ) {
+      enqueueSnackbar(t('Subtitles are available for this video'), {
+        variant: 'success',
+        preventDuplicate: true,
+        autoHideDuration: 4000,
+        action: (snackbarId) => (
+          <Button
+            onClick={() => closeSnackbar(snackbarId)}
+            sx={{ color: 'white' }}
+          >
+            {t('Dismiss')}
+          </Button>
+        ),
+        TransitionComponent: (props: SlideProps) => (
+          <Slide {...props} direction="up" />
+        )
+      })
+    }
+  }, [
+    data,
+    captionLanguages,
+    subtitleLanguageId,
+    enqueueSnackbar,
+    closeSnackbar,
+    t
+  ])
 
   const loading = data == null && error == null
 
