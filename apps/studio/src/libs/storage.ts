@@ -15,25 +15,29 @@ export interface GeneratedStepContent {
   selectedImageUrl?: string
 }
 
-export interface ConversationGuideStep {
-  stage: string
-  guideMessage: string
-  responderCue: string | null
-  purpose: string | null
-  scriptureSupport: string | null
+export interface ConversationMapScripture {
+  reference: string | null
+  text: string | null
 }
 
-export interface ConversationResponderScenario {
-  scenario: string
+export interface ConversationMapResponseOption {
+  id: string
+  label: string
+  icon: string | null
   responderMessage: string
-  guideResponse: string
-  nextStep: string | null
-  scriptureSupport: string | null
+  guideFollowUps: string[]
+}
+
+export interface ConversationMapStep {
+  title: string
+  purpose: string | null
+  guideMessage: string
+  scripture: ConversationMapScripture | null
+  responseOptions: ConversationMapResponseOption[]
 }
 
 export interface ConversationMap {
-  idealPath: ConversationGuideStep[]
-  responderScenarios: ConversationResponderScenario[]
+  steps: ConversationMapStep[]
 }
 
 export interface UserInputData {

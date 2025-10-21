@@ -1,6 +1,5 @@
 import {
   ArrowUp,
-  Book,
   Bot,
   Camera,
   Check,
@@ -265,22 +264,26 @@ const DEFAULT_OUTPUT_FORMAT_INSTRUCTIONS = `Provide the response as JSON with th
 const CONVERSATION_OUTPUT_FORMAT_INSTRUCTIONS = `Provide the response as JSON with this structure:
 {
   "conversationMap": {
-    "idealPath": [
+    "steps": [
       {
-        "stage": "Short stage label (max 5 words)",
-        "guideMessage": "2-3 sentence message for the ministry guide to say in warm, empathetic tone.",
-        "responderCue": "Expected short reply or reaction from the responder. Use null if not applicable.",
+        "title": "Short step heading (max 6 words)",
         "purpose": "Why this exchange matters. Use null if redundant.",
-        "scriptureSupport": "Optional scripture reference or encouragement. Use null if not needed."
-      }
-    ],
-    "responderScenarios": [
-      {
-        "scenario": "Short description of the responder's posture (max 7 words)",
-        "responderMessage": "Example of what they might say or do.",
-        "guideResponse": "How the guide should reply with empathy, gospel connection, and next question in 2-3 sentences.",
-        "nextStep": "Suggested follow-up move that keeps conversation going. Use null if already covered.",
-        "scriptureSupport": "Optional scripture reference or promise. Use null if not needed."
+        "guideMessage": "2-3 sentence message for the ministry guide to say in warm, empathetic tone.",
+        "scripture": {
+          "text": "1-2 sentence scripture excerpt that reinforces the moment.",
+          "reference": "Book chapter:verse format. Use null if no scripture fits."
+        },
+        "responseOptions": [
+          {
+            "id": "kebab-case id for this responder option",
+            "label": "Short label that appears on the response tile (max 4 words)",
+            "icon": "Emoji that represents the responder posture. Use null if unsure.",
+            "responderMessage": "How the responder reacts in 1-2 sentences.",
+            "guideFollowUps": [
+              "Up to three follow-up replies for the guide in the same warm voice, each as its own string."
+            ]
+          }
+        ]
       }
     ]
   }
@@ -296,17 +299,17 @@ const DEFAULT_RESPONSE_GUIDELINES = `Guidelines:
 
 const CONVERSATION_RESPONSE_GUIDELINES = `Guidelines:
 - Map an ideal path of 6-9 guide-led conversation moves that gently progress toward gospel hope.
-- After each guide move, include what the responder might say or feel when relevant.
-- Finish each guide move with purpose notes and scripture support when it naturally reinforces the moment.
-- Provide 4-6 common responder scenarios with empathetic guide replies that keep the dialogue open.
-- Do not include design instructions, media prompts, or image keywords.
-- Keep tone pastoral, patient, and people-first.`
+- Every step must include a guide message, a purpose note (or null), and scripture text plus reference when natural.
+- Craft 3-5 responseOptions per step that capture common responder postures. Each must include an emoji icon, tile label, responder reaction, and 1-3 guide follow-up replies as separate strings.
+- Maintain warm, pastoral tone across the guide messages and follow-up replies. Keep each message concise enough to fit in a chat bubble.
+- Do not include design instructions, media prompts, or image keywords in any field.
+- Output valid JSON only.`
 
 const contextSystemPrompts: Record<string, string> = {
   default:
     'Default to producing ministry-ready resources that can flex between digital and in-person sharing when no specific context is selected. Provide balanced guidance that keeps the content adaptable.',
   'Conversations':
-    'Guide one-on-one or small group conversations that gently introduce gospel truths. Produce a conversation map with an ideal guide-led path and empathetic responses to common responder situations. Emphasize listening, questions, prayerful transitions, and Scripture when natural. Avoid design instructions and image keywords in this mode.',
+    'Guide one-on-one or small group conversations that gently introduce gospel truths. Return structured JSON for a chat-style conversation map where each step has a guide message, scripture bubble, and interactive responder options with follow-up replies. Emphasize listening, questions, prayerful transitions, and Scripture when natural. Avoid design instructions and image keywords in this mode.',
   'Social Media':
     'Operate like a Canva-style designer for social media campaigns. Treat each step as a templated design idea for stories, carousels, reels, or feed posts. Suggest layout direction, color palettes, typography moods, and short, scroll-stopping copy. Keep platform conventions (vertical ratios, accessibility, alt-text) in mind and tailor media prompts to energetic, template-friendly visuals.',
   Website:
@@ -1344,8 +1347,7 @@ export default function NewPage() {
   const conversationMapForDisplay = useMemo<ConversationMap>(
     () =>
       conversationMap ?? {
-        idealPath: [],
-        responderScenarios: []
+        steps: []
       },
     [conversationMap]
   )
@@ -1663,53 +1665,163 @@ export default function NewPage() {
       return trimmed.length > 0 ? trimmed : null
     }
 
-    const idealPathSource = Array.isArray(rawData?.idealPath)
+    const slugify = (value: string, fallback: string): string => {
+      const slug = value
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+
+      return slug || fallback
+    }
+
+    const normalizeFollowUps = (input: any, defaultMessage: string): string[] => {
+      if (Array.isArray(input)) {
+        return input
+          .map(item => ensureString(item))
+          .filter(Boolean)
+          .slice(0, 3)
+      }
+
+      if (typeof input === 'string') {
+        const cleaned = input
+          .split(/\n+/)
+          .map(line => line.trim())
+          .filter(Boolean)
+
+        if (cleaned.length > 0) {
+          return cleaned.slice(0, 3)
+        }
+
+        return defaultMessage ? [defaultMessage] : []
+      }
+
+      return defaultMessage ? [defaultMessage] : []
+    }
+
+    const normalizeScripture = (input: any): ConversationMap['steps'][number]['scripture'] => {
+      if (!input) return null
+
+      if (typeof input === 'string') {
+        const text = input.trim()
+        if (!text) return null
+        return { text, reference: null }
+      }
+
+      if (typeof input === 'object') {
+        const text = ensureNullableString(
+          input.text ?? input.passage ?? input.quote ?? input.content ?? null
+        )
+        const reference = ensureNullableString(
+          input.reference ?? input.ref ?? input.citation ?? input.verse ?? null
+        )
+
+        if (!text && !reference) {
+          return null
+        }
+
+        return {
+          text,
+          reference
+        }
+      }
+
+      return null
+    }
+
+    const legacyIdealPath = Array.isArray(rawData?.idealPath)
       ? rawData.idealPath
       : []
 
-    const normalizedIdealPath = idealPathSource
-      .map((item, index) => {
-        const guideMessage = ensureString(item?.guideMessage)
-        if (!guideMessage) return null
-
-        const stage = ensureString(item?.stage)
-
-        return {
-          stage: stage || `Stage ${index + 1}`,
-          guideMessage,
-          responderCue: ensureNullableString(item?.responderCue),
-          purpose: ensureNullableString(item?.purpose),
-          scriptureSupport: ensureNullableString(item?.scriptureSupport)
-        }
-      })
-      .filter((item): item is ConversationMap['idealPath'][number] => item !== null)
-
-    const scenariosSource = Array.isArray(rawData?.responderScenarios)
+    const legacyScenarios = Array.isArray(rawData?.responderScenarios)
       ? rawData.responderScenarios
       : []
 
-    const normalizedScenarios = scenariosSource
+    const stepsSource = Array.isArray(rawData?.steps)
+      ? rawData.steps
+      : legacyIdealPath
+
+    const normalizedSteps = stepsSource
       .map((item, index) => {
-        const responderMessage = ensureString(item?.responderMessage)
-        const guideResponse = ensureString(item?.guideResponse)
+        const guideMessage = ensureString(item?.guideMessage ?? item?.guideResponse)
+        if (!guideMessage) return null
 
-        if (!responderMessage || !guideResponse) return null
+        const title = ensureString(item?.title ?? item?.stage)
+        const purpose = ensureNullableString(item?.purpose)
 
-        const scenarioLabel = ensureString(item?.scenario)
+        const scripture = normalizeScripture(item?.scripture ?? item?.scriptureSupport)
+
+        const responseSource = Array.isArray(item?.responseOptions)
+          ? item.responseOptions
+          : Array.isArray(item?.responses)
+            ? item.responses
+            : []
+
+        let normalizedResponses = responseSource
+          .map((response: any, responseIndex: number) => {
+            const responderMessage = ensureString(
+              response?.responderMessage ?? response?.responderCue ?? response?.response
+            )
+            const label = ensureString(response?.label ?? response?.scenario ?? response?.title)
+            const icon = ensureNullableString(response?.icon)
+            const followUps = normalizeFollowUps(
+              response?.guideFollowUps ?? response?.guideResponses,
+              ensureString(response?.guideResponse)
+            )
+
+            if (!responderMessage && followUps.length === 0) {
+              return null
+            }
+
+            const optionId = ensureString(response?.id)
+
+            return {
+              id: optionId || slugify(label || responderMessage, `step-${index}-option-${responseIndex}`),
+              label: label || `Option ${responseIndex + 1}`,
+              icon: icon ?? null,
+              responderMessage: responderMessage || label,
+              guideFollowUps: followUps
+            }
+          })
+          .filter((option): option is ConversationMap['steps'][number]['responseOptions'][number] => option !== null)
+
+        if (normalizedResponses.length === 0 && legacyScenarios.length > 0 && index === 0) {
+          normalizedResponses = legacyScenarios
+            .map((scenario: any, scenarioIndex: number) => {
+              const responderMessage = ensureString(scenario?.responderMessage)
+              const guideResponse = ensureString(scenario?.guideResponse)
+
+              if (!responderMessage && !guideResponse) return null
+
+              const scenarioLabel = ensureString(scenario?.scenario)
+              const icon = ensureNullableString(scenario?.icon)
+              const followUps = normalizeFollowUps(scenario?.guideFollowUps, guideResponse)
+
+              return {
+                id: slugify(
+                  scenarioLabel || responderMessage,
+                  `step-${index}-legacy-${scenarioIndex}`
+                ),
+                label: scenarioLabel || `Scenario ${scenarioIndex + 1}`,
+                icon: icon ?? null,
+                responderMessage: responderMessage || scenarioLabel,
+                guideFollowUps: followUps
+              }
+            })
+            .filter((option): option is ConversationMap['steps'][number]['responseOptions'][number] => option !== null)
+        }
 
         return {
-          scenario: scenarioLabel || `Scenario ${index + 1}`,
-          responderMessage,
-          guideResponse,
-          nextStep: ensureNullableString(item?.nextStep),
-          scriptureSupport: ensureNullableString(item?.scriptureSupport)
+          title: title || `Step ${index + 1}`,
+          purpose,
+          guideMessage,
+          scripture,
+          responseOptions: normalizedResponses
         }
       })
-      .filter((item): item is ConversationMap['responderScenarios'][number] => item !== null)
+      .filter((item): item is ConversationMap['steps'][number] => item !== null)
 
     return {
-      idealPath: normalizedIdealPath,
-      responderScenarios: normalizedScenarios
+      steps: normalizedSteps
     }
   }
 
@@ -2003,200 +2115,207 @@ export default function NewPage() {
   })
 
   const ConversationMapView = React.memo(({ map }: { map: ConversationMap }) => {
-    const [copiedItemId, setCopiedItemId] = useState<string | null>(null)
+    const [playedOptions, setPlayedOptions] = useState<Record<string, string[]>>({})
 
     useEffect(() => {
-      if (copiedItemId === null) return
-      const timeout = setTimeout(() => setCopiedItemId(null), 2000)
-      return () => clearTimeout(timeout)
-    }, [copiedItemId])
+      setPlayedOptions({})
+    }, [map])
 
-    const copyText = useCallback(async (id: string, text: string) => {
-      if (!text) return
-      try {
-        if (typeof navigator !== 'undefined' && navigator.clipboard) {
-          await navigator.clipboard.writeText(text)
-          setCopiedItemId(id)
+    const handleOptionSelect = useCallback((stepIndex: number, optionId: string) => {
+      setPlayedOptions(previous => {
+        const stepKey = `step-${stepIndex}`
+        const existing = previous[stepKey] ?? []
+        if (existing.includes(optionId)) {
+          return previous
         }
-      } catch (error) {
-        console.error('Failed to copy conversation text:', error)
-      }
+
+        return {
+          ...previous,
+          [stepKey]: [...existing, optionId]
+        }
+      })
     }, [])
 
-    const renderIdealPath = () => {
-      if (!map.idealPath || map.idealPath.length === 0) {
-        return (
-          <div className="text-sm text-muted-foreground border border-dashed border-border rounded-2xl p-6 bg-muted/40">
-            The AI will map an ideal set of guide-led messages once you provide context above.
-          </div>
-        )
-      }
+    const hasSteps = Array.isArray(map?.steps) && map.steps.length > 0
 
-      return map.idealPath.map((step, index) => {
-        const stageId = `ideal-${index}`
-        const stageCopyText = [
-          `Stage: ${step.stage}`,
-          `Guide: ${step.guideMessage}`,
-          step.responderCue ? `Expected responder: ${step.responderCue}` : '',
-          step.purpose ? `Purpose: ${step.purpose}` : '',
-          step.scriptureSupport ? `Scripture: ${step.scriptureSupport}` : ''
-        ]
-          .filter(Boolean)
-          .join('\n')
-
-        const isCopied = copiedItemId === stageId
-
-        return (
-          <div
-            key={stageId}
-            className="bg-white border border-border rounded-3xl shadow-sm px-6 py-6 space-y-4"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="text-xs uppercase tracking-wide text-muted-foreground">Step {index + 1}</div>
-                <div className="text-lg font-semibold text-foreground">{step.stage}</div>
-              </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => copyText(stageId, stageCopyText)}
-                title={isCopied ? 'Copied!' : 'Copy this exchange'}
-              >
-                {isCopied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
-              </Button>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="shrink-0 rounded-full bg-blue-600 text-white text-[11px] font-semibold px-3 py-1 uppercase tracking-wide">
-                  Guide
-                </div>
-                <div className="rounded-2xl bg-blue-50 text-blue-900 px-4 py-3 shadow-inner">
-                  {step.guideMessage}
-                </div>
-              </div>
-              {step.responderCue && (
-                <div className="flex items-start gap-3 justify-end">
-                  <div className="rounded-2xl bg-stone-200 text-stone-900 px-4 py-3 shadow-inner max-w-xl">
-                    {step.responderCue}
-                  </div>
-                  <div className="shrink-0 rounded-full bg-stone-400 text-white text-[11px] font-semibold px-3 py-1 uppercase tracking-wide">
-                    Responder
-                  </div>
-                </div>
-              )}
-              <div className="grid gap-3 text-sm text-muted-foreground sm:grid-cols-2">
-                {step.purpose && (
-                  <div className="flex items-start gap-2">
-                    <MessageCircle className="h-4 w-4 mt-0.5 text-blue-500" />
-                    <span>
-                      <span className="font-semibold text-foreground">Purpose:&nbsp;</span>
-                      {step.purpose}
-                    </span>
-                  </div>
-                )}
-                {step.scriptureSupport && (
-                  <div className="flex items-start gap-2">
-                    <Book className="h-4 w-4 mt-0.5 text-amber-600" />
-                    <span>
-                      <span className="font-semibold text-foreground">Scripture:&nbsp;</span>
-                      {step.scriptureSupport}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )
-      })
-    }
-
-    const renderResponderScenarios = () => {
-      if (!map.responderScenarios || map.responderScenarios.length === 0) {
-        return (
-          <div className="text-sm text-muted-foreground border border-dashed border-border rounded-2xl p-6 bg-muted/40">
-            Once the ideal path is set, the assistant will suggest how to respond when the other person hesitates, gets curious, or has questions.
-          </div>
-        )
-      }
-
-      return map.responderScenarios.map((scenario, index) => {
-        const scenarioId = `scenario-${index}`
-        const scenarioCopyText = [
-          `Scenario: ${scenario.scenario}`,
-          `Responder: ${scenario.responderMessage}`,
-          `Guide: ${scenario.guideResponse}`,
-          scenario.nextStep ? `Next step: ${scenario.nextStep}` : '',
-          scenario.scriptureSupport ? `Scripture: ${scenario.scriptureSupport}` : ''
-        ]
-          .filter(Boolean)
-          .join('\n')
-
-        const isCopied = copiedItemId === scenarioId
-
-        return (
-          <Card key={scenarioId} className="border-border shadow-sm">
-            <CardHeader className="flex flex-row items-start justify-between gap-4">
-              <div>
-                <CardTitle className="text-base font-semibold text-foreground">
-                  Common Scenario {index + 1}: {scenario.scenario}
-                </CardTitle>
-              </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => copyText(scenarioId, scenarioCopyText)}
-                title={isCopied ? 'Copied!' : 'Copy this response'}
-              >
-                {isCopied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div>
-                <span className="font-semibold text-foreground">Responder says:&nbsp;</span>
-                {scenario.responderMessage}
-              </div>
-              <div>
-                <span className="font-semibold text-foreground">Guide response:&nbsp;</span>
-                {scenario.guideResponse}
-              </div>
-              {scenario.nextStep && (
-                <div>
-                  <span className="font-semibold text-foreground">Next step:&nbsp;</span>
-                  {scenario.nextStep}
-                </div>
-              )}
-              {scenario.scriptureSupport && (
-                <div className="text-muted-foreground">
-                  <span className="font-semibold text-foreground">Scripture:&nbsp;</span>
-                  {scenario.scriptureSupport}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )
-      })
+    if (!hasSteps) {
+      return (
+        <div className="text-sm text-muted-foreground border border-dashed border-border rounded-2xl p-6 bg-muted/40">
+          The AI will map an ideal set of guide-led messages once you provide context above.
+        </div>
+      )
     }
 
     return (
-      <div className="space-y-10">
-        <section className="space-y-4">
-          <div className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-blue-600" />
-            <h3 className="text-lg font-semibold">Ideal Conversation Path</h3>
-          </div>
-          <div className="space-y-6">{renderIdealPath()}</div>
-        </section>
-        <section className="space-y-4">
-          <div className="flex items-center gap-2">
-            <HelpCircle className="h-5 w-5 text-violet-600" />
-            <h3 className="text-lg font-semibold">Responder Scenarios</h3>
-          </div>
-          <div className="space-y-4">{renderResponderScenarios()}</div>
-        </section>
+      <div className="relative">
+        <div
+          aria-hidden="true"
+          className="hidden sm:block absolute left-4 top-0 bottom-0 w-px bg-border"
+        />
+
+        <div className="space-y-10">
+          {map.steps.map((step, index) => {
+            const stepKey = `step-${index}`
+            const playedForStep = playedOptions[stepKey] ?? []
+
+            return (
+              <section
+                key={stepKey}
+                className="relative pl-0 sm:pl-12"
+                aria-label={`Step ${index + 1}: ${step.title}`}
+              >
+                <div
+                  aria-hidden="true"
+                  className="hidden sm:block absolute left-[9px] top-1.5 h-4 w-4 rounded-full border-4 border-background bg-primary shadow"
+                />
+
+                <header className="mb-4 space-y-1">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Step {index + 1}:{' '}
+                    <span className="text-foreground normal-case">{step.title}</span>
+                  </div>
+                  {step.purpose && (
+                    <p className="text-sm text-muted-foreground">{step.purpose}</p>
+                  )}
+                </header>
+
+                <div className="space-y-4">
+                  {step.scripture && (step.scripture.text || step.scripture.reference) && (
+                    <div className="flex justify-start">
+                      <div className="space-y-2">
+                        <div className="text-xs uppercase font-semibold tracking-wide text-amber-700">
+                          Scripture
+                        </div>
+                        <div className="relative max-w-xl rounded-2xl bg-amber-100 text-amber-900 px-4 py-3 shadow-sm">
+                          <span
+                            aria-hidden="true"
+                            className="absolute left-3 -bottom-1 h-3 w-3 rotate-45 bg-amber-100"
+                          />
+                          {step.scripture.text && (
+                            <p className="text-sm leading-relaxed whitespace-pre-line">{step.scripture.text}</p>
+                          )}
+                          {step.scripture.reference && (
+                            <p className="mt-1 text-xs font-medium tracking-wide">
+                              {step.scripture.reference}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <div className="text-xs uppercase font-semibold tracking-wide text-blue-600 text-right pr-2">
+                      You
+                    </div>
+                    <div className="flex justify-end">
+                      <div className="relative max-w-xl rounded-2xl bg-blue-600 text-white px-4 py-3 shadow-md">
+                        <span
+                          aria-hidden="true"
+                          className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-blue-600"
+                        />
+                        <p className="text-sm leading-relaxed whitespace-pre-line">{step.guideMessage}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {step.responseOptions.length > 0 && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          Common responses
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          Tap to preview how you might reply
+                        </span>
+                      </div>
+                      <div
+                        role="list"
+                        className="flex flex-wrap gap-2"
+                        aria-label="Responder options"
+                      >
+                        {step.responseOptions.map(option => {
+                          const isPlayed = playedForStep.includes(option.id)
+
+                          return (
+                            <button
+                              key={option.id}
+                              type="button"
+                              role="listitem"
+                              onClick={() => handleOptionSelect(index, option.id)}
+                              className={`group inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium shadow-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary ${
+                                isPlayed
+                                  ? 'bg-primary/10 border-primary text-primary'
+                                  : 'bg-background border-border hover:bg-muted'
+                              }`}
+                              aria-pressed={isPlayed}
+                              aria-label={`${option.label}${isPlayed ? ' (played)' : ''}`}
+                            >
+                              {option.icon && (
+                                <span aria-hidden className="text-base leading-none">
+                                  {option.icon}
+                                </span>
+                              )}
+                              <span>{option.label}</span>
+                              {isPlayed && <Check className="h-4 w-4" />}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {playedForStep.length > 0 && (
+                    <div className="space-y-6" aria-live="polite">
+                      {playedForStep.map(optionId => {
+                        const option = step.responseOptions.find(item => item.id === optionId)
+                        if (!option) return null
+
+                        return (
+                          <div key={option.id} className="space-y-3">
+                            <div className="space-y-2">
+                              <div className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
+                                Chatmate
+                              </div>
+                              <div className="flex justify-start">
+                                <div className="relative max-w-xl rounded-2xl bg-muted text-foreground px-4 py-3 shadow-sm">
+                                  <span
+                                    aria-hidden="true"
+                                    className="absolute left-3 -bottom-1 h-3 w-3 rotate-45 bg-muted"
+                                  />
+                                  <p className="text-sm leading-relaxed whitespace-pre-line">
+                                    {option.responderMessage}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+
+                            {option.guideFollowUps.map((followUp, followUpIndex) => (
+                              <div key={`${option.id}-follow-${followUpIndex}`} className="space-y-2">
+                                <div className="text-xs uppercase font-semibold tracking-wide text-blue-600 text-right pr-2">
+                                  You
+                                </div>
+                                <div className="flex justify-end">
+                                  <div className="relative max-w-xl rounded-2xl bg-blue-600 text-white px-4 py-3 shadow-md">
+                                    <span
+                                      aria-hidden="true"
+                                      className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-blue-600"
+                                    />
+                                    <p className="text-sm leading-relaxed whitespace-pre-line">{followUp}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              </section>
+            )
+          })}
+        </div>
       </div>
     )
   })
