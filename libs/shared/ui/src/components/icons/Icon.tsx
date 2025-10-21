@@ -160,6 +160,7 @@ import Passport from './Passport'
 import Pause1 from './Pause1'
 import Pause2 from './Pause2'
 import Pause3 from './Pause3'
+import Phone from './Phone'
 import Play1 from './Play1'
 import Play2 from './Play2'
 import Play3 from './Play3'
@@ -386,6 +387,7 @@ export type IconName =
   | 'Play1'
   | 'Play2'
   | 'Play3'
+  | 'Phone'
   | 'Plus1'
   | 'Plus2'
   | 'Plus3'
@@ -613,6 +615,7 @@ const iconComponents: IconComponents = {
   Play1,
   Play2,
   Play3,
+  Phone,
   Plus1,
   Plus2,
   Plus3,

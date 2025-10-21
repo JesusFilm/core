@@ -8,6 +8,7 @@
 //==============================================================
 
 export enum ButtonAction {
+  ChatAction = "ChatAction",
   EmailAction = "EmailAction",
   LinkAction = "LinkAction",
   NavigateToBlockAction = "NavigateToBlockAction",
@@ -37,6 +38,11 @@ export enum ButtonSize {
 export enum ButtonVariant {
   contained = "contained",
   outlined = "outlined",
+  text = "text",
+}
+
+export enum ContactActionType {
+  call = "call",
   text = "text",
 }
 
@@ -298,6 +304,7 @@ export interface BlockUpdateActionInput {
   phone?: string | null;
   countryCode?: string | null;
   target?: string | null;
+  chatUrl?: string | null;
   blockId?: string | null;
 }
 
@@ -359,6 +366,14 @@ export interface CardBlockUpdateInput {
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+}
+
+export interface ChatActionInput {
+  gtmEventName?: string | null;
+  chatUrl: string;
+  target?: string | null;
+  customizable?: boolean | null;
+  parentStepId?: string | null;
 }
 
 export interface ChatButtonCreateInput {
@@ -606,6 +621,13 @@ export interface LinkActionInput {
 
 export interface MeInput {
   redirect?: string | null;
+}
+
+export interface PhoneActionInput {
+  gtmEventName?: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction?: ContactActionType | null;
 }
 
 export interface QrCodeCreateInput {

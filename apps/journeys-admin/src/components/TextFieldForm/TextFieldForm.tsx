@@ -1,3 +1,4 @@
+import InputAdornment from '@mui/material/InputAdornment'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
 import {
@@ -36,6 +37,7 @@ interface TextFieldFormProps extends FieldProps {
 
 export interface TextFieldFormRef {
   focus: () => void
+  validate: () => void
 }
 
 interface ValidationSchema {
@@ -55,8 +57,15 @@ export function TextFieldForm({
   ...muiFieldProps
 }: TextFieldFormProps): ReactElement {
   const textFieldRef = useRef<HTMLInputElement>(null)
+  const formikRef = useRef<any>(null)
+
   useImperativeHandle(ref, () => ({
-    focus: () => textFieldRef.current?.focus()
+    focus: () => textFieldRef.current?.focus(),
+    validate: () => {
+      if (formikRef.current) {
+        formikRef.current.handleSubmit()
+      }
+    }
   }))
 
   const isRequired =
@@ -87,39 +96,54 @@ export function TextFieldForm({
         handleChange,
         handleBlur,
         setFieldValue,
-        handleSubmit
-      }) => (
-        <Form>
-          <TextField
-            {...muiFieldProps}
-            id={id}
-            name={id}
-            inputRef={textFieldRef}
-            variant="filled"
-            fullWidth
-            value={values[id]}
-            error={Boolean(errors[id])}
-            helperText={errors[id] != null ? errors[id] : helperText}
-            InputProps={{
-              startAdornment: startIcon,
-              endAdornment: endIcon
-            }}
-            onPaste={onPaste}
-            onBlur={async (e) => {
-              handleBlur(e)
-              if (errors[id] == null) {
-                handleSubmit()
-              } else if (isRequired) {
-                await setFieldValue(id, initialValue)
-              }
-            }}
-            onChange={(e) => {
-              handleChange(e)
-            }}
-            data-testid="JourneysAdminTextFieldForm"
-          />
-        </Form>
-      )}
+        handleSubmit,
+        ...formikProps
+      }) => {
+        // Store formik instance in ref for external access
+        formikRef.current = { handleSubmit, ...formikProps }
+
+        return (
+          <Form>
+            <TextField
+              {...muiFieldProps}
+              id={id}
+              name={id}
+              inputRef={textFieldRef}
+              variant="filled"
+              fullWidth
+              value={values[id]}
+              error={Boolean(errors[id])}
+              helperText={errors[id] != null ? errors[id] : helperText}
+              InputProps={{
+                startAdornment: startIcon ? (
+                  <InputAdornment data-testid="startAdornment" position="start">
+                    {startIcon}
+                  </InputAdornment>
+                ) : undefined,
+                endAdornment: endIcon ? (
+                  <InputAdornment data-testid="endAdornment" position="end">
+                    {endIcon}
+                  </InputAdornment>
+                ) : undefined
+              }}
+              onPaste={onPaste}
+              onBlur={async (e) => {
+                handleBlur(e)
+                if (errors[id] == null) {
+                  handleSubmit()
+                } else if (values[id] === '' && initialValue) {
+                  // Revert to initial value if field is empty and has an initial value
+                  void setFieldValue(id, initialValue)
+                }
+              }}
+              onChange={(e) => {
+                handleChange(e)
+              }}
+              data-testid="JourneysAdminTextFieldForm"
+            />
+          </Form>
+        )
+      }}
     </Formik>
   )
 }
