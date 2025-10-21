@@ -227,6 +227,9 @@ resource "aws_eks_node_group" "az_2a" {
   update_config {
     max_unavailable = 2
   }
+  node_repair_config {
+    enabled = true
+  }
   capacity_type = "ON_DEMAND"
 
   instance_types = ["t3.large"]
