@@ -30,34 +30,145 @@ export interface UserInputData {
   }
 }
 
-const STORAGE_KEY = 'jesus-film-studio-user-inputs'
-const CURRENT_SESSION_KEY = 'jesus-film-studio-current-session'
+const STORAGE_KEYS = {
+  sessions: 'jesus-film-studio-user-inputs',
+  currentSession: 'jesus-film-studio-current-session',
+  draft: 'jesus-film-studio-draft',
+} as const
+
+const DRAFT_STORAGE_LIMIT_BYTES = 4 * 1024 * 1024 // 4MB limit to be safe
 
 class UserInputStorage {
-  private getStoredData(): UserInputData[] {
-    if (typeof window === 'undefined') return []
+  private get storage(): Storage | null {
+    return typeof window === 'undefined' ? null : window.localStorage
+  }
+
+  private readJSON<T>(key: string, fallback: T, errorMessage: string): T {
+    const storage = this.storage
+    if (!storage) return fallback
 
     try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      return stored ? JSON.parse(stored) : []
+      const stored = storage.getItem(key)
+      return stored ? (JSON.parse(stored) as T) : fallback
     } catch (error) {
-      console.error('Failed to load stored data:', error)
-      return []
+      console.error(errorMessage, error)
+      return fallback
     }
   }
 
-  private saveStoredData(data: UserInputData[]): void {
-    if (typeof window === 'undefined') return
+  private writeJSON(
+    key: string,
+    value: unknown,
+    errorMessage: string,
+    onQuotaExceeded?: () => void,
+  ): void {
+    const storage = this.storage
+    if (!storage) return
 
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+      storage.setItem(key, JSON.stringify(value))
     } catch (error) {
-      console.error('Failed to save data:', error)
-      // If it's a quota exceeded error, suggest running cleanup
+      console.error(errorMessage, error)
       if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-        console.warn('localStorage quota exceeded. Try running cleanup: userInputStorage.cleanupImageData()')
+        onQuotaExceeded?.()
       }
     }
+  }
+
+  private writeJSONWithLimit(
+    key: string,
+    value: unknown,
+    errorMessage: string,
+    limitExceededMessage: string,
+    sizeLimit: number,
+  ): void {
+    const storage = this.storage
+    if (!storage) return
+
+    try {
+      const serialized = JSON.stringify(value)
+      if (serialized.length > sizeLimit) {
+        console.warn(limitExceededMessage)
+        return
+      }
+
+      storage.setItem(key, serialized)
+    } catch (error) {
+      console.error(errorMessage, error)
+    }
+  }
+
+  private removeItem(key: string): void {
+    const storage = this.storage
+    storage?.removeItem(key)
+  }
+
+  private sanitizeKeywords(keywords: unknown): string[] {
+    if (!Array.isArray(keywords)) return []
+
+    return keywords
+      .filter((keyword): keyword is string => Boolean(keyword))
+      .slice(0, 5)
+  }
+
+  private sanitizeSteps(steps: GeneratedStepContent[] | undefined): GeneratedStepContent[] {
+    if (!Array.isArray(steps)) return []
+
+    return steps.map(step => ({
+      content: step?.content || '',
+      keywords: this.sanitizeKeywords(step?.keywords),
+      mediaPrompt: step?.mediaPrompt || '',
+      selectedImageUrl: typeof step?.selectedImageUrl === 'string' ? step.selectedImageUrl : undefined,
+      selectedVideoUrl: typeof step?.selectedVideoUrl === 'string' ? step.selectedVideoUrl : undefined,
+    }))
+  }
+
+  private sanitizeImageAnalysis(
+    results: ImageAnalysisResult[] | undefined,
+  ): ImageAnalysisResult[] {
+    if (!Array.isArray(results)) return []
+
+    return results.map(result => ({
+      imageSrc: result?.imageSrc || '',
+      contentType: result?.contentType || 'unknown',
+      extractedText: result?.extractedText || '',
+      detailedDescription: result?.detailedDescription || '',
+      confidence: result?.confidence || 'unknown',
+      contentIdeas: Array.isArray(result?.contentIdeas)
+        ? result.contentIdeas.filter((idea): idea is string => Boolean(idea))
+        : [],
+      isAnalyzing: Boolean(result?.isAnalyzing),
+    }))
+  }
+
+  private sanitizeDraftData(data: Omit<UserInputData, 'id' | 'timestamp'>) {
+    return {
+      textContent: data.textContent || '',
+      images: Array.isArray(data.images) ? data.images : [],
+      aiResponse: data.aiResponse || '',
+      aiSteps: this.sanitizeSteps(data.aiSteps),
+      imageAnalysisResults: this.sanitizeImageAnalysis(data.imageAnalysisResults),
+    }
+  }
+
+  private getStoredData(): UserInputData[] {
+    return this.readJSON<UserInputData[]>(
+      STORAGE_KEYS.sessions,
+      [],
+      'Failed to load stored data:',
+    )
+  }
+
+  private saveStoredData(data: UserInputData[]): void {
+    this.writeJSON(
+      STORAGE_KEYS.sessions,
+      data,
+      'Failed to save data:',
+      () =>
+        console.warn(
+          'localStorage quota exceeded. Try running cleanup: userInputStorage.cleanupImageData()',
+        ),
+    )
   }
 
   private generateId(): string {
@@ -81,9 +192,8 @@ class UserInputStorage {
     this.saveStoredData(updatedData)
 
     // Save current session ID
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(CURRENT_SESSION_KEY, sessionData.id)
-    }
+    const storage = this.storage
+    storage?.setItem(STORAGE_KEYS.currentSession, sessionData.id)
 
     return sessionData.id
   }
@@ -104,9 +214,10 @@ class UserInputStorage {
 
   // Get current session data
   getCurrentSession(): UserInputData | null {
-    if (typeof window === 'undefined') return null
+    const storage = this.storage
+    if (!storage) return null
 
-    const currentSessionId = localStorage.getItem(CURRENT_SESSION_KEY)
+    const currentSessionId = storage.getItem(STORAGE_KEYS.currentSession)
     if (!currentSessionId) return null
 
     const allData = this.getStoredData()
@@ -125,20 +236,19 @@ class UserInputStorage {
     this.saveStoredData(filteredData)
 
     // Clear current session if it was deleted
-    if (typeof window !== 'undefined') {
-      const currentSessionId = localStorage.getItem(CURRENT_SESSION_KEY)
+    const storage = this.storage
+    if (storage) {
+      const currentSessionId = storage.getItem(STORAGE_KEYS.currentSession)
       if (currentSessionId === sessionId) {
-        localStorage.removeItem(CURRENT_SESSION_KEY)
+        storage.removeItem(STORAGE_KEYS.currentSession)
       }
     }
   }
 
   // Clear all data
   clearAll(): void {
-    if (typeof window === 'undefined') return
-
-    localStorage.removeItem(STORAGE_KEY)
-    localStorage.removeItem(CURRENT_SESSION_KEY)
+    this.removeItem(STORAGE_KEYS.sessions)
+    this.removeItem(STORAGE_KEYS.currentSession)
   }
 
   // Cleanup images from all sessions while preserving analysis data
@@ -178,77 +288,39 @@ class UserInputStorage {
 
   // Auto-save current working data (for draft-like functionality)
   autoSaveDraft(data: Omit<UserInputData, 'id' | 'timestamp'>): void {
-    const draftKey = 'jesus-film-studio-draft'
-
-    if (typeof window !== 'undefined') {
-      try {
-        // Ensure data is serializable and handle potential issues with imageAnalysisResults
-        const sanitizedData = {
-          textContent: data.textContent || '',
-          images: Array.isArray(data.images) ? data.images : [],
-          aiResponse: data.aiResponse || '',
-          aiSteps: Array.isArray(data.aiSteps)
-            ? data.aiSteps.map((step) => ({
-                content: step?.content || '',
-                keywords: Array.isArray(step?.keywords)
-                  ? step.keywords
-                      .filter((keyword): keyword is string => Boolean(keyword))
-                      .slice(0, 5)
-                  : [],
-                mediaPrompt: step?.mediaPrompt || ''
-              }))
-            : [],
-          imageAnalysisResults: Array.isArray(data.imageAnalysisResults)
-            ? data.imageAnalysisResults.map(result => ({
-                imageSrc: result?.imageSrc || '',
-                contentType: result?.contentType || 'unknown',
-                extractedText: result?.extractedText || '',
-                detailedDescription: result?.detailedDescription || '',
-                confidence: result?.confidence || 'unknown',
-                contentIdeas: Array.isArray(result?.contentIdeas) ? result.contentIdeas : [],
-                isAnalyzing: result?.isAnalyzing || false,
-              }))
-            : []
-        }
-
-        const dataToSave = {
-          ...sanitizedData,
-          lastSaved: Date.now(),
-        }
-
-        // Check if data is too large for localStorage (limit is ~5MB)
-        const dataString = JSON.stringify(dataToSave)
-        if (dataString.length > 4 * 1024 * 1024) { // 4MB limit to be safe
-          console.warn('Draft data too large for localStorage, skipping auto-save')
-          return
-        }
-
-        localStorage.setItem(draftKey, dataString)
-      } catch (error) {
-        console.error('Failed to auto-save draft:', error)
-        // Don't re-throw the error to prevent app crashes
+    try {
+      const dataToSave = {
+        ...this.sanitizeDraftData(data),
+        lastSaved: Date.now(),
       }
+
+      this.writeJSONWithLimit(
+        STORAGE_KEYS.draft,
+        dataToSave,
+        'Failed to auto-save draft:',
+        'Draft data too large for localStorage, skipping auto-save',
+        DRAFT_STORAGE_LIMIT_BYTES,
+      )
+    } catch (error) {
+      console.error('Failed to auto-save draft:', error)
+      // Don't re-throw the error to prevent app crashes
     }
   }
 
   // Load draft data
   loadDraft(): (Omit<UserInputData, 'id' | 'timestamp'> & { lastSaved: number }) | null {
-    if (typeof window === 'undefined') return null
-
-    try {
-      const draft = localStorage.getItem('jesus-film-studio-draft')
-      return draft ? JSON.parse(draft) : null
-    } catch (error) {
-      console.error('Failed to load draft:', error)
-      return null
-    }
+    return this.readJSON<
+      (Omit<UserInputData, 'id' | 'timestamp'> & { lastSaved: number }) | null
+    >(
+      STORAGE_KEYS.draft,
+      null,
+      'Failed to load draft:',
+    )
   }
 
   // Clear draft
   clearDraft(): void {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('jesus-film-studio-draft')
-    }
+    this.removeItem(STORAGE_KEYS.draft)
   }
 }
 
