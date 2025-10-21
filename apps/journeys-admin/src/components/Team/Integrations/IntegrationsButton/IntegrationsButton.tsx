@@ -25,6 +25,7 @@ interface IntegrationsButtonProps {
   /** Optional override for integrations not yet in IntegrationType enum */
   titleOverride?: string
   srcOverride?: StaticImageData
+  iconOverride?: ReactElement
 }
 
 export function IntegrationsButton({
@@ -32,7 +33,8 @@ export function IntegrationsButton({
   type,
   showAddButton = false,
   titleOverride,
-  srcOverride
+  srcOverride,
+  iconOverride
 }: IntegrationsButtonProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -87,6 +89,18 @@ export function IntegrationsButton({
       >
         {showAddButton ? (
           <Plus1Icon />
+        ) : iconOverride != null ? (
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: 65,
+              width: 65
+            }}
+          >
+            {iconOverride}
+          </Box>
         ) : src != null ? (
           <Image src={src} alt={title ?? ''} height={65} width={65} />
         ) : (

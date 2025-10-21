@@ -5,6 +5,7 @@ import { encryptSymmetric } from '@core/nest/common/crypto'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
+
 import { IntegrationGoogleRef } from './google'
 import { IntegrationGoogleCreateInput } from './inputs/integrationGoogleCreateInput'
 

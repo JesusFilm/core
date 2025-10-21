@@ -4,9 +4,10 @@ import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
+import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
+
 import { IntegrationType } from '../../../../__generated__/globalTypes'
 import { BreadcrumbNavigation } from '../BreadcrumbNavigation'
-
 import { IntegrationsButton } from './IntegrationsButton'
 
 export function Integrations(): ReactElement {
@@ -34,6 +35,7 @@ export function Integrations(): ReactElement {
               router.query.teamId as string
             }/integrations/new/google`}
             titleOverride="Google"
+            iconOverride={<GoogleIcon sizePx={48} />}
           />
         </Stack>
       </Container>

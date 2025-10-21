@@ -4,6 +4,8 @@ import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
+import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
+
 import { useIntegrationQuery } from '../../../libs/useIntegrationQuery'
 import { BreadcrumbNavigation } from '../BreadcrumbNavigation'
 import { IntegrationsButton } from '../Integrations/IntegrationsButton'
@@ -39,6 +41,11 @@ export function TeamIntegrations(): ReactElement {
                 type={integration.type}
                 titleOverride={
                   integration.type === 'google' ? 'Google' : undefined
+                }
+                iconOverride={
+                  integration.type === 'google' ? (
+                    <GoogleIcon sizePx={48} />
+                  ) : undefined
                 }
               />
             ))}
