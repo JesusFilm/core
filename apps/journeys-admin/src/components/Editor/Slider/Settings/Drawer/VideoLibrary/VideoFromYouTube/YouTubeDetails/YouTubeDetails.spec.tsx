@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SWRConfig } from 'swr'
 
@@ -47,9 +48,11 @@ describe('YouTubeDetails', () => {
   it('should render loading state', () => {
     mswServer.use(getVideosLoading)
     const { getByTestId } = render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
-      </SWRConfig>
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
     )
     const container = getByTestId('YoutubeDetails')
     expect(container.querySelector('.MuiSkeleton-root')).toBeInTheDocument()
@@ -58,9 +61,11 @@ describe('YouTubeDetails', () => {
   it('should render details of a video', async () => {
     mswServer.use(getVideosWithOffsetAndUrl)
     const { getByText, getByRole } = render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
-      </SWRConfig>
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
     )
     await waitFor(() =>
       expect(
@@ -77,9 +82,11 @@ describe('YouTubeDetails', () => {
   it('should initialize video player with correct source and poster', async () => {
     mswServer.use(getVideosWithOffsetAndUrl)
     const { getByRole } = render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
-      </SWRConfig>
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
     )
 
     await waitFor(() =>
@@ -109,9 +116,11 @@ describe('YouTubeDetails', () => {
   it('should display video duration', async () => {
     mswServer.use(getVideosWithOffsetAndUrl)
     const { getByText } = render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
-      </SWRConfig>
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
     )
 
     await waitFor(() => expect(getByText('06:03')).toBeInTheDocument())
@@ -121,9 +130,11 @@ describe('YouTubeDetails', () => {
     mswServer.use(getVideosWithOffsetAndUrl)
     const onSelect = jest.fn()
     const { getByRole } = render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <YouTubeDetails id="jQaeIJOA6J0" open onSelect={onSelect} />
-      </SWRConfig>
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={onSelect} />
+        </SWRConfig>
+      </MockedProvider>
     )
     await waitFor(() =>
       expect(
@@ -142,9 +153,11 @@ describe('YouTubeDetails', () => {
   it('should fetch closed captions when open', async () => {
     mswServer.use(getVideosWithOffsetAndUrl)
     render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
-      </SWRConfig>
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
     )
 
     await waitFor(() => {
@@ -192,14 +205,16 @@ describe('YouTubeDetails', () => {
     }
 
     const { getByRole } = render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <YouTubeDetails
-          id="jQaeIJOA6J0"
-          open
-          onSelect={jest.fn()}
-          activeVideoBlock={activeVideoBlock}
-        />
-      </SWRConfig>
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails
+            id="jQaeIJOA6J0"
+            open
+            onSelect={jest.fn()}
+            activeVideoBlock={activeVideoBlock}
+          />
+        </SWRConfig>
+      </MockedProvider>
     )
 
     await waitFor(() =>
@@ -232,9 +247,11 @@ describe('YouTubeDetails', () => {
     })
 
     const { getByRole } = render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
-      </SWRConfig>
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
     )
 
     await waitFor(() =>
@@ -261,9 +278,11 @@ describe('YouTubeDetails', () => {
   it('should set up playing event handler on video player', async () => {
     mswServer.use(getVideosWithOffsetAndUrl)
     const { getByRole } = render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
-      </SWRConfig>
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
     )
 
     await waitFor(() =>
@@ -279,9 +298,11 @@ describe('YouTubeDetails', () => {
   it('should disable select button while loading', () => {
     mswServer.use(getVideosLoading)
     const { getByRole } = render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
-      </SWRConfig>
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
     )
 
     const selectButton = getByRole('button', { name: 'Select' })
@@ -291,9 +312,11 @@ describe('YouTubeDetails', () => {
   it('should not fetch data when not open', () => {
     mswServer.use(getVideosWithOffsetAndUrl)
     const { getByTestId } = render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <YouTubeDetails id="jQaeIJOA6J0" open={false} onSelect={jest.fn()} />
-      </SWRConfig>
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails id="jQaeIJOA6J0" open={false} onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
     )
 
     const container = getByTestId('YoutubeDetails')
