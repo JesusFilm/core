@@ -33,8 +33,8 @@ import {
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
 import {
-  useYouTubeClosedCaptions,
-  type YouTubeLanguage
+  type YouTubeLanguage,
+  useYouTubeClosedCaptions
 } from '../../../../../../../libs/useYouTubeClosedCaptions'
 
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
