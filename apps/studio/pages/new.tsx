@@ -94,7 +94,7 @@ import {
   userInputStorage
 } from '../src/libs/storage'
 
-import { AutoResizeTextarea } from '@/components/ui/textarea'
+import { AutoResizeTextarea, Textarea } from '@/components/ui/textarea'
 // Dynamic imports for components to avoid hydration issues
 const AnimatedLoadingText = dynamic(
   () => Promise.resolve(() => (
