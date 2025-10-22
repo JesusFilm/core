@@ -243,7 +243,9 @@ export class JourneyPage {
     const createJourneyLoaderPath = this.page.locator(
       'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
     )
-    await this.page.waitForLoadState('load')
+    await this.page
+      .locator('div[data-testid="JourneysAdminContainedIconButton"] button')
+      .waitFor({ state: 'visible', timeout: 150000 })
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminContainedIconButton"] button'
@@ -1071,7 +1073,12 @@ export class JourneyPage {
   }
 
   async clickOnJourneyCard() {
-    await this.page.waitForLoadState('load')
+    await this.page
+      .frameLocator(this.journeyCardFrame)
+      .first()
+      .locator('div[data-testid="CardOverlayImageContainer"]')
+      .first()
+      .waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
     await this.page
       .frameLocator(this.journeyCardFrame)
       .first()
