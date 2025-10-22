@@ -94,13 +94,6 @@ import {
   userInputStorage
 } from '../src/libs/storage'
 
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious
-} from '@/components/ui/carousel'
 import { AutoResizeTextarea } from '@/components/ui/textarea'
 // Dynamic imports for components to avoid hydration issues
 const AnimatedLoadingText = dynamic(
