@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./../../../../__generated__/globalTypes";
+import { JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: JourneyFields
@@ -23,17 +23,11 @@ export interface JourneyFields_language {
   name: JourneyFields_language_name[];
 }
 
-export interface JourneyFields_blocks_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+export interface JourneyFields_blocks_MultiselectBlock {
+  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-}
-
-export interface JourneyFields_blocks_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
 }
 
 export interface JourneyFields_blocks_ButtonBlock_action_NavigateToBlockAction {
@@ -61,7 +55,25 @@ export interface JourneyFields_blocks_ButtonBlock_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type JourneyFields_blocks_ButtonBlock_action = JourneyFields_blocks_ButtonBlock_action_PhoneAction | JourneyFields_blocks_ButtonBlock_action_NavigateToBlockAction | JourneyFields_blocks_ButtonBlock_action_LinkAction | JourneyFields_blocks_ButtonBlock_action_EmailAction;
+export interface JourneyFields_blocks_ButtonBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface JourneyFields_blocks_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type JourneyFields_blocks_ButtonBlock_action = JourneyFields_blocks_ButtonBlock_action_NavigateToBlockAction | JourneyFields_blocks_ButtonBlock_action_LinkAction | JourneyFields_blocks_ButtonBlock_action_EmailAction | JourneyFields_blocks_ButtonBlock_action_ChatAction | JourneyFields_blocks_ButtonBlock_action_PhoneAction;
 
 export interface JourneyFields_blocks_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -150,12 +162,6 @@ export interface JourneyFields_blocks_ImageBlock {
   focalLeft: number | null;
 }
 
-export interface JourneyFields_blocks_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface JourneyFields_blocks_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string | null;
@@ -181,7 +187,25 @@ export interface JourneyFields_blocks_RadioOptionBlock_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type JourneyFields_blocks_RadioOptionBlock_action = JourneyFields_blocks_RadioOptionBlock_action_PhoneAction | JourneyFields_blocks_RadioOptionBlock_action_NavigateToBlockAction | JourneyFields_blocks_RadioOptionBlock_action_LinkAction | JourneyFields_blocks_RadioOptionBlock_action_EmailAction;
+export interface JourneyFields_blocks_RadioOptionBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface JourneyFields_blocks_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type JourneyFields_blocks_RadioOptionBlock_action = JourneyFields_blocks_RadioOptionBlock_action_NavigateToBlockAction | JourneyFields_blocks_RadioOptionBlock_action_LinkAction | JourneyFields_blocks_RadioOptionBlock_action_EmailAction | JourneyFields_blocks_RadioOptionBlock_action_ChatAction | JourneyFields_blocks_RadioOptionBlock_action_PhoneAction;
 
 export interface JourneyFields_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -204,12 +228,6 @@ export interface JourneyFields_blocks_RadioQuestionBlock {
   parentBlockId: string | null;
   parentOrder: number | null;
   gridView: boolean | null;
-}
-
-export interface JourneyFields_blocks_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
 }
 
 export interface JourneyFields_blocks_SignUpBlock_action_NavigateToBlockAction {
@@ -237,7 +255,25 @@ export interface JourneyFields_blocks_SignUpBlock_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type JourneyFields_blocks_SignUpBlock_action = JourneyFields_blocks_SignUpBlock_action_PhoneAction | JourneyFields_blocks_SignUpBlock_action_NavigateToBlockAction | JourneyFields_blocks_SignUpBlock_action_LinkAction | JourneyFields_blocks_SignUpBlock_action_EmailAction;
+export interface JourneyFields_blocks_SignUpBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface JourneyFields_blocks_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type JourneyFields_blocks_SignUpBlock_action = JourneyFields_blocks_SignUpBlock_action_NavigateToBlockAction | JourneyFields_blocks_SignUpBlock_action_LinkAction | JourneyFields_blocks_SignUpBlock_action_EmailAction | JourneyFields_blocks_SignUpBlock_action_ChatAction | JourneyFields_blocks_SignUpBlock_action_PhoneAction;
 
 export interface JourneyFields_blocks_SignUpBlock {
   __typename: "SignUpBlock";
@@ -295,6 +331,7 @@ export interface JourneyFields_blocks_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface JourneyFields_blocks_TypographyBlock_settings {
@@ -368,12 +405,6 @@ export interface JourneyFields_blocks_VideoBlock_mediaVideo_YouTube {
 
 export type JourneyFields_blocks_VideoBlock_mediaVideo = JourneyFields_blocks_VideoBlock_mediaVideo_Video | JourneyFields_blocks_VideoBlock_mediaVideo_MuxVideo | JourneyFields_blocks_VideoBlock_mediaVideo_YouTube;
 
-export interface JourneyFields_blocks_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface JourneyFields_blocks_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string | null;
@@ -399,7 +430,25 @@ export interface JourneyFields_blocks_VideoBlock_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type JourneyFields_blocks_VideoBlock_action = JourneyFields_blocks_VideoBlock_action_PhoneAction | JourneyFields_blocks_VideoBlock_action_NavigateToBlockAction | JourneyFields_blocks_VideoBlock_action_LinkAction | JourneyFields_blocks_VideoBlock_action_EmailAction;
+export interface JourneyFields_blocks_VideoBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface JourneyFields_blocks_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type JourneyFields_blocks_VideoBlock_action = JourneyFields_blocks_VideoBlock_action_NavigateToBlockAction | JourneyFields_blocks_VideoBlock_action_LinkAction | JourneyFields_blocks_VideoBlock_action_EmailAction | JourneyFields_blocks_VideoBlock_action_ChatAction | JourneyFields_blocks_VideoBlock_action_PhoneAction;
 
 export interface JourneyFields_blocks_VideoBlock {
   __typename: "VideoBlock";
@@ -422,12 +471,6 @@ export interface JourneyFields_blocks_VideoBlock {
   objectFit: VideoBlockObjectFit | null;
   mediaVideo: JourneyFields_blocks_VideoBlock_mediaVideo | null;
   action: JourneyFields_blocks_VideoBlock_action | null;
-}
-
-export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
 }
 
 export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -455,7 +498,25 @@ export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_EmailActio
   parentStepId: string | null;
 }
 
-export type JourneyFields_blocks_VideoTriggerBlock_triggerAction = JourneyFields_blocks_VideoTriggerBlock_triggerAction_PhoneAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_LinkAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_EmailAction;
+export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface JourneyFields_blocks_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type JourneyFields_blocks_VideoTriggerBlock_triggerAction = JourneyFields_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_LinkAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_EmailAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_ChatAction | JourneyFields_blocks_VideoTriggerBlock_triggerAction_PhoneAction;
 
 export interface JourneyFields_blocks_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -470,7 +531,7 @@ export interface JourneyFields_blocks_VideoTriggerBlock {
   triggerAction: JourneyFields_blocks_VideoTriggerBlock_triggerAction | null;
 }
 
-export type JourneyFields_blocks = JourneyFields_blocks_GridContainerBlock | JourneyFields_blocks_ButtonBlock | JourneyFields_blocks_CardBlock | JourneyFields_blocks_IconBlock | JourneyFields_blocks_ImageBlock | JourneyFields_blocks_RadioOptionBlock | JourneyFields_blocks_RadioQuestionBlock | JourneyFields_blocks_SignUpBlock | JourneyFields_blocks_SpacerBlock | JourneyFields_blocks_StepBlock | JourneyFields_blocks_TextResponseBlock | JourneyFields_blocks_TypographyBlock | JourneyFields_blocks_VideoBlock | JourneyFields_blocks_VideoTriggerBlock;
+export type JourneyFields_blocks = JourneyFields_blocks_MultiselectBlock | JourneyFields_blocks_ButtonBlock | JourneyFields_blocks_CardBlock | JourneyFields_blocks_IconBlock | JourneyFields_blocks_ImageBlock | JourneyFields_blocks_RadioOptionBlock | JourneyFields_blocks_RadioQuestionBlock | JourneyFields_blocks_SignUpBlock | JourneyFields_blocks_SpacerBlock | JourneyFields_blocks_StepBlock | JourneyFields_blocks_TextResponseBlock | JourneyFields_blocks_TypographyBlock | JourneyFields_blocks_VideoBlock | JourneyFields_blocks_VideoTriggerBlock;
 
 export interface JourneyFields_primaryImageBlock {
   __typename: "ImageBlock";

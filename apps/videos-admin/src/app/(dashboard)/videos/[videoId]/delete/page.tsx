@@ -34,7 +34,7 @@ const DELETE_VIDEO = graphql(`
 
 export default function DeleteVideoPage(): ReactElement {
   const router = useRouter()
-  const { videoId } = useParams() as { videoId: string }
+  const { videoId } = useParams<{ videoId: string }>()
   const { enqueueSnackbar } = useSnackbar()
   const { data } = useSuspenseQuery(GET_VIDEO_FOR_DELETE, {
     variables: { id: videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }

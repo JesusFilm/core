@@ -24,7 +24,7 @@ const CREATE_VIDEO_EDITION = graphql(`
 
 export default function AddEditionPage() {
   const router = useRouter()
-  const { videoId } = useParams() as { videoId: string }
+  const { videoId } = useParams<{ videoId: string }>()
   const { enqueueSnackbar } = useSnackbar()
   const [createEdition] = useMutation(CREATE_VIDEO_EDITION)
 

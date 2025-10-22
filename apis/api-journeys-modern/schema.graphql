@@ -26,6 +26,7 @@ input BlockUpdateActionInput {
   phone: String
   countryCode: String
   target: String
+  chatUrl: String
   blockId: String
 }
 
@@ -46,6 +47,7 @@ enum ButtonAction {
   LinkAction
   EmailAction
   PhoneAction
+  ChatAction
 }
 
 enum ButtonAlignment {
@@ -125,12 +127,29 @@ type ButtonClickEvent implements Event
 }
 
 input ButtonClickEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
   stepId: ID
+
+  """stepName of the parent stepBlock"""
   label: String
+
+  """label of the button"""
   value: String
+
+  """Action type of the button when it was clicked"""
   action: ButtonAction
+
+  """
+  The label for each corresponding action, mapping below: 
+  NavigateToBlockAction - StepName (generated in client) of the StepBlock 
+  LinkAction - url of the link
+  """
   actionValue: String
 }
 
@@ -217,6 +236,26 @@ input CardBlockUpdateInput {
   themeName: ThemeName
 }
 
+type ChatAction implements Action
+  @shareable
+{
+  parentBlockId: ID!
+  gtmEventName: String
+  parentBlock: Block!
+  chatUrl: String!
+  target: String
+  customizable: Boolean
+  parentStepId: String
+}
+
+input ChatActionInput {
+  gtmEventName: String
+  chatUrl: String!
+  target: String
+  customizable: Boolean
+  parentStepId: String
+}
+
 type ChatButton
   @shareable
 {
@@ -247,10 +286,22 @@ type ChatOpenEvent implements Event
 }
 
 input ChatOpenEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
   id: ID
   blockId: ID!
+
+  """id of the parent stepBlock"""
   stepId: ID
+
+  """messagePlatform of the link used for chat"""
   value: MessagePlatform
+}
+
+enum ContactActionType {
+  call
+  text
 }
 
 type CustomDomain
@@ -369,6 +420,7 @@ enum EventType {
   StepViewEvent
   StepNextEvent
   StepPreviousEvent
+  MultiselectSubmissionEvent
   TextResponseSubmissionEvent
   VideoStartEvent
   VideoPlayEvent
@@ -649,6 +701,7 @@ type Journey
   showLogo: Boolean
   showMenu: Boolean
   showDisplayTitle: Boolean
+  showAssistant: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
   socialNodeX: Int
   socialNodeY: Int
@@ -897,6 +950,7 @@ input JourneyUpdateInput {
   showLogo: Boolean
   showMenu: Boolean
   showDisplayTitle: Boolean
+  showAssistant: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
   menuStepBlockId: ID
   logoImageBlockId: ID
@@ -937,6 +991,7 @@ type JourneyVisitor
   lastTextResponse: String
   lastRadioQuestion: String
   lastRadioOptionSubmission: String
+  lastMultiselectSubmission: String
   countryCode: String
   messagePlatform: MessagePlatform
   notes: String
@@ -951,10 +1006,18 @@ type JourneyVisitorEdge
   cursor: String!
 }
 
+input JourneyVisitorExportSelect {
+  name: Boolean
+  email: Boolean
+  phone: Boolean
+  createdAt: Boolean
+}
+
 input JourneyVisitorFilter {
   journeyId: String!
   hasChatStarted: Boolean
   hasPollAnswers: Boolean
+  hasMultiselectSubmission: Boolean
   hasTextResponse: Boolean
   hasIcon: Boolean
   hideInactive: Boolean
@@ -1092,6 +1155,69 @@ enum MessagePlatform {
   settings
 }
 
+type MultiselectBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  min: Int
+  max: Int
+}
+
+input MultiselectBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+}
+
+input MultiselectBlockUpdateInput {
+  parentBlockId: ID
+  min: Int
+  max: Int
+}
+
+type MultiselectOptionBlock implements Block
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  parentBlockId: ID
+  parentOrder: Int
+  label: String!
+}
+
+input MultiselectOptionBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  label: String!
+}
+
+input MultiselectOptionBlockUpdateInput {
+  parentBlockId: ID
+  label: String
+}
+
+type MultiselectSubmissionEvent implements Event
+  @shareable
+{
+  id: ID!
+  journeyId: ID!
+  createdAt: DateTime!
+  label: String
+  value: String
+}
+
+input MultiselectSubmissionEventCreateInput {
+  id: ID
+  blockId: ID!
+  stepId: ID
+  label: String
+  values: [String!]!
+}
+
 type Mutation {
   """blockDelete returns the updated sibling blocks on successful delete"""
   blockDelete(
@@ -1175,6 +1301,22 @@ type Mutation {
     """drop this parameter after merging teams"""
     journeyId: ID
   ): ImageBlock! @override(from: "api-journeys")
+  multiselectBlockCreate(input: MultiselectBlockCreateInput!): MultiselectBlock!
+  multiselectBlockUpdate(
+    id: ID!
+    input: MultiselectBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): MultiselectBlock!
+  multiselectOptionBlockCreate(input: MultiselectOptionBlockCreateInput!): MultiselectOptionBlock!
+  multiselectOptionBlockUpdate(
+    id: ID!
+    input: MultiselectOptionBlockUpdateInput!
+
+    """drop this parameter after merging teams"""
+    journeyId: ID
+  ): MultiselectOptionBlock!
   radioOptionBlockCreate(input: RadioOptionBlockCreateInput!): RadioOptionBlock! @override(from: "api-journeys")
   radioOptionBlockUpdate(
     id: ID!
@@ -1248,6 +1390,7 @@ type Mutation {
   blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID): LinkAction! @override(from: "api-journeys")
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction! @override(from: "api-journeys")
   blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID): PhoneAction! @override(from: "api-journeys")
+  blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID): ChatAction! @override(from: "api-journeys")
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput!): ChatButton @override(from: "api-journeys")
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton @override(from: "api-journeys")
   chatButtonRemove(id: ID!): ChatButton @override(from: "api-journeys")
@@ -1255,13 +1398,14 @@ type Mutation {
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain @override(from: "api-journeys")
   customDomainDelete(id: ID!): CustomDomain @override(from: "api-journeys")
   customDomainCheck(id: ID!): CustomDomainCheck! @override(from: "api-journeys")
-  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent @override(from: "api-journeys")
-  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent @override(from: "api-journeys")
+  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
+  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @override(from: "api-journeys")
   journeyViewEventCreate(input: JourneyViewEventCreateInput!): JourneyViewEvent @override(from: "api-journeys")
   stepViewEventCreate(input: StepViewEventCreateInput!): StepViewEvent @override(from: "api-journeys")
   stepNextEventCreate(input: StepNextEventCreateInput!): StepNextEvent @override(from: "api-journeys")
   stepPreviousEventCreate(input: StepPreviousEventCreateInput!): StepPreviousEvent @override(from: "api-journeys")
   radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput!): RadioQuestionSubmissionEvent @override(from: "api-journeys")
+  multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent! @override(from: "api-journeys")
   signUpSubmissionEventCreate(input: SignUpSubmissionEventCreateInput!): SignUpSubmissionEvent @override(from: "api-journeys")
   textResponseSubmissionEventCreate(input: TextResponseSubmissionEventCreateInput!): TextResponseSubmissionEvent @override(from: "api-journeys")
   videoStartEventCreate(input: VideoStartEventCreateInput!): VideoStartEvent @override(from: "api-journeys")
@@ -1381,12 +1525,14 @@ type PhoneAction implements Action
   parentBlock: Block!
   phone: String!
   countryCode: String!
+  contactAction: ContactActionType!
 }
 
 input PhoneActionInput {
   gtmEventName: String
   phone: String!
   countryCode: String!
+  contactAction: ContactActionType = call
 }
 
 input PlausibleStatsAggregateFilter {
@@ -1500,6 +1646,11 @@ type Query {
   getJourneyProfile: JourneyProfile @override(from: "api-journeys")
   journeyTheme(journeyId: ID!): JourneyTheme @override(from: "api-journeys")
   journeysEmailPreference(email: String!): JourneysEmailPreference @override(from: "api-journeys")
+
+  """
+  Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
+  """
+  journeyVisitorExport(journeyId: ID!, filter: JourneyEventsFilter, select: JourneyVisitorExportSelect): String
   journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType): Int @override(from: "api-journeys")
   journeysPlausibleStatsAggregate(id: ID!, idType: IdType, where: PlausibleStatsAggregateFilter!): PlausibleStatsAggregateResponse @override(from: "api-journeys")
   journeysPlausibleStatsBreakdown(id: ID!, idType: IdType, where: PlausibleStatsBreakdownFilter!): [PlausibleStatsResponse!] @override(from: "api-journeys")
@@ -1845,6 +1996,7 @@ type TextResponseBlock implements Block
   placeholder: String
   required: Boolean
   hint: String
+  hideLabel: Boolean
   minRows: Int
   type: TextResponseType
   routeId: String
@@ -1864,6 +2016,7 @@ input TextResponseBlockUpdateInput {
   placeholder: String
   required: Boolean
   hint: String
+  hideLabel: Boolean
   minRows: Int
   routeId: String
   type: TextResponseType

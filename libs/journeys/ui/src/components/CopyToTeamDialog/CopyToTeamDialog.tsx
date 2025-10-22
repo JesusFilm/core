@@ -8,6 +8,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Formik, FormikHelpers } from 'formik'
 import sortBy from 'lodash/sortBy'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { boolean, object, string } from 'yup'
@@ -15,6 +16,7 @@ import { boolean, object, string } from 'yup'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
+import { useJourney } from '../../libs/JourneyProvider'
 import { SUPPORTED_LANGUAGE_IDS } from '../../libs/useJourneyAiTranslateSubscription/supportedLanguages'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
@@ -85,9 +87,19 @@ export function CopyToTeamDialog({
 }: CopyToTeamDialogProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { query, setActiveTeam } = useTeam()
+  const { journey } = useJourney()
   const teams = query?.data?.teams ?? []
   const [updateLastActiveTeamId, { client }] =
     useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
+
+  const { pathname } = useRouter()
+  const isTemplatesAdmin = pathname?.includes('/publisher') ?? false
+  const isOriginalTemplate =
+    journey?.template && journey?.fromTemplateId == null
+
+  // this is to prevent publishers from copying and translating non-original templates - which will break Languages screen of journey customization flow
+  const disablePublisherCopyAndTranslate =
+    !isOriginalTemplate && isTemplatesAdmin
 
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529',
@@ -204,6 +216,7 @@ export function CopyToTeamDialog({
             onTranslate={handleFormSubmit}
             title={title}
             loading={loading || isSubmitting}
+            disabled={disablePublisherCopyAndTranslate}
             isTranslation={values.showTranslation || isTranslating}
             submitLabel={submitLabel}
             divider={false}
@@ -262,6 +275,7 @@ export function CopyToTeamDialog({
                 <FormControlLabel
                   control={
                     <Switch
+                      disabled={disablePublisherCopyAndTranslate}
                       checked={values.showTranslation}
                       onChange={(e) =>
                         setFieldValue('showTranslation', e.target.checked)
@@ -275,6 +289,13 @@ export function CopyToTeamDialog({
                   }
                 />
               </Stack>
+              {disablePublisherCopyAndTranslate && (
+                <Typography variant="caption" color="red">
+                  {t(
+                    `This template isn't the original — it's a copy or an AI translated copy. For most accurate translations, please translate from the original template`
+                  )}
+                </Typography>
+              )}
               {values.showTranslation && (
                 <LanguageAutocomplete
                   languages={languagesData?.languages}

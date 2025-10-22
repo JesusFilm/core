@@ -36,7 +36,7 @@ const CREATE_STUDY_QUESTION = graphql(`
 
 export default function StudyQuestionsAddPage(): ReactElement {
   const router = useRouter()
-  const { videoId } = useParams() as { videoId: string }
+  const { videoId } = useParams<{ videoId: string }>()
   const { enqueueSnackbar } = useSnackbar()
   const { data } = useSuspenseQuery(GET_STUDY_QUESTIONS, {
     variables: { videoId }

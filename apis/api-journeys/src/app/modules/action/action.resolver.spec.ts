@@ -31,8 +31,10 @@ describe('ActionResolver', () => {
     email: 'john.smith@example.com',
     phone: null,
     countryCode: null,
+    contactAction: null,
     customizable: null,
-    parentStepId: null
+    parentStepId: null,
+    chatUrl: null
   }
   const linkAction: Action = {
     parentBlockId: 'parentBlockId',
@@ -45,8 +47,10 @@ describe('ActionResolver', () => {
     email: null,
     phone: null,
     countryCode: null,
+    contactAction: null,
     customizable: null,
-    parentStepId: null
+    parentStepId: null,
+    chatUrl: null
   }
   const navigateToBlockAction: Action = {
     parentBlockId: 'parentBlockId',
@@ -59,8 +63,10 @@ describe('ActionResolver', () => {
     email: null,
     phone: null,
     countryCode: null,
+    contactAction: null,
     customizable: null,
-    parentStepId: null
+    parentStepId: null,
+    chatUrl: null
   }
   const phoneAction: Action = {
     parentBlockId: 'parentBlockId',
@@ -73,8 +79,10 @@ describe('ActionResolver', () => {
     email: null,
     phone: '1234567890',
     countryCode: 'US',
+    contactAction: null,
     customizable: null,
-    parentStepId: null
+    parentStepId: null,
+    chatUrl: null
   }
 
   beforeEach(async () => {

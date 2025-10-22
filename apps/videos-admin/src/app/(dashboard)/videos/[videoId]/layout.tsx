@@ -53,7 +53,7 @@ export default function VideoViewLayout({
   studyQuestions
 }: VideoViewLayoutProps): ReactNode {
   const router = useRouter()
-  const { videoId } = useParams() as { videoId: string }
+  const { videoId } = useParams<{ videoId: string }>()
   // keep metadata visible when modal is open
   const availableTabs = ['metadata', 'audio', 'children', 'editions']
   const segment = useSelectedLayoutSegment() ?? 'metadata'

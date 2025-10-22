@@ -36,6 +36,9 @@ export const TextResponseBlock = builder.prismaObject('Block', {
     hint: t.exposeString('hint', {
       nullable: true
     }),
+    hideLabel: t.exposeBoolean('hideLabel', {
+      nullable: true
+    }),
     minRows: t.exposeInt('minRows', {
       nullable: true
     }),

@@ -203,6 +203,9 @@ export const JourneyRef = builder.prismaObject('Journey', {
     showDisplayTitle: t.exposeBoolean('showDisplayTitle', {
       nullable: true
     }),
+    showAssistant: t.exposeBoolean('showAssistant', {
+      nullable: true
+    }),
 
     // UI Configuration Fields
     menuButtonIcon: t.field({
