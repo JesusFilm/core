@@ -1,1 +1,1 @@
-export { createApolloClient } from '../apolloClient'
+export { createApolloClient } from './apolloClient'
