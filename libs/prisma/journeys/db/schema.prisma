@@ -263,6 +263,7 @@ model Team {
 model Integration {
   id                     String          @id @default(uuid())
   teamId                 String
+  userId                 String?
   type                   IntegrationType
   accessId               String?
   accessSecretPart       String?
@@ -272,6 +273,7 @@ model Integration {
   team                   Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@index([teamId])
+  @@index(userId)
 }
 
 model UserTeam {

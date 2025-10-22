@@ -1,11 +1,12 @@
 import { gql, useMutation } from '@apollo/client'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { useIntegrationQuery } from '../../../libs/useIntegrationQuery'
-import { GoogleSettings } from '../GoogleSettings/GoogleSettings'
 
 export const INTEGRATION_GOOGLE_UPDATE = gql`
   mutation IntegrationGoogleUpdate(
@@ -41,6 +42,29 @@ export function GoogleIntegrationDetails(): ReactElement {
 
   const [integrationGoogleUpdate] = useMutation(INTEGRATION_GOOGLE_UPDATE)
   const [integrationDelete] = useMutation(INTEGRATION_DELETE)
+
+  const computedRedirectUri = useMemo(() => {
+    if (typeof window === 'undefined') return undefined
+    const url = new URL(window.location.href)
+    url.search = ''
+    return url.toString()
+  }, [])
+
+  const oauthUrl = useMemo(() => {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+    if (clientId == null || computedRedirectUri == null) return undefined
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: computedRedirectUri,
+      response_type: 'code',
+      scope: 'openid email profile',
+      access_type: 'offline',
+      include_granted_scopes: 'true',
+      prompt: 'consent',
+      state: (router.query.teamId as string) ?? ''
+    })
+    return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
+  }, [computedRedirectUri, router.query.teamId])
 
   async function handleClick(): Promise<void> {
     try {
@@ -128,14 +152,20 @@ export function GoogleIntegrationDetails(): ReactElement {
   }, [data?.integrations, integrationId])
 
   return (
-    <GoogleSettings
-      code={code}
-      redirectUri={redirectUri}
-      setCode={setCode}
-      setRedirectUri={setRedirectUri}
-      disabled={loading || integrationLoading}
-      onClick={handleClick}
-      onDelete={handleDelete}
-    />
+    <Stack gap={4}>
+      <Stack direction="row" justifyContent="flex-end">
+        <Button
+          variant="outlined"
+          href={oauthUrl}
+          disabled={oauthUrl == null || loading || integrationLoading}
+          aria-label={t('Reconnect with Google')}
+        >
+          {t('Reconnect with Google')}
+        </Button>
+        <Button onClick={handleDelete} disabled={loading || integrationLoading}>
+          {t('Remove')}
+        </Button>
+      </Stack>
+    </Stack>
   )
 }

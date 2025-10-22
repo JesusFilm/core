@@ -23,8 +23,14 @@ builder.mutationField('integrationGoogleCreate', (t) =>
     args: {
       input: t.arg({ type: IntegrationGoogleCreateInput, required: true })
     },
-    resolve: async (_query, _parent, args) => {
+    resolve: async (_query, _parent, args, context) => {
       const { teamId, code, redirectUri } = args.input
+      const userId = context.user?.id
+      if (userId == null) {
+        throw new GraphQLError('unauthenticated', {
+          extensions: { code: 'UNAUTHENTICATED' }
+        })
+      }
 
       const clientId = process.env.GOOGLE_CLIENT_ID
       const clientSecret = process.env.GOOGLE_CLIENT_SECRET
@@ -64,6 +70,7 @@ builder.mutationField('integrationGoogleCreate', (t) =>
         data: {
           type: 'google',
           teamId,
+          userId,
           accessId: 'oauth2',
           accessSecretPart: accessToken.slice(0, 6),
           accessSecretCipherText: ciphertext,

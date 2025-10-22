@@ -6,8 +6,6 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 
-import { GoogleSettings } from '../GoogleSettings/GoogleSettings'
-
 export const INTEGRATION_GOOGLE_CREATE = gql`
   mutation IntegrationGoogleCreate($input: IntegrationGoogleCreateInput!) {
     integrationGoogleCreate(input: $input) {
@@ -108,25 +106,15 @@ export function GoogleCreateIntegration(): ReactElement {
   }
 
   return (
-    <>
-      <Stack direction="row" justifyContent="flex-end" sx={{ mb: 4 }}>
-        <Button
-          variant="outlined"
-          href={oauthUrl}
-          disabled={oauthUrl == null || loading}
-          aria-label={t('Connect with Google')}
-        >
-          {t('Connect with Google')}
-        </Button>
-      </Stack>
-      <GoogleSettings
-        code={code}
-        redirectUri={redirectUri}
-        setCode={(value) => setCode(value)}
-        setRedirectUri={(value) => setRedirectUri(value)}
-        disabled={loading}
-        onClick={handleClick}
-      />
-    </>
+    <Stack direction="row" justifyContent="flex-end">
+      <Button
+        variant="outlined"
+        href={oauthUrl}
+        disabled={oauthUrl == null || loading}
+        aria-label={t('Connect with Google')}
+      >
+        {t('Connect with Google')}
+      </Button>
+    </Stack>
   )
 }

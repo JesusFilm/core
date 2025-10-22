@@ -23,8 +23,14 @@ builder.mutationField('integrationGoogleUpdate', (t) =>
       id: t.arg.id({ required: true }),
       input: t.arg({ type: IntegrationGoogleUpdateInput, required: true })
     },
-    resolve: async (_query, _parent, args) => {
+    resolve: async (_query, _parent, args, context) => {
       const { id, input } = args
+      const userId = context.user?.id
+      if (userId == null) {
+        throw new GraphQLError('unauthenticated', {
+          extensions: { code: 'UNAUTHENTICATED' }
+        })
+      }
 
       const clientId = process.env.GOOGLE_CLIENT_ID
       const clientSecret = process.env.GOOGLE_CLIENT_SECRET
@@ -63,6 +69,7 @@ builder.mutationField('integrationGoogleUpdate', (t) =>
       return await prisma.integration.update({
         where: { id },
         data: {
+          userId,
           accessId: 'oauth2',
           accessSecretPart: accessToken.slice(0, 6),
           accessSecretCipherText: ciphertext,
