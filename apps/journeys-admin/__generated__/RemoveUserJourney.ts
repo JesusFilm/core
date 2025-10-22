@@ -16,7 +16,7 @@ export interface RemoveUserJourney {
   /**
    * Removes all userJourneys associated with a journeyId
    */
-  userJourneyRemoveAll: RemoveUserJourney_userJourneyRemoveAll[];
+  userJourneyRemoveAll: RemoveUserJourney_userJourneyRemoveAll[] | null;
 }
 
 export interface RemoveUserJourneyVariables {

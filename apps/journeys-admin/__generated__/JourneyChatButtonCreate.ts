@@ -17,7 +17,7 @@ export interface JourneyChatButtonCreate_chatButtonCreate {
 }
 
 export interface JourneyChatButtonCreate {
-  chatButtonCreate: JourneyChatButtonCreate_chatButtonCreate;
+  chatButtonCreate: JourneyChatButtonCreate_chatButtonCreate | null;
 }
 
 export interface JourneyChatButtonCreateVariables {

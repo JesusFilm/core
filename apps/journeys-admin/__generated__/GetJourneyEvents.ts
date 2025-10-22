@@ -33,7 +33,7 @@ export interface GetJourneyEvents_journeyEventsConnection_edges_node {
 export interface GetJourneyEvents_journeyEventsConnection_edges {
   __typename: "JourneyEventEdge";
   cursor: string;
-  node: GetJourneyEvents_journeyEventsConnection_edges_node;
+  node: GetJourneyEvents_journeyEventsConnection_edges_node | null;
 }
 
 export interface GetJourneyEvents_journeyEventsConnection_pageInfo {
@@ -58,7 +58,7 @@ export interface GetJourneyEvents_journeyEventsConnection_pageInfo {
 
 export interface GetJourneyEvents_journeyEventsConnection {
   __typename: "JourneyEventsConnection";
-  edges: GetJourneyEvents_journeyEventsConnection_edges[];
+  edges: (GetJourneyEvents_journeyEventsConnection_edges | null)[] | null;
   pageInfo: GetJourneyEvents_journeyEventsConnection_pageInfo;
 }
 

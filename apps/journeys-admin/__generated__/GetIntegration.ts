@@ -31,7 +31,7 @@ export interface GetIntegration_integrations {
 }
 
 export interface GetIntegration {
-  integrations: GetIntegration_integrations[];
+  integrations: GetIntegration_integrations[] | null;
 }
 
 export interface GetIntegrationVariables {

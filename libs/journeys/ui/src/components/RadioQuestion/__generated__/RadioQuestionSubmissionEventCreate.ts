@@ -15,7 +15,7 @@ export interface RadioQuestionSubmissionEventCreate_radioQuestionSubmissionEvent
 }
 
 export interface RadioQuestionSubmissionEventCreate {
-  radioQuestionSubmissionEventCreate: RadioQuestionSubmissionEventCreate_radioQuestionSubmissionEventCreate;
+  radioQuestionSubmissionEventCreate: RadioQuestionSubmissionEventCreate_radioQuestionSubmissionEventCreate | null;
 }
 
 export interface RadioQuestionSubmissionEventCreateVariables {

@@ -21,5 +21,5 @@ export interface GetJourneyProfileAndTeams_teams {
 
 export interface GetJourneyProfileAndTeams {
   getJourneyProfile: GetJourneyProfileAndTeams_getJourneyProfile | null;
-  teams: GetJourneyProfileAndTeams_teams[];
+  teams: GetJourneyProfileAndTeams_teams[] | null;
 }

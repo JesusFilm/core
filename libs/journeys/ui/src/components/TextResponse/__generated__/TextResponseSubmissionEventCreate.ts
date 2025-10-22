@@ -15,7 +15,7 @@ export interface TextResponseSubmissionEventCreate_textResponseSubmissionEventCr
 }
 
 export interface TextResponseSubmissionEventCreate {
-  textResponseSubmissionEventCreate: TextResponseSubmissionEventCreate_textResponseSubmissionEventCreate;
+  textResponseSubmissionEventCreate: TextResponseSubmissionEventCreate_textResponseSubmissionEventCreate | null;
 }
 
 export interface TextResponseSubmissionEventCreateVariables {

@@ -17,7 +17,7 @@ export interface GetAllTeamHosts_hosts {
 }
 
 export interface GetAllTeamHosts {
-  hosts: GetAllTeamHosts_hosts[];
+  hosts: GetAllTeamHosts_hosts[] | null;
 }
 
 export interface GetAllTeamHostsVariables {

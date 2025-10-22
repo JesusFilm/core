@@ -15,7 +15,7 @@ export interface StepPreviousEventCreate_stepPreviousEventCreate {
 }
 
 export interface StepPreviousEventCreate {
-  stepPreviousEventCreate: StepPreviousEventCreate_stepPreviousEventCreate;
+  stepPreviousEventCreate: StepPreviousEventCreate_stepPreviousEventCreate | null;
 }
 
 export interface StepPreviousEventCreateVariables {

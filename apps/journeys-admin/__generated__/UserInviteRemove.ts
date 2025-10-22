@@ -15,7 +15,7 @@ export interface UserInviteRemove_userInviteRemove {
 }
 
 export interface UserInviteRemove {
-  userInviteRemove: UserInviteRemove_userInviteRemove;
+  userInviteRemove: UserInviteRemove_userInviteRemove | null;
 }
 
 export interface UserInviteRemoveVariables {

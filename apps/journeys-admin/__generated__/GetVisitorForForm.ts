@@ -55,7 +55,7 @@ export interface GetVisitorForForm {
   /**
    * Get a single visitor
    */
-  visitor: GetVisitorForForm_visitor;
+  visitor: GetVisitorForForm_visitor | null;
 }
 
 export interface GetVisitorForFormVariables {

@@ -1035,12 +1035,12 @@ export type JourneyEvent = Event & Node & {
 export type JourneyEventEdge = {
   __typename?: 'JourneyEventEdge';
   cursor: Scalars['String']['output'];
-  node: JourneyEvent;
+  node?: Maybe<JourneyEvent>;
 };
 
 export type JourneyEventsConnection = {
   __typename?: 'JourneyEventsConnection';
-  edges: Array<JourneyEventEdge>;
+  edges?: Maybe<Array<Maybe<JourneyEventEdge>>>;
   pageInfo: PageInfo;
 };
 
@@ -1283,7 +1283,7 @@ export type JourneyVisitorEdge = {
   /** A cursor for use in pagination. */
   cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
-  node: JourneyVisitor;
+  node?: Maybe<JourneyVisitor>;
 };
 
 export type JourneyVisitorExportSelect = {
@@ -1313,7 +1313,7 @@ export enum JourneyVisitorSort {
 export type JourneyVisitorsConnection = {
   __typename?: 'JourneyVisitorsConnection';
   /** A list of edges. */
-  edges: Array<JourneyVisitorEdge>;
+  edges?: Maybe<Array<Maybe<JourneyVisitorEdge>>>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
 };
@@ -1584,9 +1584,9 @@ export type Mutation = {
   buttonClickEventCreate: ButtonClickEvent;
   cardBlockCreate: CardBlock;
   cardBlockUpdate: CardBlock;
-  chatButtonCreate: ChatButton;
-  chatButtonRemove: ChatButton;
-  chatButtonUpdate: ChatButton;
+  chatButtonCreate?: Maybe<ChatButton>;
+  chatButtonRemove?: Maybe<ChatButton>;
+  chatButtonUpdate?: Maybe<ChatButton>;
   chatOpenEventCreate: ChatOpenEvent;
   /** The endpoint to upload a file to Cloudflare R2 */
   cloudflareR2Create: CloudflareR2;
@@ -1604,20 +1604,21 @@ export type Mutation = {
   createMuxVideoUploadByUrl: MuxVideo;
   createVerificationRequest?: Maybe<Scalars['Boolean']['output']>;
   customDomainCheck: CustomDomainCheck;
-  customDomainCreate: CustomDomain;
-  customDomainDelete: CustomDomain;
-  customDomainUpdate: CustomDomain;
+  customDomainCreate?: Maybe<CustomDomain>;
+  customDomainDelete?: Maybe<CustomDomain>;
+  customDomainUpdate?: Maybe<CustomDomain>;
   deleteCloudflareImage: Scalars['Boolean']['output'];
   deleteMuxVideo: Scalars['Boolean']['output'];
   enableMuxDownload?: Maybe<MuxVideo>;
-  hostCreate: Host;
-  hostDelete: Host;
-  hostUpdate: Host;
+  fixVideoLanguages: Scalars['Boolean']['output'];
+  hostCreate?: Maybe<Host>;
+  hostDelete?: Maybe<Host>;
+  hostUpdate?: Maybe<Host>;
   iconBlockCreate: IconBlock;
   iconBlockUpdate: IconBlock;
   imageBlockCreate: ImageBlock;
   imageBlockUpdate: ImageBlock;
-  integrationDelete: Integration;
+  integrationDelete?: Maybe<Integration>;
   integrationGrowthSpacesCreate: IntegrationGrowthSpaces;
   integrationGrowthSpacesUpdate: IntegrationGrowthSpaces;
   journeyAiTranslateCreate: Journey;
@@ -1631,7 +1632,7 @@ export type Mutation = {
   /** Sets journey status to featured */
   journeyFeature?: Maybe<Journey>;
   journeyLanguageAiDetect: Scalars['Boolean']['output'];
-  journeyNotificationUpdate: JourneyNotification;
+  journeyNotificationUpdate?: Maybe<JourneyNotification>;
   journeyProfileCreate: JourneyProfile;
   journeyProfileUpdate: JourneyProfile;
   /** Sets journey status to published */
@@ -1676,7 +1677,7 @@ export type Mutation = {
   radioOptionBlockUpdate: RadioOptionBlock;
   radioQuestionBlockCreate: RadioQuestionBlock;
   radioQuestionBlockUpdate: RadioQuestionBlock;
-  radioQuestionSubmissionEventCreate: RadioQuestionSubmissionEvent;
+  radioQuestionSubmissionEventCreate?: Maybe<RadioQuestionSubmissionEvent>;
   /** create a new short link */
   shortLinkCreate: MutationShortLinkCreateResult;
   /** delete an existing short link */
@@ -1691,46 +1692,46 @@ export type Mutation = {
   shortLinkUpdate: MutationShortLinkUpdateResult;
   signUpBlockCreate: SignUpBlock;
   signUpBlockUpdate?: Maybe<SignUpBlock>;
-  signUpSubmissionEventCreate: SignUpSubmissionEvent;
+  signUpSubmissionEventCreate?: Maybe<SignUpSubmissionEvent>;
   siteCreate: MutationSiteCreateResult;
   spacerBlockCreate: SpacerBlock;
   spacerBlockUpdate: SpacerBlock;
   stepBlockCreate: StepBlock;
   stepBlockPositionUpdate: Array<StepBlock>;
   stepBlockUpdate: StepBlock;
-  stepNextEventCreate: StepNextEvent;
-  stepPreviousEventCreate: StepPreviousEvent;
-  stepViewEventCreate: StepViewEvent;
-  teamCreate: Team;
-  teamUpdate: Team;
+  stepNextEventCreate?: Maybe<StepNextEvent>;
+  stepPreviousEventCreate?: Maybe<StepPreviousEvent>;
+  stepViewEventCreate?: Maybe<StepViewEvent>;
+  teamCreate?: Maybe<Team>;
+  teamUpdate?: Maybe<Team>;
   textResponseBlockCreate: TextResponseBlock;
   textResponseBlockUpdate?: Maybe<TextResponseBlock>;
-  textResponseSubmissionEventCreate: TextResponseSubmissionEvent;
+  textResponseSubmissionEventCreate?: Maybe<TextResponseSubmissionEvent>;
   triggerUnsplashDownload: Scalars['Boolean']['output'];
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
   userImpersonate?: Maybe<Scalars['String']['output']>;
-  userInviteAcceptAll: Array<UserInvite>;
+  userInviteAcceptAll?: Maybe<Array<UserInvite>>;
   userInviteCreate?: Maybe<UserInvite>;
-  userInviteRemove: UserInvite;
-  userJourneyApprove: UserJourney;
+  userInviteRemove?: Maybe<UserInvite>;
+  userJourneyApprove?: Maybe<UserJourney>;
   userJourneyOpen?: Maybe<UserJourney>;
-  userJourneyPromote: UserJourney;
-  userJourneyRemove: UserJourney;
+  userJourneyPromote?: Maybe<UserJourney>;
+  userJourneyRemove?: Maybe<UserJourney>;
   /** Removes all userJourneys associated with a journeyId */
-  userJourneyRemoveAll: Array<UserJourney>;
-  userJourneyRequest: UserJourney;
-  userTeamDelete: UserTeam;
-  userTeamInviteAcceptAll: Array<UserTeamInvite>;
+  userJourneyRemoveAll?: Maybe<Array<UserJourney>>;
+  userJourneyRequest?: Maybe<UserJourney>;
+  userTeamDelete?: Maybe<UserTeam>;
+  userTeamInviteAcceptAll?: Maybe<Array<UserTeamInvite>>;
   userTeamInviteCreate?: Maybe<UserTeamInvite>;
-  userTeamInviteRemove: UserTeamInvite;
-  userTeamUpdate: UserTeam;
+  userTeamInviteRemove?: Maybe<UserTeamInvite>;
+  userTeamUpdate?: Maybe<UserTeam>;
   validateEmail?: Maybe<User>;
   videoBlockCreate: VideoBlock;
   videoBlockUpdate: VideoBlock;
-  videoCollapseEventCreate: VideoCollapseEvent;
-  videoCompleteEventCreate: VideoCompleteEvent;
+  videoCollapseEventCreate?: Maybe<VideoCollapseEvent>;
+  videoCompleteEventCreate?: Maybe<VideoCompleteEvent>;
   videoCreate: Video;
   videoDelete: Video;
   videoDescriptionCreate: VideoDescription;
@@ -1739,20 +1740,20 @@ export type Mutation = {
   videoEditionCreate: VideoEdition;
   videoEditionDelete: VideoEdition;
   videoEditionUpdate: VideoEdition;
-  videoExpandEventCreate: VideoExpandEvent;
+  videoExpandEventCreate?: Maybe<VideoExpandEvent>;
   videoImageAltCreate: VideoImageAlt;
   videoImageAltDelete: VideoImageAlt;
   videoImageAltUpdate: VideoImageAlt;
   videoOriginCreate: VideoOrigin;
   videoOriginDelete: VideoOrigin;
   videoOriginUpdate: VideoOrigin;
-  videoPauseEventCreate: VideoPauseEvent;
-  videoPlayEventCreate: VideoPlayEvent;
-  videoProgressEventCreate: VideoProgressEvent;
+  videoPauseEventCreate?: Maybe<VideoPauseEvent>;
+  videoPlayEventCreate?: Maybe<VideoPlayEvent>;
+  videoProgressEventCreate?: Maybe<VideoProgressEvent>;
   videoSnippetCreate: VideoSnippet;
   videoSnippetDelete: VideoSnippet;
   videoSnippetUpdate: VideoSnippet;
-  videoStartEventCreate: VideoStartEvent;
+  videoStartEventCreate?: Maybe<VideoStartEvent>;
   videoStudyQuestionCreate: VideoStudyQuestion;
   videoStudyQuestionDelete: VideoStudyQuestion;
   videoStudyQuestionUpdate: VideoStudyQuestion;
@@ -1762,6 +1763,8 @@ export type Mutation = {
   videoTitleCreate: VideoTitle;
   videoTitleDelete: VideoTitle;
   videoTitleUpdate: VideoTitle;
+  videoTriggerBlockCreate: VideoTriggerBlock;
+  videoTriggerBlockUpdate: VideoTriggerBlock;
   videoUpdate: Video;
   videoVariantCreate: VideoVariant;
   videoVariantDelete: VideoVariant;
@@ -1770,9 +1773,9 @@ export type Mutation = {
   videoVariantDownloadUpdate: VideoVariantDownload;
   videoVariantUpdate: VideoVariant;
   /** Update a visitor */
-  visitorUpdate: Visitor;
+  visitorUpdate?: Maybe<Visitor>;
   /** Allow current user to update specific allowable fields of their visitor record */
-  visitorUpdateForCurrentUser: Visitor;
+  visitorUpdateForCurrentUser?: Maybe<Visitor>;
 };
 
 
@@ -1912,7 +1915,7 @@ export type MutationCardBlockUpdateArgs = {
 
 
 export type MutationChatButtonCreateArgs = {
-  input?: InputMaybe<ChatButtonCreateInput>;
+  input: ChatButtonCreateInput;
   journeyId: Scalars['ID']['input'];
 };
 
@@ -2055,6 +2058,11 @@ export type MutationDeleteMuxVideoArgs = {
 export type MutationEnableMuxDownloadArgs = {
   id: Scalars['ID']['input'];
   resolution?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationFixVideoLanguagesArgs = {
+  videoId: Scalars['ID']['input'];
 };
 
 
@@ -2457,13 +2465,13 @@ export type MutationStepViewEventCreateArgs = {
 
 
 export type MutationTeamCreateArgs = {
-  input?: InputMaybe<TeamCreateInput>;
+  input: TeamCreateInput;
 };
 
 
 export type MutationTeamUpdateArgs = {
   id: Scalars['ID']['input'];
-  input?: InputMaybe<TeamUpdateInput>;
+  input: TeamUpdateInput;
 };
 
 
@@ -2512,7 +2520,7 @@ export type MutationUserImpersonateArgs = {
 
 
 export type MutationUserInviteCreateArgs = {
-  input?: InputMaybe<UserInviteCreateInput>;
+  input: UserInviteCreateInput;
   journeyId: Scalars['ID']['input'];
 };
 
@@ -2549,7 +2557,6 @@ export type MutationUserJourneyRemoveAllArgs = {
 
 
 export type MutationUserJourneyRequestArgs = {
-  idType?: InputMaybe<IdType>;
   journeyId: Scalars['ID']['input'];
 };
 
@@ -2560,7 +2567,7 @@ export type MutationUserTeamDeleteArgs = {
 
 
 export type MutationUserTeamInviteCreateArgs = {
-  input?: InputMaybe<UserTeamInviteCreateInput>;
+  input: UserTeamInviteCreateInput;
   teamId: Scalars['ID']['input'];
 };
 
@@ -2572,7 +2579,7 @@ export type MutationUserTeamInviteRemoveArgs = {
 
 export type MutationUserTeamUpdateArgs = {
   id: Scalars['ID']['input'];
-  input?: InputMaybe<UserTeamUpdateInput>;
+  input: UserTeamUpdateInput;
 };
 
 
@@ -2756,6 +2763,18 @@ export type MutationVideoTitleDeleteArgs = {
 
 export type MutationVideoTitleUpdateArgs = {
   input: VideoTranslationUpdateInput;
+};
+
+
+export type MutationVideoTriggerBlockCreateArgs = {
+  input: VideoTriggerBlockCreateInput;
+};
+
+
+export type MutationVideoTriggerBlockUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: VideoTriggerBlockUpdateInput;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -3399,12 +3418,12 @@ export type Query = {
   bibleBooks: Array<BibleBook>;
   bibleCitation: BibleCitation;
   bibleCitations: Array<BibleCitation>;
-  block: Block;
+  block?: Maybe<Block>;
   blocks: Array<Block>;
   countries: Array<Country>;
   country?: Maybe<Country>;
-  customDomain: CustomDomain;
-  customDomains: Array<CustomDomain>;
+  customDomain?: Maybe<CustomDomain>;
+  customDomains?: Maybe<Array<CustomDomain>>;
   getJourneyProfile?: Maybe<JourneyProfile>;
   getMuxVideo?: Maybe<MuxVideo>;
   getMyCloudflareImage: CloudflareImage;
@@ -3412,24 +3431,24 @@ export type Query = {
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
   getUserRole?: Maybe<UserRole>;
-  hosts: Array<Host>;
-  integrations: Array<Integration>;
-  journey: Journey;
+  hosts?: Maybe<Array<Host>>;
+  integrations?: Maybe<Array<Integration>>;
+  journey?: Maybe<Journey>;
   journeyCollection: JourneyCollection;
   journeyCollections: Array<Maybe<JourneyCollection>>;
   journeyEventsConnection: JourneyEventsConnection;
-  journeyEventsCount: Scalars['Int']['output'];
+  journeyEventsCount?: Maybe<Scalars['Int']['output']>;
   journeySimpleGet?: Maybe<Scalars['Json']['output']>;
   journeyTheme?: Maybe<JourneyTheme>;
   /** Get a JourneyVisitor count by JourneyVisitorFilter */
-  journeyVisitorCount: Scalars['Int']['output'];
+  journeyVisitorCount?: Maybe<Scalars['Int']['output']>;
   /** Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information */
   journeyVisitorExport?: Maybe<Scalars['String']['output']>;
   /** Get a list of Visitor Information by Journey */
   journeyVisitorsConnection: JourneyVisitorsConnection;
   journeys: Array<Journey>;
   journeysEmailPreference?: Maybe<JourneysEmailPreference>;
-  journeysPlausibleStatsAggregate: PlausibleStatsAggregateResponse;
+  journeysPlausibleStatsAggregate?: Maybe<PlausibleStatsAggregateResponse>;
   /**
    * This endpoint allows you to break down your stats by some property.
    * If you are familiar with SQL family databases, this endpoint corresponds to
@@ -3448,14 +3467,14 @@ export type Query = {
    * breakdown for every page, you would have to break down on `event:page` and
    * make multiple queries for each date.
    */
-  journeysPlausibleStatsBreakdown: Array<PlausibleStatsResponse>;
-  journeysPlausibleStatsRealtimeVisitors: Scalars['Int']['output'];
+  journeysPlausibleStatsBreakdown?: Maybe<Array<PlausibleStatsResponse>>;
+  journeysPlausibleStatsRealtimeVisitors?: Maybe<Scalars['Int']['output']>;
   /**
    * This endpoint provides timeseries data over a certain time period.
    * If you are familiar with the Plausible dashboard, this endpoint
    * corresponds to the main visitor graph.
    */
-  journeysPlausibleStatsTimeseries: Array<PlausibleStatsResponse>;
+  journeysPlausibleStatsTimeseries?: Maybe<Array<PlausibleStatsResponse>>;
   keywords: Array<Keyword>;
   language?: Maybe<Language>;
   languages: Array<Language>;
@@ -3481,14 +3500,14 @@ export type Query = {
   shortLinks: QueryShortLinksConnection;
   tags: Array<Tag>;
   taxonomies: Array<Taxonomy>;
-  team: Team;
-  teams: Array<Team>;
+  team?: Maybe<Team>;
+  teams?: Maybe<Array<Team>>;
   user?: Maybe<User>;
   userByEmail?: Maybe<User>;
   userInvites?: Maybe<Array<UserInvite>>;
-  userTeam: UserTeam;
-  userTeamInvites: Array<UserTeamInvite>;
-  userTeams: Array<UserTeam>;
+  userTeam?: Maybe<UserTeam>;
+  userTeamInvites?: Maybe<Array<UserTeamInvite>>;
+  userTeams?: Maybe<Array<UserTeam>>;
   video: Video;
   videoEdition?: Maybe<VideoEdition>;
   videoEditions: Array<VideoEdition>;
@@ -3498,7 +3517,7 @@ export type Query = {
   videos: Array<Video>;
   videosCount: Scalars['Int']['output'];
   /** Get a single visitor */
-  visitor: Visitor;
+  visitor?: Maybe<Visitor>;
   /** A list of visitors that are connected with a specific team. */
   visitorsConnection: VisitorsConnection;
 };
@@ -5510,6 +5529,18 @@ export type VideoTriggerBlock = Block & {
   triggerStart: Scalars['Int']['output'];
 };
 
+export type VideoTriggerBlockCreateInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  journeyId: Scalars['ID']['input'];
+  parentBlockId: Scalars['ID']['input'];
+  /** triggerStart sets the time as to when a video navigates to the next block, this is the number of seconds since the start of the video */
+  triggerStart?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type VideoTriggerBlockUpdateInput = {
+  triggerStart?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type VideoUpdateInput = {
   childIds?: InputMaybe<Array<Scalars['String']['input']>>;
   id: Scalars['String']['input'];
@@ -5760,7 +5791,7 @@ export type VisitorEdge = {
   /** A cursor for use in pagination. */
   cursor: Scalars['String']['output'];
   /** The item at the end of the edge. */
-  node: Visitor;
+  node?: Maybe<Visitor>;
 };
 
 /**
@@ -5823,7 +5854,7 @@ export type VisitorUpdateInput = {
 export type VisitorsConnection = {
   __typename?: 'VisitorsConnection';
   /** A list of edges. */
-  edges: Array<VisitorEdge>;
+  edges?: Maybe<Array<Maybe<VisitorEdge>>>;
   /** Information to aid in pagination. */
   pageInfo: PageInfo;
 };

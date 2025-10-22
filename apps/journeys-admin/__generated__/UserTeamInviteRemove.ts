@@ -13,7 +13,7 @@ export interface UserTeamInviteRemove_userTeamInviteRemove {
 }
 
 export interface UserTeamInviteRemove {
-  userTeamInviteRemove: UserTeamInviteRemove_userTeamInviteRemove;
+  userTeamInviteRemove: UserTeamInviteRemove_userTeamInviteRemove | null;
 }
 
 export interface UserTeamInviteRemoveVariables {

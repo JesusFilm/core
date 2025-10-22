@@ -88,6 +88,11 @@ export const builder = new SchemaBuilder<{
     dmmf: Prisma.dmmf,
     onUnusedQuery: process.env.NODE_ENV === 'production' ? null : 'warn'
   },
+  relay: {
+    pageInfoTypeOptions: {
+      shareable: true
+    }
+  },
   scopeAuth: {
     authScopes: async (context: Context) => {
       switch (context.type) {

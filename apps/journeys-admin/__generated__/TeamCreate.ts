@@ -41,7 +41,7 @@ export interface TeamCreate_teamCreate {
 }
 
 export interface TeamCreate {
-  teamCreate: TeamCreate_teamCreate;
+  teamCreate: TeamCreate_teamCreate | null;
 }
 
 export interface TeamCreateVariables {

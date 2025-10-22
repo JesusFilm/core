@@ -1,0 +1,1 @@
+export { TextResponseType } from './textResponseType'

@@ -11,6 +11,7 @@ import { builder } from '../builder'
 import { JourneyRef } from '../journey/journey'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
+import { JourneyAiTranslateInput } from './inputs'
 
 // Define the translation progress interface
 interface JourneyAiTranslateProgress {
@@ -56,16 +57,7 @@ const JourneyAnalysisSchema = z.object({
   seoDescription: z.string().describe('Translated journey SEO description')
 })
 
-// Define the shared input type
-const JourneyAiTranslateInput = builder.inputType('JourneyAiTranslateInput', {
-  fields: (t) => ({
-    journeyId: t.id({ required: true }),
-    name: t.string({ required: true }),
-    journeyLanguageName: t.string({ required: true }),
-    textLanguageId: t.id({ required: true }),
-    textLanguageName: t.string({ required: true })
-  })
-})
+// Input types are now imported from ./inputs/
 
 builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
   t.withAuth({ isAuthenticated: true }).field({

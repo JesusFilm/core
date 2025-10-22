@@ -48,5 +48,5 @@ export interface GetLastActiveTeamIdAndTeams_teams {
 
 export interface GetLastActiveTeamIdAndTeams {
   getJourneyProfile: GetLastActiveTeamIdAndTeams_getJourneyProfile | null;
-  teams: GetLastActiveTeamIdAndTeams_teams[];
+  teams: GetLastActiveTeamIdAndTeams_teams[] | null;
 }

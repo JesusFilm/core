@@ -19,7 +19,7 @@ export interface UserJourneyRemove_userJourneyRemove {
 }
 
 export interface UserJourneyRemove {
-  userJourneyRemove: UserJourneyRemove_userJourneyRemove;
+  userJourneyRemove: UserJourneyRemove_userJourneyRemove | null;
 }
 
 export interface UserJourneyRemoveVariables {

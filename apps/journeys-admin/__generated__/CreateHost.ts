@@ -16,7 +16,7 @@ export interface CreateHost_hostCreate {
 }
 
 export interface CreateHost {
-  hostCreate: CreateHost_hostCreate;
+  hostCreate: CreateHost_hostCreate | null;
 }
 
 export interface CreateHostVariables {

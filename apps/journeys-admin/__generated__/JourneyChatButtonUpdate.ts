@@ -17,7 +17,7 @@ export interface JourneyChatButtonUpdate_chatButtonUpdate {
 }
 
 export interface JourneyChatButtonUpdate {
-  chatButtonUpdate: JourneyChatButtonUpdate_chatButtonUpdate;
+  chatButtonUpdate: JourneyChatButtonUpdate_chatButtonUpdate | null;
 }
 
 export interface JourneyChatButtonUpdateVariables {

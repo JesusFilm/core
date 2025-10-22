@@ -31,7 +31,7 @@ export interface GetCustomDomains_customDomains {
 }
 
 export interface GetCustomDomains {
-  customDomains: GetCustomDomains_customDomains[];
+  customDomains: GetCustomDomains_customDomains[] | null;
 }
 
 export interface GetCustomDomainsVariables {

@@ -19,7 +19,7 @@ export interface UpdateHost_hostUpdate {
 }
 
 export interface UpdateHost {
-  hostUpdate: UpdateHost_hostUpdate;
+  hostUpdate: UpdateHost_hostUpdate | null;
 }
 
 export interface UpdateHostVariables {

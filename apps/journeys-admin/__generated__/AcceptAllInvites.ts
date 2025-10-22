@@ -18,6 +18,6 @@ export interface AcceptAllInvites_userInviteAcceptAll {
 }
 
 export interface AcceptAllInvites {
-  userTeamInviteAcceptAll: AcceptAllInvites_userTeamInviteAcceptAll[];
-  userInviteAcceptAll: AcceptAllInvites_userInviteAcceptAll[];
+  userTeamInviteAcceptAll: AcceptAllInvites_userTeamInviteAcceptAll[] | null;
+  userInviteAcceptAll: AcceptAllInvites_userInviteAcceptAll[] | null;
 }

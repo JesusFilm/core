@@ -15,7 +15,7 @@ export interface VideoCollapseEventCreate_videoCollapseEventCreate {
 }
 
 export interface VideoCollapseEventCreate {
-  videoCollapseEventCreate: VideoCollapseEventCreate_videoCollapseEventCreate;
+  videoCollapseEventCreate: VideoCollapseEventCreate_videoCollapseEventCreate | null;
 }
 
 export interface VideoCollapseEventCreateVariables {

@@ -350,7 +350,7 @@ export interface GetVisitorEvents {
   /**
    * Get a single visitor
    */
-  visitor: GetVisitorEvents_visitor;
+  visitor: GetVisitorEvents_visitor | null;
 }
 
 export interface GetVisitorEventsVariables {

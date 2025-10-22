@@ -33,8 +33,8 @@ export interface GetUserTeamsAndInvites_userTeamInvites {
 }
 
 export interface GetUserTeamsAndInvites {
-  userTeams: GetUserTeamsAndInvites_userTeams[];
-  userTeamInvites: GetUserTeamsAndInvites_userTeamInvites[];
+  userTeams: GetUserTeamsAndInvites_userTeams[] | null;
+  userTeamInvites: GetUserTeamsAndInvites_userTeamInvites[] | null;
 }
 
 export interface GetUserTeamsAndInvitesVariables {

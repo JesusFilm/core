@@ -13,7 +13,7 @@ export interface UserTeamDelete_userTeamDelete {
 }
 
 export interface UserTeamDelete {
-  userTeamDelete: UserTeamDelete_userTeamDelete;
+  userTeamDelete: UserTeamDelete_userTeamDelete | null;
 }
 
 export interface UserTeamDeleteVariables {
