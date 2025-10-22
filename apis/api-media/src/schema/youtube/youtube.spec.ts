@@ -1,6 +1,7 @@
 import axios, { isAxiosError } from 'axios'
 
 import { graphql } from '@core/shared/gql'
+import { createApolloClient } from '@core/yoga/apolloClient'
 
 import { getClient } from '../../../test/client'
 
@@ -10,13 +11,13 @@ const mockedIsAxiosError = isAxiosError as jest.MockedFunction<
   typeof isAxiosError
 >
 
-jest.mock('@apollo/client', () => ({
-  ApolloClient: jest.fn().mockImplementation(() => ({
-    query: jest.fn()
-  })),
-  InMemoryCache: jest.fn(),
-  createHttpLink: jest.fn()
+jest.mock('@core/yoga/apolloClient', () => ({
+  createApolloClient: jest.fn()
 }))
+
+const mockedCreateApolloClient = createApolloClient as jest.MockedFunction<
+  typeof createApolloClient
+>
 
 describe('youtube', () => {
   const client = getClient()
@@ -145,10 +146,9 @@ describe('youtube', () => {
       const mockApolloQuery = jest
         .fn()
         .mockResolvedValueOnce(mockGatewayResponse)
-      const { ApolloClient } = require('@apollo/client')
-      ApolloClient.mockImplementation(() => ({
+      mockedCreateApolloClient.mockReturnValue({
         query: mockApolloQuery
-      }))
+      } as any)
 
       const data = await client({
         document: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
@@ -159,6 +159,7 @@ describe('youtube', () => {
         'https://www.googleapis.com/youtube/v3/captions?part=snippet&key=test-api-key&videoId=test-video-id'
       )
 
+      expect(mockedCreateApolloClient).toHaveBeenCalledWith('api-media')
       expect(mockApolloQuery).toHaveBeenCalledWith({
         query: expect.any(Object),
         variables: {
@@ -347,10 +348,9 @@ describe('youtube', () => {
       const mockApolloQuery = jest
         .fn()
         .mockRejectedValueOnce(new Error('Gateway error'))
-      const { ApolloClient } = require('@apollo/client')
-      ApolloClient.mockImplementation(() => ({
+      mockedCreateApolloClient.mockReturnValue({
         query: mockApolloQuery
-      }))
+      } as any)
 
       const data = await client({
         document: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
