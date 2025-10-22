@@ -2353,7 +2353,11 @@ export default function NewPage() {
     imageAnalysisResults,
     buildConversationHistory,
     extractTextFromResponse,
-    parseGeneratedSteps: (content: string) => parseGeneratedResponse(content).steps,
+    parseGeneratedSteps: (content: string) => {
+      const parsed = parseGeneratedResponse(content)
+      setConversationMap(parsed.conversationMap || null)
+      return parsed.steps
+    },
 
     setAiResponse,
     setEditableSteps,
