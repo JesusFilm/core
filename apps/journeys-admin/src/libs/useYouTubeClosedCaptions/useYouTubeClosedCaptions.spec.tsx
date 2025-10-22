@@ -2,41 +2,44 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { renderHook, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 
-import { GetYouTubeClosedCaptionLanguageIds } from '../../../__generated__/GetYouTubeClosedCaptionLanguageIds'
+import { YouTubeClosedCaptionLanguages } from '../../../__generated__/YouTubeClosedCaptionLanguages'
 
 import {
-  GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS,
+  YOUTUBE_CLOSED_CAPTION_LANGUAGES,
   useYouTubeClosedCaptions
 } from './useYouTubeClosedCaptions'
 
 const mockLanguages = [
   {
-    id: 'lang-en',
+    id: '529',
     bcp47: 'en',
     name: [
-      { value: 'English', primary: true, __typename: 'YouTubeLanguageName' as const }
+      { value: 'English', primary: true, __typename: 'LanguageName' as const }
     ],
-    __typename: 'YouTubeLanguage' as const
+    __typename: 'Language' as const
   },
   {
-    id: 'lang-es',
+    id: '496',
     bcp47: 'es',
     name: [
-      { value: 'Spanish', primary: true, __typename: 'YouTubeLanguageName' as const }
+      { value: 'Spanish', primary: true, __typename: 'LanguageName' as const }
     ],
-    __typename: 'YouTubeLanguage' as const
+    __typename: 'Language' as const
   }
 ]
 
-const getYouTubeClosedCaptionsMock: MockedResponse<GetYouTubeClosedCaptionLanguageIds> =
+const getYouTubeClosedCaptionsMock: MockedResponse<YouTubeClosedCaptionLanguages> =
   {
     request: {
-      query: GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS,
+      query: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
       variables: { videoId: 'test-video-id' }
     },
     result: {
       data: {
-        getYouTubeClosedCaptionLanguageIds: mockLanguages
+        youtubeClosedCaptionLanguages: {
+          __typename: 'QueryYoutubeClosedCaptionLanguagesSuccess' as const,
+          data: mockLanguages
+        }
       }
     }
   }
@@ -118,14 +121,17 @@ describe('useYouTubeClosedCaptions', () => {
   })
 
   it('returns empty array when no data', async () => {
-    const emptyMock: MockedResponse<GetYouTubeClosedCaptionLanguageIds> = {
+    const emptyMock: MockedResponse<YouTubeClosedCaptionLanguages> = {
       request: {
-        query: GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS,
+        query: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
         variables: { videoId: 'test-video-id' }
       },
       result: {
         data: {
-          getYouTubeClosedCaptionLanguageIds: []
+          youtubeClosedCaptionLanguages: {
+            __typename: 'QueryYoutubeClosedCaptionLanguagesSuccess' as const,
+            data: []
+          }
         }
       }
     }
@@ -173,8 +179,8 @@ describe('useYouTubeClosedCaptions', () => {
     })
 
     expect(result.current.languages).toHaveLength(2)
-    expect(result.current.languages[0].id).toBe('lang-en')
-    expect(result.current.languages[1].id).toBe('lang-es')
+    expect(result.current.languages[0].id).toBe('529')
+    expect(result.current.languages[1].id).toBe('496')
   })
 
   it('uses cache-first fetch policy', async () => {

@@ -343,6 +343,11 @@ export interface CardFormRestore_image_TypographyBlock {
   settings: CardFormRestore_image_TypographyBlock_settings | null;
 }
 
+export interface CardFormRestore_image_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardFormRestore_image_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -507,7 +512,7 @@ export interface CardFormRestore_image_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardFormRestore_image_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_image_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -909,6 +914,11 @@ export interface CardFormRestore_subtitle_TypographyBlock {
   settings: CardFormRestore_subtitle_TypographyBlock_settings | null;
 }
 
+export interface CardFormRestore_subtitle_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardFormRestore_subtitle_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1073,7 +1083,7 @@ export interface CardFormRestore_subtitle_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardFormRestore_subtitle_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_subtitle_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -1475,6 +1485,11 @@ export interface CardFormRestore_title_TypographyBlock {
   settings: CardFormRestore_title_TypographyBlock_settings | null;
 }
 
+export interface CardFormRestore_title_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardFormRestore_title_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1639,7 +1654,7 @@ export interface CardFormRestore_title_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardFormRestore_title_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_title_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -2041,6 +2056,11 @@ export interface CardFormRestore_textResponse_TypographyBlock {
   settings: CardFormRestore_textResponse_TypographyBlock_settings | null;
 }
 
+export interface CardFormRestore_textResponse_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardFormRestore_textResponse_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -2205,7 +2225,7 @@ export interface CardFormRestore_textResponse_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardFormRestore_textResponse_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_textResponse_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -2607,6 +2627,11 @@ export interface CardFormRestore_button_TypographyBlock {
   settings: CardFormRestore_button_TypographyBlock_settings | null;
 }
 
+export interface CardFormRestore_button_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardFormRestore_button_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -2771,7 +2796,7 @@ export interface CardFormRestore_button_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardFormRestore_button_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_button_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -3173,6 +3198,11 @@ export interface CardFormRestore_startIcon_TypographyBlock {
   settings: CardFormRestore_startIcon_TypographyBlock_settings | null;
 }
 
+export interface CardFormRestore_startIcon_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardFormRestore_startIcon_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -3337,7 +3367,7 @@ export interface CardFormRestore_startIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardFormRestore_startIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_startIcon_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -3739,6 +3769,11 @@ export interface CardFormRestore_endIcon_TypographyBlock {
   settings: CardFormRestore_endIcon_TypographyBlock_settings | null;
 }
 
+export interface CardFormRestore_endIcon_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardFormRestore_endIcon_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -3903,7 +3938,7 @@ export interface CardFormRestore_endIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardFormRestore_endIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_endIcon_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -4305,6 +4340,11 @@ export interface CardFormRestore_body_TypographyBlock {
   settings: CardFormRestore_body_TypographyBlock_settings | null;
 }
 
+export interface CardFormRestore_body_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardFormRestore_body_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -4469,7 +4509,7 @@ export interface CardFormRestore_body_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardFormRestore_body_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_body_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

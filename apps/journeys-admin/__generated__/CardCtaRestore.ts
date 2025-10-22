@@ -343,6 +343,11 @@ export interface CardCtaRestore_imageRestore_TypographyBlock {
   settings: CardCtaRestore_imageRestore_TypographyBlock_settings | null;
 }
 
+export interface CardCtaRestore_imageRestore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardCtaRestore_imageRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -507,7 +512,7 @@ export interface CardCtaRestore_imageRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardCtaRestore_imageRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardCtaRestore_imageRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -909,6 +914,11 @@ export interface CardCtaRestore_subtitleRestore_TypographyBlock {
   settings: CardCtaRestore_subtitleRestore_TypographyBlock_settings | null;
 }
 
+export interface CardCtaRestore_subtitleRestore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardCtaRestore_subtitleRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1073,7 +1083,7 @@ export interface CardCtaRestore_subtitleRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardCtaRestore_subtitleRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardCtaRestore_subtitleRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -1475,6 +1485,11 @@ export interface CardCtaRestore_titleRestore_TypographyBlock {
   settings: CardCtaRestore_titleRestore_TypographyBlock_settings | null;
 }
 
+export interface CardCtaRestore_titleRestore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardCtaRestore_titleRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1639,7 +1654,7 @@ export interface CardCtaRestore_titleRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardCtaRestore_titleRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardCtaRestore_titleRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -2041,6 +2056,11 @@ export interface CardCtaRestore_button1Restore_TypographyBlock {
   settings: CardCtaRestore_button1Restore_TypographyBlock_settings | null;
 }
 
+export interface CardCtaRestore_button1Restore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardCtaRestore_button1Restore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -2205,7 +2225,7 @@ export interface CardCtaRestore_button1Restore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardCtaRestore_button1Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardCtaRestore_button1Restore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -2607,6 +2627,11 @@ export interface CardCtaRestore_startIcon1Restore_TypographyBlock {
   settings: CardCtaRestore_startIcon1Restore_TypographyBlock_settings | null;
 }
 
+export interface CardCtaRestore_startIcon1Restore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardCtaRestore_startIcon1Restore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -2771,7 +2796,7 @@ export interface CardCtaRestore_startIcon1Restore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardCtaRestore_startIcon1Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardCtaRestore_startIcon1Restore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -3173,6 +3198,11 @@ export interface CardCtaRestore_endIcon1Restore_TypographyBlock {
   settings: CardCtaRestore_endIcon1Restore_TypographyBlock_settings | null;
 }
 
+export interface CardCtaRestore_endIcon1Restore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardCtaRestore_endIcon1Restore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -3337,7 +3367,7 @@ export interface CardCtaRestore_endIcon1Restore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardCtaRestore_endIcon1Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardCtaRestore_endIcon1Restore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -3739,6 +3769,11 @@ export interface CardCtaRestore_button2Restore_TypographyBlock {
   settings: CardCtaRestore_button2Restore_TypographyBlock_settings | null;
 }
 
+export interface CardCtaRestore_button2Restore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardCtaRestore_button2Restore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -3903,7 +3938,7 @@ export interface CardCtaRestore_button2Restore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardCtaRestore_button2Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardCtaRestore_button2Restore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -4305,6 +4340,11 @@ export interface CardCtaRestore_startIcon2Restore_TypographyBlock {
   settings: CardCtaRestore_startIcon2Restore_TypographyBlock_settings | null;
 }
 
+export interface CardCtaRestore_startIcon2Restore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardCtaRestore_startIcon2Restore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -4469,7 +4509,7 @@ export interface CardCtaRestore_startIcon2Restore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardCtaRestore_startIcon2Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardCtaRestore_startIcon2Restore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -4871,6 +4911,11 @@ export interface CardCtaRestore_endIcon2Restore_TypographyBlock {
   settings: CardCtaRestore_endIcon2Restore_TypographyBlock_settings | null;
 }
 
+export interface CardCtaRestore_endIcon2Restore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardCtaRestore_endIcon2Restore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -5035,7 +5080,7 @@ export interface CardCtaRestore_endIcon2Restore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardCtaRestore_endIcon2Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardCtaRestore_endIcon2Restore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -5437,6 +5482,11 @@ export interface CardCtaRestore_button3Restore_TypographyBlock {
   settings: CardCtaRestore_button3Restore_TypographyBlock_settings | null;
 }
 
+export interface CardCtaRestore_button3Restore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardCtaRestore_button3Restore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -5601,7 +5651,7 @@ export interface CardCtaRestore_button3Restore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardCtaRestore_button3Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardCtaRestore_button3Restore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -6003,6 +6053,11 @@ export interface CardCtaRestore_startIcon3Restore_TypographyBlock {
   settings: CardCtaRestore_startIcon3Restore_TypographyBlock_settings | null;
 }
 
+export interface CardCtaRestore_startIcon3Restore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardCtaRestore_startIcon3Restore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -6167,7 +6222,7 @@ export interface CardCtaRestore_startIcon3Restore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardCtaRestore_startIcon3Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardCtaRestore_startIcon3Restore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -6569,6 +6624,11 @@ export interface CardCtaRestore_endIcon3Restore_TypographyBlock {
   settings: CardCtaRestore_endIcon3Restore_TypographyBlock_settings | null;
 }
 
+export interface CardCtaRestore_endIcon3Restore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardCtaRestore_endIcon3Restore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -6733,7 +6793,7 @@ export interface CardCtaRestore_endIcon3Restore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguageId: string | null;
+  subtitleLanguage: CardCtaRestore_endIcon3Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardCtaRestore_endIcon3Restore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
