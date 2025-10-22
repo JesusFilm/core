@@ -11,14 +11,14 @@ import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignm
 
 export interface ButtonFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface ButtonFields_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
   customizable: boolean | null;
@@ -27,7 +27,7 @@ export interface ButtonFields_action_LinkAction {
 
 export interface ButtonFields_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
   customizable: boolean | null;
@@ -56,6 +56,9 @@ export type ButtonFields_action = ButtonFields_action_NavigateToBlockAction | Bu
 
 export interface ButtonFields_settings {
   __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
   alignment: ButtonAlignment | null;
 }
 

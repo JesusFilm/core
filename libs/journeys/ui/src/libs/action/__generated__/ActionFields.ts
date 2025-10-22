@@ -11,14 +11,14 @@ import { ContactActionType } from "./../../../../__generated__/globalTypes";
 
 export interface ActionFields_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface ActionFields_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
   customizable: boolean | null;
@@ -27,7 +27,7 @@ export interface ActionFields_LinkAction {
 
 export interface ActionFields_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
   customizable: boolean | null;

@@ -11,11 +11,11 @@ import { ButtonClickEventCreateInput } from "./../../../../__generated__/globalT
 
 export interface ButtonClickEventCreate_buttonClickEventCreate {
   __typename: "ButtonClickEvent";
-  id: string | null;
+  id: string;
 }
 
 export interface ButtonClickEventCreate {
-  buttonClickEventCreate: ButtonClickEventCreate_buttonClickEventCreate | null;
+  buttonClickEventCreate: ButtonClickEventCreate_buttonClickEventCreate;
 }
 
 export interface ButtonClickEventCreateVariables {

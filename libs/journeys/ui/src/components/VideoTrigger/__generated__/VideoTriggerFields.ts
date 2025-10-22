@@ -11,14 +11,14 @@ import { ContactActionType } from "./../../../../__generated__/globalTypes";
 
 export interface VideoTriggerFields_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface VideoTriggerFields_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
   customizable: boolean | null;
@@ -27,7 +27,7 @@ export interface VideoTriggerFields_triggerAction_LinkAction {
 
 export interface VideoTriggerFields_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
   customizable: boolean | null;
@@ -63,5 +63,5 @@ export interface VideoTriggerFields {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: VideoTriggerFields_triggerAction | null;
+  triggerAction: VideoTriggerFields_triggerAction;
 }

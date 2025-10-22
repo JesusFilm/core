@@ -32,14 +32,14 @@ export interface GetJourney_journey_blocks_MultiselectBlock {
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
   customizable: boolean | null;
@@ -48,7 +48,7 @@ export interface GetJourney_journey_blocks_ButtonBlock_action_LinkAction {
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
   customizable: boolean | null;
@@ -77,6 +77,9 @@ export type GetJourney_journey_blocks_ButtonBlock_action = GetJourney_journey_bl
 
 export interface GetJourney_journey_blocks_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
   alignment: ButtonAlignment | null;
 }
 
@@ -164,14 +167,14 @@ export interface GetJourney_journey_blocks_ImageBlock {
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
   customizable: boolean | null;
@@ -180,7 +183,7 @@ export interface GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction {
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
   customizable: boolean | null;
@@ -232,14 +235,14 @@ export interface GetJourney_journey_blocks_RadioQuestionBlock {
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
   customizable: boolean | null;
@@ -248,7 +251,7 @@ export interface GetJourney_journey_blocks_SignUpBlock_action_LinkAction {
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
   customizable: boolean | null;
@@ -407,14 +410,14 @@ export type GetJourney_journey_blocks_VideoBlock_mediaVideo = GetJourney_journey
 
 export interface GetJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface GetJourney_journey_blocks_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
   customizable: boolean | null;
@@ -423,7 +426,7 @@ export interface GetJourney_journey_blocks_VideoBlock_action_LinkAction {
 
 export interface GetJourney_journey_blocks_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
   customizable: boolean | null;
@@ -455,34 +458,86 @@ export interface GetJourney_journey_blocks_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  muted: boolean;
-  autoplay: boolean;
+  muted: boolean | null;
+  autoplay: boolean | null;
+  /**
+   * startAt dictates at which point of time the video should start playing
+   */
   startAt: number | null;
+  /**
+   * endAt dictates at which point of time the video should end
+   */
   endAt: number | null;
+  /**
+   * posterBlockId is present if a child block should be used as a poster.
+   * This child block should not be rendered normally, instead it should be used
+   * as the video poster. PosterBlock should be of type ImageBlock.
+   */
   posterBlockId: string | null;
-  fullsize: boolean;
+  fullsize: boolean | null;
+  /**
+   * internal source videos: videoId and videoVariantLanguageId both need to be set
+   * to select a video.
+   * For other sources only videoId needs to be set.
+   */
   videoId: string | null;
+  /**
+   * internal source videos: videoId and videoVariantLanguageId both need to be set
+   * to select a video.
+   * For other sources only videoId needs to be set.
+   */
   videoVariantLanguageId: string | null;
-  source: VideoBlockSource | null;
-  title: string;
-  description: string;
+  /**
+   * internal source: videoId, videoVariantLanguageId, and video present
+   * youTube source: videoId, title, description, and duration present
+   */
+  source: VideoBlockSource;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field.
+   * For other sources this is automatically populated.
+   */
+  title: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   */
+  description: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   */
   image: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   * duration in seconds.
+   */
   duration: number | null;
+  /**
+   * how the video should display within the VideoBlock
+   */
   objectFit: VideoBlockObjectFit | null;
   mediaVideo: GetJourney_journey_blocks_VideoBlock_mediaVideo | null;
+  /**
+   * action that should be performed when the video ends
+   */
   action: GetJourney_journey_blocks_VideoBlock_action | null;
 }
 
 export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
   customizable: boolean | null;
@@ -491,7 +546,7 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkA
 
 export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
   customizable: boolean | null;
@@ -528,7 +583,7 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: GetJourney_journey_blocks_VideoTriggerBlock_triggerAction | null;
+  triggerAction: GetJourney_journey_blocks_VideoTriggerBlock_triggerAction;
 }
 
 export type GetJourney_journey_blocks = GetJourney_journey_blocks_MultiselectBlock | GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_IconBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_SpacerBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TextResponseBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoTriggerBlock;
@@ -552,11 +607,7 @@ export interface GetJourney_journey_primaryImageBlock {
   focalLeft: number | null;
 }
 
-export interface GetJourney_journey_creatorImageBlock_ButtonBlock {
-  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "RadioQuestionBlock" | "RadioOptionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "VideoTriggerBlock" | "VideoBlock" | "TypographyBlock";
-}
-
-export interface GetJourney_journey_creatorImageBlock_ImageBlock {
+export interface GetJourney_journey_creatorImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -575,8 +626,6 @@ export interface GetJourney_journey_creatorImageBlock_ImageBlock {
   focalLeft: number | null;
 }
 
-export type GetJourney_journey_creatorImageBlock = GetJourney_journey_creatorImageBlock_ButtonBlock | GetJourney_journey_creatorImageBlock_ImageBlock;
-
 export interface GetJourney_journey_userJourneys_user {
   __typename: "User";
   id: string;
@@ -587,24 +636,27 @@ export interface GetJourney_journey_userJourneys_user {
 
 export interface GetJourney_journey_userJourneys {
   __typename: "UserJourney";
-  id: string | null;
-  role: UserJourneyRole | null;
+  id: string;
+  role: UserJourneyRole;
+  /**
+   * Date time of when the journey was first opened
+   */
   openedAt: any | null;
   user: GetJourney_journey_userJourneys_user | null;
 }
 
 export interface GetJourney_journey_chatButtons {
   __typename: "ChatButton";
-  id: string | null;
+  id: string;
   link: string | null;
   platform: MessagePlatform | null;
 }
 
 export interface GetJourney_journey_host {
   __typename: "Host";
-  id: string | null;
-  teamId: string | null;
-  title: string | null;
+  id: string;
+  teamId: string;
+  title: string;
   location: string | null;
   src1: string | null;
   src2: string | null;
@@ -612,8 +664,8 @@ export interface GetJourney_journey_host {
 
 export interface GetJourney_journey_team {
   __typename: "Team";
-  id: string | null;
-  title: string | null;
+  id: string;
+  title: string;
   publicTitle: string | null;
 }
 
@@ -636,11 +688,7 @@ export interface GetJourney_journey_tags {
   name: GetJourney_journey_tags_name[];
 }
 
-export interface GetJourney_journey_logoImageBlock_ButtonBlock {
-  __typename: "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "RadioQuestionBlock" | "RadioOptionBlock" | "SignUpBlock" | "SpacerBlock" | "StepBlock" | "TextResponseBlock" | "VideoTriggerBlock" | "VideoBlock" | "TypographyBlock";
-}
-
-export interface GetJourney_journey_logoImageBlock_ImageBlock {
+export interface GetJourney_journey_logoImageBlock {
   __typename: "ImageBlock";
   id: string;
   parentBlockId: string | null;
@@ -659,13 +707,7 @@ export interface GetJourney_journey_logoImageBlock_ImageBlock {
   focalLeft: number | null;
 }
 
-export type GetJourney_journey_logoImageBlock = GetJourney_journey_logoImageBlock_ButtonBlock | GetJourney_journey_logoImageBlock_ImageBlock;
-
-export interface GetJourney_journey_menuStepBlock_ImageBlock {
-  __typename: "ImageBlock" | "ButtonBlock" | "CardBlock" | "GridContainerBlock" | "GridItemBlock" | "IconBlock" | "RadioQuestionBlock" | "RadioOptionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "VideoTriggerBlock" | "VideoBlock" | "TypographyBlock";
-}
-
-export interface GetJourney_journey_menuStepBlock_StepBlock {
+export interface GetJourney_journey_menuStepBlock {
   __typename: "StepBlock";
   id: string;
   parentBlockId: string | null;
@@ -690,11 +732,9 @@ export interface GetJourney_journey_menuStepBlock_StepBlock {
   slug: string | null;
 }
 
-export type GetJourney_journey_menuStepBlock = GetJourney_journey_menuStepBlock_ImageBlock | GetJourney_journey_menuStepBlock_StepBlock;
-
 export interface GetJourney_journey_journeyTheme {
   __typename: "JourneyTheme";
-  id: string | null;
+  id: string;
   headerFont: string | null;
   bodyFont: string | null;
   labelFont: string | null;
@@ -738,7 +778,7 @@ export interface GetJourney_journey {
   creatorDescription: string | null;
   creatorImageBlock: GetJourney_journey_creatorImageBlock | null;
   userJourneys: GetJourney_journey_userJourneys[] | null;
-  chatButtons: GetJourney_journey_chatButtons[] | null;
+  chatButtons: GetJourney_journey_chatButtons[];
   host: GetJourney_journey_host | null;
   team: GetJourney_journey_team | null;
   tags: GetJourney_journey_tags[];

@@ -18,14 +18,14 @@ export interface BlockFields_MultiselectBlock {
 
 export interface BlockFields_ButtonBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface BlockFields_ButtonBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
   customizable: boolean | null;
@@ -34,7 +34,7 @@ export interface BlockFields_ButtonBlock_action_LinkAction {
 
 export interface BlockFields_ButtonBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
   customizable: boolean | null;
@@ -63,6 +63,9 @@ export type BlockFields_ButtonBlock_action = BlockFields_ButtonBlock_action_Navi
 
 export interface BlockFields_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
   alignment: ButtonAlignment | null;
 }
 
@@ -150,14 +153,14 @@ export interface BlockFields_ImageBlock {
 
 export interface BlockFields_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface BlockFields_RadioOptionBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
   customizable: boolean | null;
@@ -166,7 +169,7 @@ export interface BlockFields_RadioOptionBlock_action_LinkAction {
 
 export interface BlockFields_RadioOptionBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
   customizable: boolean | null;
@@ -218,14 +221,14 @@ export interface BlockFields_RadioQuestionBlock {
 
 export interface BlockFields_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface BlockFields_SignUpBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
   customizable: boolean | null;
@@ -234,7 +237,7 @@ export interface BlockFields_SignUpBlock_action_LinkAction {
 
 export interface BlockFields_SignUpBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
   customizable: boolean | null;
@@ -393,14 +396,14 @@ export type BlockFields_VideoBlock_mediaVideo = BlockFields_VideoBlock_mediaVide
 
 export interface BlockFields_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface BlockFields_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
   customizable: boolean | null;
@@ -409,7 +412,7 @@ export interface BlockFields_VideoBlock_action_LinkAction {
 
 export interface BlockFields_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
   customizable: boolean | null;
@@ -441,34 +444,86 @@ export interface BlockFields_VideoBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-  muted: boolean;
-  autoplay: boolean;
+  muted: boolean | null;
+  autoplay: boolean | null;
+  /**
+   * startAt dictates at which point of time the video should start playing
+   */
   startAt: number | null;
+  /**
+   * endAt dictates at which point of time the video should end
+   */
   endAt: number | null;
+  /**
+   * posterBlockId is present if a child block should be used as a poster.
+   * This child block should not be rendered normally, instead it should be used
+   * as the video poster. PosterBlock should be of type ImageBlock.
+   */
   posterBlockId: string | null;
-  fullsize: boolean;
+  fullsize: boolean | null;
+  /**
+   * internal source videos: videoId and videoVariantLanguageId both need to be set
+   * to select a video.
+   * For other sources only videoId needs to be set.
+   */
   videoId: string | null;
+  /**
+   * internal source videos: videoId and videoVariantLanguageId both need to be set
+   * to select a video.
+   * For other sources only videoId needs to be set.
+   */
   videoVariantLanguageId: string | null;
-  source: VideoBlockSource | null;
-  title: string;
-  description: string;
+  /**
+   * internal source: videoId, videoVariantLanguageId, and video present
+   * youTube source: videoId, title, description, and duration present
+   */
+  source: VideoBlockSource;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field.
+   * For other sources this is automatically populated.
+   */
+  title: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   */
+  description: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   */
   image: string | null;
+  /**
+   * internal source videos: this field is not populated and instead only present
+   * in the video field
+   * For other sources this is automatically populated.
+   * duration in seconds.
+   */
   duration: number | null;
+  /**
+   * how the video should display within the VideoBlock
+   */
   objectFit: VideoBlockObjectFit | null;
   mediaVideo: BlockFields_VideoBlock_mediaVideo | null;
+  /**
+   * action that should be performed when the video ends
+   */
   action: BlockFields_VideoBlock_action | null;
 }
 
 export interface BlockFields_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
 export interface BlockFields_VideoTriggerBlock_triggerAction_LinkAction {
   __typename: "LinkAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   url: string;
   customizable: boolean | null;
@@ -477,7 +532,7 @@ export interface BlockFields_VideoTriggerBlock_triggerAction_LinkAction {
 
 export interface BlockFields_VideoTriggerBlock_triggerAction_EmailAction {
   __typename: "EmailAction";
-  parentBlockId: string | null;
+  parentBlockId: string;
   gtmEventName: string | null;
   email: string;
   customizable: boolean | null;
@@ -514,7 +569,7 @@ export interface BlockFields_VideoTriggerBlock {
    * this is the number of seconds since the start of the video
    */
   triggerStart: number;
-  triggerAction: BlockFields_VideoTriggerBlock_triggerAction | null;
+  triggerAction: BlockFields_VideoTriggerBlock_triggerAction;
 }
 
 export type BlockFields = BlockFields_MultiselectBlock | BlockFields_ButtonBlock | BlockFields_CardBlock | BlockFields_IconBlock | BlockFields_ImageBlock | BlockFields_RadioOptionBlock | BlockFields_RadioQuestionBlock | BlockFields_SignUpBlock | BlockFields_SpacerBlock | BlockFields_StepBlock | BlockFields_TextResponseBlock | BlockFields_TypographyBlock | BlockFields_VideoBlock | BlockFields_VideoTriggerBlock;

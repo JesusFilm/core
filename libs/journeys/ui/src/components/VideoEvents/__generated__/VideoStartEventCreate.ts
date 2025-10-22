@@ -11,7 +11,7 @@ import { VideoStartEventCreateInput } from "./../../../../__generated__/globalTy
 
 export interface VideoStartEventCreate_videoStartEventCreate {
   __typename: "VideoStartEvent";
-  id: string | null;
+  id: string;
 }
 
 export interface VideoStartEventCreate {

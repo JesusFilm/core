@@ -11,11 +11,11 @@ import { ChatOpenEventCreateInput } from "./../../../../../__generated__/globalT
 
 export interface ChatButtonEventCreate_chatOpenEventCreate {
   __typename: "ChatOpenEvent";
-  id: string | null;
+  id: string;
 }
 
 export interface ChatButtonEventCreate {
-  chatOpenEventCreate: ChatButtonEventCreate_chatOpenEventCreate | null;
+  chatOpenEventCreate: ChatButtonEventCreate_chatOpenEventCreate;
 }
 
 export interface ChatButtonEventCreateVariables {

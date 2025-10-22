@@ -11,7 +11,7 @@ import { UserTeamRole } from "./../../../../__generated__/globalTypes";
 
 export interface GetLastActiveTeamIdAndTeams_getJourneyProfile {
   __typename: "JourneyProfile";
-  id: string | null;
+  id: string;
   lastActiveTeamId: string | null;
 }
 
@@ -26,24 +26,24 @@ export interface GetLastActiveTeamIdAndTeams_teams_userTeams_user {
 
 export interface GetLastActiveTeamIdAndTeams_teams_userTeams {
   __typename: "UserTeam";
-  id: string | null;
-  user: GetLastActiveTeamIdAndTeams_teams_userTeams_user | null;
-  role: UserTeamRole | null;
+  id: string;
+  user: GetLastActiveTeamIdAndTeams_teams_userTeams_user;
+  role: UserTeamRole;
 }
 
 export interface GetLastActiveTeamIdAndTeams_teams_customDomains {
   __typename: "CustomDomain";
-  id: string | null;
-  name: string | null;
+  id: string;
+  name: string;
 }
 
 export interface GetLastActiveTeamIdAndTeams_teams {
   __typename: "Team";
-  id: string | null;
-  title: string | null;
+  id: string;
+  title: string;
   publicTitle: string | null;
-  userTeams: GetLastActiveTeamIdAndTeams_teams_userTeams[] | null;
-  customDomains: GetLastActiveTeamIdAndTeams_teams_customDomains[] | null;
+  userTeams: GetLastActiveTeamIdAndTeams_teams_userTeams[];
+  customDomains: GetLastActiveTeamIdAndTeams_teams_customDomains[];
 }
 
 export interface GetLastActiveTeamIdAndTeams {
