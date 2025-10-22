@@ -450,4 +450,106 @@ describe('VideoBlockEditorSettings', () => {
       })
     })
   })
+
+  it('clears subtitleLanguageId when videoId changes', async () => {
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: mockYouTubeLanguages,
+      loading: false,
+      error: undefined
+    })
+
+    const onChange = jest.fn()
+    const { rerender } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{
+                ...video,
+                source: VideoBlockSource.youTube,
+                videoId: 'test-youtube-id-1',
+                subtitleLanguageId: 'lang-en'
+              }}
+              posterBlock={null}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    // Change videoId
+    rerender(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{
+                ...video,
+                source: VideoBlockSource.youTube,
+                videoId: 'test-youtube-id-2',
+                subtitleLanguageId: 'lang-en'
+              }}
+              posterBlock={null}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith({
+        subtitleLanguageId: null
+      })
+    })
+  })
+
+  it('clears subtitleLanguageId when source changes', async () => {
+    const onChange = jest.fn()
+    const { rerender } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{
+                ...video,
+                source: VideoBlockSource.youTube,
+                videoId: 'test-youtube-id',
+                subtitleLanguageId: 'lang-en'
+              }}
+              posterBlock={null}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    // Change source (which requires changing videoId too)
+    rerender(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{
+                ...video,
+                source: VideoBlockSource.internal,
+                videoId: '2_0-FallingPlates',
+                subtitleLanguageId: 'lang-en'
+              }}
+              posterBlock={null}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith({
+        subtitleLanguageId: null
+      })
+    })
+  })
 })

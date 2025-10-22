@@ -11,7 +11,7 @@ import { FormikValues, useFormik } from 'formik'
 import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -132,6 +132,27 @@ export function VideoBlockEditorSettings({
     },
     onSubmit: noop
   })
+
+  // Clear subtitle when video changes (covers both source changes and video changes)
+  const prevVideoIdRef = useRef(selectedBlock?.videoId)
+
+  useEffect(() => {
+    const currentVideoId = selectedBlock?.videoId
+    const prevVideoId = prevVideoIdRef.current
+
+    // Check if videoId changed (covers both source changes and video changes)
+    const isChangingVideo =
+      prevVideoId != null &&
+      currentVideoId != null &&
+      prevVideoId !== currentVideoId
+
+    if (isChangingVideo) {
+      void setFieldValue('subtitleLanguageId', null)
+      void onChange({ subtitleLanguageId: null })
+    }
+
+    prevVideoIdRef.current = currentVideoId
+  }, [selectedBlock?.videoId, onChange, setFieldValue])
 
   return (
     <Box
