@@ -1,8 +1,17 @@
-import { Book, Bot, Check, Copy, Layers, User } from 'lucide-react'
 import { memo, useCallback, useEffect, useState } from 'react'
+
+import { Book, Bot, Check, Copy, Layers, User } from 'lucide-react'
 
 import type { ConversationMap } from '../../libs/storage'
 import { Button } from '../ui/button'
+
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+} from '../ui/carousel'
 import { AutoResizeTextarea } from '@/components/ui/textarea'
 
 export type ConversationMapViewProps = {
@@ -131,6 +140,76 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
         {map.steps.map((step, index) => {
           const stepKey = `step-${index}`
           const playedForStep = playedOptions[stepKey] ?? []
+          const scriptureSlides = Array.isArray(step.scriptureOptions)
+            ? step.scriptureOptions.reduce<
+                {
+                  optionIndex: number
+                  verseId: string
+                  verseDisplay: string
+                  hasVerseContent: boolean
+                  hasWhy: boolean
+                  whyText: string
+                  conversationExamples: { tone?: string; message: string }[]
+                }[]
+              >((accumulator, option, optionIndex) => {
+                const text =
+                  typeof option?.text === 'string' ? option.text.trim() : ''
+                const reference =
+                  typeof option?.reference === 'string'
+                    ? option.reference.trim()
+                    : ''
+                const verseParts = [text, reference].filter(Boolean)
+                const verseDisplay = verseParts.join('\n\n')
+                const hasVerseContent = verseDisplay.length > 0
+
+                const whyText =
+                  typeof option?.whyItFits === 'string'
+                    ? option.whyItFits.trim()
+                    : ''
+                const hasWhy = whyText.length > 0
+
+                const conversationExamples = Array.isArray(
+                  option?.conversationExamples
+                )
+                  ? option.conversationExamples.reduce<
+                      { tone?: string; message: string }[]
+                    >((examplesAccumulator, example) => {
+                      const message =
+                        typeof example?.message === 'string'
+                          ? example.message.trim()
+                          : ''
+
+                      if (!message) {
+                        return examplesAccumulator
+                      }
+
+                      examplesAccumulator.push({
+                        ...example,
+                        message
+                      })
+
+                      return examplesAccumulator
+                    }, [])
+                  : []
+                const hasExamples = conversationExamples.length > 0
+
+                if (!hasVerseContent && !hasWhy && !hasExamples) {
+                  return accumulator
+                }
+
+                accumulator.push({
+                  optionIndex,
+                  verseId: `scripture-${index}-${optionIndex}`,
+                  verseDisplay,
+                  hasVerseContent,
+                  hasWhy,
+                  whyText,
+                  conversationExamples
+                })
+
+                return accumulator
+              }, [])
+            : []
 
           return (
             <section
@@ -156,136 +235,156 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
               </header>
 
               <div className="space-y-6">
-                {step.scriptureOptions?.length ? (
+                {scriptureSlides.length > 0 ? (
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-xs uppercase font-semibold tracking-wide text-muted-foreground">
                       <Book className="w-4 h-4 text-muted-foreground" />
                       Scripture Options
                     </div>
 
-                    <div className="space-y-4">
-                      {step.scriptureOptions.map((option, optionIndex) => {
-                        const verseParts = [option.text?.trim(), option.reference?.trim()].filter(Boolean)
-                        const verseDisplay = verseParts.join('\n\n')
-                        const verseId = `scripture-${index}-${optionIndex}`
-                        const hasVerseContent = verseDisplay.length > 0
-                        const hasWhy = Boolean(option.whyItFits && option.whyItFits.trim())
-                        const conversationExamples = Array.isArray(option.conversationExamples)
-                          ? option.conversationExamples
-                          : []
-                        const hasExamples = conversationExamples.length > 0
+                    <Carousel
+                      className="relative w-full"
+                      opts={{ align: 'start', containScroll: 'trimSnaps' }}
+                      aria-label={`Scripture options for ${step.title}`}
+                    >
+                      <CarouselContent className="pb-8">
+                        {scriptureSlides.map((slide) => {
+                          const exampleBaseId = `scripture-example-${index}-${slide.optionIndex}`
 
-                        if (!hasVerseContent && !hasWhy && !hasExamples) {
-                          return null
-                        }
+                          return (
+                            <CarouselItem
+                              key={`scripture-option-${index}-${slide.optionIndex}`}
+                              className="flex"
+                            >
+                              <div className="flex w-full flex-col gap-4 pr-4">
+                                {slide.hasVerseContent && (
+                                  <div className="flex justify-start">
+                                    <div className="relative w-full max-w-[400px] rounded-2xl bg-amber-100 text-amber-900 shadow-xl">
+                                      <span
+                                        aria-hidden="true"
+                                        className="absolute left-3 -bottom-1 h-3 w-3 rotate-45 bg-amber-100"
+                                      />
+                                      <AutoResizeTextarea
+                                        value={
+                                          editingMessageId === slide.verseId
+                                            ? localMessageContent
+                                            : slide.verseDisplay
+                                        }
+                                        onChange={(event) =>
+                                          handleMessageChange(event.target.value)
+                                        }
+                                        onClick={() =>
+                                          handleMessageClick(
+                                            slide.verseDisplay,
+                                            slide.verseId
+                                          )
+                                        }
+                                        onBlur={handleMessageBlur}
+                                        readOnly={editingMessageId !== slide.verseId}
+                                        className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 text-sm leading-relaxed whitespace-pre-line"
+                                        data-message-id={slide.verseId}
+                                      />
+                                    </div>
+                                  </div>
+                                )}
 
-                        return (
-                          <div
-                            key={`scripture-option-${index}-${optionIndex}`}
-                            className="rounded-2xl border border-amber-200 bg-amber-50 p-4 shadow-sm space-y-4"
-                          >
-                            {hasVerseContent && (
-                              <div className="relative w-full max-w-[400px]">
-                                <span
-                                  aria-hidden="true"
-                                  className="absolute left-3 -bottom-1 h-3 w-3 rotate-45 bg-amber-50"
-                                />
-                                <AutoResizeTextarea
-                                  value={
-                                    editingMessageId === verseId
-                                      ? localMessageContent
-                                      : verseDisplay
-                                  }
-                                  onChange={(event) =>
-                                    handleMessageChange(event.target.value)
-                                  }
-                                  onClick={() =>
-                                    handleMessageClick(verseDisplay, verseId)
-                                  }
-                                  onBlur={handleMessageBlur}
-                                  readOnly={editingMessageId !== verseId}
-                                  className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 text-sm leading-relaxed whitespace-pre-line"
-                                  data-message-id={verseId}
-                                />
+                                {slide.hasWhy && (
+                                  <p className="text-sm text-amber-900/90 leading-relaxed">
+                                    {slide.whyText}
+                                  </p>
+                                )}
+
+                                {slide.conversationExamples.length > 0 && (
+                                  <div className="space-y-2">
+                                    <span className="text-xs uppercase font-semibold tracking-wide text-amber-900/70">
+                                      Conversation Examples
+                                    </span>
+                                    <div className="space-y-2">
+                                      {slide.conversationExamples.map(
+                                        (example, exampleIndex) => {
+                                          const exampleId = `${exampleBaseId}-${exampleIndex}`
+
+                                          return (
+                                            <div
+                                              key={exampleId}
+                                              className="relative rounded-2xl border border-amber-200/70 bg-white p-3 shadow group"
+                                            >
+                                              <div className="mb-2 flex items-center justify-between gap-2">
+                                                <span className="text-xs uppercase font-semibold tracking-wide text-amber-900/80">
+                                                  {example.tone || 'Example'}
+                                                </span>
+                                                <Button
+                                                  type="button"
+                                                  variant="transparent"
+                                                  size="sm"
+                                                  className="h-6 w-6 gap-1 p-0 opacity-0 transition-opacity group-hover:opacity-100"
+                                                  onClick={(event) => {
+                                                    event.preventDefault()
+                                                    event.stopPropagation()
+                                                    void handleCopyMessage(
+                                                      example.message,
+                                                      exampleId
+                                                    )
+                                                  }}
+                                                  onMouseDown={(event) =>
+                                                    event.preventDefault()
+                                                  }
+                                                  title={
+                                                    copiedMessageId === exampleId
+                                                      ? 'Copied!'
+                                                      : 'Copy message'
+                                                  }
+                                                >
+                                                  {copiedMessageId === exampleId ? (
+                                                    <Check className="h-3 w-3 text-green-500" />
+                                                  ) : (
+                                                    <Copy className="h-3 w-3" />
+                                                  )}
+                                                </Button>
+                                              </div>
+                                              <AutoResizeTextarea
+                                                value={
+                                                  editingMessageId === exampleId
+                                                    ? localMessageContent
+                                                    : example.message
+                                                }
+                                                onChange={(event) =>
+                                                  handleMessageChange(
+                                                    event.target.value
+                                                  )
+                                                }
+                                                onClick={() =>
+                                                  handleMessageClick(
+                                                    example.message,
+                                                    exampleId
+                                                  )
+                                                }
+                                                onBlur={handleMessageBlur}
+                                                readOnly={
+                                                  editingMessageId !== exampleId
+                                                }
+                                                className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 text-sm leading-relaxed"
+                                                data-message-id={exampleId}
+                                              />
+                                            </div>
+                                          )
+                                        }
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
-                            )}
-
-                            {hasWhy && (
-                              <p className="text-sm text-amber-900/90 leading-relaxed">
-                                {option.whyItFits}
-                              </p>
-                            )}
-
-                            {hasExamples && (
-                              <div className="space-y-2">
-                                <span className="text-xs uppercase font-semibold tracking-wide text-amber-900/70">
-                                  Conversation Examples
-                                </span>
-                                <div className="space-y-2">
-                                  {conversationExamples.map((example, exampleIndex) => {
-                                    if (!example?.message) return null
-                                    const exampleId = `scripture-example-${index}-${optionIndex}-${exampleIndex}`
-
-                                    return (
-                                      <div
-                                        key={exampleId}
-                                        className="relative rounded-2xl border border-amber-200/70 bg-white p-3 shadow group"
-                                      >
-                                        <div className="flex items-center justify-between gap-2 mb-2">
-                                          <span className="text-xs uppercase font-semibold tracking-wide text-amber-900/80">
-                                            {example.tone || 'Example'}
-                                          </span>
-                                          <Button
-                                            type="button"
-                                            variant="transparent"
-                                            size="sm"
-                                            className="gap-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                                            onClick={(event) => {
-                                              event.preventDefault()
-                                              event.stopPropagation()
-                                              void handleCopyMessage(example.message, exampleId)
-                                            }}
-                                            onMouseDown={(event) => event.preventDefault()}
-                                            title={
-                                              copiedMessageId === exampleId
-                                                ? 'Copied!'
-                                                : 'Copy message'
-                                            }
-                                          >
-                                            {copiedMessageId === exampleId ? (
-                                              <Check className="h-3 w-3 text-green-500" />
-                                            ) : (
-                                              <Copy className="h-3 w-3" />
-                                            )}
-                                          </Button>
-                                        </div>
-                                        <AutoResizeTextarea
-                                          value={
-                                            editingMessageId === exampleId
-                                              ? localMessageContent
-                                              : example.message
-                                          }
-                                          onChange={(event) =>
-                                            handleMessageChange(event.target.value)
-                                          }
-                                          onClick={() =>
-                                            handleMessageClick(example.message, exampleId)
-                                          }
-                                          onBlur={handleMessageBlur}
-                                          readOnly={editingMessageId !== exampleId}
-                                          className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 text-sm leading-relaxed"
-                                          data-message-id={exampleId}
-                                        />
-                                      </div>
-                                    )
-                                  })}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        )
-                      })}
-                    </div>
+                            </CarouselItem>
+                          )
+                        })}
+                      </CarouselContent>
+                      {scriptureSlides.length > 1 && (
+                        <>
+                          <CarouselPrevious className="-left-8 top-1/2 -translate-y-1/2" />
+                          <CarouselNext className="-right-8 top-1/2 -translate-y-1/2" />
+                        </>
+                      )}
+                    </Carousel>
                   </div>
                 ) : null}
 
