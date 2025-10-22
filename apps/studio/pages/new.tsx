@@ -79,7 +79,6 @@ import {
   RESPONSE_GUIDELINES,
   categorySharingOptions,
   contextDetailOptions,
-  contextSystemPrompts,
   steps
 } from '../src/config/new-page'
 import { useAiContent } from '../src/hooks/useAiContent'
