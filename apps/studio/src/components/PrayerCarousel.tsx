@@ -44,6 +44,7 @@ function usePrefersReducedMotion() {
 type PrayerSlide = {
   title: string
   body?: string
+  verse?: string
   reference?: string
   bullets?: string[]
 }
@@ -65,41 +66,31 @@ export function PrayerCarousel({
   const slides = useMemo<PrayerSlide[]>(
     () => [
       {
-        title: 'God Gives the Growth',
+        title: 'What’s Happening Now',
         body:
-          '“I planted, Apollos watered, but God gave the growth. So neither the one who plants nor the one who waters is anything, but only God who gives the growth.”',
-        reference: '1 Corinthians 3:6-7'
+          'We’re looking at your request.\nGathering Bible verses and conversation ideas\nto help you respond with grace and wisdom.'
       },
       {
-        title: 'Pause to Pray',
-        body:
-          'Before we craft another sentence, breathe. No arrangement of words, design, or effort can wake a heart—only the Spirit of God can.'
+        title: 'What Truly Brings Change',
+        body: 'No AI can change the human heart.\nOnly the Word of God can.',
+        verse:
+          '“So is my word that goes out from my mouth:\nIt will not return to me empty,\nbut will accomplish what I desire\nand achieve the purpose for which I sent it.”',
+        reference: '— Isaiah 55:11 (NIV)'
       },
       {
-        title: 'What to Pray About',
+        title: 'The Purpose of This Tool',
         bullets: [
-          'That Jesus would be seen clearly and beautifully by everyone who encounters this message.',
-          'That God would draw the right people to engage and respond.',
-          'That we would listen and obey whatever He asks us to do next.'
+          'To inspire you.',
+          'To remove fear and hesitation when sharing truth and grace.',
+          'To help you see how the Word of God is relevant and applicable to any daily situation.'
         ]
       },
       {
-        title: 'Faith Like a Mustard Seed',
+        title: 'The Real Source of Power',
         body:
-          '“The kingdom of heaven is like a grain of mustard seed... it is the smallest of all seeds, but when it has grown it is larger than all garden plants.”',
-        reference: 'Matthew 13:31-32'
-      },
-      {
-        title: 'Prepare the Soil',
-        body:
-          '“As for that in the good soil, they are those who, hearing the word, hold it fast in an honest and good heart, and bear fruit with patience.”',
-        reference: 'Luke 8:15'
-      },
-      {
-        title: 'Sent to the World',
-        body:
-          '“Go into all the world and proclaim the gospel to the whole creation.”',
-        reference: 'Mark 16:15'
+          'All of this means nothing\nwithout the Holy Spirit and your prayer.\n\nTake a moment to pray.\nAsk God to guide your heart, your words, and this conversation.',
+        verse: '“‘Not by might nor by power,\nbut by my Spirit,’ says the Lord Almighty.”',
+        reference: '— Zechariah 4:6 (NIV)'
       }
     ],
     []
@@ -377,8 +368,13 @@ export function PrayerCarousel({
                       {slide.title}
                     </h3>
                     {slide.body != null && (
-                      <p className="text-sm leading-relaxed text-amber-900/80 md:text-base">
+                      <p className="text-sm leading-relaxed text-amber-900/80 whitespace-pre-line md:text-base">
                         {slide.body}
+                      </p>
+                    )}
+                    {slide.verse != null && (
+                      <p className="text-sm italic leading-relaxed text-amber-900/80 whitespace-pre-line md:text-base">
+                        {slide.verse}
                       </p>
                     )}
                     {Array.isArray(slide.bullets) && slide.bullets.length > 0 && (
