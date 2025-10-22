@@ -38,7 +38,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { ReactElement } from 'react'
 
 import { PrayerCarousel } from '../src/components/PrayerCarousel'
 import { Accordion } from '../src/components/ui/accordion'
@@ -93,7 +92,9 @@ import {
   userInputStorage
 } from '../src/libs/storage'
 
+import { ConversationMapView } from '../src/components/newPage/ConversationMapView'
 import { RotatingText } from '../src/components/newPage/RotatingText'
+import { StepsList } from '../src/components/newPage/StepsList'
 import { AutoResizeTextarea, Textarea } from '@/components/ui/textarea'
 // Dynamic imports for components to avoid hydration issues
 const AnimatedLoadingText = dynamic(
@@ -940,24 +941,45 @@ export default function NewPage() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
+  const handleStepContentChange = useCallback((index: number, value: string) => {
+    setEditableSteps((prev) => {
+      if (!prev[index]) return prev
+      const updated = [...prev]
+      updated[index] = { ...updated[index], content: value }
+      return updated
+    })
+  }, [])
+
   // Create stable handlers for step interactions to prevent re-renders
   const stepHandlers = useMemo(() => {
-    const handlers: Record<number, {
-      onContentChange: (value: string) => void
-      onFocus: () => void
-    }> = {}
+    const handlers: Record<
+      number,
+      {
+        onContentChange: (value: string) => void
+        onFocus: () => void
+        onExitEditMode: () => void
+      }
+    > = {}
 
     editableSteps.forEach((_, index) => {
       handlers[index] = {
-        onContentChange: (value: string) => handleStepContentChange(index, value),
+        onContentChange: (value: string) =>
+          handleStepContentChange(index, value),
         onFocus: () => {
-          setEditingStepIndices(prev => new Set([...prev, index]))
+          setEditingStepIndices((previous) => new Set([...previous, index]))
+        },
+        onExitEditMode: () => {
+          setEditingStepIndices((previous) => {
+            const next = new Set(previous)
+            next.delete(index)
+            return next
+          })
         }
       }
     })
 
     return handlers
-  }, [editableSteps.length]) // Only recreate when step count changes
+  }, [editableSteps.length, handleStepContentChange])
 
   const conversationMapForDisplay = useMemo<ConversationMap>(
     () =>
@@ -988,33 +1010,6 @@ export default function NewPage() {
       localStorage.setItem('jesus-film-studio-unsplash-api-key', unsplashApiKey)
     }
   }, [unsplashApiKey])
-
-  // Intersection Observer hook for lazy loading
-  const useIntersectionObserver = (callback: () => void, options?: IntersectionObserverInit) => {
-    const [element, setElement] = useState<Element | null>(null)
-    const [hasTriggered, setHasTriggered] = useState(false)
-
-    useEffect(() => {
-      if (!element || hasTriggered) return
-
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            callback()
-            setHasTriggered(true)
-            observer.disconnect()
-          }
-        },
-        { threshold: 0.1, ...options }
-      )
-
-      observer.observe(element)
-
-      return () => observer.disconnect()
-    }, [element, callback, hasTriggered, options])
-
-    return { ref: setElement }
-  }
 
   // Intersection Observer for lazy loading Unsplash images
   const loadImagesWhenVisible = (step: GeneratedStepContent, stepIndex: number) => {
@@ -1527,404 +1522,13 @@ export default function NewPage() {
     }
   }
 
-  const handleStepContentChange = useCallback((index: number, value: string) => {
-    setEditableSteps((prev) => {
-      if (!prev[index]) return prev
-      const updated = [...prev]
-      updated[index] = { ...updated[index], content: value }
-      return updated
-    })
-  }, [])
-
-  const handleImageSelection = useCallback((stepIndex: number, imageUrl: string) => {
-    setEditableSteps((prev) => {
-      if (!prev[stepIndex]) return prev
-      const updated = [...prev]
-      updated[stepIndex] = { ...updated[stepIndex], selectedImageUrl: imageUrl }
-      return updated
-    })
-  }, [])
-
-  // Memoized component for steps to prevent re-renders from tile hover states
-  const StepsList = React.memo(({
-    editableSteps,
-    editingStepIndices,
-    stepHandlers,
-    copiedStepIndex,
-    unsplashImages,
-    onImageSelection
-  }: {
-    editableSteps: GeneratedStepContent[]
-    editingStepIndices: Set<number>
-    stepHandlers: Record<number, { onContentChange: (value: string) => void; onFocus: () => void }>
-    copiedStepIndex: number | null
-    unsplashImages: Record<string, string[]>
-    onImageSelection: (stepIndex: number, imageUrl: string) => void
-  }) => {
-    return (
-      <>
-        {editableSteps.map((step, index) => {
-          const heading = deriveHeadingFromContent(
-            step.content,
-            `Step ${index + 1}`
-          )
-          const cardKey = heading
-            ? `${heading}-${index}`
-            : `step-${index}`
-
-          // Intersection observer for lazy loading images
-          const { ref: cardRef } = useIntersectionObserver(
-            () => loadImagesWhenVisible(step, index),
-            { threshold: 0.1 }
-          )
-
-          return (
-            <div key={cardKey} ref={cardRef}>
-              <Card className="bg-transparent shadow-none">
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <StepContentRenderer
-                    content={step.content}
-                    className="-mx-6"
-                    stepIndex={index}
-                    isEditing={editingStepIndices.has(index)}
-                    onContentChange={stepHandlers[index]?.onContentChange}
-                    onFocus={stepHandlers[index]?.onFocus}
-                    copiedStepIndex={copiedStepIndex}
-                  />
-                </div>
-                <div className="space-y-2 hidden">
-                  <h4 className="text-sm font-medium">Media Prompt</h4>
-                  <p className="text-sm whitespace-pre-wrap text-muted-foreground">
-                    {step.mediaPrompt || 'No prompt provided.'}
-                  </p>
-                </div>
-              </CardContent>
-              </Card>
-            </div>
-          )
-        })}
-      </>
-    )
-  })
-
-  const ConversationMapView = React.memo(({ map }: { map: ConversationMap }) => {
-    const [playedOptions, setPlayedOptions] = useState<Record<string, string[]>>({})
-    const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null)
-    const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
-    const [localMessageContent, setLocalMessageContent] = useState<string>('')
-
-    useEffect(() => {
-      setPlayedOptions({})
-      setCopiedMessageId(null)
-      setEditingMessageId(null)
-      setLocalMessageContent('')
-    }, [map])
-
-    const handleOptionSelect = useCallback((stepIndex: number, optionId: string) => {
-      setPlayedOptions(previous => {
-        const stepKey = `step-${stepIndex}`
-        const existing = previous[stepKey] ?? []
-        if (existing.includes(optionId)) {
-          return previous
-        }
-
-        return {
-          ...previous,
-          [stepKey]: [...existing, optionId]
-        }
-      })
-    }, [])
-
-    const handleCopyMessage = useCallback(async (content: string, messageId: string) => {
-      try {
-        if (typeof navigator !== 'undefined' && navigator?.clipboard) {
-          await navigator.clipboard.writeText(content)
-          setCopiedMessageId(messageId)
-          setTimeout(() => setCopiedMessageId(null), 2000)
-        } else {
-          throw new Error('Clipboard API unavailable')
-        }
-      } catch (error) {
-        console.error('Failed to copy message content:', error)
-        console.warn('Unable to copy content automatically. Please copy manually.')
-      }
-    }, [])
-
-    const handleMessageClick = useCallback((content: string, messageId: string) => {
-      setEditingMessageId(messageId)
-      setLocalMessageContent(content)
-    }, [])
-
-    const handleMessageBlur = useCallback(() => {
-      setEditingMessageId(null)
-      // TODO: Save changes to parent state if needed
-    }, [])
-
-    const handleMessageChange = useCallback((value: string) => {
-      setLocalMessageContent(value)
-    }, [])
-
-    const hasSteps = Array.isArray(map?.steps) && map.steps.length > 0
-
-    if (!hasSteps) {
-      return (
-        <div className="text-sm text-muted-foreground border border-dashed border-border rounded-2xl p-6 bg-muted/40">
-          The AI will map an ideal set of guide-led messages once you provide context above.
-        </div>
-      )
-    }
-
-    return (
-      <div className="relative">
-        <div
-          aria-hidden="true"
-          className="hidden sm:block absolute left-4 top-0 bottom-0 w-px bg-border"
-        />
-
-        <div className="space-y-10">
-          {map.steps.map((step, index) => {
-            const stepKey = `step-${index}`
-            const playedForStep = playedOptions[stepKey] ?? []
-
-            return (
-              <section
-                key={stepKey}
-                className="relative pl-0 sm:pl-12"
-                aria-label={`Step ${index + 1}: ${step.title}`}
-              >
-                <div
-                  aria-hidden="true"
-                  className="hidden sm:block absolute left-[9px] top-1.5 h-4 w-4 rounded-full border-4 border-background bg-primary shadow"
-                />
-
-                <header className="mb-4 space-y-1">
-                  <div className="text-md font-light leading-tight uppercase tracking-wide text-muted-foreground">
-                    Step {index + 1}:<br />
-                    <span className="text-xl text-foreground normal-case font-semibold">{step.title}</span>
-                  </div>
-                  {step.purpose && (
-                    <p className="text-sm text-muted-foreground">{step.purpose}</p>
-                  )}
-                </header>
-
-                <div className="space-y-4">
-                  {step.scripture && (step.scripture.text || step.scripture.reference) && (
-                    <div className="flex justify-start">
-                      <div className="space-y-3  w-full">
-                        <div className="relative w-full max-w-[400px] rounded-2xl bg-amber-100 text-amber-900 shadow-xl">
-                          <span
-                            aria-hidden="true"
-                            className="absolute left-3 -bottom-1 h-3 w-3 rotate-45 bg-amber-100"
-                          />
-                          {step.scripture.text && (
-                            <AutoResizeTextarea
-                              value={editingMessageId === `scripture-${index}` ? localMessageContent : `${step.scripture.text}${step.scripture.reference ? `\n\n${step.scripture.reference}` : ''}`}
-                              onChange={(e) => handleMessageChange(e.target.value)}
-                              onClick={() => handleMessageClick(`${step.scripture.text}${step.scripture.reference ? `\n\n${step.scripture.reference}` : ''}`, `scripture-${index}`)}
-                              onBlur={handleMessageBlur}
-                              readOnly={editingMessageId !== `scripture-${index}`}
-                              className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 text-sm leading-relaxed whitespace-pre-line"
-                              data-message-id={`scripture-${index}`}
-                            />
-                          )}
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Book className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
-                            Scripture
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="space-y-3">
-                    <div className="flex justify-end">
-                      <div className="relative w-full max-w-[400px] rounded-2xl bg-[#098CFF] text-white shadow-xl group">
-                        <Button
-                          type="button"
-                          variant="transparent"
-                          size="sm"
-                          className="absolute top-2 right-2 gap-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={(e) => {
-                            e.preventDefault()
-                            e.stopPropagation()
-                            void handleCopyMessage(step.guideMessage, `guide-${index}`)
-                          }}
-                          onMouseDown={(e) => e.preventDefault()}
-                          title={copiedMessageId === `guide-${index}` ? "Copied!" : "Copy message"}
-                        >
-                          {copiedMessageId === `guide-${index}` ? (
-                            <Check className="h-3 w-3 text-green-300" />
-                          ) : (
-                            <Copy className="h-3 w-3" />
-                          )}
-                        </Button>
-                        <span
-                          aria-hidden="true"
-                          className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-[#098CFF]"
-                        />
-                        <AutoResizeTextarea
-                          value={editingMessageId === `guide-${index}` ? localMessageContent : step.guideMessage}
-                          onChange={(e) => handleMessageChange(e.target.value)}
-                          onClick={() => handleMessageClick(step.guideMessage, `guide-${index}`)}
-                          onBlur={handleMessageBlur}
-                          readOnly={editingMessageId !== `guide-${index}`}
-                          className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 px-4 py-3 rounded-2xl"
-                          data-message-id={`guide-${index}`}
-                        />
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-end space-x-2">
-                      <span className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
-                        You
-                      </span>
-                      <User className="w-4 h-4 text-muted-foreground" />
-                    </div>
-                  </div>
-
-                  {step.responseOptions.length > 0 && (
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between flex-wrap gap-2">
-                        <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                          Common responses
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          Tap to preview how you might reply
-                        </span>
-                      </div>
-                      <div
-                        role="list"
-                        className="flex flex-wrap gap-2"
-                        aria-label="Responder options"
-                      >
-                        {step.responseOptions.map(option => {
-                          const isPlayed = playedForStep.includes(option.id)
-
-                          return (
-                            <button
-                              key={option.id}
-                              type="button"
-                              role="listitem"
-                              onClick={() => handleOptionSelect(index, option.id)}
-                              className={`group inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium shadow-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary ${
-                                isPlayed
-                                  ? 'bg-primary/10 border-primary text-primary'
-                                  : 'bg-background border-border hover:bg-muted'
-                              }`}
-                              aria-pressed={isPlayed}
-                              aria-label={`${option.label}${isPlayed ? ' (played)' : ''}`}
-                            >
-                              {option.icon && (
-                                <span aria-hidden className="text-base leading-none">
-                                  {option.icon}
-                                </span>
-                              )}
-                              <span>{option.label}</span>
-                              {isPlayed && <Check className="h-4 w-4" />}
-                            </button>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  )}
-
-                  {playedForStep.length > 0 && (
-                    <div className="space-y-6" aria-live="polite">
-                      {playedForStep.map(optionId => {
-                        const option = step.responseOptions.find(item => item.id === optionId)
-                        if (!option) return null
-
-                        return (
-                          <div key={option.id} className="space-y-3">
-                            <div className="space-y-3">
-                              <div className="flex justify-start">
-                                <div className="relative w-1/2 rounded-2xl bg-white text-foreground px-4 py-3 shadow-xl">
-                                  <span
-                                    aria-hidden="true"
-                                    className="absolute left-3 -bottom-1 h-3 w-3 rotate-45 bg-white"
-                                  />
-                                  <p className="text-sm leading-relaxed whitespace-pre-line">
-                                    {option.responderMessage}
-                                  </p>
-                                </div>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <Bot className="w-4 h-4 text-muted-foreground" />
-                                <span className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
-                                  Chatmate
-                                </span>
-                              </div>
-                            </div>
-
-                            {option.guideFollowUps.map((followUp, followUpIndex) => (
-                              <div key={`${option.id}-follow-${followUpIndex}`} className="space-y-3">
-                                <div className="flex justify-end">
-                                  <div className="relative w-1/2 rounded-2xl bg-[#098CFF] text-white shadow-xl group">
-                                    <Button
-                                      type="button"
-                                      variant="transparent"
-                                      size="sm"
-                                      className="absolute top-2 right-2 gap-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                                      onClick={(e) => {
-                                        e.preventDefault()
-                                        e.stopPropagation()
-                                        void handleCopyMessage(followUp, `followup-${option.id}-${followUpIndex}`)
-                                      }}
-                                      onMouseDown={(e) => e.preventDefault()}
-                                      title={copiedMessageId === `followup-${option.id}-${followUpIndex}` ? "Copied!" : "Copy message"}
-                                    >
-                                      {copiedMessageId === `followup-${option.id}-${followUpIndex}` ? (
-                                        <Check className="h-3 w-3 text-green-300" />
-                                      ) : (
-                                        <Copy className="h-3 w-3" />
-                                      )}
-                                    </Button>
-                                    <span
-                                      aria-hidden="true"
-                                      className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-[#098CFF]"
-                                    />
-                                    <AutoResizeTextarea
-                                      value={editingMessageId === `followup-${option.id}-${followUpIndex}` ? localMessageContent : followUp}
-                                      onChange={(e) => handleMessageChange(e.target.value)}
-                                      onClick={() => handleMessageClick(followUp, `followup-${option.id}-${followUpIndex}`)}
-                                      onBlur={handleMessageBlur}
-                                      readOnly={editingMessageId !== `followup-${option.id}-${followUpIndex}`}
-                                      className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 px-4 py-3 rounded-2xl"
-                                      data-message-id={`followup-${option.id}-${followUpIndex}`}
-                                    />
-                                  </div>
-                                </div>
-                                <div className="flex items-center justify-end space-x-2">
-                                  <span className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
-                                    You
-                                  </span>
-                                  <User className="w-4 h-4 text-muted-foreground" />
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )
-                      })}
-                    </div>
-                  )}
-                </div>
-              </section>
-            )
-          })}
-        </div>
-      </div>
-    )
-  })
-
   const handleCopyStep = async (
-    step: GeneratedStepContent,
+    content: string,
     index: number
   ): Promise<void> => {
     try {
       if (typeof navigator !== 'undefined' && navigator?.clipboard) {
-        await navigator.clipboard.writeText(step.content)
+        await navigator.clipboard.writeText(content)
         setCopiedStepIndex(index)
       } else {
         throw new Error('Clipboard API unavailable')
@@ -2390,188 +1994,6 @@ export default function NewPage() {
       { name: 'Card Component: 400 × 300 px', icon: Globe }
     ]
   }
-
-  // MDX renderer component for step content
-  const StepContentRenderer = React.memo(({
-    content,
-    stepIndex,
-    isEditing,
-    onContentChange,
-    onFocus,
-    copiedStepIndex,
-    className
-  }: {
-    content: string
-    stepIndex: number
-    isEditing: boolean
-    onContentChange: (value: string) => void
-    onFocus: () => void
-    copiedStepIndex: number | null
-    className?: string
-  }) => {
-    const [localContent, setLocalContent] = useState(content)
-
-    // Update local content when prop changes (when not editing)
-    useEffect(() => {
-      if (!isEditing) {
-        setLocalContent(content)
-      }
-    }, [content, isEditing])
-
-    const handleBlur = () => {
-      // Only update parent state on blur
-      onContentChange(localContent)
-      setEditingStepIndices(prev => {
-        const newSet = new Set(prev)
-        newSet.delete(stepIndex)
-        return newSet
-      })
-    }
-
-    // Focus textarea when entering edit mode (only once per edit session)
-    useEffect(() => {
-      if (isEditing) {
-        // Small delay to ensure DOM is ready
-        setTimeout(() => {
-          const textarea = document.querySelector(`textarea[data-step-index="${stepIndex}"]`) as HTMLTextAreaElement
-          if (textarea) {
-            textarea.focus()
-          }
-        }, 0)
-      }
-    }, [isEditing, stepIndex])
-
-    return (
-      <div className={`relative ${className || ''}`}>
-        {isEditing ? (
-          <AutoResizeTextarea
-            value={localContent}
-            onChange={(e) => setLocalContent(e.target.value)}
-            onBlur={handleBlur}
-            className="min-h-[160px] whitespace-pre-wrap bg-white border-none outline-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-sm font-mono px-6 py-6 rounded-bl-none rounded-br-none"
-            data-step-index={stepIndex}
-          />
-        ) : (
-          (() => {
-            try {
-              // Simple MDX-like rendering - convert basic markdown to JSX
-              const renderMarkdown = (text: string) => {
-                // Split by lines and process each line
-                const lines = text.split('\n')
-                const elements: ReactElement[] = []
-                let key = 0
-
-                for (let i = 0; i < lines.length; i++) {
-                  const line = lines[i]
-
-                  // Headers
-                  if (line.startsWith('# ')) {
-                    elements.push(<h1 key={key++} className="text-3xl font-bold mb-2 mt-4 first:mt-0">{line.substring(2)}</h1>)
-                  } else if (line.startsWith('## ')) {
-                    elements.push(<h2 key={key++} className="text-xl font-semibold mb-2 mt-3">{line.substring(3)}</h2>)
-                  } else if (line.startsWith('### ')) {
-                    elements.push(<h3 key={key++} className="text-lg font-medium mb-1 mt-2">{line.substring(4)}</h3>)
-                  }
-                  // Bold text
-                  else if (line.includes('**')) {
-                    const parts = line.split('**')
-                    const processedParts = parts.map((part, index) =>
-                      index % 2 === 1 ? <strong key={index}>{part}</strong> : part
-                    )
-                    elements.push(<p key={key++} className="mb-2">{processedParts}</p>)
-                  }
-                  // Italic text
-                  else if (line.includes('*')) {
-                    const parts = line.split('*')
-                    const processedParts = parts.map((part, index) =>
-                      index % 2 === 1 ? <em key={index}>{part}</em> : part
-                    )
-                    elements.push(<p key={key++} className="mb-2">{processedParts}</p>)
-                  }
-                  // Lists
-                  else if (line.startsWith('- ') || line.startsWith('* ')) {
-                    elements.push(<li key={key++} className="mb-1">{line.substring(2)}</li>)
-                  }
-                  // Empty lines
-                  else if (line.trim() === '') {
-                    // Skip empty lines, they'll be handled by margins
-                  }
-                  // Regular paragraphs
-                  else {
-                    elements.push(<p key={key++} className="mb-2">{line}</p>)
-                  }
-                }
-
-                return elements
-              }
-
-              return (
-                <div
-                  className="min-h-[160px] text-sm font-mono  whitespace-pre-wrap bg-white border-none shadow-sm outline-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 px-6 py-6 rounded-tl rounded-tr-md"
-                  onClick={onFocus}
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault()
-                      onFocus()
-                    }
-                  }}
-                >
-                  {renderMarkdown(content)}
-                </div>
-              )
-            } catch (error) {
-              console.error('MDX rendering error:', error)
-              return (
-                <div
-                  className="min-h-[160px] p-3 border border-input rounded-md bg-white cursor-text whitespace-pre-wrap pr-12"
-                  onClick={onFocus}
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault()
-                      onFocus()
-                    }
-                  }}
-                >
-                  {content}
-                </div>
-              )
-            }
-          })()
-        )}
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className={`absolute top-2 right-2 gap-1 h-8 w-8 p-0 opacity-60 hover:opacity-100 transition-opacity ${
-            copiedStepIndex === stepIndex ? '' : ''
-          }`}
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            void handleCopyStep(
-              {
-                content: isEditing ? localContent : content,
-                keywords: [],
-                mediaPrompt: ''
-              },
-              stepIndex
-            )
-          }}
-          onMouseDown={(e) => e.preventDefault()}
-          title={copiedStepIndex === stepIndex ? "Copied!" : "Copy content"}
-        >
-          {copiedStepIndex === stepIndex ? (
-            <Check className="h-4 w-4 text-green-600" />
-          ) : (
-            <Copy className="h-4 w-4" />
-          )}
-        </Button>
-      </div>
-    )
-  })
-
   return (
     <>
       <Head data-id="Head">
@@ -4868,8 +4290,9 @@ export default function NewPage() {
                                   editingStepIndices={editingStepIndices}
                                   stepHandlers={stepHandlers}
                                   copiedStepIndex={copiedStepIndex}
-                                  unsplashImages={unsplashImages}
-                                  onImageSelection={handleImageSelection}
+                                  deriveHeadingFromContent={deriveHeadingFromContent}
+                                  onCopyStep={handleCopyStep}
+                                  onStepVisible={loadImagesWhenVisible}
                                 />
                               </div>
                             </>
