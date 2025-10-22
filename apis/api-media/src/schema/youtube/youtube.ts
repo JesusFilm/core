@@ -14,7 +14,7 @@ interface YoutubeShape {
   id: string
 }
 
-const YouTubeCaptionsResponseSchema = z.object({
+const youTubeCaptionsResponseSchema = z.object({
   items: z.array(
     z.object({
       snippet: z.object({
@@ -25,7 +25,7 @@ const YouTubeCaptionsResponseSchema = z.object({
   )
 })
 
-type YouTubeCaptionsResponse = z.infer<typeof YouTubeCaptionsResponseSchema>
+type YouTubeCaptionsResponse = z.infer<typeof youTubeCaptionsResponseSchema>
 
 const YouTube = builder.objectRef<YoutubeShape>('Youtube')
 YouTube.implement({
@@ -64,7 +64,7 @@ const GET_LANGUAGES_BY_BCP47 = graphql(`
 `)
 
 builder.queryFields((t) => ({
-  youtubeClosedCaptionLanguages: t.field({
+  youtubeClosedCaptionLanguages: t.withAuth({ isAuthenticated: true }).field({
     type: [Language],
     errors: {
       types: [Error, ZodError]
@@ -115,7 +115,7 @@ builder.queryFields((t) => ({
       // Validate the response structure with Zod
       let ytClosedCaptionResponse: YouTubeCaptionsResponse
       try {
-        ytClosedCaptionResponse = YouTubeCaptionsResponseSchema.parse(
+        ytClosedCaptionResponse = youTubeCaptionsResponseSchema.parse(
           response.data
         )
       } catch {

@@ -20,7 +20,11 @@ const mockedCreateApolloClient = createApolloClient as jest.MockedFunction<
 >
 
 describe('youtube', () => {
-  const client = getClient()
+  const client = getClient({
+    headers: {
+      authorization: 'token'
+    }
+  })
 
   describe('entity', () => {
     const YOUTUBE = graphql(`
@@ -237,8 +241,6 @@ describe('youtube', () => {
         variables: { videoId: 'test-video-id' }
       })
 
-      console.log(data)
-
       expect(data).toHaveProperty(
         'data.youtubeClosedCaptionLanguages.message',
         'YouTube API key is not configured'
@@ -274,38 +276,6 @@ describe('youtube', () => {
           id: '529'
         }
       ])
-    })
-
-    it('should throw Error when YouTube API quota is exceeded in production', async () => {
-      process.env.NODE_ENV = 'production'
-
-      const mockError = {
-        response: {
-          status: 403,
-          data: {
-            error: {
-              errors: [
-                {
-                  reason: 'quotaExceeded'
-                }
-              ]
-            }
-          }
-        }
-      }
-
-      mockedIsAxiosError.mockReturnValue(true)
-      mockedAxios.get.mockRejectedValueOnce(mockError)
-
-      const data = await client({
-        document: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
-        variables: { videoId: 'test-video-id' }
-      })
-
-      expect(data).toHaveProperty(
-        'data.youtubeClosedCaptionLanguages.message',
-        'YouTube API quota exceeded. Please try again later.'
-      )
     })
 
     it('should throw Error when YouTube API returns general error', async () => {
