@@ -46,11 +46,25 @@ describe('youtube', () => {
     })
   })
 
-  describe('getYouTubeClosedCaptionLanguageIds', () => {
-    const GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS = graphql(`
-      query GetYouTubeClosedCaptionLanguageIds($videoId: ID!) {
-        getYouTubeClosedCaptionLanguageIds(videoId: $videoId) {
-          id
+  describe('youtubeClosedCaptionLanguages', () => {
+    const YOUTUBE_CLOSED_CAPTION_LANGUAGES = graphql(`
+      query YoutubeClosedCaptionLanguages($videoId: ID!) {
+        youtubeClosedCaptionLanguages(videoId: $videoId) {
+          ... on QueryYoutubeClosedCaptionLanguagesSuccess {
+            data {
+              id
+            }
+          }
+          ... on Error {
+            message
+          }
+          ... on ZodError {
+            message
+            fieldErrors {
+              message
+              path
+            }
+          }
         }
       }
     `)
@@ -137,7 +151,7 @@ describe('youtube', () => {
       }))
 
       const data = await client({
-        document: GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS,
+        document: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
         variables: { videoId: 'test-video-id' }
       })
 
@@ -148,13 +162,16 @@ describe('youtube', () => {
       expect(mockApolloQuery).toHaveBeenCalledWith({
         query: expect.any(Object),
         variables: {
+          select: {
+            id: true
+          },
           where: {
             bcp47: ['en', 'es']
           }
         }
       })
 
-      expect(data).toHaveProperty('data.getYouTubeClosedCaptionLanguageIds', [
+      expect(data).toHaveProperty('data.youtubeClosedCaptionLanguages.data', [
         {
           id: '529'
         },
@@ -181,11 +198,11 @@ describe('youtube', () => {
       mockedAxios.get.mockResolvedValueOnce(mockYouTubeResponse)
 
       const data = await client({
-        document: GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS,
+        document: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
         variables: { videoId: 'test-video-id' }
       })
 
-      expect(data).toHaveProperty('data.getYouTubeClosedCaptionLanguageIds', [])
+      expect(data).toHaveProperty('data.youtubeClosedCaptionLanguages.data', [])
     })
 
     it('should return empty array when YouTube API returns no items', async () => {
@@ -198,11 +215,11 @@ describe('youtube', () => {
       mockedAxios.get.mockResolvedValueOnce(mockYouTubeResponse)
 
       const data = await client({
-        document: GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS,
+        document: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
         variables: { videoId: 'test-video-id' }
       })
 
-      expect(data).toHaveProperty('data.getYouTubeClosedCaptionLanguageIds', [])
+      expect(data).toHaveProperty('data.youtubeClosedCaptionLanguages.data', [])
     })
 
     it('should throw error when api key is missing', async () => {
@@ -210,18 +227,16 @@ describe('youtube', () => {
       delete process.env.FIREBASE_API_KEY
 
       const data = await client({
-        document: GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS,
+        document: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
         variables: { videoId: 'test-video-id' }
       })
 
-      expect(data).toHaveProperty('errors', [
-        expect.objectContaining({
-          message: 'YouTube API key is not configured',
-          extensions: {
-            code: 'INTERNAL_SERVER_ERROR'
-          }
-        })
-      ])
+      console.log(data)
+
+      expect(data).toHaveProperty(
+        'data.youtubeClosedCaptionLanguages.message',
+        'YouTube API key is not configured'
+      )
     })
 
     it('should return mock data when YouTube API quota is exceeded in non-production', async () => {
@@ -244,18 +259,18 @@ describe('youtube', () => {
       mockedAxios.get.mockRejectedValueOnce(mockError)
 
       const data = await client({
-        document: GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS,
+        document: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
         variables: { videoId: 'test-video-id' }
       })
 
-      expect(data).toHaveProperty('data.getYouTubeClosedCaptionLanguageIds', [
+      expect(data).toHaveProperty('data.youtubeClosedCaptionLanguages.data', [
         {
           id: '529'
         }
       ])
     })
 
-    it('should throw GraphQLError when YouTube API quota is exceeded in production', async () => {
+    it('should throw Error when YouTube API quota is exceeded in production', async () => {
       process.env.NODE_ENV = 'production'
 
       const mockError = {
@@ -277,21 +292,17 @@ describe('youtube', () => {
       mockedAxios.get.mockRejectedValueOnce(mockError)
 
       const data = await client({
-        document: GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS,
+        document: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
         variables: { videoId: 'test-video-id' }
       })
 
-      expect(data).toHaveProperty('errors', [
-        expect.objectContaining({
-          message: 'YouTube API quota exceeded. Please try again later.',
-          extensions: {
-            code: 'QUOTA_EXCEEDED'
-          }
-        })
-      ])
+      expect(data).toHaveProperty(
+        'data.youtubeClosedCaptionLanguages.message',
+        'YouTube API quota exceeded. Please try again later.'
+      )
     })
 
-    it('should throw GraphQLError when YouTube API returns general error', async () => {
+    it('should throw Error when YouTube API returns general error', async () => {
       const mockError = {
         response: {
           status: 400,
@@ -307,21 +318,17 @@ describe('youtube', () => {
       mockedAxios.get.mockRejectedValueOnce(mockError)
 
       const data = await client({
-        document: GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS,
+        document: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
         variables: { videoId: 'test-video-id' }
       })
 
-      expect(data).toHaveProperty('errors', [
-        expect.objectContaining({
-          message: 'Failed to fetch YouTube closed caption language IDs',
-          extensions: {
-            code: 'EXTERNAL_SERVICE_ERROR'
-          }
-        })
-      ])
+      expect(data).toHaveProperty(
+        'data.youtubeClosedCaptionLanguages.message',
+        'Failed to fetch YouTube closed caption language IDs'
+      )
     })
 
-    it('should throw GraphQLError when gateway API fails', async () => {
+    it('should throw Error when gateway API fails', async () => {
       const mockYouTubeResponse = {
         data: {
           items: [
@@ -346,18 +353,52 @@ describe('youtube', () => {
       }))
 
       const data = await client({
-        document: GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS,
+        document: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
         variables: { videoId: 'test-video-id' }
       })
 
-      expect(data).toHaveProperty('errors', [
-        expect.objectContaining({
-          message: 'Failed to fetch languages from gateway',
-          extensions: {
-            code: 'INTERNAL_SERVER_ERROR'
-          }
-        })
-      ])
+      expect(data).toHaveProperty(
+        'data.youtubeClosedCaptionLanguages.message',
+        'Failed to fetch languages from gateway'
+      )
+    })
+
+    it('should throw error if response does not match validation schema', async () => {
+      const invalidYouTubeResponse = {
+        data: {
+          items: [
+            {
+              // Missing required 'snippet' property
+              id: 'invalid-item'
+            },
+            {
+              snippet: {
+                // Missing required 'language' property
+                trackKind: 'standard'
+              }
+            },
+            {
+              snippet: {
+                language: 'en',
+                // Invalid trackKind value
+                trackKind: 'invalid-track-kind'
+              }
+            }
+          ]
+        }
+      }
+
+      mockedAxios.get.mockResolvedValueOnce(invalidYouTubeResponse)
+
+      const data = await client({
+        document: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
+        variables: { videoId: 'test-video-id' }
+      })
+
+      expect(data).toHaveProperty(
+        'data.youtubeClosedCaptionLanguages.message',
+        'Invalid YouTube API response format'
+      )
     })
   })
 })

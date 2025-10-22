@@ -2,7 +2,7 @@
 
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
 import axios, { isAxiosError } from 'axios'
-import { GraphQLError } from 'graphql'
+import { ZodError, z } from 'zod'
 
 import { graphql } from '@core/shared/gql'
 
@@ -13,6 +13,19 @@ import { VideoSource, VideoSourceShape } from '../videoSource/videoSource'
 interface YoutubeShape {
   id: string
 }
+
+const YouTubeCaptionsResponseSchema = z.object({
+  items: z.array(
+    z.object({
+      snippet: z.object({
+        language: z.string(),
+        trackKind: z.enum(['standard', 'asr'])
+      })
+    })
+  )
+})
+
+type YouTubeCaptionsResponse = z.infer<typeof YouTubeCaptionsResponseSchema>
 
 const YouTube = builder.objectRef<YoutubeShape>('Youtube')
 YouTube.implement({
@@ -68,8 +81,11 @@ const createApolloClient = () => {
 }
 
 builder.queryFields((t) => ({
-  getYouTubeClosedCaptionLanguageIds: t.field({
+  youtubeClosedCaptionLanguages: t.field({
     type: [Language],
+    errors: {
+      types: [Error, ZodError]
+    },
     nullable: false,
     args: {
       videoId: t.arg.id({ required: true })
@@ -78,9 +94,7 @@ builder.queryFields((t) => ({
       // Validate FIREBASE_API_KEY is present and non-empty
       const apiKey = process.env.FIREBASE_API_KEY
       if (!apiKey || apiKey.trim() === '') {
-        throw new GraphQLError('YouTube API key is not configured', {
-          extensions: { code: 'INTERNAL_SERVER_ERROR' }
-        })
+        throw new Error('YouTube API key is not configured')
       }
 
       const query = new URLSearchParams({
@@ -103,34 +117,33 @@ builder.queryFields((t) => ({
             if (process.env.NODE_ENV !== 'production') {
               return [{ id: '529' }]
             }
-            throw new GraphQLError(
-              'YouTube API quota exceeded. Please try again later.',
-              {
-                extensions: { code: 'QUOTA_EXCEEDED' }
-              }
+            throw new Error(
+              'YouTube API quota exceeded. Please try again later.'
             )
           }
         }
-        throw new GraphQLError(
-          'Failed to fetch YouTube closed caption language IDs',
-          {
-            extensions: { code: 'EXTERNAL_SERVICE_ERROR' }
-          }
-        )
+        throw new Error('Failed to fetch YouTube closed caption language IDs')
       }
 
-      const youtubeLanguageBcp47s: string[] = []
+      // Validate the response structure with Zod
+      let ytClosedCaptionResponse: YouTubeCaptionsResponse
+      try {
+        ytClosedCaptionResponse = YouTubeCaptionsResponseSchema.parse(
+          response.data
+        )
+      } catch {
+        throw new Error('Invalid YouTube API response format')
+      }
 
-      response.data.items.forEach(
-        (item: {
-          snippet: { language: string; trackKind: 'standard' | 'asr' }
-        }) => {
-          if (item?.snippet?.trackKind === 'standard')
-            youtubeLanguageBcp47s.push(item.snippet.language)
+      const bcp47: string[] = []
+
+      ytClosedCaptionResponse.items.forEach((item) => {
+        if (item.snippet.trackKind === 'standard') {
+          bcp47.push(item.snippet.language)
         }
-      )
+      })
 
-      if (youtubeLanguageBcp47s.length === 0) return []
+      if (bcp47.length === 0) return []
 
       const apollo = createApolloClient()
 
@@ -139,22 +152,20 @@ builder.queryFields((t) => ({
         const result = await apollo.query({
           query: GET_LANGUAGES_BY_BCP47,
           variables: {
+            select: {
+              id: true
+            },
             where: {
-              bcp47: youtubeLanguageBcp47s
+              bcp47
             }
           }
         })
         data = result.data
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (_error) {
-        throw new GraphQLError('Failed to fetch languages from gateway', {
-          extensions: { code: 'INTERNAL_SERVER_ERROR' }
-        })
+      } catch {
+        throw new Error('Failed to fetch languages from gateway')
       }
 
-      return data.languages.map((language) => ({
-        id: language.id
-      }))
+      return data.languages
     }
   })
 }))

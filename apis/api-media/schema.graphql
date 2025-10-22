@@ -627,7 +627,7 @@ type Query {
   videoEdition(id: ID!): VideoEdition
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
-  getYouTubeClosedCaptionLanguageIds(videoId: ID!): [Language!]!
+  youtubeClosedCaptionLanguages(videoId: ID!): QueryYoutubeClosedCaptionLanguagesResult!
   arclightApiKeys: [ArclightApiKey!]!
   arclightApiKeyByKey(key: String!): ArclightApiKey
 }
@@ -676,6 +676,12 @@ type QueryShortLinksConnection {
 type QueryShortLinksConnectionEdge {
   node: ShortLink
   cursor: String!
+}
+
+union QueryYoutubeClosedCaptionLanguagesResult = ZodError | Error | QueryYoutubeClosedCaptionLanguagesSuccess
+
+type QueryYoutubeClosedCaptionLanguagesSuccess {
+  data: [Language!]!
 }
 
 enum RedirectType {

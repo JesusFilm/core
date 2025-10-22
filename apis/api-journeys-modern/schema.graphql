@@ -1958,7 +1958,7 @@ type VideoBlock implements Block
   objectFit: VideoBlockObjectFit
   posterBlockId: ID
   fullsize: Boolean
-  subtitleLanguageId: ID
+  subtitleLanguage: Language
   action: Action
   mediaVideo: MediaVideo
 }

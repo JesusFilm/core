@@ -54,19 +54,6 @@ builder.mutationField('videoBlockUpdate', (t) =>
 
       let input = { ...initialInput }
 
-      const isChangingSource =
-        initialInput.source != null &&
-        block.source != null &&
-        initialInput.source !== block.source
-
-      const isChangingVideo =
-        initialInput.videoId != null &&
-        block.videoId != null &&
-        initialInput.videoId !== block.videoId
-
-      // used to clear the subtitle language when changing the source or video
-      const shouldClearSubtitleLanguage = isChangingSource || isChangingVideo
-
       switch (initialInput.source ?? block.source) {
         case 'youTube':
           videoBlockYouTubeSchema.parse({
@@ -76,9 +63,6 @@ builder.mutationField('videoBlockUpdate', (t) =>
           if (input.videoId != null) {
             input = {
               ...input,
-              subtitleLanguageId: shouldClearSubtitleLanguage
-                ? null
-                : (input?.subtitleLanguageId ?? block?.subtitleLanguageId),
               ...(await fetchFieldsFromYouTube(input.videoId))
             }
           }
@@ -93,10 +77,7 @@ builder.mutationField('videoBlockUpdate', (t) =>
             title: null,
             description: null,
             image: null,
-            duration: null,
-            subtitleLanguageId: shouldClearSubtitleLanguage
-              ? null
-              : (input?.subtitleLanguageId ?? block?.subtitleLanguageId)
+            duration: null
           }
           break
         case 'mux':
@@ -107,9 +88,6 @@ builder.mutationField('videoBlockUpdate', (t) =>
           if (input.videoId != null) {
             input = {
               ...input,
-              subtitleLanguageId: shouldClearSubtitleLanguage
-                ? null
-                : (input?.subtitleLanguageId ?? block?.subtitleLanguageId),
               ...(await fetchFieldsFromMux(input.videoId))
             }
           }
