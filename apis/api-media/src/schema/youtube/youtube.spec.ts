@@ -156,7 +156,12 @@ describe('youtube', () => {
       })
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        'https://www.googleapis.com/youtube/v3/captions?part=snippet&key=test-api-key&videoId=test-video-id'
+        'https://www.googleapis.com/youtube/v3/captions?part=snippet&videoId=test-video-id',
+        {
+          headers: {
+            'X-Goog-Api-Key': 'test-api-key'
+          }
+        }
       )
 
       expect(mockedCreateApolloClient).toHaveBeenCalledWith('api-media')

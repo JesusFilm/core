@@ -82,14 +82,18 @@ builder.queryFields((t) => ({
 
       const query = new URLSearchParams({
         part: 'snippet',
-        key: apiKey,
         videoId: videoId
       }).toString()
 
       let response
       try {
         response = await axios.get(
-          `https://www.googleapis.com/youtube/v3/captions?${query}`
+          `https://www.googleapis.com/youtube/v3/captions?${query}`,
+          {
+            headers: {
+              'X-Goog-Api-Key': apiKey
+            }
+          }
         )
       } catch (error) {
         // Handle YouTube API quota exceeded error specifically
