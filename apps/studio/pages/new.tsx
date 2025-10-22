@@ -121,15 +121,30 @@ const DEFAULT_OUTPUT_FORMAT_INSTRUCTIONS = `Provide the response as JSON with th
 const CONVERSATION_OUTPUT_FORMAT_INSTRUCTIONS = `Provide the response as JSON with this structure:
 {
   "conversationMap": {
+    "flow": {
+      "sequence": [
+        "Word or short phrase that names each movement in order (e.g., \"shared weakness\")"
+      ],
+      "rationale": "Short explanation for why this flow helps the responder."
+    },
     "steps": [
       {
         "title": "Short step heading (max 6 words)",
         "purpose": "Why this exchange matters. Use null if redundant.",
         "guideMessage": "2-3 sentence message for the ministry guide to say in warm, empathetic tone.",
-        "scripture": {
-          "text": "1-2 sentence scripture excerpt that reinforces the moment.",
-          "reference": "Book chapter:verse format. Use null if no scripture fits."
-        },
+        "scriptureOptions": [
+          {
+            "text": "1-2 sentence scripture excerpt that reinforces the moment.",
+            "reference": "Book chapter:verse format. Use null if no scripture fits.",
+            "whyItFits": "Explain why this verse supports the step and how to transition toward it.",
+            "conversationExamples": [
+              {
+                "tone": "Tone label (e.g., Friendly, Gentle, Salty).",
+                "message": "Concrete phrasing the guide could use in that tone."
+              }
+            ]
+          }
+        ],
         "responseOptions": [
           {
             "id": "kebab-case id for this responder option",
@@ -156,9 +171,10 @@ const DEFAULT_RESPONSE_GUIDELINES = `Guidelines:
 
 const CONVERSATION_RESPONSE_GUIDELINES = `Guidelines:
 - Map an ideal path of 6-9 guide-led conversation moves that gently progress toward gospel hope.
-- Every step must include a guide message, a purpose note (or null), and scripture text plus reference when natural.
+- Summarize the overall movement first with a \"flow\" that lists each step's short theme in order and a brief rationale for why this journey helps the responder.
+- Every step must include a guide message, a purpose note (or null), and at least five scriptureOptions. Each scripture option needs the verse text/reference, a note on why it fits/how to migrate the conversation toward it, and multiple tone-tagged conversation examples.
 - Craft 3-5 responseOptions per step that capture common responder postures. Each must include an emoji icon, tile label, responder reaction, and 1-3 guide follow-up replies as separate strings.
-- Maintain warm, pastoral tone across the guide messages and follow-up replies. Keep each message concise enough to fit in a chat bubble.
+- Maintain warm, pastoral tone across the guide messages, verse explanations, and follow-up replies. Keep each message concise enough to fit in a chat bubble.
 - Do not include design instructions, media prompts, or image keywords in any field.
 - Output valid JSON only.`
 
@@ -166,7 +182,7 @@ const contextSystemPrompts: Record<string, string> = {
   default:
     'Default to producing ministry-ready resources that can flex between digital and in-person sharing when no specific context is selected. Provide balanced guidance that keeps the content adaptable.',
   'Conversations':
-    'Guide one-on-one or small group conversations that gently introduce gospel truths. Return structured JSON for a chat-style conversation map where each step has a guide message, scripture bubble, and interactive responder options with follow-up replies. Emphasize listening, questions, prayerful transitions, and Scripture when natural. Avoid design instructions and image keywords in this mode.',
+    'Guide one-on-one or small group conversations that gently introduce gospel truths. Return structured JSON for a chat-style conversation map that begins with a flow overview (sequence plus rationale), then lists steps with guide messages, multi-verse scriptureOptions (each with why-it-fits notes and tone-labeled conversation examples), and interactive responder options with follow-up replies. Emphasize listening, questions, prayerful transitions, and Scripture when natural. Avoid design instructions and image keywords in this mode.',
   'Social Media':
     'Operate like a Canva-style designer for social media campaigns. Treat each step as a templated design idea for stories, carousels, reels, or feed posts. Suggest layout direction, color palettes, typography moods, and short, scroll-stopping copy. Keep platform conventions (vertical ratios, accessibility, alt-text) in mind and tailor media prompts to energetic, template-friendly visuals.',
   Website:
@@ -1281,7 +1297,50 @@ export default function NewPage() {
       return defaultMessage ? [defaultMessage] : []
     }
 
-    const normalizeScripture = (input: any): ConversationMap['steps'][number]['scripture'] => {
+    const ensureStringArray = (value: any): string[] => {
+      if (Array.isArray(value)) {
+        return value.map(item => ensureString(item)).filter(Boolean)
+      }
+
+      if (typeof value === 'string') {
+        return value
+          .split(/[→➡️>-]+|,|\n+/)
+          .map(segment => segment.trim())
+          .filter(Boolean)
+      }
+
+      return []
+    }
+
+    const normalizeFlow = (input: any): ConversationMap['flow'] => {
+      if (!input) return null
+
+      if (typeof input !== 'object') {
+        const rationale = ensureNullableString(input)
+        return rationale ? { sequence: [], rationale } : null
+      }
+
+      const sequence = ensureStringArray(
+        input.sequence ?? input.steps ?? input.path ?? input.movement ?? input.flow
+      )
+
+      const rationale = ensureNullableString(
+        input.rationale ?? input.reason ?? input.commentary ?? input.summary ?? input.context
+      )
+
+      if (sequence.length === 0 && !rationale) {
+        return null
+      }
+
+      return {
+        sequence,
+        rationale
+      }
+    }
+
+    const normalizeLegacyScripture = (
+      input: any
+    ): { text: string | null; reference: string | null } | null => {
       if (!input) return null
 
       if (typeof input === 'string') {
@@ -1311,6 +1370,149 @@ export default function NewPage() {
       return null
     }
 
+    const normalizeConversationExamples = (
+      input: any
+    ): ConversationMap['steps'][number]['scriptureOptions'][number]['conversationExamples'] => {
+      if (!input) return []
+
+      if (Array.isArray(input)) {
+        return input
+          .map((example, index) => {
+            if (typeof example === 'string') {
+              const message = ensureString(example)
+              if (!message) return null
+              return {
+                tone: `Example ${index + 1}`,
+                message
+              }
+            }
+
+            if (typeof example === 'object') {
+              const message = ensureString(
+                example.message ?? example.text ?? example.content ?? example.example
+              )
+              if (!message) return null
+
+              const tone = ensureString(
+                example.tone ?? example.style ?? example.label ?? example.title
+              )
+
+              return {
+                tone: tone || `Example ${index + 1}`,
+                message
+              }
+            }
+
+            return null
+          })
+          .filter((example): example is ConversationMap['steps'][number]['scriptureOptions'][number]['conversationExamples'][number] => example !== null)
+      }
+
+      if (typeof input === 'object') {
+        return Object.entries(input)
+          .map(([toneKey, value], index) => {
+            const message = ensureString(value)
+            if (!message) return null
+
+            const tone = ensureString(toneKey)
+            return {
+              tone: tone || `Example ${index + 1}`,
+              message
+            }
+          })
+          .filter((example): example is ConversationMap['steps'][number]['scriptureOptions'][number]['conversationExamples'][number] => example !== null)
+      }
+
+      if (typeof input === 'string') {
+        const message = ensureString(input)
+        return message
+          ? [
+              {
+                tone: 'Example',
+                message
+              }
+            ]
+          : []
+      }
+
+      return []
+    }
+
+    const normalizeScriptureOptions = (
+      item: any
+    ): ConversationMap['steps'][number]['scriptureOptions'] => {
+      const optionsSource = Array.isArray(item?.scriptureOptions)
+        ? item.scriptureOptions
+        : Array.isArray(item?.scriptures)
+          ? item.scriptures
+          : Array.isArray(item?.bibleVerses)
+            ? item.bibleVerses
+            : Array.isArray(item?.verses)
+              ? item.verses
+              : []
+
+      const normalized = optionsSource
+        .map((option: any) => {
+          if (!option) return null
+
+          if (typeof option === 'string') {
+            const text = ensureString(option)
+            if (!text) return null
+            return {
+              text,
+              reference: null,
+              whyItFits: null,
+              conversationExamples: []
+            }
+          }
+
+          if (typeof option === 'object') {
+            const text = ensureNullableString(
+              option.text ?? option.passage ?? option.quote ?? option.content ?? option.verseText
+            )
+            const reference = ensureNullableString(
+              option.reference ?? option.ref ?? option.citation ?? option.verse ?? option.book
+            )
+            const whyItFits = ensureNullableString(
+              option.whyItFits ?? option.reason ?? option.explanation ?? option.transition ?? option.structure ?? option.context
+            )
+            const conversationExamples = normalizeConversationExamples(
+              option.conversationExamples ?? option.messageExamples ?? option.messages ?? option.examples
+            )
+
+            if (!text && !reference && !whyItFits && conversationExamples.length === 0) {
+              return null
+            }
+
+            return {
+              text,
+              reference,
+              whyItFits,
+              conversationExamples
+            }
+          }
+
+          return null
+        })
+        .filter((option): option is ConversationMap['steps'][number]['scriptureOptions'][number] => option !== null)
+
+      if (normalized.length === 0) {
+        const legacyScripture = normalizeLegacyScripture(item?.scripture ?? item?.scriptureSupport)
+        if (legacyScripture) {
+          normalized.push({
+            text: legacyScripture.text,
+            reference: legacyScripture.reference,
+            whyItFits: ensureNullableString(
+              item?.scriptureExplanation ?? item?.scriptureWhy ?? item?.whyItFits ?? item?.transition
+            ),
+            conversationExamples: []
+          })
+        }
+      }
+
+      return normalized
+    }
+
     const legacyIdealPath = Array.isArray(rawData?.idealPath)
       ? rawData.idealPath
       : []
@@ -1331,7 +1533,7 @@ export default function NewPage() {
         const title = ensureString(item?.title ?? item?.stage)
         const purpose = ensureNullableString(item?.purpose)
 
-        const scripture = normalizeScripture(item?.scripture ?? item?.scriptureSupport)
+        const scriptureOptions = normalizeScriptureOptions(item)
 
         const responseSource = Array.isArray(item?.responseOptions)
           ? item.responseOptions
@@ -1397,13 +1599,16 @@ export default function NewPage() {
           title: title || `Step ${index + 1}`,
           purpose,
           guideMessage,
-          scripture,
+          scriptureOptions,
           responseOptions: normalizedResponses
         }
       })
       .filter((item): item is ConversationMap['steps'][number] => item !== null)
 
     return {
+      flow: normalizeFlow(
+        rawData?.flow ?? rawData?.flowSummary ?? rawData?.conversationFlow ?? rawData?.movement
+      ),
       steps: normalizedSteps
     }
   }

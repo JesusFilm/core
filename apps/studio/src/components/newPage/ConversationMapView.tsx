@@ -1,6 +1,5 @@
+import { Book, Bot, Check, Copy, Layers, User } from 'lucide-react'
 import { memo, useCallback, useEffect, useState } from 'react'
-
-import { Book, Bot, Check, Copy, User } from 'lucide-react'
 
 import type { ConversationMap } from '../../libs/storage'
 import { Button } from '../ui/button'
@@ -73,6 +72,14 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
 
   const hasSteps = Array.isArray(map?.steps) && map.steps.length > 0
 
+  const rawFlowSequence = map.flow?.sequence
+  const flowSequence = Array.isArray(rawFlowSequence)
+    ? rawFlowSequence.map((movement) => movement.trim()).filter(Boolean)
+    : []
+
+  const flowRationale =
+    typeof map.flow?.rationale === 'string' ? map.flow.rationale.trim() : ''
+
   if (!hasSteps) {
     return (
       <div className="text-sm text-muted-foreground border border-dashed border-border rounded-2xl p-6 bg-muted/40">
@@ -89,6 +96,38 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
       />
 
       <div className="space-y-10">
+        {(flowSequence.length > 0 || flowRationale) && (
+          <section className="relative pl-0 sm:pl-12" aria-label="Conversation flow overview">
+            <div
+              aria-hidden="true"
+              className="hidden sm:block absolute left-[9px] top-1.5 h-4 w-4 rounded-full border-4 border-background bg-primary shadow"
+            />
+            <div className="rounded-3xl border border-primary/20 bg-primary/5 p-6 space-y-4">
+              <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-primary font-semibold">
+                <Layers className="h-4 w-4" />
+                Conversation Flow
+              </div>
+              {flowSequence.length ? (
+                <div className="flex flex-wrap items-center gap-2 text-sm text-primary/90">
+                  {flowSequence.map((movement, movementIndex) => (
+                    <span key={`${movement}-${movementIndex}`} className="flex items-center gap-2">
+                      <span className="rounded-full bg-primary/10 px-3 py-1 font-medium capitalize text-primary">
+                        {movement}
+                      </span>
+                      {movementIndex < flowSequence.length - 1 && (
+                        <span aria-hidden className="text-primary/60">→</span>
+                      )}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+              {flowRationale && (
+                <p className="text-sm text-primary/80 leading-relaxed">{flowRationale}</p>
+              )}
+            </div>
+          </section>
+        )}
+
         {map.steps.map((step, index) => {
           const stepKey = `step-${index}`
           const playedForStep = playedOptions[stepKey] ?? []
@@ -116,55 +155,139 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                 )}
               </header>
 
-              <div className="space-y-4">
-                {step.scripture && (step.scripture.text || step.scripture.reference) && (
-                  <div className="flex justify-start">
-                    <div className="space-y-3  w-full">
-                      <div className="relative w-full max-w-[400px] rounded-2xl bg-amber-100 text-amber-900 shadow-xl">
-                        <span
-                          aria-hidden="true"
-                          className="absolute left-3 -bottom-1 h-3 w-3 rotate-45 bg-amber-100"
-                        />
-                        {step.scripture.text && (
-                          <AutoResizeTextarea
-                            value={
-                              editingMessageId === `scripture-${index}`
-                                ? localMessageContent
-                                : `${step.scripture.text}${
-                                    step.scripture.reference
-                                      ? `\n\n${step.scripture.reference}`
-                                      : ''
-                                  }`
-                            }
-                            onChange={(event) =>
-                              handleMessageChange(event.target.value)
-                            }
-                            onClick={() =>
-                              handleMessageClick(
-                                `${step.scripture.text}${
-                                  step.scripture.reference
-                                    ? `\n\n${step.scripture.reference}`
-                                    : ''
-                                }`,
-                                `scripture-${index}`
-                              )
-                            }
-                            onBlur={handleMessageBlur}
-                            readOnly={editingMessageId !== `scripture-${index}`}
-                            className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 text-sm leading-relaxed whitespace-pre-line"
-                            data-message-id={`scripture-${index}`}
-                          />
-                        )}
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Book className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
-                          Scripture
-                        </span>
-                      </div>
+              <div className="space-y-6">
+                {step.scriptureOptions?.length ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-xs uppercase font-semibold tracking-wide text-muted-foreground">
+                      <Book className="w-4 h-4 text-muted-foreground" />
+                      Scripture Options
+                    </div>
+
+                    <div className="space-y-4">
+                      {step.scriptureOptions.map((option, optionIndex) => {
+                        const verseParts = [option.text?.trim(), option.reference?.trim()].filter(Boolean)
+                        const verseDisplay = verseParts.join('\n\n')
+                        const verseId = `scripture-${index}-${optionIndex}`
+                        const hasVerseContent = verseDisplay.length > 0
+                        const hasWhy = Boolean(option.whyItFits && option.whyItFits.trim())
+                        const conversationExamples = Array.isArray(option.conversationExamples)
+                          ? option.conversationExamples
+                          : []
+                        const hasExamples = conversationExamples.length > 0
+
+                        if (!hasVerseContent && !hasWhy && !hasExamples) {
+                          return null
+                        }
+
+                        return (
+                          <div
+                            key={`scripture-option-${index}-${optionIndex}`}
+                            className="rounded-2xl border border-amber-200 bg-amber-50 p-4 shadow-sm space-y-4"
+                          >
+                            {hasVerseContent && (
+                              <div className="relative w-full max-w-[400px]">
+                                <span
+                                  aria-hidden="true"
+                                  className="absolute left-3 -bottom-1 h-3 w-3 rotate-45 bg-amber-50"
+                                />
+                                <AutoResizeTextarea
+                                  value={
+                                    editingMessageId === verseId
+                                      ? localMessageContent
+                                      : verseDisplay
+                                  }
+                                  onChange={(event) =>
+                                    handleMessageChange(event.target.value)
+                                  }
+                                  onClick={() =>
+                                    handleMessageClick(verseDisplay, verseId)
+                                  }
+                                  onBlur={handleMessageBlur}
+                                  readOnly={editingMessageId !== verseId}
+                                  className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 text-sm leading-relaxed whitespace-pre-line"
+                                  data-message-id={verseId}
+                                />
+                              </div>
+                            )}
+
+                            {hasWhy && (
+                              <p className="text-sm text-amber-900/90 leading-relaxed">
+                                {option.whyItFits}
+                              </p>
+                            )}
+
+                            {hasExamples && (
+                              <div className="space-y-2">
+                                <span className="text-xs uppercase font-semibold tracking-wide text-amber-900/70">
+                                  Conversation Examples
+                                </span>
+                                <div className="space-y-2">
+                                  {conversationExamples.map((example, exampleIndex) => {
+                                    if (!example?.message) return null
+                                    const exampleId = `scripture-example-${index}-${optionIndex}-${exampleIndex}`
+
+                                    return (
+                                      <div
+                                        key={exampleId}
+                                        className="relative rounded-2xl border border-amber-200/70 bg-white p-3 shadow group"
+                                      >
+                                        <div className="flex items-center justify-between gap-2 mb-2">
+                                          <span className="text-xs uppercase font-semibold tracking-wide text-amber-900/80">
+                                            {example.tone || 'Example'}
+                                          </span>
+                                          <Button
+                                            type="button"
+                                            variant="transparent"
+                                            size="sm"
+                                            className="gap-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            onClick={(event) => {
+                                              event.preventDefault()
+                                              event.stopPropagation()
+                                              void handleCopyMessage(example.message, exampleId)
+                                            }}
+                                            onMouseDown={(event) => event.preventDefault()}
+                                            title={
+                                              copiedMessageId === exampleId
+                                                ? 'Copied!'
+                                                : 'Copy message'
+                                            }
+                                          >
+                                            {copiedMessageId === exampleId ? (
+                                              <Check className="h-3 w-3 text-green-500" />
+                                            ) : (
+                                              <Copy className="h-3 w-3" />
+                                            )}
+                                          </Button>
+                                        </div>
+                                        <AutoResizeTextarea
+                                          value={
+                                            editingMessageId === exampleId
+                                              ? localMessageContent
+                                              : example.message
+                                          }
+                                          onChange={(event) =>
+                                            handleMessageChange(event.target.value)
+                                          }
+                                          onClick={() =>
+                                            handleMessageClick(example.message, exampleId)
+                                          }
+                                          onBlur={handleMessageBlur}
+                                          readOnly={editingMessageId !== exampleId}
+                                          className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 text-sm leading-relaxed"
+                                          data-message-id={exampleId}
+                                        />
+                                      </div>
+                                    )
+                                  })}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
-                )}
+                ) : null}
 
                 <div className="space-y-3">
                   <div className="flex justify-end">
