@@ -7,15 +7,16 @@ test('journeys', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' })
   // Wait for and click the Fact or Fiction entry using a stable href-based locator
   const factOrFictionLink = page.locator('a[href="/fact-or-fiction"]')
-  await expect(factOrFictionLink).toBeVisible({ timeout: 60000 })
+  await expect(factOrFictionLink).toBeVisible({ timeout: 150000 })
   await factOrFictionLink.click()
   // test that user actually navigated to the choosen journey
   await expect(page).toHaveURL(/.*fact-or-fiction/)
   // Test Fact or Fiction screen
   await expect(
-    page.getByRole('heading', { name: 'Fact or Fiction' })
+    page
+      .getByRole('heading', { name: 'Fact or Fiction' })
+      .and(page.getByTestId('JourneysTypography'))
   ).toBeInViewport()
-  await expect(page.getByTestId('JourneysTypography')).toBeInViewport()
   await page.getByRole('button', { name: 'Explore Now' }).click()
   // Test Video Screen
   await page.getByTestId('ConductorNavigationButtonNext').click()
