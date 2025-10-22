@@ -2548,7 +2548,7 @@ export default function NewPage() {
                         />
                       </div>
                       <Button variant="link" size="sm" asChild className="">
-                        <Link href="/studio" className="inline-flex items-center gap-2">
+                        <Link href="/" className="inline-flex items-center gap-2">
                           <HelpCircle className="h-4 w-4" />
                           How it works
                         </Link>
