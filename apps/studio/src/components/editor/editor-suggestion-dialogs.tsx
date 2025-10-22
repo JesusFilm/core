@@ -1,8 +1,8 @@
 import Image from 'next/image'
 import type { FC } from 'react'
 
-import type { ImageAnalysisResult } from '../../libs/storage'
 import { cn } from '../../libs/cn/cn'
+import type { ImageAnalysisResult } from '../../libs/storage'
 import {
   Dialog,
   DialogContent,

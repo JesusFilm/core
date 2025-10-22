@@ -20,8 +20,8 @@ export const useUnsplashMedia = ({
   setIsSettingsOpen,
   deriveHeadingFromContent
 }: UseUnsplashMediaOptions) => {
-  const searchUnsplash = useCallback(
-    async (query: string, perPage: number = 3): Promise<string[]> => {
+    const searchUnsplash = useCallback(
+      async (query: string, perPage = 3): Promise<string[]> => {
       const accessKey = unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
 
       console.log('🔑 API Key debug:', {
