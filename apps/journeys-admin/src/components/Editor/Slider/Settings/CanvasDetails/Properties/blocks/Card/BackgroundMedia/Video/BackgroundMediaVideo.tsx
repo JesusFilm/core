@@ -132,7 +132,10 @@ export function BackgroundMediaVideo({
       posterBlockId: input.posterBlockId ?? null,
       fullsize: input.fullsize ?? null,
       objectFit: input.objectFit ?? null,
-      subtitleLanguage: input.subtitleLanguage ?? null
+      subtitleLanguage:
+        input.subtitleLanguageId != null
+          ? { __typename: 'Language', id: input.subtitleLanguageId }
+          : null
     }
 
     add({

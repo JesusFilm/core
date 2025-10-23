@@ -1,2 +1,2 @@
-export { SubtitleSelector, getMockSubtitles } from './SubtitleSelector'
+export { SubtitleSelector } from './SubtitleSelector'
 export type { SubtitleSelectorProps } from './SubtitleSelector'

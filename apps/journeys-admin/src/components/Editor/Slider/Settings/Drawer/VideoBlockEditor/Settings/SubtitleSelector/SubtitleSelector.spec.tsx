@@ -10,15 +10,15 @@ const mockYouTubeLanguages = [
       {
         value: 'English',
         primary: true,
-        __typename: 'YouTubeLanguageName' as const
+        __typename: 'LanguageName' as const
       },
       {
         value: 'Inglés',
         primary: false,
-        __typename: 'YouTubeLanguageName' as const
+        __typename: 'LanguageName' as const
       }
     ],
-    __typename: 'YouTubeLanguage' as const
+    __typename: 'Language' as const
   },
   {
     id: 'lang-es',
@@ -27,10 +27,10 @@ const mockYouTubeLanguages = [
       {
         value: 'Spanish',
         primary: true,
-        __typename: 'YouTubeLanguageName' as const
+        __typename: 'LanguageName' as const
       }
     ],
-    __typename: 'YouTubeLanguage' as const
+    __typename: 'Language' as const
   },
   {
     id: 'lang-fr',
@@ -39,15 +39,15 @@ const mockYouTubeLanguages = [
       {
         value: 'French',
         primary: true,
-        __typename: 'YouTubeLanguageName' as const
+        __typename: 'LanguageName' as const
       },
       {
         value: 'Français',
         primary: false,
-        __typename: 'YouTubeLanguageName' as const
+        __typename: 'LanguageName' as const
       }
     ],
-    __typename: 'YouTubeLanguage' as const
+    __typename: 'Language' as const
   }
 ]
 

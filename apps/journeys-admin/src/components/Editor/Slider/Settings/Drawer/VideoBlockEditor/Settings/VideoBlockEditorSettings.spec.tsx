@@ -92,7 +92,7 @@ const video: TreeBlock = {
   posterBlockId: null,
   children: [],
   objectFit: null,
-  subtitleLanguageId: null
+  subtitleLanguage: null
 }
 
 describe('VideoBlockEditorSettings', () => {
@@ -468,7 +468,7 @@ describe('VideoBlockEditorSettings', () => {
                 ...video,
                 source: VideoBlockSource.youTube,
                 videoId: 'test-youtube-id-1',
-                subtitleLanguageId: 'lang-en'
+                subtitleLanguage: { __typename: 'Language', id: 'lang-en' }
               }}
               posterBlock={null}
               onChange={onChange}
@@ -488,7 +488,7 @@ describe('VideoBlockEditorSettings', () => {
                 ...video,
                 source: VideoBlockSource.youTube,
                 videoId: 'test-youtube-id-2',
-                subtitleLanguageId: 'lang-en'
+                subtitleLanguage: { __typename: 'Language', id: 'lang-en' }
               }}
               posterBlock={null}
               onChange={onChange}
@@ -516,7 +516,7 @@ describe('VideoBlockEditorSettings', () => {
                 ...video,
                 source: VideoBlockSource.youTube,
                 videoId: 'test-youtube-id',
-                subtitleLanguageId: 'lang-en'
+                subtitleLanguage: { __typename: 'Language', id: 'lang-en' }
               }}
               posterBlock={null}
               onChange={onChange}
@@ -536,7 +536,7 @@ describe('VideoBlockEditorSettings', () => {
                 ...video,
                 source: VideoBlockSource.internal,
                 videoId: '2_0-FallingPlates',
-                subtitleLanguageId: 'lang-en'
+                subtitleLanguage: { __typename: 'Language', id: 'lang-en' }
               }}
               posterBlock={null}
               onChange={onChange}

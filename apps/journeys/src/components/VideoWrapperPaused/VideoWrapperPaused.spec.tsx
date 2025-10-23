@@ -35,6 +35,7 @@ describe('VideoWrapper', () => {
       fullsize: null,
       action: null,
       objectFit: null,
+      subtitleLanguage: null,
       children: [
         {
           id: 'image5.id',
@@ -124,6 +125,7 @@ describe('VideoWrapper', () => {
       fullsize: null,
       action: null,
       objectFit: null,
+      subtitleLanguage: null,
       children: [
         {
           id: 'image5.id',

@@ -1,5 +1,5 @@
 export {
   useYouTubeClosedCaptions,
-  GET_YOUTUBE_CLOSED_CAPTION_LANGUAGE_IDS
+  YOUTUBE_CLOSED_CAPTION_LANGUAGES
 } from './useYouTubeClosedCaptions'
 export type { YouTubeLanguage } from './useYouTubeClosedCaptions'

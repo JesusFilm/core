@@ -59,8 +59,9 @@ export function VideoOptions(): ReactElement {
       inverseInput.fullsize = selectedBlock.fullsize
     if (input.objectFit !== undefined)
       inverseInput.objectFit = selectedBlock.objectFit
-    if (input.subtitleLanguage !== undefined)
-      inverseInput.subtitleLanguage = selectedBlock.subtitleLanguage
+    if (input.subtitleLanguageId !== undefined)
+      inverseInput.subtitleLanguageId =
+        selectedBlock.subtitleLanguage?.id ?? null
 
     add({
       parameters: {

@@ -61,6 +61,7 @@ describe('CardWrapper', () => {
           fullsize: null,
           action: null,
           objectFit: null,
+          subtitleLanguage: null,
           children: [
             {
               id: 'image5.id',
@@ -179,6 +180,7 @@ describe('CardWrapper', () => {
           fullsize: null,
           action: null,
           objectFit: null,
+          subtitleLanguage: null,
           children: [
             {
               id: 'image5.id',
