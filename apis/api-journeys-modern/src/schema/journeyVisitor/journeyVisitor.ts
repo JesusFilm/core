@@ -10,6 +10,16 @@ import { JourneyEventsFilter } from '../event/journey/inputs'
 
 import { JourneyVisitorExportSelect } from './inputs'
 
+// Sanitize CSV cells to prevent injection attacks and preserve leading zeros
+function sanitizeCSVCell(value: string): string {
+  if (!value) return ''
+  // Check for formulas that could be executed in Excel/CSV viewers
+  if (/^[=+\-@]/.test(value)) {
+    return `'${value}` // Prefix with single quote to treat as text
+  }
+  return value
+}
+
 export const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
   shareable: true,
   fields: (t) => ({
@@ -165,9 +175,10 @@ async function* getJourneyVisitors(
           eventValuesByKey.get(key)!.push(eventValue)
         }
       })
-      // Join values with a fixed separator
+      // Join values with a fixed separator and sanitize for CSV
       eventValuesByKey.forEach((values, key) => {
-        row[key] = values.join('; ')
+        const sanitizedValues = values.map(value => sanitizeCSVCell(value))
+        row[key] = sanitizedValues.join('; ')
       })
       yield row
     }
@@ -519,7 +530,10 @@ builder.queryField('journeyVisitorExport', (t) => {
         // Stream rows directly to CSV without collecting in memory
         const stringifier = stringify({
           header: false,
-          columns: columns.map((col) => ({ key: col.key }))
+          columns: columns.map((col) => ({ key: col.key })),
+          cast: {
+            string: (value: any) => String(value ?? '')
+          }
         })
         const onEndPromise = new Promise((resolve) => {
           stringifier.on('end', resolve)
@@ -529,9 +543,11 @@ builder.queryField('journeyVisitorExport', (t) => {
           csvContent += chunk
         })
 
-        // Manually write the two header rows
-        stringifier.write(cardHeadingRow)
-        stringifier.write(labelRow)
+        // Manually write the two header rows (sanitized)
+        const sanitizedCardHeadingRow = cardHeadingRow.map(cell => sanitizeCSVCell(cell))
+        const sanitizedLabelRow = labelRow.map(cell => sanitizeCSVCell(cell))
+        stringifier.write(sanitizedCardHeadingRow)
+        stringifier.write(sanitizedLabelRow)
 
         for await (const row of getJourneyVisitors(journeyId, eventWhere)) {
           stringifier.write(row)
