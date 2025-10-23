@@ -23,6 +23,7 @@ import { RotatingText } from '../src/components/newPage/RotatingText'
 import { StepsList } from '../src/components/newPage/StepsList'
 import { PrayerCarousel } from '../src/components/PrayerCarousel'
 import { Accordion } from '../src/components/ui/accordion'
+import { StudioSiteSelector } from '../src/components/studio-site-selector'
 import { Button } from '../src/components/ui/button'
 import { Card } from '../src/components/ui/card'
 import {
@@ -2063,18 +2064,13 @@ export default function NewPage() {
         <title>Create New Content | Studio | Jesus Film Project</title>
       </Head>
       <div className="min-h-screen bg-stone-100 text-foreground" data-id="PageRoot">
-        <header className="border-b border-border bg-background backdrop-blur" data-id="Header">
+        <header className="border-b border-border bg-background backdrop-blur relative z-100" data-id="Header">
           <div className="container mx-auto px-4 py-6" data-id="HeaderContainer">
             <div className="flex items-center justify-between" data-id="HeaderRow">
               <div className="flex items-center gap-4" data-id="HeaderBranding">
-                <Image
-                  src="/jesusfilm-sign.svg"
-                  alt="Jesus Film Project"
-                  width={24}
-                  height={24}
-                  className="h-6 w-auto"
-                />
-                <h1 className="text-2xl font-bold text-foreground">Studio</h1>
+                <StudioSiteSelector onNavigateHome={() => {
+                  void router.push('/')
+                }} />
               </div>
               <div className="flex items-center gap-4" data-id="HeaderActions">
                 {(totalTokensUsed.input > 0 || totalTokensUsed.output > 0) && (

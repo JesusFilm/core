@@ -1,8 +1,8 @@
 import { History, Settings } from 'lucide-react'
-import Image from 'next/image'
 import type { FC, ReactNode } from 'react'
 
 import { Button } from '../ui/button'
+import { StudioSiteSelector } from '../studio-site-selector'
 
 export interface TokenSummary {
   formattedTotal: string
@@ -29,24 +29,12 @@ export const EditorHeader: FC<EditorHeaderProps> = ({
   children
 }) => {
   return (
-    <header className="border-b border-border bg-background backdrop-blur" data-id="Header">
+    <header className="border-b border-border bg-background backdrop-blur  relative z-100" data-id="Header">
       <div className="container mx-auto px-4 py-6" data-id="HeaderContainer">
         <div className="flex items-center justify-between" data-id="HeaderRow">
           <div className="flex items-center gap-4" data-id="HeaderBranding">
             <div className="flex items-center gap-2">
-              <button
-                onClick={onNavigateHome}
-                className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
-              >
-                <Image
-                  src="/jesusfilm-sign.svg"
-                  alt="Jesus Film Project"
-                  width={24}
-                  height={24}
-                  className="h-6 w-auto"
-                />
-                <span className="text-2xl font-bold text-foreground">Studio</span>
-              </button>
+              <StudioSiteSelector onNavigateHome={onNavigateHome} />
               <span className="text-muted-foreground">{'>'}</span>
               <button
                 onClick={onNavigatePlan}
