@@ -83,7 +83,19 @@ describe('api-users', () => {
       const data = await authClient({
         document: ME_QUERY
       })
-      expect(findOrFetchUser).toHaveBeenCalledWith({}, 'testUserId', undefined)
+      expect(findOrFetchUser).toHaveBeenCalledWith(
+        {},
+        'testUserId',
+        undefined,
+        expect.objectContaining({
+          id: 'testUserId',
+          firstName: 'Test',
+          lastName: 'User',
+          email: 'test@example.com',
+          emailVerified: true,
+          imageUrl: null
+        })
+      )
       expect(data).toHaveProperty(
         'data.me',
         omit(user, ['createdAt', 'userId'])
