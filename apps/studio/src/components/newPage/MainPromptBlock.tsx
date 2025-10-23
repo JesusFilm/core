@@ -168,12 +168,12 @@ export function MainPromptBlock({
         <div className="absolute bottom-3 left-3">
           <button
             onClick={handleOpenCamera}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-full border-2 border-border bg-transparent text-foreground hover:bg-muted/30 transition-colors cursor-pointer"
+            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-full bg-transparent text-foreground hover:bg-muted/30 transition-colors cursor-pointer"
             title="Add image"
             type="button"
           >
             <Camera className="w-4 h-4" />
-            <span>Add Image</span>
+            <span className="hidden md:inline">Add Image</span>
           </button>
         </div>
 
@@ -182,7 +182,7 @@ export function MainPromptBlock({
           <div className="absolute bottom-3 right-3 flex items-center gap-2">
             <DialogTrigger asChild>
               <button
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-full border-2 border-border bg-transparent text-foreground hover:bg-muted/30 transition-colors cursor-pointer"
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-full bg-transparent text-foreground hover:bg-muted/30 transition-colors cursor-pointer"
                 type="button"
               >
                 <Users className="w-4 h-4" />
@@ -205,7 +205,7 @@ export function MainPromptBlock({
               {isProcessing ? (
                 <AnimatedLoadingText />
               ) : hasPendingImageAnalysis ? (
-                <>Analyzing images…</>
+                <>Analyzing…</>
               ) : (
                 <>{aiResponse.trim() ? 'Retry' : 'Run'}&nbsp;&nbsp;&nbsp;&nbsp;⌘ + ↵</>
               )}

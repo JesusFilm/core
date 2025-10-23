@@ -1,35 +1,13 @@
 import {
   ArrowUp,
-  Book,
   Bot,
-  Camera,
-  Check,
-  Copy,
-  Crown,
-  Facebook,
-  FileText,
-  Globe,
   HelpCircle,
   History,
   Image as ImageIcon,
-  Instagram,
-  Layers,
   Loader2,
-  MessageCircle,
-  MessageSquare,
-  Palette,
-  Plus,
-  Printer,
   Settings,
   Sparkles,
-  Trash2,
-  Twitter,
-  User,
-  Users,
-  Video,
-  X,
-  Youtube,
-  Zap
+  Trash2
 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
@@ -40,16 +18,9 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { PrayerCarousel } from '../src/components/PrayerCarousel'
 import { Accordion } from '../src/components/ui/accordion'
-import { Button } from '../src/components/ui/button'
 import { Card } from '../src/components/ui/card'
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious
-} from '../src/components/ui/carousel'
-import { Checkbox } from '../src/components/ui/checkbox'
+import { Button } from '../src/components/ui/button'
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '../src/components/ui/carousel'
 import {
   Dialog,
   DialogContent,
@@ -60,17 +31,9 @@ import {
 } from '../src/components/ui/dialog'
 import { Input } from '../src/components/ui/input'
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger
-} from '../src/components/ui/tabs'
-import {
   BASE_SYSTEM_PROMPT,
   IMAGE_ANALYSIS_PROMPT,
-  OUTPUT_FORMAT_INSTRUCTIONS,
   REFINEMENT_INSTRUCTIONS,
-  RESPONSE_GUIDELINES,
   contextDetailOptions,
   steps
 } from '../src/config/new-page'
@@ -87,6 +50,7 @@ import {
 } from '../src/libs/storage'
 
 import { ConversationMapView } from '../src/components/newPage/ConversationMapView'
+import { ContextSelector } from '../src/components/newPage/ContextSelector'
 import { MainPromptBlock } from '../src/components/newPage/MainPromptBlock'
 import { RotatingText } from '../src/components/newPage/RotatingText'
 import { StepsList } from '../src/components/newPage/StepsList'
@@ -2713,11 +2677,11 @@ export default function NewPage() {
                   <div
                   className={`relative w-full transition-[max-height] duration-700 ease-out pt-0 ${
                     isContextContainerHidden
-                      ? 'opacity-0 max-h-0 py-0 pointer-events-none pt-10'
+                      ? 'opacity-0 max-h-0 py-0 pointer-events-none md:pt-10'
                       : 'opacity-100 max-h-100  '
                   }`}>
-                    <div className="flex items-start justify-between gap-8 mb-4" data-id="HeroRow">
-                      <blockquote className="text-xl font-medium text-stone-950 text-balance w-full text-center z-30 animate-bible-quote-appear py-12" data-id="Verse">
+                    <div className="flex items-start justify-between md:mb-4" data-id="HeroRow">
+                      <blockquote className="text-xl font-semibold md:font-medium text-stone-950 text-balance w-full text-center z-30 animate-bible-quote-appear md:py-12 py-2" data-id="Verse">
                         &ldquo;Let your conversation be always{' '}
                         <span className="animate-gradient-wave animate-glow-delay">full&nbsp;of&nbsp;grace,
                         seasoned&nbsp;with&nbsp;salt</span>, so&nbsp;that&nbsp;you&nbsp;may know how to
@@ -2726,8 +2690,8 @@ export default function NewPage() {
                           Colossians 4:5–6
                         </cite>
                       </blockquote>
-                      <p className="absolute block -bottom-40 text-center w-full text-sm font-medium text-stone-400 opacity-0 animate-fade-in-out [animation-delay:1200ms] z-100 uppercase tracking-widest" data-id="IntroLabel">
-                        Introducing: Sharing Studio...
+                      <p className="absolute block bottom-0 md:-bottom-40 text-center w-full text-sm font-medium text-stone-400 opacity-0 animate-fade-in-out [animation-delay:1200ms] z-100 uppercase tracking-widest" data-id="IntroLabel">
+                        Introducing: <br />Sharing Studio...
                       </p>
 
                     {showTestimonialBackground && (
@@ -2740,10 +2704,16 @@ export default function NewPage() {
                       />
                     )}
                     </div>
-                    <div className="flex justify-between items-center mb-4">
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-center">
+                      <Button variant="outline" size="lg" asChild className="self-center md:self-auto md:size-sm block md:hidden my-8">
+                        <Link href="/studio" className="inline-flex items-center gap-2">
+                          <HelpCircle className="h-4 w-4" />
+                          How it works
+                        </Link>
+                      </Button>
                       <div
                       data-id="HeroTitle"
-                      className="text-2xl text-left relative"
+                      className="text-2xl text-left relative leading-[1.2] md:leading-1.2 py-4 md:py-6" 
                       >
                         Share God's grace… <RotatingText
                           onCategoryChange={handleCategoryChange}
@@ -2752,8 +2722,8 @@ export default function NewPage() {
                           isAnimationStopped={isAnimationStopped}
                         />
                       </div>
-                      <Button variant="link" size="sm" asChild className="">
-                        <Link href="/studio" className="inline-flex items-center gap-2">
+                      <Button variant="link" size="sm" asChild className="hidden md:inline-flex">
+                        <Link href="/studio" className="hidden md:inline-flex items-center gap-2">
                           <HelpCircle className="h-4 w-4" />
                           How it works
                         </Link>
@@ -2762,269 +2732,18 @@ export default function NewPage() {
                   </div>
                   <div data-testid="section-channels" className="space-y-6" data-id="ChannelsSection">
                     {/* Context Selector */}
-                    <div className="mb-8" data-id="ContextSelector">
-                      <div
-                        className="grid grid-cols-5 gap-4"
-                        data-id="ContextGrid"
-                        onMouseEnter={() => setIsTilesContainerHovered(true)}
-                        onMouseLeave={() => setIsTilesContainerHovered(false)}
-                        suppressHydrationWarning
-                      >
-                        {/* Conversations */}
-                        <div
-                          data-id="Tile-Conversations"
-                          className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-3' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
-                            selectedContext === 'Conversations'
-                              ? 'bg-gradient-to-br from-blue-500 via-cyan-600 to-teal-600 border-blue-500'
-                              : !isHovering && highlightedCategory === 'Conversations'
-                                ? 'bg-transparent border-cyan-600'
-                                : `bg-transparent border-gray-300 ${
-                                    shouldShowHoverEffect('Conversations')
-                                      ? 'hover:bg-gradient-to-br hover:from-blue-500 hover:via-cyan-600 hover:to-teal-600 hover:border-cyan-600'
-                                      : ''
-                                  }`
-                          }`}
-                          onClick={() => handleContextChange('Conversations')}
-                          onMouseEnter={() => {
-                            setHoveredCategory('Conversations')
-                            setIsHovering(true)
-                          }}
-                          onMouseLeave={() => {
-                            setHoveredCategory(null)
-                            setIsHovering(false)
-                          }}
-                        >
-                          {!(collapsedTiles && !isTilesContainerHovered) && (
-                            <div className="p-3" data-id="Tile-Conversations-Icon">
-                              <MessageSquare
-                                className={`w-8 h-8 ${
-                                  selectedContext === 'Conversations'
-                                    ? 'text-white drop-shadow-lg'
-                                    : !isHovering && highlightedCategory === 'Conversations'
-                                      ? 'text-cyan-600'
-                                      : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
-                                }`}
-                              />
-                            </div>
-                          )}
-                          <span
-                            data-id="Tile-Conversations-Label"
-                            className={`font-medium text-sm text-center ${
-                              selectedContext === 'Conversations'
-                                ? 'text-white drop-shadow-lg'
-                                : !isHovering && highlightedCategory === 'Conversations'
-                                  ? 'text-cyan-600'
-                                  : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
-                            }`}
-                          >
-                            <span className="inline md:hidden">Conv.</span><span className="hidden md:inline">Conversations</span>
-                          </span>
-                        </div>
-
-                        {/* Social Media */}
-                        <div
-                          data-id="Tile-SocialMedia"
-                          className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
-                            selectedContext === 'Social Media'
-                              ? 'bg-gradient-to-br from-purple-500 via-pink-600 to-red-600 border-purple-500'
-                              : !isHovering && highlightedCategory === 'Social Media'
-                                ? 'bg-transparent border-pink-500'
-                                : `bg-transparent border-gray-300 ${
-                                    shouldShowHoverEffect('Social Media')
-                                      ? 'hover:bg-gradient-to-br hover:from-purple-500 hover:via-pink-600 hover:to-red-600 hover:border-pink-500'
-                                      : ''
-                                  }`
-                          }`}
-                          onClick={() => handleContextChange('Social Media')}
-                          onMouseEnter={() => {
-                            setHoveredCategory('Social Media')
-                            setIsHovering(true)
-                          }}
-                          onMouseLeave={() => {
-                            setHoveredCategory(null)
-                            setIsHovering(false)
-                          }}
-                        >
-                          {!(collapsedTiles && !isTilesContainerHovered) && (
-                            <div className="p-3" data-id="Tile-SocialMedia-Icon">
-                              <Layers
-                                className={`w-8 h-8 ${
-                                  selectedContext === 'Social Media'
-                                    ? 'text-white drop-shadow-lg'
-                                    : !isHovering && highlightedCategory === 'Social Media'
-                                      ? 'text-pink-500'
-                                      : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
-                                }`}
-                              />
-                            </div>
-                          )}
-                          <span
-                            data-id="Tile-SocialMedia-Label"
-                            className={`font-medium text-sm text-center ${
-                              selectedContext === 'Social Media'
-                                ? 'text-white drop-shadow-lg'
-                                : !isHovering && highlightedCategory === 'Social Media'
-                                  ? 'text-pink-500'
-                                  : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
-                            }`}
-                          >
-                            <span className="inline md:hidden">Social</span><span className="hidden md:inline">Social Media</span>
-                          </span>
-                        </div>
-
-                        {/* Website */}
-                        <div
-                          data-id="Tile-Website"
-                          className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
-                            selectedContext === 'Website'
-                              ? 'bg-gradient-to-br from-orange-500 via-yellow-600 to-amber-600 border-orange-500'
-                              : !isHovering && highlightedCategory === 'Website'
-                                ? 'bg-transparent border-orange-500'
-                                : `bg-transparent border-gray-300 ${
-                                    shouldShowHoverEffect('Website')
-                                      ? 'hover:bg-gradient-to-br hover:from-orange-500 hover:via-yellow-600 hover:to-amber-600 hover:border-orange-500'
-                                      : ''
-                                  }`
-                          }`}
-                          onClick={() => handleContextChange('Website')}
-                          onMouseEnter={() => {
-                            setHoveredCategory('Website')
-                            setIsHovering(true)
-                          }}
-                          onMouseLeave={() => {
-                            setHoveredCategory(null)
-                            setIsHovering(false)
-                          }}
-                        >
-                          {!(collapsedTiles && !isTilesContainerHovered) && (
-                            <div className="p-3" data-id="Tile-Website-Icon">
-                              <Globe
-                                className={`w-8 h-8 ${
-                                  selectedContext === 'Website'
-                                    ? 'text-white drop-shadow-lg'
-                                    : !isHovering && highlightedCategory === 'Website'
-                                      ? 'text-orange-500'
-                                      : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
-                                }`}
-                              />
-                            </div>
-                          )}
-                          <span
-                            data-id="Tile-Website-Label"
-                            className={`font-medium text-sm text-center ${
-                              selectedContext === 'Website'
-                                ? 'text-white drop-shadow-lg'
-                                : !isHovering && highlightedCategory === 'Website'
-                                  ? 'text-orange-500'
-                                  : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
-                            }`}
-                          >
-                            <span className="inline md:hidden">Web</span><span className="hidden md:inline">Website</span>
-                          </span>
-                        </div>
-
-                        {/* Print */}
-                        <div
-                          data-id="Tile-Print"
-                          className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
-                            selectedContext === 'Print'
-                              ? 'bg-gradient-to-br from-emerald-500 via-green-600 to-lime-600 border-emerald-500'
-                              : !isHovering && highlightedCategory === 'Print'
-                                ? 'bg-transparent border-emerald-500'
-                                : `bg-transparent border-gray-300 ${
-                                    shouldShowHoverEffect('Print')
-                                      ? 'hover:bg-gradient-to-br hover:from-emerald-500 hover:via-green-600 hover:to-lime-600 hover:border-emerald-500'
-                                      : ''
-                                  }`
-                          }`}
-                          onClick={() => handleContextChange('Print')}
-                          onMouseEnter={() => {
-                            setHoveredCategory('Print')
-                            setIsHovering(true)
-                          }}
-                          onMouseLeave={() => {
-                            setHoveredCategory(null)
-                            setIsHovering(false)
-                          }}
-                        >
-                          {!(collapsedTiles && !isTilesContainerHovered) && (
-                            <div className="p-3" data-id="Tile-Print-Icon">
-                              <FileText
-                                className={`w-8 h-8 ${
-                                  selectedContext === 'Print'
-                                    ? 'text-white drop-shadow-lg'
-                                    : !isHovering && highlightedCategory === 'Print'
-                                      ? 'text-emerald-600'
-                                      : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
-                                }`}
-                              />
-                            </div>
-                          )}
-                          <span
-                            data-id="Tile-Print-Label"
-                            className={`font-medium text-sm text-center ${
-                              selectedContext === 'Print'
-                                ? 'text-white drop-shadow-lg'
-                                : !isHovering && highlightedCategory === 'Print'
-                                  ? 'text-emerald-600'
-                                  : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
-                            }`}
-                          >
-                            Print
-                          </span>
-                        </div>
-
-                        {/* Real Life */}
-                        <div
-                          data-id="Tile-RealLife"
-                          className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-2' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-3'} ${
-                            selectedContext === 'Real Life'
-                              ? 'bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-600 border-rose-500'
-                              : !isHovering && highlightedCategory === 'Real Life'
-                                ? 'bg-transparent border-rose-500'
-                                : `bg-transparent border-gray-300 ${
-                                    shouldShowHoverEffect('Real Life')
-                                      ? 'hover:bg-gradient-to-br hover:from-rose-500 hover:via-pink-600 hover:to-fuchsia-600 hover:border-rose-500'
-                                      : ''
-                                  }`
-                          }`}
-                          onClick={() => handleContextChange('Real Life')}
-                          onMouseEnter={() => {
-                            setHoveredCategory('Real Life')
-                            setIsHovering(true)
-                          }}
-                          onMouseLeave={() => {
-                            setHoveredCategory(null)
-                            setIsHovering(false)
-                          }}
-                        >
-                          {!(collapsedTiles && !isTilesContainerHovered) && (
-                            <div className="p-3">
-                              <Users
-                                className={`w-8 h-8 ${
-                                  selectedContext === 'Real Life'
-                                    ? 'text-white drop-shadow-lg'
-                                    : !isHovering && highlightedCategory === 'Real Life'
-                                      ? 'text-rose-500'
-                                      : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
-                                }`}
-                              />
-                            </div>
-                          )}
-                          <span
-                            className={`font-medium text-sm text-center ${
-                              selectedContext === 'Real Life'
-                                ? 'text-white drop-shadow-lg'
-                                : !isHovering && highlightedCategory === 'Real Life'
-                                  ? 'text-rose-500'
-                                  : 'text-black group-hover:text-white group-hover:drop-shadow-lg'
-                            }`}
-                          >
-                            <span className="inline md:hidden">Live</span><span className="hidden md:inline">Real Life</span>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                    <ContextSelector
+                      selectedContext={selectedContext}
+                      collapsedTiles={collapsedTiles}
+                      isTilesContainerHovered={isTilesContainerHovered}
+                      isHovering={isHovering}
+                      highlightedCategory={highlightedCategory}
+                      shouldShowHoverEffect={shouldShowHoverEffect}
+                      handleContextChange={handleContextChange}
+                      setHoveredCategory={setHoveredCategory}
+                      setIsHovering={setIsHovering}
+                      setIsTilesContainerHovered={setIsTilesContainerHovered}
+                    />
 
                     <MainPromptBlock
                       selectedContext={selectedContext}
@@ -3313,7 +3032,7 @@ export default function NewPage() {
           {/* Context detail options */}
 
             {selectedContextOptions.length > 0 && (
-              <div className={`mb-8 max-w-4xl mx-auto px-6 transition-all duration-500 ease-out ${
+              <div className={`mb-8 max-w-4xl mx-auto  transition-all duration-500 ease-out ${
                 hidingSuggestionsCarousel ? 'opacity-0 max-h-0 overflow-hidden' : 'opacity-100 max-h-96'
               }`}>
                 <Carousel data-id="SuggestionTilesContainer" className="relative w-full" opts={{ align: 'start' }}>
@@ -3324,7 +3043,7 @@ export default function NewPage() {
                       return (
                         <CarouselItem
                           key={option.text}
-                          className="basis-3/4 sm:basis-1/2 md:basis-1/3 lg:basis-1/5 xl:basis-1/5 py-2"
+                          className="basis-1/3  md:basis-1/5 lg:basis-1/6 py-2"
                           style={{
                             animationDelay: `${index * 0.1}s`,
                             animationFillMode: 'forwards'
@@ -3359,7 +3078,7 @@ export default function NewPage() {
                               // Hide suggestions carousel with animation
                               setHidingSuggestionsCarousel(true)
                             }}
-                            className={`group relative flex h-full w-full flex-col justify-between rounded-2xl border-2 p-4 text-left transition-all duration-300 cursor-pointer hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:border-transparent aspect-square ${
+                            className={`group relative flex h-full w-full flex-col justify-between rounded-2xl border-2 p-4 text-left transition-all duration-300 cursor-pointer hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:border-transparent md:aspect-square ${
                               isSelected
                                 ? 'border-primary shadow-lg ring-2 ring-primary/60'
                                 : 'border-gray-200 hover:border-white hover:'
@@ -3373,10 +3092,10 @@ export default function NewPage() {
                                   : 'text-muted-foreground group-hover:text-primary'
                               }`}
                             />
-                            <span className="text-4xl" aria-hidden="true">
+                            <span className="text-3xl md:text-4xl mb-2" aria-hidden="true">
                               {option.emoji}
                             </span>
-                            <span className="mt-auto text-sm font-semibold text-balance leading-snug text-gray-900 line-clamp-4">
+                            <span className="mt-auto text-xs md:text-sm font-semibold text-balance leading-snug text-gray-900 line-clamp-4 word-break-all">
                               {option.text}
                             </span>
                           </button>
@@ -3384,8 +3103,8 @@ export default function NewPage() {
                       )
                     })}
                   </CarouselContent>
-                  <CarouselPrevious className="-left-6 hidden md:flex" />
-                  <CarouselNext className="-right-6 hidden md:flex" />
+                  <CarouselPrevious className="-left-6" />
+                  <CarouselNext className="-right-6" />
                 </Carousel>
               </div>
             )}
