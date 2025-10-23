@@ -29,7 +29,7 @@ export const EditorHeader: FC<EditorHeaderProps> = ({
   children
 }) => {
   return (
-    <header className="border-b border-border bg-background backdrop-blur" data-id="Header">
+    <header className="border-b border-border bg-background backdrop-blur  relative z-100" data-id="Header">
       <div className="container mx-auto px-4 py-6" data-id="HeaderContainer">
         <div className="flex items-center justify-between" data-id="HeaderRow">
           <div className="flex items-center gap-4" data-id="HeaderBranding">

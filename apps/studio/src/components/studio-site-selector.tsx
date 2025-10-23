@@ -76,18 +76,18 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
     () => [
       {
         href: 'https://www.jesusfilm.org/watch',
-        label: 'Videos',
+        label: 'Video Library',
         description: 'Watch the story of Jesus in hundreds of languages.'
       },
       {
-        label: 'Studio',
-        description: 'Create ministry resources with AI assistance.',
+        label: 'Sharing Studio',
+        description: 'Grace and Salt for every conversation.',
         isSelected: true,
         onSelect: handleNavigateHome
       },
       {
         href: 'https://www.jesusfilm.org/resources/strategies/digital/jesus-film-project-app/',
-        label: 'App',
+        label: 'Mobile App',
         description: 'Carry the Jesus Film experience wherever you go.'
       }
     ],
