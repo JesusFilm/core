@@ -11,7 +11,6 @@ import type {
   SetStateAction
 } from 'react'
 
-import { cn } from '../../libs/cn/cn'
 import type { ImageAnalysisResult } from '../../libs/storage'
 import { Button } from '../ui/button'
 import {
@@ -23,11 +22,14 @@ import {
   DialogTrigger
 } from '../ui/dialog'
 import { Input } from '../ui/input'
+
 import { AutoResizeTextarea, Textarea } from '@/components/ui/textarea'
 
 const AnimatedLoadingText = dynamic(
   async () => {
-    const mod = await import('./AnimatedLoadingText')
+    const mod = await import(
+      /* webpackChunkName: "studio-main-prompt-animated-loading-text" */ './AnimatedLoadingText'
+    )
     return mod.AnimatedLoadingText
   },
   { ssr: false }
@@ -46,7 +48,7 @@ type MainPromptBlockProps = {
   imageAnalysisResults: ImageAnalysisResult[]
   removeImage: (index: number) => void
   setSelectedImageForDetails: Dispatch<SetStateAction<number | null>>
-  textareaRef: RefObject<HTMLTextAreaElement>
+  textareaRef: RefObject<HTMLTextAreaElement | null>
   animatingTextarea: boolean
   handlePaste: (event: ClipboardEvent<HTMLTextAreaElement>) => void
   setTextContent: Dispatch<SetStateAction<string>>
@@ -147,7 +149,7 @@ export function MainPromptBlock({
         <AutoResizeTextarea
           ref={textareaRef}
           placeholder="Enter your text content here... You can also paste or drop images directly."
-          className={`relative shadow-none resize-none bg-transparent pr-12 pb-16 px-4 border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none focus-visible:shadow-none overflow-hidden pt-4 text-base scrollbar-hide min-h-[200px] h-auto overflow-y-hidden ${
+          className={`relative shadow-none resize-none bg-transparent pr-12 pb-16 px-4 border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-base scrollbar-hide min-h-[200px] h-auto overflow-y-hidden ${
             animatingTextarea ? 'animate-text-appear' : ''
           }`}
           onPaste={handlePaste}
@@ -193,10 +195,7 @@ export function MainPromptBlock({
               onClick={() => {
                 void handleSubmit()
               }}
-              className={cn(
-                'px-4 py-2 text-sm font-medium text-white rounded-full bg-primary hover:bg-primary/90 transition-colors group disabled:opacity-50 disabled:hover:bg-primary/90',
-                isProcessing ? 'cursor-progress' : 'disabled:cursor-not-allowed'
-              )}
+              className="px-4 py-2 text-sm font-medium text-white rounded-full bg-primary hover:bg-primary/90 transition-colors group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary/90"
               type="button"
               disabled={isProcessing || hasPendingImageAnalysis}
               title={
