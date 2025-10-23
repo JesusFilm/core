@@ -1,6 +1,7 @@
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
+import { ACTION_UPDATE_RESET } from '../blockUpdateAction.mutation'
 
 describe('blockUpdatePhoneAction mutation', () => {
   const authClient = getClient({
@@ -75,14 +76,10 @@ describe('blockUpdatePhoneAction mutation', () => {
           parentBlock: { connect: { id: '1' } }
         },
         update: {
-          url: null,
-          target: null,
-          email: null,
+          ...ACTION_UPDATE_RESET,
           phone: '+15551234567',
           countryCode: 'US',
           contactAction: 'call',
-          journey: { disconnect: true },
-          block: { disconnect: true },
           gtmEventName: null
         }
       })

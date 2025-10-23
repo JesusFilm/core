@@ -2,6 +2,8 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
+import { ACTION_UPDATE_RESET } from './blockUpdateAction.mutation'
+
 describe('blockUpdateAction mutation', () => {
   const authClient = getClient({
     headers: { authorization: 'token' },
@@ -86,14 +88,10 @@ describe('blockUpdateAction mutation', () => {
           countryCode: 'US'
         },
         update: expect.objectContaining({
-          gtmEventName: null,
-          url: null,
-          target: null,
-          email: null,
-          journey: { disconnect: true },
-          block: { disconnect: true },
+          ...ACTION_UPDATE_RESET,
           phone: '+1555123456',
-          countryCode: 'US'
+          countryCode: 'US',
+          gtmEventName: null
         })
       })
 
@@ -140,13 +138,9 @@ describe('blockUpdateAction mutation', () => {
           block: { connect: { id: 'blockId' } }
         },
         update: expect.objectContaining({
-          gtmEventName: null,
-          url: null,
-          target: null,
-          email: null,
-          phone: null,
-          journey: { disconnect: true },
-          block: { connect: { id: 'blockId' } }
+          ...ACTION_UPDATE_RESET,
+          block: { connect: { id: 'blockId' } },
+          gtmEventName: null
         })
       })
 
@@ -188,13 +182,10 @@ describe('blockUpdateAction mutation', () => {
           target: null
         },
         update: expect.objectContaining({
-          gtmEventName: null,
+          ...ACTION_UPDATE_RESET,
           url: 'https://example.com',
           target: null,
-          email: null,
-          phone: null,
-          journey: { disconnect: true },
-          block: { disconnect: true }
+          gtmEventName: null
         })
       })
 
@@ -235,13 +226,9 @@ describe('blockUpdateAction mutation', () => {
           email: 'example@example.com'
         },
         update: expect.objectContaining({
-          gtmEventName: null,
-          url: null,
-          target: null,
+          ...ACTION_UPDATE_RESET,
           email: 'example@example.com',
-          phone: null,
-          journey: { disconnect: true },
-          block: { disconnect: true }
+          gtmEventName: null
         })
       })
 
@@ -287,13 +274,10 @@ describe('blockUpdateAction mutation', () => {
           parentBlock: { connect: { id: '1' } }
         },
         update: expect.objectContaining({
-          gtmEventName: null,
+          ...ACTION_UPDATE_RESET,
           chatUrl: 'https://wa.me/1234567890',
           target: null,
-          email: null,
-          phone: null,
-          journey: { disconnect: true },
-          block: { disconnect: true }
+          gtmEventName: null
         })
       })
 

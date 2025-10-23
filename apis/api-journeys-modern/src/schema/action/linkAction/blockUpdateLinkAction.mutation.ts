@@ -1,22 +1,14 @@
 import { GraphQLError } from 'graphql'
 
-import { Prisma, prisma } from '@core/prisma/journeys/client'
+import { prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../../lib/auth/ability'
 import { builder } from '../../builder'
+import { ACTION_UPDATE_RESET } from '../blockUpdateAction.mutation'
 import { canBlockHaveAction } from '../canBlockHaveAction'
 
 import { LinkActionInput } from './inputs'
 import { LinkActionRef } from './linkAction'
-
-const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
-  url: null,
-  target: null,
-  email: null,
-  phone: null,
-  journey: { disconnect: true },
-  block: { disconnect: true }
-}
 
 builder.mutationField('blockUpdateLinkAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
