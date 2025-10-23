@@ -45,9 +45,8 @@ export function Image({
           loading="eager"
           placeholder="blur"
           blurDataURL={placeholderSrc ?? src}
-          layout="responsive"
-          objectFit="cover"
           sx={{
+            objectFit: 'cover',
             transform: `scale(${(scale ?? 100) / 100})`,
             transformOrigin: `${focalLeft}% ${focalTop}%`
           }}
