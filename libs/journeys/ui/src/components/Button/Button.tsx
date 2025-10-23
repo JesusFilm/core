@@ -168,7 +168,10 @@ export function Button({
         stepId: activeBlock?.id,
         label: heading,
         value: resolvedLabel,
-        action: action?.__typename as ButtonAction | undefined,
+        action:
+          action?.__typename != null
+            ? (action.__typename as ButtonAction)
+            : undefined,
         actionValue
       }
       void buttonClickEventCreate({
@@ -275,10 +278,17 @@ export function Button({
       if (!isEmptyForm() && Object.keys(errors).length > 0) return
     }
 
-    if (messagePlatform == null && action?.__typename !== 'PhoneAction') {
-      void createClickEvent()
-    } else {
+    const hasMessagePlatform = messagePlatform != null
+    const isChatAction = action?.__typename === 'ChatAction'
+    const isPhoneAction = action?.__typename === 'PhoneAction'
+    const isLinkChatAction =
+      action?.__typename === 'LinkAction' && hasMessagePlatform
+    const isChatEvent = isLinkChatAction || isChatAction || isPhoneAction
+
+    if (isChatEvent) {
       void createChatEvent()
+    } else {
+      void createClickEvent()
     }
 
     const nextStepSlug = getNextStepSlug(journey, action)

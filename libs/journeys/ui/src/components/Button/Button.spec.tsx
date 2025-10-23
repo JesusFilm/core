@@ -400,6 +400,90 @@ describe('Button', () => {
     })
   })
 
+  it('should create a buttonClickEvent for NavigateToBlockAction (not chat event)', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+
+    const action: ButtonFields_action = {
+      __typename: 'NavigateToBlockAction',
+      parentBlockId: 'button',
+      gtmEventName: 'click',
+      blockId: 'next-step-id'
+    }
+
+    const buttonWithAction = {
+      ...block,
+      action
+    }
+
+    const result = jest.fn(() => ({
+      data: {
+        buttonClickEventCreate: {
+          __typename: 'ButtonClickEvent',
+          id: 'uuid',
+          action: action.__typename,
+          actionValue: ''
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BUTTON_CLICK_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  label: 'stepName',
+                  value: buttonWithAction.label,
+                  action: action.__typename,
+                  actionValue: 'Unknown Step'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <Button {...buttonWithAction} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('buttonClick', {
+      u: `${mockOrigin}/journey.id/step.id`,
+      props: {
+        id: 'uuid',
+        blockId: 'button',
+        action: 'NavigateToBlockAction',
+        actionValue: 'Unknown Step',
+        label: 'stepName',
+        stepId: 'step.id',
+        value: 'This is a button',
+        key: keyify({
+          stepId: 'step.id',
+          event: 'buttonClick',
+          blockId: 'button',
+          target: action
+        }),
+        simpleKey: keyify({
+          stepId: 'step.id',
+          event: 'buttonClick',
+          blockId: 'button'
+        })
+      }
+    })
+  })
+
   it('should add button_click event to dataLayer', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
     const activeBlock: TreeBlock<StepBlock> = {
@@ -612,6 +696,84 @@ describe('Button', () => {
         blockId: 'button',
         stepId: 'step.id',
         value: 'facebook',
+        key: keyify({
+          stepId: 'step.id',
+          event: 'chatButtonClick',
+          blockId: 'button',
+          target: action
+        }),
+        simpleKey: keyify({
+          stepId: 'step.id',
+          event: 'chatButtonClick',
+          blockId: 'button'
+        })
+      }
+    })
+  })
+
+  it('should create a chatOpenEvent for ChatAction', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+    const action: ButtonFields_action = {
+      __typename: 'ChatAction',
+      parentBlockId: 'button',
+      gtmEventName: 'click',
+      chatUrl: 'https://chat.example.com',
+      customizable: false,
+      parentStepId: 'step.id'
+    }
+
+    const buttonBlock = {
+      ...block,
+      action
+    }
+
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+
+    const result = jest.fn(() => ({
+      data: {
+        chatOpenEventCreate: {
+          __typename: 'ChatOpenEvent',
+          id: 'uuid'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CHAT_OPEN_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  value: undefined
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <Button {...buttonBlock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('chatButtonClick', {
+      u: `${mockOrigin}/journey.id/step.id`,
+      props: {
+        id: 'uuid',
+        blockId: 'button',
+        stepId: 'step.id',
+        value: undefined,
         key: keyify({
           stepId: 'step.id',
           event: 'chatButtonClick',

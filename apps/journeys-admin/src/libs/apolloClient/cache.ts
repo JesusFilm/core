@@ -14,6 +14,7 @@ export const cache = (): InMemoryCache =>
         'NavigateToBlockAction',
         'LinkAction',
         'EmailAction',
+        'ChatAction',
         'PhoneAction'
       ],
       Block: [
@@ -94,6 +95,7 @@ export const cache = (): InMemoryCache =>
       LinkAction: { keyFields: ['parentBlockId'] },
       EmailAction: { keyFields: ['parentBlockId'] },
       NavigateToBlockAction: { keyFields: ['parentBlockId'] },
+      ChatAction: { keyFields: ['parentBlockId'] },
       PhoneAction: { keyFields: ['parentBlockId'] }
     }
   })
