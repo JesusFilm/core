@@ -445,6 +445,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     downloadable: Boolean = false
     maxResolution: MaxResolutionTier = fhd
   ): MuxVideo! @join__field(graph: API_MEDIA) 
+  createMuxGeneratedSubtitlesByAssetId(assetId: ID!, languageCode: String!, name: String!, userGenerated: Boolean) : MutationCreateMuxGeneratedSubtitlesByAssetIdResult! @join__field(graph: API_MEDIA) 
   createMuxVideoUploadByUrl(
     url: String!
     userGenerated: Boolean
@@ -818,6 +819,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
   getMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo @join__field(graph: API_MEDIA) 
+  getMyMuxSubtitleTrack(id: ID!, userGenerated: Boolean) : QueryGetMyMuxSubtitleTrackResult! @join__field(graph: API_MEDIA) 
   playlists: [Playlist!] @join__field(graph: API_MEDIA) 
   playlist(id: ID!, idType: IdType! = databaseId) : QueryPlaylistResult @join__field(graph: API_MEDIA) 
   """
@@ -2609,6 +2611,10 @@ type LanguageWithSlug @join__type(graph: API_MEDIA)  {
   slug: String!
 }
 
+type MutationCreateMuxGeneratedSubtitlesByAssetIdSuccess @join__type(graph: API_MEDIA)  {
+  data: MuxSubtitleTrack!
+}
+
 type MutationPlaylistCreateSuccess @join__type(graph: API_MEDIA)  {
   data: Playlist!
 }
@@ -2659,6 +2665,16 @@ type MutationShortLinkDomainUpdateSuccess @join__type(graph: API_MEDIA)  {
 
 type MutationShortLinkUpdateSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLink!
+}
+
+type MuxSubtitleTrack @join__type(graph: API_MEDIA)  {
+  id: ID!
+  trackId: String
+  languageCode: String
+  muxLanguageName: String
+  readyToStream: Boolean!
+  source: String
+  muxVideo: MuxVideo!
 }
 
 type NotFoundError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
@@ -2720,6 +2736,10 @@ type PlaylistItem @join__type(graph: API_MEDIA)  {
   updatedAt: DateTime!
   videoVariant: VideoVariant!
   playlist: Playlist!
+}
+
+type QueryGetMyMuxSubtitleTrackSuccess @join__type(graph: API_MEDIA)  {
+  data: MuxSubtitleTrack!
 }
 
 type QueryPlaylistSuccess @join__type(graph: API_MEDIA)  {
@@ -3097,6 +3117,11 @@ union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMe
 
 union MediaVideo @join__type(graph: API_JOURNEYS_MODERN)  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "MuxVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "Video")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "YouTube")  = MuxVideo | Video | YouTube
 
+union MutationCreateMuxGeneratedSubtitlesByAssetIdResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "Error")  @join__unionMember(
+  graph: API_MEDIA
+  member: "MutationCreateMuxGeneratedSubtitlesByAssetIdSuccess"
+) = ZodError | Error | MutationCreateMuxGeneratedSubtitlesByAssetIdSuccess
+
 union MutationPlaylistCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistCreateSuccess")  = ZodError | MutationPlaylistCreateSuccess
 
 union MutationPlaylistDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistDeleteSuccess")  = NotFoundError | MutationPlaylistDeleteSuccess
@@ -3125,6 +3150,8 @@ union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__
 union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = NotFoundError | MutationShortLinkDomainUpdateSuccess
 
 union MutationShortLinkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkUpdateSuccess")  = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
+
+union QueryGetMyMuxSubtitleTrackResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "Error")  @join__unionMember(graph: API_MEDIA, member: "QueryGetMyMuxSubtitleTrackSuccess")  = Error | QueryGetMyMuxSubtitleTrackSuccess
 
 union QueryPlaylistResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryPlaylistSuccess")  = NotFoundError | QueryPlaylistSuccess
 

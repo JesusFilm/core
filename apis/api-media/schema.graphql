@@ -199,6 +199,7 @@ type Mutation {
   createKeyword(value: String!, languageId: String!): Keyword!
   createMuxVideoAndQueueUpload(videoId: ID!, edition: String!, languageId: ID!, version: Int!, r2PublicUrl: String!, originalFilename: String!, durationMs: Int!, duration: Int!, width: Int!, height: Int!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
+  createMuxGeneratedSubtitlesByAssetId(assetId: ID!, languageCode: String!, name: String!, userGenerated: Boolean): MutationCreateMuxGeneratedSubtitlesByAssetIdResult!
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
@@ -288,6 +289,12 @@ input MutationBibleCitationUpdateInput {
   verseStart: Int
   verseEnd: Int
   order: Int
+}
+
+union MutationCreateMuxGeneratedSubtitlesByAssetIdResult = ZodError | Error | MutationCreateMuxGeneratedSubtitlesByAssetIdSuccess
+
+type MutationCreateMuxGeneratedSubtitlesByAssetIdSuccess {
+  data: MuxSubtitleTrack!
 }
 
 union MutationPlaylistCreateResult = ZodError | MutationPlaylistCreateSuccess
@@ -448,6 +455,16 @@ input MutationVideoOriginUpdateInput {
   description: String
 }
 
+type MuxSubtitleTrack {
+  id: ID!
+  trackId: String
+  languageCode: String
+  muxLanguageName: String
+  readyToStream: Boolean!
+  source: String
+  muxVideo: MuxVideo!
+}
+
 type MuxVideo
   @key(fields: "id primaryLanguageId")
 {
@@ -578,6 +595,7 @@ type Query {
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
   getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
+  getMyMuxSubtitleTrack(id: ID!, userGenerated: Boolean): QueryGetMyMuxSubtitleTrackResult!
   playlists: [Playlist!]
   playlist(id: ID!, idType: IdType! = databaseId): QueryPlaylistResult
 
@@ -631,6 +649,12 @@ type Query {
   youtubeClosedCaptionLanguages(videoId: ID!): QueryYoutubeClosedCaptionLanguagesResult!
   arclightApiKeys: [ArclightApiKey!]!
   arclightApiKeyByKey(key: String!): ArclightApiKey
+}
+
+union QueryGetMyMuxSubtitleTrackResult = Error | QueryGetMyMuxSubtitleTrackSuccess
+
+type QueryGetMyMuxSubtitleTrackSuccess {
+  data: MuxSubtitleTrack!
 }
 
 union QueryPlaylistResult = NotFoundError | QueryPlaylistSuccess

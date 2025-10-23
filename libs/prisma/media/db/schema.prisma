@@ -45,22 +45,41 @@ model CloudflareImage {
 }
 
 model MuxVideo {
-  id            String         @id @default(uuid())
-  playbackId    String?        @unique
+  id            String             @id @default(uuid())
+  playbackId    String?            @unique
   uploadUrl     String?
-  uploadId      String?        @unique
-  assetId       String?        @unique
+  uploadId      String?            @unique
+  assetId       String?            @unique
   userId        String
   name          String?
-  duration      Int            @default(0)
-  downloadable  Boolean        @default(false)
-  createdAt     DateTime       @default(now())
-  readyToStream Boolean        @default(false)
-  updatedAt     DateTime       @default(now()) @updatedAt
+  duration      Int                @default(0)
+  downloadable  Boolean            @default(false)
+  createdAt     DateTime           @default(now())
+  readyToStream Boolean            @default(false)
+  updatedAt     DateTime           @default(now()) @updatedAt
   videoVariants VideoVariant[]
+  subtitles     MuxSubtitleTrack[]
 
   @@index(userId(type: Hash))
   @@index(assetId(type: Hash))
+}
+
+enum MuxSubtitleTrackSource {
+  uploaded
+  generated
+}
+
+model MuxSubtitleTrack {
+  id              String                 @id @default(uuid())
+  trackId         String                 @unique
+  source          MuxSubtitleTrackSource
+  readyToStream   Boolean                @default(false)
+  languageCode    String
+  muxLanguageName String?
+  muxVideoId      String
+  muxVideo        MuxVideo               @relation(fields: [muxVideoId], references: [id], onDelete: Cascade)
+
+  @@index(trackId(type: Hash))
 }
 
 model CloudflareR2 {

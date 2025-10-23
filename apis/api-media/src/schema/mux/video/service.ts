@@ -91,6 +91,34 @@ export async function createVideoByDirectUpload(
   }
 }
 
+export async function createGeneratedSubtitlesByAssetId(
+  userGenerated: boolean,
+  assetId: string,
+  languageCode: string,
+  name: string
+): Promise<Mux.Video.AssetGenerateSubtitlesResponse> {
+  const asset = await getVideo(assetId, userGenerated)
+  const track = asset.tracks?.find(
+    (track) => track.type === 'audio' && track.language_code === languageCode
+  )
+  if (track == null || track.id == null)
+    throw new Error('Audio track not found')
+
+  return await getClient(userGenerated).video.assets.generateSubtitles(
+    assetId,
+    track.id,
+    {
+      generated_subtitles: [
+        {
+          language_code:
+            languageCode as Mux.Video.AssetGenerateSubtitlesParams.GeneratedSubtitle['language_code'],
+          name: name
+        }
+      ]
+    }
+  )
+}
+
 export async function createVideoFromUrl(
   url: string,
   userGenerated: boolean,
@@ -119,6 +147,21 @@ export async function createVideoFromUrl(
       : []
   })
 }
+
+// async function getAudioTrackId(assetId: string, userGenerated: boolean): Promise<string | null> {
+//   try {
+//     const tracks = await getClient(userGenerated).video.assets.retrieve(assetId)
+
+//     // The tracks are available in the asset object
+//     // Look for audio tracks in the tracks array
+//     const audioTrack = tracks.tracks?.find((track) => track.type === 'audio')
+
+//     return audioTrack?.id || null
+//   } catch (error) {
+//     console.error('Error retrieving audio track:', error)
+//     return null
+//   }
+// }
 
 export async function getVideo(
   videoId: string,
