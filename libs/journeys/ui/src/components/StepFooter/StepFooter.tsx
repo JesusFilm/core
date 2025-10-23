@@ -85,7 +85,7 @@ export function StepFooter({
             height: { xs: footerMobileHeight, sm: 52 },
             flexDirection: rtl ? 'row-reverse' : 'row',
             alignItems: 'center',
-            justifyContent: isWebsite ? 'space-between' : undefined,
+            justifyContent: isWebsite ? 'flex-end' : undefined,
             mt: '0px !important'
           }}
           gap={4}
@@ -95,7 +95,6 @@ export function StepFooter({
               <FooterButtonList />
             </Box>
           )}
-          {isWebsite && <InformationButton sx={{ p: 0 }} />}
           {!isWebsite && (
             <Stack
               sx={{
