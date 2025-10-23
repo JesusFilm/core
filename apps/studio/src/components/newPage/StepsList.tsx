@@ -1,11 +1,11 @@
+import { Check, Copy } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
-
-import { Check, Copy } from 'lucide-react'
 
 import type { GeneratedStepContent } from '../../libs/storage'
 import { Button } from '../ui/button'
 import { Card, CardContent } from '../ui/card'
+
 import { AutoResizeTextarea } from '@/components/ui/textarea'
 
 type StepHandlers = {
@@ -89,9 +89,9 @@ const StepContentRenderer = ({
     if (!isEditing) return
 
     const timeout = window.setTimeout(() => {
-      const textarea = document.querySelector(
+      const textarea = document.querySelector<HTMLTextAreaElement>(
         `textarea[data-step-index="${stepIndex}"]`
-      ) as HTMLTextAreaElement | null
+      )
       textarea?.focus()
     }, 0)
 

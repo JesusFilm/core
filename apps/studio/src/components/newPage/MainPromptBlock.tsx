@@ -1,6 +1,6 @@
+import { Camera, Info, Users, X } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { Camera, Info, Users, X } from 'lucide-react'
 import type {
   ChangeEvent,
   ClipboardEvent,
@@ -11,8 +11,7 @@ import type {
   SetStateAction
 } from 'react'
 
-import { AutoResizeTextarea, Textarea } from '@/components/ui/textarea'
-
+import type { ImageAnalysisResult } from '../../libs/storage'
 import { Button } from '../ui/button'
 import {
   Dialog,
@@ -23,11 +22,14 @@ import {
   DialogTrigger
 } from '../ui/dialog'
 import { Input } from '../ui/input'
-import type { ImageAnalysisResult } from '../../libs/storage'
+
+import { AutoResizeTextarea, Textarea } from '@/components/ui/textarea'
 
 const AnimatedLoadingText = dynamic(
   async () => {
-    const mod = await import('./AnimatedLoadingText')
+    const mod = await import(
+      /* webpackChunkName: "studio-main-prompt-animated-loading-text" */ './AnimatedLoadingText'
+    )
     return mod.AnimatedLoadingText
   },
   { ssr: false }
@@ -46,7 +48,7 @@ type MainPromptBlockProps = {
   imageAnalysisResults: ImageAnalysisResult[]
   removeImage: (index: number) => void
   setSelectedImageForDetails: Dispatch<SetStateAction<number | null>>
-  textareaRef: RefObject<HTMLTextAreaElement>
+  textareaRef: RefObject<HTMLTextAreaElement | null>
   animatingTextarea: boolean
   handlePaste: (event: ClipboardEvent<HTMLTextAreaElement>) => void
   setTextContent: Dispatch<SetStateAction<string>>

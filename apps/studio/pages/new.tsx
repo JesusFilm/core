@@ -16,11 +16,22 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { ContextSelector } from '../src/components/newPage/ContextSelector'
+import { ConversationMapView } from '../src/components/newPage/ConversationMapView'
+import { MainPromptBlock } from '../src/components/newPage/MainPromptBlock'
+import { RotatingText } from '../src/components/newPage/RotatingText'
+import { StepsList } from '../src/components/newPage/StepsList'
 import { PrayerCarousel } from '../src/components/PrayerCarousel'
 import { Accordion } from '../src/components/ui/accordion'
-import { Card } from '../src/components/ui/card'
 import { Button } from '../src/components/ui/button'
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from '../src/components/ui/carousel'
+import { Card } from '../src/components/ui/card'
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious
+} from '../src/components/ui/carousel'
 import {
   Dialog,
   DialogContent,
@@ -49,27 +60,18 @@ import {
   userInputStorage
 } from '../src/libs/storage'
 
-import { ConversationMapView } from '../src/components/newPage/ConversationMapView'
-import { ContextSelector } from '../src/components/newPage/ContextSelector'
-import { MainPromptBlock } from '../src/components/newPage/MainPromptBlock'
-import { RotatingText } from '../src/components/newPage/RotatingText'
-import { StepsList } from '../src/components/newPage/StepsList'
 import { AutoResizeTextarea } from '@/components/ui/textarea'
 // Dynamic imports for components to avoid hydration issues
 
 const FormatSelection = dynamic(
   async () => {
-    const mod = await import('../src/components/newPage/FormatSelection')
+    const mod = await import(
+      /* webpackChunkName: "studio-format-selection" */ '../src/components/newPage/FormatSelection'
+    )
     return mod.FormatSelection
   },
   { ssr: false }
 )
-
-const START_FROM_SCRATCH_OPTION = 'Start from scratch'
-
-
-
-
 
 const DEFAULT_OUTPUT_FORMAT_INSTRUCTIONS = `Provide the response as JSON with this structure:
 {
@@ -87,7 +89,7 @@ const CONVERSATION_OUTPUT_FORMAT_INSTRUCTIONS = `Provide the response as JSON wi
   "conversationMap": {
     "flow": {
       "sequence": [
-        "Word or short phrase that names each movement in order (e.g., \"shared weakness\")"
+        "Word or short phrase that names each movement in order (e.g., 'shared weakness')"
       ],
       "rationale": "Short explanation for why this flow helps the responder."
     },
@@ -131,11 +133,11 @@ const DEFAULT_RESPONSE_GUIDELINES = `Guidelines:
 - Provide three exactly single-word keywords per step that is suitable for Unsplash image searches.
 - The mediaPrompt should align with the step's tone and visuals.
 - Use markdown formatting inside the content field when helpful.
-- Begin each content field with a level-one markdown heading that states the step's short label (e.g., "# Let Your Light Shine") followed by a blank line.`
+- Begin each content field with a level-one markdown heading that states the step's short label (e.g., '# Let Your Light Shine') followed by a blank line.`
 
 const CONVERSATION_RESPONSE_GUIDELINES = `Guidelines:
 - Map an ideal path of 6-9 guide-led conversation moves that gently progress toward gospel hope.
-- Summarize the overall movement first with a \"flow\" that lists each step's short theme in order and a brief rationale for why this journey helps the responder.
+- Summarize the overall movement first with a 'flow' that lists each step's short theme in order and a brief rationale for why this journey helps the responder.
 - Every step must include a guide message, a purpose note (or null), and at least five scriptureOptions. Each scripture option needs the verse text/reference, a note on why it fits/how to migrate the conversation toward it, and multiple tone-tagged conversation examples.
 - Craft 3-5 responseOptions per step that capture common responder postures. Each must include an emoji icon, tile label, responder reaction, and 1-3 guide follow-up replies as separate strings.
 - Maintain warm, pastoral tone across the guide messages, verse explanations, and follow-up replies. Keep each message concise enough to fit in a chat bubble.
@@ -166,9 +168,6 @@ const getResponseGuidelines = (context: string): string =>
   context === 'Conversations'
     ? CONVERSATION_RESPONSE_GUIDELINES
     : DEFAULT_RESPONSE_GUIDELINES
-
-
-
 
 type SelectedOutputsMap = Record<string, string[]>
 
@@ -731,35 +730,11 @@ export default function NewPage() {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [isHovering, setIsHovering] = useState<boolean>(false)
   const [isAnimationStopped, setIsAnimationStopped] = useState<boolean>(false)
-  const [selectedOutputs, setSelectedOutputs] = useState<SelectedOutputsMap>({})
+  const [selectedOutputs] = useState<SelectedOutputsMap>({})
   const [isTilesContainerHovered, setIsTilesContainerHovered] = useState<boolean>(false)
 
   const selectedContextOptions =
     contextDetailOptions[selectedContext] ?? []
-
-  const selectedDetailOption = useMemo(() => {
-    if (!selectedContextDetail) {
-      return null
-    }
-
-    const options = contextDetailOptions[selectedContext] ?? []
-    return (
-      options.find((option) => option.text === selectedContextDetail) ?? null
-    )
-  }, [selectedContext, selectedContextDetail])
-
-  const parsedContentHeadingSuffix = useMemo(() => {
-    if (!selectedContext || !selectedContextDetail) {
-      return ''
-    }
-
-    // Remove "Plan " prefix and add "a " prefix for the detail
-    const modifiedDetail = selectedContextDetail.startsWith('Plan ')
-      ? ' a ' + selectedContextDetail.slice(5).toLowerCase()
-      : selectedContextDetail.charAt(0).toLowerCase() + selectedContextDetail.slice(1)
-
-    return `${modifiedDetail} for ${selectedContext.toLowerCase()}`
-  }, [selectedContext, selectedContextDetail])
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isSessionsOpen, setIsSessionsOpen] = useState(false)
@@ -952,12 +927,11 @@ export default function NewPage() {
   const conversationMapForDisplay = useMemo<ConversationMap>(
     () =>
       conversationMap ?? {
+        flow: null,
         steps: []
       },
     [conversationMap]
   )
-
-
 
   // Load saved data on mount
   useEffect(() => {
@@ -1052,24 +1026,6 @@ export default function NewPage() {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1)
     }
-  }
-
-  const handleOutputChange = (
-    category: string,
-    optionName: string,
-    checked: boolean
-  ) => {
-    setSelectedOutputs((prev) => {
-      const categoryOutputs = prev[category] || []
-      if (checked) {
-        return { ...prev, [category]: [...categoryOutputs, optionName] }
-      } else {
-        return {
-          ...prev,
-          [category]: categoryOutputs.filter((o) => o !== optionName)
-        }
-      }
-    })
   }
 
   const handleContextChange = useCallback((context: string) => {
@@ -1268,7 +1224,7 @@ export default function NewPage() {
 
       if (typeof value === 'string') {
         return value
-          .split(/[→➡️>-]+|,|\n+/)
+          .split(/(?:→|➡️|>|-)+|,|\n+/)
           .map(segment => segment.trim())
           .filter(Boolean)
       }
@@ -2931,10 +2887,9 @@ export default function NewPage() {
                     )}
 
                     {/* Content Type Selector */}
-                    <FormatSelection />
-                    
+                      <FormatSelection />
 
-                    {aiResponse && (
+                      {aiResponse && (
                       <div className="mt-12 space-y-6">
                         <Accordion
                           title="AI Response"

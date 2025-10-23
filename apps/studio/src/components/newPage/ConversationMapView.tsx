@@ -1,6 +1,5 @@
-import { memo, useCallback, useEffect, useState } from 'react'
-
 import { ArrowUp, Book, Bot, Check, Copy, Layers, User, X } from 'lucide-react'
+import { memo, useCallback, useEffect, useState } from 'react'
 
 import type { ConversationMap } from '../../libs/storage'
 import { Button } from '../ui/button'
@@ -252,8 +251,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                         Prayerfully select the bible verse to use
                       </h3>
 
-                      {scriptureSlides.map((slide, slideIndex) => {
-                        const exampleBaseId = `scripture-example-${index}-${slide.optionIndex}`
+                        {scriptureSlides.map((slide, slideIndex) => {
                         const isSelected = selectedScriptureOption === slide.verseId
                         const shouldShow = !selectedScriptureOption || isSelected
 
@@ -361,9 +359,9 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                                       </span>
                                       <Button
                                         type="button"
-                                        variant="transparent"
+                                        variant="ghost"
                                         size="sm"
-                                        className="h-6 w-6 gap-1 p-0 opacity-0 transition-opacity group-hover:opacity-100"
+                                        className="h-6 w-6 gap-1 p-0 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-transparent"
                                         onClick={(event) => {
                                           event.preventDefault()
                                           event.stopPropagation()
@@ -418,9 +416,9 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                     <div className="relative w-full max-w-[400px] rounded-2xl bg-[#098CFF] text-white shadow-xl group">
                       <Button
                         type="button"
-                        variant="transparent"
+                        variant="ghost"
                         size="sm"
-                        className="absolute top-2 right-2 gap-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-2 right-2 gap-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent text-white"
                         onClick={(event) => {
                           event.preventDefault()
                           event.stopPropagation()
@@ -557,9 +555,9 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                                 <div className="relative w-1/2 rounded-2xl bg-[#098CFF] text-white shadow-xl group">
                                   <Button
                                     type="button"
-                                    variant="transparent"
+                                    variant="ghost"
                                     size="sm"
-                                    className="absolute top-2 right-2 gap-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    className="absolute top-2 right-2 gap-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent"
                                     onClick={(event) => {
                                       event.preventDefault()
                                       event.stopPropagation()

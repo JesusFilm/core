@@ -1,10 +1,10 @@
+import { Check, Copy } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { ReactElement } from 'react'
 
-import { Check, Copy } from 'lucide-react'
-
 import { Button } from '../ui/button'
-import { AutoResizeTextarea } from '../ui/textarea'
+
+import { AutoResizeTextarea } from '@/components/ui/textarea'
 
 export type StepContentRendererProps = {
   content: string
@@ -48,9 +48,9 @@ export function StepContentRenderer({
     }
 
     const focusTextarea = () => {
-      const textarea = document.querySelector(
+      const textarea = document.querySelector<HTMLTextAreaElement>(
         `textarea[data-step-index="${stepIndex}"]`
-      ) as HTMLTextAreaElement | null
+      )
       textarea?.focus()
     }
 
