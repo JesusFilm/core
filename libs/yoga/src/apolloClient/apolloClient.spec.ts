@@ -1,5 +1,4 @@
 import { ApolloClient, createHttpLink } from '@apollo/client'
-import clone from 'lodash/clone'
 
 import { createApolloClient } from '../apolloClient'
 
@@ -14,17 +13,17 @@ const mockCreateHttpLink = createHttpLink as jest.MockedFunction<
 >
 
 describe('apolloClient', () => {
-  const originalEnv = clone(process.env)
+  const originalEnv = { ...process.env }
   const mockApolloClient = ApolloClient as jest.MockedClass<typeof ApolloClient>
 
   beforeEach(() => {
-    process.env = originalEnv
+    process.env = { ...originalEnv }
     jest.clearAllMocks()
     mockCreateHttpLink.mockReturnValue({} as any)
   })
 
   afterEach(() => {
-    process.env = originalEnv
+    process.env = { ...originalEnv }
   })
 
   describe('createApolloClient', () => {

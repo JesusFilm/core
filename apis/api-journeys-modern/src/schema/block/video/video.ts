@@ -73,9 +73,6 @@ youTube source: videoId, title, description, and duration present`,
     subtitleLanguage: t.field({
       type: Language,
       nullable: true,
-      select: {
-        subtitleLanguageId: true
-      },
       resolve: (block) => {
         if (block.subtitleLanguageId == null) return null
         return { id: block.subtitleLanguageId }
