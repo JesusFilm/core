@@ -462,8 +462,11 @@ builder.queryField('journeyVisitorExport', (t) => {
         // Row 1: Card Heading
         // Row 2: Label/Type (Poll, Name, Response, etc)
         // First, count polls and multiselects per card for numbering
-        const cardPollCounts = new Map<string, { pollCount: number; multiselectCount: number }>()
-        
+        const cardPollCounts = new Map<
+          string,
+          { pollCount: number; multiselectCount: number }
+        >()
+
         blockHeaders.forEach((header) => {
           const cardBlock = getAncestorByType(header.blockId, 'CardBlock')
           if (cardBlock) {
@@ -481,32 +484,46 @@ builder.queryField('journeyVisitorExport', (t) => {
         })
 
         // Track current counts for each card as we build the label row
-        const currentCardCounts = new Map<string, { pollCount: number; multiselectCount: number }>()
-        
+        const currentCardCounts = new Map<
+          string,
+          { pollCount: number; multiselectCount: number }
+        >()
+
         const labelRow = columns.map((col) => {
           if (col.key === 'date') return 'Date'
-          
+
           const cardBlock = getAncestorByType(col.blockId, 'CardBlock')
-          if (cardBlock && (col.typename === 'RadioQuestionBlock' || col.typename === 'RadioMultiselectBlock')) {
+          if (
+            cardBlock &&
+            (col.typename === 'RadioQuestionBlock' ||
+              col.typename === 'RadioMultiselectBlock')
+          ) {
             const cardId = cardBlock.id
             if (!currentCardCounts.has(cardId)) {
-              currentCardCounts.set(cardId, { pollCount: 0, multiselectCount: 0 })
+              currentCardCounts.set(cardId, {
+                pollCount: 0,
+                multiselectCount: 0
+              })
             }
-            
+
             const counts = currentCardCounts.get(cardId)!
             const totalCounts = cardPollCounts.get(cardId)!
-            
+
             if (col.typename === 'RadioQuestionBlock') {
               counts.pollCount++
               // Only add number if there are multiple polls on this card
-              return totalCounts.pollCount > 1 ? `Poll ${counts.pollCount}` : 'Poll'
+              return totalCounts.pollCount > 1
+                ? `Poll ${counts.pollCount}`
+                : 'Poll'
             } else if (col.typename === 'RadioMultiselectBlock') {
               counts.multiselectCount++
               // Only add number if there are multiple multiselects on this card
-              return totalCounts.multiselectCount > 1 ? `Multiselect ${counts.multiselectCount}` : 'Multiselect'
+              return totalCounts.multiselectCount > 1
+                ? `Multiselect ${counts.multiselectCount}`
+                : 'Multiselect'
             }
           }
-          
+
           // Use the label from the event (e.g., "What is your name?")
           return col.label
         })
