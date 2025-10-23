@@ -46,7 +46,7 @@ export const useImageAnalysis = ({
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model: 'gpt-4o-mini',
+            // model: 'openai/gpt-4o-mini',
             messages: [
               { role: 'system', content: prompt },
               {

@@ -10,8 +10,8 @@ import {
 const OPENROUTER_BASE_URL =
   process.env.OPENROUTER_BASE_URL ?? 'https://openrouter.ai/api/v1'
 const OPENROUTER_APP_TITLE =
-  process.env.OPENROUTER_APP_TITLE ?? 'Jesus Film Studio'
-const DEFAULT_MODEL = 'gpt-4o'
+  process.env.OPENROUTER_APP_TITLE ?? 'JF Studio'
+const DEFAULT_MODEL = 'x-ai/grok-4-fast'
 
 const isString = (value: unknown): value is string => typeof value === 'string'
 const isNumber = (value: unknown): value is number =>
@@ -95,6 +95,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  console.log(`[AI Respond] Received ${req.method} request`)
+
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
     res.status(405).json({ error: 'Method Not Allowed' })
@@ -166,11 +168,15 @@ export default async function handler(
       generationOptions.providerOptions = providerOptions as any
     }
 
+    console.log(`[AI Respond] Sending request to OpenRouter - Model: ${model}, Messages: ${messages?.length ?? 0}, Prompt: ${prompt ? 'yes' : 'no'}`)
+
     const result = await generateText(generationOptions)
 
     const responseId = result.response?.id ?? `or-${Date.now()}`
     const createdAt = result.response?.timestamp ?? new Date()
     const text = result.text ?? ''
+
+    console.log(`[AI Respond] Received response from OpenRouter - Response ID: ${responseId}, Finish Reason: ${result.finishReason}, Usage: ${JSON.stringify(mapUsage(result.usage))}`)
 
     res.status(200).json({
       id: responseId,

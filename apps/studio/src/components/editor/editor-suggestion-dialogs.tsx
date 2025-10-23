@@ -334,7 +334,7 @@ const AllIdeasGrid: FC<AllIdeasGridProps> = ({
             key={ideaIndex}
             type="button"
             className={cn(
-              'relative p-4 border border-gray-200 rounded-lg text-left transition-all duration-200 hover:bg-white hover:scale-102 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+              'relative p-4 border border-gray-200 rounded-lg text-left transition-all duration-200 hover:bg-white hover:scale-102 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 cursor-pointer',
               isAnimating
                 ? 'animate-suggestion-disappear opacity-100'
                 : 'opacity-0 animate-fade-in-up'

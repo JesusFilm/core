@@ -1,4 +1,4 @@
-import { ArrowUp, Book, Bot, Check, Copy, Layers, User, X } from 'lucide-react'
+import { ArrowLeft, ArrowUp, Book, Bot, Check, Copy, Layers, User, X } from 'lucide-react'
 import { memo, useCallback, useEffect, useState } from 'react'
 
 import type { ConversationMap } from '../../libs/storage'
@@ -227,7 +227,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
               />
 
               <header className="mb-4 space-y-1">
-                <div className="text-md font-light leading-tight uppercase tracking-wide text-muted-foreground">
+                <div className="text-md leading-tight uppercase tracking-wide text-muted-foreground">
                   Step {index + 1}:<br />
                   <span className="text-xl text-foreground normal-case font-semibold">
                     {step.title}
@@ -263,7 +263,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                             <button
                               type="button"
                               onClick={() => isSelected ? handleScriptureSelect(null) : handleScriptureSelect(slide.verseId)}
-                              className={`flex items-center justify-center w-6 h-6 mt-2 rounded-full cursor-pointer transition-all duration-200 flex-shrink-0 group/checkbox ${
+                              className={`flex items-center justify-center w-5 h-5 mt-2 rounded-full cursor-pointer transition-all duration-200 flex-shrink-0 group/checkbox ${
                                 isSelected
                                   ? 'bg-primary border-2 border-primary text-primary-foreground hover:bg-red-500 hover:border-red-500 hover:text-white'
                                   : 'border-2 border-muted-foreground/40 hover:border-primary'
@@ -272,8 +272,8 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                             >
                               {isSelected ? (
                                 <div className="relative">
-                                  <Check className="w-4 h-4 opacity-100 group-hover/checkbox:opacity-0 transition-opacity duration-200" />
-                                  <X className="w-4 h-4 absolute inset-0 opacity-0 group-hover/checkbox:opacity-100 transition-opacity duration-200" />
+                                  <Check className="w-3 h-3 opacity-100 group-hover/checkbox:opacity-0 transition-opacity duration-200" />
+                                  <X className="w-3 h-3 absolute inset-0 opacity-0 group-hover/checkbox:opacity-100 transition-opacity duration-200" />
                                 </div>
                               ) : null}
                             </button>
@@ -294,11 +294,11 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                                   <div className="flex justify-start lg:flex-1">
                                     <div className="relative w-full max-w-[500px]">
                                       <div className="flex flex-col gap-2">
-                                        <div className="text-base leading-relaxed whitespace-pre-line text-foreground">
+                                        <div className="text-lg font-semibold leading-[1.25] whitespace-pre-line text-foreground">
                                           {slide.verseText}
                                         </div>
                                         {slide.verseReference && (
-                                          <div className="text-xs font-light text-muted-foreground italic">
+                                          <div className="text-sm font-regular text-muted-foreground">
                                             {slide.verseReference}
                                           </div>
                                         )}
@@ -309,9 +309,10 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
 
                                 {slide.hasWhy && (
                                   <div className="mt-2 lg:flex-1 lg:flex lg:items-start lg:justify-end">
-                                    <p className="text-sm font-light text-stone-500 leading-relaxed lg:max-w-[300px]">
-                                      <ArrowUp className="inline w-3 h-3 mr-1 mb-0.5" />
-                                      {slide.whyText}
+                                    <p className="text-sm text-stone-500 leading-relaxed lg:max-w-[300px]">
+                                        <ArrowUp className="inline w-3 h-3 mr-1 mb-0.5 md:hidden" />
+                                        <ArrowLeft className="hidden w-3 h-3 mr-1 mb-0.5 md:inline" />
+                                        {slide.whyText}
                                     </p>
                                   </div>
                                 )}

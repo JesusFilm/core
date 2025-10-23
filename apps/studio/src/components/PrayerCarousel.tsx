@@ -285,7 +285,7 @@ export function PrayerCarousel({
             <button
               type="button"
               onClick={handlePrevious}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-amber-200/80 bg-white/80 text-amber-600 transition hover:bg-amber-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-amber-200/80 bg-white/80 text-amber-600 transition hover:bg-amber-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60 cursor-pointer"
               aria-label="Previous slide"
               aria-controls={slidesRegionId}
             >
@@ -330,7 +330,7 @@ export function PrayerCarousel({
             <button
               type="button"
               onClick={handleNext}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-amber-200/80 bg-white/80 text-amber-600 transition hover:bg-amber-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-amber-200/80 bg-white/80 text-amber-600 transition hover:bg-amber-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/60 cursor-pointer"
               aria-label="Next slide"
               aria-controls={slidesRegionId}
             >

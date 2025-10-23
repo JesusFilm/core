@@ -195,7 +195,7 @@ export function MainPromptBlock({
               onClick={() => {
                 void handleSubmit()
               }}
-              className="px-4 py-2 text-sm font-medium text-white rounded-full bg-primary hover:bg-primary/90 transition-colors group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary/90"
+              className="px-4 py-2 text-sm font-medium text-white rounded-full bg-primary hover:bg-primary/90 transition-colors group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary/90 cursor-pointer"
               type="button"
               disabled={isProcessing || hasPendingImageAnalysis}
               title={
