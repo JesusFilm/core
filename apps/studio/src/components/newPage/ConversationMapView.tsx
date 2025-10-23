@@ -349,6 +349,22 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                             <div className="space-y-2">
                               {slide.conversationExamples.map((example, exampleIndex) => {
                                 const exampleId = `${exampleBaseId}-${exampleIndex}`
+                                const currentMessage =
+                                  editingMessageId === exampleId
+                                    ? localMessageContent
+                                    : example.message
+                                const verseContent = [
+                                  slide.verseText?.trim() ?? '',
+                                  slide.verseReference?.trim() ?? ''
+                                ]
+                                  .filter(Boolean)
+                                  .join('\n')
+                                const trimmedMessage = currentMessage.trim()
+                                const combinedMessage = verseContent
+                                  ? [trimmedMessage, verseContent]
+                                      .filter(Boolean)
+                                      .join('\n\n')
+                                  : trimmedMessage
 
                                 return (
                                   <div
@@ -368,7 +384,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                                           event.preventDefault()
                                           event.stopPropagation()
                                           void handleCopyMessage(
-                                            example.message,
+                                            combinedMessage,
                                             exampleId
                                           )
                                         }}
@@ -386,23 +402,38 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                                         )}
                                       </Button>
                                     </div>
+                                    <p className="mb-2 text-xs font-medium uppercase tracking-wide text-amber-900/70">
+                                      Start with this message to introduce the verse
+                                    </p>
                                     <AutoResizeTextarea
-                                      value={
-                                        editingMessageId === exampleId
-                                          ? localMessageContent
-                                          : example.message
-                                      }
+                                      value={currentMessage}
                                       onChange={(event) =>
                                         handleMessageChange(event.target.value)
                                       }
                                       onClick={() =>
-                                        handleMessageClick(example.message, exampleId)
+                                        handleMessageClick(currentMessage, exampleId)
                                       }
                                       onBlur={handleMessageBlur}
                                       readOnly={editingMessageId !== exampleId}
                                       className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 text-sm leading-relaxed"
                                       data-message-id={exampleId}
                                     />
+                                    {verseContent && (
+                                      <div className="mt-3 rounded-xl border border-amber-200/70 bg-amber-50/60 p-3 text-sm leading-relaxed text-amber-950">
+                                        <div className="mb-1 flex items-center gap-2 text-xs uppercase font-semibold tracking-wide text-amber-800/80">
+                                          <Book className="h-3.5 w-3.5" />
+                                          Then share this Scripture
+                                        </div>
+                                        {slide.verseText && (
+                                          <p className="whitespace-pre-line">{slide.verseText}</p>
+                                        )}
+                                        {slide.verseReference && (
+                                          <p className="mt-2 text-xs italic text-amber-800">
+                                            {slide.verseReference}
+                                          </p>
+                                        )}
+                                      </div>
+                                    )}
                                   </div>
                                 )
                               })}
