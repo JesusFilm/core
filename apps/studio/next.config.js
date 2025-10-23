@@ -28,6 +28,15 @@ const nextConfig = {
         hostname: 'source.unsplash.com',
       }
     ]
+  },
+  async redirects() {
+    return [
+      {
+        source: '/studio',
+        destination: '/',
+        permanent: true
+      }
+    ]
   }
 }
 
