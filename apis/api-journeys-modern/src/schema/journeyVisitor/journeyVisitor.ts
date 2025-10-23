@@ -177,7 +177,7 @@ async function* getJourneyVisitors(
       })
       // Join values with a fixed separator and sanitize for CSV
       eventValuesByKey.forEach((values, key) => {
-        const sanitizedValues = values.map(value => sanitizeCSVCell(value))
+        const sanitizedValues = values.map((value) => sanitizeCSVCell(value))
         row[key] = sanitizedValues.join('; ')
       })
       yield row
@@ -561,8 +561,10 @@ builder.queryField('journeyVisitorExport', (t) => {
         })
 
         // Manually write the two header rows (sanitized)
-        const sanitizedCardHeadingRow = cardHeadingRow.map(cell => sanitizeCSVCell(cell))
-        const sanitizedLabelRow = labelRow.map(cell => sanitizeCSVCell(cell))
+        const sanitizedCardHeadingRow = cardHeadingRow.map((cell) =>
+          sanitizeCSVCell(cell)
+        )
+        const sanitizedLabelRow = labelRow.map((cell) => sanitizeCSVCell(cell))
         stringifier.write(sanitizedCardHeadingRow)
         stringifier.write(sanitizedLabelRow)
 
