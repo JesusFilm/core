@@ -133,6 +133,11 @@ export function SubtitleSelector({
               onKeyDown={(e) => e.stopPropagation()}
               fullWidth
               autoFocus
+              slotProps={{
+                htmlInput: {
+                  'aria-label': t('Search by language')
+                }
+              }}
             />
           </Box>
         )}

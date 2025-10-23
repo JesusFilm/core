@@ -18,6 +18,7 @@ jest.mock('../../../../../../../../libs/useYouTubeClosedCaptions', () => ({
 jest.mock('video.js', () => {
   const mockPlayer = {
     on: jest.fn(),
+    off: jest.fn(),
     dispose: jest.fn(),
     tech_: {
       ytPlayer: {

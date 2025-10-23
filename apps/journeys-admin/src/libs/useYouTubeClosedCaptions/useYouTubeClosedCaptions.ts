@@ -51,11 +51,14 @@ export function useYouTubeClosedCaptions({
     )
 
   useEffect(() => {
-    if (enabled && videoId != null) {
-      void getClosedCaptions({
-        variables: { videoId }
-      })
-    }
+    if (!enabled) return
+
+    const sanitizedVideoId = videoId?.trim()
+    if (sanitizedVideoId == null || sanitizedVideoId === '') return
+
+    void getClosedCaptions({
+      variables: { videoId }
+    })
   }, [videoId, enabled, getClosedCaptions])
 
   const languages =
