@@ -1,6 +1,6 @@
+import { Camera, Info, Users, X } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { Camera, Info, Users, X } from 'lucide-react'
 import type {
   ChangeEvent,
   ClipboardEvent,
@@ -11,8 +11,8 @@ import type {
   SetStateAction
 } from 'react'
 
-import { AutoResizeTextarea, Textarea } from '@/components/ui/textarea'
-
+import { cn } from '../../libs/cn/cn'
+import type { ImageAnalysisResult } from '../../libs/storage'
 import { Button } from '../ui/button'
 import {
   Dialog,
@@ -23,7 +23,7 @@ import {
   DialogTrigger
 } from '../ui/dialog'
 import { Input } from '../ui/input'
-import type { ImageAnalysisResult } from '../../libs/storage'
+import { AutoResizeTextarea, Textarea } from '@/components/ui/textarea'
 
 const AnimatedLoadingText = dynamic(
   async () => {
@@ -193,7 +193,10 @@ export function MainPromptBlock({
               onClick={() => {
                 void handleSubmit()
               }}
-              className="px-4 py-2 text-sm font-medium text-white rounded-full bg-primary hover:bg-primary/90 transition-colors group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary/90"
+              className={cn(
+                'px-4 py-2 text-sm font-medium text-white rounded-full bg-primary hover:bg-primary/90 transition-colors group disabled:opacity-50 disabled:hover:bg-primary/90',
+                isProcessing ? 'cursor-progress' : 'disabled:cursor-not-allowed'
+              )}
               type="button"
               disabled={isProcessing || hasPendingImageAnalysis}
               title={
