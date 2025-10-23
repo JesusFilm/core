@@ -3511,6 +3511,7 @@ export type Query = {
   visitor: Visitor;
   /** A list of visitors that are connected with a specific team. */
   visitorsConnection: VisitorsConnection;
+  youtubeClosedCaptionLanguages: QueryYoutubeClosedCaptionLanguagesResult;
 };
 
 
@@ -3926,6 +3927,11 @@ export type QueryVisitorsConnectionArgs = {
   teamId?: InputMaybe<Scalars['String']['input']>;
 };
 
+
+export type QueryYoutubeClosedCaptionLanguagesArgs = {
+  videoId: Scalars['ID']['input'];
+};
+
 export type QueryPlaylistResult = NotFoundError | QueryPlaylistSuccess;
 
 export type QueryPlaylistSuccess = {
@@ -3978,6 +3984,13 @@ export type QueryShortLinksConnectionEdge = {
   __typename?: 'QueryShortLinksConnectionEdge';
   cursor: Scalars['String']['output'];
   node?: Maybe<ShortLink>;
+};
+
+export type QueryYoutubeClosedCaptionLanguagesResult = Error | QueryYoutubeClosedCaptionLanguagesSuccess | ZodError;
+
+export type QueryYoutubeClosedCaptionLanguagesSuccess = {
+  __typename?: 'QueryYoutubeClosedCaptionLanguagesSuccess';
+  data: Array<Language>;
 };
 
 export type RadioOptionBlock = Block & {
@@ -4997,6 +5010,7 @@ export type VideoBlock = Block & {
   source: VideoBlockSource;
   /** startAt dictates at which point of time the video should start playing */
   startAt?: Maybe<Scalars['Int']['output']>;
+  subtitleLanguage?: Maybe<Language>;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -5040,6 +5054,7 @@ export type VideoBlockCreateInput = {
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
   source?: InputMaybe<VideoBlockSource>;
   startAt?: InputMaybe<Scalars['Int']['input']>;
+  subtitleLanguageId?: InputMaybe<Scalars['ID']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['ID']['input']>;
   videoVariantLanguageId?: InputMaybe<Scalars['ID']['input']>;
@@ -5094,6 +5109,7 @@ export type VideoBlockUpdateInput = {
    */
   source?: InputMaybe<VideoBlockSource>;
   startAt?: InputMaybe<Scalars['Int']['input']>;
+  subtitleLanguageId?: InputMaybe<Scalars['ID']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['ID']['input']>;
   videoVariantLanguageId?: InputMaybe<Scalars['ID']['input']>;

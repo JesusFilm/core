@@ -2011,6 +2011,7 @@ type VideoBlock implements Block
   objectFit: VideoBlockObjectFit
   posterBlockId: ID
   fullsize: Boolean
+  subtitleLanguage: Language
   action: Action
   mediaVideo: MediaVideo
 }
@@ -2038,6 +2039,7 @@ input VideoBlockCreateInput {
   autoplay: Boolean
   fullsize: Boolean
   posterBlockId: ID
+  subtitleLanguageId: ID
 }
 
 enum VideoBlockObjectFit {
@@ -2068,6 +2070,7 @@ input VideoBlockUpdateInput {
   muted: Boolean
   autoplay: Boolean
   fullsize: Boolean
+  subtitleLanguageId: ID
 
   """
   internal source: videoId and videoVariantLanguageId required
