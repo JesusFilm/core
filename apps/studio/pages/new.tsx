@@ -2706,7 +2706,7 @@ export default function NewPage() {
                     </div>
                     <div className="flex flex-col md:flex-row md:justify-between md:items-center">
                       <Button variant="outline" size="lg" asChild className="self-center md:self-auto md:size-sm block md:hidden my-8">
-                        <Link href="/studio" className="inline-flex items-center gap-2">
+                        <Link href="/" className="inline-flex items-center gap-2">
                           <HelpCircle className="h-4 w-4" />
                           How it works
                         </Link>
@@ -2723,7 +2723,7 @@ export default function NewPage() {
                         />
                       </div>
                       <Button variant="link" size="sm" asChild className="hidden md:inline-flex">
-                        <Link href="/studio" className="hidden md:inline-flex items-center gap-2">
+                        <Link href="/" className="hidden md:inline-flex items-center gap-2">
                           <HelpCircle className="h-4 w-4" />
                           How it works
                         </Link>
