@@ -240,6 +240,63 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
               </header>
 
               <div className="space-y-6">
+                <div className="space-y-3">
+                  <div className="flex justify-end">
+                    <div className="relative w-full max-w-[400px] rounded-2xl bg-[#098CFF] text-white shadow-xl group">
+                      <Button
+                        type="button"
+                        variant="transparent"
+                        size="sm"
+                        className="absolute top-2 right-2 gap-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(event) => {
+                          event.preventDefault()
+                          event.stopPropagation()
+                          void handleCopyMessage(step.guideMessage, `guide-${index}`)
+                        }}
+                        onMouseDown={(event) => event.preventDefault()}
+                        title={
+                          copiedMessageId === `guide-${index}`
+                            ? 'Copied!'
+                            : 'Copy message'
+                        }
+                      >
+                        {copiedMessageId === `guide-${index}` ? (
+                          <Check className="h-3 w-3 text-green-300" />
+                        ) : (
+                          <Copy className="h-3 w-3" />
+                        )}
+                      </Button>
+                      <span
+                        aria-hidden="true"
+                        className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-[#098CFF]"
+                      />
+                      <AutoResizeTextarea
+                        value={
+                          editingMessageId === `guide-${index}`
+                            ? localMessageContent
+                            : step.guideMessage
+                        }
+                        onChange={(event) =>
+                          handleMessageChange(event.target.value)
+                        }
+                        onClick={() =>
+                          handleMessageClick(step.guideMessage, `guide-${index}`)
+                        }
+                        onBlur={handleMessageBlur}
+                        readOnly={editingMessageId !== `guide-${index}`}
+                        className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 px-4 py-3 rounded-2xl"
+                        data-message-id={`guide-${index}`}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-end space-x-2">
+                    <span className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
+                      You
+                    </span>
+                    <User className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                </div>
+
                 {scriptureSlides.length > 0 ? (
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-xs uppercase font-semibold tracking-wide text-muted-foreground">
@@ -253,7 +310,6 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                       </h3>
 
                       {scriptureSlides.map((slide, slideIndex) => {
-                        const exampleBaseId = `scripture-example-${index}-${slide.optionIndex}`
                         const isSelected = selectedScriptureOption === slide.verseId
                         const shouldShow = !selectedScriptureOption || isSelected
 
@@ -262,73 +318,77 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                         return (
                           <div key={`scripture-option-${index}-${slide.optionIndex}`}>
                             <div className="flex w-full items-start gap-4">
-                            <button
-                              type="button"
-                              onClick={() => isSelected ? handleScriptureSelect(null) : handleScriptureSelect(slide.verseId)}
-                              className={`flex items-center justify-center w-6 h-6 mt-2 rounded-full cursor-pointer transition-all duration-200 flex-shrink-0 group/checkbox ${
-                                isSelected
-                                  ? 'bg-primary border-2 border-primary text-primary-foreground hover:bg-red-500 hover:border-red-500 hover:text-white'
-                                  : 'border-2 border-muted-foreground/40 hover:border-primary'
-                              }`}
-                              title={isSelected ? "Reset selection" : "Select verse"}
-                            >
-                              {isSelected ? (
-                                <div className="relative">
-                                  <Check className="w-4 h-4 opacity-100 group-hover/checkbox:opacity-0 transition-opacity duration-200" />
-                                  <X className="w-4 h-4 absolute inset-0 opacity-0 group-hover/checkbox:opacity-100 transition-opacity duration-200" />
-                                </div>
-                              ) : null}
-                            </button>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  isSelected
+                                    ? handleScriptureSelect(null)
+                                    : handleScriptureSelect(slide.verseId)
+                                }
+                                className={`flex items-center justify-center w-6 h-6 mt-2 rounded-full cursor-pointer transition-all duration-200 flex-shrink-0 group/checkbox ${
+                                  isSelected
+                                    ? 'bg-primary border-2 border-primary text-primary-foreground hover:bg-red-500 hover:border-red-500 hover:text-white'
+                                    : 'border-2 border-muted-foreground/40 hover:border-primary'
+                                }`}
+                                title={isSelected ? 'Reset selection' : 'Select verse'}
+                              >
+                                {isSelected ? (
+                                  <div className="relative">
+                                    <Check className="w-4 h-4 opacity-100 group-hover/checkbox:opacity-0 transition-opacity duration-200" />
+                                    <X className="w-4 h-4 absolute inset-0 opacity-0 group-hover/checkbox:opacity-100 transition-opacity duration-200" />
+                                  </div>
+                                ) : null}
+                              </button>
 
-                            <button
-                              type="button"
-                              onClick={() => handleScriptureSelect(slide.verseId)}
-                              className={`flex-1 text-left cursor-pointer transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary group ${
-                                isSelected
-                                  ? 'rounded-2xl'
-                                  : 'rounded-2xl border-2 border-transparent'
-                              }`}
-                              aria-pressed={isSelected}
-                            >
-                            <div className="flex w-full items-start gap-4">
-                              <div className="flex flex-1 flex-col lg:flex-row gap-2">
-                                {slide.hasVerseContent && (
-                                  <div className="flex justify-start lg:flex-1">
-                                    <div className="relative w-full max-w-[500px]">
-                                      <div className="flex flex-col gap-2">
-                                        <div className="text-base leading-relaxed whitespace-pre-line text-foreground">
-                                          {slide.verseText}
-                                        </div>
-                                        {slide.verseReference && (
-                                          <div className="text-xs font-light text-muted-foreground italic">
-                                            {slide.verseReference}
+                              <button
+                                type="button"
+                                onClick={() => handleScriptureSelect(slide.verseId)}
+                                className={`flex-1 text-left cursor-pointer transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary group ${
+                                  isSelected
+                                    ? 'rounded-2xl'
+                                    : 'rounded-2xl border-2 border-transparent'
+                                }`}
+                                aria-pressed={isSelected}
+                              >
+                                <div className="flex w-full items-start gap-4">
+                                  <div className="flex flex-1 flex-col lg:flex-row gap-2">
+                                    {slide.hasVerseContent && (
+                                      <div className="flex justify-start lg:flex-1">
+                                        <div className="relative w-full max-w-[500px]">
+                                          <div className="flex flex-col gap-2">
+                                            <div className="text-base leading-relaxed whitespace-pre-line text-foreground">
+                                              {slide.verseText}
+                                            </div>
+                                            {slide.verseReference && (
+                                              <div className="text-xs font-light text-muted-foreground italic">
+                                                {slide.verseReference}
+                                              </div>
+                                            )}
                                           </div>
-                                        )}
+                                        </div>
                                       </div>
-                                    </div>
-                                  </div>
-                                )}
+                                    )}
 
-                                {slide.hasWhy && (
-                                  <div className="mt-2 lg:flex-1 lg:flex lg:items-start lg:justify-end">
-                                    <p className="text-sm font-light text-stone-500 leading-relaxed lg:max-w-[300px]">
-                                      <ArrowUp className="inline w-3 h-3 mr-1 mb-0.5" />
-                                      {slide.whyText}
-                                    </p>
+                                    {slide.hasWhy && (
+                                      <div className="mt-2 lg:flex-1 lg:flex lg:items-start lg:justify-end">
+                                        <p className="text-sm font-light text-stone-500 leading-relaxed lg:max-w-[300px]">
+                                          <ArrowUp className="inline w-3 h-3 mr-1 mb-0.5" />
+                                          {slide.whyText}
+                                        </p>
+                                      </div>
+                                    )}
                                   </div>
-                                )}
-                              </div>
+                                </div>
+                              </button>
                             </div>
-                          </button>
-                        </div>
 
-                        {/* Horizontal divider between items */}
-                        {slideIndex < scriptureSlides.length - 1 && (
-                          <div className="w-full h-px bg-border my-4" />
-                        )}
-                      </div>
-                    )
-                  })}
+                            {/* Horizontal divider between items */}
+                            {slideIndex < scriptureSlides.length - 1 && (
+                              <div className="w-full h-px bg-border my-4" />
+                            )}
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
                 ) : null}
@@ -412,63 +472,6 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                       })}
                   </div>
                 )}
-
-                <div className="space-y-3">
-                  <div className="flex justify-end">
-                    <div className="relative w-full max-w-[400px] rounded-2xl bg-[#098CFF] text-white shadow-xl group">
-                      <Button
-                        type="button"
-                        variant="transparent"
-                        size="sm"
-                        className="absolute top-2 right-2 gap-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={(event) => {
-                          event.preventDefault()
-                          event.stopPropagation()
-                          void handleCopyMessage(step.guideMessage, `guide-${index}`)
-                        }}
-                        onMouseDown={(event) => event.preventDefault()}
-                        title={
-                          copiedMessageId === `guide-${index}`
-                            ? 'Copied!'
-                            : 'Copy message'
-                        }
-                      >
-                        {copiedMessageId === `guide-${index}` ? (
-                          <Check className="h-3 w-3 text-green-300" />
-                        ) : (
-                          <Copy className="h-3 w-3" />
-                        )}
-                      </Button>
-                      <span
-                        aria-hidden="true"
-                        className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-[#098CFF]"
-                      />
-                      <AutoResizeTextarea
-                        value={
-                          editingMessageId === `guide-${index}`
-                            ? localMessageContent
-                            : step.guideMessage
-                        }
-                        onChange={(event) =>
-                          handleMessageChange(event.target.value)
-                        }
-                        onClick={() =>
-                          handleMessageClick(step.guideMessage, `guide-${index}`)
-                        }
-                        onBlur={handleMessageBlur}
-                        readOnly={editingMessageId !== `guide-${index}`}
-                        className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 px-4 py-3 rounded-2xl"
-                        data-message-id={`guide-${index}`}
-                      />
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-end space-x-2">
-                    <span className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
-                      You
-                    </span>
-                    <User className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                </div>
 
                 {step.responseOptions.length > 0 && (
                   <div className="space-y-3">
