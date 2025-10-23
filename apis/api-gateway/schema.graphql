@@ -880,6 +880,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   videoEdition(id: ID!) : VideoEdition @join__field(graph: API_MEDIA) 
   tags: [Tag!]! @join__field(graph: API_MEDIA) 
   taxonomies(category: String, languageCodes: [String!]) : [Taxonomy!]! @join__field(graph: API_MEDIA) 
+  youtubeClosedCaptionLanguages(videoId: ID!) : QueryYoutubeClosedCaptionLanguagesResult! @join__field(graph: API_MEDIA) 
   arclightApiKeys: [ArclightApiKey!]! @join__field(graph: API_MEDIA) 
   arclightApiKeyByKey(key: String!) : ArclightApiKey @join__field(graph: API_MEDIA) 
   me(input: MeInput) : User @join__field(graph: API_USERS) 
@@ -1247,6 +1248,7 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   how the video should display within the VideoBlock
   """
   objectFit: VideoBlockObjectFit
+  subtitleLanguage: Language
   mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
@@ -2758,6 +2760,10 @@ type QueryShortLinksConnectionEdge @join__type(graph: API_MEDIA)  {
   cursor: String!
 }
 
+type QueryYoutubeClosedCaptionLanguagesSuccess @join__type(graph: API_MEDIA)  {
+  data: [Language!]!
+}
+
 """
 A domain that can be used for short links
 """
@@ -3127,6 +3133,8 @@ union QueryShortLinkByPathResult @join__type(graph: API_MEDIA)  @join__unionMemb
 union QueryShortLinkDomainResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkDomainSuccess")  = NotFoundError | QueryShortLinkDomainSuccess
 
 union QueryShortLinkResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkSuccess")  = NotFoundError | QueryShortLinkSuccess
+
+union QueryYoutubeClosedCaptionLanguagesResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "Error")  @join__unionMember(graph: API_MEDIA, member: "QueryYoutubeClosedCaptionLanguagesSuccess")  = ZodError | Error | QueryYoutubeClosedCaptionLanguagesSuccess
 
 enum ThemeMode @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   dark @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -4696,6 +4704,7 @@ input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   autoplay: Boolean
   fullsize: Boolean
   posterBlockId: ID
+  subtitleLanguageId: ID
 }
 
 input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4713,6 +4722,7 @@ input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   muted: Boolean
   autoplay: Boolean
   fullsize: Boolean
+  subtitleLanguageId: ID
   """
   internal source: videoId and videoVariantLanguageId required
     youTube source: videoId required
