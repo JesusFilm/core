@@ -55,13 +55,14 @@ export function YouTubeDetails({
   )
 
   // Get subtitle language ID from the active video block
-  const subtitleLanguageId = activeVideoBlock?.subtitleLanguageId ?? null
+  const subtitleLanguageId = activeVideoBlock?.subtitleLanguage?.id ?? null
 
   // Fetch closed captions using custom hook
-  const { languages: captionLanguages } = useYouTubeClosedCaptions({
-    videoId: id,
-    enabled: open
-  })
+  const { languages: captionLanguages, loading: captionsLoading } =
+    useYouTubeClosedCaptions({
+      videoId: id,
+      enabled: open
+    })
 
   // Derive bcp47 code from caption data by matching subtitleLanguageId
   const subtitleLanguageBcp47 =
@@ -118,10 +119,12 @@ export function YouTubeDetails({
   }, [data, subtitleLanguageBcp47])
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+
   // Handle when subtitles are available but none selected
   useEffect(() => {
     if (
       data != null &&
+      !captionsLoading &&
       captionLanguages.length > 0 &&
       subtitleLanguageId === null
     ) {
@@ -144,6 +147,7 @@ export function YouTubeDetails({
     }
   }, [
     data,
+    captionsLoading,
     captionLanguages,
     subtitleLanguageId,
     enqueueSnackbar,
