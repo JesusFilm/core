@@ -83,9 +83,9 @@ Special notes:
 3. We don't call apis within storybook so mock out the response. <br/>Some components may call **our apis**. The basic structure is:
 
 ```
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
-const exampleEventMock: MockedResponse = {
+const exampleEventMock: MockLink.MockedResponse = {
   request: {
     query: EXAMPLE_EVENT_UPDATE,
     variables: {

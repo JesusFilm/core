@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -172,7 +173,7 @@ export const getServerSideProps: GetServerSideProps<EmailPreferencesPageProps> =
       }
     })
 
-    if (journeysEmailPreferenceData.journeysEmailPreference == null) {
+    if (journeysEmailPreferenceData?.journeysEmailPreference == null) {
       journeysEmailPreferenceData = {
         journeysEmailPreference: {
           email: query?.email as string,

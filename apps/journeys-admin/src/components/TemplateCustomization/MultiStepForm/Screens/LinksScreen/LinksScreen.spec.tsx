@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import {
   act,
   fireEvent,
@@ -192,7 +193,7 @@ describe('LinksScreen', () => {
       ]
     } as unknown as Journey
 
-    const linkUpdateMock: MockedResponse<
+    const linkUpdateMock: MockLink.MockedResponse<
       BlockActionLinkUpdate,
       BlockActionLinkUpdateVariables
     > = {
@@ -221,7 +222,7 @@ describe('LinksScreen', () => {
       }))
     }
 
-    const emailUpdateMock: MockedResponse<
+    const emailUpdateMock: MockLink.MockedResponse<
       BlockActionEmailUpdate,
       BlockActionEmailUpdateVariables
     > = {

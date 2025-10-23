@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
@@ -147,7 +147,7 @@ describe('BlockRenderer', () => {
       ]
     }
     const { getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer block={block} />
       </MockedProvider>
     )
@@ -187,7 +187,7 @@ describe('BlockRenderer', () => {
       ]
     }
     const { getByTestId, getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer
           block={block}
           wrappers={{
@@ -287,7 +287,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer block={block} />
       </MockedProvider>
     )
@@ -306,7 +306,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByTestId, getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer
           block={block}
           wrappers={{
@@ -341,7 +341,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByTestId, getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer
           block={{ ...block, gridView: true }}
           wrappers={{
@@ -385,7 +385,7 @@ describe('BlockRenderer', () => {
       children: [option, { ...option, label: 'radio option 2' }]
     }
     const { getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer block={block} />
       </MockedProvider>
     )
@@ -403,7 +403,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByTestId, getByRole } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer
           block={{ ...block }}
           wrappers={{
@@ -440,7 +440,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByLabelText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <BlockRenderer block={block} />
         </SnackbarProvider>
@@ -462,7 +462,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByTestId, getByLabelText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <SnackbarProvider>
           <BlockRenderer
             block={block}
@@ -692,7 +692,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByTestId } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer block={block} />
       </MockedProvider>
     )
@@ -748,7 +748,7 @@ describe('BlockRenderer', () => {
       children: []
     }
     const { getByTestId } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <BlockRenderer
           block={block}
           wrappers={{

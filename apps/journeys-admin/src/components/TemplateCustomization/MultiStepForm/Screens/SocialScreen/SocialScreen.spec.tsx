@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -27,7 +28,7 @@ describe('SocialScreen', () => {
   })
 
   const renderSocialScreen = (
-    mocks: MockedResponse[] = []
+    mocks: MockLink.MockedResponse[] = []
   ): ReturnType<typeof render> => {
     return render(
       <MockedProvider mocks={mocks}>

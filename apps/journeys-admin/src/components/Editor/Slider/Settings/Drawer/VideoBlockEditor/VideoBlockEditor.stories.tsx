@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 import { screen, userEvent, waitFor } from '@storybook/test'
@@ -176,19 +177,20 @@ const videoLanguages: GetVideoVariantLanguages_video = {
   ]
 }
 
-const mockGetVideoVariantLanguages: MockedResponse<GetVideoVariantLanguages> = {
-  request: {
-    query: GET_VIDEO_VARIANT_LANGUAGES,
-    variables: {
-      id: videoLanguages.id
-    }
-  },
-  result: {
-    data: {
-      video: videoLanguages
+const mockGetVideoVariantLanguages: MockLink.MockedResponse<GetVideoVariantLanguages> =
+  {
+    request: {
+      query: GET_VIDEO_VARIANT_LANGUAGES,
+      variables: {
+        id: videoLanguages.id
+      }
+    },
+    result: {
+      data: {
+        video: videoLanguages
+      }
     }
   }
-}
 
 const Template: StoryObj<typeof VideoBlockEditor> = {
   render: (args) => (

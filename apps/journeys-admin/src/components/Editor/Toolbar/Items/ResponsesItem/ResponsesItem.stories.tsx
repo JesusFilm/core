@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/react'
 
@@ -22,7 +22,7 @@ const Demo: Meta<typeof ResponsesItem> = {
   title: 'Journeys-Admin/Editor/Toolbar/Items/ResponsesItem'
 }
 
-const getVisitorCountMock: MockedResponse<
+const getVisitorCountMock: MockLink.MockedResponse<
   GetJourneyVisitorsCountWithTextResponses,
   GetJourneyVisitorsCountWithTextResponsesVariables
 > = {

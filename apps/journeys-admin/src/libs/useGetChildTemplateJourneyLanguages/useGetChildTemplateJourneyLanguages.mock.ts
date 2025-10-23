@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   GetChildJourneysFromTemplateId,
@@ -14,7 +14,7 @@ export const mockChildVariables: GetChildJourneysFromTemplateIdVariables = {
   }
 }
 
-export const mockChildJourneys: MockedResponse<
+export const mockChildJourneys: MockLink.MockedResponse<
   GetChildJourneysFromTemplateId,
   GetChildJourneysFromTemplateIdVariables
 > = {

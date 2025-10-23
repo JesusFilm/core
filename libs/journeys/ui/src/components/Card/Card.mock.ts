@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   ButtonColor,
@@ -266,7 +266,7 @@ export const journey = {
 } as unknown as Journey
 
 // GraphQL mocks
-export const mockStepPreviousEventCreate: MockedResponse<StepPreviousEventCreate> =
+export const mockStepPreviousEventCreate: MockLink.MockedResponse<StepPreviousEventCreate> =
   {
     request: {
       query: STEP_PREVIOUS_EVENT_CREATE,
@@ -290,28 +290,29 @@ export const mockStepPreviousEventCreate: MockedResponse<StepPreviousEventCreate
     }))
   }
 
-export const mockStepNextEventCreate: MockedResponse<StepNextEventCreate> = {
-  request: {
-    query: STEP_NEXT_EVENT_CREATE,
-    variables: {
-      input: {
-        id: 'uuid',
-        blockId: 'step1.id',
-        nextStepId: 'step2.id',
-        label: 'Step {{number}}',
-        value: 'Step {{number}}'
+export const mockStepNextEventCreate: MockLink.MockedResponse<StepNextEventCreate> =
+  {
+    request: {
+      query: STEP_NEXT_EVENT_CREATE,
+      variables: {
+        input: {
+          id: 'uuid',
+          blockId: 'step1.id',
+          nextStepId: 'step2.id',
+          label: 'Step {{number}}',
+          value: 'Step {{number}}'
+        }
       }
-    }
-  },
-  result: jest.fn(() => ({
-    data: {
-      stepNextEventCreate: {
-        id: 'uuid',
-        __typename: 'StepNextEvent'
+    },
+    result: jest.fn(() => ({
+      data: {
+        stepNextEventCreate: {
+          id: 'uuid',
+          __typename: 'StepNextEvent'
+        }
       }
-    }
-  }))
-}
+    }))
+  }
 
 export const mockTextResponseSubmissionEventCreate = {
   request: {
@@ -405,7 +406,7 @@ export const mockTextResponseEmailSubmissionEventCreate = {
 export const getStepViewEventMock = (
   blockId: string,
   value?: string
-): MockedResponse<StepViewEventCreate> => ({
+): MockLink.MockedResponse<StepViewEventCreate> => ({
   request: {
     query: STEP_VIEW_EVENT_CREATE,
     variables: {

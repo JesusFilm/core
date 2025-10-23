@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
@@ -113,7 +114,9 @@ function JourneyReportsPage({ flags, plausibleDashboardViewed }): ReactElement {
               currentRef={currentRef}
               pointerPosition="92%"
               handleClose={() => {
-                void updatePlausibleDashboardViewed()
+                void updatePlausibleDashboardViewed({
+                  variables: { input: { plausibleDashboardViewed: true } }
+                })
                 setBeaconRoute('/ask/')
                 setOpen(false)
               }}
@@ -177,7 +180,8 @@ export const getServerSideProps = withUserTokenSSR({
     props: {
       ...translations,
       flags,
-      plausibleDashboardViewed: data.getJourneyProfile?.plausibleDashboardViewed
+      plausibleDashboardViewed:
+        data?.getJourneyProfile?.plausibleDashboardViewed
     }
   }
 })

@@ -1,4 +1,5 @@
-import { gql, useLazyQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client/react'
 import Grid from '@mui/material/GridLegacy'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
