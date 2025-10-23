@@ -1,9 +1,10 @@
 import { ArrowRight, Camera, MessageCircle, Sparkles, Video, Waves } from 'lucide-react'
 import Head from 'next/head'
-import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import type { ReactElement } from 'react'
 
+import { StudioSiteSelector } from '../src/components/studio-site-selector'
 import { Button } from '../src/components/ui/button'
 import { cn } from '../src/libs/cn/cn'
 
@@ -51,6 +52,7 @@ const processSteps = [
 const inputTypes = ['Text', 'Image', 'Video', 'Quote', 'Link', 'Audio Note']
 
 export default function StudioLandingPage(): ReactElement {
+  const router = useRouter()
   return (
     <>
       <Head>
@@ -63,10 +65,9 @@ export default function StudioLandingPage(): ReactElement {
       <div className="min-h-screen bg-gradient-to-b from-[#fdfaf4] via-white to-[#f0f5ff] text-stone-900">
         <header className="border-b border-border bg-background/80 backdrop-blur">
           <div className="container mx-auto flex items-center justify-between px-4 py-6">
-            <div className="flex items-center gap-4">
-              <Image src="/jesusfilm-sign.svg" alt="Jesus Film Project" width={24} height={24} className="h-6 w-auto" />
-              <h1 className="text-2xl font-bold tracking-tight">Studio</h1>
-            </div>
+            <StudioSiteSelector onNavigateHome={() => {
+              void router.push('/')
+            }} />
             <div className="flex items-center gap-3">
               <Button size="sm" asChild>
                 <Link href="/new">
