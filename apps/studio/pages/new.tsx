@@ -108,7 +108,7 @@ const CONVERSATION_OUTPUT_FORMAT_INSTRUCTIONS = `Provide the response as JSON wi
               }
             ]
           }
-        ],
+        ], // Use an empty array when no scripture belongs in this step.
         "responseOptions": [
           {
             "id": "kebab-case id for this responder option",
@@ -136,7 +136,7 @@ const DEFAULT_RESPONSE_GUIDELINES = `Guidelines:
 const CONVERSATION_RESPONSE_GUIDELINES = `Guidelines:
 - Map an ideal path of 6-9 guide-led conversation moves that gently progress toward gospel hope.
 - Summarize the overall movement first with a \"flow\" that lists each step's short theme in order and a brief rationale for why this journey helps the responder.
-- Every step must include a guide message, a purpose note (or null), and at least five scriptureOptions. Each scripture option needs the verse text/reference, a note on why it fits/how to migrate the conversation toward it, and multiple tone-tagged conversation examples.
+- Include scriptureOptions for 2-3 middle steps where a verse naturally supports the transition. Use an empty array for steps where scripture would feel forced. When scripture is present, provide 2-3 options with verse text/reference, a note explaining why it fits, and multiple tone-tagged conversation examples.
 - Craft 3-5 responseOptions per step that capture common responder postures. Each must include an emoji icon, tile label, responder reaction, and 1-3 guide follow-up replies as separate strings.
 - Maintain warm, pastoral tone across the guide messages, verse explanations, and follow-up replies. Keep each message concise enough to fit in a chat bubble.
 - Do not include design instructions, media prompts, or image keywords in any field.
@@ -146,7 +146,7 @@ const contextSystemPrompts: Record<string, string> = {
   default:
     'Default to producing ministry-ready resources that can flex between digital and in-person sharing when no specific context is selected. Provide balanced guidance that keeps the content adaptable.',
   'Conversations':
-    'Guide one-on-one or small group conversations that gently introduce gospel truths. Return structured JSON for a chat-style conversation map that begins with a flow overview (sequence plus rationale), then lists steps with guide messages, multi-verse scriptureOptions (each with why-it-fits notes and tone-labeled conversation examples), and interactive responder options with follow-up replies. Emphasize listening, questions, prayerful transitions, and Scripture when natural. Avoid design instructions and image keywords in this mode.',
+    'Guide one-on-one or small group conversations that gently introduce gospel truths. Return structured JSON for a chat-style conversation map that begins with a flow overview (sequence plus rationale), then lists steps with guide messages, targeted scriptureOptions (each with why-it-fits notes and tone-labeled conversation examples), and interactive responder options with follow-up replies. Emphasize listening, questions, prayerful transitions, and bring Scripture in only when it emerges naturally near the middle of the exchange. Avoid design instructions and image keywords in this mode.',
   'Social Media':
     'Operate like a Canva-style designer for social media campaigns. Treat each step as a templated design idea for stories, carousels, reels, or feed posts. Suggest layout direction, color palettes, typography moods, and short, scroll-stopping copy. Keep platform conventions (vertical ratios, accessibility, alt-text) in mind and tailor media prompts to energetic, template-friendly visuals.',
   Website:
