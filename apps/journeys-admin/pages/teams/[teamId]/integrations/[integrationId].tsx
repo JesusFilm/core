@@ -15,6 +15,7 @@ import { useIntegrationQuery } from '../../../../src/libs/useIntegrationQuery'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
+import { useRouter } from 'next/router'
 
 function IntegrationPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
