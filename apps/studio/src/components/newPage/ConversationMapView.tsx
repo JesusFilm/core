@@ -2,13 +2,82 @@ import { memo, useCallback, useEffect, useState } from 'react'
 
 import { ArrowUp, Book, Bot, Check, Copy, Layers, User, X } from 'lucide-react'
 
-import type { ConversationMap } from '../../libs/storage'
+import type { ConversationMap, ConversationMapResponseOption } from '../../libs/storage'
 import { Button } from '../ui/button'
 
 import { AutoResizeTextarea } from '@/components/ui/textarea'
 
 export type ConversationMapViewProps = {
   map: ConversationMap
+}
+
+type ReactionPreset = {
+  idSuffix: string
+  icon: string
+  label: string
+  fallbackMessage: string
+}
+
+const PREDEFINED_RESPONSE_REACTIONS: ReactionPreset[] = [
+  {
+    idSuffix: 'feeling-hurt',
+    icon: '😡',
+    label: 'Feeling hurt',
+    fallbackMessage: "This really upsets me. I don't think I can accept this."
+  },
+  {
+    idSuffix: 'uneasy',
+    icon: '🫤',
+    label: 'Uneasy',
+    fallbackMessage: "I'm not convinced this is the right direction."
+  },
+  {
+    idSuffix: 'processing',
+    icon: '😐',
+    label: 'Processing',
+    fallbackMessage: "Okay... I'm hearing you, I'm just not sure what to do with this yet."
+  },
+  {
+    idSuffix: 'curious',
+    icon: '😏',
+    label: 'Curious',
+    fallbackMessage: "Huh, that's interesting. Maybe there's more here for me to explore."
+  },
+  {
+    idSuffix: 'encouraged',
+    icon: '🙂',
+    label: 'Encouraged',
+    fallbackMessage: 'Thanks—that actually gives me some hope.'
+  }
+]
+
+const sanitizeString = (value: unknown): string =>
+  typeof value === 'string' ? value.trim() : ''
+
+const buildReactionOptions = (
+  step: ConversationMap['steps'][number],
+  stepKey: string
+): ConversationMapResponseOption[] => {
+  return PREDEFINED_RESPONSE_REACTIONS.map((reaction, reactionIndex) => {
+    const sourceOption = step.responseOptions?.[reactionIndex]
+
+    const responderMessage =
+      sanitizeString(sourceOption?.responderMessage) ||
+      sanitizeString(sourceOption?.label) ||
+      reaction.fallbackMessage
+
+    const guideFollowUps = (sourceOption?.guideFollowUps ?? [])
+      .map((followUp) => sanitizeString(followUp))
+      .filter((followUp): followUp is string => followUp.length > 0)
+
+    return {
+      id: `${stepKey}-${reaction.idSuffix}`,
+      label: reaction.label,
+      icon: reaction.icon,
+      responderMessage,
+      guideFollowUps
+    }
+  })
 }
 
 export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
@@ -139,6 +208,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
         {map.steps.map((step, index) => {
           const stepKey = `step-${index}`
           const playedForStep = playedOptions[stepKey] ?? []
+          const reactionOptions = buildReactionOptions(step, stepKey)
           const scriptureSlides = Array.isArray(step.scriptureOptions)
             ? step.scriptureOptions.reduce<
                 {
@@ -470,7 +540,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                   </div>
                 </div>
 
-                {step.responseOptions.length > 0 && (
+                {reactionOptions.length > 0 && (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                       <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
@@ -485,7 +555,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                       className="flex flex-wrap gap-2"
                       aria-label="Responder options"
                     >
-                      {step.responseOptions.map((option) => {
+                      {reactionOptions.map((option) => {
                         const isPlayed = playedForStep.includes(option.id)
 
                         return (
@@ -521,10 +591,10 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                 {playedForStep.length > 0 && (
                   <div className="space-y-6" aria-live="polite">
                     {playedForStep.map((optionId) => {
-                      const option = step.responseOptions.find(
-                        (item) => item.id === optionId
-                      )
-                      if (!option) return null
+                        const option = reactionOptions.find(
+                          (item) => item.id === optionId
+                        )
+                        if (!option) return null
 
                       return (
                         <div key={option.id} className="space-y-3">
