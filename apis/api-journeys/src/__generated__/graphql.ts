@@ -1610,6 +1610,7 @@ export type Mutation = {
   deleteCloudflareImage: Scalars['Boolean']['output'];
   deleteMuxVideo: Scalars['Boolean']['output'];
   enableMuxDownload?: Maybe<MuxVideo>;
+  fixVideoLanguages: Scalars['Boolean']['output'];
   hostCreate: Host;
   hostDelete: Host;
   hostUpdate: Host;
@@ -2055,6 +2056,11 @@ export type MutationDeleteMuxVideoArgs = {
 export type MutationEnableMuxDownloadArgs = {
   id: Scalars['ID']['input'];
   resolution?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationFixVideoLanguagesArgs = {
+  videoId: Scalars['ID']['input'];
 };
 
 
@@ -3094,16 +3100,20 @@ export type PhoneAction = Action & {
   __typename?: 'PhoneAction';
   contactAction: ContactActionType;
   countryCode: Scalars['String']['output'];
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   gtmEventName?: Maybe<Scalars['String']['output']>;
   parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
+  parentStepId?: Maybe<Scalars['String']['output']>;
   phone: Scalars['String']['output'];
 };
 
 export type PhoneActionInput = {
   contactAction?: InputMaybe<ContactActionType>;
   countryCode: Scalars['String']['input'];
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  parentStepId?: InputMaybe<Scalars['String']['input']>;
   phone: Scalars['String']['input'];
 };
 

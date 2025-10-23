@@ -18,6 +18,8 @@ const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
   email: null,
   phone: null,
   contactAction: null,
+  customizable: null,
+  parentStepId: null,
   journey: { disconnect: true },
   block: { disconnect: true }
 }
