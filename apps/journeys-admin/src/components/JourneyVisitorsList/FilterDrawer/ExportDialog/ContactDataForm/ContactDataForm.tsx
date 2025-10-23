@@ -32,6 +32,7 @@ export function ContactDataForm({
             'email',
             'phone',
             'RadioQuestionSubmissionEvent',
+            'MultiselectSubmissionEvent',
             'SignUpSubmissionEvent',
             'TextResponseSubmissionEvent'
           ]
@@ -52,6 +53,7 @@ export function ContactDataForm({
       'email',
       'phone',
       'RadioQuestionSubmissionEvent',
+      'MultiselectSubmissionEvent',
       'SignUpSubmissionEvent',
       'TextResponseSubmissionEvent'
     ])
@@ -61,7 +63,7 @@ export function ContactDataForm({
     <Stack>
       <FormGroup>
         <CheckboxOption
-          checked={selectedFields.length === 6}
+          checked={selectedFields.length === 7}
           onChange={handleSelectAll}
           label={t('All')}
         />
@@ -85,6 +87,11 @@ export function ContactDataForm({
           checked={selectedFields.includes('RadioQuestionSubmissionEvent')}
           onChange={toggleField('RadioQuestionSubmissionEvent')}
           label={t('Poll Selection')}
+        />
+        <CheckboxOption
+          checked={selectedFields.includes('MultiselectSubmissionEvent')}
+          onChange={toggleField('MultiselectSubmissionEvent')}
+          label={t('Multiselect Submission')}
         />
         <CheckboxOption
           checked={selectedFields.includes('SignUpSubmissionEvent')}

@@ -25,6 +25,7 @@ interface FilterDrawerProps {
   sortSetting?: 'date' | 'duration'
   chatStarted: boolean
   withPollAnswers: boolean
+  withMultiselectAnswers?: boolean
   withSubmittedText: boolean
   withIcon: boolean
   hideInteractive: boolean
@@ -40,6 +41,7 @@ export function FilterDrawer({
   sortSetting,
   chatStarted,
   withPollAnswers,
+  withMultiselectAnswers,
   withSubmittedText,
   withIcon,
   hideInteractive,
@@ -84,6 +86,13 @@ export function FilterDrawer({
             value="Poll Answers"
             onChange={handleChange}
             checked={withPollAnswers}
+          />
+          <FormControlLabel
+            control={<Checkbox />}
+            label={t('Multiselect Answers')}
+            value="Multiselect Answers"
+            onChange={handleChange}
+            checked={withMultiselectAnswers ?? false}
           />
           <FormControlLabel
             control={<Checkbox />}

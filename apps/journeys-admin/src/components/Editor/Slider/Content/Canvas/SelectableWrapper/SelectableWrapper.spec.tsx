@@ -7,6 +7,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { Image } from '@core/journeys/ui/Image'
+import { MultiselectQuestion } from '@core/journeys/ui/MultiselectQuestion'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
 import { SignUp } from '@core/journeys/ui/SignUp'
 import { Typography } from '@core/journeys/ui/Typography'
@@ -14,6 +15,8 @@ import { Typography } from '@core/journeys/ui/Typography'
 import { ButtonFields } from '../../../../../../../__generated__/ButtonFields'
 import { TypographyVariant } from '../../../../../../../__generated__/globalTypes'
 import { ImageFields } from '../../../../../../../__generated__/ImageFields'
+import { MultiselectOptionFields } from '../../../../../../../__generated__/MultiselectOptionFields'
+import { MultiselectQuestionFields } from '../../../../../../../__generated__/MultiselectQuestionFields'
 import { RadioOptionFields } from '../../../../../../../__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQuestionFields'
 import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
@@ -137,6 +140,35 @@ describe('SelectableWrapper', () => {
     children: []
   }
 
+  const multiselectOption1: TreeBlock<MultiselectOptionFields> = {
+    __typename: 'MultiselectOptionBlock',
+    id: 'MultiselectOption1',
+    label: 'Option 1',
+    parentBlockId: 'MultiselectQuestion1',
+    parentOrder: 0,
+    children: []
+  }
+
+  const multiselectQuestionBlock: TreeBlock<MultiselectQuestionFields> = {
+    __typename: 'MultiselectBlock',
+    id: 'MultiselectQuestion1',
+    parentBlockId: 'parent.id',
+    parentOrder: 0,
+    min: null,
+    max: null,
+    children: [
+      multiselectOption1,
+      {
+        __typename: 'MultiselectOptionBlock',
+        id: 'MultiselectOption2',
+        label: 'Option 2',
+        parentBlockId: 'MultiselectQuestion1',
+        parentOrder: 1,
+        children: []
+      } as unknown as TreeBlock<MultiselectOptionFields>
+    ]
+  }
+
   const step = (blocks: TreeBlock[]): TreeBlock<StepFields> => {
     return {
       __typename: 'StepBlock',
@@ -248,6 +280,102 @@ describe('SelectableWrapper', () => {
       zIndex: '1',
       outlineColor: '#C52D3A'
     })
+  })
+
+  it('should select multiselect question on multiselect option click', async () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step([multiselectQuestionBlock])]
+            }}
+          >
+            <SelectableWrapper block={multiselectQuestionBlock}>
+              <MultiselectQuestion
+                {...multiselectQuestionBlock}
+                wrappers={{ Wrapper: SelectableWrapper }}
+              />
+            </SelectableWrapper>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByTestId(`SelectableWrapper-${multiselectOption1.id}`))
+    expect(
+      getByTestId(`SelectableWrapper-${multiselectQuestionBlock.id}`)
+    ).toHaveStyle({
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
+    })
+  })
+
+  it('should select multiselect option on click when multiselect question selected', async () => {
+    const { getByTestId, getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: multiselectQuestionBlock,
+              selectedBlockId: multiselectQuestionBlock.id,
+              steps: [step([multiselectQuestionBlock])]
+            }}
+          >
+            <SelectableWrapper block={multiselectQuestionBlock}>
+              <MultiselectQuestion
+                {...multiselectQuestionBlock}
+                wrappers={{ Wrapper: SelectableWrapper }}
+              />
+            </SelectableWrapper>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      fireEvent.click(getByRole('button', { name: 'Option 1' }))
+    )
+    expect(getByTestId(`SelectableWrapper-MultiselectOption1`)).toHaveStyle({
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
+    })
+    expect(push).not.toHaveBeenCalled()
+  })
+
+  it('should select multiselect option on click when sibling option selected', async () => {
+    const { getByTestId, getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: multiselectOption1,
+              selectedBlockId: multiselectOption1.id,
+              steps: [step([multiselectQuestionBlock])]
+            }}
+          >
+            <SelectableWrapper block={multiselectQuestionBlock}>
+              <MultiselectQuestion
+                {...multiselectQuestionBlock}
+                wrappers={{ Wrapper: SelectableWrapper }}
+              />
+            </SelectableWrapper>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      fireEvent.click(getByRole('button', { name: 'Option 1' }))
+    })
+    expect(getByTestId(`SelectableWrapper-MultiselectOption1`)).toHaveStyle({
+      outline: '2px solid',
+      zIndex: '1',
+      outlineColor: '#C52D3A'
+    })
+    expect(push).not.toHaveBeenCalled()
   })
 
   it('should select radio option on click when radio question selected', async () => {
