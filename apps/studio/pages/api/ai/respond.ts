@@ -1,235 +1,213 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import OpenAI from 'openai'
-import type {
-  ResponseCreateParamsNonStreaming,
-  ResponseInput,
-  ResponseInputMessageContentList
-} from 'openai/resources/responses/responses'
+import { createOpenAI } from '@ai-sdk/openai'
+import {
+  convertToCoreMessages,
+  generateText,
+  type CoreMessage,
+  type LanguageModelUsage
+} from 'ai'
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+const OPENROUTER_BASE_URL =
+  process.env.OPENROUTER_BASE_URL ?? 'https://openrouter.ai/api/v1'
+const OPENROUTER_APP_TITLE =
+  process.env.OPENROUTER_APP_TITLE ?? 'Jesus Film Studio'
+const DEFAULT_MODEL = 'gpt-4o'
+
+const isString = (value: unknown): value is string => typeof value === 'string'
+const isNumber = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isFinite(value)
+const isBoolean = (value: unknown): value is boolean => typeof value === 'boolean'
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  value != null && typeof value === 'object'
+
+const buildOpenRouterHeaders = (): Record<string, string> => {
+  const headers: Record<string, string> = {
+    'X-Title': OPENROUTER_APP_TITLE
+  }
+
+  if (isString(process.env.OPENROUTER_HTTP_REFERER)) {
+    headers['HTTP-Referer'] = process.env.OPENROUTER_HTTP_REFERER
+  }
+
+  return headers
+}
+
+const createOpenRouterClient = (apiKey: string) =>
+  createOpenAI({
+    apiKey,
+    baseURL: OPENROUTER_BASE_URL,
+    compatibility: 'compatible',
+    name: 'openrouter',
+    headers: buildOpenRouterHeaders()
+  })
+
+const ensureMessages = (rawMessages: unknown): CoreMessage[] => {
+  if (!Array.isArray(rawMessages)) {
+    throw new Error('Messages payload must be an array.')
+  }
+
+  try {
+    return convertToCoreMessages(rawMessages as Array<any>)
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Unable to normalize messages.'
+    throw new Error(message)
+  }
+}
+
+const buildProviderOptions = (
+  body: Record<string, unknown>
+): Record<string, unknown> => {
+  const providerOptions: Record<string, unknown> = {}
+
+  if (isBoolean(body.store)) providerOptions.store = body.store
+  if (isBoolean(body.parallel_tool_calls)) {
+    providerOptions.parallelToolCalls = body.parallel_tool_calls
+  }
+  if (isString(body.previous_response_id)) {
+    providerOptions.previousResponseId = body.previous_response_id
+  }
+  if (isString(body.instructions)) {
+    providerOptions.instructions = body.instructions
+  }
+  if (body.metadata !== undefined) {
+    providerOptions.metadata = body.metadata
+  }
+  if (isString(body.user)) providerOptions.user = body.user
+
+  const reasoning = body.reasoning
+  if (isRecord(reasoning) && isString(reasoning.effort)) {
+    providerOptions.reasoningEffort = reasoning.effort
+  }
+
+  return providerOptions
+}
+
+const mapUsage = (usage: LanguageModelUsage | undefined) => ({
+  input_tokens: usage?.promptTokens ?? 0,
+  output_tokens: usage?.completionTokens ?? 0,
+  total_tokens:
+    usage?.totalTokens ??
+    (usage?.promptTokens ?? 0) + (usage?.completionTokens ?? 0)
 })
 
-type ChatContentItem =
-  | string
-  | {
-      type: string
-      [key: string]: any
-    }
-
-type ChatMessage = {
-  role: 'user' | 'assistant' | 'system' | 'developer'
-  content: string | ChatContentItem[]
-}
-
-type ResponseMessageContent = ResponseInputMessageContentList[number]
-
-const isResponseMessageContent = (
-  item: ChatContentItem
-): item is ResponseMessageContent =>
-  typeof item === 'object' &&
-  item !== null &&
-  'type' in item &&
-  (item.type === 'input_text' || item.type === 'input_image')
-
-const toInputText = (text: unknown) =>
-  typeof text === 'string' ? text : JSON.stringify(text)
-
-const toInputImage = (item: Record<string, any>): ResponseMessageContent => {
-  const { image_url, detail } = item
-
-  if (typeof image_url === 'string') {
-    return {
-      type: 'input_image' as const,
-      image_url,
-      detail: (detail as 'low' | 'high' | 'auto') ?? 'auto'
-    }
-  }
-
-  if (image_url && typeof image_url === 'object') {
-    const url = 'url' in image_url ? image_url.url : undefined
-    const derivedDetail =
-      (image_url.detail as 'low' | 'high' | 'auto' | undefined) ?? detail ?? 'auto'
-
-    return {
-      type: 'input_image' as const,
-      image_url: typeof url === 'string' ? url : undefined,
-      detail: derivedDetail
-    }
-  }
-
-  return {
-    type: 'input_image' as const,
-    image_url: undefined,
-    detail: (detail as 'low' | 'high' | 'auto') ?? 'auto'
-  }
-}
-
-const normalizeContent = (
-  content: ChatMessage['content']
-): string | ResponseInputMessageContentList => {
-  if (!Array.isArray(content)) {
-    return toInputText(content)
-  }
-
-  return content.map<ResponseMessageContent>((item) => {
-    if (typeof item === 'string') {
-      return {
-        type: 'input_text' as const,
-        text: item
-      }
-    }
-
-    if (isResponseMessageContent(item)) {
-      return item
-    }
-
-    if (item?.type === 'text') {
-      return {
-        type: 'input_text' as const,
-        text: typeof item.text === 'string' ? item.text : JSON.stringify(item.text)
-      }
-    }
-
-    if (item?.type === 'image_url') {
-      return toInputImage(item)
-    }
-
-    return {
-      type: 'input_text' as const,
-      text: JSON.stringify(item)
-    }
-  })
-}
-
-const normalizeMessages = (messages: ChatMessage[]): ResponseInput =>
-  messages.map((message) => {
-    const normalizedContent = normalizeContent(message.content)
-
-    if (typeof normalizedContent === 'string') {
-      return {
-        role: message.role,
-        content: normalizedContent
-      }
-    }
-
-    return {
-      type: 'message',
-      role: message.role,
-      content: normalizedContent
-    }
-  })
-
-type OptionalPayloadFields = Partial<
-  Omit<ResponseCreateParamsNonStreaming, 'input' | 'model' | 'max_output_tokens'>
->
-
-const pickOptionalFields = (body: Record<string, unknown>): OptionalPayloadFields => {
-  const allowedFields: Array<keyof OptionalPayloadFields> = [
-    'background',
-    'include',
-    'instructions',
-    'metadata',
-    'parallel_tool_calls',
-    'previous_response_id',
-    'reasoning',
-    'service_tier',
-    'store',
-    'stream',
-    'temperature',
-    'text',
-    'tool_choice',
-    'tools',
-    'top_p',
-    'truncation',
-    'user'
-  ]
-
-  return allowedFields.reduce<OptionalPayloadFields>((accumulator, field) => {
-    const value = body[field as string]
-    if (value !== undefined) {
-      accumulator[field] = value as never
-    }
-    return accumulator
-  }, {})
-}
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
     res.status(405).json({ error: 'Method Not Allowed' })
     return
   }
 
-  if (!process.env.OPENAI_API_KEY) {
-    res.status(500).json({ error: 'OPENAI_API_KEY is not configured on the server.' })
+  const apiKey = process.env.OPENROUTER_API_KEY
+  if (!isString(apiKey) || apiKey.trim() === '') {
+    res
+      .status(500)
+      .json({ error: 'OPENROUTER_API_KEY is not configured on the server.' })
     return
   }
 
+  const body = isRecord(req.body) ? (req.body as Record<string, unknown>) : {}
+
+  const model = isString(body.model) && body.model.trim() !== ''
+    ? body.model.trim()
+    : DEFAULT_MODEL
+
+  const maxOutputTokens = isNumber(body.max_output_tokens)
+    ? body.max_output_tokens
+    : isNumber(body.max_tokens)
+      ? body.max_tokens
+      : undefined
+
+  const providerOptions = buildProviderOptions(body)
+
+  let prompt: string | undefined
+  let messages: CoreMessage[] | undefined
+
+  if (Array.isArray(body.messages)) {
+    try {
+      messages = ensureMessages(body.messages)
+    } catch (error) {
+      res.status(400).json({
+        error: 'Invalid messages payload.',
+        details: error instanceof Error ? error.message : undefined
+      })
+      return
+    }
+
+    if (messages.length === 0) {
+      res.status(400).json({ error: 'Provided messages array is empty.' })
+      return
+    }
+  } else if (isString(body.input) && body.input.trim() !== '') {
+    prompt = body.input.trim()
+  } else {
+    res
+      .status(400)
+      .json({ error: 'Request body must include messages or input.' })
+    return
+  }
+
+  const client = createOpenRouterClient(apiKey)
+
   try {
-    const { model = 'gpt-4o', messages, max_tokens, max_output_tokens } = req.body ?? {}
-
-    const optionalFields = pickOptionalFields(req.body ?? {})
-
-    let input: ResponseCreateParamsNonStreaming['input'] | undefined
-    if (Array.isArray(messages)) {
-      input = normalizeMessages(messages as ChatMessage[])
-    } else if (typeof req.body?.input === 'string' && req.body.input.trim() !== '') {
-      input = req.body.input
+    const generationOptions: Parameters<typeof generateText>[0] = {
+      model: client.responses(model as any),
+      temperature: isNumber(body.temperature) ? body.temperature : undefined,
+      topP: isNumber(body.top_p) ? body.top_p : undefined,
+      maxTokens: maxOutputTokens
     }
 
-    if (input === undefined) {
-      res.status(400).json({ error: 'Request body must include messages or input.' })
-      return
+    if (messages != null) generationOptions.messages = messages
+    if (prompt != null) generationOptions.prompt = prompt
+    if (Object.keys(providerOptions).length > 0) {
+      generationOptions.providerOptions = providerOptions as any
     }
 
-    if (Array.isArray(input)) {
-      if (input.length === 0) {
-        res.status(400).json({ error: 'Provided input is empty.' })
-        return
-      }
-    } else if (typeof input === 'string') {
-      if (input.trim().length === 0) {
-        res.status(400).json({ error: 'Provided input is empty.' })
-        return
-      }
-    } else {
-      res.status(400).json({ error: 'Provided input format is not supported.' })
-      return
-    }
+    const result = await generateText(generationOptions)
 
-    const payload: ResponseCreateParamsNonStreaming = {
+    const responseId = result.response?.id ?? `or-${Date.now()}`
+    const createdAt = result.response?.timestamp ?? new Date()
+    const text = result.text ?? ''
+
+    res.status(200).json({
+      id: responseId,
       model,
-      input,
-      ...optionalFields
-    }
+      created: Math.floor(createdAt.getTime() / 1000),
+      provider: 'openrouter',
+      finish_reason: result.finishReason,
+      warnings: result.warnings ?? [],
+      usage: mapUsage(result.usage),
+      output_text: text,
+      output: [
+        {
+          id: `${responseId}-msg-0`,
+          type: 'message',
+          role: 'assistant',
+          content: [
+            {
+              type: 'output_text',
+              text
+            }
+          ]
+        }
+      ]
+    })
+  } catch (error) {
+    console.error('OpenRouter proxy error:', error)
 
-    if (typeof max_output_tokens === 'number') {
-      payload.max_output_tokens = max_output_tokens
-    } else if (typeof max_tokens === 'number') {
-      payload.max_output_tokens = max_tokens
-    }
-
-    const response = await client.responses.create(payload)
-
-    res.status(200).json(response)
-  } catch (error: unknown) {
-    console.error('OpenAI proxy error:', error)
-
-    if (error && typeof error === 'object' && 'status' in error) {
-      const status = typeof (error as { status?: number }).status === 'number'
-        ? (error as { status: number }).status
-        : 500
-
-      res.status(status).json({
-        error: 'OpenAI request failed',
-        details: (error as any).message ?? 'Unknown error'
+    if (isRecord(error) && typeof error.status === 'number') {
+      res.status(error.status).json({
+        error: 'OpenRouter request failed',
+        details: isString(error.message) ? error.message : undefined
       })
       return
     }
 
     res.status(500).json({
-      error: 'Unexpected error while contacting OpenAI.',
+      error: 'Unexpected error while contacting OpenRouter.',
       details: error instanceof Error ? error.message : 'Unknown error'
     })
   }
