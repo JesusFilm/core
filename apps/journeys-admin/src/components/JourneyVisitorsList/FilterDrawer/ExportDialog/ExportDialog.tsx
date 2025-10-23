@@ -90,12 +90,7 @@ export function ExportDialog({
         }
         await exportJourneyContacts({
           journeyId,
-          filter,
-          select: {
-            name: contactData.includes('name'),
-            email: contactData.includes('email'),
-            phone: contactData.includes('phone')
-          }
+          filter
         })
       }
       onClose()
