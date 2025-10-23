@@ -83,6 +83,7 @@ const buildReactionOptions = (
 
 export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
   const [playedOptions, setPlayedOptions] = useState<Record<string, string[]>>({})
+  const [reactionSelections, setReactionSelections] = useState<Record<string, number | null>>({})
   const [selectedScriptureOption, setSelectedScriptureOption] = useState<string | null>(null)
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null)
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
@@ -90,6 +91,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
 
   useEffect(() => {
     setPlayedOptions({})
+    setReactionSelections({})
     setSelectedScriptureOption(null)
     setCopiedMessageId(null)
     setEditingMessageId(null)
@@ -209,7 +211,9 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
         {map.steps.map((step, index) => {
           const stepKey = `step-${index}`
           const playedForStep = playedOptions[stepKey] ?? []
+          const stepSelection = reactionSelections[stepKey] ?? null
           const reactionOptions = buildReactionOptions(step, stepKey)
+          const sliderSpan = Math.max(reactionOptions.length - 1, 1)
           const scriptureSlides = Array.isArray(step.scriptureOptions)
             ? step.scriptureOptions.reduce<
                 {
@@ -542,49 +546,90 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                 </div>
 
                 {reactionOptions.length > 0 && (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                       <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                         Common responses
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        Tap to preview how you might reply
+                        Drag or tap a reaction to preview a reply
                       </span>
                     </div>
-                    <div
-                      role="list"
-                      className="flex flex-wrap gap-2"
-                      aria-label="Responder options"
-                    >
-                      {reactionOptions.map((option) => {
-                        const isPlayed = playedForStep.includes(option.id)
 
-                        return (
-                          <button
-                            key={option.id}
-                            type="button"
-                            role="listitem"
-                            onClick={() => handleOptionSelect(index, option.id)}
-                            className={`group inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium shadow-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary ${
-                              isPlayed
-                                ? 'bg-primary/10 border-primary text-primary'
-                                : 'bg-background border-border hover:bg-muted'
-                            }`}
-                            aria-pressed={isPlayed}
-                            aria-label={`${option.label}${
-                              isPlayed ? ' (played)' : ''
-                            }`}
-                          >
-                            {option.icon && (
-                              <span aria-hidden className="text-base leading-none">
-                                {option.icon}
-                              </span>
-                            )}
-                            <span>{option.label}</span>
-                            {isPlayed && <Check className="h-4 w-4" />}
-                          </button>
-                        )
-                      })}
+                    <div className="space-y-6" aria-label="Responder options slider">
+                      <div className="relative px-2">
+                        <div className="absolute left-2 right-2 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-muted" aria-hidden />
+                        {reactionOptions.length > 1 && (
+                          <div
+                            className="absolute left-2 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-primary transition-all"
+                            style={{
+                              width: `${Math.max(
+                                0,
+                                Math.min(
+                                  100,
+                                  ((stepSelection ?? 0) / sliderSpan) * 100
+                                )
+                              )}%`
+                            }}
+                            aria-hidden
+                          />
+                        )}
+                        <input
+                          type="range"
+                          min={0}
+                          max={reactionOptions.length - 1}
+                          step={1}
+                          value={stepSelection ?? 0}
+                          onChange={(event) => {
+                            const nextValue = Number(event.target.value)
+                            const option = reactionOptions[nextValue]
+                            if (!option) return
+                            setReactionSelections((previous) => ({
+                              ...previous,
+                              [stepKey]: nextValue
+                            }))
+                            handleOptionSelect(index, option.id)
+                          }}
+                          className="relative z-10 w-full appearance-none bg-transparent focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-transparent [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-transparent [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:shadow [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-background [&::-moz-range-thumb]:shadow"
+                          aria-valuenow={stepSelection ?? 0}
+                          aria-valuemin={0}
+                          aria-valuemax={reactionOptions.length - 1}
+                          aria-valuetext={
+                            reactionOptions[stepSelection ?? 0]?.label ?? ''
+                          }
+                        />
+                        {reactionOptions.map((option, optionIndex) => {
+                          const offsetPercent = (optionIndex / sliderSpan) * 100
+                          const isSelected = stepSelection === optionIndex
+                          const isPlayed = playedForStep.includes(option.id)
+
+                          return (
+                            <button
+                              key={option.id}
+                              type="button"
+                              onClick={() => {
+                                setReactionSelections((previous) => ({
+                                  ...previous,
+                                  [stepKey]: optionIndex
+                                }))
+                                handleOptionSelect(index, option.id)
+                              }}
+                              className={`absolute top-1/2 flex h-12 w-12 -translate-y-1/2 -translate-x-1/2 items-center justify-center rounded-full border text-2xl transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary ${
+                                isSelected
+                                  ? 'bg-primary text-primary-foreground border-primary shadow-lg scale-110'
+                                  : isPlayed
+                                    ? 'bg-primary/10 border-primary text-primary'
+                                    : 'bg-background border-border'
+                              }`}
+                              style={{ left: `calc(${offsetPercent}% + 8px)` }}
+                              aria-label={`${option.label}${isPlayed ? ' (played)' : ''}`}
+                              aria-pressed={isSelected}
+                            >
+                              <span aria-hidden>{option.icon}</span>
+                            </button>
+                          )
+                        })}
+                      </div>
                     </div>
                   </div>
                 )}
