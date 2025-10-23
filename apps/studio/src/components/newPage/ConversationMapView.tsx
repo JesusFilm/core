@@ -295,12 +295,12 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                                 {slide.hasVerseContent && (
                                   <div className="flex justify-start lg:flex-1">
                                     <div className="relative w-full max-w-[500px]">
-                                      <div className="flex items-start justify-between gap-4">
-                                        <div className="text-base leading-relaxed whitespace-pre-line text-foreground flex-1">
+                                      <div className="flex flex-col gap-2">
+                                        <div className="text-base leading-relaxed whitespace-pre-line text-foreground">
                                           {slide.verseText}
                                         </div>
                                         {slide.verseReference && (
-                                          <div className="text-xs font-light text-muted-foreground italic flex-shrink-0">
+                                          <div className="text-xs font-light text-muted-foreground italic">
                                             {slide.verseReference}
                                           </div>
                                         )}
@@ -311,7 +311,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
 
                                 {slide.hasWhy && (
                                   <div className="mt-2 lg:flex-1 lg:flex lg:items-start lg:justify-end">
-                                    <p className="text-xs font-light text-muted-foreground leading-relaxed lg:max-w-[300px]">
+                                    <p className="text-sm font-light text-stone-500 leading-relaxed lg:max-w-[300px]">
                                       <ArrowUp className="inline w-3 h-3 mr-1 mb-0.5" />
                                       {slide.whyText}
                                     </p>

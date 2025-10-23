@@ -2681,7 +2681,7 @@ export default function NewPage() {
                       : 'opacity-100 max-h-100  '
                   }`}>
                     <div className="flex items-start justify-between md:mb-4" data-id="HeroRow">
-                      <blockquote className="text-xl font-semibold md:font-medium text-stone-950 text-balance w-full text-center z-30 animate-bible-quote-appear md:py-12 py-2" data-id="Verse">
+                      <blockquote className="text-xl font-semibold md:font-semibold text-stone-950 text-balance w-full text-center z-30 animate-bible-quote-appear md:py-12 py-2" data-id="Verse">
                         &ldquo;Let your conversation be always{' '}
                         <span className="animate-gradient-wave animate-glow-delay">full&nbsp;of&nbsp;grace,
                         seasoned&nbsp;with&nbsp;salt</span>, so&nbsp;that&nbsp;you&nbsp;may know how to
@@ -2713,7 +2713,7 @@ export default function NewPage() {
                       </Button>
                       <div
                       data-id="HeroTitle"
-                      className="text-2xl text-left relative leading-[1.2] md:leading-1.2 py-4 md:py-6" 
+                      className="text-xl text-left relative  font-semibold leading-[1.2] md:leading-1.2 py-4 md:py-6" 
                       >
                         Share God's grace… <RotatingText
                           onCategoryChange={handleCategoryChange}
