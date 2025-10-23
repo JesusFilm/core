@@ -26,36 +26,36 @@ export function GoogleCreateIntegration(): ReactElement {
 
   const [integrationGoogleCreate] = useMutation(INTEGRATION_GOOGLE_CREATE)
 
-  const computedRedirectUri = useMemo(() => {
+  const staticRedirectUri = useMemo(() => {
     if (typeof window === 'undefined') return undefined
-    const url = new URL(window.location.href)
-    url.search = ''
-    return url.toString()
+    const origin = window.location.origin
+    return `${origin}/api/integrations/google/callback`
   }, [])
 
   const oauthUrl = useMemo(() => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
-    if (clientId == null || computedRedirectUri == null) return undefined
+    if (clientId == null || staticRedirectUri == null) return undefined
+    const state = JSON.stringify({ teamId, returnTo: window.location.pathname })
     const params = new URLSearchParams({
       client_id: clientId,
-      redirect_uri: computedRedirectUri,
+      redirect_uri: staticRedirectUri,
       response_type: 'code',
       scope: 'openid email profile',
       access_type: 'offline',
       include_granted_scopes: 'true',
       prompt: 'consent',
-      state: teamId ?? ''
+      state
     })
     return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
-  }, [computedRedirectUri, teamId])
+  }, [staticRedirectUri, teamId])
 
   useEffect(() => {
     const authCode = router.query.code as string | undefined
-    if (authCode != null && computedRedirectUri != null) {
+    if (authCode != null && staticRedirectUri != null) {
       setCode(authCode)
-      setRedirectUri(computedRedirectUri)
+      setRedirectUri(staticRedirectUri)
     }
-  }, [router.query.code, computedRedirectUri])
+  }, [router.query.code, staticRedirectUri])
 
   useEffect(() => {
     // Auto-submit when code is present

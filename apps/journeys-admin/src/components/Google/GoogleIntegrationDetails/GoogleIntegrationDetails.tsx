@@ -43,28 +43,31 @@ export function GoogleIntegrationDetails(): ReactElement {
   const [integrationGoogleUpdate] = useMutation(INTEGRATION_GOOGLE_UPDATE)
   const [integrationDelete] = useMutation(INTEGRATION_DELETE)
 
-  const computedRedirectUri = useMemo(() => {
+  const staticRedirectUri = useMemo(() => {
     if (typeof window === 'undefined') return undefined
-    const url = new URL(window.location.href)
-    url.search = ''
-    return url.toString()
+    const origin = window.location.origin
+    return `${origin}/api/integrations/google/callback`
   }, [])
 
   const oauthUrl = useMemo(() => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
-    if (clientId == null || computedRedirectUri == null) return undefined
+    if (clientId == null || staticRedirectUri == null) return undefined
+    const state = JSON.stringify({
+      teamId: router.query.teamId as string,
+      returnTo: window.location.pathname
+    })
     const params = new URLSearchParams({
       client_id: clientId,
-      redirect_uri: computedRedirectUri,
+      redirect_uri: staticRedirectUri,
       response_type: 'code',
       scope: 'openid email profile',
       access_type: 'offline',
       include_granted_scopes: 'true',
       prompt: 'consent',
-      state: (router.query.teamId as string) ?? ''
+      state
     })
     return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
-  }, [computedRedirectUri, router.query.teamId])
+  }, [staticRedirectUri, router.query.teamId])
 
   async function handleClick(): Promise<void> {
     try {
@@ -103,6 +106,16 @@ export function GoogleIntegrationDetails(): ReactElement {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    const authCode = router.query.code as string | undefined
+    if (authCode != null && staticRedirectUri != null) {
+      setCode(authCode)
+      setRedirectUri(staticRedirectUri)
+      void handleClick()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.query.code, staticRedirectUri])
 
   async function handleDelete(): Promise<void> {
     try {
