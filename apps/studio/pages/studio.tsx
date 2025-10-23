@@ -68,12 +68,9 @@ export default function StudioLandingPage(): ReactElement {
               <h1 className="text-2xl font-bold tracking-tight">Studio</h1>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/new">Launch Studio</Link>
-              </Button>
               <Button size="sm" asChild>
                 <Link href="/new">
-                  Try It Now
+                  Start
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
               </Button>

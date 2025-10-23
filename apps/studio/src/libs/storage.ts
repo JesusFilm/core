@@ -16,11 +16,6 @@ export interface GeneratedStepContent {
   selectedVideoUrl?: string
 }
 
-export interface ConversationMapScripture {
-  reference: string | null
-  text: string | null
-}
-
 export interface ConversationMapResponseOption {
   id: string
   label: string
@@ -29,15 +24,33 @@ export interface ConversationMapResponseOption {
   guideFollowUps: string[]
 }
 
+export interface ConversationMapFlow {
+  sequence: string[]
+  rationale: string | null
+}
+
+export interface ConversationMapScriptureExample {
+  tone: string
+  message: string
+}
+
+export interface ConversationMapScriptureOption {
+  reference: string | null
+  text: string | null
+  whyItFits: string | null
+  conversationExamples: ConversationMapScriptureExample[]
+}
+
 export interface ConversationMapStep {
   title: string
   purpose: string | null
   guideMessage: string
-  scripture: ConversationMapScripture | null
+  scriptureOptions: ConversationMapScriptureOption[]
   responseOptions: ConversationMapResponseOption[]
 }
 
 export interface ConversationMap {
+  flow: ConversationMapFlow | null
   steps: ConversationMapStep[]
 }
 

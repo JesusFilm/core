@@ -121,7 +121,7 @@ const rotatingItems = [
 
   // Real Life - Rose/Pink/Fuchsia gradient
   {
-    text: 'in a private message to someone in need',
+    text: 'in a private message',
     category: 'Conversations',
     colorClass: 'text-cyan-600'
   },
@@ -223,7 +223,7 @@ const RotatingTextComponent = ({
 
   return (
     <span
-      className={`inline-block animate-text-rotate font-semibold ${colorClass}`}
+      className={`inline-block animate-text-rotate font-semibold text-[80%] md:text-[100%] ${colorClass}`}
       data-highlight-category={category}
     >
       {displayText}
