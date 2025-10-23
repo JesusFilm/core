@@ -128,6 +128,7 @@ describe('CardWrapper', () => {
             objectFit: null,
             image: null,
             mediaVideo: null,
+            subtitleLanguage: null,
             videoId: null,
             videoVariantLanguageId: '529'
           }
@@ -247,6 +248,7 @@ describe('CardWrapper', () => {
             duration: null,
             image: null,
             mediaVideo: null,
+            subtitleLanguage: null,
             videoId: null,
             videoVariantLanguageId: '529'
           }

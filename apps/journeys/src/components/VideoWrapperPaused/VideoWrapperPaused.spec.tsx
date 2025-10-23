@@ -97,7 +97,8 @@ describe('VideoWrapper', () => {
         objectFit: null,
         mediaVideo: null,
         videoId: null,
-        videoVariantLanguageId: '529'
+        videoVariantLanguageId: '529',
+        subtitleLanguage: null
       },
       undefined
     )
@@ -187,7 +188,8 @@ describe('VideoWrapper', () => {
         objectFit: null,
         mediaVideo: null,
         videoId: null,
-        videoVariantLanguageId: '529'
+        videoVariantLanguageId: '529',
+        subtitleLanguage: null
       },
       undefined
     )
