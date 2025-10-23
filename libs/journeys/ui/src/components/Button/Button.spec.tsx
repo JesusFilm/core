@@ -711,6 +711,84 @@ describe('Button', () => {
     })
   })
 
+  it('should create a chatOpenEvent for ChatAction', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+    const action: ButtonFields_action = {
+      __typename: 'ChatAction',
+      parentBlockId: 'button',
+      gtmEventName: 'click',
+      chatUrl: 'https://chat.example.com',
+      customizable: false,
+      parentStepId: 'step.id'
+    }
+
+    const buttonBlock = {
+      ...block,
+      action
+    }
+
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+
+    const result = jest.fn(() => ({
+      data: {
+        chatOpenEventCreate: {
+          __typename: 'ChatOpenEvent',
+          id: 'uuid'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CHAT_OPEN_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  value: undefined
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <Button {...buttonBlock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('chatButtonClick', {
+      u: `${mockOrigin}/journey.id/step.id`,
+      props: {
+        id: 'uuid',
+        blockId: 'button',
+        stepId: 'step.id',
+        value: undefined,
+        key: keyify({
+          stepId: 'step.id',
+          event: 'chatButtonClick',
+          blockId: 'button',
+          target: action
+        }),
+        simpleKey: keyify({
+          stepId: 'step.id',
+          event: 'chatButtonClick',
+          blockId: 'button'
+        })
+      }
+    })
+  })
+
   it('should create a chatOpenEvent onClick for phone action', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
     const mockPlausible = jest.fn()

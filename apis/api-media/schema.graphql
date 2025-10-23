@@ -243,6 +243,7 @@ type Mutation {
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
   videoDelete(id: ID!): Video!
+  fixVideoLanguages(videoId: ID!): Boolean!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
   videoDescriptionUpdate(input: VideoTranslationUpdateInput!): VideoDescription!
   videoDescriptionDelete(id: ID!): VideoDescription!
@@ -627,6 +628,7 @@ type Query {
   videoEdition(id: ID!): VideoEdition
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
+  youtubeClosedCaptionLanguages(videoId: ID!): QueryYoutubeClosedCaptionLanguagesResult!
   arclightApiKeys: [ArclightApiKey!]!
   arclightApiKeyByKey(key: String!): ArclightApiKey
 }
@@ -675,6 +677,12 @@ type QueryShortLinksConnection {
 type QueryShortLinksConnectionEdge {
   node: ShortLink
   cursor: String!
+}
+
+union QueryYoutubeClosedCaptionLanguagesResult = ZodError | Error | QueryYoutubeClosedCaptionLanguagesSuccess
+
+type QueryYoutubeClosedCaptionLanguagesSuccess {
+  data: [Language!]!
 }
 
 enum RedirectType {

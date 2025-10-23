@@ -335,6 +335,7 @@ describe('CustomizationToggle', () => {
       })
     )
   })
+
   it('renders toggle for ChatAction and reflects unchecked state', () => {
     const selectedBlock = {
       id: 'button-6',
@@ -368,6 +369,7 @@ describe('CustomizationToggle', () => {
     })
     expect(toggle).not.toBeChecked()
   })
+
   it('dispatches addAction on ChatAction toggle change', () => {
     const addAction = jest.fn()
     jest
