@@ -113,7 +113,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
             <div className="rounded-3xl border border-primary/20 bg-primary/5 p-6 space-y-4">
               <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-primary font-semibold">
                 <Layers className="h-4 w-4" />
-                Conversation Flow
+                Conversation Path
               </div>
               {flowSequence.length ? (
                 <div className="flex flex-wrap items-center gap-2 text-sm text-primary/90">

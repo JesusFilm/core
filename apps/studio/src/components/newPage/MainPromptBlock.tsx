@@ -147,7 +147,7 @@ export function MainPromptBlock({
         <AutoResizeTextarea
           ref={textareaRef}
           placeholder="Enter your text content here... You can also paste or drop images directly."
-          className={`relative shadow-none resize-none bg-transparent pr-12 pb-16 px-4 border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-base scrollbar-hide min-h-[200px] h-auto overflow-y-hidden ${
+          className={`relative shadow-none resize-none bg-transparent pr-12 pb-16 px-4 border-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none focus-visible:shadow-none overflow-hidden pt-4 text-base scrollbar-hide min-h-[200px] h-auto overflow-y-hidden ${
             animatingTextarea ? 'animate-text-appear' : ''
           }`}
           onPaste={handlePaste}

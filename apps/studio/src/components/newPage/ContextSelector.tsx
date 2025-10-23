@@ -33,7 +33,7 @@ const contextItems: ContextItem[] = [
     shortLabel: 'Talk',
     icon: MessageSquare,
     gradient: 'from-blue-500 via-cyan-600 to-teal-600',
-    selectedBorderColor: 'border-blue-500',
+    selectedBorderColor: 'border-cyan-600',
     highlightedBorderColor: 'border-cyan-600',
     hoverBorderColor: 'hover:border-cyan-600',
     highlightColor: 'text-cyan-600'
@@ -44,7 +44,7 @@ const contextItems: ContextItem[] = [
     shortLabel: 'Social',
     icon: Layers,
     gradient: 'from-purple-500 via-pink-600 to-red-600',
-    selectedBorderColor: 'border-purple-500',
+    selectedBorderColor: 'border-pink-500',
     highlightedBorderColor: 'border-pink-500',
     hoverBorderColor: 'hover:border-pink-500',
     highlightColor: 'text-pink-500'
@@ -120,7 +120,7 @@ export function ContextSelector({
                   ? `bg-gradient-to-br ${item.gradient} ${item.selectedBorderColor}`
                   : isHighlighted
                     ? `bg-transparent ${item.highlightedBorderColor}`
-                    : `bg-transparent border-gray-300 ${
+                    : `bg-transparent border-gray-300/40 ${
                         showHover
                           ? `hover:bg-gradient-to-br hover:${item.gradient} ${item.hoverBorderColor}`
                           : ''
@@ -151,7 +151,7 @@ export function ContextSelector({
               )}
               <span
                 data-id={`Tile-${item.id.replace(' ', '')}-Label`}
-                className={`font-medium text-sm text-center ${
+                className={`font-semibold text-sm text-center ${
                   isSelected
                     ? 'text-white drop-shadow-lg'
                     : isHighlighted

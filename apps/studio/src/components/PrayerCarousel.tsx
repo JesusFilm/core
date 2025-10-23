@@ -266,7 +266,7 @@ export function PrayerCarousel({
 
   return (
     <div
-      className="mt-6 overflow-hidden rounded-3xl border border-amber-200/70 bg-gradient-to-br from-amber-50 via-white to-rose-50 transition-all duration-700 ease-out"
+      className="mt-6 overflow-hidden rounded-3xl transition-all duration-700 ease-out"
       style={{
         maxHeight: isVisible ? 360 : 0,
         opacity: isVisible ? 1 : 0,
@@ -358,7 +358,7 @@ export function PrayerCarousel({
               return (
                 <CarouselItem key={slide.title}>
                   <div
-                    className="flex h-full flex-col justify-center gap-4"
+                    className="flex h-full flex-col justify-top gap-4"
                     aria-hidden={!isCurrent}
                   >
                     <span className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-500/90">
