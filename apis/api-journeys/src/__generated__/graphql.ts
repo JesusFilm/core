@@ -843,6 +843,17 @@ export type IntegrationGoogle = Integration & {
   type: IntegrationType;
 };
 
+export type IntegrationGoogleCreateInput = {
+  code: Scalars['String']['input'];
+  redirectUri: Scalars['String']['input'];
+  teamId: Scalars['String']['input'];
+};
+
+export type IntegrationGoogleUpdateInput = {
+  code: Scalars['String']['input'];
+  redirectUri: Scalars['String']['input'];
+};
+
 export type IntegrationGrowthSpaces = Integration & {
   __typename?: 'IntegrationGrowthSpaces';
   accessId?: Maybe<Scalars['String']['output']>;
@@ -1620,6 +1631,7 @@ export type Mutation = {
   deleteCloudflareImage: Scalars['Boolean']['output'];
   deleteMuxVideo: Scalars['Boolean']['output'];
   enableMuxDownload?: Maybe<MuxVideo>;
+  fixVideoLanguages: Scalars['Boolean']['output'];
   hostCreate: Host;
   hostDelete: Host;
   hostUpdate: Host;
@@ -1628,6 +1640,8 @@ export type Mutation = {
   imageBlockCreate: ImageBlock;
   imageBlockUpdate: ImageBlock;
   integrationDelete: Integration;
+  integrationGoogleCreate: IntegrationGoogle;
+  integrationGoogleUpdate: IntegrationGoogle;
   integrationGrowthSpacesCreate: IntegrationGrowthSpaces;
   integrationGrowthSpacesUpdate: IntegrationGrowthSpaces;
   journeyAiTranslateCreate: Journey;
@@ -2068,6 +2082,11 @@ export type MutationEnableMuxDownloadArgs = {
 };
 
 
+export type MutationFixVideoLanguagesArgs = {
+  videoId: Scalars['ID']['input'];
+};
+
+
 export type MutationHostCreateArgs = {
   input: HostCreateInput;
   teamId: Scalars['ID']['input'];
@@ -2113,6 +2132,17 @@ export type MutationImageBlockUpdateArgs = {
 
 export type MutationIntegrationDeleteArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationIntegrationGoogleCreateArgs = {
+  input: IntegrationGoogleCreateInput;
+};
+
+
+export type MutationIntegrationGoogleUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: IntegrationGoogleUpdateInput;
 };
 
 
