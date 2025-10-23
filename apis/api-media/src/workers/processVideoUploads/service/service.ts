@@ -9,7 +9,7 @@ import { Logger } from 'pino'
 
 import { prisma } from '@core/prisma/media/client'
 
-import { getVideo } from '../../../schema/mux/video/service'
+import { getVideo } from '../../../schema/mux/services'
 import { jobName as processVideoDownloadsNowJobName } from '../../processVideoDownloads/config'
 import { queue as processVideoDownloadsQueue } from '../../processVideoDownloads/queue'
 

@@ -6,7 +6,7 @@ import {
   createDownloadsFromMuxAsset,
   downloadsReadyToStore
 } from '../lib/downloads'
-import { getVideo } from '../schema/mux/video/service'
+import { getVideo } from '../schema/mux/services'
 
 const prisma = new PrismaClient()
 

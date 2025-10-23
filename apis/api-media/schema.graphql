@@ -199,10 +199,10 @@ type Mutation {
   createKeyword(value: String!, languageId: String!): Keyword!
   createMuxVideoAndQueueUpload(videoId: ID!, edition: String!, languageId: ID!, version: Int!, r2PublicUrl: String!, originalFilename: String!, durationMs: Int!, duration: Int!, width: Int!, height: Int!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
-  createMuxGeneratedSubtitlesByAssetId(assetId: ID!, languageCode: String!, name: String!, userGenerated: Boolean): MutationCreateMuxGeneratedSubtitlesByAssetIdResult!
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
+  createMuxGeneratedSubtitlesByAssetId(assetId: ID!, languageCode: String!, name: String!, userGenerated: Boolean): MutationCreateMuxGeneratedSubtitlesByAssetIdResult!
   playlistCreate(input: PlaylistCreateInput!): MutationPlaylistCreateResult
   playlistUpdate(id: ID!, input: PlaylistUpdateInput!): MutationPlaylistUpdateResult
   playlistDelete(id: ID!): MutationPlaylistDeleteResult

@@ -1,5 +1,7 @@
 import Mux from '@mux/mux-node'
 
+import { getClient } from '../services'
+
 import { MaxResolutionTierEnum } from './enums/maxResolutionTierEnum'
 
 // Type guard to safely check if a value is a valid MaxResolutionTierEnum key
@@ -24,32 +26,6 @@ export function getMaxResolutionValue(
     `Invalid maxResolution value: ${maxResolution}. Falling back to 'fhd'.`
   )
   return MaxResolutionTierEnum.fhd
-}
-
-function getClient(userGenerated: boolean): Mux {
-  if (userGenerated) {
-    if (process.env.MUX_UGC_ACCESS_TOKEN_ID == null)
-      throw new Error('Missing MUX_UGC_ACCESS_TOKEN_ID')
-
-    if (process.env.MUX_UGC_SECRET_KEY == null)
-      throw new Error('Missing MUX_UGC_SECRET_KEY')
-
-    return new Mux({
-      tokenId: process.env.MUX_UGC_ACCESS_TOKEN_ID,
-      tokenSecret: process.env.MUX_UGC_SECRET_KEY
-    })
-  }
-
-  if (process.env.MUX_ACCESS_TOKEN_ID == null)
-    throw new Error('Missing MUX_ACCESS_TOKEN_ID')
-
-  if (process.env.MUX_SECRET_KEY == null)
-    throw new Error('Missing MUX_SECRET_KEY')
-
-  return new Mux({
-    tokenId: process.env.MUX_ACCESS_TOKEN_ID,
-    tokenSecret: process.env.MUX_SECRET_KEY
-  })
 }
 
 export async function createVideoByDirectUpload(
@@ -89,34 +65,6 @@ export async function createVideoByDirectUpload(
     id,
     uploadUrl
   }
-}
-
-export async function createGeneratedSubtitlesByAssetId(
-  userGenerated: boolean,
-  assetId: string,
-  languageCode: string,
-  name: string
-): Promise<Mux.Video.AssetGenerateSubtitlesResponse> {
-  const asset = await getVideo(assetId, userGenerated)
-  const track = asset.tracks?.find(
-    (track) => track.type === 'audio' && track.language_code === languageCode
-  )
-  if (track == null || track.id == null)
-    throw new Error('Audio track not found')
-
-  return await getClient(userGenerated).video.assets.generateSubtitles(
-    assetId,
-    track.id,
-    {
-      generated_subtitles: [
-        {
-          language_code:
-            languageCode as Mux.Video.AssetGenerateSubtitlesParams.GeneratedSubtitle['language_code'],
-          name: name
-        }
-      ]
-    }
-  )
 }
 
 export async function createVideoFromUrl(
@@ -162,13 +110,6 @@ export async function createVideoFromUrl(
 //     return null
 //   }
 // }
-
-export async function getVideo(
-  videoId: string,
-  userGenerated: boolean
-): Promise<Mux.Video.Asset> {
-  return await getClient(userGenerated).video.assets.retrieve(videoId)
-}
 
 export async function getUpload(
   uploadId: string,
