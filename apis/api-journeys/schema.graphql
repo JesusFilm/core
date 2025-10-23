@@ -2151,6 +2151,7 @@ type IntegrationGoogle implements Integration
   type: IntegrationType!
   accessId: String!
   accessSecretPart: String!
+  user: User
 }
 
 type IntegrationGrowthSpaces implements Integration

@@ -841,6 +841,7 @@ export type IntegrationGoogle = Integration & {
   id: Scalars['ID']['output'];
   team: Team;
   type: IntegrationType;
+  user?: Maybe<User>;
 };
 
 export type IntegrationGoogleCreateInput = {

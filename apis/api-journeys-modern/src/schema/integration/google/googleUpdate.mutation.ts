@@ -33,6 +33,20 @@ builder.mutationField('integrationGoogleUpdate', (t) =>
         })
       }
 
+      // Only the user who created/owns the integration may update (reconnect)
+      const existing = await prisma.integration.findUnique({
+        where: { id },
+        select: { userId: true }
+      })
+      if (existing == null)
+        throw new GraphQLError('integration not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      if (existing.userId !== userId)
+        throw new GraphQLError('user is not allowed to update integration', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+
       const clientId = process.env.GOOGLE_CLIENT_ID
       const clientSecret = process.env.GOOGLE_CLIENT_SECRET
       if (clientId == null)

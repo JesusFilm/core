@@ -35,6 +35,11 @@ export interface GetIntegration_integrations_IntegrationGoogle_team {
   id: string;
 }
 
+export interface GetIntegration_integrations_IntegrationGoogle_user {
+  __typename: "User";
+  id: string;
+}
+
 export interface GetIntegration_integrations_IntegrationGoogle {
   __typename: "IntegrationGoogle";
   id: string;
@@ -42,6 +47,7 @@ export interface GetIntegration_integrations_IntegrationGoogle {
   type: IntegrationType;
   accessId: string | null;
   accessSecretPart: string | null;
+  user: GetIntegration_integrations_IntegrationGoogle_user | null;
 }
 
 export type GetIntegration_integrations = GetIntegration_integrations_IntegrationGrowthSpaces | GetIntegration_integrations_IntegrationGoogle;

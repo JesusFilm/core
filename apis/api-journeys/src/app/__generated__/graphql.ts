@@ -1728,6 +1728,7 @@ export class IntegrationGoogle implements Integration {
     type: IntegrationType;
     accessId: string;
     accessSecretPart: string;
+    user?: Nullable<User>;
 }
 
 export class IntegrationGrowthSpaces implements Integration {

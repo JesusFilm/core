@@ -2,7 +2,7 @@ import { GraphQLError } from 'graphql'
 
 import { prisma } from '@core/prisma/journeys/client'
 
-import { Action, ability, subject } from '../../lib/auth/ability'
+// no-op
 import { builder } from '../builder'
 
 import { IntegrationRef } from './integration'
@@ -26,15 +26,10 @@ export const IntegrationDelete = builder.mutationField(
           })
 
         const isOwner = integration.userId === context.user?.id
-        const canManageJourney = ability(
-          Action.Manage,
-          subject('Journey', integration.team as any),
-          context.user
-        )
         const isTeamManager = integration.team.userTeams.some(
           (ut) => ut.userId === context.user?.id && ut.role === 'manager'
         )
-        if (!isOwner && !canManageJourney && !isTeamManager) {
+        if (!isOwner && !isTeamManager) {
           throw new GraphQLError('user is not allowed to delete integration', {
             extensions: { code: 'FORBIDDEN' }
           })

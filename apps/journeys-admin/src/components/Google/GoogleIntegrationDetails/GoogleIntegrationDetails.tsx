@@ -7,6 +7,9 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { useIntegrationQuery } from '../../../libs/useIntegrationQuery'
+import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
+import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvitesQuery'
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
 
 export const INTEGRATION_GOOGLE_UPDATE = gql`
   mutation IntegrationGoogleUpdate(
@@ -39,9 +42,39 @@ export function GoogleIntegrationDetails(): ReactElement {
   const { data, loading: integrationLoading } = useIntegrationQuery({
     teamId: router.query.teamId as string
   })
+  const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
+  const { data: teamData } = useUserTeamsAndInvitesQuery(
+    router.query.teamId != null
+      ? {
+          teamId: router.query.teamId as string,
+          where: { role: [UserTeamRole.manager, UserTeamRole.member] }
+        }
+      : undefined
+  )
 
   const [integrationGoogleUpdate] = useMutation(INTEGRATION_GOOGLE_UPDATE)
   const [integrationDelete] = useMutation(INTEGRATION_DELETE)
+  useEffect(() => {
+    void loadUser()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const isOwner = useMemo(() => {
+    const integration = data?.integrations.find((i) => i.id === integrationId)
+    // supports both union variants
+    // @ts-expect-error union narrowing not applied on fragmentless union here
+    const userId: string | undefined = integration?.user?.id
+    return userId != null && userId === currentUser.id
+  }, [data?.integrations, integrationId, currentUser.id])
+
+  const isTeamManager = useMemo(() => {
+    return (
+      teamData?.userTeams.some(
+        (ut) =>
+          ut.user.id === currentUser.id && ut.role === UserTeamRole.manager
+      ) === true
+    )
+  }, [teamData?.userTeams, currentUser.id])
 
   const staticRedirectUri = useMemo(() => {
     if (typeof window === 'undefined') return undefined
@@ -170,12 +203,22 @@ export function GoogleIntegrationDetails(): ReactElement {
         <Button
           variant="outlined"
           href={oauthUrl}
-          disabled={oauthUrl == null || loading || integrationLoading}
+          disabled={
+            oauthUrl == null ||
+            loading ||
+            integrationLoading ||
+            isOwner !== true
+          }
           aria-label={t('Reconnect with Google')}
         >
           {t('Reconnect with Google')}
         </Button>
-        <Button onClick={handleDelete} disabled={loading || integrationLoading}>
+        <Button
+          onClick={handleDelete}
+          disabled={
+            loading || integrationLoading || (!isOwner && !isTeamManager)
+          }
+        >
           {t('Remove')}
         </Button>
       </Stack>

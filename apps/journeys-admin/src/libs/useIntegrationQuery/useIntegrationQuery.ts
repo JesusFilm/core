@@ -28,6 +28,9 @@ export const GET_INTEGRATION = gql`
         accessId
         type
         accessSecretPart
+        user {
+          id
+        }
       }
     }
   }
