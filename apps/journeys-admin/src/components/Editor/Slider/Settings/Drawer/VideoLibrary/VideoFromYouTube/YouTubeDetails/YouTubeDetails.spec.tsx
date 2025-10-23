@@ -123,7 +123,16 @@ describe('YouTubeDetails', () => {
       expect.objectContaining({
         fluid: true,
         controls: true,
-        poster: 'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg'
+        poster: 'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg',
+        errorDisplay: false,
+        enableSmoothSeeking: true,
+        experimentalSvgIcons: true,
+        html5: expect.objectContaining({
+          vhs: expect.any(Object),
+          hls: expect.any(Object),
+          nativeAudioTracks: false,
+          nativeVideoTracks: false
+        })
       })
     )
   })
@@ -213,7 +222,10 @@ describe('YouTubeDetails', () => {
       image: null,
       duration: null,
       objectFit: null,
-      subtitleLanguageId: 'lang2',
+      subtitleLanguage: {
+        __typename: 'Language' as const,
+        id: 'lang2'
+      },
       mediaVideo: null,
       action: null,
       children: []
@@ -246,7 +258,17 @@ describe('YouTubeDetails', () => {
           cc_lang_pref: 'es'
         },
         fluid: true,
-        controls: true
+        controls: true,
+        poster: 'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg',
+        errorDisplay: false,
+        enableSmoothSeeking: true,
+        experimentalSvgIcons: true,
+        html5: expect.objectContaining({
+          vhs: expect.any(Object),
+          hls: expect.any(Object),
+          nativeAudioTracks: false,
+          nativeVideoTracks: false
+        })
       })
     )
   })
@@ -279,7 +301,17 @@ describe('YouTubeDetails', () => {
       expect.any(HTMLVideoElement),
       expect.objectContaining({
         fluid: true,
-        controls: true
+        controls: true,
+        poster: 'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg',
+        errorDisplay: false,
+        enableSmoothSeeking: true,
+        experimentalSvgIcons: true,
+        html5: expect.objectContaining({
+          vhs: expect.any(Object),
+          hls: expect.any(Object),
+          nativeAudioTracks: false,
+          nativeVideoTracks: false
+        })
       })
     )
     expect(mockVideoJs).toHaveBeenCalledWith(
@@ -428,7 +460,10 @@ describe('YouTubeDetails', () => {
       image: null,
       duration: null,
       objectFit: null,
-      subtitleLanguageId: 'lang1',
+      subtitleLanguage: {
+        __typename: 'Language' as const,
+        id: 'lang1'
+      },
       mediaVideo: null,
       action: null,
       children: []
