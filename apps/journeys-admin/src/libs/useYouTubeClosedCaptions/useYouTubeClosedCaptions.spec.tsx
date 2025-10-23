@@ -81,9 +81,7 @@ describe('useYouTubeClosedCaptions', () => {
         }),
       {
         wrapper: ({ children }: { children: ReactElement }) => (
-          <MockedProvider mocks={[]}>
-            {children}
-          </MockedProvider>
+          <MockedProvider mocks={[]}>{children}</MockedProvider>
         )
       }
     )
@@ -105,9 +103,7 @@ describe('useYouTubeClosedCaptions', () => {
         }),
       {
         wrapper: ({ children }: { children: ReactElement }) => (
-          <MockedProvider mocks={[]}>
-            {children}
-          </MockedProvider>
+          <MockedProvider mocks={[]}>{children}</MockedProvider>
         )
       }
     )
@@ -144,9 +140,7 @@ describe('useYouTubeClosedCaptions', () => {
         }),
       {
         wrapper: ({ children }: { children: ReactElement }) => (
-          <MockedProvider mocks={[emptyMock]}>
-            {children}
-          </MockedProvider>
+          <MockedProvider mocks={[emptyMock]}>{children}</MockedProvider>
         )
       }
     )
@@ -210,4 +204,3 @@ describe('useYouTubeClosedCaptions', () => {
     expect(result.current.languages).toEqual(mockLanguages)
   })
 })
-
