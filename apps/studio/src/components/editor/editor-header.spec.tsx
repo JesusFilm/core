@@ -37,12 +37,24 @@ describe('EditorHeader site selector', () => {
 
     expect(toggleButton).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByRole('menu')).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: 'Videos' })).toHaveAttribute(
+    expect(screen.getByRole('menuitem', { name: /Videos/i })).toHaveAttribute(
       'href',
       'https://www.jesusfilm.org/watch'
     )
 
-    fireEvent.click(screen.getByRole('menuitem', { name: 'Videos' }))
+    const studioMenuItem = screen.getByRole('menuitem', { name: /Studio/i })
+    expect(studioMenuItem).toHaveAttribute('aria-current', 'page')
+
+    fireEvent.click(studioMenuItem)
+    expect(defaultProps.onNavigateHome).toHaveBeenCalled()
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+
+    fireEvent.click(toggleButton)
+
+    expect(toggleButton).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('menu')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('menuitem', { name: /Videos/i }))
 
     expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
