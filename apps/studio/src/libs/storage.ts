@@ -45,6 +45,23 @@ export interface ConversationMap {
   steps: ConversationMapStep[]
 }
 
+export interface ConversationStrategyVerse {
+  id: string
+  reference: string | null
+  text: string | null
+  reason: string | null
+}
+
+export interface ConversationStrategy {
+  id: string
+  label: string
+  summary: string | null
+  tone: string | null
+  approach: string | null
+  scriptureThemes: string | null
+  verses: ConversationStrategyVerse[]
+}
+
 export interface UserInputData {
   id: string
   timestamp: number
@@ -53,6 +70,7 @@ export interface UserInputData {
   aiResponse?: string // The enhanced content from OpenAI text processing
   aiSteps?: GeneratedStepContent[]
   conversationMap?: ConversationMap | null
+  conversationStrategies?: ConversationStrategy[]
   imageAnalysisResults: ImageAnalysisResult[]
   tokensUsed?: {
     input: number
