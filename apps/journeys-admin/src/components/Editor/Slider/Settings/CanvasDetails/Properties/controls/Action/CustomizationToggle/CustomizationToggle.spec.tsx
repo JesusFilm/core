@@ -20,6 +20,7 @@ jest.mock('../../../../../../../utils/useActionCommand', () => ({
 describe('CustomizationToggle', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    jest.restoreAllMocks()
   })
 
   it('renders toggle for LinkAction and reflects checked state', () => {
@@ -282,10 +283,6 @@ describe('CustomizationToggle', () => {
   })
 
   it('handles toggle change for PhoneAction', () => {
-    // Clear any previous mock overrides and restore the global mock
-    jest.clearAllMocks()
-    jest.restoreAllMocks()
-
     const selectedBlock = {
       id: 'button-6',
       __typename: 'ButtonBlock',
