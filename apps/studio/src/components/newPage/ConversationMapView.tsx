@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowUp, Book, Bot, Check, Copy, Layers, User } from 'lucide-react'
+import { Book, Bot, Check, Copy, Layers, User } from 'lucide-react'
 import { memo, useCallback, useEffect, useState } from 'react'
 
 import { cn } from '../../libs/cn/cn'
@@ -225,7 +225,6 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                   hasVerseContent: boolean
                   hasWhy: boolean
                   whyText: string
-                  introductionMessage: string
                   verseCopyText: string
                   conversationExamples: { tone?: string; message: string }[]
                 }[]
@@ -277,10 +276,6 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                   return accumulator
                 }
 
-                const introductionMessage = reference
-                  ? `Your situation reminds me of ${reference} from the Bible.`
-                  : 'Your situation reminds me of something from the Bible that might help.'
-
                 const verseCopyText = [verseText, verseReference]
                   .filter(Boolean)
                   .join('\n\n')
@@ -294,7 +289,6 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                   hasVerseContent,
                   hasWhy,
                   whyText,
-                  introductionMessage,
                   verseCopyText,
                   conversationExamples
                 })
@@ -327,6 +321,63 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
               </header>
 
               <div className="space-y-6">
+                <div className="space-y-3">
+                  <div className="flex justify-end">
+                    <div className="relative w-full max-w-[400px] rounded-2xl bg-[#098CFF] text-white shadow-xl group">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute top-2 right-2 gap-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent text-white"
+                        onClick={(event) => {
+                          event.preventDefault()
+                          event.stopPropagation()
+                          void handleCopyMessage(step.guideMessage, `guide-${index}`)
+                        }}
+                        onMouseDown={(event) => event.preventDefault()}
+                        title={
+                          copiedMessageId === `guide-${index}`
+                            ? 'Copied!'
+                            : 'Copy message'
+                        }
+                      >
+                        {copiedMessageId === `guide-${index}` ? (
+                          <Check className="h-3 w-3 text-green-300" />
+                        ) : (
+                          <Copy className="h-3 w-3" />
+                        )}
+                      </Button>
+                      <span
+                        aria-hidden="true"
+                        className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-[#098CFF]"
+                      />
+                      <AutoResizeTextarea
+                        value={
+                          editingMessageId === `guide-${index}`
+                            ? localMessageContent
+                            : step.guideMessage
+                        }
+                        onChange={(event) =>
+                          handleMessageChange(event.target.value)
+                        }
+                        onClick={() =>
+                          handleMessageClick(step.guideMessage, `guide-${index}`)
+                        }
+                        onBlur={handleMessageBlur}
+                        readOnly={editingMessageId !== `guide-${index}`}
+                        className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 px-4 py-3 rounded-2xl"
+                        data-message-id={`guide-${index}`}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-end space-x-2">
+                    <span className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
+                      You
+                    </span>
+                    <User className="w-4 h-4 text-muted-foreground" />
+                  </div>
+                </div>
+
                 {scriptureSlides.length > 0 ? (
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 text-xs uppercase font-semibold tracking-wide text-muted-foreground">
@@ -361,76 +412,52 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                                       : 'border-border'
                                   )}
                                 >
-                                  <div className="space-y-4">
-                                    <div className="flex justify-end">
-                                      <div className="relative w-full max-w-[360px] rounded-2xl bg-[#098CFF] px-4 py-3 text-sm leading-relaxed text-white shadow-xl">
-                                        <span
-                                          aria-hidden="true"
-                                          className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-[#098CFF]"
-                                        />
-                                        <p>{slide.introductionMessage}</p>
-                                      </div>
-                                    </div>
-                                    <div className="flex items-center justify-end gap-2 text-muted-foreground">
-                                      <span className="text-xs uppercase font-semibold tracking-wide">You</span>
-                                      <User className="h-4 w-4" />
-                                    </div>
-
-                                    <div className="flex justify-end">
-                                      <div className="relative w-full max-w-[360px] rounded-2xl bg-[#098CFF] px-4 py-4 text-sm leading-relaxed text-white shadow-xl">
-                                        <span
-                                          aria-hidden="true"
-                                          className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-[#098CFF]"
-                                        />
-                                        <Button
-                                          type="button"
-                                          variant="ghost"
-                                          size="sm"
-                                          className="absolute top-2 right-2 h-6 w-6 gap-1 p-0 opacity-0 transition-opacity hover:bg-transparent text-white focus:opacity-100 focus-visible:ring-0 group-hover/scripture-carousel:opacity-100"
-                                          onClick={(event) => {
-                                            event.preventDefault()
-                                            event.stopPropagation()
-                                            void handleCopyMessage(slide.verseCopyText, `${verseCopyId}-copy`)
-                                          }}
-                                          onMouseDown={(event) => event.preventDefault()}
-                                          title={
-                                            copiedMessageId === `${verseCopyId}-copy`
-                                              ? 'Copied!'
-                                              : 'Copy verse'
-                                          }
-                                        >
-                                          {copiedMessageId === `${verseCopyId}-copy` ? (
-                                            <Check className="h-3 w-3 text-green-300" />
-                                          ) : (
-                                            <Copy className="h-3 w-3" />
-                                          )}
-                                        </Button>
-
-                                        <p className="whitespace-pre-line text-base font-medium leading-relaxed">
-                                          {slide.verseText || slide.verseDisplay}
-                                        </p>
-                                        {slide.verseReference && (
-                                          <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-white/80">
-                                            {slide.verseReference}
-                                          </p>
+                                  <div className="flex justify-end">
+                                    <div className="relative w-full max-w-[360px] rounded-2xl bg-[#098CFF] px-4 py-4 text-sm leading-relaxed text-white shadow-xl">
+                                      <span
+                                        aria-hidden="true"
+                                        className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-[#098CFF]"
+                                      />
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="absolute top-2 right-2 h-6 w-6 gap-1 p-0 opacity-0 transition-opacity hover:bg-transparent text-white focus:opacity-100 focus-visible:ring-0 group-hover/scripture-carousel:opacity-100"
+                                        onClick={(event) => {
+                                          event.preventDefault()
+                                          event.stopPropagation()
+                                          void handleCopyMessage(slide.verseCopyText, `${verseCopyId}-copy`)
+                                        }}
+                                        onMouseDown={(event) => event.preventDefault()}
+                                        title={
+                                          copiedMessageId === `${verseCopyId}-copy`
+                                            ? 'Copied!'
+                                            : 'Copy verse'
+                                        }
+                                      >
+                                        {copiedMessageId === `${verseCopyId}-copy` ? (
+                                          <Check className="h-3 w-3 text-green-300" />
+                                        ) : (
+                                          <Copy className="h-3 w-3" />
                                         )}
-                                      </div>
-                                    </div>
-                                    <div className="flex items-center justify-end gap-2 text-muted-foreground">
-                                      <span className="text-xs uppercase font-semibold tracking-wide">You · Scripture</span>
-                                      <Book className="h-4 w-4" />
-                                    </div>
+                                      </Button>
 
-                                    {slide.hasWhy ? (
-                                      <div className="flex justify-end">
-                                        <p className="max-w-[320px] text-sm leading-relaxed text-muted-foreground">
-                                          <ArrowUp className="inline h-3 w-3 -translate-y-[1px] pr-1 md:hidden" />
-                                          <ArrowLeft className="hidden h-3 w-3 -translate-y-[1px] pr-1 md:inline" />
-                                          {slide.whyText}
+                                      <p className="whitespace-pre-line text-base font-medium leading-relaxed">
+                                        {slide.verseText || slide.verseDisplay}
+                                      </p>
+                                      {slide.verseReference && (
+                                        <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-white/80">
+                                          {slide.verseReference}
                                         </p>
-                                      </div>
-                                    ) : null}
+                                      )}
+                                    </div>
                                   </div>
+
+                                  {slide.hasWhy ? (
+                                    <p className="ml-auto max-w-[320px] text-sm leading-relaxed text-muted-foreground">
+                                      {slide.whyText}
+                                    </p>
+                                  ) : null}
 
                                   <div className="mt-auto flex items-center justify-between gap-2">
                                     {isSelected ? (
@@ -544,63 +571,6 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                       })}
                   </div>
                 )}
-
-                <div className="space-y-3">
-                  <div className="flex justify-end">
-                    <div className="relative w-full max-w-[400px] rounded-2xl bg-[#098CFF] text-white shadow-xl group">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute top-2 right-2 gap-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent text-white"
-                        onClick={(event) => {
-                          event.preventDefault()
-                          event.stopPropagation()
-                          void handleCopyMessage(step.guideMessage, `guide-${index}`)
-                        }}
-                        onMouseDown={(event) => event.preventDefault()}
-                        title={
-                          copiedMessageId === `guide-${index}`
-                            ? 'Copied!'
-                            : 'Copy message'
-                        }
-                      >
-                        {copiedMessageId === `guide-${index}` ? (
-                          <Check className="h-3 w-3 text-green-300" />
-                        ) : (
-                          <Copy className="h-3 w-3" />
-                        )}
-                      </Button>
-                      <span
-                        aria-hidden="true"
-                        className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-[#098CFF]"
-                      />
-                      <AutoResizeTextarea
-                        value={
-                          editingMessageId === `guide-${index}`
-                            ? localMessageContent
-                            : step.guideMessage
-                        }
-                        onChange={(event) =>
-                          handleMessageChange(event.target.value)
-                        }
-                        onClick={() =>
-                          handleMessageClick(step.guideMessage, `guide-${index}`)
-                        }
-                        onBlur={handleMessageBlur}
-                        readOnly={editingMessageId !== `guide-${index}`}
-                        className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 px-4 py-3 rounded-2xl"
-                        data-message-id={`guide-${index}`}
-                      />
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-end space-x-2">
-                    <span className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
-                      You
-                    </span>
-                    <User className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                </div>
 
                 {reactionOptions.length > 0 && (
                   <div className="space-y-4">
