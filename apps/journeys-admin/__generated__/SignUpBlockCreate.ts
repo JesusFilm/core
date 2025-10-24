@@ -50,6 +50,8 @@ export interface SignUpBlockCreate_signUpBlockCreate_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type SignUpBlockCreate_signUpBlockCreate_action = SignUpBlockCreate_signUpBlockCreate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockCreate_action_LinkAction | SignUpBlockCreate_signUpBlockCreate_action_EmailAction | SignUpBlockCreate_signUpBlockCreate_action_ChatAction | SignUpBlockCreate_signUpBlockCreate_action_PhoneAction;
@@ -115,6 +117,8 @@ export interface SignUpBlockCreate_signUpBlockUpdate_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type SignUpBlockCreate_signUpBlockUpdate_action = SignUpBlockCreate_signUpBlockUpdate_action_NavigateToBlockAction | SignUpBlockCreate_signUpBlockUpdate_action_LinkAction | SignUpBlockCreate_signUpBlockUpdate_action_EmailAction | SignUpBlockCreate_signUpBlockUpdate_action_ChatAction | SignUpBlockCreate_signUpBlockUpdate_action_PhoneAction;
