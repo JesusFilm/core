@@ -3,7 +3,7 @@ import {
   type CoreMessage,
   type LanguageModelUsage,
   convertToCoreMessages,
-  generateText
+  streamText
 } from 'ai'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
@@ -94,6 +94,46 @@ const mapUsage = (usage: LanguageModelUsage | undefined) => ({
     usage?.totalTokens ??
     (usage?.promptTokens ?? 0) + (usage?.completionTokens ?? 0)
 })
+
+const MARKDOWN_INSTRUCTION = 'Format every response using Markdown only.'
+
+const enforceMarkdownFormatting = (
+  messages: CoreMessage[] | undefined,
+  prompt: string | undefined
+) => {
+  let updatedMessages = messages
+  let updatedPrompt = prompt
+
+  const hasMarkdownInstruction = messages?.some(message => {
+    if (message.role !== 'system') return false
+    if (typeof message.content === 'string') {
+      return message.content.includes('Markdown')
+    }
+
+    return message.content.some(
+      part => part.type === 'text' && part.text.includes('Markdown')
+    )
+  })
+
+  if (messages != null && !hasMarkdownInstruction) {
+    updatedMessages = [
+      {
+        role: 'system',
+        content: MARKDOWN_INSTRUCTION
+      },
+      ...messages
+    ]
+  } else if (
+    (messages == null || messages.length === 0) &&
+    typeof prompt === 'string' &&
+    prompt.trim() !== '' &&
+    !prompt.includes('Markdown')
+  ) {
+    updatedPrompt = `${prompt}\n\n${MARKDOWN_INSTRUCTION}`
+  }
+
+  return { messages: updatedMessages, prompt: updatedPrompt }
+}
 
 const buildApologistHeaders = (apiKey: string, cacheTtl?: number): Record<string, string> => {
   const headers: Record<string, string> = {
@@ -266,6 +306,10 @@ export default async function handler(
     return
   }
 
+  const markdownEnforced = enforceMarkdownFormatting(messages, prompt)
+  messages = markdownEnforced.messages
+  prompt = markdownEnforced.prompt
+
   // Handle Apologist provider
   if (provider === 'apologist') {
     if (!isString(APOLOGIST_AGENT_DOMAIN) || APOLOGIST_AGENT_DOMAIN.trim() === '') {
@@ -336,7 +380,7 @@ export default async function handler(
   const client = createOpenRouterClient(apiKey)
 
   try {
-    const generationOptions: Parameters<typeof generateText>[0] = {
+    const generationOptions: Parameters<typeof streamText>[0] = {
       model: client.responses(model),
       temperature: isNumber(body.temperature) ? body.temperature : undefined,
       topP: isNumber(body.top_p) ? body.top_p : undefined,
@@ -351,37 +395,40 @@ export default async function handler(
 
     console.log(`[AI Respond] Sending request to OpenRouter - Model: ${model}, Messages: ${messages?.length ?? 0}, Prompt: ${prompt ? 'yes' : 'no'}`)
 
-    const result = await generateText(generationOptions)
+    const result = streamText(generationOptions)
 
-    const responseId = result.response?.id ?? `or-${Date.now()}`
-    const createdAt = result.response?.timestamp ?? new Date()
-    const text = result.text ?? ''
+    result.response
+      .then(metadata => {
+        const usage = mapUsage(metadata.usage)
+        const responseId = metadata.id ?? `or-${Date.now()}`
+        console.log(
+          `[AI Respond] Completed streaming response from OpenRouter - Response ID: ${responseId}, Finish Reason: ${metadata.finishReason}, Usage: ${JSON.stringify(usage)}`
+        )
+      })
+      .catch(error => {
+        console.error('OpenRouter streaming metadata error:', error)
+      })
 
-    console.log(`[AI Respond] Received response from OpenRouter - Response ID: ${responseId}, Finish Reason: ${result.finishReason}, Usage: ${JSON.stringify(mapUsage(result.usage))}`)
+    res.setHeader('Cache-Control', 'no-cache, no-transform')
+    res.setHeader('Connection', 'keep-alive')
+    res.setHeader('X-Accel-Buffering', 'no')
 
-    res.status(200).json({
-      id: responseId,
-      model,
-      created: Math.floor(createdAt.getTime() / 1000),
-      provider: 'openrouter',
-      finish_reason: result.finishReason,
-      warnings: result.warnings ?? [],
-      usage: mapUsage(result.usage),
-      output_text: text,
-      output: [
+    result.pipeDataStreamToResponse(res, {
+      headers: {
+        'Cache-Control': 'no-cache, no-transform',
+        Connection: 'keep-alive'
+      },
+      data: [
         {
-          id: `${responseId}-msg-0`,
-          type: 'message',
-          role: 'assistant',
-          content: [
-            {
-              type: 'output_text',
-              text
-            }
-          ]
+          type: 'response_metadata',
+          provider: 'openrouter',
+          model
         }
-      ]
+      ],
+      getErrorMessage: error =>
+        error instanceof Error ? error.message : 'Unexpected streaming error'
     })
+    return
   } catch (error) {
     console.error('OpenRouter proxy error:', error)
 
