@@ -111,17 +111,6 @@ const CONVERSATION_OUTPUT_FORMAT_INSTRUCTIONS = `Provide the response as JSON wi
               }
             ]
           }
-        ],
-        "responseOptions": [
-          {
-            "id": "kebab-case id for this responder option",
-            "label": "Short label that appears on the response tile (max 4 words)",
-            "icon": "Emoji that represents the responder posture. Use null if unsure.",
-            "responderMessage": "How the responder reacts in 1-2 sentences.",
-            "guideFollowUps": [
-              "Up to three follow-up replies for the guide in the same warm voice, each as its own string."
-            ]
-          }
         ]
       }
     ]
@@ -140,8 +129,7 @@ const CONVERSATION_RESPONSE_GUIDELINES = `Guidelines:
 - Map an ideal path of 6-9 guide-led conversation moves that gently progress toward gospel hope.
 - Summarize the overall movement first with a 'flow' that lists each step's short theme in order and a brief rationale for why this journey helps the responder.
 - Every step must include a guide message, a purpose note (or null), and at least five scriptureOptions. Each scripture option needs the verse text/reference, a note on why it fits/how to migrate the conversation toward it, and multiple tone-tagged conversation examples.
-- Craft 3-5 responseOptions per step that capture common responder postures. Each must include an emoji icon, tile label, responder reaction, and 1-3 guide follow-up replies as separate strings.
-- Maintain warm, pastoral tone across the guide messages, verse explanations, and follow-up replies. Keep each message concise enough to fit in a chat bubble.
+ - Maintain warm, pastoral tone across the guide messages, verse explanations, and conversation examples. Keep each message concise enough to fit in a chat bubble.
 - Do not include design instructions, media prompts, or image keywords in any field.
 - Output valid JSON only.`
 
@@ -149,7 +137,7 @@ const contextSystemPrompts: Record<string, string> = {
   default:
     'Default to producing ministry-ready resources that can flex between digital and in-person sharing when no specific context is selected. Provide balanced guidance that keeps the content adaptable.',
   'Conversations':
-    'Guide one-on-one or small group conversations that gently introduce gospel truths. Return structured JSON for a chat-style conversation map that begins with a flow overview (sequence plus rationale), then lists steps with guide messages, multi-verse scriptureOptions (each with why-it-fits notes and tone-labeled conversation examples), and interactive responder options with follow-up replies. Emphasize listening, questions, prayerful transitions, and Scripture when natural. Avoid design instructions and image keywords in this mode.',
+    'Guide one-on-one or small group conversations that gently introduce gospel truths. Return structured JSON for a chat-style conversation map that begins with a flow overview (sequence plus rationale), then lists steps with guide messages and multi-verse scriptureOptions (each with why-it-fits notes and tone-labeled conversation examples). Emphasize listening, questions, prayerful transitions, and Scripture when natural. Avoid design instructions and image keywords in this mode.',
   'Social Media':
     'Operate like a Canva-style designer for social media campaigns. Treat each step as a templated design idea for stories, carousels, reels, or feed posts. Suggest layout direction, color palettes, typography moods, and short, scroll-stopping copy. Keep platform conventions (vertical ratios, accessibility, alt-text) in mind and tailor media prompts to energetic, template-friendly visuals.',
   Website:
@@ -1185,39 +1173,6 @@ export default function NewPage() {
       return trimmed.length > 0 ? trimmed : null
     }
 
-    const slugify = (value: string, fallback: string): string => {
-      const slug = value
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '')
-
-      return slug || fallback
-    }
-
-    const normalizeFollowUps = (input: any, defaultMessage: string): string[] => {
-      if (Array.isArray(input)) {
-        return input
-          .map(item => ensureString(item))
-          .filter(Boolean)
-          .slice(0, 3)
-      }
-
-      if (typeof input === 'string') {
-        const cleaned = input
-          .split(/\n+/)
-          .map(line => line.trim())
-          .filter(Boolean)
-
-        if (cleaned.length > 0) {
-          return cleaned.slice(0, 3)
-        }
-
-        return defaultMessage ? [defaultMessage] : []
-      }
-
-      return defaultMessage ? [defaultMessage] : []
-    }
-
     const ensureStringArray = (value: any): string[] => {
       if (Array.isArray(value)) {
         return value.map(item => ensureString(item)).filter(Boolean)
@@ -1438,10 +1393,6 @@ export default function NewPage() {
       ? rawData.idealPath
       : []
 
-    const legacyScenarios = Array.isArray(rawData?.responderScenarios)
-      ? rawData.responderScenarios
-      : []
-
     const stepsSource = Array.isArray(rawData?.steps)
       ? rawData.steps
       : legacyIdealPath
@@ -1456,72 +1407,11 @@ export default function NewPage() {
 
         const scriptureOptions = normalizeScriptureOptions(item)
 
-        const responseSource = Array.isArray(item?.responseOptions)
-          ? item.responseOptions
-          : Array.isArray(item?.responses)
-            ? item.responses
-            : []
-
-        let normalizedResponses = responseSource
-          .map((response: any, responseIndex: number) => {
-            const responderMessage = ensureString(
-              response?.responderMessage ?? response?.responderCue ?? response?.response
-            )
-            const label = ensureString(response?.label ?? response?.scenario ?? response?.title)
-            const icon = ensureNullableString(response?.icon)
-            const followUps = normalizeFollowUps(
-              response?.guideFollowUps ?? response?.guideResponses,
-              ensureString(response?.guideResponse)
-            )
-
-            if (!responderMessage && followUps.length === 0) {
-              return null
-            }
-
-            const optionId = ensureString(response?.id)
-
-            return {
-              id: optionId || slugify(label || responderMessage, `step-${index}-option-${responseIndex}`),
-              label: label || `Option ${responseIndex + 1}`,
-              icon: icon ?? null,
-              responderMessage: responderMessage || label,
-              guideFollowUps: followUps
-            }
-          })
-          .filter((option): option is ConversationMap['steps'][number]['responseOptions'][number] => option !== null)
-
-        if (normalizedResponses.length === 0 && legacyScenarios.length > 0 && index === 0) {
-          normalizedResponses = legacyScenarios
-            .map((scenario: any, scenarioIndex: number) => {
-              const responderMessage = ensureString(scenario?.responderMessage)
-              const guideResponse = ensureString(scenario?.guideResponse)
-
-              if (!responderMessage && !guideResponse) return null
-
-              const scenarioLabel = ensureString(scenario?.scenario)
-              const icon = ensureNullableString(scenario?.icon)
-              const followUps = normalizeFollowUps(scenario?.guideFollowUps, guideResponse)
-
-              return {
-                id: slugify(
-                  scenarioLabel || responderMessage,
-                  `step-${index}-legacy-${scenarioIndex}`
-                ),
-                label: scenarioLabel || `Scenario ${scenarioIndex + 1}`,
-                icon: icon ?? null,
-                responderMessage: responderMessage || scenarioLabel,
-                guideFollowUps: followUps
-              }
-            })
-            .filter((option): option is ConversationMap['steps'][number]['responseOptions'][number] => option !== null)
-        }
-
         return {
           title: title || `Step ${index + 1}`,
           purpose,
           guideMessage,
-          scriptureOptions,
-          responseOptions: normalizedResponses
+          scriptureOptions
         }
       })
       .filter((item): item is ConversationMap['steps'][number] => item !== null)

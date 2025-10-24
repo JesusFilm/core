@@ -1,7 +1,7 @@
-import { ArrowLeft, ArrowUp, Book, Bot, Check, Copy, Layers, User, X } from 'lucide-react'
+import { ArrowLeft, ArrowUp, Book, Check, Copy, Layers, User, X } from 'lucide-react'
 import { memo, useCallback, useEffect, useState } from 'react'
 
-import type { ConversationMap, ConversationMapResponseOption } from '../../libs/storage'
+import type { ConversationMap } from '../../libs/storage'
 import { Button } from '../ui/button'
 
 import { AutoResizeTextarea } from '@/components/ui/textarea'
@@ -10,106 +10,18 @@ export type ConversationMapViewProps = {
   map: ConversationMap
 }
 
-type ReactionPreset = {
-  idSuffix: string
-  icon: string
-  label: string
-  fallbackMessage: string
-}
-
-const PREDEFINED_RESPONSE_REACTIONS: ReactionPreset[] = [
-  {
-    idSuffix: 'feeling-hurt',
-    icon: '😡',
-    label: 'Feeling hurt',
-    fallbackMessage: "This really upsets me. I don't think I can accept this."
-  },
-  {
-    idSuffix: 'uneasy',
-    icon: '🫤',
-    label: 'Uneasy',
-    fallbackMessage: "I'm not convinced this is the right direction."
-  },
-  {
-    idSuffix: 'processing',
-    icon: '😐',
-    label: 'Processing',
-    fallbackMessage: "Okay... I'm hearing you, I'm just not sure what to do with this yet."
-  },
-  {
-    idSuffix: 'curious',
-    icon: '😏',
-    label: 'Curious',
-    fallbackMessage: "Huh, that's interesting. Maybe there's more here for me to explore."
-  },
-  {
-    idSuffix: 'encouraged',
-    icon: '🙂',
-    label: 'Encouraged',
-    fallbackMessage: 'Thanks—that actually gives me some hope.'
-  }
-]
-
-const sanitizeString = (value: unknown): string =>
-  typeof value === 'string' ? value.trim() : ''
-
-const buildReactionOptions = (
-  step: ConversationMap['steps'][number],
-  stepKey: string
-): ConversationMapResponseOption[] => {
-  return PREDEFINED_RESPONSE_REACTIONS.map((reaction, reactionIndex) => {
-    const sourceOption = step.responseOptions?.[reactionIndex]
-
-    const responderMessage =
-      sanitizeString(sourceOption?.responderMessage) ||
-      sanitizeString(sourceOption?.label) ||
-      reaction.fallbackMessage
-
-    const guideFollowUps = (sourceOption?.guideFollowUps ?? [])
-      .map((followUp) => sanitizeString(followUp))
-      .filter((followUp): followUp is string => followUp.length > 0)
-
-    return {
-      id: `${stepKey}-${reaction.idSuffix}`,
-      label: reaction.label,
-      icon: reaction.icon,
-      responderMessage,
-      guideFollowUps
-    }
-  })
-}
-
 export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
-  const [playedOptions, setPlayedOptions] = useState<Record<string, string[]>>({})
-  const [reactionSelections, setReactionSelections] = useState<Record<string, number | null>>({})
   const [selectedScriptureOption, setSelectedScriptureOption] = useState<string | null>(null)
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null)
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [localMessageContent, setLocalMessageContent] = useState<string>('')
 
   useEffect(() => {
-    setPlayedOptions({})
-    setReactionSelections({})
     setSelectedScriptureOption(null)
     setCopiedMessageId(null)
     setEditingMessageId(null)
     setLocalMessageContent('')
   }, [map])
-
-  const handleOptionSelect = useCallback((stepIndex: number, optionId: string) => {
-    setPlayedOptions((previous) => {
-      const stepKey = `step-${stepIndex}`
-      const existing = previous[stepKey] ?? []
-      if (existing.includes(optionId)) {
-        return previous
-      }
-
-      return {
-        ...previous,
-        [stepKey]: [...existing, optionId]
-      }
-    })
-  }, [])
 
   const handleScriptureSelect = useCallback((verseId: string | null) => {
     setSelectedScriptureOption(verseId)
@@ -207,11 +119,6 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
         )}
 
         {map.steps.map((step, index) => {
-          const stepKey = `step-${index}`
-          const playedForStep = playedOptions[stepKey] ?? []
-          const stepSelection = reactionSelections[stepKey] ?? null
-          const reactionOptions = buildReactionOptions(step, stepKey)
-          const sliderSpan = Math.max(reactionOptions.length - 1, 1)
           const scriptureSlides = Array.isArray(step.scriptureOptions)
             ? step.scriptureOptions.reduce<
                 {
@@ -543,203 +450,6 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                   </div>
                 </div>
 
-                {reactionOptions.length > 0 && (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        Common responses
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        Drag or tap a reaction to preview a reply
-                      </span>
-                    </div>
-
-                    <div className="space-y-6" aria-label="Responder options slider">
-                      <div className="relative px-2">
-                        <div className="absolute left-2 right-2 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-muted" aria-hidden />
-                        {reactionOptions.length > 1 && (
-                          <div
-                            className="absolute left-2 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-primary transition-all"
-                            style={{
-                              width: `${Math.max(
-                                0,
-                                Math.min(
-                                  100,
-                                  ((stepSelection ?? 0) / sliderSpan) * 100
-                                )
-                              )}%`
-                            }}
-                            aria-hidden
-                          />
-                        )}
-                        <input
-                          type="range"
-                          min={0}
-                          max={reactionOptions.length - 1}
-                          step={1}
-                          value={stepSelection ?? 0}
-                          onChange={(event) => {
-                            const nextValue = Number(event.target.value)
-                            const option = reactionOptions[nextValue]
-                            if (!option) return
-                            setReactionSelections((previous) => ({
-                              ...previous,
-                              [stepKey]: nextValue
-                            }))
-                            handleOptionSelect(index, option.id)
-                          }}
-                          className="relative z-10 w-full appearance-none bg-transparent focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-transparent [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-transparent [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:shadow [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-background [&::-moz-range-thumb]:shadow"
-                          aria-valuenow={stepSelection ?? 0}
-                          aria-valuemin={0}
-                          aria-valuemax={reactionOptions.length - 1}
-                          aria-valuetext={
-                            reactionOptions[stepSelection ?? 0]?.label ?? ''
-                          }
-                        />
-                        {reactionOptions.map((option, optionIndex) => {
-                          const offsetPercent = (optionIndex / sliderSpan) * 100
-                          const isSelected = stepSelection === optionIndex
-                          const isPlayed = playedForStep.includes(option.id)
-
-                          return (
-                            <button
-                              key={option.id}
-                              type="button"
-                              onClick={() => {
-                                setReactionSelections((previous) => ({
-                                  ...previous,
-                                  [stepKey]: optionIndex
-                                }))
-                                handleOptionSelect(index, option.id)
-                              }}
-                              className={`absolute top-1/2 flex h-12 w-12 -translate-y-1/2 -translate-x-1/2 items-center justify-center rounded-full border text-2xl transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary ${
-                                isSelected
-                                  ? 'bg-primary text-primary-foreground border-primary shadow-lg scale-110'
-                                  : isPlayed
-                                    ? 'bg-primary/10 border-primary text-primary'
-                                    : 'bg-background border-border'
-                              }`}
-                              style={{ left: `calc(${offsetPercent}% + 8px)` }}
-                              aria-label={`${option.label}${isPlayed ? ' (played)' : ''}`}
-                              aria-pressed={isSelected}
-                            >
-                              <span aria-hidden>{option.icon}</span>
-                            </button>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {playedForStep.length > 0 && (
-                  <div className="space-y-6" aria-live="polite">
-                    {playedForStep.map((optionId) => {
-                        const option = reactionOptions.find(
-                          (item) => item.id === optionId
-                        )
-                        if (!option) return null
-
-                      return (
-                        <div key={option.id} className="space-y-3">
-                          <div className="space-y-3">
-                            <div className="flex justify-start">
-                              <div className="relative w-1/2 rounded-2xl bg-white text-foreground px-4 py-3 shadow-xl">
-                                <span
-                                  aria-hidden="true"
-                                  className="absolute left-3 -bottom-1 h-3 w-3 rotate-45 bg-white"
-                                />
-                                <p className="text-sm leading-relaxed whitespace-pre-line">
-                                  {option.responderMessage}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Bot className="w-4 h-4 text-muted-foreground" />
-                              <span className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
-                                Chatmate
-                              </span>
-                            </div>
-                          </div>
-
-                          {option.guideFollowUps.map((followUp, followUpIndex) => (
-                            <div
-                              key={`${option.id}-follow-${followUpIndex}`}
-                              className="space-y-3"
-                            >
-                              <div className="flex justify-end">
-                                <div className="relative w-1/2 rounded-2xl bg-[#098CFF] text-white shadow-xl group">
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="absolute top-2 right-2 gap-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent"
-                                    onClick={(event) => {
-                                      event.preventDefault()
-                                      event.stopPropagation()
-                                      void handleCopyMessage(
-                                        followUp,
-                                        `followup-${option.id}-${followUpIndex}`
-                                      )
-                                    }}
-                                    onMouseDown={(event) => event.preventDefault()}
-                                    title={
-                                      copiedMessageId ===
-                                      `followup-${option.id}-${followUpIndex}`
-                                        ? 'Copied!'
-                                        : 'Copy message'
-                                    }
-                                  >
-                                    {copiedMessageId ===
-                                    `followup-${option.id}-${followUpIndex}` ? (
-                                      <Check className="h-3 w-3 text-green-300" />
-                                    ) : (
-                                      <Copy className="h-3 w-3" />
-                                    )}
-                                  </Button>
-                                  <span
-                                    aria-hidden="true"
-                                    className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-[#098CFF]"
-                                  />
-                                  <AutoResizeTextarea
-                                    value={
-                                      editingMessageId ===
-                                      `followup-${option.id}-${followUpIndex}`
-                                        ? localMessageContent
-                                        : followUp
-                                    }
-                                    onChange={(event) =>
-                                      handleMessageChange(event.target.value)
-                                    }
-                                    onClick={() =>
-                                      handleMessageClick(
-                                        followUp,
-                                        `followup-${option.id}-${followUpIndex}`
-                                      )
-                                    }
-                                    onBlur={handleMessageBlur}
-                                    readOnly={
-                                      editingMessageId !==
-                                      `followup-${option.id}-${followUpIndex}`
-                                    }
-                                    className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 px-4 py-3 rounded-2xl"
-                                    data-message-id={`followup-${option.id}-${followUpIndex}`}
-                                  />
-                                </div>
-                              </div>
-                              <div className="flex items-center justify-end space-x-2">
-                                <span className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
-                                  You
-                                </span>
-                                <User className="w-4 h-4 text-muted-foreground" />
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
               </div>
             </section>
           )

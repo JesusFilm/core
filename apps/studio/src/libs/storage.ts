@@ -16,14 +16,6 @@ export interface GeneratedStepContent {
   selectedVideoUrl?: string
 }
 
-export interface ConversationMapResponseOption {
-  id: string
-  label: string
-  icon: string | null
-  responderMessage: string
-  guideFollowUps: string[]
-}
-
 export interface ConversationMapFlow {
   sequence: string[]
   rationale: string | null
@@ -46,7 +38,6 @@ export interface ConversationMapStep {
   purpose: string | null
   guideMessage: string
   scriptureOptions: ConversationMapScriptureOption[]
-  responseOptions: ConversationMapResponseOption[]
 }
 
 export interface ConversationMap {
