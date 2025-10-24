@@ -6,7 +6,8 @@ const config: Config = {
     'swiper/react': '<rootDir>/../__mocks__/swiper/react',
     'swiper/modules': '<rootDir>/../__mocks__/swiper/modules',
     'swiper/css': '<rootDir>/../__mocks__/swiper/css',
-    'swiper/css/*': '<rootDir>/../__mocks__/swiper/css'
+    'swiper/css/*': '<rootDir>/../__mocks__/swiper/css',
+    'styled-jsx/style': '<rootDir>/../__mocks__/styled-jsx/style'
   },
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',

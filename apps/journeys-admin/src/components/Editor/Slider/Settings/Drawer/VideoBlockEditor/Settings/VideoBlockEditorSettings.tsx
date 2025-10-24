@@ -11,7 +11,7 @@ import { FormikValues, useFormik } from 'formik'
 import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -32,8 +32,15 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
+import {
+  type YouTubeLanguage,
+  useYouTubeClosedCaptions
+} from '../../../../../../../libs/useYouTubeClosedCaptions'
 
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
+import { SubtitleSelector } from './SubtitleSelector'
+
+export type { YouTubeLanguage }
 
 interface Values extends FormikValues {
   autoplay: boolean
@@ -41,6 +48,7 @@ interface Values extends FormikValues {
   startAt: string
   endAt: string
   objectFit: ObjectFit
+  subtitleLanguageId: string | null
 }
 
 interface VideoBlockEditorSettingsProps {
@@ -56,12 +64,20 @@ export function VideoBlockEditorSettings({
 }: VideoBlockEditorSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
+
+  // Fetch closed captions using custom hook
+  const { languages: availableSubtitles } = useYouTubeClosedCaptions({
+    videoId: selectedBlock?.videoId,
+    enabled: selectedBlock?.source === VideoBlockSource.youTube
+  })
+
   const initialValues: Values = {
     autoplay: selectedBlock?.autoplay ?? true,
     muted: selectedBlock?.muted ?? true,
     startAt: secondsToTimeFormat(selectedBlock?.startAt ?? 0),
     endAt: secondsToTimeFormat(selectedBlock?.endAt ?? 0),
-    objectFit: selectedBlock?.objectFit ?? ObjectFit.fill
+    objectFit: selectedBlock?.objectFit ?? ObjectFit.fill,
+    subtitleLanguageId: selectedBlock?.subtitleLanguage?.id ?? null
   }
   const { values, errors, handleChange, setFieldValue } = useFormik<Values>({
     initialValues,
@@ -105,8 +121,9 @@ export function VideoBlockEditorSettings({
           preventDuplicate: true
         })
       } else {
+        const { subtitleLanguageId, ...videoBlockValues } = values
         await onChange({
-          ...values,
+          ...videoBlockValues,
           startAt: convertedStartAt,
           endAt: convertedEndAt
         })
@@ -116,9 +133,61 @@ export function VideoBlockEditorSettings({
     onSubmit: noop
   })
 
+  // Clear subtitle when video changes (covers both source changes and video changes)
+  const prevVideoIdRef = useRef(selectedBlock?.videoId)
+
+  useEffect(() => {
+    const currentVideoId = selectedBlock?.videoId
+    const prevVideoId = prevVideoIdRef.current
+
+    // Check if videoId changed (covers both source changes and video changes)
+    const isChangingVideo =
+      prevVideoId != null &&
+      currentVideoId != null &&
+      prevVideoId !== currentVideoId
+
+    if (isChangingVideo) {
+      void setFieldValue('subtitleLanguageId', null)
+      void onChange({ subtitleLanguageId: null })
+    }
+
+    prevVideoIdRef.current = currentVideoId
+  }, [selectedBlock?.videoId, onChange, setFieldValue])
+
   return (
-    <Box sx={{ px: 4, width: '100%' }} data-testid="VideoBlockEditorSettings">
+    <Box
+      sx={{ px: 4, pt: 2, width: '100%' }}
+      data-testid="VideoBlockEditorSettings"
+    >
       <Stack direction="column" spacing={6}>
+        {/* Subtitles */}
+        {/* Only show subtitles for YouTube source, MUX and Internal not yet supported*/}
+        {selectedBlock?.source === VideoBlockSource.youTube && (
+          <Stack direction="column" spacing={4}>
+            <Typography
+              variant="subtitle2"
+              sx={{
+                color: selectedBlock == null ? 'action.disabled' : undefined
+              }}
+            >
+              {t('Subtitles')}
+            </Typography>
+            <SubtitleSelector
+              selectedSubtitleId={values.subtitleLanguageId}
+              availableLanguages={availableSubtitles}
+              onChange={async (subtitleLanguageId) => {
+                await setFieldValue('subtitleLanguageId', subtitleLanguageId)
+                await onChange({
+                  subtitleLanguageId
+                })
+              }}
+              disabled={selectedBlock == null}
+            />
+            <Divider />
+          </Stack>
+        )}
+
+        {/* Timing */}
         <Stack direction="column" spacing={2}>
           <Typography
             variant="subtitle2"
@@ -175,6 +244,8 @@ export function VideoBlockEditorSettings({
             />
           </Stack>
         </Stack>
+
+        {/* Aspect ratio */}
         <Stack direction="column" spacing={2}>
           <Stack>
             <Typography
@@ -240,6 +311,8 @@ export function VideoBlockEditorSettings({
             </ToggleButton>
           </ToggleButtonGroup>
         </Stack>
+
+        {/* Autoplay */}
         <Stack direction="column" spacing={4}>
           <Stack direction="row" justifyContent="space-between">
             <Stack direction="column">

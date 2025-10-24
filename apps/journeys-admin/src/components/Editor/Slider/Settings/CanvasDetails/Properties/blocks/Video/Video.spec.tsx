@@ -31,6 +31,7 @@ describe('Video', () => {
     duration: null,
     image: null,
     objectFit: null,
+    subtitleLanguage: null,
     mediaVideo: {
       __typename: 'Video',
       id: '2_0-FallingPlates',

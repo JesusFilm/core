@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { Meta, StoryObj } from '@storybook/react'
 import { SWRConfig } from 'swr'
 
@@ -21,9 +22,11 @@ const YouTubeDetailsStory: Meta<typeof YouTubeDetails> = {
 const Template: StoryObj<typeof YouTubeDetails> = {
   render: ({ id, onSelect }) => {
     return (
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <YouTubeDetails id={id} open onSelect={onSelect} />
-      </SWRConfig>
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails id={id} open onSelect={onSelect} />
+        </SWRConfig>
+      </MockedProvider>
     )
   }
 }
