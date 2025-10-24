@@ -1729,6 +1729,7 @@ export class IntegrationGoogle implements Integration {
     accessId: string;
     accessSecretPart: string;
     user?: Nullable<User>;
+    accountEmail?: Nullable<string>;
 }
 
 export class IntegrationGrowthSpaces implements Integration {

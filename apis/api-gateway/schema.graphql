@@ -1772,6 +1772,7 @@ type IntegrationGoogle implements Integration @join__type(graph: API_JOURNEYS)  
   accessId: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
   accessSecretPart: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
   user: User
+  accountEmail: String
 }
 
 type IntegrationGrowthSpaces implements Integration @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Integration")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Integration")  {

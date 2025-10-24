@@ -5,4 +5,5 @@ type IntegrationGoogle implements Integration @shareable {
   accessId: String!
   accessSecretPart: String!
   user: User
+  accountEmail: String
 }

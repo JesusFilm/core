@@ -15,6 +15,10 @@ interface GoogleTokenResponse {
   scope: string
   token_type: string
 }
+interface GoogleUserInfoResponse {
+  email?: string
+  email_verified?: boolean
+}
 
 builder.mutationField('integrationGoogleCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
@@ -40,6 +44,7 @@ builder.mutationField('integrationGoogleCreate', (t) =>
         throw new GraphQLError('GOOGLE_CLIENT_SECRET not configured')
 
       let accessToken: string
+      let accountEmail: string | undefined
       try {
         const params = new URLSearchParams({
           code,
@@ -54,6 +59,12 @@ builder.mutationField('integrationGoogleCreate', (t) =>
           { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
         )
         accessToken = res.data.access_token
+        // fetch userinfo to get account email
+        const userInfo = await axios.get<GoogleUserInfoResponse>(
+          'https://openidconnect.googleapis.com/v1/userinfo',
+          { headers: { Authorization: `Bearer ${accessToken}` } }
+        )
+        accountEmail = userInfo.data.email
       } catch (e) {
         const message = e instanceof Error ? e.message : 'OAuth exchange failed'
         throw new GraphQLError(message, {
@@ -75,7 +86,8 @@ builder.mutationField('integrationGoogleCreate', (t) =>
           accessSecretPart: accessToken.slice(0, 6),
           accessSecretCipherText: ciphertext,
           accessSecretIv: iv,
-          accessSecretTag: tag
+          accessSecretTag: tag,
+          accountEmail
         }
       })
     }

@@ -633,6 +633,7 @@ type IntegrationGoogle implements Integration
   team: Team!
   accessId: String
   accessSecretPart: String
+  accountEmail: String
   user: User
 }
 

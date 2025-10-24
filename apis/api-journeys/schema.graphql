@@ -2152,6 +2152,7 @@ type IntegrationGoogle implements Integration
   accessId: String!
   accessSecretPart: String!
   user: User
+  accountEmail: String
 }
 
 type IntegrationGrowthSpaces implements Integration

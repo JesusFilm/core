@@ -40,7 +40,18 @@ export function TeamIntegrations(): ReactElement {
                 url={`/teams/${teamId}/integrations/${integration.id}`}
                 type={integration.type}
                 titleOverride={
-                  integration.type === 'google' ? 'Google' : undefined
+                  integration.type === 'google'
+                    ? `Google${(() => {
+                        // accountEmail is only on IntegrationGoogle
+                        // @ts-expect-error union type does not include accountEmail in all variants
+                        const email = integration.accountEmail as
+                          | string
+                          | undefined
+                        return email != null && email.length > 0
+                          ? ` (${email})`
+                          : ''
+                      })()}`
+                    : undefined
                 }
                 iconOverride={
                   integration.type === 'google' ? (

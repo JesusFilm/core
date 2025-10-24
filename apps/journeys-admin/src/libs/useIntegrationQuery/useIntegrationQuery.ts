@@ -31,6 +31,7 @@ export const GET_INTEGRATION = gql`
         user {
           id
         }
+        accountEmail
       }
     }
   }

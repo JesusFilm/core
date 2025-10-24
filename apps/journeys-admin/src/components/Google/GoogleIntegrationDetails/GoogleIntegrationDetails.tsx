@@ -7,6 +7,7 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { useIntegrationQuery } from '../../../libs/useIntegrationQuery'
+import { GET_INTEGRATION } from '../../../libs/useIntegrationQuery'
 import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvitesQuery'
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
@@ -156,7 +157,14 @@ export function GoogleIntegrationDetails(): ReactElement {
       const { data } = await integrationDelete({
         variables: {
           id: integrationId
-        }
+        },
+        refetchQueries: [
+          {
+            query: GET_INTEGRATION,
+            variables: { teamId: router.query.teamId as string }
+          }
+        ],
+        awaitRefetchQueries: true
       })
       if (data?.integrationDelete?.id != null) {
         await router.push(
@@ -199,6 +207,19 @@ export function GoogleIntegrationDetails(): ReactElement {
 
   return (
     <Stack gap={4}>
+      <Stack>
+        {data?.integrations
+          .filter((i) => i.id === integrationId)
+          .map((i) => (
+            <Stack key={i.id} direction="row" justifyContent="space-between">
+              <span>{t('Connected Google Account')}</span>
+              {
+                // @ts-expect-error union narrowing not applied
+                i.accountEmail ?? t('Unknown')
+              }
+            </Stack>
+          ))}
+      </Stack>
       <Stack direction="row" justifyContent="flex-end">
         <Button
           variant="outlined"

@@ -270,6 +270,7 @@ model Integration {
   accessSecretCipherText String?
   accessSecretIv         String?
   accessSecretTag        String?
+  accountEmail           String?
   team                   Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@index([teamId])
