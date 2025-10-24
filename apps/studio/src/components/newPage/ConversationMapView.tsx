@@ -1,8 +1,6 @@
 import { ArrowLeft, ArrowUp, Book, Bot, Check, Copy, Layers, User, X } from 'lucide-react'
 import { memo, useCallback, useEffect, useState } from 'react'
 
-import { ArrowUp, Book, Bot, Check, Copy, Layers, User, X } from 'lucide-react'
-
 import type { ConversationMap, ConversationMapResponseOption } from '../../libs/storage'
 import { Button } from '../ui/button'
 
