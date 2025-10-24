@@ -1,0 +1,23 @@
+name = "nextstep-redirects-dev"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+main = "src/index.ts"
+
+[env.prod]
+name = "nextstep-redirects-prod"
+logpush = true
+routes = [
+  { pattern = "nextstep.is/Msuwr3Wc", zone_name = "nextstep.is" },
+  { pattern = "www.nextstep.is/Msuwr3Wc", zone_name = "nextstep.is" },
+  { pattern = "nextstep.is/o0RLCcG9", zone_name = "nextstep.is" },
+  { pattern = "www.nextstep.is/o0RLCcG9", zone_name = "nextstep.is" },
+  { pattern = "nextstep.is/6mHO59sg", zone_name = "nextstep.is" },
+  { pattern = "www.nextstep.is/6mHO59sg", zone_name = "nextstep.is" },
+  { pattern = "nextstep.is/VPqoF2zc", zone_name = "nextstep.is" },
+  { pattern = "www.nextstep.is/VPqoF2zc", zone_name = "nextstep.is" }
+]
+
+[env.prod.observability.logs]
+enabled = true
+
+

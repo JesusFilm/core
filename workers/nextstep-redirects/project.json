@@ -1,0 +1,28 @@
+{
+  "name": "nextstep-redirects",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "workers/nextstep-redirects/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@naxodev/nx-cloudflare:serve",
+      "options": {
+        "port": 8787
+      }
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "../../coverage/workers/nextstep-redirects",
+        "config": "workers/nextstep-redirects/vite.config.ts",
+        "configFile": "workers/nextstep-redirects/vitest.config.ts"
+      }
+    },
+    "deploy": {
+      "executor": "@naxodev/nx-cloudflare:deploy",
+      "options": { "env": "prod" }
+    }
+  }
+}
