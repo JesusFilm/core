@@ -1,10 +1,9 @@
 import { ArrowLeft, ArrowUp, Book, Bot, Check, Copy, Layers, User, X } from 'lucide-react'
 import { memo, useCallback, useEffect, useState } from 'react'
 
-import { ArrowUp, Book, Bot, Check, Copy, Layers, User, X } from 'lucide-react'
-
 import type { ConversationMap, ConversationMapResponseOption } from '../../libs/storage'
 import { Button } from '../ui/button'
+import { Slider } from '../ui/slider'
 
 import { AutoResizeTextarea } from '@/components/ui/textarea'
 
@@ -213,7 +212,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
           const playedForStep = playedOptions[stepKey] ?? []
           const stepSelection = reactionSelections[stepKey] ?? null
           const reactionOptions = buildReactionOptions(step, stepKey)
-          const sliderSpan = Math.max(reactionOptions.length - 1, 1)
+          const sliderMax = Math.max(reactionOptions.length - 1, 0)
           const scriptureSlides = Array.isArray(step.scriptureOptions)
             ? step.scriptureOptions.reduce<
                 {
@@ -557,31 +556,45 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                     </div>
 
                     <div className="space-y-6" aria-label="Responder options slider">
-                      <div className="relative px-2">
-                        <div className="absolute left-2 right-2 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-muted" aria-hidden />
-                        {reactionOptions.length > 1 && (
-                          <div
-                            className="absolute left-2 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-primary transition-all"
-                            style={{
-                              width: `${Math.max(
-                                0,
-                                Math.min(
-                                  100,
-                                  ((stepSelection ?? 0) / sliderSpan) * 100
-                                )
-                              )}%`
-                            }}
-                            aria-hidden
-                          />
-                        )}
-                        <input
-                          type="range"
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between gap-3 px-2">
+                          {reactionOptions.map((option, optionIndex) => {
+                            const isSelected = stepSelection === optionIndex
+                            const isPlayed = playedForStep.includes(option.id)
+
+                            return (
+                              <button
+                                key={option.id}
+                                type="button"
+                                onClick={() => {
+                                  setReactionSelections((previous) => ({
+                                    ...previous,
+                                    [stepKey]: optionIndex
+                                  }))
+                                  handleOptionSelect(index, option.id)
+                                }}
+                                className={`flex h-12 w-12 items-center justify-center rounded-full border text-2xl transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary ${
+                                  isSelected
+                                    ? 'bg-primary text-primary-foreground border-primary shadow-lg scale-110'
+                                    : isPlayed
+                                      ? 'bg-primary/10 border-primary text-primary'
+                                      : 'bg-background border-border'
+                                }`}
+                                aria-label={`${option.label}${isPlayed ? ' (played)' : ''}`}
+                                aria-pressed={isSelected}
+                              >
+                                <span aria-hidden>{option.icon}</span>
+                              </button>
+                            )
+                          })}
+                        </div>
+                        <Slider
                           min={0}
-                          max={reactionOptions.length - 1}
+                          max={sliderMax}
                           step={1}
-                          value={stepSelection ?? 0}
-                          onChange={(event) => {
-                            const nextValue = Number(event.target.value)
+                          value={[stepSelection ?? 0]}
+                          onValueChange={(value) => {
+                            const nextValue = Number(value[0] ?? 0)
                             const option = reactionOptions[nextValue]
                             if (!option) return
                             setReactionSelections((previous) => ({
@@ -590,45 +603,13 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                             }))
                             handleOptionSelect(index, option.id)
                           }}
-                          className="relative z-10 w-full appearance-none bg-transparent focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-slider-runnable-track]:rounded-full [&::-webkit-slider-runnable-track]:bg-transparent [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-transparent [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-background [&::-webkit-slider-thumb]:shadow [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-background [&::-moz-range-thumb]:shadow"
-                          aria-valuenow={stepSelection ?? 0}
-                          aria-valuemin={0}
-                          aria-valuemax={reactionOptions.length - 1}
+                          aria-label="Responder option selection"
                           aria-valuetext={
                             reactionOptions[stepSelection ?? 0]?.label ?? ''
                           }
+                          disabled={reactionOptions.length <= 1}
+                          className="px-2"
                         />
-                        {reactionOptions.map((option, optionIndex) => {
-                          const offsetPercent = (optionIndex / sliderSpan) * 100
-                          const isSelected = stepSelection === optionIndex
-                          const isPlayed = playedForStep.includes(option.id)
-
-                          return (
-                            <button
-                              key={option.id}
-                              type="button"
-                              onClick={() => {
-                                setReactionSelections((previous) => ({
-                                  ...previous,
-                                  [stepKey]: optionIndex
-                                }))
-                                handleOptionSelect(index, option.id)
-                              }}
-                              className={`absolute top-1/2 flex h-12 w-12 -translate-y-1/2 -translate-x-1/2 items-center justify-center rounded-full border text-2xl transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary ${
-                                isSelected
-                                  ? 'bg-primary text-primary-foreground border-primary shadow-lg scale-110'
-                                  : isPlayed
-                                    ? 'bg-primary/10 border-primary text-primary'
-                                    : 'bg-background border-border'
-                              }`}
-                              style={{ left: `calc(${offsetPercent}% + 8px)` }}
-                              aria-label={`${option.label}${isPlayed ? ' (played)' : ''}`}
-                              aria-pressed={isSelected}
-                            >
-                              <span aria-hidden>{option.icon}</span>
-                            </button>
-                          )
-                        })}
                       </div>
                     </div>
                   </div>
