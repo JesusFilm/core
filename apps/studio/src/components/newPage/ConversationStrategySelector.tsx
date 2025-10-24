@@ -1,11 +1,10 @@
 import { ArrowRight, Loader2 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
 import { cn } from '../../libs/cn/cn'
 import type { ConversationStrategy } from '../../libs/storage'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
 
 export type ConversationStrategySelectorProps = {
   strategies: ConversationStrategy[]
@@ -118,7 +117,7 @@ const StrategyCard = ({
               </span>
             </div>
             {strategy.summary && (
-              <p className="text-sm leading-relaxed text-muted-foreground">
+              <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
                 {strategy.summary}
               </p>
             )}
@@ -144,7 +143,7 @@ const StrategyCard = ({
             className="shrink-0"
             disabled={isSelected}
           >
-            {isSelected ? 'Strategy selected' : 'Use this strategy'}
+            {isSelected ? 'Grace strategy selected' : 'Use Grace strategy'}
           </Button>
         </div>
 
@@ -186,7 +185,7 @@ const StrategyCard = ({
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Scripture themes
               </p>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-1 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
                 {strategy.scriptureThemes}
               </p>
             </div>
@@ -206,29 +205,6 @@ export const ConversationStrategySelector = ({
   canGenerate,
   hasConversationMap
 }: ConversationStrategySelectorProps) => {
-  const [activeTab, setActiveTab] = useState<string>(
-    selectedStrategyId ?? strategies[0]?.id ?? ''
-  )
-
-  useEffect(() => {
-    if (strategies.length === 0) {
-      setActiveTab('')
-      return
-    }
-
-    const availableIds = new Set(strategies.map((strategy) => strategy.id))
-    const fallbackId = strategies[0]?.id ?? ''
-
-    if (selectedStrategyId && availableIds.has(selectedStrategyId) && selectedStrategyId !== activeTab) {
-      setActiveTab(selectedStrategyId)
-      return
-    }
-
-    if (!activeTab || !availableIds.has(activeTab)) {
-      setActiveTab(selectedStrategyId ?? fallbackId)
-    }
-  }, [strategies, selectedStrategyId, activeTab])
-
   const activeStrategy = useMemo(
     () =>
       selectedStrategyId
@@ -241,55 +217,26 @@ export const ConversationStrategySelector = ({
     return null
   }
 
-  const tabValue = activeTab || strategies[0]?.id || ''
-
   return (
     <div className="space-y-6" aria-label="Conversation strategy selector">
       <div className="space-y-1">
-        <h3 className="text-base font-semibold text-foreground">Choose a conversation path</h3>
+        <h3 className="text-base font-semibold text-foreground">Grace conversation strategy</h3>
         <p className="text-sm text-muted-foreground">
-          Pick a strategy to review its stage plan and Scripture emphasis. When you&apos;re ready,
-          generate the conversation map based on that path.
+          Review the Grace path for this prompt. When you&apos;re ready, generate the conversation map from
+          this strategy.
         </p>
       </div>
 
-      <div className="space-y-4">
-        <div className="md:hidden">
-          <Tabs value={tabValue} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 gap-2">
-              {strategies.map((strategy) => (
-                <TabsTrigger key={strategy.id} value={strategy.id} className="flex-1 text-xs sm:text-sm">
-                  {strategy.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            {strategies.map((strategy) => (
-              <TabsContent
-                key={`mobile-${strategy.id}`}
-                value={strategy.id}
-                className="mt-4 focus-visible:ring-0 focus-visible:ring-offset-0"
-              >
-                <StrategyCard
-                  strategy={strategy}
-                  isSelected={strategy.id === selectedStrategyId}
-                  onSelectStrategy={onSelectStrategy}
-                />
-              </TabsContent>
-            ))}
-          </Tabs>
-        </div>
-
-        <div className="hidden gap-4 md:grid md:grid-cols-3">
-          {strategies.map((strategy) => (
-            <StrategyCard
-              key={`desktop-${strategy.id}`}
-              strategy={strategy}
-              isSelected={strategy.id === selectedStrategyId}
-              onSelectStrategy={onSelectStrategy}
-              className="h-full"
-            />
-          ))}
-        </div>
+      <div className="grid gap-4">
+        {strategies.map((strategy) => (
+          <StrategyCard
+            key={`strategy-${strategy.id}`}
+            strategy={strategy}
+            isSelected={strategy.id === selectedStrategyId}
+            onSelectStrategy={onSelectStrategy}
+            className="h-full"
+          />
+        ))}
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -301,7 +248,7 @@ export const ConversationStrategySelector = ({
               path.
             </>
           ) : (
-            'Select a strategy to review its plan and build the conversation map.'
+            'Select the Grace strategy to review its plan and build the conversation map.'
           )}
         </p>
         <Button

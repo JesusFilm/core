@@ -87,29 +87,18 @@ const DEFAULT_OUTPUT_FORMAT_INSTRUCTIONS = `Provide the response as JSON with th
   ]
 }`
 
-const CONVERSATION_OUTPUT_FORMAT_INSTRUCTIONS = `Provide the response as JSON with this structure:
+const CONVERSATION_OUTPUT_FORMAT_INSTRUCTIONS = `When planning a conversation path, respond in Markdown using this exact layout:
+# Grace Conversation Strategy
+## Description
+Two to three sentences that gently summarize how Grace will guide the conversation.
+## Stage Milestones
+1. Stage name — One-sentence milestone summary.
+2. Stage name — One-sentence milestone summary.
+## Scripture Themes
+- One to three short bullets or sentences describing the biblical ideas to emphasize. Do not include specific verse references.
+
+When explicitly instructed to "Generate the final conversationMap JSON using the schema provided earlier.", output JSON that matches this structure:
 {
-  "conversationStrategies": [
-    {
-      "id": "grace",
-      "label": "Grace",
-      "summary": "Two sentence overview of this path.",
-      "approach": "Stage names connected with arrows (e.g., 'Listen → Reflect → Invite').",
-      "scriptureThemes": "Themes or theological anchors emphasized.",
-      "stages": [
-        {
-          "id": "grace-stage-1",
-          "label": "Warm welcome",
-          "summary": "One sentence explanation of this milestone."
-        },
-        {
-          "id": "grace-stage-2",
-          "label": "Earn permission to share",
-          "summary": "Brief milestone description."
-        }
-      ]
-    }
-  ],
   "conversationMap": {
     "flow": {
       "sequence": [
@@ -129,7 +118,7 @@ const CONVERSATION_OUTPUT_FORMAT_INSTRUCTIONS = `Provide the response as JSON wi
             "whyItFits": "Explain why this verse supports the step and how to transition toward it.",
             "conversationExamples": [
               {
-                "tone": "Tone label (e.g., Friendly, Gentle, Salty).",
+                "tone": "Tone label (e.g., Friendly, Gentle, Encouraging).",
                 "message": "Concrete phrasing the guide could use in that tone."
               }
             ]
@@ -149,15 +138,15 @@ const DEFAULT_RESPONSE_GUIDELINES = `Guidelines:
 - Begin each content field with a level-one markdown heading that states the step's short label (e.g., '# Let Your Light Shine') followed by a blank line.`
 
 const CONVERSATION_RESPONSE_GUIDELINES = `Guidelines:
-- Always surface three conversation strategies named "Grace", "Salt", and "Pepper". Grace stays gentle and inclusive, Salt is direct and Bible-rooted, Pepper is strict and candid. Provide two-sentence summaries and arrow-linked stage notes for each.
-- Give every strategy a staged plan. List 3-5 milestone labels in the "stages" array and mirror that order in the "approach" string using arrows (e.g., "Listen → Reflect → Invite").
-- Include the "scriptureThemes" string to highlight the passages or ideas the guide should explore. Do not return individual verse objects inside the strategies.
-- When the user has not yet selected a strategy, set "conversationMap" to null while fully populating the strategies array.
-- When the user selects a strategy, generate the "conversationMap" with 6-9 guide-led steps that honor that path's posture (Grace = gentle, Salt = direct and Bible-rooted, Pepper = strict and candid). Use the scripture themes and stage flow to choose appropriate verses within the map.
-- Every step must include a guide message, a purpose note (or null), and at least five scriptureOptions. Each scripture option needs the verse text/reference, a note on why it fits/how to migrate the conversation toward it, and multiple tone-tagged conversation examples.
-- Maintain warm pastoral care even when using direct or strict tones—model respectful conviction. Keep each message concise enough to fit in a chat bubble.
+- Present a single strategy named "Grace" during planning. Use the Markdown headings and ordering shown above and do not include additional strategies or verse lists.
+- Keep the Grace description gentle, inclusive, and pastorally warm. Avoid directives that sound harsh or judgmental.
+- Under "Stage Milestones", list 3-5 sequential milestones. Begin each line with a numbered list entry, provide a short label, and follow it with an em dash and a one-sentence summary whenever possible.
+- Under "Scripture Themes", summarize the theological ideas or passages to emphasize without citing specific references.
+- When you receive the instruction "Generate the final conversationMap JSON using the schema provided earlier.", return JSON for a 6-9 step map that reflects the Grace posture described above.
+- Every conversation map step must include a guide message, a purpose note (or null), and at least five scriptureOptions. Each scripture option needs the verse text/reference, a note on why it fits/how to transition toward it, and multiple tone-tagged conversation examples.
+- Maintain warm pastoral care in every guide message. Keep each response concise enough to fit inside a chat bubble.
 - Do not include design instructions, media prompts, or image keywords in any field.
-- Output valid JSON only.`
+- Ensure Markdown responses and JSON responses remain valid for their respective formats.`
 
 const contextSystemPrompts: Record<string, string> = {
   default:
@@ -979,7 +968,7 @@ export default function NewPage() {
         return current
       }
 
-      const preferredOrder = ['grace', 'salt', 'pepper']
+      const preferredOrder = ['grace']
       const preferredMatch = conversationStrategies.find((strategy) =>
         preferredOrder.includes(strategy.id)
       )
@@ -1593,16 +1582,16 @@ export default function NewPage() {
             ? rawData
             : []
 
-    const defaultLabels = ['Grace', 'Salt', 'Pepper']
+    const defaultLabels = ['Grace']
 
-    return strategiesSource
+    const normalized = strategiesSource
       .map((item, index) => {
         if (!item) {
           return null
         }
 
         if (typeof item === 'string') {
-          const fallbackLabel = defaultLabels[index] ?? `Strategy ${index + 1}`
+          const fallbackLabel = defaultLabels[index] ?? 'Grace'
           const id = sanitizeIdentifier(
             fallbackLabel.toLowerCase(),
             `strategy-${index + 1}`
@@ -1622,7 +1611,7 @@ export default function NewPage() {
           return null
         }
 
-        const fallbackLabel = defaultLabels[index] ?? `Strategy ${index + 1}`
+        const fallbackLabel = defaultLabels[index] ?? 'Grace'
         const label =
           ensureString(
             item.label ?? item.name ?? item.title ?? item.strategy ?? item.path ?? ''
@@ -1767,6 +1756,167 @@ export default function NewPage() {
         }
       })
       .filter((strategy): strategy is ConversationStrategy => strategy !== null)
+
+    if (normalized.length === 0) {
+      return []
+    }
+
+    const graceMatch = normalized.find((strategy) => {
+      if (!strategy) {
+        return false
+      }
+
+      if (strategy.id === 'grace') {
+        return true
+      }
+
+      const label = strategy.label?.toLowerCase?.() ?? ''
+      return label.includes('grace')
+    })
+
+    if (graceMatch) {
+      return [
+        {
+          ...graceMatch,
+          id: 'grace',
+          label: 'Grace'
+        }
+      ]
+    }
+
+    const fallback = normalized[0]
+    return fallback
+      ? [
+          {
+            ...fallback,
+            id: 'grace',
+            label: 'Grace'
+          }
+        ]
+      : []
+  }
+
+  const getMarkdownSection = (
+    markdown: string,
+    headings: string[]
+  ): string | null => {
+    if (!markdown) {
+      return null
+    }
+
+    const escapedHeadings = headings
+      .map((heading) => heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+      .join('|')
+
+    const headingRegex = new RegExp(
+      `^#{2,6}\\s*(?:${escapedHeadings})\\s*$`,
+      'im'
+    )
+
+    const match = headingRegex.exec(markdown)
+    if (!match) {
+      return null
+    }
+
+    const afterHeading = markdown.slice(match.index + match[0].length)
+    const trimmed = afterHeading.replace(/^\s*/, '')
+    const nextHeadingIndex = trimmed.search(/\n#{1,6}\s+/)
+    const section =
+      nextHeadingIndex >= 0
+        ? trimmed.slice(0, nextHeadingIndex).trim()
+        : trimmed.trim()
+
+    return section.length > 0 ? section : null
+  }
+
+  const parseMarkdownStages = (section: string): ConversationStrategy['stages'] => {
+    if (!section) {
+      return []
+    }
+
+    const lines = section
+      .split(/\r?\n/)
+      .map((line) => line.replace(/^\s*(?:[-*]|\d+[.)])\s*/, '').trim())
+      .filter((line) => line.length > 0)
+
+    return lines.map((line, index) => {
+      let label = line
+      let summary: string | null = null
+
+      const delimiterMatch = line.match(/\s(?:—|–|-)\s+|:\s+/)
+      if (delimiterMatch) {
+        const delimiterIndex = line.indexOf(delimiterMatch[0])
+        const potentialLabel = line.slice(0, delimiterIndex).trim()
+        const potentialSummary = line
+          .slice(delimiterIndex + delimiterMatch[0].length)
+          .trim()
+
+        if (potentialLabel.length > 0) {
+          label = potentialLabel
+        }
+
+        summary = potentialSummary.length > 0 ? potentialSummary : null
+      }
+
+      if (!label) {
+        label = `Stage ${index + 1}`
+      }
+
+      const stageId = sanitizeIdentifier(
+        `grace-${label}`.slice(0, 60),
+        `grace-stage-${index + 1}`
+      )
+
+      return {
+        id: stageId,
+        label,
+        summary
+      }
+    })
+  }
+
+  const parseGraceMarkdownStrategy = (
+    markdown: string
+  ): ConversationStrategy | null => {
+    const content = markdown.trim()
+    if (!content || !/#\s*Grace/i.test(content)) {
+      return null
+    }
+
+    const descriptionSection = getMarkdownSection(content, ['Description'])
+    const stagesSection = getMarkdownSection(content, [
+      'Stage Milestones',
+      'Stage Plan',
+      'Stages'
+    ])
+    const themesSection = getMarkdownSection(content, [
+      'Scripture Themes',
+      'Scripture Theme',
+      'Themes'
+    ])
+
+    const stages = stagesSection ? parseMarkdownStages(stagesSection) : []
+    const approachLabels = stages
+      .map((stage) => stage.label?.trim())
+      .filter((label): label is string => Boolean(label && label.length > 0))
+    const approach =
+      approachLabels.length > 0 ? approachLabels.join(' → ') : null
+
+    const summary = descriptionSection ? descriptionSection.trim() : null
+    const scriptureThemes = themesSection ? themesSection.trim() : null
+
+    if (!summary && stages.length === 0 && !scriptureThemes) {
+      return null
+    }
+
+    return {
+      id: 'grace',
+      label: 'Grace',
+      summary,
+      approach,
+      scriptureThemes,
+      stages
+    }
   }
   const parseGeneratedResponse = (
     rawContent: string
@@ -1850,6 +2000,17 @@ export default function NewPage() {
         'Failed to parse structured multi-step content. Falling back to default format.',
         error
       )
+    }
+
+    if (selectedContext === 'Conversations') {
+      const markdownStrategy = parseGraceMarkdownStrategy(preparedContent)
+      if (markdownStrategy) {
+        return {
+          steps: [],
+          conversationMap: null,
+          conversationStrategies: [markdownStrategy]
+        }
+      }
     }
 
     if (selectedContext === 'Conversations') {
@@ -2119,7 +2280,7 @@ export default function NewPage() {
         ? `Scripture themes to emphasize: ${selectedStrategy.scriptureThemes}`
         : null,
       'Anchor the map in Scripture references that align with these themes and milestones. Do not assume any pre-selected verses.',
-      'Ensure every step reflects the posture implied by this strategy (Grace = gentle, Salt = direct and Bible-rooted, Pepper = strict and candid) while keeping the map within 6-9 movements.'
+      'Ensure every step reflects a gentle, inclusive Grace posture while keeping the map within 6-9 movements.'
     ].filter((section): section is string => Boolean(section))
 
     setAiError(null)
