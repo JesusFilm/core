@@ -1,7 +1,6 @@
-import { Book, Bot, Check, Copy, Layers, User } from 'lucide-react'
+import { ArrowUp, Book, Bot, Check, Copy, Layers, User } from 'lucide-react'
 import { memo, useCallback, useEffect, useState } from 'react'
 
-import { cn } from '../../libs/cn/cn'
 import type { ConversationMap, ConversationMapResponseOption } from '../../libs/storage'
 import { Button } from '../ui/button'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '../ui/carousel'
@@ -84,7 +83,6 @@ const buildReactionOptions = (
 export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
   const [playedOptions, setPlayedOptions] = useState<Record<string, string[]>>({})
   const [reactionSelections, setReactionSelections] = useState<Record<string, number | null>>({})
-  const [selectedScriptureOption, setSelectedScriptureOption] = useState<string | null>(null)
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null)
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [localMessageContent, setLocalMessageContent] = useState<string>('')
@@ -92,7 +90,6 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
   useEffect(() => {
     setPlayedOptions({})
     setReactionSelections({})
-    setSelectedScriptureOption(null)
     setCopiedMessageId(null)
     setEditingMessageId(null)
     setLocalMessageContent('')
@@ -111,10 +108,6 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
         [stepKey]: [...existing, optionId]
       }
     })
-  }, [])
-
-  const handleScriptureSelect = useCallback((verseId: string | null) => {
-    setSelectedScriptureOption(verseId)
   }, [])
 
   const handleCopyMessage = useCallback(
@@ -218,7 +211,6 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
             ? step.scriptureOptions.reduce<
                 {
                   optionIndex: number
-                  verseId: string
                   verseDisplay: string
                   verseText: string
                   verseReference: string
@@ -226,7 +218,6 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                   hasWhy: boolean
                   whyText: string
                   verseCopyText: string
-                  conversationExamples: { tone?: string; message: string }[]
                 }[]
               >((accumulator, option, optionIndex) => {
                 const text =
@@ -247,32 +238,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                     : ''
                 const hasWhy = whyText.length > 0
 
-                const conversationExamples = Array.isArray(
-                  option?.conversationExamples
-                )
-                  ? option.conversationExamples.reduce<
-                      { tone?: string; message: string }[]
-                    >((examplesAccumulator, example) => {
-                      const message =
-                        typeof example?.message === 'string'
-                          ? example.message.trim()
-                          : ''
-
-                      if (!message) {
-                        return examplesAccumulator
-                      }
-
-                      examplesAccumulator.push({
-                        ...example,
-                        message
-                      })
-
-                      return examplesAccumulator
-                    }, [])
-                  : []
-                const hasExamples = conversationExamples.length > 0
-
-                if (!hasVerseContent && !hasWhy && !hasExamples) {
+                if (!hasVerseContent && !hasWhy) {
                   return accumulator
                 }
 
@@ -280,17 +246,15 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                   .filter(Boolean)
                   .join('\n\n')
 
-                accumulator.push({
-                  optionIndex,
-                  verseId: `scripture-${index}-${optionIndex}`,
-                  verseDisplay,
+                  accumulator.push({
+                    optionIndex,
+                    verseDisplay,
                   verseText,
                   verseReference,
                   hasVerseContent,
                   hasWhy,
                   whyText,
-                  verseCopyText,
-                  conversationExamples
+                  verseCopyText
                 })
 
                 return accumulator
@@ -396,7 +360,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                       >
                         <CarouselContent className="-ml-2">
                           {scriptureSlides.map((slide) => {
-                            const isSelected = selectedScriptureOption === slide.verseId
+                            const verseMessageId = `scripture-${index}-${slide.optionIndex}`
 
                             return (
                               <CarouselItem
@@ -404,42 +368,50 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                                 className="pl-2 pr-2 basis-full"
                               >
                                 <div className="flex h-full flex-col items-end gap-3">
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      handleScriptureSelect(isSelected ? null : slide.verseId)
-                                    }
-                                    aria-pressed={isSelected}
-                                    className={cn(
-                                      'relative w-full max-w-[360px] rounded-2xl bg-[#098CFF] px-4 py-4 text-left text-sm leading-relaxed text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:ring-[#098CFF]/60',
-                                      isSelected &&
-                                        'ring-2 ring-offset-2 ring-offset-background ring-white/70'
-                                    )}
-                                  >
+                                  <div className="relative w-full max-w-[400px] rounded-2xl bg-[#098CFF] text-white shadow-xl group">
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      className="absolute top-2 right-2 gap-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent text-white"
+                                      onClick={(event) => {
+                                        event.preventDefault()
+                                        event.stopPropagation()
+                                        void handleCopyMessage(slide.verseCopyText, verseMessageId)
+                                      }}
+                                      onMouseDown={(event) => event.preventDefault()}
+                                      title={
+                                        copiedMessageId === verseMessageId
+                                          ? 'Copied!'
+                                          : 'Copy message'
+                                      }
+                                    >
+                                      {copiedMessageId === verseMessageId ? (
+                                        <Check className="h-3 w-3 text-green-300" />
+                                      ) : (
+                                        <Copy className="h-3 w-3" />
+                                      )}
+                                    </Button>
                                     <span
                                       aria-hidden="true"
                                       className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-[#098CFF]"
                                     />
-                                    <p className="whitespace-pre-line text-base font-medium leading-relaxed">
-                                      {slide.verseText || slide.verseDisplay}
-                                    </p>
-                                    {slide.verseReference && (
-                                      <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-white/80">
-                                        {slide.verseReference}
+                                    <div className="px-4 py-4 text-left text-sm leading-relaxed">
+                                      <p className="whitespace-pre-line text-base font-medium leading-relaxed">
+                                        {slide.verseText || slide.verseDisplay}
                                       </p>
-                                    )}
-                                  </button>
+                                      {slide.verseReference && (
+                                        <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-white/80">
+                                          {slide.verseReference}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
 
                                   {slide.hasWhy ? (
-                                    <p className="ml-auto max-w-[320px] text-sm leading-relaxed text-muted-foreground">
-                                      {slide.whyText}
-                                    </p>
-                                  ) : null}
-
-                                  {isSelected ? (
-                                    <div className="flex items-center gap-1 text-xs font-semibold uppercase text-primary">
-                                      <Check className="h-3 w-3" />
-                                      Selected
+                                    <div className="ml-auto flex max-w-[400px] items-start gap-2 text-sm leading-relaxed text-muted-foreground">
+                                      <ArrowUp className="mt-1 h-4 w-4" />
+                                      <p className="flex-1">{slide.whyText}</p>
                                     </div>
                                   ) : null}
                                 </div>
@@ -453,86 +425,6 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                     </div>
                   </div>
                 ) : null}
-
-                {selectedScriptureOption && (
-                  <div className="space-y-3">
-                    {scriptureSlides
-                      .filter((slide) => slide.verseId === selectedScriptureOption)
-                      .map((slide) => {
-                        const exampleBaseId = `scripture-example-${index}-${slide.optionIndex}`
-
-                        return (
-                          <div key={`selected-examples-${slide.verseId}`} className="space-y-3">
-                            <div className="flex items-center gap-2 text-xs uppercase font-semibold tracking-wide text-muted-foreground">
-                              <Book className="w-4 h-4 text-muted-foreground" />
-                              Conversation Examples
-                            </div>
-                            <div className="space-y-2">
-                              {slide.conversationExamples.map((example, exampleIndex) => {
-                                const exampleId = `${exampleBaseId}-${exampleIndex}`
-
-                                return (
-                                  <div
-                                    key={exampleId}
-                                    className="relative rounded-2xl border border-amber-200/70 bg-white p-3 shadow group"
-                                  >
-                                    <div className="mb-2 flex items-center justify-between gap-2">
-                                      <span className="text-xs uppercase font-semibold tracking-wide text-amber-900/80">
-                                        {example.tone || 'Example'}
-                                      </span>
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-6 w-6 gap-1 p-0 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-transparent"
-                                        onClick={(event) => {
-                                          event.preventDefault()
-                                          event.stopPropagation()
-                                          void handleCopyMessage(
-                                            example.message,
-                                            exampleId
-                                          )
-                                        }}
-                                        onMouseDown={(event) => event.preventDefault()}
-                                        title={
-                                          copiedMessageId === exampleId
-                                            ? 'Copied!'
-                                            : 'Copy message'
-                                        }
-                                      >
-                                        {copiedMessageId === exampleId ? (
-                                          <Check className="h-3 w-3 text-green-500" />
-                                        ) : (
-                                          <Copy className="h-3 w-3" />
-                                        )}
-                                      </Button>
-                                    </div>
-                                    <AutoResizeTextarea
-                                      value={
-                                        editingMessageId === exampleId
-                                          ? localMessageContent
-                                          : example.message
-                                      }
-                                      onChange={(event) =>
-                                        handleMessageChange(event.target.value)
-                                      }
-                                      onClick={() =>
-                                        handleMessageClick(example.message, exampleId)
-                                      }
-                                      onBlur={handleMessageBlur}
-                                      readOnly={editingMessageId !== exampleId}
-                                      className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 text-sm leading-relaxed"
-                                      data-message-id={exampleId}
-                                    />
-                                  </div>
-                                )
-                              })}
-                            </div>
-                          </div>
-                        )
-                      })}
-                  </div>
-                )}
 
                 {reactionOptions.length > 0 && (
                   <div className="space-y-4">
