@@ -65,7 +65,17 @@ export function GoogleIntegrationDetails(): ReactElement {
     // supports both union variants
     // @ts-expect-error union narrowing not applied on fragmentless union here
     const userId: string | undefined = integration?.user?.id
-    return userId != null && userId === currentUser.id
+    // @ts-expect-error accountEmail only on IntegrationGoogle
+    const emailFromIntegration: string | undefined = integration?.accountEmail
+    if (userId != null && userId === currentUser.id) return true
+    if (
+      emailFromIntegration != null &&
+      emailFromIntegration.length > 0 &&
+      currentUser.email.length > 0 &&
+      emailFromIntegration.toLowerCase() === currentUser.email.toLowerCase()
+    )
+      return true
+    return false
   }, [data?.integrations, integrationId, currentUser.id])
 
   const isTeamManager = useMemo(() => {
