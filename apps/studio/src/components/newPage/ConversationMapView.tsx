@@ -198,7 +198,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
 
           return (
             <section
-              key={stepKey}
+              key={`step-${index}`}
               className="relative pl-0 sm:pl-12"
               aria-label={`Step ${index + 1}: ${step.title}`}
             >
