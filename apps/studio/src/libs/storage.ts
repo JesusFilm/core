@@ -45,32 +45,20 @@ export interface ConversationMap {
   steps: ConversationMapStep[]
 }
 
-export interface ConversationStrategyVerse {
-  id: string
-  reference: string | null
-  text: string | null
-  reason: string | null
-  stageId?: string | null
-  stageLabel?: string | null
-}
-
 export interface ConversationStrategyStage {
   id: string
   label: string
   summary: string | null
-  requiresScripture: boolean
-  verses: ConversationStrategyVerse[]
+  requiresScripture?: boolean
 }
 
 export interface ConversationStrategy {
   id: string
   label: string
   summary: string | null
-  tone: string | null
   approach: string | null
   scriptureThemes: string | null
   stages: ConversationStrategyStage[]
-  verses: ConversationStrategyVerse[]
 }
 
 export interface UserInputData {
