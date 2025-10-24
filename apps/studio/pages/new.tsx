@@ -96,14 +96,41 @@ const CONVERSATION_OUTPUT_FORMAT_INSTRUCTIONS = `Provide the response as JSON wi
       "label": "Grace",
       "summary": "Two sentence overview of this path.",
       "tone": "Short note on tone and posture.",
-      "approach": "Key moves that define this conversation approach.",
+      "approach": "Stage names connected with arrows (e.g., 'Listen → Reflect → Invite').",
       "scriptureThemes": "Themes or theological anchors emphasized.",
+      "stages": [
+        {
+          "id": "grace-stage-1",
+          "label": "Warm welcome",
+          "summary": "One sentence explanation of this milestone.",
+          "requiresScripture": true,
+          "verses": [
+            {
+              "id": "grace-stage-1-verse-1",
+              "reference": "Book chapter:verse format.",
+              "text": "1-2 sentence scripture excerpt.",
+              "reason": "Why this verse supports the strategy.",
+              "stageId": "grace-stage-1",
+              "stageLabel": "Warm welcome"
+            }
+          ]
+        },
+        {
+          "id": "grace-stage-2",
+          "label": "Earn permission to share",
+          "summary": "Brief milestone description.",
+          "requiresScripture": false,
+          "verses": []
+        }
+      ],
       "verses": [
         {
-          "id": "grace-1",
+          "id": "grace-stage-1-verse-1",
           "reference": "Book chapter:verse format.",
           "text": "1-2 sentence scripture excerpt.",
-          "reason": "Why this verse supports the strategy."
+          "reason": "Why this verse supports the strategy.",
+          "stageId": "grace-stage-1",
+          "stageLabel": "Warm welcome"
         }
       ]
     }
@@ -147,10 +174,13 @@ const DEFAULT_RESPONSE_GUIDELINES = `Guidelines:
 - Begin each content field with a level-one markdown heading that states the step's short label (e.g., '# Let Your Light Shine') followed by a blank line.`
 
 const CONVERSATION_RESPONSE_GUIDELINES = `Guidelines:
-- Always surface three conversation strategies named "Grace", "Salt", and "Pepper". Grace stays gentle and inclusive, Salt is direct and Bible-rooted, Pepper is strict and candid. Provide two-sentence summaries plus tone and approach notes for each.
-- Each strategy must include exactly eight highly relevant Bible verses with short excerpts and 1-2 sentence reasons that match the user's prompt and that strategy's posture.
+- Always surface three conversation strategies named "Grace", "Salt", and "Pepper". Grace stays gentle and inclusive, Salt is direct and Bible-rooted, Pepper is strict and candid. Provide two-sentence summaries plus tone and arrow-linked stage notes for each.
+- Give every strategy a staged plan. List 3-5 milestone labels in the "stages" array and mirror that order in the "approach" string using arrows (e.g., "Listen → Reflect → Invite").
+- Use "requiresScripture" to flag which stages need verse support. Supply up to three high-impact verses for those stages only, each with reference, excerpt, reason, and the matching stageId/stageLabel. Leave stages without Scripture support marked false and with an empty verses array.
+- Populate the strategy-level "verses" array with the same verse objects (including stageId and stageLabel) so the UI can surface them for selection.
+- Do not pre-select verses or imply a default choice—the guide will choose which passages to include.
 - When the user has not yet selected a strategy, set "conversationMap" to null while fully populating the strategies array.
-- When the user selects a strategy and verses, populate "conversationMap" with 6-9 guide-led steps that honor that tone and the chosen verses. Follow the same JSON schema for flow and steps while weaving in the selected verses inside the scriptureOptions.
+- When the user selects a strategy and verses, populate "conversationMap" with 6-9 guide-led steps that honor that tone and the chosen verses. Follow the same JSON schema for flow and steps while weaving only the selected verses inside the scriptureOptions.
 - Every step must include a guide message, a purpose note (or null), and at least five scriptureOptions. Each scripture option needs the verse text/reference, a note on why it fits/how to migrate the conversation toward it, and multiple tone-tagged conversation examples.
 - Maintain warm pastoral care even when using direct or strict tones—model respectful conviction. Keep each message concise enough to fit in a chat bubble.
 - Do not include design instructions, media prompts, or image keywords in any field.
@@ -992,10 +1022,7 @@ export default function NewPage() {
           strategy.verses.some((verse) => verse.id === verseId)
         )
 
-        next[strategy.id] =
-          validSelection.length > 0
-            ? Array.from(new Set(validSelection))
-            : strategy.verses.map((verse) => verse.id)
+        next[strategy.id] = Array.from(new Set(validSelection))
       })
 
       return next
@@ -1290,13 +1317,17 @@ export default function NewPage() {
     return []
   }
 
-  const sanitizeIdentifier = (rawValue: string, fallback: string): string => {
-    const normalized = rawValue
+  const normalizeIdentifierValue = (value: string): string =>
+    value
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '')
 
-    return normalized || fallback
+  const sanitizeIdentifier = (rawValue: string, fallback: string): string => {
+    const normalized = normalizeIdentifierValue(rawValue)
+    const normalizedFallback = normalizeIdentifierValue(fallback)
+
+    return normalized || normalizedFallback || 'value'
   }
 
   const normalizeConversationMap = (rawData: any): ConversationMap => {
@@ -1570,7 +1601,10 @@ export default function NewPage() {
 
         if (typeof item === 'string') {
           const fallbackLabel = defaultLabels[index] ?? `Strategy ${index + 1}`
-          const id = sanitizeIdentifier(fallbackLabel.toLowerCase(), `strategy-${index + 1}`)
+          const id = sanitizeIdentifier(
+            fallbackLabel.toLowerCase(),
+            `strategy-${index + 1}`
+          )
 
           return {
             id,
@@ -1579,6 +1613,7 @@ export default function NewPage() {
             tone: null,
             approach: null,
             scriptureThemes: null,
+            stages: [],
             verses: []
           }
         }
@@ -1601,7 +1636,10 @@ export default function NewPage() {
           item.id ?? item.key ?? item.slug ?? item.code ?? item.identifier ?? label
         )
 
-        const id = sanitizeIdentifier(rawIdSource, sanitizeIdentifier(label.toLowerCase(), fallbackId))
+        const id = sanitizeIdentifier(
+          rawIdSource,
+          sanitizeIdentifier(label.toLowerCase(), fallbackId)
+        )
 
         const summary = ensureNullableString(
           item.summary ?? item.description ?? item.overview ?? item.focus ?? item.commentary
@@ -1619,6 +1657,243 @@ export default function NewPage() {
           item.scriptureThemes ?? item.themes ?? item.theme ?? item.emphasis ?? item.anchor ?? item.anchors
         )
 
+        const verseRegistry = new Map<string, ConversationStrategyVerse>()
+
+        const registerVerse = (
+          verse: ConversationStrategyVerse
+        ): ConversationStrategyVerse => {
+          const existing = verseRegistry.get(verse.id)
+          if (!existing) {
+            const stored = { ...verse }
+            verseRegistry.set(verse.id, stored)
+            return stored
+          }
+
+          const merged: ConversationStrategyVerse = {
+            ...existing,
+            ...verse,
+            stageId: verse.stageId ?? existing.stageId ?? null,
+            stageLabel: verse.stageLabel ?? existing.stageLabel ?? null
+          }
+
+          verseRegistry.set(verse.id, merged)
+          return merged
+        }
+
+        const normalizeVerse = (
+          verseInput: any,
+          verseIndex: number,
+          context: { stageId?: string; stageLabel?: string } = {}
+        ): ConversationStrategyVerse | null => {
+          if (!verseInput) {
+            return null
+          }
+
+          const baseId = context.stageId ?? id
+          const fallbackVerseId = `${baseId}-verse-${verseIndex + 1}`
+
+          if (typeof verseInput === 'string') {
+            const text = ensureString(verseInput)
+            if (!text) return null
+
+            const verseId = sanitizeIdentifier(
+              `${baseId}-${text}`.slice(0, 60),
+              fallbackVerseId
+            )
+
+            return {
+              id: verseId,
+              reference: null,
+              text,
+              reason: null,
+              stageId: context.stageId ?? null,
+              stageLabel: context.stageLabel ?? null
+            }
+          }
+
+          if (typeof verseInput !== 'object') {
+            return null
+          }
+
+          const reference = ensureNullableString(
+            verseInput.reference ??
+              verseInput.ref ??
+              verseInput.citation ??
+              verseInput.verse ??
+              verseInput.book
+          )
+
+          const text = ensureNullableString(
+            verseInput.text ??
+              verseInput.passage ??
+              verseInput.quote ??
+              verseInput.excerpt ??
+              verseInput.content
+          )
+
+          const reason = ensureNullableString(
+            verseInput.reason ??
+              verseInput.why ??
+              verseInput.explanation ??
+              verseInput.commentary ??
+              verseInput.connection ??
+              verseInput.note
+          )
+
+          if (!reference && !text && !reason) {
+            return null
+          }
+
+          let resolvedStageId = context.stageId ?? null
+          if (!resolvedStageId) {
+            const stageIdSource = ensureString(
+              verseInput.stageId ??
+                verseInput.stage ??
+                verseInput.milestoneId ??
+                verseInput.milestoneKey ??
+                ''
+            )
+            resolvedStageId = stageIdSource
+              ? sanitizeIdentifier(stageIdSource, `${id}-stage-${verseIndex + 1}`)
+              : null
+          }
+
+          const resolvedStageLabel =
+            context.stageLabel ??
+            ensureNullableString(
+              verseInput.stageLabel ??
+                verseInput.stage ??
+                verseInput.milestone ??
+                verseInput.stageName ??
+                ''
+            ) ??
+            (resolvedStageId ?? null)
+
+          const verseIdSource = ensureString(
+            verseInput.id ??
+              verseInput.key ??
+              verseInput.slug ??
+              verseInput.identifier ??
+              ''
+          )
+
+          const verseId = sanitizeIdentifier(
+            verseIdSource || `${reference ?? text ?? fallbackVerseId}`,
+            fallbackVerseId
+          )
+
+          return {
+            id: verseId,
+            reference,
+            text,
+            reason,
+            stageId: resolvedStageId,
+            stageLabel: resolvedStageLabel
+          }
+        }
+
+        const stageSource = Array.isArray(item.stages)
+          ? item.stages
+          : Array.isArray(item.milestones)
+            ? item.milestones
+            : Array.isArray(item.approachStages)
+              ? item.approachStages
+              : Array.isArray(item.milestoneStages)
+                ? item.milestoneStages
+                : Array.isArray(item.stagePlan)
+                  ? item.stagePlan
+                  : []
+
+        const normalizedStages = stageSource
+          .map((stageItem: any, stageIndex: number) => {
+            if (!stageItem) {
+              return null
+            }
+
+            const rawLabel = ensureString(
+              stageItem.label ??
+                stageItem.name ??
+                stageItem.title ??
+                stageItem.stage ??
+                stageItem.milestone ??
+                ''
+            )
+            const stageLabel = rawLabel || `Stage ${stageIndex + 1}`
+
+            const stageIdSource = ensureString(
+              stageItem.id ??
+                stageItem.key ??
+                stageItem.slug ??
+                stageItem.stageId ??
+                stageItem.identifier ??
+                stageLabel
+            )
+
+            const stageId = sanitizeIdentifier(
+              stageIdSource,
+              `${id}-stage-${stageIndex + 1}`
+            )
+
+            const stageSummary = ensureNullableString(
+              stageItem.summary ??
+                stageItem.description ??
+                stageItem.focus ??
+                stageItem.goal ??
+                stageItem.purpose ??
+                stageItem.intent ??
+                stageItem.context
+            )
+
+            const requiresScriptureRaw =
+              stageItem.requiresScripture ??
+              stageItem.needsScripture ??
+              stageItem.requiresVerse ??
+              stageItem.scripture ??
+              stageItem.hasScripture
+
+            const stageVersesSource = Array.isArray(stageItem.verses)
+              ? stageItem.verses
+              : Array.isArray(stageItem.scriptures)
+                ? stageItem.scriptures
+                : Array.isArray(stageItem.bibleVerses)
+                  ? stageItem.bibleVerses
+                  : Array.isArray(stageItem.verseOptions)
+                    ? stageItem.verseOptions
+                    : []
+
+            const stageVerseCandidates: ConversationStrategyVerse[] = []
+            stageVersesSource.forEach((verseInput: any, verseIndex: number) => {
+              const normalizedVerse = normalizeVerse(verseInput, verseIndex, {
+                stageId,
+                stageLabel
+              })
+              if (normalizedVerse) {
+                stageVerseCandidates.push(normalizedVerse)
+              }
+            })
+
+            const limitedStageVerses = stageVerseCandidates.slice(0, 3)
+            const requiresScripture =
+              typeof requiresScriptureRaw === 'boolean'
+                ? requiresScriptureRaw
+                : limitedStageVerses.length > 0
+
+            const versesForStage = requiresScripture
+              ? limitedStageVerses.map((verse) => registerVerse(verse))
+              : []
+
+            return {
+              id: stageId,
+              label: stageLabel,
+              summary: stageSummary,
+              requiresScripture,
+              verses: versesForStage
+            }
+          })
+          .filter(
+            (stage): stage is ConversationStrategy['stages'][number] => stage !== null
+          )
+
         const versesSource = Array.isArray(item.verses)
           ? item.verses
           : Array.isArray(item.scriptures)
@@ -1631,60 +1906,18 @@ export default function NewPage() {
                   ? item.options
                   : []
 
-        const verses = versesSource
-          .map((verse: any, verseIndex: number) => {
-            if (!verse) return null
+        versesSource.forEach((verse: any, verseIndex: number) => {
+          const normalizedVerse = normalizeVerse(verse, verseIndex)
+          if (normalizedVerse) {
+            registerVerse(normalizedVerse)
+          }
+        })
 
-            if (typeof verse === 'string') {
-              const text = ensureString(verse)
-              if (!text) return null
-
-              return {
-                id: `${id}-verse-${verseIndex + 1}`,
-                reference: null,
-                text,
-                reason: null
-              }
-            }
-
-            if (typeof verse === 'object') {
-              const reference = ensureNullableString(
-                verse.reference ?? verse.ref ?? verse.citation ?? verse.verse ?? verse.book
-              )
-              const text = ensureNullableString(
-                verse.text ?? verse.passage ?? verse.quote ?? verse.excerpt ?? verse.content
-              )
-              const reason = ensureNullableString(
-                verse.reason ?? verse.why ?? verse.explanation ?? verse.commentary ?? verse.connection ?? verse.note
-              )
-
-              if (!reference && !text && !reason) {
-                return null
-              }
-
-              const verseIdSource = ensureString(
-                verse.id ?? verse.key ?? verse.slug ?? reference ?? text ?? ''
-              )
-
-              const verseId = sanitizeIdentifier(
-                verseIdSource,
-                `${id}-verse-${verseIndex + 1}`
-              )
-
-              return {
-                id: verseId,
-                reference,
-                text,
-                reason
-              }
-            }
-
-            return null
-          })
-          .filter((verse): verse is ConversationStrategyVerse => verse !== null)
+        const verses = Array.from(verseRegistry.values())
 
         if (
           verses.length === 0 &&
+          normalizedStages.length === 0 &&
           !summary &&
           !tone &&
           !approach &&
@@ -1700,6 +1933,7 @@ export default function NewPage() {
           tone,
           approach,
           scriptureThemes,
+          stages: normalizedStages,
           verses
         }
       })
@@ -2016,26 +2250,17 @@ export default function NewPage() {
     (strategyId: string) => {
       setSelectedStrategyId(strategyId)
       setSelectedStrategyVerses((previous) => {
-        const existing = previous[strategyId]
-        if (existing && existing.length > 0) {
-          return previous
-        }
-
-        const strategy = conversationStrategies.find(
-          (item) => item.id === strategyId
-        )
-
-        if (!strategy) {
+        if (previous[strategyId]) {
           return previous
         }
 
         return {
           ...previous,
-          [strategyId]: strategy.verses.map((verse) => verse.id)
+          [strategyId]: []
         }
       })
     },
-    [conversationStrategies]
+    []
   )
 
   const handleToggleStrategyVerse = useCallback(
@@ -2088,6 +2313,26 @@ export default function NewPage() {
       new Set(selectedStrategyVerses[selectedStrategy.id] ?? [])
     )
 
+    const stageLookup = new Map<
+      string,
+      { label: string; summary: string | null; requiresScripture: boolean }
+    >()
+
+    if (Array.isArray(selectedStrategy.stages)) {
+      selectedStrategy.stages.forEach((stage, index) => {
+        if (!stage?.id) {
+          return
+        }
+
+        const label = stage.label?.trim() || `Stage ${index + 1}`
+        stageLookup.set(stage.id, {
+          label,
+          summary: stage.summary ?? null,
+          requiresScripture: Boolean(stage.requiresScripture)
+        })
+      })
+    }
+
     const chosenVerses = selectedStrategy.verses.filter((verse) =>
       selectedVerseIds.includes(verse.id)
     )
@@ -2096,9 +2341,48 @@ export default function NewPage() {
       return
     }
 
+    const stagePlanSummary =
+      Array.isArray(selectedStrategy.stages) &&
+      selectedStrategy.stages.length > 0
+        ? selectedStrategy.stages
+            .map((stage, index) => {
+              if (!stage) {
+                return null
+              }
+
+              const label = stage.label?.trim() || `Stage ${index + 1}`
+              const descriptors: string[] = []
+              if (stage.summary) {
+                descriptors.push(stage.summary)
+              }
+              descriptors.push(
+                stage.requiresScripture
+                  ? 'Requires scripture support.'
+                  : 'No scripture needed.'
+              )
+
+              return descriptors.length > 0
+                ? `Stage ${index + 1}: ${label} — ${descriptors.join(' ')}`
+                : `Stage ${index + 1}: ${label}`
+            })
+            .filter((value): value is string => Boolean(value))
+            .join('\n')
+        : null
+
     const verseSummaries = chosenVerses
       .map((verse, index) => {
         const parts: string[] = []
+        const stageInfo = verse.stageId ? stageLookup.get(verse.stageId) : null
+        const stageLabel = stageInfo?.label ?? verse.stageLabel ?? null
+
+        if (stageLabel) {
+          parts.push(`Stage: ${stageLabel}`)
+        }
+
+        if (stageInfo?.summary) {
+          parts.push(`Stage summary: ${stageInfo.summary}`)
+        }
+
         if (verse.reference) {
           parts.push(verse.reference)
         }
@@ -2118,6 +2402,7 @@ export default function NewPage() {
       selectedStrategy.summary
         ? `Strategy summary: ${selectedStrategy.summary}`
         : null,
+      stagePlanSummary ? `Stage flow plan:\n${stagePlanSummary}` : null,
       selectedStrategy.approach
         ? `Approach notes: ${selectedStrategy.approach}`
         : null,

@@ -50,6 +50,16 @@ export interface ConversationStrategyVerse {
   reference: string | null
   text: string | null
   reason: string | null
+  stageId?: string | null
+  stageLabel?: string | null
+}
+
+export interface ConversationStrategyStage {
+  id: string
+  label: string
+  summary: string | null
+  requiresScripture: boolean
+  verses: ConversationStrategyVerse[]
 }
 
 export interface ConversationStrategy {
@@ -59,6 +69,7 @@ export interface ConversationStrategy {
   tone: string | null
   approach: string | null
   scriptureThemes: string | null
+  stages: ConversationStrategyStage[]
   verses: ConversationStrategyVerse[]
 }
 

@@ -1,4 +1,4 @@
-import { Loader2 } from 'lucide-react'
+import { ArrowRight, Loader2 } from 'lucide-react'
 import { useMemo } from 'react'
 
 import { cn } from '../../libs/cn/cn'
@@ -20,6 +20,61 @@ export type ConversationStrategySelectorProps = {
   canGenerate: boolean
   selectedVersesCount: number
   hasConversationMap: boolean
+}
+
+const splitApproachToStages = (approach?: string | null): string[] => {
+  if (!approach) {
+    return []
+  }
+
+  const trimmed = approach.trim()
+  if (!trimmed) {
+    return []
+  }
+
+  const trySplit = (pattern: RegExp): string[] =>
+    trimmed
+      .split(pattern)
+      .map((part) => part.trim())
+      .filter((part) => part.length > 0)
+
+  const newlineSegments = trySplit(/\s*\n+\s*/)
+  if (newlineSegments.length > 1) {
+    return newlineSegments
+  }
+
+  const arrowSegments = trySplit(/\s*(?:→|➡️|➝|➜|➔|⇒|->|—>|–>)\s*/)
+  if (arrowSegments.length > 1) {
+    return arrowSegments
+  }
+
+  const bulletSegments = trySplit(/\s*(?:•|\u2022|[-–—])\s*/u)
+  if (bulletSegments.length > 1) {
+    return bulletSegments
+  }
+
+  const semicolonSegments = trySplit(/\s*;\s*/)
+  if (semicolonSegments.length > 1) {
+    return semicolonSegments
+  }
+
+  const numberedSegments = trimmed
+    .split(/\s*\d+\.\s*/g)
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0)
+  if (numberedSegments.length > 1) {
+    return numberedSegments
+  }
+
+  const sentenceSegments = (trimmed.match(/[^.!?]+[.!?]*|[^.!?]+$/g) || [])
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0)
+
+  if (sentenceSegments.length > 1) {
+    return sentenceSegments
+  }
+
+  return [trimmed]
 }
 
 export const ConversationStrategySelector = ({
@@ -60,7 +115,24 @@ export const ConversationStrategySelector = ({
         {strategies.map((strategy) => {
           const isSelected = strategy.id === selectedStrategyId
           const verseSelections = new Set(selectedVerseIdsByStrategy[strategy.id] ?? [])
-          const verseCount = strategy.verses.length
+          const stages = Array.isArray(strategy.stages) ? strategy.stages : []
+          const timelineStages = stages
+            .map((stage) => (stage?.label ?? '').trim())
+            .filter((label): label is string => label.length > 0)
+          const stageSequence =
+            timelineStages.length > 0
+              ? timelineStages
+              : splitApproachToStages(strategy.approach)
+          const versesForDisplayCount = stages.length > 0
+            ? stages.reduce((total, stage) => {
+                if (!stage?.requiresScripture) {
+                  return total
+                }
+
+                const stageVerses = Array.isArray(stage.verses) ? stage.verses : []
+                return total + stageVerses.slice(0, 3).length
+              }, 0)
+            : strategy.verses.length
 
           return (
             <Card
@@ -88,11 +160,22 @@ export const ConversationStrategySelector = ({
                         {strategy.summary}
                       </p>
                     )}
-                    {strategy.approach && (
-                      <p className="text-sm text-muted-foreground/90 leading-relaxed">
-                        <span className="font-medium text-foreground/80">Approach:</span>{' '}
-                        {strategy.approach}
-                      </p>
+                    {stageSequence.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-muted-foreground/80">
+                        {stageSequence.map((label, index) => (
+                          <div
+                            key={`${strategy.id}-stage-${index}`}
+                            className="flex items-center gap-2"
+                          >
+                            <span className="rounded-full bg-muted px-3 py-1 text-xs font-semibold text-foreground/80">
+                              {label}
+                            </span>
+                            {index < stageSequence.length - 1 && (
+                              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/60" />
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     )}
                     {strategy.tone && (
                       <p className="text-sm text-muted-foreground/90">
@@ -118,10 +201,10 @@ export const ConversationStrategySelector = ({
                   </Button>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <h5 className="text-sm font-medium text-foreground">
-                      Recommended Scriptures ({verseCount})
+                      Scripture selections ({versesForDisplayCount})
                     </h5>
                     {isSelected ? (
                       <div className="flex items-center gap-2">
@@ -130,6 +213,7 @@ export const ConversationStrategySelector = ({
                           variant="ghost"
                           className="h-7 px-2.5 text-xs"
                           onClick={() => onSelectAllVerses(strategy.id)}
+                          disabled={versesForDisplayCount === 0}
                         >
                           Select all
                         </Button>
@@ -150,47 +234,149 @@ export const ConversationStrategySelector = ({
                     )}
                   </div>
 
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {strategy.verses.map((verse) => {
-                      const isVerseSelected = verseSelections.has(verse.id)
+                  {stages.length > 0 ? (
+                    <div className="space-y-4">
+                      {stages.map((stage, stageIndex) => {
+                        const requiresScripture = Boolean(stage?.requiresScripture)
+                        const stageLabel = (stage?.label ?? '').trim() || `Stage ${stageIndex + 1}`
+                        const stageSummary = stage?.summary ?? null
+                        const stageVersesRaw = Array.isArray(stage?.verses) ? stage.verses : []
+                        const stageVerses = requiresScripture
+                          ? stageVersesRaw.slice(0, 3)
+                          : []
+                        const hasStageVerses = stageVerses.length > 0
 
-                      return (
-                        <label
-                          key={verse.id}
-                          className={cn(
-                            'flex items-start gap-3 rounded-2xl border p-3 transition-colors',
-                            isSelected
-                              ? isVerseSelected
-                                ? 'border-primary/70 bg-primary/5'
-                                : 'border-border hover:border-primary/40'
-                              : 'border-dashed border-border opacity-80'
-                          )}
-                        >
-                          <Checkbox
-                            checked={isVerseSelected}
-                            disabled={!isSelected}
-                            onCheckedChange={() => onToggleVerse(strategy.id, verse.id)}
-                            className="mt-1"
-                          />
-                          <div className="space-y-1 text-sm text-foreground">
-                            <div className="font-medium text-foreground/90">
-                              {verse.reference || 'Scripture'}
+                        return (
+                          <div
+                            key={stage?.id ?? `${strategy.id}-stage-${stageIndex}`}
+                            className="space-y-3 rounded-xl border border-border/80 p-4"
+                          >
+                            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm font-semibold text-foreground">
+                                    {stageLabel}
+                                  </span>
+                                  {!requiresScripture && (
+                                    <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                                      No scripture needed
+                                    </span>
+                                  )}
+                                </div>
+                                {stageSummary && (
+                                  <p className="text-sm text-muted-foreground leading-relaxed">
+                                    {stageSummary}
+                                  </p>
+                                )}
+                              </div>
+                              {requiresScripture && (
+                                <span className="text-xs text-muted-foreground">
+                                  {hasStageVerses
+                                    ? `${stageVerses.length} verse${stageVerses.length === 1 ? '' : 's'}`
+                                    : 'No verses provided'}
+                                </span>
+                              )}
                             </div>
-                            {verse.text && (
-                              <p className="text-sm leading-relaxed text-muted-foreground">
-                                {verse.text}
-                              </p>
-                            )}
-                            {verse.reason && (
-                              <p className="text-xs text-muted-foreground/80 leading-relaxed">
-                                {verse.reason}
-                              </p>
-                            )}
+                            {requiresScripture && hasStageVerses ? (
+                              <div className="grid gap-3 sm:grid-cols-2">
+                                {stageVerses.map((verse) => {
+                                  const isVerseSelected = verseSelections.has(verse.id)
+
+                                  return (
+                                    <label
+                                      key={verse.id}
+                                      className={cn(
+                                        'flex items-start gap-3 rounded-2xl border p-3 transition-colors',
+                                        isSelected
+                                          ? isVerseSelected
+                                            ? 'border-primary/70 bg-primary/5'
+                                            : 'border-border hover:border-primary/40'
+                                          : 'border-dashed border-border opacity-80'
+                                      )}
+                                    >
+                                      <Checkbox
+                                        checked={isVerseSelected}
+                                        disabled={!isSelected}
+                                        onCheckedChange={() => onToggleVerse(strategy.id, verse.id)}
+                                        className="mt-1"
+                                      />
+                                      <div className="space-y-1 text-sm text-foreground">
+                                        <div className="font-medium text-foreground/90">
+                                          {verse.reference || 'Scripture'}
+                                        </div>
+                                        {verse.text && (
+                                          <p className="text-sm leading-relaxed text-muted-foreground">
+                                            {verse.text}
+                                          </p>
+                                        )}
+                                        {verse.reason && (
+                                          <p className="text-xs text-muted-foreground/80 leading-relaxed">
+                                            {verse.reason}
+                                          </p>
+                                        )}
+                                      </div>
+                                    </label>
+                                  )
+                                })}
+                              </div>
+                            ) : null}
                           </div>
-                        </label>
-                      )
-                    })}
-                  </div>
+                        )
+                      })}
+
+                      {versesForDisplayCount === 0 && (
+                        <p className="text-sm text-muted-foreground/80">
+                          No scripture selections are required for this path.
+                        </p>
+                      )}
+                    </div>
+                  ) : strategy.verses.length > 0 ? (
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {strategy.verses.map((verse) => {
+                        const isVerseSelected = verseSelections.has(verse.id)
+
+                        return (
+                          <label
+                            key={verse.id}
+                            className={cn(
+                              'flex items-start gap-3 rounded-2xl border p-3 transition-colors',
+                              isSelected
+                                ? isVerseSelected
+                                  ? 'border-primary/70 bg-primary/5'
+                                  : 'border-border hover:border-primary/40'
+                                : 'border-dashed border-border opacity-80'
+                            )}
+                          >
+                            <Checkbox
+                              checked={isVerseSelected}
+                              disabled={!isSelected}
+                              onCheckedChange={() => onToggleVerse(strategy.id, verse.id)}
+                              className="mt-1"
+                            />
+                            <div className="space-y-1 text-sm text-foreground">
+                              <div className="font-medium text-foreground/90">
+                                {verse.reference || 'Scripture'}
+                              </div>
+                              {verse.text && (
+                                <p className="text-sm leading-relaxed text-muted-foreground">
+                                  {verse.text}
+                                </p>
+                              )}
+                              {verse.reason && (
+                                <p className="text-xs text-muted-foreground/80 leading-relaxed">
+                                  {verse.reason}
+                                </p>
+                              )}
+                            </div>
+                          </label>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground/80">
+                      No scripture options provided for this strategy yet.
+                    </p>
+                  )}
                 </div>
               </div>
             </Card>
