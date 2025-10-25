@@ -1126,11 +1126,13 @@ describe('JourneyResolver', () => {
         email: null,
         phone: null,
         countryCode: null,
+        contactAction: null,
         updatedAt: new Date(),
         parentBlockId: 'stepId',
         blockId: 'nextStepId',
         customizable: null,
-        parentStepId: null
+        parentStepId: null,
+        chatUrl: null
       }
     }
     const duplicatedButton = {

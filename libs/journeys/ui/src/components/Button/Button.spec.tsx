@@ -10,6 +10,7 @@ import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
+  ContactActionType,
   IconColor,
   IconName,
   IconSize,
@@ -396,6 +397,90 @@ describe('Button', () => {
     })
   })
 
+  it('should create a buttonClickEvent for NavigateToBlockAction (not chat event)', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+
+    const action: ButtonFields_action = {
+      __typename: 'NavigateToBlockAction',
+      parentBlockId: 'button',
+      gtmEventName: 'click',
+      blockId: 'next-step-id'
+    }
+
+    const buttonWithAction = {
+      ...block,
+      action
+    }
+
+    const result = jest.fn(() => ({
+      data: {
+        buttonClickEventCreate: {
+          __typename: 'ButtonClickEvent',
+          id: 'uuid',
+          action: action.__typename,
+          actionValue: ''
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BUTTON_CLICK_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  label: 'stepName',
+                  value: buttonWithAction.label,
+                  action: action.__typename,
+                  actionValue: 'Unknown Step'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <Button {...buttonWithAction} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('buttonClick', {
+      u: `${mockOrigin}/journey.id/step.id`,
+      props: {
+        id: 'uuid',
+        blockId: 'button',
+        action: 'NavigateToBlockAction',
+        actionValue: 'Unknown Step',
+        label: 'stepName',
+        stepId: 'step.id',
+        value: 'This is a button',
+        key: keyify({
+          stepId: 'step.id',
+          event: 'buttonClick',
+          blockId: 'button',
+          target: action
+        }),
+        simpleKey: keyify({
+          stepId: 'step.id',
+          event: 'buttonClick',
+          blockId: 'button'
+        })
+      }
+    })
+  })
+
   it('should add button_click event to dataLayer', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
     const activeBlock: TreeBlock<StepBlock> = {
@@ -541,7 +626,7 @@ describe('Button', () => {
     )
   })
 
-  it('should create a chatOpenEvent onClick', async () => {
+  it('should create a chatOpenEvent onClick for link action', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
     const mockPlausible = jest.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
@@ -602,6 +687,162 @@ describe('Button', () => {
         blockId: 'button',
         stepId: 'step.id',
         value: 'facebook',
+        key: keyify({
+          stepId: 'step.id',
+          event: 'chatButtonClick',
+          blockId: 'button',
+          target: action
+        }),
+        simpleKey: keyify({
+          stepId: 'step.id',
+          event: 'chatButtonClick',
+          blockId: 'button'
+        })
+      }
+    })
+  })
+
+  it('should create a chatOpenEvent for ChatAction', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+    const action: ButtonFields_action = {
+      __typename: 'ChatAction',
+      parentBlockId: 'button',
+      gtmEventName: 'click',
+      chatUrl: 'https://chat.example.com',
+      customizable: false,
+      parentStepId: 'step.id'
+    }
+
+    const buttonBlock = {
+      ...block,
+      action
+    }
+
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+
+    const result = jest.fn(() => ({
+      data: {
+        chatOpenEventCreate: {
+          __typename: 'ChatOpenEvent',
+          id: 'uuid'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CHAT_OPEN_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  value: undefined
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <Button {...buttonBlock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('chatButtonClick', {
+      u: `${mockOrigin}/journey.id/step.id`,
+      props: {
+        id: 'uuid',
+        blockId: 'button',
+        stepId: 'step.id',
+        value: undefined,
+        key: keyify({
+          stepId: 'step.id',
+          event: 'chatButtonClick',
+          blockId: 'button',
+          target: action
+        }),
+        simpleKey: keyify({
+          stepId: 'step.id',
+          event: 'chatButtonClick',
+          blockId: 'button'
+        })
+      }
+    })
+  })
+
+  it('should create a chatOpenEvent onClick for phone action', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+    const action: ButtonFields_action = {
+      __typename: 'PhoneAction',
+      parentBlockId: 'button',
+      gtmEventName: 'click',
+      phone: '+1234567890',
+      countryCode: 'US',
+      contactAction: ContactActionType.call
+    }
+
+    const buttonBlock = {
+      ...block,
+      action
+    }
+
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+
+    const result = jest.fn(() => ({
+      data: {
+        chatOpenEventCreate: {
+          __typename: 'ChatOpenEvent',
+          id: 'uuid'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CHAT_OPEN_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  value: undefined
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <Button {...buttonBlock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('chatButtonClick', {
+      u: `${mockOrigin}/journey.id/step.id`,
+      props: {
+        id: 'uuid',
+        blockId: 'button',
+        stepId: 'step.id',
+        value: undefined,
         key: keyify({
           stepId: 'step.id',
           event: 'chatButtonClick',
@@ -1006,5 +1247,124 @@ describe('Button', () => {
 
     fireEvent.click(submitButton)
     expect(handleSubmit).toHaveBeenCalledTimes(1)
+  })
+
+  describe('customization string resolution', () => {
+    it('resolves label using journey customization fields on default variant', () => {
+      const journeyWithFields = {
+        journeyCustomizationFields: [
+          {
+            __typename: 'JourneyCustomizationField',
+            id: '1',
+            journeyId: 'journeyId',
+            key: 'name',
+            value: 'Alice',
+            defaultValue: 'Anonymous'
+          }
+        ]
+      } as unknown as Journey
+
+      const btn = { ...block, label: '{{ name }}' }
+
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithFields, variant: 'default' }}
+          >
+            <Button {...btn} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByRole('button')).toHaveTextContent('Alice')
+    })
+
+    it('does not resolve label on admin variant for template journeys', () => {
+      const journeyWithFields = {
+        template: true,
+        journeyCustomizationFields: [
+          {
+            __typename: 'JourneyCustomizationField',
+            id: '1',
+            journeyId: 'journeyId',
+            key: 'name',
+            value: 'Alice',
+            defaultValue: 'Anonymous'
+          }
+        ]
+      } as unknown as Journey
+
+      const btn = { ...block, label: '{{ name }}' }
+
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithFields, variant: 'admin' }}
+          >
+            <Button {...btn} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByRole('button')).toHaveTextContent('{{ name }}')
+    })
+
+    it('replaces custom fields within mixed strings and leaves other text intact', () => {
+      const journeyWithFields = {
+        journeyCustomizationFields: [
+          {
+            __typename: 'JourneyCustomizationField',
+            id: '1',
+            journeyId: 'journeyId',
+            key: 'name',
+            value: 'Alice',
+            defaultValue: 'Anonymous'
+          }
+        ]
+      } as unknown as Journey
+
+      const btn = { ...block, label: 'Hello {{ name }}!' }
+
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithFields, variant: 'default' }}
+          >
+            <Button {...btn} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByRole('button')).toHaveTextContent('Hello Alice!')
+    })
+
+    it('uses defaultValue when value is null', () => {
+      const journeyWithFields = {
+        journeyCustomizationFields: [
+          {
+            __typename: 'JourneyCustomizationField',
+            id: '2',
+            journeyId: 'journeyId',
+            key: 'title',
+            value: null,
+            defaultValue: 'Child of God'
+          }
+        ]
+      } as unknown as Journey
+
+      const btn = { ...block, label: '{{ title }}' }
+
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithFields, variant: 'default' }}
+          >
+            <Button {...btn} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByRole('button')).toHaveTextContent('Child of God')
+    })
   })
 })

@@ -2,18 +2,26 @@ import Box from '@mui/material/Box'
 import InputAdornment from '@mui/material/InputAdornment'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, RefObject } from 'react'
 import { object, string } from 'yup'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import LinkIcon from '@core/shared/ui/icons/Link'
 
-import { BlockFields_ButtonBlock as ButtonBlock } from '../../../../../../../../../../__generated__/BlockFields'
+import {
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_ButtonBlock_action_LinkAction as ButtonBlockLinkAction
+} from '../../../../../../../../../../__generated__/BlockFields'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
+import { TextFieldFormRef } from '../../../../../../../../TextFieldForm/TextFieldForm'
 import { useActionCommand } from '../../../../../../../utils/useActionCommand'
 
-export function LinkAction(): ReactElement {
+interface LinkActionProps {
+  ref?: RefObject<TextFieldFormRef | null>
+}
+
+export function LinkAction({ ref }: LinkActionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { selectedBlock: stateSelectedBlock, selectedStep }
@@ -48,8 +56,7 @@ export function LinkAction(): ReactElement {
   })
 
   function handleSubmit(src: string): void {
-    if (selectedBlock == null) return
-
+    if (selectedBlock == null || selectedStep == null) return
     // checks if url has a protocol
     const url = /^\w+:\/\//.test(src) ? src : `https://${src}`
     const { id, action, __typename: blockTypename } = selectedBlock
@@ -60,7 +67,11 @@ export function LinkAction(): ReactElement {
         __typename: 'LinkAction',
         parentBlockId: id,
         gtmEventName: '',
-        url
+        url,
+        customizable:
+          (selectedBlock?.action as ButtonBlockLinkAction)?.customizable ??
+          false,
+        parentStepId: selectedStep.id
       },
       undoAction: action,
       editorFocus: {
@@ -82,6 +93,7 @@ export function LinkAction(): ReactElement {
       <Box data-testid="LinkAction">
         <TextFieldForm
           id="link"
+          ref={ref}
           label={t('Paste URL here...')}
           initialValue={linkAction?.url}
           validationSchema={linkActionSchema}

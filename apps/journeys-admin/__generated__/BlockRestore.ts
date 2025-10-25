@@ -3,23 +3,17 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: BlockRestore
 // ====================================================
 
-export interface BlockRestore_blockRestore_GridContainerBlock {
-  __typename: "GridContainerBlock" | "GridItemBlock";
+export interface BlockRestore_blockRestore_MultiselectBlock {
+  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
-}
-
-export interface BlockRestore_blockRestore_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
 }
 
 export interface BlockRestore_blockRestore_ButtonBlock_action_NavigateToBlockAction {
@@ -43,7 +37,25 @@ export interface BlockRestore_blockRestore_ButtonBlock_action_EmailAction {
   email: string;
 }
 
-export type BlockRestore_blockRestore_ButtonBlock_action = BlockRestore_blockRestore_ButtonBlock_action_PhoneAction | BlockRestore_blockRestore_ButtonBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_ButtonBlock_action_LinkAction | BlockRestore_blockRestore_ButtonBlock_action_EmailAction;
+export interface BlockRestore_blockRestore_ButtonBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface BlockRestore_blockRestore_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type BlockRestore_blockRestore_ButtonBlock_action = BlockRestore_blockRestore_ButtonBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_ButtonBlock_action_LinkAction | BlockRestore_blockRestore_ButtonBlock_action_EmailAction | BlockRestore_blockRestore_ButtonBlock_action_ChatAction | BlockRestore_blockRestore_ButtonBlock_action_PhoneAction;
 
 export interface BlockRestore_blockRestore_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -135,12 +147,6 @@ export interface BlockRestore_blockRestore_ImageBlock {
   focalLeft: number | null;
 }
 
-export interface BlockRestore_blockRestore_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface BlockRestore_blockRestore_RadioOptionBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -162,7 +168,25 @@ export interface BlockRestore_blockRestore_RadioOptionBlock_action_EmailAction {
   email: string;
 }
 
-export type BlockRestore_blockRestore_RadioOptionBlock_action = BlockRestore_blockRestore_RadioOptionBlock_action_PhoneAction | BlockRestore_blockRestore_RadioOptionBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_RadioOptionBlock_action_LinkAction | BlockRestore_blockRestore_RadioOptionBlock_action_EmailAction;
+export interface BlockRestore_blockRestore_RadioOptionBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface BlockRestore_blockRestore_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type BlockRestore_blockRestore_RadioOptionBlock_action = BlockRestore_blockRestore_RadioOptionBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_RadioOptionBlock_action_LinkAction | BlockRestore_blockRestore_RadioOptionBlock_action_EmailAction | BlockRestore_blockRestore_RadioOptionBlock_action_ChatAction | BlockRestore_blockRestore_RadioOptionBlock_action_PhoneAction;
 
 export interface BlockRestore_blockRestore_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -187,12 +211,6 @@ export interface BlockRestore_blockRestore_RadioQuestionBlock {
   gridView: boolean | null;
 }
 
-export interface BlockRestore_blockRestore_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface BlockRestore_blockRestore_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -214,7 +232,25 @@ export interface BlockRestore_blockRestore_SignUpBlock_action_EmailAction {
   email: string;
 }
 
-export type BlockRestore_blockRestore_SignUpBlock_action = BlockRestore_blockRestore_SignUpBlock_action_PhoneAction | BlockRestore_blockRestore_SignUpBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_SignUpBlock_action_LinkAction | BlockRestore_blockRestore_SignUpBlock_action_EmailAction;
+export interface BlockRestore_blockRestore_SignUpBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface BlockRestore_blockRestore_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type BlockRestore_blockRestore_SignUpBlock_action = BlockRestore_blockRestore_SignUpBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_SignUpBlock_action_LinkAction | BlockRestore_blockRestore_SignUpBlock_action_EmailAction | BlockRestore_blockRestore_SignUpBlock_action_ChatAction | BlockRestore_blockRestore_SignUpBlock_action_PhoneAction;
 
 export interface BlockRestore_blockRestore_SignUpBlock {
   __typename: "SignUpBlock";
@@ -282,6 +318,7 @@ export interface BlockRestore_blockRestore_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface BlockRestore_blockRestore_TypographyBlock_settings {
@@ -355,12 +392,6 @@ export interface BlockRestore_blockRestore_VideoBlock_mediaVideo_YouTube {
 
 export type BlockRestore_blockRestore_VideoBlock_mediaVideo = BlockRestore_blockRestore_VideoBlock_mediaVideo_Video | BlockRestore_blockRestore_VideoBlock_mediaVideo_MuxVideo | BlockRestore_blockRestore_VideoBlock_mediaVideo_YouTube;
 
-export interface BlockRestore_blockRestore_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface BlockRestore_blockRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -382,7 +413,25 @@ export interface BlockRestore_blockRestore_VideoBlock_action_EmailAction {
   email: string;
 }
 
-export type BlockRestore_blockRestore_VideoBlock_action = BlockRestore_blockRestore_VideoBlock_action_PhoneAction | BlockRestore_blockRestore_VideoBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_VideoBlock_action_LinkAction | BlockRestore_blockRestore_VideoBlock_action_EmailAction;
+export interface BlockRestore_blockRestore_VideoBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface BlockRestore_blockRestore_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type BlockRestore_blockRestore_VideoBlock_action = BlockRestore_blockRestore_VideoBlock_action_NavigateToBlockAction | BlockRestore_blockRestore_VideoBlock_action_LinkAction | BlockRestore_blockRestore_VideoBlock_action_EmailAction | BlockRestore_blockRestore_VideoBlock_action_ChatAction | BlockRestore_blockRestore_VideoBlock_action_PhoneAction;
 
 export interface BlockRestore_blockRestore_VideoBlock {
   __typename: "VideoBlock";
@@ -459,12 +508,6 @@ export interface BlockRestore_blockRestore_VideoBlock {
   action: BlockRestore_blockRestore_VideoBlock_action | null;
 }
 
-export interface BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -486,7 +529,25 @@ export interface BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_Email
   email: string;
 }
 
-export type BlockRestore_blockRestore_VideoTriggerBlock_triggerAction = BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_PhoneAction | BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_LinkAction | BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_EmailAction;
+export interface BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type BlockRestore_blockRestore_VideoTriggerBlock_triggerAction = BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_NavigateToBlockAction | BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_LinkAction | BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_EmailAction | BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_ChatAction | BlockRestore_blockRestore_VideoTriggerBlock_triggerAction_PhoneAction;
 
 export interface BlockRestore_blockRestore_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -501,7 +562,7 @@ export interface BlockRestore_blockRestore_VideoTriggerBlock {
   triggerAction: BlockRestore_blockRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockRestore_blockRestore = BlockRestore_blockRestore_GridContainerBlock | BlockRestore_blockRestore_ButtonBlock | BlockRestore_blockRestore_CardBlock | BlockRestore_blockRestore_IconBlock | BlockRestore_blockRestore_ImageBlock | BlockRestore_blockRestore_RadioOptionBlock | BlockRestore_blockRestore_RadioQuestionBlock | BlockRestore_blockRestore_SignUpBlock | BlockRestore_blockRestore_SpacerBlock | BlockRestore_blockRestore_StepBlock | BlockRestore_blockRestore_TextResponseBlock | BlockRestore_blockRestore_TypographyBlock | BlockRestore_blockRestore_VideoBlock | BlockRestore_blockRestore_VideoTriggerBlock;
+export type BlockRestore_blockRestore = BlockRestore_blockRestore_MultiselectBlock | BlockRestore_blockRestore_ButtonBlock | BlockRestore_blockRestore_CardBlock | BlockRestore_blockRestore_IconBlock | BlockRestore_blockRestore_ImageBlock | BlockRestore_blockRestore_RadioOptionBlock | BlockRestore_blockRestore_RadioQuestionBlock | BlockRestore_blockRestore_SignUpBlock | BlockRestore_blockRestore_SpacerBlock | BlockRestore_blockRestore_StepBlock | BlockRestore_blockRestore_TextResponseBlock | BlockRestore_blockRestore_TypographyBlock | BlockRestore_blockRestore_VideoBlock | BlockRestore_blockRestore_VideoTriggerBlock;
 
 export interface BlockRestore {
   /**

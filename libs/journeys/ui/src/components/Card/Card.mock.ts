@@ -163,7 +163,8 @@ export const textResponseBlock: TreeBlock<TextResponseBlock> = {
   type: TextResponseType.freeForm,
   routeId: null,
   integrationId: null,
-  required: null
+  required: null,
+  hideLabel: false
 }
 
 export const imageBlock: TreeBlock<ImageFields> = {
@@ -257,7 +258,9 @@ export const journey = {
   id: 'journey.id',
   language: {
     bcp: 'en'
-  }
+  },
+  journeyCustomizationFields: [],
+  fromTemplateId: null
 } as unknown as Journey
 
 // GraphQL mocks
