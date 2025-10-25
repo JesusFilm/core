@@ -95,6 +95,52 @@ const mapUsage = (usage: LanguageModelUsage | undefined) => ({
     (usage?.promptTokens ?? 0) + (usage?.completionTokens ?? 0)
 })
 
+const MARKDOWN_INSTRUCTION = 'Format every response using Markdown only.'
+
+const enforceMarkdownFormatting = (
+  messages: CoreMessage[] | undefined,
+  prompt: string | undefined
+) => {
+  let updatedMessages = messages
+  let updatedPrompt = prompt
+
+  const hasMarkdownInstruction = messages?.some(message => {
+    if (message.role !== 'system') return false
+    if (typeof message.content === 'string') {
+      return message.content.includes('Markdown')
+    }
+
+    // Type guard for array content
+    const content = message.content
+    if (Array.isArray(content)) {
+      return (content as any[]).some(
+        part => 'type' in part && part.type === 'text' && 'text' in part && typeof part.text === 'string' && part.text.includes('Markdown')
+      )
+    }
+
+    return false
+  })
+
+  if (messages != null && !hasMarkdownInstruction) {
+    updatedMessages = [
+      {
+        role: 'system',
+        content: MARKDOWN_INSTRUCTION
+      },
+      ...messages
+    ]
+  } else if (
+    (messages == null || messages.length === 0) &&
+    typeof prompt === 'string' &&
+    prompt.trim() !== '' &&
+    !prompt.includes('Markdown')
+  ) {
+    updatedPrompt = `${prompt}\n\n${MARKDOWN_INSTRUCTION}`
+  }
+
+  return { messages: updatedMessages, prompt: updatedPrompt }
+}
+
 const buildApologistHeaders = (apiKey: string, cacheTtl?: number): Record<string, string> => {
   const headers: Record<string, string> = {
     'x-api-key': apiKey,
@@ -266,6 +312,10 @@ export default async function handler(
     return
   }
 
+  const markdownEnforced = enforceMarkdownFormatting(messages, prompt)
+  messages = markdownEnforced.messages
+  prompt = markdownEnforced.prompt
+
   // Handle Apologist provider
   if (provider === 'apologist') {
     if (!isString(APOLOGIST_AGENT_DOMAIN) || APOLOGIST_AGENT_DOMAIN.trim() === '') {
@@ -353,21 +403,17 @@ export default async function handler(
 
     const result = await generateText(generationOptions)
 
-    const responseId = result.response?.id ?? `or-${Date.now()}`
-    const createdAt = result.response?.timestamp ?? new Date()
-    const text = result.text ?? ''
-
-    console.log(`[AI Respond] Received response from OpenRouter - Response ID: ${responseId}, Finish Reason: ${result.finishReason}, Usage: ${JSON.stringify(mapUsage(result.usage))}`)
-
-    res.status(200).json({
+    const usage = mapUsage(result.usage)
+    const responseId = result.response.id ?? `or-${Date.now()}`
+    const normalizedResponse = {
       id: responseId,
       model,
-      created: Math.floor(createdAt.getTime() / 1000),
+      created: Math.floor(Date.now() / 1000),
       provider: 'openrouter',
-      finish_reason: result.finishReason,
-      warnings: result.warnings ?? [],
-      usage: mapUsage(result.usage),
-      output_text: text,
+      finish_reason: result.finishReason ?? 'stop',
+      warnings: [],
+      usage,
+      output_text: result.text,
       output: [
         {
           id: `${responseId}-msg-0`,
@@ -376,12 +422,16 @@ export default async function handler(
           content: [
             {
               type: 'output_text',
-              text
+              text: result.text
             }
           ]
         }
       ]
-    })
+    }
+
+    console.log(`[AI Respond] Completed response from OpenRouter - Response ID: ${responseId}, Finish Reason: ${normalizedResponse.finish_reason}, Usage: ${JSON.stringify(usage)}`)
+
+    res.status(200).json(normalizedResponse)
   } catch (error) {
     console.error('OpenRouter proxy error:', error)
 

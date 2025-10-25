@@ -893,6 +893,8 @@ export default function NewPage() {
       }
     > = {}
 
+    if (!editableSteps) return handlers
+
     editableSteps.forEach((_, index) => {
       handlers[index] = {
         onContentChange: (value: string) =>
@@ -911,7 +913,7 @@ export default function NewPage() {
     })
 
     return handlers
-  }, [editableSteps.length, handleStepContentChange])
+  }, [editableSteps?.length ?? 0, handleStepContentChange])
 
   const conversationMapForDisplay = useMemo<ConversationMap>(
     () =>
@@ -1792,7 +1794,7 @@ export default function NewPage() {
       })
       const timestamp = new Date().toISOString()
       const previewSource =
-        editableSteps.length > 0
+        (editableSteps?.length ?? 0) > 0
           ? editableSteps
               .map((step, index) => {
                 const content = step?.content?.trim() || ''
@@ -2815,7 +2817,7 @@ export default function NewPage() {
                             <ConversationMapView map={conversationMapForDisplay} />
                           </div>
                         ) : (
-                          editableSteps.length > 0 && (
+                          (editableSteps?.length ?? 0) > 0 && (
                             <>
                               <div className="flex flex-wrap items-center justify-between gap-2">
                                 <label className="text-sm font-medium">
@@ -2840,7 +2842,7 @@ export default function NewPage() {
                     )}
 
                     {/* Generate Designs Button */}
-                    {editableSteps.length > 0 && !isProcessing && (
+                    {(editableSteps?.length ?? 0) > 0 && !isProcessing && (
                       <div className="mt-8 pt-6 border-t border-border">
                         <Button
                           size="lg"

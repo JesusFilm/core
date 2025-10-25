@@ -15,7 +15,7 @@ type StepHandlers = {
 }
 
 export type StepsListProps = {
-  editableSteps: GeneratedStepContent[]
+  editableSteps: GeneratedStepContent[] | undefined
   editingStepIndices: Set<number>
   stepHandlers: Record<number, StepHandlers>
   copiedStepIndex: number | null
@@ -244,7 +244,7 @@ export const StepsList = ({
 
   return (
     <div className={containerClass}>
-      {editableSteps.map((step, index) => {
+      {(editableSteps || []).map((step, index) => {
         const heading = deriveHeadingFromContent(
           step.content,
           `Step ${index + 1}`
