@@ -1,3 +1,4 @@
+import { BullModule } from '@nestjs/bullmq'
 import { Global, Module } from '@nestjs/common'
 
 import { CaslAuthModule } from '@core/nest/common/CaslAuthModule'
@@ -10,7 +11,10 @@ import { JourneyProfileResolver } from './journeyProfile.resolver'
 
 @Global()
 @Module({
-  imports: [CaslAuthModule.register(AppCaslFactory)],
+  imports: [
+    CaslAuthModule.register(AppCaslFactory),
+    BullModule.registerQueue({ name: 'api-journeys-profile-create' })
+  ],
   providers: [JourneyProfileResolver, MailChimpService, PrismaService],
   exports: []
 })
