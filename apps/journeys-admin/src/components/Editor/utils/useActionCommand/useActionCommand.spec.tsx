@@ -72,9 +72,7 @@ describe('useActionCommand', () => {
           __typename: 'LinkAction',
           url: 'https://github.com',
           parentBlockId: 'button2.id',
-          gtmEventName: '',
-          customizable: false,
-          parentStepId: 'step.id'
+          gtmEventName: ''
         },
         undoAction: null
       })
@@ -117,9 +115,7 @@ describe('useActionCommand', () => {
           __typename: 'EmailAction',
           email: 'edmondwashere@gmail.com',
           parentBlockId: 'button2.id',
-          gtmEventName: '',
-          customizable: false,
-          parentStepId: 'step.id'
+          gtmEventName: ''
         },
         undoAction: null
       })
@@ -341,9 +337,7 @@ describe('useActionCommand', () => {
           __typename: 'LinkAction',
           url: 'https://github.com',
           parentBlockId: 'button2.id',
-          gtmEventName: '',
-          customizable: false,
-          parentStepId: 'step.id'
+          gtmEventName: ''
         },
         undoAction: null,
         editorFocus: {

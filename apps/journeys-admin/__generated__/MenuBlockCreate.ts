@@ -133,8 +133,6 @@ export interface MenuBlockCreate_button1_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface MenuBlockCreate_button1_action_EmailAction {
@@ -142,8 +140,6 @@ export interface MenuBlockCreate_button1_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface MenuBlockCreate_button1_action_ChatAction {
@@ -202,8 +198,6 @@ export interface MenuBlockCreate_button2_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface MenuBlockCreate_button2_action_EmailAction {
@@ -211,8 +205,6 @@ export interface MenuBlockCreate_button2_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface MenuBlockCreate_button2_action_ChatAction {
@@ -271,8 +263,6 @@ export interface MenuBlockCreate_button3_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface MenuBlockCreate_button3_action_EmailAction {
@@ -280,8 +270,6 @@ export interface MenuBlockCreate_button3_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface MenuBlockCreate_button3_action_ChatAction {

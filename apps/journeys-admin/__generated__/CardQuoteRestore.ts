@@ -28,8 +28,6 @@ export interface CardQuoteRestore_image_ButtonBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_image_ButtonBlock_action_EmailAction {
@@ -37,8 +35,6 @@ export interface CardQuoteRestore_image_ButtonBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_image_ButtonBlock_action_ChatAction {
@@ -163,8 +159,6 @@ export interface CardQuoteRestore_image_RadioOptionBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_image_RadioOptionBlock_action_EmailAction {
@@ -172,8 +166,6 @@ export interface CardQuoteRestore_image_RadioOptionBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_image_RadioOptionBlock_action_ChatAction {
@@ -231,8 +223,6 @@ export interface CardQuoteRestore_image_SignUpBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_image_SignUpBlock_action_EmailAction {
@@ -240,8 +230,6 @@ export interface CardQuoteRestore_image_SignUpBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_image_SignUpBlock_action_ChatAction {
@@ -406,8 +394,6 @@ export interface CardQuoteRestore_image_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_image_VideoBlock_action_EmailAction {
@@ -415,8 +401,6 @@ export interface CardQuoteRestore_image_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_image_VideoBlock_action_ChatAction {
@@ -526,8 +510,6 @@ export interface CardQuoteRestore_image_VideoTriggerBlock_triggerAction_LinkActi
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_image_VideoTriggerBlock_triggerAction_EmailAction {
@@ -535,8 +517,6 @@ export interface CardQuoteRestore_image_VideoTriggerBlock_triggerAction_EmailAct
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_image_VideoTriggerBlock_triggerAction_ChatAction {
@@ -593,8 +573,6 @@ export interface CardQuoteRestore_subtitle_ButtonBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_subtitle_ButtonBlock_action_EmailAction {
@@ -602,8 +580,6 @@ export interface CardQuoteRestore_subtitle_ButtonBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_subtitle_ButtonBlock_action_ChatAction {
@@ -728,8 +704,6 @@ export interface CardQuoteRestore_subtitle_RadioOptionBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_subtitle_RadioOptionBlock_action_EmailAction {
@@ -737,8 +711,6 @@ export interface CardQuoteRestore_subtitle_RadioOptionBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_subtitle_RadioOptionBlock_action_ChatAction {
@@ -796,8 +768,6 @@ export interface CardQuoteRestore_subtitle_SignUpBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_subtitle_SignUpBlock_action_EmailAction {
@@ -805,8 +775,6 @@ export interface CardQuoteRestore_subtitle_SignUpBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_subtitle_SignUpBlock_action_ChatAction {
@@ -971,8 +939,6 @@ export interface CardQuoteRestore_subtitle_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_subtitle_VideoBlock_action_EmailAction {
@@ -980,8 +946,6 @@ export interface CardQuoteRestore_subtitle_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_subtitle_VideoBlock_action_ChatAction {
@@ -1091,8 +1055,6 @@ export interface CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_LinkA
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_EmailAction {
@@ -1100,8 +1062,6 @@ export interface CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_Email
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_subtitle_VideoTriggerBlock_triggerAction_ChatAction {
@@ -1158,8 +1118,6 @@ export interface CardQuoteRestore_title_ButtonBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_title_ButtonBlock_action_EmailAction {
@@ -1167,8 +1125,6 @@ export interface CardQuoteRestore_title_ButtonBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_title_ButtonBlock_action_ChatAction {
@@ -1293,8 +1249,6 @@ export interface CardQuoteRestore_title_RadioOptionBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_title_RadioOptionBlock_action_EmailAction {
@@ -1302,8 +1256,6 @@ export interface CardQuoteRestore_title_RadioOptionBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_title_RadioOptionBlock_action_ChatAction {
@@ -1361,8 +1313,6 @@ export interface CardQuoteRestore_title_SignUpBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_title_SignUpBlock_action_EmailAction {
@@ -1370,8 +1320,6 @@ export interface CardQuoteRestore_title_SignUpBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_title_SignUpBlock_action_ChatAction {
@@ -1536,8 +1484,6 @@ export interface CardQuoteRestore_title_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_title_VideoBlock_action_EmailAction {
@@ -1545,8 +1491,6 @@ export interface CardQuoteRestore_title_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_title_VideoBlock_action_ChatAction {
@@ -1656,8 +1600,6 @@ export interface CardQuoteRestore_title_VideoTriggerBlock_triggerAction_LinkActi
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_title_VideoTriggerBlock_triggerAction_EmailAction {
@@ -1665,8 +1607,6 @@ export interface CardQuoteRestore_title_VideoTriggerBlock_triggerAction_EmailAct
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_title_VideoTriggerBlock_triggerAction_ChatAction {
@@ -1723,8 +1663,6 @@ export interface CardQuoteRestore_body_ButtonBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_body_ButtonBlock_action_EmailAction {
@@ -1732,8 +1670,6 @@ export interface CardQuoteRestore_body_ButtonBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_body_ButtonBlock_action_ChatAction {
@@ -1858,8 +1794,6 @@ export interface CardQuoteRestore_body_RadioOptionBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_body_RadioOptionBlock_action_EmailAction {
@@ -1867,8 +1801,6 @@ export interface CardQuoteRestore_body_RadioOptionBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_body_RadioOptionBlock_action_ChatAction {
@@ -1926,8 +1858,6 @@ export interface CardQuoteRestore_body_SignUpBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_body_SignUpBlock_action_EmailAction {
@@ -1935,8 +1865,6 @@ export interface CardQuoteRestore_body_SignUpBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_body_SignUpBlock_action_ChatAction {
@@ -2101,8 +2029,6 @@ export interface CardQuoteRestore_body_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_body_VideoBlock_action_EmailAction {
@@ -2110,8 +2036,6 @@ export interface CardQuoteRestore_body_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_body_VideoBlock_action_ChatAction {
@@ -2221,8 +2145,6 @@ export interface CardQuoteRestore_body_VideoTriggerBlock_triggerAction_LinkActio
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_body_VideoTriggerBlock_triggerAction_EmailAction {
@@ -2230,8 +2152,6 @@ export interface CardQuoteRestore_body_VideoTriggerBlock_triggerAction_EmailActi
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardQuoteRestore_body_VideoTriggerBlock_triggerAction_ChatAction {

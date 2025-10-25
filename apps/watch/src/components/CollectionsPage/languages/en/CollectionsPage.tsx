@@ -2,16 +2,17 @@
 import { ReactElement, useState } from 'react'
 
 import { PageWrapper } from '../../../PageWrapper'
+import { SectionVideoCarousel } from '../../../SectionVideoCarousel'
 import { CollectionIntroText } from '../../CollectionIntroText'
 import {
   CollectionNavigationCarousel,
   ContentItem
 } from '../../CollectionNavigationCarousel'
+import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
 import { CollectionsPageContent } from '../../CollectionsPageContent'
 import { CollectionsVideoContent } from '../../CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCarousel'
 import { ContainerHero } from '../../ContainerHero'
-import { OtherCollectionsCarousel } from '../../OtherCollectionsCarousel'
 
 export function CollectionsPage(): ReactElement {
   const [mutePage, setMutePage] = useState(true)
@@ -132,7 +133,7 @@ Because the greatest celebration in human history is about far more than traditi
                       "Even in times of chaos and uncertainty, we can trust in God's sovereignty because:"
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>
                       {
                         'God remains in control even when circumstances feel out of control'
@@ -159,7 +160,7 @@ Because the greatest celebration in human history is about far more than traditi
               answer: (
                 <>
                   <p>{'Easter is central to Christian faith because:'}</p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>
                       {
                         "It marks Jesus' resurrection, proving His victory over death"
@@ -185,7 +186,7 @@ Because the greatest celebration in human history is about far more than traditi
               answer: (
                 <>
                   <p>{'The Bible tells us several key events occurred:'}</p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>
                       {
                         "Jesus' body was placed in a tomb and guarded by Roman soldiers"
@@ -235,51 +236,13 @@ Because the greatest celebration in human history is about far more than traditi
             buttonText: 'Join Our Bible study'
           }}
         />
-        <OtherCollectionsCarousel
+        <SectionVideoCarousel
           id="other-collections"
-          collectionSubtitle="Video Bible Collection"
-          collectionTitle="The Easter story is a key part of a bigger picture"
-          watchButtonText="Watch"
-          missionHighlight="Our mission"
-          missionDescription="is to introduce people to the Bible through films and videos that faithfully bring the Gospels to life. By visually telling the story of Jesus and God's love for humanity, we make Scripture more accessible, engaging, and easy to understand."
-          movieUrls={[
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/cfER11',
-              altText: 'JESUS Film Movie Poster',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/jesus.html/english.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/9wGrB0',
-              altText: 'The Life of Jesus Movie Poster',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/life-of-jesus-gospel-of-john.html/english.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/zeoyJz',
-              altText: 'Gospel of Matthew Film Movie Poster',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-matthew.html/lumo-matthew-1-1-2-23/english.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/Ol9PXg',
-              altText: 'Gospel of Mark Film Movie Poster',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-mark.html/lumo-mark-1-1-45/english.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/cft9yz',
-              altText: 'Gospel of Luke Film Movie Poster',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-luke.html/lumo-luke-1-1-56/english.html'
-            },
-            {
-              imageUrl: 'https://cdn-std.droplr.net/files/acc_760170/TxsUi3',
-              altText: 'Gospel of John Film Movie Poster',
-              externalUrl:
-                'https://www.jesusfilm.org/watch/lumo-the-gospel-of-john.html/lumo-john-1-1-34/english.html'
-            }
-          ]}
+          sources={collectionShowcaseSources}
+          primaryCollectionId="LUMOCollection"
+          subtitleOverride="Video Bible Collection"
+          titleOverride="The Easter story is a key part of a bigger picture"
+          descriptionOverride="<strong>Our mission</strong> is to introduce people to the Bible through films and videos that faithfully bring the Gospels to life. By visually telling the story of Jesus and God's love for humanity, we make Scripture more accessible, engaging, and easy to understand."
         />
         <CollectionsVideoContent
           contentId="my-last-day/english"
@@ -308,7 +271,7 @@ Because the greatest celebration in human history is about far more than traditi
                       "Jesus' forgiveness is a demonstration of God's grace and mercy. The thief on the cross recognized Jesus' innocence and divinity, humbly asking to be remembered in His kingdom. Jesus' response shows:"
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{'Salvation is based on faith, not deeds'}</li>
                     <li>
                       {"God's mercy extends to all, even the worst sinners"}
@@ -336,7 +299,7 @@ Because the greatest celebration in human history is about far more than traditi
                       "Jesus willingly accepted death because it was part of God's plan for redemption. His sacrifice was necessary to fulfill prophecy and bring salvation. Key reasons include:"
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>
                       {
                         'His death fulfilled Old Testament prophecies (Isaiah 53)'
@@ -366,7 +329,7 @@ Because the greatest celebration in human history is about far more than traditi
                       'Being in paradise with Jesus means eternal life in the presence of God. The thief on the cross was assured of his place with Jesus in heaven because of his faith. Important aspects of this promise include:'
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>
                       {
                         'It signifies immediate presence with Christ after death'
@@ -480,7 +443,7 @@ Because the greatest celebration in human history is about far more than traditi
                       "Jesus' death was necessary to fulfill God's plan of redemption. Because of sin, humanity was separated from God, but Jesus' sacrifice provided the way for reconciliation. Here's why His death was essential:"
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{'Sin creates a barrier between us and God'}</li>
                     <li>{"God's justice requires a payment for sin"}</li>
                     <li>{'Jesus, as the perfect sacrifice, took our place'}</li>
@@ -504,7 +467,7 @@ Because the greatest celebration in human history is about far more than traditi
                       "God's love and justice go hand in hand. While He desires to forgive, He also upholds justice. Jesus' sacrifice was the ultimate expression of both:"
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>
                       {'Forgiveness requires a cost, and Jesus paid that cost'}
                     </li>
@@ -536,7 +499,7 @@ Because the greatest celebration in human history is about far more than traditi
                       "Jesus' death and resurrection opened the way for us to be reconciled with God. Through Him, we can:"
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{'Experience forgiveness and freedom from sin'}</li>
                     <li>{'Have direct access to God through Christ'}</li>
                     <li>{'Receive the gift of eternal life'}</li>
@@ -605,7 +568,7 @@ Because the greatest celebration in human history is about far more than traditi
                       "Being 'born again' means experiencing a spiritual rebirth. Jesus explained to Nicodemus that this rebirth is not physical but spiritual—born of water and the Spirit."
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{'It is a work of the Holy Spirit'}</li>
                     <li>{'It involves believing in Jesus as Savior'}</li>
                     <li>
@@ -623,7 +586,7 @@ Because the greatest celebration in human history is about far more than traditi
                   <p>
                     {`Jesus wanted Nicodemus to understand that religious knowledge and good deeds are not enough. To enter God's kingdom, a complete inner transformation is needed.`}
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{'It shows our need for spiritual renewal'}</li>
                     <li>{'It points to salvation through faith, not works'}</li>
                     <li>{'It emphasizes the role of the Holy Spirit'}</li>
@@ -641,7 +604,7 @@ Because the greatest celebration in human history is about far more than traditi
                       'Jesus explained that being born again comes through believing in Him. It is a personal step of faith that results in a new life in God.'
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{'Believe in Jesus Christ as the Son of God'}</li>
                     <li>{'Accept His sacrifice for your sins'}</li>
                     <li>
@@ -711,7 +674,7 @@ Because the greatest celebration in human history is about far more than traditi
                       "There is strong historical and biblical evidence for Jesus' death and resurrection:"
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>
                       {'Roman soldiers confirmed His death before burying Him'}
                     </li>
@@ -738,7 +701,7 @@ Because the greatest celebration in human history is about far more than traditi
                   <p>
                     {'The resurrection is central to Christian faith because:'}
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{`It proves Jesus' victory over sin and death`}</li>
                     <li>
                       {'It fulfills Old Testament prophecies about the Messiah'}
@@ -762,7 +725,7 @@ Because the greatest celebration in human history is about far more than traditi
                       "Jesus' resurrection calls for a personal response. We can:"
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{'Believe in Him as our Savior and Lord'}</li>
                     <li>{'Repent from sin and follow His teachings'}</li>
                     <li>
@@ -948,7 +911,7 @@ Because the greatest celebration in human history is about far more than traditi
                       'The Bible teaches that everything began with God, the Creator of the universe. He spoke everything into existence with purpose and design. Humanity was created in His image to live in harmony with Him, each other, and creation.'
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{'God created the world out of love and order'}</li>
                     <li>
                       {
@@ -975,7 +938,7 @@ Because the greatest celebration in human history is about far more than traditi
                       'Suffering exists because sin entered the world when humanity chose to rebel against God. This disobedience broke the original perfection, introducing death, pain, and separation from God.'
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{'Sin brought suffering, brokenness, and death'}</li>
                     <li>{'We all contribute to the problem of sin'}</li>
                     <li>
@@ -998,7 +961,7 @@ Because the greatest celebration in human history is about far more than traditi
                       'Yes! God sent Jesus as the rescuer. Jesus lived a perfect life, died on the cross to pay for sin, and rose from the dead to defeat death itself. Through Him, we can be restored to God and experience a new life.'
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{"Jesus' sacrifice makes forgiveness possible"}</li>
                     <li>{'His resurrection proves His power over death'}</li>
                     <li>
@@ -1021,7 +984,7 @@ Because the greatest celebration in human history is about far more than traditi
                       'According to the Bible, God has promised a future where He will restore everything. Those who trust in Jesus will live forever with Him in a perfect, renewed world. Sin, suffering, and death will be no more.'
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{'God will create a new heaven and a new earth'}</li>
                     <li>{'There will be no more pain, suffering, or death'}</li>
                     <li>
@@ -1096,7 +1059,7 @@ Because the greatest celebration in human history is about far more than traditi
                       "Mary Magdalene's story is one of transformation and redemption. Like many of us, she carried a past filled with struggles, but Jesus freed her and gave her a new purpose. Her story teaches us:"
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{'Jesus offers redemption regardless of our past'}</li>
                     <li>{'Faith in Christ brings healing and purpose'}</li>
                     <li>
@@ -1117,7 +1080,7 @@ Because the greatest celebration in human history is about far more than traditi
                       'The religious leaders opposed Jesus because His teachings challenged their authority and traditions. Key reasons include:'
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>
                       {
                         'He welcomed sinners and outcasts, disrupting social norms'
@@ -1151,7 +1114,7 @@ Because the greatest celebration in human history is about far more than traditi
                       "Jesus' first appearance to Mary Magdalene was deeply significant. It showed:"
                     }
                   </p>
-                  <ul className="mt-2 list-disc space-y-2 pl-6">
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
                     <li>{'His care for those the world overlooked'}</li>
                     <li>
                       {'The importance of faith and devotion over status'}

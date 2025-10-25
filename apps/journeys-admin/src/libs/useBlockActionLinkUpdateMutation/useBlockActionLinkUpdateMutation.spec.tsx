@@ -41,7 +41,7 @@ describe('useBlockActionLinkUpdateMutation', () => {
     })
 
     await act(async () => {
-      await result.current[0](block1, 'https://github.com', false, 'step.id')
+      await result.current[0](block1, 'https://github.com')
 
       expect(mockResult).toHaveBeenCalled()
     })
@@ -64,7 +64,7 @@ describe('useBlockActionLinkUpdateMutation', () => {
     })
 
     await act(async () => {
-      await result.current[0](block1, 'https://github.com', false, 'step.id')
+      await result.current[0](block1, 'https://github.com')
 
       await waitFor(() =>
         expect(cache.extract()['ButtonBlock:button2.id']).toEqual({
@@ -73,9 +73,7 @@ describe('useBlockActionLinkUpdateMutation', () => {
             __typename: 'LinkAction',
             gtmEventName: null,
             parentBlockId: 'button2.id',
-            url: 'https://github.com',
-            customizable: false,
-            parentStepId: 'step.id'
+            url: 'https://github.com'
           }
         })
       )

@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "_comment": "All IDs in playlistSequence are archlight database IDs, not slugs",
+  "blacklistedVideoIds": [],
+  "playlistSequence": [
+    ["1_jf-0-0"],
+    ["JFP-Featured"],
+    ["8_NBC"],
+    [
+      "GOJohnCollection",
+      "GOLukeCollection",
+      "GOMarkCollection",
+      "GOMattCollection"
+    ],
+    ["7_Origins", "Nua", "2_ElCamWaySJEN"],
+    ["MAG1"],
+    ["11_Sermon", "11_Shema", "11_ReadBible", "11_Advent"],
+    ["2_GOJ-0-0"],
+    ["CS1"],
+
+    ["9_CreationtoChrist"],
+    ["2_FileZero-0-0"],
+    ["10_DarkroomFaith"]
+  ],
+  "blacklist": [
+    "7_Origins4Connect"
+  ]
+}

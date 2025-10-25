@@ -77,20 +77,10 @@ export function useActionCommand(): {
             })
           switch (action?.__typename) {
             case 'LinkAction':
-              void actionLinkUpdate(
-                block,
-                action.url,
-                action.customizable,
-                action.parentStepId
-              )
+              void actionLinkUpdate(block, action.url)
               break
             case 'EmailAction':
-              void actionEmailUpdate(
-                block,
-                action.email,
-                action.customizable,
-                action.parentStepId
-              )
+              void actionEmailUpdate(block, action.email)
               break
             case 'ChatAction':
               void actionChatUpdate(

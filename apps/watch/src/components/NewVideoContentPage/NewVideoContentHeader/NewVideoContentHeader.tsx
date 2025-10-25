@@ -16,7 +16,7 @@ interface VideoContentHeaderProps {
 export function NewVideoContentHeader({
   loading,
   videos = []
-}: VideoContentHeaderProps): ReactElement {
+}: VideoContentHeaderProps): ReactElement | null {
   const { t } = useTranslation('apps-watch')
   const { id, container } = useVideo()
 
@@ -26,83 +26,77 @@ export function NewVideoContentHeader({
       : -1
   }, [container, videos, id])
 
+  if (container == null) return null
+
   return (
     <div
-      className="relative z-2 mx-auto flex w-full max-w-[1920px] px-4 pt-7 sm:px-6 md:px-8 lg:px-10 xl:px-12"
       data-testid="NewVideoContentHeader"
+      className="flex z-2 py-6 responsive-container relative"
     >
-      {container != null && (
-        <div className="w-full">
-          <div
-            className="flex flex-row items-center justify-between"
-            data-testid="VideoHeading"
-          >
-            <div className="flex flex-row items-center space-x-4">
-              {container.variant?.slug != null ? (
-                <NextLink
-                  href={`/watch/${container.variant.slug}`}
-                  locale={false}
-                  className="text-primary text-sm tracking-wider uppercase no-underline"
-                >
-                  {last(container.title)?.value}
-                </NextLink>
-              ) : (
-                <span className="text-primary text-sm tracking-wider uppercase no-underline">
-                  {last(container.title)?.value}
-                </span>
-              )}
-              <p className="hidden text-sm font-bold tracking-wider text-[#bbbcbc] uppercase xl:block">
-                •
-              </p>
-              <p className="hidden text-sm tracking-wider text-[#bbbcbc] uppercase xl:block">
-                {loading === true ? (
-                  <Skeleton width={100} height={20} />
-                ) : (
-                  <>
-                    {t('Clip ')}
-                    {activeVideoIndex}
-                    {t(' of ')}
-                    {videos.length != 0
-                      ? videos.length
-                      : container.childrenCount}
-                  </>
-                )}
-              </p>
-            </div>
+      <div className="w-full">
+        <div
+          className="flex flex-row justify-between items-center"
+          data-testid="VideoHeading"
+        >
+          <div className="flex flex-row items-center space-x-4">
             {container.variant?.slug != null ? (
               <NextLink
                 href={`/watch/${container.variant.slug}`}
                 locale={false}
-                passHref
+                className="uppercase text-sm tracking-wider text-primary no-underline"
               >
-                <button className="hidden cursor-pointer rounded-md border border-[#bbbcbc] px-2 py-1 text-sm font-bold text-[#bbbcbc] xl:block">
-                  {container.label === VideoLabel.featureFilm
-                    ? 'Watch Full Film'
-                    : 'See All'}
-                </button>
+                {last(container.title)?.value}
               </NextLink>
             ) : (
-              <button className="hidden cursor-pointer rounded-md border border-[#bbbcbc] px-2 py-1 text-sm font-bold text-[#bbbcbc] xl:block">
-                {container.label === VideoLabel.featureFilm
-                  ? 'Watch Full Film'
-                  : 'See All'}
-              </button>
+              <span className="uppercase text-sm tracking-wider text-primary no-underline">
+                {last(container.title)?.value}
+              </span>
             )}
             <p
-              data-testid="container-progress-short"
-              className="block text-xs tracking-wider text-[#bbbcbc] uppercase xl:hidden"
+              className="uppercase text-sm tracking-wider text-[#bbbcbc] hidden xl:block font-bold"
+              aria-hidden="true"
             >
+              •
+            </p>
+            <div className="uppercase text-sm tracking-wider text-[#bbbcbc]  hidden xl:block">
               {loading === true ? (
                 <Skeleton width={100} height={20} />
               ) : (
-                <>
-                  {activeVideoIndex}/{container.childrenCount}
-                </>
+                t('Clip {{current}} of {{total}}', {
+                  current: activeVideoIndex,
+                  total:
+                    videos.length !== 0
+                      ? videos.length
+                      : container.childrenCount
+                })
               )}
-            </p>
+            </div>
+          </div>
+          {container.variant?.slug != null && (
+            <NextLink
+              href={`/watch/${container.variant.slug}`}
+              locale={false}
+              className="border border-[#bbbcbc] rounded-md px-2 py-1 text-sm text-[#bbbcbc] hidden xl:block cursor-pointer font-bold"
+            >
+              {container.label === VideoLabel.featureFilm
+                ? 'Watch Full Film'
+                : 'See All'}
+            </NextLink>
+          )}
+          <div
+            data-testid="container-progress-short"
+            className="uppercase text-xs tracking-wider text-[#bbbcbc] block xl:hidden"
+          >
+            {loading === true ? (
+              <Skeleton width={100} height={20} />
+            ) : (
+              <>
+                {activeVideoIndex}/{container.childrenCount}
+              </>
+            )}
           </div>
         </div>
-      )}
+      </div>
     </div>
   )
 }

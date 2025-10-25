@@ -52,9 +52,7 @@ describe('LinkNode', () => {
                 __typename: 'LinkAction',
                 parentBlockId: 'button1.id',
                 gtmEventName: null,
-                url: 'https://www.google.com',
-                customizable: false,
-                parentStepId: null
+                url: 'https://www.google.com'
               },
               children: [],
               settings: null
@@ -75,9 +73,7 @@ describe('LinkNode', () => {
                 __typename: 'EmailAction',
                 parentBlockId: 'button2.id',
                 gtmEventName: null,
-                email: 'email@example.com',
-                customizable: false,
-                parentStepId: null
+                email: 'email@example.com'
               },
               children: [],
               settings: null

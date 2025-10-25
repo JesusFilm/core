@@ -294,8 +294,7 @@ describe('UploadVideoVariantContext', () => {
         file,
         expect.objectContaining({
           headers: { 'Content-Type': 'video/mp4' },
-          onUploadProgress: expect.any(Function),
-          signal: expect.anything()
+          onUploadProgress: expect.any(Function)
         })
       )
 

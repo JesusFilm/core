@@ -14,8 +14,6 @@ export interface BlockActionLinkUpdate_blockUpdateLinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface BlockActionLinkUpdate {

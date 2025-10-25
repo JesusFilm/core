@@ -14,8 +14,6 @@ export interface BlockActionEmailUpdate_blockUpdateEmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface BlockActionEmailUpdate {

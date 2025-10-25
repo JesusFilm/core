@@ -1,0 +1,146 @@
+{
+  "version": "1.0.0",
+  "inserts": [
+    {
+      "id": "welcome-start",
+      "enabled": true,
+      "source": "mux",
+      "playbackIds": ["34eG2PxlcRu3L4wU5XlKVna2vN3BAI02Tjrq28dazn3Y"],
+      "duration": 9,
+      "overlay": {
+        "label": "Faith & Scripture",
+        "title": "Today’s Video Picks",
+        "collection": "Daily Inspirations",
+        "description": "Faith-centered video content from our library to inspire, challenge, and spark reflection."
+      },
+      "trigger": { "type": "sequence-start" },
+      "logo": true,
+      "conditionalOverlays": [
+        {
+          "conditions": [
+            {
+              "type": "time-range",
+              "range": { "start": 5, "end": 9 }
+            }
+          ],
+          "overlay": {
+            "label": "Morning Inspiration",
+            "title": "Good Morning! Today's Bible Moments Await.",
+            "collection": "Morning Moments",
+            "description": "Begin your day with encouraging Bible moments designed to inspire and uplift your spirit."
+          },
+          "priority": 10
+        },
+        {
+          "conditions": [
+            {
+              "type": "time-range",
+              "range": { "start": 9, "end": 12 }
+            }
+          ],
+          "overlay": {
+            "label": "Morning Inspiration",
+            "title": "Good Morning! A New Day of Inspiration.",
+            "collection": "Morning Moments",
+            "description": "A thoughtful collection of Bible moments to accompany your morning routine."
+          },
+          "priority": 10
+        },
+        {
+          "conditions": [
+            {
+              "type": "time-range",
+              "range": { "start": 12, "end": 17 }
+            }
+          ],
+          "overlay": {
+            "label": "Afternoon Inspiration",
+            "title": "Good Afternoon! Bible Moments for Your Day.",
+            "collection": "Afternoon Moments",
+            "description": "Encouraging Bible content perfect for your afternoon break or continued inspiration."
+          },
+          "priority": 10
+        },
+        {
+          "conditions": [
+            {
+              "type": "time-range",
+              "range": { "start": 17, "end": 21 }
+            }
+          ],
+          "overlay": {
+            "label": "Evening Inspiration",
+            "title": "Good Evening! Wind Down with Bible Moments.",
+            "collection": "Evening Moments",
+            "description": "Peaceful Bible moments to help you reflect and find comfort as your day comes to a close."
+          },
+          "priority": 10
+        },
+        {
+          "conditions": [
+            {
+              "type": "time-range",
+              "range": { "start": 21, "end": 0 }
+            }
+          ],
+          "overlay": {
+            "label": "Evening Inspiration",
+            "title": "Good Evening! Bible Moments Before Bed.",
+            "collection": "Evening Moments",
+            "description": "Peaceful Bible moments to help you reflect as evening turns to night."
+          },
+          "priority": 10
+        },
+        {
+          "conditions": [
+            {
+              "type": "time-range",
+              "range": { "start": 0, "end": 5 }
+            }
+          ],
+          "overlay": {
+            "label": "Late Night Inspiration",
+            "title": "Hello, Night Owl! Bible Moments for You.",
+            "collection": "Late Night Moments",
+            "description": "Special Bible moments for those quiet hours when the world is asleep."
+          },
+          "priority": 10
+        }
+      ]
+    },
+    {
+      "id": "join-us",
+      "enabled": true,
+      "source": "mux",
+      "playbackIds": ["VN4b95KOO3JtLg3x019dH2mzMHPL4le65vRmXFONyzZ8"],
+      "overlay": {
+        "label": "Join Us",
+        "title": "Bilions are searching",
+        "collection": "Highlights",
+        "description": "The harvest is here. Join us as we share the gospel with the world using digital media.",
+        "action": {
+          "label": "Join Us",
+          "url": "https://your.nextstep.is/joinus"
+        }
+      },
+      "trigger": { "type": "after-count", "count": 1 }
+    },
+    {
+      "id": "telling-the-story-of-jesus",
+      "enabled": true,
+      "source": "mux",
+      "playbackIds": ["W00xXnOS4kU8VVMgx4M6AdzZE63OnKk300HdEDeUYZqlQ"],
+      "overlay": {
+        "label": "Let's go together",
+        "title": "Telling the Story of Jesus, Together",
+        "collection": "Highlights",
+        "description": "So they can hear and see the love of Jesus in their own language right where they are.",
+        "action": {
+          "label": "Share in Our Mission",
+          "url": "https://www.jesusfilm.org/partners/"
+        }
+      },
+      "trigger": { "type": "after-count", "count": 3 }
+    }
+  ]
+}

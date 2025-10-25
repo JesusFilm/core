@@ -3,4 +3,4 @@ export {
   AccordionItem,
   AccordionTrigger,
   AccordionContent
-} from './Accordion'
+} from '../ui/accordion'

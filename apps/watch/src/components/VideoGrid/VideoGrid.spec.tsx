@@ -123,4 +123,22 @@ describe('VideoGrid', () => {
 
     expect(screen.getByText('Sorry, no results')).toBeInTheDocument()
   })
+
+  it('should render sequence numbers when enabled', () => {
+    mockedUseAlgoliaVideos.mockReturnValue({
+      loading: false,
+      noResults: false,
+      items: [],
+      showMore: jest.fn(),
+      isLastPage: false,
+      sendEvent: jest.fn()
+    })
+
+    render(<VideoGrid videos={videos.slice(0, 2)} showSequenceNumbers />)
+
+    const sequenceBadges = screen.getAllByTestId('VideoCardSequenceNumber')
+    expect(sequenceBadges).toHaveLength(2)
+    expect(sequenceBadges[0]).toHaveTextContent('1')
+    expect(sequenceBadges[1]).toHaveTextContent('2')
+  })
 })

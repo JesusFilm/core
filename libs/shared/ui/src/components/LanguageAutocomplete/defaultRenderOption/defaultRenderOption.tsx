@@ -2,12 +2,12 @@ import ListItem from '@mui/material/ListItem'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { ReactNode } from 'react'
-import type { RowComponentProps } from 'react-window'
+import type { ListChildComponentProps as RowComponentProps } from 'react-window'
 
 export function defaultRenderOption(
   props: RowComponentProps<{ rows: any[] }>
 ): ReactNode {
-  const { rows, index, style } = props
+  const { data: rows, index, style } = props
   const { id, localName, nativeName } = rows[index][1]
   const { key, ownerState, ariaAttributes, ...optionProps } = rows[index][0]
 

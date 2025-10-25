@@ -85,7 +85,7 @@ export function AudioTrackSelect({
       (mapping) => mapping.languageId === language.id
     )?.locale
     if (languageLocale != null) {
-      void i18n.changeLanguage(languageLocale)
+      i18n.changeLanguage(languageLocale)
     }
 
     const languageEnglishName = language.englishName?.value
@@ -104,7 +104,7 @@ export function AudioTrackSelect({
       <div className="flex items-center justify-between">
         <label
           htmlFor="audio-select"
-          className="ml-7 block text-xl font-medium text-gray-700"
+          className="block text-xl font-medium text-gray-700 ml-7"
         >
           {t('Language')}
         </label>

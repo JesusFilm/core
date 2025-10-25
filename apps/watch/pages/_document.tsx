@@ -26,16 +26,16 @@ export default class MyDocument extends Document<DocumentHeadTagsProps> {
             href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800&family=Open+Sans&display=swap"
             rel="stylesheet"
           />
-          <link rel="icon" href="/watch/assets/favicon-32.png" sizes="32x32" />
+          <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" />
           <link
             rel="icon"
-            href="/watch/assets/favicon-180.png"
+            href="/assets/favicon-180.png"
             sizes="192x192"
           />
-          <link rel="apple-touch-icon" href="/watch/assets/favicon-180.png" />
+          <link rel="apple-touch-icon" href="/assets/favicon-180.png" />
           <meta
             name="msapplication-TileImage"
-            content="/watch/assets/favicon-180.png"
+            content="/assets/favicon-180.png"
           />
           {languageName && <meta name="language" content={languageName} />}
           {/* Inject MUI styles first to match with the prepend: true configuration. */}

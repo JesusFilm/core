@@ -147,9 +147,7 @@ export const action: LinkAction = {
   __typename: 'LinkAction',
   parentBlockId: 'button',
   gtmEventName: null,
-  url: 'https://test.com/some-site',
-  customizable: null,
-  parentStepId: null
+  url: 'https://test.com/some-site'
 }
 
 export const textResponseBlock: TreeBlock<TextResponseBlock> = {

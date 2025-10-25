@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import last from 'lodash/last'
 import { useRouter } from 'next/router'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { useVideo } from '../../libs/videoContext'
@@ -14,6 +14,7 @@ import { ShareButton } from '../ShareButton'
 import { ShareDialog } from '../ShareDialog'
 import { getSlug } from '../VideoCard'
 import { VideoCarousel } from '../VideoCarousel'
+import { mergeMuxInserts } from '../VideoHero/libs/useCarouselVideos/insertMux'
 
 import { DownloadButton } from './DownloadButton'
 import { VideoContent } from './VideoContent/VideoContent'
@@ -47,6 +48,7 @@ export function VideoContentPage(): ReactElement {
   const [openDownload, setOpenDownload] = useState(false)
 
   const ogSlug = getSlug(container?.slug, label, variant?.slug)
+  const carouselSlides = useMemo(() => mergeMuxInserts(children), [children])
 
   return (
     <>
@@ -116,7 +118,8 @@ export function VideoContentPage(): ReactElement {
                 (children.length === children.length ||
                   children.length > 0) && (
                   <Box pb={4}>
-                    <VideoCarousel
+                  <VideoCarousel
+                      slides={carouselSlides}
                       loading={loading}
                       videos={children}
                       containerSlug={container?.slug ?? slug}

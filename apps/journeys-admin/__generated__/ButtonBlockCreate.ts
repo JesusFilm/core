@@ -21,8 +21,6 @@ export interface ButtonBlockCreate_buttonBlockCreate_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface ButtonBlockCreate_buttonBlockCreate_action_EmailAction {
@@ -30,8 +28,6 @@ export interface ButtonBlockCreate_buttonBlockCreate_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface ButtonBlockCreate_buttonBlockCreate_action_ChatAction {
@@ -110,8 +106,6 @@ export interface ButtonBlockCreate_buttonBlockUpdate_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface ButtonBlockCreate_buttonBlockUpdate_action_EmailAction {
@@ -119,8 +113,6 @@ export interface ButtonBlockCreate_buttonBlockUpdate_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface ButtonBlockCreate_buttonBlockUpdate_action_ChatAction {

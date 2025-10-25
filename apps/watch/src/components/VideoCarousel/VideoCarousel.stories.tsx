@@ -68,4 +68,41 @@ export const Default = {
   }
 }
 
+export const WithMuxInsert = {
+  ...Template,
+  args: {
+    videos,
+    slides: [
+      {
+        source: 'mux' as const,
+        id: 'welcome-start',
+        overlay: {
+          label: 'Today’s Pick',
+          title: 'Morning Nature Background',
+          collection: 'Daily Inspirations',
+          description: 'A calm intro before your playlist.'
+        },
+        playbackId: 'J3WBxqGgXxi01201FYmW0202ayeL7PGXfuuXR02nvjQCE7bI',
+        playbackIndex: 0,
+        urls: {
+          hls: 'https://stream.mux.com/J3WBxqGgXxi01201FYmW0202ayeL7PGXfuuXR02nvjQCE7bI.m3u8',
+          poster:
+            'https://image.mux.com/J3WBxqGgXxi01201FYmW0202ayeL7PGXfuuXR02nvjQCE7bI/thumbnail.jpg?time=1',
+          mp4: {}
+        }
+      },
+      ...videos.map((video) => ({
+        source: 'video' as const,
+        id: video.id,
+        video
+      }))
+    ]
+  },
+  parameters: {
+    msw: {
+      handlers: [getAlgoliaVideosHandlers]
+    }
+  }
+}
+
 export default VideoCarouselStory

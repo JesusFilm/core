@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { ReactElement, ReactNode } from 'react'
-import type { RowComponentProps } from 'react-window'
+import type { ListChildComponentProps as RowComponentProps } from 'react-window'
 
 import {
   LanguageAutocomplete,
@@ -14,7 +14,7 @@ import {
 import { ResizeObserverPolyfill } from '@core/shared/ui/ResizeObserverPolyfill'
 
 export function Option(props: RowComponentProps<{ rows: any[] }>): ReactNode {
-  const { rows, index, style } = props
+  const { data: rows, index, style } = props
   const { id, localName, nativeName } = rows[index][1]
   const { key, ...optionProps } = rows[index][0]
 

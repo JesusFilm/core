@@ -99,9 +99,7 @@ export function Custom404(): ReactElement {
         gtmEventName: null,
         parentBlockId: '404-button-id',
         url: '/',
-        __typename: 'LinkAction',
-        customizable: null,
-        parentStepId: null
+        __typename: 'LinkAction'
       },
       settings: null
     },

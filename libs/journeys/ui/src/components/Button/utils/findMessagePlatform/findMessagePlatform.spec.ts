@@ -8,9 +8,7 @@ describe('findMessagePlatform', () => {
     __typename: 'LinkAction',
     parentBlockId: 'button.id',
     gtmEventName: 'click',
-    url: 'https://google.com',
-    customizable: null,
-    parentStepId: null
+    url: 'https://google.com'
   }
 
   it('should return facebook', () => {

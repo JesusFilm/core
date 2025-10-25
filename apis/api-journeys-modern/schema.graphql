@@ -676,7 +676,6 @@ type Journey
   showLogo: Boolean
   showMenu: Boolean
   showDisplayTitle: Boolean
-  showAssistant: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
   socialNodeX: Int
   socialNodeY: Int
@@ -911,7 +910,6 @@ input JourneyUpdateInput {
   showLogo: Boolean
   showMenu: Boolean
   showDisplayTitle: Boolean
-  showAssistant: Boolean
   menuButtonIcon: JourneyMenuButtonIcon
   menuStepBlockId: ID
   logoImageBlockId: ID
@@ -1693,7 +1691,6 @@ type TextResponseBlock implements Block
   placeholder: String
   required: Boolean
   hint: String
-  hideLabel: Boolean
   minRows: Int
   type: TextResponseType
   routeId: String
@@ -1713,7 +1710,6 @@ input TextResponseBlockUpdateInput {
   placeholder: String
   required: Boolean
   hint: String
-  hideLabel: Boolean
   minRows: Int
   routeId: String
   type: TextResponseType
