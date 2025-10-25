@@ -84,18 +84,22 @@ const StrategyCard = ({
   onSelectStrategy,
   className
 }: StrategyCardProps) => {
-  const stages = Array.isArray(strategy.stages) ? strategy.stages : []
-  const timelineStages = stages
-    .map((stage) => (stage?.label ?? '').trim())
+  const flowSteps = Array.isArray(strategy.flow?.steps)
+    ? strategy.flow?.steps ?? []
+    : []
+  const timelineStages = flowSteps
+    .map((step) => (step?.title ?? '').trim())
     .filter((label): label is string => label.length > 0)
   const stageSequence =
     timelineStages.length > 0
       ? timelineStages
       : splitApproachToStages(strategy.approach)
-
-  const stageDetails = stages.filter((stage) => Boolean(stage?.label || stage?.summary))
-  const hasStageDetails = stageDetails.length > 0
-  const fallbackStageList = !hasStageDetails ? stageSequence : []
+  const hasFlowDetails = flowSteps.length > 0
+  const fallbackStageList = !hasFlowDetails ? stageSequence : []
+  const fallbackFlowMarkdown =
+    strategy.flow?.rawMarkdown && strategy.flow.rawMarkdown.trim().length > 0
+      ? strategy.flow.rawMarkdown.trim()
+      : null
 
   return (
     <Card
@@ -143,27 +147,60 @@ const StrategyCard = ({
             className="shrink-0"
             disabled={isSelected}
           >
-            {isSelected ? 'Grace strategy selected' : 'Use Grace strategy'}
+            {isSelected ? 'Grace plan selected' : 'Use Grace plan'}
           </Button>
         </div>
 
         <div className="space-y-4">
           <div className="space-y-3">
-            <h5 className="text-sm font-medium text-foreground">Stage milestones</h5>
-            {hasStageDetails ? (
+            <h5 className="text-sm font-medium text-foreground">Conversation flow</h5>
+            {hasFlowDetails ? (
               <ol className="space-y-3">
-                {stageDetails.map((stage, stageIndex) => {
-                  const label = stage?.label?.trim() || `Stage ${stageIndex + 1}`
-                  const summary = stage?.summary ?? null
+                {flowSteps.map((step, stepIndex) => {
+                  if (!step) {
+                    return null
+                  }
+
+                  const title = step.title?.trim() || `Movement ${stepIndex + 1}`
+                  const message = step.message?.trim() ?? null
+                  const scriptures = Array.isArray(step.scriptures)
+                    ? step.scriptures.filter(
+                        (scripture) => Boolean(scripture?.reference || scripture?.text)
+                      )
+                    : []
 
                   return (
                     <li
-                      key={stage?.id ?? `${strategy.id}-detail-${stageIndex}`}
-                      className="rounded-xl border border-border/80 p-3"
+                      key={step?.id ?? `${strategy.id}-flow-${stepIndex}`}
+                      className="space-y-2 rounded-xl border border-border/80 p-3"
                     >
-                      <div className="text-sm font-semibold text-foreground">{label}</div>
-                      {summary && (
-                        <p className="text-sm leading-relaxed text-muted-foreground">{summary}</p>
+                      <div className="text-sm font-semibold text-foreground">{title}</div>
+                      {message && (
+                        <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">{message}</p>
+                      )}
+                      {scriptures.length > 0 && (
+                        <ul className="space-y-1">
+                          {scriptures.map((scripture, scriptureIndex) => {
+                            const reference = scripture?.reference?.trim() ?? null
+                            const text = scripture?.text?.trim() ?? null
+
+                            return (
+                              <li
+                                key={`${step?.id ?? `${strategy.id}-flow-${stepIndex}`}-scripture-${scriptureIndex}`}
+                                className="rounded-md bg-muted/70 p-2"
+                              >
+                                {reference && (
+                                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground/80">
+                                    {reference}
+                                  </div>
+                                )}
+                                {text && (
+                                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{text}</p>
+                                )}
+                              </li>
+                            )
+                          })}
+                        </ul>
                       )}
                     </li>
                   )
@@ -175,8 +212,14 @@ const StrategyCard = ({
                   <li key={`${strategy.id}-fallback-${stageIndex}`}>{label}</li>
                 ))}
               </ul>
+            ) : fallbackFlowMarkdown ? (
+              <div className="rounded-xl border border-dashed border-border/70 bg-muted/60 p-4">
+                <p className="whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
+                  {fallbackFlowMarkdown}
+                </p>
+              </div>
             ) : (
-              <p className="text-sm text-muted-foreground">No stage breakdown provided.</p>
+              <p className="text-sm text-muted-foreground">No conversation flow provided.</p>
             )}
           </div>
 
@@ -222,8 +265,8 @@ export const ConversationStrategySelector = ({
       <div className="space-y-1">
         <h3 className="text-base font-semibold text-foreground">Grace conversation strategy</h3>
         <p className="text-sm text-muted-foreground">
-          Review the Grace path for this prompt. When you&apos;re ready, generate the conversation map from
-          this strategy.
+          Review the Grace plan for this prompt. When you&apos;re ready, generate the conversation map from this
+          strategy.
         </p>
       </div>
 
@@ -245,10 +288,10 @@ export const ConversationStrategySelector = ({
             <>
               Preparing the{' '}
               <span className="font-medium text-foreground">{activeStrategy.label}</span>{' '}
-              path.
+              plan.
             </>
           ) : (
-            'Select the Grace strategy to review its plan and build the conversation map.'
+            'Select the Grace plan to review its flow and build the conversation map.'
           )}
         </p>
         <Button

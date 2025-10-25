@@ -45,20 +45,30 @@ export interface ConversationMap {
   steps: ConversationMapStep[]
 }
 
-export interface ConversationStrategyStage {
-  id: string
-  label: string
-  summary: string | null
-  requiresScripture?: boolean
-}
-
 export interface ConversationStrategy {
   id: string
   label: string
   summary: string | null
   approach: string | null
   scriptureThemes: string | null
-  stages: ConversationStrategyStage[]
+  flow: ConversationStrategyFlow | null
+}
+
+export interface ConversationStrategyFlowScripture {
+  reference: string | null
+  text: string | null
+}
+
+export interface ConversationStrategyFlowStep {
+  id: string
+  title: string | null
+  message: string | null
+  scriptures: ConversationStrategyFlowScripture[]
+}
+
+export interface ConversationStrategyFlow {
+  rawMarkdown: string | null
+  steps: ConversationStrategyFlowStep[]
 }
 
 export interface UserInputData {

@@ -57,6 +57,9 @@ import { useUnsplashMedia } from '../src/hooks/useUnsplashMedia'
 import {
   type ConversationMap,
   type ConversationStrategy,
+  type ConversationStrategyFlow,
+  type ConversationStrategyFlowScripture,
+  type ConversationStrategyFlowStep,
   type GeneratedStepContent,
   type ImageAnalysisResult,
   type UserInputData,
@@ -91,11 +94,11 @@ const CONVERSATION_OUTPUT_FORMAT_INSTRUCTIONS = `When planning a conversation pa
 # Grace Conversation Strategy
 ## Description
 Two to three sentences that gently summarize how Grace will guide the conversation.
-## Stage Milestones
-1. Stage name — One-sentence milestone summary.
-2. Stage name — One-sentence milestone summary.
+## Conversation Flow
+1. **Movement title** — 2-3 sentence guide message that models gentle, inclusive pastoral care.
+   - Scripture: Reference — Quote a 1-2 sentence excerpt and note how it supports the moment.
 ## Scripture Themes
-- One to three short bullets or sentences describing the biblical ideas to emphasize. Do not include specific verse references.
+- One to three short bullets or sentences describing the biblical ideas to emphasize. Do not include full verse texts here.
 
 When explicitly instructed to "Generate the final conversationMap JSON using the schema provided earlier.", output JSON that matches this structure:
 {
@@ -138,11 +141,12 @@ const DEFAULT_RESPONSE_GUIDELINES = `Guidelines:
 - Begin each content field with a level-one markdown heading that states the step's short label (e.g., '# Let Your Light Shine') followed by a blank line.`
 
 const CONVERSATION_RESPONSE_GUIDELINES = `Guidelines:
-- Present a single strategy named "Grace" during planning. Use the Markdown headings and ordering shown above and do not include additional strategies or verse lists.
+- Present a single strategy named "Grace" during planning. Use the Markdown headings and ordering shown above and do not include additional strategies.
 - Keep the Grace description gentle, inclusive, and pastorally warm. Avoid directives that sound harsh or judgmental.
-- Under "Stage Milestones", list 3-5 sequential milestones. Begin each line with a numbered list entry, provide a short label, and follow it with an em dash and a one-sentence summary whenever possible.
-- Under "Scripture Themes", summarize the theological ideas or passages to emphasize without citing specific references.
-- When you receive the instruction "Generate the final conversationMap JSON using the schema provided earlier.", return JSON for a 6-9 step map that reflects the Grace posture described above.
+- Under "Conversation Flow", outline 5-7 sequential movements. Number each movement, bold the movement title, and follow it with a 2-3 sentence guide message.
+- For every movement in the flow, include one or two indented bullets that begin with "Scripture:" and cite a relevant passage. Each bullet should provide the reference and a 1-2 sentence excerpt with a brief note about why it reinforces the moment.
+- Under "Scripture Themes", summarize the theological ideas or passages to emphasize without repeating the full verse text.
+- When you receive the instruction "Generate the final conversationMap JSON using the schema provided earlier.", return JSON for a 6-9 step map that reflects the Grace posture and incorporates the conversation flow and Scriptures you outlined.
 - Every conversation map step must include a guide message, a purpose note (or null), and at least five scriptureOptions. Each scripture option needs the verse text/reference, a note on why it fits/how to transition toward it, and multiple tone-tagged conversation examples.
 - Maintain warm pastoral care in every guide message. Keep each response concise enough to fit inside a chat bubble.
 - Do not include design instructions, media prompts, or image keywords in any field.
@@ -1508,7 +1512,7 @@ export default function NewPage() {
     }
   }
 
-  const splitApproachToStageLabels = (approach?: string | null): string[] => {
+  const splitApproachToFlowSegments = (approach?: string | null): string[] => {
     if (!approach) {
       return []
     }
@@ -1565,6 +1569,206 @@ export default function NewPage() {
     return [trimmed]
   }
 
+  const normalizeFlowScriptures = (
+    ...sources: any[]
+  ): ConversationStrategyFlowScripture[] => {
+    const toScripture = (input: any): ConversationStrategyFlowScripture | null => {
+      if (!input) {
+        return null
+      }
+
+      if (typeof input === 'string') {
+        const trimmed = input.trim()
+        if (!trimmed) {
+          return null
+        }
+
+        const withoutPrefix = trimmed.replace(/^scripture\s*[:-]\s*/i, '').trim()
+        const delimiterMatch = withoutPrefix.match(/\s*(?:—|–|-|:)\s+/)
+
+        if (delimiterMatch) {
+          const [referencePart, textPart] = withoutPrefix.split(delimiterMatch[0])
+          const reference = referencePart?.trim() ?? ''
+          const text = textPart?.trim() ?? ''
+          return {
+            reference: reference.length > 0 ? reference : null,
+            text: text.length > 0 ? text : null
+          }
+        }
+
+        return {
+          reference: withoutPrefix.length > 0 ? withoutPrefix : null,
+          text: null
+        }
+      }
+
+      if (typeof input !== 'object') {
+        return null
+      }
+
+      const reference = ensureNullableString(
+        input.reference ??
+          input.ref ??
+          input.verse ??
+          input.passageReference ??
+          input.scripture ??
+          input.book ??
+          input.label ??
+          input.name ??
+          input.title
+      )
+
+      const text = ensureNullableString(
+        input.text ??
+          input.excerpt ??
+          input.quote ??
+          input.summary ??
+          input.reason ??
+          input.explanation ??
+          input.context ??
+          input.message ??
+          input.detail ??
+          input.content
+      )
+
+      if (!reference && !text) {
+        return null
+      }
+
+      return {
+        reference: reference ?? null,
+        text: text ?? null
+      }
+    }
+
+    const normalized: ConversationStrategyFlowScripture[] = []
+    const seen = new Set<string>()
+
+    sources.forEach((source) => {
+      if (!source) return
+
+      const values = Array.isArray(source) ? source : [source]
+      values.forEach((value) => {
+        const scripture = toScripture(value)
+        if (!scripture) return
+
+        const key = `${scripture.reference ?? ''}:::${scripture.text ?? ''}`
+        if (seen.has(key)) {
+          return
+        }
+
+        normalized.push(scripture)
+        seen.add(key)
+      })
+    })
+
+    return normalized
+  }
+
+  const normalizeFlowStepsFromArray = (
+    flowSource: any[],
+    strategyId: string
+  ): ConversationStrategyFlowStep[] => {
+    if (!Array.isArray(flowSource)) {
+      return []
+    }
+
+    return flowSource
+      .map((stepItem, index) => {
+        if (!stepItem) {
+          return null
+        }
+
+        if (typeof stepItem === 'string') {
+          const labelValue = ensureString(stepItem)
+          if (!labelValue) {
+            return null
+          }
+
+          const stepId = sanitizeIdentifier(
+            `${strategyId}-${labelValue}`.slice(0, 60),
+            `${strategyId}-movement-${index + 1}`
+          )
+
+          return {
+            id: stepId,
+            title: labelValue,
+            message: null,
+            scriptures: []
+          }
+        }
+
+        if (typeof stepItem !== 'object') {
+          return null
+        }
+
+        const rawTitle = ensureNullableString(
+          stepItem.title ??
+            stepItem.name ??
+            stepItem.heading ??
+            stepItem.label ??
+            stepItem.stage ??
+            stepItem.milestone ??
+            stepItem.movement
+        )
+
+        const message = ensureNullableString(
+          stepItem.message ??
+            stepItem.summary ??
+            stepItem.description ??
+            stepItem.focus ??
+            stepItem.commentary ??
+            stepItem.context ??
+            stepItem.plan ??
+            stepItem.goal ??
+            stepItem.intent ??
+            stepItem.guidance ??
+            stepItem.notes ??
+            stepItem.body ??
+            stepItem.content
+        )
+
+        const scriptures = normalizeFlowScriptures(
+          stepItem.scriptures,
+          stepItem.verses,
+          stepItem.bibleVerses,
+          stepItem.references,
+          stepItem.reference,
+          stepItem.scripture,
+          stepItem.passage,
+          stepItem.readings,
+          stepItem.supportingScripture
+        )
+
+        const fallbackTitleCandidate =
+          rawTitle ?? (message ? message.split(/[.!?]/)[0]?.trim() ?? null : null)
+
+        const stepIdSource = ensureString(
+          stepItem.id ??
+            stepItem.key ??
+            stepItem.slug ??
+            stepItem.identifier ??
+            fallbackTitleCandidate ??
+            `movement-${index + 1}`
+        )
+
+        const stepId = sanitizeIdentifier(
+          stepIdSource,
+          `${strategyId}-movement-${index + 1}`
+        )
+
+        return {
+          id: stepId,
+          title: rawTitle ?? (fallbackTitleCandidate ? fallbackTitleCandidate : null),
+          message: message ?? null,
+          scriptures
+        }
+      })
+      .filter(
+        (step): step is ConversationStrategyFlowStep => step !== null
+      )
+  }
+
   const normalizeConversationStrategies = (
     rawData: any
   ): ConversationStrategy[] => {
@@ -1597,13 +1801,28 @@ export default function NewPage() {
             `strategy-${index + 1}`
           )
 
+          const flowFromApproach = splitApproachToFlowSegments(item).map(
+            (label, flowIndex) => ({
+              id: sanitizeIdentifier(
+                `${id}-${label}`.slice(0, 60),
+                `${id}-movement-${flowIndex + 1}`
+              ),
+              title: label,
+              message: null,
+              scriptures: []
+            })
+          )
+
           return {
             id,
             label: fallbackLabel,
             summary: ensureNullableString(item),
             approach: null,
             scriptureThemes: null,
-            stages: []
+            flow:
+              flowFromApproach.length > 0
+                ? { rawMarkdown: null, steps: flowFromApproach }
+                : null
           }
         }
 
@@ -1642,117 +1861,71 @@ export default function NewPage() {
           item.scriptureThemes ?? item.themes ?? item.theme ?? item.emphasis ?? item.anchor ?? item.anchors
         )
 
-        const stageSource = Array.isArray(item.stages)
-          ? item.stages
-          : Array.isArray(item.milestones)
-            ? item.milestones
-            : Array.isArray(item.approachStages)
-              ? item.approachStages
-              : Array.isArray(item.milestoneStages)
-                ? item.milestoneStages
-                : Array.isArray(item.stagePlan)
-                  ? item.stagePlan
-                  : []
+        const flowMarkdown = ensureNullableString(
+          item.flowMarkdown ??
+            item.conversationFlowMarkdown ??
+            item.planMarkdown ??
+            item.markdown ??
+            null
+        )
 
-        const normalizedStages = stageSource
-          .map((stageItem: any, stageIndex: number) => {
-            if (!stageItem) {
-              return null
-            }
+        const flowSource = Array.isArray(item.flow?.steps)
+          ? item.flow.steps
+          : Array.isArray(item.conversationFlow?.steps)
+            ? item.conversationFlow.steps
+            : Array.isArray(item.conversationFlow)
+              ? item.conversationFlow
+              : Array.isArray(item.flow)
+                ? item.flow
+                : Array.isArray(item.movements)
+                  ? item.movements
+                  : Array.isArray(item.stages)
+                    ? item.stages
+                    : []
 
-            if (typeof stageItem === 'string') {
-              const labelValue = ensureString(stageItem)
-              if (!labelValue) return null
+        const normalizedSteps = normalizeFlowStepsFromArray(flowSource, id)
 
-              const stageId = sanitizeIdentifier(
-                `${id}-${labelValue}`.slice(0, 60),
-                `${id}-stage-${stageIndex + 1}`
-              )
-
-              return {
-                id: stageId,
-                label: labelValue,
-                summary: null
-              }
-            }
-
-            if (typeof stageItem !== 'object') {
-              return null
-            }
-
-            const rawLabel = ensureString(
-              stageItem.label ??
-                stageItem.name ??
-                stageItem.title ??
-                stageItem.stage ??
-                stageItem.milestone ??
-                ''
-            )
-            const stageLabel = rawLabel || `Stage ${stageIndex + 1}`
-
-            const stageIdSource = ensureString(
-              stageItem.id ??
-                stageItem.key ??
-                stageItem.slug ??
-                stageItem.stageId ??
-                stageItem.identifier ??
-                stageLabel
-            )
-
-            const stageId = sanitizeIdentifier(
-              stageIdSource,
-              `${id}-stage-${stageIndex + 1}`
-            )
-
-            const stageSummary = ensureNullableString(
-              stageItem.summary ??
-                stageItem.description ??
-                stageItem.focus ??
-                stageItem.goal ??
-                stageItem.purpose ??
-                stageItem.intent ??
-                stageItem.context
-            )
-
-            return {
-              id: stageId,
-              label: stageLabel,
-              summary: stageSummary
-            }
-          })
-          .filter(
-            (stage): stage is ConversationStrategy['stages'][number] => stage !== null
-          )
-
-        const fallbackStageLabels = splitApproachToStageLabels(approach)
-        const fallbackStages = fallbackStageLabels.map((label, stageIndex) => ({
+        const fallbackFlowLabels = splitApproachToFlowSegments(approach)
+        const fallbackSteps = fallbackFlowLabels.map((label, flowIndex) => ({
           id: sanitizeIdentifier(
             `${id}-${label}`.slice(0, 60),
-            `${id}-stage-${stageIndex + 1}`
+            `${id}-movement-${flowIndex + 1}`
           ),
-          label,
-          summary: null
+          title: label,
+          message: null,
+          scriptures: []
         }))
 
-        const stages =
-          normalizedStages.length > 0 ? normalizedStages : fallbackStages
+        const flowSteps =
+          normalizedSteps.length > 0 ? normalizedSteps : fallbackSteps
 
-        if (
-          stages.length === 0 &&
-          !summary &&
-          !approach &&
-          !scriptureThemes
-        ) {
+        if (!summary && flowSteps.length === 0 && !scriptureThemes) {
           return null
         }
+
+        const derivedApproach =
+          approach && approach.length > 0
+            ? approach
+            : flowSteps
+                .map((step) => step.title?.trim())
+                .filter((value): value is string => Boolean(value))
+                .join(' → ') || null
+
+        const flow: ConversationStrategyFlow | null =
+          flowSteps.length > 0 || flowMarkdown
+            ? {
+                rawMarkdown: flowMarkdown,
+                steps: flowSteps
+              }
+            : null
 
         return {
           id,
           label,
           summary,
-          approach,
+          approach: derivedApproach,
           scriptureThemes,
-          stages
+          flow
         }
       })
       .filter((strategy): strategy is ConversationStrategy => strategy !== null)
@@ -1795,7 +1968,6 @@ export default function NewPage() {
         ]
       : []
   }
-
   const getMarkdownSection = (
     markdown: string,
     headings: string[]
@@ -1829,50 +2001,127 @@ export default function NewPage() {
     return section.length > 0 ? section : null
   }
 
-  const parseMarkdownStages = (section: string): ConversationStrategy['stages'] => {
+  const parseMarkdownConversationFlow = (
+    section: string
+  ): ConversationStrategyFlow => {
     if (!section) {
-      return []
+      return { rawMarkdown: null, steps: [] }
     }
 
-    const lines = section
-      .split(/\r?\n/)
-      .map((line) => line.replace(/^\s*(?:[-*]|\d+[.)])\s*/, '').trim())
-      .filter((line) => line.length > 0)
+    type DraftStep = {
+      title: string | null
+      message: string | null
+      scriptures: ConversationStrategyFlowScripture[]
+    }
 
-    return lines.map((line, index) => {
-      let label = line
-      let summary: string | null = null
+    const draftSteps: DraftStep[] = []
+    let current: DraftStep | null = null
 
-      const delimiterMatch = line.match(/\s(?:—|–|-)\s+|:\s+/)
-      if (delimiterMatch) {
-        const delimiterIndex = line.indexOf(delimiterMatch[0])
-        const potentialLabel = line.slice(0, delimiterIndex).trim()
-        const potentialSummary = line
-          .slice(delimiterIndex + delimiterMatch[0].length)
-          .trim()
+    const pushCurrent = () => {
+      if (!current) {
+        return
+      }
 
-        if (potentialLabel.length > 0) {
-          label = potentialLabel
+      const hasContent =
+        (current.title && current.title.trim().length > 0) ||
+        (current.message && current.message.trim().length > 0) ||
+        current.scriptures.length > 0
+
+      if (hasContent) {
+        draftSteps.push(current)
+      }
+
+      current = null
+    }
+
+    const lines = section.split(/\r?\n/)
+
+    for (const line of lines) {
+      const trimmedLine = typeof line === 'string' ? line.trim() : ''
+      if (!trimmedLine) {
+        continue
+      }
+
+      const numberedMatch = trimmedLine.match(/^(?:\d+[.)]|\(\d+\))\s+(.*)$/)
+      if (numberedMatch) {
+        pushCurrent()
+
+        const content = numberedMatch[1].trim()
+        let title: string | null = null
+        let message: string | null = null
+
+        const boldMatch = content.match(/\*\*(.+?)\*\*/)
+        if (boldMatch) {
+          title = boldMatch[1].trim()
+          const remainder = content.replace(boldMatch[0], '').trim()
+          const cleanedRemainder = remainder.replace(/^[-–—:]+/, '').trim()
+          message = cleanedRemainder.length > 0 ? cleanedRemainder : null
+        } else {
+          const delimiterMatch = content.match(/\s*(?:—|–|-|:)\s+/)
+          if (delimiterMatch) {
+            const [titlePart, messagePart] = content.split(delimiterMatch[0])
+            title = titlePart?.trim() || null
+            message = messagePart?.trim() || null
+          } else {
+            message = content.length > 0 ? content : null
+          }
         }
 
-        summary = potentialSummary.length > 0 ? potentialSummary : null
+        current = {
+          title,
+          message,
+          scriptures: []
+        }
+
+        continue
       }
 
-      if (!label) {
-        label = `Stage ${index + 1}`
+      const bulletMatch = trimmedLine.match(/^[-*+]\s+(.*)$/)
+      if (bulletMatch && current) {
+        const scriptureLine = bulletMatch[1].trim()
+        const normalizedScripture = normalizeFlowScriptures(scriptureLine)[0]
+        if (normalizedScripture) {
+          current.scriptures.push(normalizedScripture)
+          continue
+        }
       }
 
-      const stageId = sanitizeIdentifier(
-        `grace-${label}`.slice(0, 60),
-        `grace-stage-${index + 1}`
+      if (current) {
+        current.message = current.message
+          ? `${current.message}\n${trimmedLine}`
+          : trimmedLine
+      }
+    }
+
+    pushCurrent()
+
+    const steps: ConversationStrategyFlowStep[] = draftSteps.map((step, index) => {
+      const title = step.title?.trim() ?? null
+      const message = step.message?.trim() ?? null
+      const scriptures = step.scriptures.filter(
+        (scripture) => Boolean(scripture.reference || scripture.text)
+      )
+
+      const identifierSource =
+        title ?? message?.split(/[.!?]/)[0]?.trim() ?? `movement-${index + 1}`
+      const id = sanitizeIdentifier(
+        `grace-${identifierSource}`.slice(0, 60),
+        `grace-movement-${index + 1}`
       )
 
       return {
-        id: stageId,
-        label,
-        summary
+        id,
+        title,
+        message,
+        scriptures
       }
     })
+
+    const rawMarkdown = section.trim()
+    return {
+      rawMarkdown: rawMarkdown.length > 0 ? rawMarkdown : null,
+      steps
+    }
   }
 
   const parseGraceMarkdownStrategy = (
@@ -1884,10 +2133,11 @@ export default function NewPage() {
     }
 
     const descriptionSection = getMarkdownSection(content, ['Description'])
-    const stagesSection = getMarkdownSection(content, [
-      'Stage Milestones',
-      'Stage Plan',
-      'Stages'
+    const flowSection = getMarkdownSection(content, [
+      'Conversation Flow',
+      'Flow',
+      'Conversation Plan',
+      'Movements'
     ])
     const themesSection = getMarkdownSection(content, [
       'Scripture Themes',
@@ -1895,9 +2145,13 @@ export default function NewPage() {
       'Themes'
     ])
 
-    const stages = stagesSection ? parseMarkdownStages(stagesSection) : []
-    const approachLabels = stages
-      .map((stage) => stage.label?.trim())
+    const parsedFlow = flowSection
+      ? parseMarkdownConversationFlow(flowSection)
+      : { rawMarkdown: null, steps: [] }
+
+    const flowSteps = Array.isArray(parsedFlow.steps) ? parsedFlow.steps : []
+    const approachLabels = flowSteps
+      .map((step) => step.title?.trim())
       .filter((label): label is string => Boolean(label && label.length > 0))
     const approach =
       approachLabels.length > 0 ? approachLabels.join(' → ') : null
@@ -1905,7 +2159,7 @@ export default function NewPage() {
     const summary = descriptionSection ? descriptionSection.trim() : null
     const scriptureThemes = themesSection ? themesSection.trim() : null
 
-    if (!summary && stages.length === 0 && !scriptureThemes) {
+    if (!summary && flowSteps.length === 0 && !scriptureThemes) {
       return null
     }
 
@@ -1915,7 +2169,11 @@ export default function NewPage() {
       summary,
       approach,
       scriptureThemes,
-      stages
+      flow:
+        (parsedFlow.rawMarkdown && parsedFlow.rawMarkdown.length > 0) ||
+        flowSteps.length > 0
+          ? parsedFlow
+          : null
     }
   }
   const parseGeneratedResponse = (
@@ -2243,28 +2501,61 @@ export default function NewPage() {
     if (isProcessing || !selectedStrategy) {
       return
     }
-    const stagePlanSummary =
-      Array.isArray(selectedStrategy.stages) &&
-      selectedStrategy.stages.length > 0
-        ? selectedStrategy.stages
-            .map((stage, index) => {
-              if (!stage) {
-                return null
-              }
+    const flowSummary = (() => {
+      const flowSteps = Array.isArray(selectedStrategy.flow?.steps)
+        ? selectedStrategy.flow?.steps ?? []
+        : []
 
-              const label = stage.label?.trim() || `Stage ${index + 1}`
-              const descriptors: string[] = []
-              if (stage.summary) {
-                descriptors.push(stage.summary)
-              }
+      if (flowSteps.length > 0) {
+        const movements = flowSteps
+          .map((step, index) => {
+            if (!step) {
+              return null
+            }
 
-              return descriptors.length > 0
-                ? `Stage ${index + 1}: ${label} — ${descriptors.join(' ')}`
-                : `Stage ${index + 1}: ${label}`
-            })
-            .filter((value): value is string => Boolean(value))
-            .join('\n')
+            const label = step.title?.trim() || `Movement ${index + 1}`
+            const lines: string[] = [`Movement ${index + 1}: ${label}`]
+
+            if (step.message?.trim()) {
+              lines.push(step.message.trim())
+            }
+
+            const scriptureSummary = Array.isArray(step.scriptures)
+              ? step.scriptures
+                  .map((scripture) => {
+                    if (!scripture) {
+                      return null
+                    }
+
+                    const reference = scripture.reference?.trim() ?? null
+                    const text = scripture.text?.trim() ?? null
+
+                    if (reference && text) {
+                      return `${reference} — ${text}`
+                    }
+
+                    return reference ?? text ?? null
+                  })
+                  .filter((value): value is string => Boolean(value))
+                  .join('; ')
+              : ''
+
+            if (scriptureSummary) {
+              lines.push(`Scriptures: ${scriptureSummary}`)
+            }
+
+            return lines.join('\n')
+          })
+          .filter((value): value is string => Boolean(value))
+
+        return movements.length > 0 ? movements.join('\n\n') : null
+      }
+
+      const rawMarkdown = selectedStrategy.flow?.rawMarkdown
+      return rawMarkdown && rawMarkdown.trim().length > 0
+        ? rawMarkdown.trim()
         : null
+    })()
 
     const promptSections = [
       'Generate the final conversationMap JSON using the schema provided earlier.',
@@ -2272,14 +2563,14 @@ export default function NewPage() {
       selectedStrategy.summary
         ? `Strategy summary: ${selectedStrategy.summary}`
         : null,
-      stagePlanSummary ? `Stage flow plan:\n${stagePlanSummary}` : null,
+      flowSummary ? `Conversation flow plan:\n${flowSummary}` : null,
       selectedStrategy.approach
         ? `Approach notes: ${selectedStrategy.approach}`
         : null,
       selectedStrategy.scriptureThemes
         ? `Scripture themes to emphasize: ${selectedStrategy.scriptureThemes}`
         : null,
-      'Anchor the map in Scripture references that align with these themes and milestones. Do not assume any pre-selected verses.',
+      'Anchor the map in the Scriptures highlighted in the Grace plan and reinforce the listed themes without assuming any pre-selected verses.',
       'Ensure every step reflects a gentle, inclusive Grace posture while keeping the map within 6-9 movements.'
     ].filter((section): section is string => Boolean(section))
 
