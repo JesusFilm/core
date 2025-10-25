@@ -188,8 +188,7 @@ describe('UseThisTemplateButton', () => {
           {
             pathname: 'http://localhost:4200/users/sign-in',
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: 'http://localhost:4200/templates/journeyId/customize',
               login: true
             }
           },
@@ -216,8 +215,7 @@ describe('UseThisTemplateButton', () => {
           {
             pathname: 'http://localhost:4200/users/sign-in',
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: 'http://localhost:4200/templates/journeyId/customize',
               login: false
             }
           },
@@ -265,8 +263,7 @@ describe('UseThisTemplateButton', () => {
           {
             pathname: 'http://localhost:4200/users/sign-in',
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: 'http://localhost:4200/templates/journeyId/customize',
               login: true
             }
           },
@@ -293,8 +290,7 @@ describe('UseThisTemplateButton', () => {
           {
             pathname: 'http://localhost:4200/users/sign-in',
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: 'http://localhost:4200/templates/journeyId/customize',
               login: false
             }
           },
@@ -342,8 +338,7 @@ describe('UseThisTemplateButton', () => {
           {
             pathname: 'http://localhost:4200/users/sign-in',
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: 'http://localhost:4200/templates/journeyId/customize',
               login: true
             }
           },
@@ -370,8 +365,7 @@ describe('UseThisTemplateButton', () => {
           {
             pathname: 'http://localhost:4200/users/sign-in',
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: 'http://localhost:4200/templates/journeyId/customize',
               login: false
             }
           },

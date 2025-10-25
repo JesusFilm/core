@@ -1,5 +1,5 @@
 import Skeleton from '@mui/material/Skeleton'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo } from 'react'
 
 import { isJourneyCustomizable } from '../../../../libs/isJourneyCustomizable'
 import { useJourney } from '../../../../libs/JourneyProvider'
@@ -16,8 +16,9 @@ export function TemplateActionButton({
   openTeamDialogOnSignIn = false
 }: TemplateActionButtonProps): ReactElement {
   const { journey } = useJourney()
+  const customizable = useMemo(() => isJourneyCustomizable(journey), [journey])
 
-  if (journey != null && isJourneyCustomizable(journey)) {
+  if (journey != null && customizable) {
     return <UseThisTemplateButton signedIn={signedIn} />
   }
 
