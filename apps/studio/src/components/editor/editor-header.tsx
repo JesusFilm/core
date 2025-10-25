@@ -1,8 +1,8 @@
 import { History, Settings } from 'lucide-react'
 import type { FC, ReactNode } from 'react'
 
-import { Button } from '../ui/button'
 import { StudioSiteSelector } from '../studio-site-selector'
+import { Button } from '../ui/button'
 
 export interface TokenSummary {
   formattedTotal: string

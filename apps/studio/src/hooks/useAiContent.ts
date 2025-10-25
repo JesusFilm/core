@@ -2,6 +2,8 @@ import { useCallback } from 'react'
 import type { Dispatch, RefObject, SetStateAction } from 'react'
 
 import type {
+  ConversationMap,
+  ConversationStrategy,
   GeneratedStepContent,
   ImageAnalysisResult
 } from '../libs/storage'
@@ -40,6 +42,12 @@ type ConversationMessage = {
   content: string
 }
 
+type ParsedAiContent = {
+  steps: GeneratedStepContent[]
+  conversationMap?: ConversationMap | null
+  conversationStrategies?: ConversationStrategy[]
+}
+
 type UseAiContentOptions = {
   textareaRef: RefObject<HTMLTextAreaElement | null>
   aiResponse: string
@@ -48,7 +56,7 @@ type UseAiContentOptions = {
   imageAnalysisResults: ImageAnalysisResult[]
   buildConversationHistory: () => ConversationMessage[]
   extractTextFromResponse: (data: any) => string
-  parseGeneratedSteps: (content: string) => GeneratedStepContent[]
+  parseGeneratedSteps: (content: string) => ParsedAiContent
   setAiResponse: Dispatch<SetStateAction<string>>
   setEditableSteps: Dispatch<SetStateAction<GeneratedStepContent[]>>
   setIsProcessing: Dispatch<SetStateAction<boolean>>
@@ -114,8 +122,8 @@ export const useAiContent = ({
         const processedContent =
           extractTextFromResponse(data) || 'No response generated'
         setAiResponse(processedContent)
-        const parsedSteps = parseGeneratedSteps(processedContent)
-        setEditableSteps(parsedSteps)
+        const parsedContent = parseGeneratedSteps(processedContent)
+        setEditableSteps(parsedContent.steps)
 
         const tokenUsage = data.usage
           ? {
@@ -128,7 +136,9 @@ export const useAiContent = ({
           textContent: currentValue,
           images: imageAttachments,
           aiResponse: processedContent,
-          aiSteps: parsedSteps,
+          aiSteps: parsedContent.steps,
+          conversationMap: parsedContent.conversationMap ?? null,
+          conversationStrategies: parsedContent.conversationStrategies ?? [],
           imageAnalysisResults: imageAnalysisResults.map((result) => ({
             imageSrc: result.imageSrc,
             contentType: result.contentType,
