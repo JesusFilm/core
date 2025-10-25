@@ -3,7 +3,7 @@ import {
   type CoreMessage,
   type LanguageModelUsage,
   convertToCoreMessages,
-  streamText
+  generateText
 } from 'ai'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
@@ -110,9 +110,15 @@ const enforceMarkdownFormatting = (
       return message.content.includes('Markdown')
     }
 
-    return message.content.some(
-      part => part.type === 'text' && part.text.includes('Markdown')
-    )
+    // Type guard for array content
+    const content = message.content
+    if (Array.isArray(content)) {
+      return (content as any[]).some(
+        part => 'type' in part && part.type === 'text' && 'text' in part && typeof part.text === 'string' && part.text.includes('Markdown')
+      )
+    }
+
+    return false
   })
 
   if (messages != null && !hasMarkdownInstruction) {
@@ -380,7 +386,7 @@ export default async function handler(
   const client = createOpenRouterClient(apiKey)
 
   try {
-    const generationOptions: Parameters<typeof streamText>[0] = {
+    const generationOptions: Parameters<typeof generateText>[0] = {
       model: client.responses(model),
       temperature: isNumber(body.temperature) ? body.temperature : undefined,
       topP: isNumber(body.top_p) ? body.top_p : undefined,
@@ -395,40 +401,37 @@ export default async function handler(
 
     console.log(`[AI Respond] Sending request to OpenRouter - Model: ${model}, Messages: ${messages?.length ?? 0}, Prompt: ${prompt ? 'yes' : 'no'}`)
 
-    const result = streamText(generationOptions)
+    const result = await generateText(generationOptions)
 
-    result.response
-      .then(metadata => {
-        const usage = mapUsage(metadata.usage)
-        const responseId = metadata.id ?? `or-${Date.now()}`
-        console.log(
-          `[AI Respond] Completed streaming response from OpenRouter - Response ID: ${responseId}, Finish Reason: ${metadata.finishReason}, Usage: ${JSON.stringify(usage)}`
-        )
-      })
-      .catch(error => {
-        console.error('OpenRouter streaming metadata error:', error)
-      })
-
-    res.setHeader('Cache-Control', 'no-cache, no-transform')
-    res.setHeader('Connection', 'keep-alive')
-    res.setHeader('X-Accel-Buffering', 'no')
-
-    result.pipeDataStreamToResponse(res, {
-      headers: {
-        'Cache-Control': 'no-cache, no-transform',
-        Connection: 'keep-alive'
-      },
-      data: [
+    const usage = mapUsage(result.usage)
+    const responseId = result.response.id ?? `or-${Date.now()}`
+    const normalizedResponse = {
+      id: responseId,
+      model,
+      created: Math.floor(Date.now() / 1000),
+      provider: 'openrouter',
+      finish_reason: result.finishReason ?? 'stop',
+      warnings: [],
+      usage,
+      output_text: result.text,
+      output: [
         {
-          type: 'response_metadata',
-          provider: 'openrouter',
-          model
+          id: `${responseId}-msg-0`,
+          type: 'message',
+          role: 'assistant',
+          content: [
+            {
+              type: 'output_text',
+              text: result.text
+            }
+          ]
         }
-      ],
-      getErrorMessage: error =>
-        error instanceof Error ? error.message : 'Unexpected streaming error'
-    })
-    return
+      ]
+    }
+
+    console.log(`[AI Respond] Completed response from OpenRouter - Response ID: ${responseId}, Finish Reason: ${normalizedResponse.finish_reason}, Usage: ${JSON.stringify(usage)}`)
+
+    res.status(200).json(normalizedResponse)
   } catch (error) {
     console.error('OpenRouter proxy error:', error)
 

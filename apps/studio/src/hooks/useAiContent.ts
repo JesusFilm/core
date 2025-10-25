@@ -2,6 +2,8 @@ import { useCallback } from 'react'
 import type { Dispatch, RefObject, SetStateAction } from 'react'
 
 import type {
+  ConversationMap,
+  ConversationStrategy,
   GeneratedStepContent,
   ImageAnalysisResult
 } from '../libs/storage'
@@ -40,6 +42,12 @@ type ConversationMessage = {
   content: string
 }
 
+type ParsedAiContent = {
+  steps: GeneratedStepContent[]
+  conversationMap?: ConversationMap | null
+  conversationStrategies?: ConversationStrategy[]
+}
+
 type UseAiContentOptions = {
   textareaRef: RefObject<HTMLTextAreaElement | null>
   aiResponse: string
@@ -48,7 +56,7 @@ type UseAiContentOptions = {
   imageAnalysisResults: ImageAnalysisResult[]
   buildConversationHistory: () => ConversationMessage[]
   extractTextFromResponse: (data: any) => string
-  parseGeneratedSteps: (content: string) => GeneratedStepContent[]
+  parseGeneratedSteps: (content: string) => ParsedAiContent
   setAiResponse: Dispatch<SetStateAction<string>>
   setEditableSteps: Dispatch<SetStateAction<GeneratedStepContent[]>>
   setIsProcessing: Dispatch<SetStateAction<boolean>>
@@ -110,175 +118,27 @@ export const useAiContent = ({
           throw new Error(errorMessage || 'Failed to process content')
         }
 
-        const isStreamingResponse =
-          response.headers.get('x-vercel-ai-data-stream') === 'v1'
+        const data = await response.json()
+        const processedContent =
+          extractTextFromResponse(data) || 'No response generated'
+        setAiResponse(processedContent)
+        const parsedContent = parseGeneratedSteps(processedContent)
+        setEditableSteps(parsedContent.steps)
 
-        let processedContent: string = ''
-        let tokenUsage = { input: 0, output: 0 }
-
-        if (isStreamingResponse && response.body != null) {
-          const reader = response.body.getReader()
-          const decoder = new TextDecoder()
-          let buffer = ''
-          let aggregatedResponse = ''
-
-          const updateUsageFromPayload = (usage: unknown) => {
-            if (
-              usage != null &&
-              typeof usage === 'object' &&
-              'promptTokens' in usage &&
-              'completionTokens' in usage
-            ) {
-              const promptTokens = Number(
-                (usage as { promptTokens: unknown }).promptTokens
-              )
-              const completionTokens = Number(
-                (usage as { completionTokens: unknown }).completionTokens
-              )
-
-              tokenUsage = {
-                input: Number.isFinite(promptTokens) ? promptTokens : 0,
-                output: Number.isFinite(completionTokens)
-                  ? completionTokens
-                  : 0
-              }
+        const tokenUsage = data.usage
+          ? {
+              input: data.usage.input_tokens ?? 0,
+              output: data.usage.output_tokens ?? 0
             }
-          }
-
-          const processLine = (rawLine: string) => {
-            const line = rawLine.trim()
-            if (line === '') return
-
-            const separatorIndex = line.indexOf(':')
-            if (separatorIndex === -1) return
-
-            const code = line.slice(0, separatorIndex)
-            const payloadText = line.slice(separatorIndex + 1)
-
-            let payload: unknown
-            try {
-              payload = JSON.parse(payloadText)
-            } catch (error) {
-              console.warn('Failed to parse streaming payload chunk', {
-                line,
-                error
-              })
-              return
-            }
-
-            switch (code) {
-              case '0': {
-                if (typeof payload === 'string') {
-                  aggregatedResponse += payload
-                  setAiResponse((previous) => previous + payload)
-                }
-                break
-              }
-              case '2': {
-                if (Array.isArray(payload)) {
-                  payload.forEach((entry) => {
-                    if (
-                      entry != null &&
-                      typeof entry === 'object' &&
-                      'type' in entry &&
-                      entry.type === 'usage'
-                    ) {
-                      updateUsageFromPayload(
-                        (entry as { usage?: unknown }).usage
-                      )
-                    }
-                  })
-                }
-                break
-              }
-              case '3': {
-                const message =
-                  typeof payload === 'string'
-                    ? payload
-                    : 'The streaming response returned an error.'
-                throw new Error(message)
-              }
-              case 'd':
-              case 'e': {
-                if (
-                  payload != null &&
-                  typeof payload === 'object' &&
-                  'usage' in payload
-                ) {
-                  updateUsageFromPayload(
-                    (payload as { usage?: unknown }).usage
-                  )
-                }
-                break
-              }
-              default:
-                break
-            }
-          }
-
-          const readStream = async () => {
-            try {
-              while (true) {
-                const { value, done } = await reader.read()
-                if (value) {
-                  buffer += decoder.decode(value, { stream: !done })
-                }
-
-                let newlineIndex = buffer.indexOf('\n')
-                while (newlineIndex !== -1) {
-                  const line = buffer.slice(0, newlineIndex)
-                  buffer = buffer.slice(newlineIndex + 1)
-                  processLine(line)
-                  newlineIndex = buffer.indexOf('\n')
-                }
-
-                if (done) {
-                  const flushRemainder = decoder.decode()
-                  if (flushRemainder) {
-                    buffer += flushRemainder
-                  }
-
-                  const remaining = buffer.trim()
-                  if (remaining) {
-                    processLine(remaining)
-                  }
-                  break
-                }
-              }
-            } catch (streamError) {
-              await reader.cancel().catch(() => undefined)
-              throw streamError
-            }
-          }
-
-          await readStream()
-
-          processedContent =
-            aggregatedResponse.trim() !== ''
-              ? aggregatedResponse
-              : 'No response generated'
-          setAiResponse(processedContent)
-        } else {
-          const data = await response.json()
-          processedContent =
-            extractTextFromResponse(data) || 'No response generated'
-          setAiResponse(processedContent)
-          tokenUsage = data.usage
-            ? {
-                input: data.usage.input_tokens ?? 0,
-                output: data.usage.output_tokens ?? 0
-              }
-            : { input: 0, output: 0 }
-        }
-
-        const parsedSteps = parseGeneratedSteps(processedContent)
-        setEditableSteps(parsedSteps)
+          : { input: 0, output: 0 }
 
         const sessionId = saveSession({
           textContent: currentValue,
           images: imageAttachments,
           aiResponse: processedContent,
-          aiSteps: parsedSteps,
+          aiSteps: parsedContent.steps,
+          conversationMap: parsedContent.conversationMap ?? null,
+          conversationStrategies: parsedContent.conversationStrategies ?? [],
           imageAnalysisResults: imageAnalysisResults.map((result) => ({
             imageSrc: result.imageSrc,
             contentType: result.contentType,
