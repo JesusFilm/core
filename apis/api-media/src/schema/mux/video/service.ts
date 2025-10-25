@@ -1,5 +1,7 @@
 import Mux from '@mux/mux-node'
 
+import { getClient } from '../services'
+
 import { MaxResolutionTierEnum } from './enums/maxResolutionTierEnum'
 
 // Type guard to safely check if a value is a valid MaxResolutionTierEnum key
@@ -24,32 +26,6 @@ export function getMaxResolutionValue(
     `Invalid maxResolution value: ${maxResolution}. Falling back to 'fhd'.`
   )
   return MaxResolutionTierEnum.fhd
-}
-
-function getClient(userGenerated: boolean): Mux {
-  if (userGenerated) {
-    if (process.env.MUX_UGC_ACCESS_TOKEN_ID == null)
-      throw new Error('Missing MUX_UGC_ACCESS_TOKEN_ID')
-
-    if (process.env.MUX_UGC_SECRET_KEY == null)
-      throw new Error('Missing MUX_UGC_SECRET_KEY')
-
-    return new Mux({
-      tokenId: process.env.MUX_UGC_ACCESS_TOKEN_ID,
-      tokenSecret: process.env.MUX_UGC_SECRET_KEY
-    })
-  }
-
-  if (process.env.MUX_ACCESS_TOKEN_ID == null)
-    throw new Error('Missing MUX_ACCESS_TOKEN_ID')
-
-  if (process.env.MUX_SECRET_KEY == null)
-    throw new Error('Missing MUX_SECRET_KEY')
-
-  return new Mux({
-    tokenId: process.env.MUX_ACCESS_TOKEN_ID,
-    tokenSecret: process.env.MUX_SECRET_KEY
-  })
 }
 
 export async function createVideoByDirectUpload(
@@ -120,12 +96,20 @@ export async function createVideoFromUrl(
   })
 }
 
-export async function getVideo(
-  videoId: string,
-  userGenerated: boolean
-): Promise<Mux.Video.Asset> {
-  return await getClient(userGenerated).video.assets.retrieve(videoId)
-}
+// async function getAudioTrackId(assetId: string, userGenerated: boolean): Promise<string | null> {
+//   try {
+//     const tracks = await getClient(userGenerated).video.assets.retrieve(assetId)
+
+//     // The tracks are available in the asset object
+//     // Look for audio tracks in the tracks array
+//     const audioTrack = tracks.tracks?.find((track) => track.type === 'audio')
+
+//     return audioTrack?.id || null
+//   } catch (error) {
+//     console.error('Error retrieving audio track:', error)
+//     return null
+//   }
+// }
 
 export async function getUpload(
   uploadId: string,

@@ -7,6 +7,7 @@ import { jobName as processVideoUploadsJobName } from '../../../workers/processV
 import { queue as processVideoUploadsQueue } from '../../../workers/processVideoUploads/queue'
 import { builder } from '../../builder'
 import { VideoSource, VideoSourceShape } from '../../videoSource/videoSource'
+import { getVideo } from '../services'
 
 import { MaxResolutionTier } from './enums'
 import {
@@ -15,8 +16,7 @@ import {
   deleteVideo,
   enableDownload,
   getMaxResolutionValue,
-  getUpload,
-  getVideo
+  getUpload
 } from './service'
 
 const FIVE_DAYS = 5 * 24 * 60 * 60

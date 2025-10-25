@@ -202,6 +202,7 @@ type Mutation {
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
+  createMuxGeneratedSubtitlesByAssetId(assetId: ID!, languageCode: String!, name: String!, userGenerated: Boolean): MutationCreateMuxGeneratedSubtitlesByAssetIdResult!
   playlistCreate(input: PlaylistCreateInput!): MutationPlaylistCreateResult
   playlistUpdate(id: ID!, input: PlaylistUpdateInput!): MutationPlaylistUpdateResult
   playlistDelete(id: ID!): MutationPlaylistDeleteResult
@@ -288,6 +289,12 @@ input MutationBibleCitationUpdateInput {
   verseStart: Int
   verseEnd: Int
   order: Int
+}
+
+union MutationCreateMuxGeneratedSubtitlesByAssetIdResult = ZodError | Error | MutationCreateMuxGeneratedSubtitlesByAssetIdSuccess
+
+type MutationCreateMuxGeneratedSubtitlesByAssetIdSuccess {
+  data: MuxSubtitleTrack!
 }
 
 union MutationPlaylistCreateResult = ZodError | MutationPlaylistCreateSuccess
@@ -448,6 +455,16 @@ input MutationVideoOriginUpdateInput {
   description: String
 }
 
+type MuxSubtitleTrack {
+  id: ID!
+  trackId: String
+  languageCode: String
+  muxLanguageName: String
+  readyToStream: Boolean!
+  source: String
+  muxVideo: MuxVideo!
+}
+
 type MuxVideo
   @key(fields: "id primaryLanguageId")
 {
@@ -578,6 +595,7 @@ type Query {
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
   getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
+  getMyMuxSubtitleTrack(id: ID!, userGenerated: Boolean): QueryGetMyMuxSubtitleTrackResult!
   playlists: [Playlist!]
   playlist(id: ID!, idType: IdType! = databaseId): QueryPlaylistResult
 
@@ -631,6 +649,12 @@ type Query {
   youtubeClosedCaptionLanguages(videoId: ID!): QueryYoutubeClosedCaptionLanguagesResult!
   arclightApiKeys: [ArclightApiKey!]!
   arclightApiKeyByKey(key: String!): ArclightApiKey
+}
+
+union QueryGetMyMuxSubtitleTrackResult = Error | QueryGetMyMuxSubtitleTrackSuccess
+
+type QueryGetMyMuxSubtitleTrackSuccess {
+  data: MuxSubtitleTrack!
 }
 
 union QueryPlaylistResult = NotFoundError | QueryPlaylistSuccess

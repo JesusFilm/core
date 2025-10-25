@@ -8,12 +8,12 @@ import {
 } from '@core/prisma/media/client'
 
 import { prismaMock } from '../../../../test/prismaMock'
-import { getVideo } from '../../../schema/mux/video/service'
+import { getVideo } from '../../../schema/mux/services'
 
 import { service } from './service'
 
 // Mock the getVideo function
-jest.mock('../../../schema/mux/video/service', () => ({
+jest.mock('../../../schema/mux/services', () => ({
   getVideo: jest.fn()
 }))
 

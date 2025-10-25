@@ -2,6 +2,8 @@ import Mux from '@mux/mux-node'
 import { mockDeep } from 'jest-mock-extended'
 import clone from 'lodash/clone'
 
+import { getVideo } from '../services'
+
 import {
   createVideoByDirectUpload,
   createVideoFromUrl,
@@ -10,7 +12,6 @@ import {
   getMaxResolutionValue,
   getStaticRenditions,
   getUpload,
-  getVideo,
   isValidMaxResolutionTier
 } from './service'
 
