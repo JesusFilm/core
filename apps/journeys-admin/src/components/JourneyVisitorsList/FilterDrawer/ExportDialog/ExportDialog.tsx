@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql, useQuery, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
@@ -24,6 +24,31 @@ export const GET_JOURNEY_CREATED_AT = gql`
     journey: adminJourney(id: $id, idType: databaseId) {
       id
       createdAt
+      slug
+      title
+      team {
+        id
+      }
+    }
+  }
+`
+
+const EXPORT_TO_SHEETS = gql`
+  mutation JourneyVisitorExportToGoogleSheet(
+    $journeyId: ID!
+    $filter: JourneyEventsFilter
+    $select: JourneyVisitorExportSelect
+    $destination: JourneyVisitorGoogleSheetDestinationInput!
+  ) {
+    journeyVisitorExportToGoogleSheet(
+      journeyId: $journeyId
+      filter: $filter
+      select: $select
+      destination: $destination
+    ) {
+      spreadsheetId
+      spreadsheetUrl
+      sheetName
     }
   }
 `
@@ -65,11 +90,87 @@ export function ExportDialog({
   const [contactData, setContactData] = useState<string[]>([])
   const [exportBy, setExportBy] = useState<string>('')
 
+  const [googleDialogOpen, setGoogleDialogOpen] = useState(false)
+  const [googleMode, setGoogleMode] = useState<'create' | 'existing'>('create')
+  const [spreadsheetTitle, setSpreadsheetTitle] = useState('')
+  const [sheetName, setSheetName] = useState('')
+  const [folderId, setFolderId] = useState<string | undefined>(undefined)
+  const [existingSpreadsheetId, setExistingSpreadsheetId] = useState<
+    string | undefined
+  >(undefined)
+
+  const [exportToSheets, { loading: sheetsLoading }] =
+    useMutation(EXPORT_TO_SHEETS)
+
+  // Drive Picker integration placeholder: inject Google Picker and set folderId or existingSpreadsheetId
+  function handleOpenDrivePicker(mode: 'folder' | 'sheet'): void {
+    // Implement Google Picker load here. For now we rely on environment having Picker and set IDs via callbacks.
+    // setFolderId('...') or setExistingSpreadsheetId('...')
+  }
+
   useEffect(() => {
     if (journeyData?.journey?.createdAt != null) {
       setStartDate(new Date(journeyData.journey.createdAt))
     }
   }, [journeyData])
+
+  const filterArg = {
+    typenames: selectedEvents,
+    ...(startDate && { periodRangeStart: startDate.toISOString() }),
+    ...(endDate && { periodRangeEnd: endDate.toISOString() })
+  }
+
+  async function handleExportToSheets(): Promise<void> {
+    const destination =
+      googleMode === 'create'
+        ? {
+            mode: 'create' as const,
+            spreadsheetTitle: spreadsheetTitle || journeyData?.journey?.title,
+            folderId: folderId,
+            sheetName: sheetName
+          }
+        : {
+            mode: 'existing' as const,
+            spreadsheetId: existingSpreadsheetId,
+            sheetName: sheetName
+          }
+
+    try {
+      if (exportBy === 'Visitor Actions') {
+        await exportToSheets({
+          variables: {
+            journeyId,
+            filter: filterArg,
+            destination
+          }
+        })
+      } else if (exportBy === 'Contact Data') {
+        await exportToSheets({
+          variables: {
+            journeyId,
+            filter: {
+              typenames: contactData.filter(
+                (d) => d !== 'name' && d !== 'email' && d !== 'phone'
+              ),
+              ...(startDate && { periodRangeStart: startDate.toISOString() }),
+              ...(endDate && { periodRangeEnd: endDate.toISOString() })
+            },
+            select: {
+              name: contactData.includes('name'),
+              email: contactData.includes('email'),
+              phone: contactData.includes('phone')
+            },
+            destination
+          }
+        })
+      }
+      setGoogleDialogOpen(false)
+      onClose()
+      enqueueSnackbar(t('Exported to Google Sheets'), { variant: 'success' })
+    } catch (error) {
+      enqueueSnackbar(error.message, { variant: 'error' })
+    }
+  }
 
   const handleExport = async (): Promise<void> => {
     try {
@@ -116,23 +217,39 @@ export function ExportDialog({
       }}
       divider={false}
       dialogActionChildren={
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={handleExport}
-          loading={eventsDownloading || contactsDownloading}
-          disabled={
-            exportBy === '' ||
-            (exportBy === 'Visitor Actions' && selectedEvents.length === 0) ||
-            (exportBy === 'Contact Data' && contactData.length === 0)
-          }
-          sx={{
-            mb: { xs: 0, sm: 3 },
-            mr: { xs: 0, sm: 3 }
-          }}
-        >
-          {t('Export (CSV)')}
-        </Button>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => setGoogleDialogOpen(true)}
+            loading={eventsDownloading || contactsDownloading}
+            disabled={
+              exportBy === '' ||
+              (exportBy === 'Visitor Actions' && selectedEvents.length === 0) ||
+              (exportBy === 'Contact Data' && contactData.length === 0)
+            }
+            sx={{ mb: { xs: 0, sm: 3 } }}
+          >
+            {t('Export to Google Sheets')}
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleExport}
+            loading={eventsDownloading || contactsDownloading}
+            disabled={
+              exportBy === '' ||
+              (exportBy === 'Visitor Actions' && selectedEvents.length === 0) ||
+              (exportBy === 'Contact Data' && contactData.length === 0)
+            }
+            sx={{
+              mb: { xs: 0, sm: 3 },
+              mr: { xs: 0, sm: 3 }
+            }}
+          >
+            {t('Export (CSV)')}
+          </Button>
+        </Box>
       }
     >
       <DateRangePicker
@@ -198,6 +315,95 @@ export function ExportDialog({
           />
         </Box>
       )}
+      {/* Google Sheets Dialog */}
+      <Dialog
+        open={googleDialogOpen}
+        onClose={() => setGoogleDialogOpen(false)}
+        dialogTitle={{ title: t('Export to Google Sheets'), closeButton: true }}
+        divider={false}
+        dialogActionChildren={
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleExportToSheets}
+            loading={sheetsLoading}
+            disabled={
+              googleMode === 'create'
+                ? spreadsheetTitle === '' &&
+                  (journeyData?.journey?.title ?? '') === ''
+                : existingSpreadsheetId == null || existingSpreadsheetId === ''
+            }
+          >
+            {t('Export')}
+          </Button>
+        }
+      >
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <FormControl fullWidth>
+            <Select
+              value={googleMode}
+              onChange={(e) =>
+                setGoogleMode(e.target.value as 'create' | 'existing')
+              }
+              IconComponent={ChevronDown}
+              inputProps={{ 'aria-label': t('Destination') }}
+            >
+              <MenuItem value="create">{t('Create new spreadsheet')}</MenuItem>
+              <MenuItem value="existing">
+                {t('Use existing spreadsheet')}
+              </MenuItem>
+            </Select>
+          </FormControl>
+
+          {googleMode === 'create' && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Typography variant="subtitle2">
+                {t('Spreadsheet title')}
+              </Typography>
+              <input
+                aria-label={t('Spreadsheet title')}
+                value={spreadsheetTitle}
+                onChange={(e) => setSpreadsheetTitle(e.target.value)}
+              />
+              <Typography variant="subtitle2">
+                {t('Sheet (tab) name')}
+              </Typography>
+              <input
+                aria-label={t('Sheet name')}
+                value={sheetName}
+                onChange={(e) => setSheetName(e.target.value)}
+              />
+              <Button
+                variant="outlined"
+                onClick={() => handleOpenDrivePicker('folder')}
+              >
+                {folderId ? t('Folder selected') : t('Choose folder')}
+              </Button>
+            </Box>
+          )}
+
+          {googleMode === 'existing' && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Typography variant="subtitle2">
+                {t('Sheet (tab) name')}
+              </Typography>
+              <input
+                aria-label={t('Sheet name')}
+                value={sheetName}
+                onChange={(e) => setSheetName(e.target.value)}
+              />
+              <Button
+                variant="outlined"
+                onClick={() => handleOpenDrivePicker('sheet')}
+              >
+                {existingSpreadsheetId
+                  ? t('Spreadsheet selected')
+                  : t('Choose spreadsheet')}
+              </Button>
+            </Box>
+          )}
+        </Box>
+      </Dialog>
     </Dialog>
   )
 }

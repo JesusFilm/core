@@ -408,6 +408,12 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyVisitorExportToGoogleSheet(
+    journeyId: ID!
+    filter: JourneyEventsFilter
+    select: JourneyVisitorExportSelect
+    destination: JourneyVisitorGoogleSheetDestinationInput!
+  ): JourneyVisitorGoogleSheetExportResult! @join__field(graph: API_JOURNEYS_MODERN) 
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewDelete(languageId: ID!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
@@ -2437,6 +2443,12 @@ type JourneyEventsExportLog @join__type(graph: API_JOURNEYS_MODERN)  {
   dateRangeEnd: DateTimeISO
 }
 
+type JourneyVisitorGoogleSheetExportResult @join__type(graph: API_JOURNEYS_MODERN)  {
+  spreadsheetId: String
+  spreadsheetUrl: String
+  sheetName: String
+}
+
 type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
   id: ID!
   primaryLanguageId: ID
@@ -3467,6 +3479,11 @@ enum EventType @join__type(graph: API_JOURNEYS_MODERN)  {
   VideoExpandEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
   VideoCollapseEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
   VideoProgressEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+enum GoogleSheetExportMode @join__type(graph: API_JOURNEYS_MODERN)  {
+  create @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  existing @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
@@ -4644,6 +4661,14 @@ input JourneyVisitorExportSelect @join__type(graph: API_JOURNEYS_MODERN)  {
   email: Boolean
   phone: Boolean
   createdAt: Boolean
+}
+
+input JourneyVisitorGoogleSheetDestinationInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  mode: GoogleSheetExportMode!
+  spreadsheetTitle: String
+  folderId: String
+  spreadsheetId: String
+  sheetName: String
 }
 
 input LinkActionInput @join__type(graph: API_JOURNEYS_MODERN)  {

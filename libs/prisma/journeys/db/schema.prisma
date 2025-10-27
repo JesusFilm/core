@@ -256,12 +256,13 @@ model Team {
   customDomains      CustomDomain[]
   integrations       Integration[]
   qrCodes            QrCode[]
+  googleSheetsSync   GoogleSheetsSync[]
 
   @@index(title)
 }
 
 model Integration {
-  id                     String          @id @default(uuid())
+  id                     String             @id @default(uuid())
   teamId                 String
   userId                 String?
   type                   IntegrationType
@@ -271,10 +272,33 @@ model Integration {
   accessSecretIv         String?
   accessSecretTag        String?
   accountEmail           String?
-  team                   Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  // Google Sheets sync configuration (optional)
+  googleSheetsSyncs      GoogleSheetsSync[]
+  team                   Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@index([teamId])
   @@index(userId)
+}
+
+model GoogleSheetsSync {
+  id            String   @id @default(uuid())
+  teamId        String
+  journeyId     String
+  integrationId String
+  spreadsheetId String
+  sheetName     String
+  folderId      String?
+  appendMode    Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  integration Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
+  journey     Journey     @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  team        Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index(teamId)
+  @@index(journeyId)
+  @@index(integrationId)
 }
 
 model UserTeam {
@@ -441,6 +465,7 @@ model Journey {
   journeyTheme                    JourneyTheme?
   journeyCustomizationDescription String?
   journeyCustomizationFields      JourneyCustomizationField[]
+  googleSheetsSync                GoogleSheetsSync[]
 
   @@index(title)
 }

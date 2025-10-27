@@ -406,6 +406,11 @@ enum EventType {
   VideoProgressEvent
 }
 
+enum GoogleSheetExportMode {
+  create
+  existing
+}
+
 enum GridAlignItems {
   baseline
   flexStart
@@ -1031,6 +1036,20 @@ input JourneyVisitorFilter {
   countryCode: String
 }
 
+input JourneyVisitorGoogleSheetDestinationInput {
+  mode: GoogleSheetExportMode!
+  spreadsheetTitle: String
+  folderId: String
+  spreadsheetId: String
+  sheetName: String
+}
+
+type JourneyVisitorGoogleSheetExportResult {
+  spreadsheetId: String
+  spreadsheetUrl: String
+  sheetName: String
+}
+
 enum JourneyVisitorSort {
   date
   duration
@@ -1259,6 +1278,7 @@ type Mutation {
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
+  journeyVisitorExportToGoogleSheet(journeyId: ID!, filter: JourneyEventsFilter, select: JourneyVisitorExportSelect, destination: JourneyVisitorGoogleSheetDestinationInput!): JourneyVisitorGoogleSheetExportResult!
 }
 
 input MutationJourneyLanguageAiDetectInput {

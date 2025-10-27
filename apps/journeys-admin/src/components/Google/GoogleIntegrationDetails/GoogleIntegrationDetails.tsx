@@ -104,7 +104,8 @@ export function GoogleIntegrationDetails(): ReactElement {
       client_id: clientId,
       redirect_uri: staticRedirectUri,
       response_type: 'code',
-      scope: 'openid email profile',
+      scope:
+        'openid email profile https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets',
       access_type: 'offline',
       include_granted_scopes: 'true',
       prompt: 'consent',

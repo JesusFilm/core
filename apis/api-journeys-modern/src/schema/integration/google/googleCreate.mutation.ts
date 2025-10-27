@@ -14,6 +14,7 @@ interface GoogleTokenResponse {
   expires_in: number
   scope: string
   token_type: string
+  refresh_token?: string
 }
 interface GoogleUserInfoResponse {
   email?: string
@@ -44,6 +45,7 @@ builder.mutationField('integrationGoogleCreate', (t) =>
         throw new GraphQLError('GOOGLE_CLIENT_SECRET not configured')
 
       let accessToken: string
+      let refreshToken: string | undefined
       let accountEmail: string | undefined
       try {
         const params = new URLSearchParams({
@@ -59,6 +61,7 @@ builder.mutationField('integrationGoogleCreate', (t) =>
           { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
         )
         accessToken = res.data.access_token
+        refreshToken = res.data.refresh_token
         // fetch userinfo to get account email
         const userInfo = await axios.get<GoogleUserInfoResponse>(
           'https://openidconnect.googleapis.com/v1/userinfo',
@@ -72,8 +75,10 @@ builder.mutationField('integrationGoogleCreate', (t) =>
         })
       }
 
+      const secretToStore = refreshToken ?? accessToken
+
       const { ciphertext, iv, tag } = await encryptSymmetric(
-        accessToken,
+        secretToStore,
         process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
       )
 
@@ -83,7 +88,7 @@ builder.mutationField('integrationGoogleCreate', (t) =>
           teamId,
           userId,
           accessId: 'oauth2',
-          accessSecretPart: accessToken.slice(0, 6),
+          accessSecretPart: secretToStore.slice(0, 6),
           accessSecretCipherText: ciphertext,
           accessSecretIv: iv,
           accessSecretTag: tag,

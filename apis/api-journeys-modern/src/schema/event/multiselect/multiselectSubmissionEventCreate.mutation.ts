@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
+import { appendEventToGoogleSheets } from '../utils'
 import { validateBlockEvent } from '../utils'
 
 import { MultiselectSubmissionEventCreateInput } from './inputs/multiselectSubmissionEventCreateInput'
@@ -54,6 +55,27 @@ builder.mutationField('multiselectSubmissionEventCreate', (t) =>
           activityCount: journeyVisitor.activityCount + 1,
           lastMultiselectSubmission: input.label || null
         }
+      })
+
+      // live sync to Google Sheets (fire and forget)
+      void appendEventToGoogleSheets({
+        journeyId,
+        teamId:
+          (
+            await prisma.journey.findUnique({
+              where: { id: journeyId },
+              select: { teamId: true }
+            })
+          )?.teamId ?? '',
+        row: [
+          visitor.id,
+          event.createdAt.toISOString(),
+          '',
+          '',
+          '',
+          `${input.blockId}-${input.label ?? ''}`,
+          input.values.join(', ')
+        ]
       })
 
       return event

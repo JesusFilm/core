@@ -1,4 +1,5 @@
 import { GraphQLError } from 'graphql'
+import { format } from 'date-fns'
 
 import {
   Block,
@@ -6,6 +7,8 @@ import {
   Visitor,
   prisma
 } from '@core/prisma/journeys/client'
+import { getTeamGoogleAccessToken } from '../../lib/google/googleAuth'
+import { ensureSheet, writeValues } from '../../lib/google/sheets'
 
 // Queue for visitor interaction emails
 let emailQueue: any
@@ -203,4 +206,38 @@ export async function resetEventsEmailDelay(
   if (existingJob == null) return
   const delayMs = Math.max((delaySeconds ?? 0) * 1000, TWO_MINUTES)
   await existingJob.changeDelay(delayMs)
+}
+
+// Live Google Sheets sync: append row per event when a sync config exists
+export async function appendEventToGoogleSheets({
+  journeyId,
+  teamId,
+  row,
+  sheetName
+}: {
+  journeyId: string
+  teamId: string
+  row: (string | number | null)[]
+  sheetName?: string
+}): Promise<void> {
+  // find sync config
+  const sync = await prisma.googleSheetsSync.findFirst({
+    where: { journeyId, teamId }
+  })
+  if (sync == null) return
+
+  const { accessToken } = await getTeamGoogleAccessToken(teamId)
+  const tabName = sheetName ?? `${format(new Date(), 'yyyy-MM-dd')}`
+  await ensureSheet({
+    accessToken,
+    spreadsheetId: sync.spreadsheetId,
+    sheetTitle: tabName
+  })
+  await writeValues({
+    accessToken,
+    spreadsheetId: sync.spreadsheetId,
+    sheetTitle: tabName,
+    values: [row],
+    append: true
+  })
 }
