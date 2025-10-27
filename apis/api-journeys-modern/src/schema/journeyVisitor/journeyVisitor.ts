@@ -160,14 +160,18 @@ async function* getJourneyVisitors(
     }
     for (const journeyVisitor of journeyVisitors) {
       // Format date in user's timezone to match frontend display
-      const date = journeyVisitor.createdAt
-        .toLocaleString('en-CA', {
-          timeZone: timezone,
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit'
-        })
-        .split(',')[0] // Extract YYYY-MM-DD part
+      const date = (() => {
+        try {
+          return journeyVisitor.createdAt.toLocaleDateString('en-CA', {
+            timeZone: timezone,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          })
+        } catch {
+          return journeyVisitor.createdAt.toISOString().slice(0, 10)
+        }
+      })()
       const row: JourneyVisitorExportRow = {
         date
       }
@@ -477,7 +481,7 @@ builder.queryField('journeyVisitorExport', (t) => {
           }))
         const columns = [
           { key: 'date', label: 'Date', blockId: null, typename: '' },
-          ...(filter?.typenames == null || filter.typenames.length > 0
+          ...(filter?.typenames == null || Array.isArray(filter.typenames)
             ? blockHeaders
             : [])
         ].filter((value) => value != null)
@@ -501,7 +505,7 @@ builder.queryField('journeyVisitorExport', (t) => {
             const counts = cardPollCounts.get(cardId)!
             if (header.typename === 'RadioQuestionBlock') {
               counts.pollCount++
-            } else if (header.typename === 'RadioMultiselectBlock') {
+            } else if (header.typename === 'MultiselectBlock') {
               counts.multiselectCount++
             }
           }
@@ -520,7 +524,7 @@ builder.queryField('journeyVisitorExport', (t) => {
           if (
             cardBlock &&
             (col.typename === 'RadioQuestionBlock' ||
-              col.typename === 'RadioMultiselectBlock')
+              col.typename === 'MultiselectBlock')
           ) {
             const cardId = cardBlock.id
             if (!currentCardCounts.has(cardId)) {
@@ -539,7 +543,7 @@ builder.queryField('journeyVisitorExport', (t) => {
               return totalCounts.pollCount > 1
                 ? `Poll ${counts.pollCount}`
                 : 'Poll'
-            } else if (col.typename === 'RadioMultiselectBlock') {
+            } else if (col.typename === 'MultiselectBlock') {
               counts.multiselectCount++
               // Only add number if there are multiple multiselects on this card
               return totalCounts.multiselectCount > 1

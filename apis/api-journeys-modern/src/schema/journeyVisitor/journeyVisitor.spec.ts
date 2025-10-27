@@ -639,7 +639,7 @@ describe('journeyVisitorExport', () => {
         },
         {
           id: 'block1',
-          typename: 'RadioMultiselectBlock',
+          typename: 'MultiselectBlock',
           parentBlockId: 'card1',
           parentOrder: 1,
           nextBlockId: null,
