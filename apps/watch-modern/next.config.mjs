@@ -25,9 +25,7 @@ const withBundleAnalyzerPlugin = withBundleAnalyzer({
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  assetPrefix: ['production', 'prod', 'stage'].includes(env.VERCEL_ENV ?? '')
-    ? '/watch/modern'
-    : '',
+  assetPrefix: '/studio',
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
@@ -74,7 +72,7 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: env.CI
   },
-  basePath: '/watch',
+  basePath: '/studio',
   async redirects() {
     return [
       {
@@ -84,7 +82,7 @@ const nextConfig = {
       },
       {
         source: '/',
-        destination: '/watch',
+        destination: '/studio',
         basePath: false,
         permanent: false
       }
