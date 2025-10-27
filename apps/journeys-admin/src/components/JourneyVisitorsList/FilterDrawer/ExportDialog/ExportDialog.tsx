@@ -1,4 +1,4 @@
-import { gql, useQuery, useMutation } from '@apollo/client'
+import { gql, useQuery, useMutation, useLazyQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
@@ -30,6 +30,12 @@ export const GET_JOURNEY_CREATED_AT = gql`
         id
       }
     }
+  }
+`
+
+const GET_GOOGLE_PICKER_TOKEN = gql`
+  query IntegrationGooglePickerToken($teamId: ID!) {
+    integrationGooglePickerToken(teamId: $teamId)
   }
 `
 
@@ -101,11 +107,144 @@ export function ExportDialog({
 
   const [exportToSheets, { loading: sheetsLoading }] =
     useMutation(EXPORT_TO_SHEETS)
+  const [getPickerToken] = useLazyQuery(GET_GOOGLE_PICKER_TOKEN)
 
-  // Drive Picker integration placeholder: inject Google Picker and set folderId or existingSpreadsheetId
-  function handleOpenDrivePicker(mode: 'folder' | 'sheet'): void {
-    // Implement Google Picker load here. For now we rely on environment having Picker and set IDs via callbacks.
-    // setFolderId('...') or setExistingSpreadsheetId('...')
+  // Drive Picker integration
+  async function handleOpenDrivePicker(
+    mode: 'folder' | 'sheet'
+  ): Promise<void> {
+    try {
+      const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY
+      if (apiKey == null || apiKey === '') {
+        enqueueSnackbar(t('Missing Google API key'), { variant: 'error' })
+        return
+      }
+      // Prefer user token via GIS; fallback to integration token
+      let oauthToken = await getUserDriveAccessToken()
+      if (oauthToken == null || oauthToken === '') {
+        const teamId = journeyData?.journey?.team?.id
+        if (teamId != null) {
+          const { data: tokenData } = await getPickerToken({
+            variables: { teamId }
+          })
+          oauthToken = tokenData?.integrationGooglePickerToken
+        }
+      }
+      if (oauthToken == null || oauthToken === '') {
+        enqueueSnackbar(t('Unable to authorize Google Picker'), {
+          variant: 'error'
+        })
+        return
+      }
+
+      await ensurePickerLoaded()
+
+      const googleAny: any = (window as any).google
+      const view =
+        mode === 'sheet'
+          ? new googleAny.picker.DocsView(googleAny.picker.ViewId.SPREADSHEETS)
+          : new googleAny.picker.DocsView()
+              .setIncludeFolders(true)
+              .setSelectFolderEnabled(true)
+
+      const picker = new googleAny.picker.PickerBuilder()
+        .setOAuthToken(oauthToken)
+        .setDeveloperKey(apiKey)
+        .addView(view)
+        .setCallback((pickerData: any) => {
+          if (pickerData?.action === googleAny.picker.Action.PICKED) {
+            const doc = pickerData.docs?.[0]
+            if (doc != null) {
+              if (mode === 'sheet') {
+                setExistingSpreadsheetId(doc.id)
+              } else {
+                setFolderId(doc.id)
+              }
+            }
+          }
+        })
+        .build()
+
+      picker.setVisible(true)
+      // Force picker to top-most layer
+      setTimeout(() => elevatePickerZIndex(), 0)
+    } catch (err) {
+      enqueueSnackbar(t('Failed to open Google Picker'), { variant: 'error' })
+    }
+  }
+
+  async function getUserDriveAccessToken(): Promise<string | null> {
+    await ensureGisLoaded()
+    return await new Promise<string | null>((resolve) => {
+      const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+      const scope = [
+        'https://www.googleapis.com/auth/drive.readonly',
+        'https://www.googleapis.com/auth/drive.metadata.readonly'
+      ].join(' ')
+      const googleAny: any = (window as any).google
+      if (
+        clientId == null ||
+        clientId === '' ||
+        googleAny?.accounts?.oauth2 == null
+      ) {
+        resolve(null)
+        return
+      }
+      const tokenClient = googleAny.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope,
+        prompt: '',
+        callback: (resp: any) => {
+          if (resp?.access_token) resolve(resp.access_token)
+          else resolve(null)
+        }
+      })
+      tokenClient.requestAccessToken()
+    })
+  }
+
+  async function ensurePickerLoaded(): Promise<void> {
+    const win = window as any
+    if (win.google?.picker != null) return
+    await new Promise<void>((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = 'https://apis.google.com/js/api.js'
+      script.async = true
+      script.onload = () => {
+        const gapi = (window as any).gapi
+        if (gapi?.load != null) {
+          gapi.load('picker', { callback: resolve })
+        } else {
+          resolve()
+        }
+      }
+      script.onerror = () => reject(new Error('Failed to load Google API'))
+      document.body.appendChild(script)
+    })
+  }
+
+  async function ensureGisLoaded(): Promise<void> {
+    const win = window as any
+    if (win.google?.accounts?.oauth2 != null) return
+    await new Promise<void>((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = 'https://accounts.google.com/gsi/client'
+      script.async = true
+      script.onload = () => resolve()
+      script.onerror = () =>
+        reject(new Error('Failed to load Google Identity Services'))
+      document.body.appendChild(script)
+    })
+  }
+
+  function elevatePickerZIndex(): void {
+    const dialog = document.querySelector<HTMLElement>('.picker-dialog')
+    const bg = document.querySelector<HTMLElement>('.picker-dialog-bg')
+    const modal = document.querySelector<HTMLElement>('.picker.modal-dialog')
+    const z = '2147483647'
+    if (dialog != null) dialog.style.zIndex = z
+    if (bg != null) bg.style.zIndex = z
+    if (modal != null) modal.style.zIndex = z
   }
 
   useEffect(() => {

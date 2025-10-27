@@ -6,6 +6,7 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 
+import { Dialog } from '@core/shared/ui/Dialog'
 import { useIntegrationQuery } from '../../../libs/useIntegrationQuery'
 import { GET_INTEGRATION } from '../../../libs/useIntegrationQuery'
 import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
@@ -39,6 +40,7 @@ export function GoogleIntegrationDetails(): ReactElement {
   const [code, setCode] = useState<string | undefined>()
   const [redirectUri, setRedirectUri] = useState<string | undefined>()
   const [loading, setLoading] = useState<boolean>(false)
+  const [confirmOpen, setConfirmOpen] = useState<boolean>(false)
 
   const { data, loading: integrationLoading } = useIntegrationQuery({
     teamId: router.query.teamId as string
@@ -105,7 +107,7 @@ export function GoogleIntegrationDetails(): ReactElement {
       redirect_uri: staticRedirectUri,
       response_type: 'code',
       scope:
-        'openid email profile https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets',
+        'openid email profile https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets',
       access_type: 'offline',
       include_granted_scopes: 'true',
       prompt: 'consent',
@@ -203,6 +205,7 @@ export function GoogleIntegrationDetails(): ReactElement {
       }
     } finally {
       setLoading(false)
+      setConfirmOpen(false)
     }
   }
 
@@ -246,7 +249,7 @@ export function GoogleIntegrationDetails(): ReactElement {
           {t('Reconnect with Google')}
         </Button>
         <Button
-          onClick={handleDelete}
+          onClick={() => setConfirmOpen(true)}
           disabled={
             loading || integrationLoading || (!isOwner && !isTeamManager)
           }
@@ -254,6 +257,37 @@ export function GoogleIntegrationDetails(): ReactElement {
           {t('Remove')}
         </Button>
       </Stack>
+      <Dialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        dialogTitle={{
+          title: t('Remove Google Integration'),
+          closeButton: true
+        }}
+        dialogActionChildren={
+          <Stack direction="row" gap={2}>
+            <Button onClick={() => setConfirmOpen(false)} disabled={loading}>
+              {t('Cancel')}
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleDelete}
+              loading={loading}
+            >
+              {t('Remove Integration')}
+            </Button>
+          </Stack>
+        }
+      >
+        <Stack gap={2}>
+          <span>
+            {t(
+              'Removing this Google integration will permanently delete all active Google Sheets syncs for this team. This cannot be undone.'
+            )}
+          </span>
+        </Stack>
+      </Dialog>
     </Stack>
   )
 }

@@ -41,7 +41,7 @@ export function GoogleCreateIntegration(): ReactElement {
       redirect_uri: staticRedirectUri,
       response_type: 'code',
       scope:
-        'openid email profile https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets',
+        'openid email profile https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets',
       access_type: 'offline',
       include_granted_scopes: 'true',
       prompt: 'consent',
