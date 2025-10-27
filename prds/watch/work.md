@@ -130,3 +130,27 @@
 
 - Consider showing a brief tooltip on first visit explaining the Skip control for accessibility.
 - Evaluate whether skip interactions should emit analytics distinct from autoplay completions.
+
+# Studio AI Error Callout Contrast
+
+## Goals
+
+- [x] Improve the readability of the Studio AI error callout in the creation workflow.
+- [x] Ensure the retry action remains visible against the updated background treatment.
+
+## Obstacles
+
+- Existing tailwind utility mix produced low contrast between the background and message text, especially in dark mode.
+
+## Resolutions
+
+- Replaced the amber color tokens with higher-contrast values and added font-weight/shadow adjustments for readability.
+- Tuned the retry button styles to maintain prominence on the new surface.
+
+## Test Coverage
+
+- Visual verification via Tailwind utility adjustments (no automated tests required).
+
+## Follow-up Ideas
+
+- Consider extracting a shared alert component for consistent warning styling across Studio experiences.

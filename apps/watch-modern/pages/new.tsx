@@ -2691,7 +2691,7 @@ export default function NewPage() {
                     />
                     {aiError && (
                       <div
-                        className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-400/40 dark:bg-amber-500/10 dark:text-amber-100"
+                        className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-100 px-4 py-3 text-sm font-medium text-amber-950 shadow-sm dark:border-amber-400/60 dark:bg-amber-500/20 dark:text-amber-50"
                         role="status"
                         aria-live="polite"
                       >
@@ -2700,6 +2700,7 @@ export default function NewPage() {
                           <Button
                             variant="outline"
                             size="sm"
+                            className="border-amber-400 text-amber-900 hover:bg-amber-200 dark:border-amber-300 dark:text-amber-50 dark:hover:bg-amber-500/30"
                             onClick={() => {
                               setAiError(null)
                               void handleSubmit()
