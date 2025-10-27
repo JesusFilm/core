@@ -46,7 +46,7 @@ export function useJourneyContactsExport(): {
     try {
       // Get user's timezone to format dates consistently with frontend display
       const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-      
+
       const { data, error } = await getJourneyVisitorExport({
         variables: {
           journeyId,

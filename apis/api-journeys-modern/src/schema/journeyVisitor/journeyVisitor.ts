@@ -161,7 +161,7 @@ async function* getJourneyVisitors(
     for (const journeyVisitor of journeyVisitors) {
       // Format date in user's timezone to match frontend display
       const date = journeyVisitor.createdAt
-        .toLocaleString('en-CA', { 
+        .toLocaleString('en-CA', {
           timeZone: timezone,
           year: 'numeric',
           month: '2-digit',
@@ -209,7 +209,8 @@ builder.queryField('journeyVisitorExport', (t) => {
         select: t.arg({ type: JourneyVisitorExportSelect, required: false }),
         timezone: t.arg.string({
           required: false,
-          description: 'IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.'
+          description:
+            'IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.'
         })
       },
       resolve: async (_, { journeyId, filter, select, timezone }, context) => {
@@ -582,7 +583,11 @@ builder.queryField('journeyVisitorExport', (t) => {
 
         // Use user's timezone or default to UTC
         const userTimezone = timezone ?? 'UTC'
-        for await (const row of getJourneyVisitors(journeyId, eventWhere, userTimezone)) {
+        for await (const row of getJourneyVisitors(
+          journeyId,
+          eventWhere,
+          userTimezone
+        )) {
           stringifier.write(row)
         }
         stringifier.end()
