@@ -112,7 +112,7 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
         className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-80"
       >
         <Image
-          src="/jesusfilm-sign.svg"
+          src="/studio/jesusfilm-sign.svg"
           alt="Jesus Film Project"
           width={24}
           height={24}

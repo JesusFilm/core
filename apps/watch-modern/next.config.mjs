@@ -25,7 +25,6 @@ const withBundleAnalyzerPlugin = withBundleAnalyzer({
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  assetPrefix: '/studio',
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
@@ -72,7 +71,14 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: env.CI
   },
-  basePath: '/studio',
+  async rewrites() {
+    return [
+      {
+        source: '/studio/:path*',
+        destination: '/:path*'
+      }
+    ]
+  },
   async redirects() {
     return [
       {
@@ -83,7 +89,6 @@ const nextConfig = {
       {
         source: '/',
         destination: '/studio',
-        basePath: false,
         permanent: false
       }
     ]

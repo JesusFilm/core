@@ -40,7 +40,7 @@ export const useImageAnalysis = ({
       })
 
       try {
-        const response = await fetch('/api/ai/respond', {
+        const response = await fetch('/studio/api/ai/respond', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
