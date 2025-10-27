@@ -87,9 +87,25 @@ export const useAiContent = ({
       setAiResponse('')
 
       try {
-        const messages = buildConversationHistory()
         const currentUserMessage = currentValue.trim()
-        messages.push({
+        const conversationHistory = buildConversationHistory()
+
+        const sanitizedHistory = conversationHistory
+          .filter((message) => message.role !== 'assistant')
+          .filter((message) => {
+            if (message.role !== 'user') {
+              return true
+            }
+
+            const trimmedContent = message.content.trim()
+            if (!trimmedContent) {
+              return false
+            }
+
+            return trimmedContent !== currentUserMessage
+          })
+
+        sanitizedHistory.push({
           role: 'user',
           content: currentUserMessage
         })
@@ -101,7 +117,7 @@ export const useAiContent = ({
           },
           body: JSON.stringify({
             // model: 'gpt-5-nano',
-            messages
+            messages: sanitizedHistory
           })
         })
 
