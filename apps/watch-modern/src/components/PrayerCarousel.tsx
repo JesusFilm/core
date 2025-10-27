@@ -184,47 +184,50 @@ export function PrayerCarousel({
           role="log"
           aria-live="polite"
           aria-relevant="additions"
-          className="flex flex-col gap-4"
+          className="flex flex-col gap-6"
         >
           {messages.slice(0, visibleMessageCount).map((message) => (
-            <div
-              key={message.title}
-              className="flex items-start gap-3 rounded-2xl bg-white/90 p-4 shadow-sm ring-1 ring-amber-200/60 backdrop-blur"
-            >
-              <span className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-500/10 text-amber-700">
+            <div key={message.title} className="flex items-start gap-3">
+              <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-500/15 text-amber-700">
                 <Bot aria-hidden className="h-4 w-4" />
               </span>
-              <div className="flex-1 space-y-3 text-amber-900">
-                <div className="space-y-2">
-                  <span className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-500/90">
-                    During this moment
-                  </span>
-                  <h3 className="text-lg font-semibold md:text-xl">
-                    {message.title}
-                  </h3>
+              <div className="relative max-w-[min(100%,_38rem)] flex-1 rounded-3xl bg-white/95 p-5 shadow-md ring-1 ring-amber-200/70 backdrop-blur">
+                <span
+                  aria-hidden
+                  className="absolute -left-2 top-10 block h-3 w-3 origin-bottom-left rotate-45 rounded-sm bg-white/95 ring-1 ring-amber-200/70"
+                />
+                <div className="space-y-3 text-amber-900">
+                  <div className="space-y-2">
+                    <span className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-500/90">
+                      During this moment
+                    </span>
+                    <h3 className="text-lg font-semibold md:text-xl">
+                      {message.title}
+                    </h3>
+                  </div>
+                  {message.body != null && (
+                    <p className="whitespace-pre-line text-sm leading-relaxed text-amber-900/85 md:text-base">
+                      {message.body}
+                    </p>
+                  )}
+                  {message.verse != null && (
+                    <p className="whitespace-pre-line text-sm italic leading-relaxed text-amber-900/80 md:text-base">
+                      {message.verse}
+                    </p>
+                  )}
+                  {Array.isArray(message.bullets) && message.bullets.length > 0 && (
+                    <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-amber-900/80 marker:text-amber-500 md:text-base">
+                      {message.bullets.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {message.reference != null && (
+                    <p className="text-xs font-medium uppercase tracking-[0.2em] text-amber-500/70">
+                      {message.reference}
+                    </p>
+                  )}
                 </div>
-                {message.body != null && (
-                  <p className="text-sm leading-relaxed text-amber-900/80 whitespace-pre-line md:text-base">
-                    {message.body}
-                  </p>
-                )}
-                {message.verse != null && (
-                  <p className="text-sm italic leading-relaxed text-amber-900/80 whitespace-pre-line md:text-base">
-                    {message.verse}
-                  </p>
-                )}
-                {Array.isArray(message.bullets) && message.bullets.length > 0 && (
-                  <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-amber-900/80 marker:text-amber-500 md:text-base">
-                    {message.bullets.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                )}
-                {message.reference != null && (
-                  <p className="text-xs font-medium uppercase tracking-[0.2em] text-amber-500/70">
-                    {message.reference}
-                  </p>
-                )}
               </div>
             </div>
           ))}
