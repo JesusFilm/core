@@ -45,7 +45,7 @@ export async function getSubtitleTrack(
   assetId: string,
   trackId: string,
   userGenerated: boolean
-): Promise<any | null> {
+): Promise<Mux.Video.Track | null> {
   const muxAsset = await getVideo(assetId, userGenerated)
 
   // Find the specific subtitle track in the asset's tracks array

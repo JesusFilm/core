@@ -56,25 +56,38 @@ builder.queryFields((t) => ({
           muxVideo: {
             userId: user.id
           }
+        },
+        include: {
+          muxVideo: true
         }
       })
 
       if (!subtitleTrack.readyToStream) {
         try {
+          const assetId = subtitleTrack.muxVideo.assetId
+
+          if (assetId == null) {
+            throw new Error('Video asset ID not found')
+          }
+
           const muxTrack = await getSubtitleTrack(
-            subtitleTrack.muxVideoId,
+            assetId,
             subtitleTrack.trackId,
             isUserGenerated
           )
 
           if (muxTrack?.status === 'ready') {
-            subtitleTrack = await prisma.muxSubtitleTrack.update({
+            const updatedSubtitleTrack = await prisma.muxSubtitleTrack.update({
               ...query,
               where: { id },
               data: {
                 readyToStream: true
+              },
+              include: {
+                muxVideo: true
               }
             })
+            subtitleTrack = updatedSubtitleTrack
           }
         } catch {
           throw new Error('Failed to check subtitle track status')
@@ -116,14 +129,25 @@ builder.mutationFields((t) => ({
           ? true
           : (userGenerated ?? true)
 
-        const existingSubtitle = await prisma.muxVideo.findFirst({
-          where: { assetId },
-          include: {
-            subtitles: true
+        // Fetch the MuxVideo by assetId to get its database ID
+        const muxVideo = await prisma.muxVideo.findFirst({
+          where: { assetId }
+        })
+
+        if (muxVideo == null) {
+          throw new Error('Video not found')
+        }
+
+        // Check for existing subtitle with the same video and language combination
+        const existingSubtitle = await prisma.muxSubtitleTrack.findFirst({
+          where: {
+            muxVideoId: muxVideo.id,
+            languageCode
           }
         })
+
         if (existingSubtitle != null) {
-          throw new Error('Subtitle already exists')
+          throw new Error('Subtitle already exists for this video and language')
         }
 
         const muxSubtitleResponse = await createGeneratedSubtitlesByAssetId(
@@ -150,7 +174,7 @@ builder.mutationFields((t) => ({
             trackId: subtitle.id,
             languageCode,
             muxLanguageName: name,
-            muxVideoId: assetId,
+            muxVideoId: muxVideo.id,
             source: MuxSubtitleTrackSource.generated,
             readyToStream: subtitle.status === 'ready'
           }

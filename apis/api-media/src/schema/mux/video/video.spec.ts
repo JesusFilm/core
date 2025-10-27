@@ -6,7 +6,15 @@ import { prismaMock } from '../../../../test/prismaMock'
 
 import { enableDownload } from './service'
 
-// Mock the processVideoDownloads queue
+jest.mock('../services', () => ({
+  getClient: jest.fn(),
+  getVideo: jest.fn().mockResolvedValue({
+    id: 'assetId',
+    status: 'ready',
+    playback_ids: [{ id: 'playbackId' }],
+    duration: 10
+  })
+}))
 
 jest.mock('./service', () => ({
   createVideoByDirectUpload: jest.fn().mockResolvedValue({
@@ -15,12 +23,6 @@ jest.mock('./service', () => ({
   }),
   createVideoFromUrl: jest.fn().mockResolvedValue({
     id: 'assetId'
-  }),
-  getVideo: jest.fn().mockResolvedValue({
-    id: 'assetId',
-    status: 'ready',
-    playback_ids: [{ id: 'playbackId' }],
-    duration: 10
   }),
   deleteVideo: jest.fn().mockResolvedValue({
     id: 'assetId'
@@ -213,7 +215,7 @@ describe('mux/video', () => {
       })
 
       it('should queue download processing when video is downloadable and ready', async () => {
-        const { getVideo } = jest.requireMock('./service')
+        const { getVideo } = jest.requireMock('../services')
 
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
@@ -292,7 +294,7 @@ describe('mux/video', () => {
       })
 
       it('should not queue download processing when video is not downloadable', async () => {
-        const { getVideo } = jest.requireMock('./service')
+        const { getVideo } = jest.requireMock('../services')
 
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',

@@ -96,21 +96,6 @@ export async function createVideoFromUrl(
   })
 }
 
-// async function getAudioTrackId(assetId: string, userGenerated: boolean): Promise<string | null> {
-//   try {
-//     const tracks = await getClient(userGenerated).video.assets.retrieve(assetId)
-
-//     // The tracks are available in the asset object
-//     // Look for audio tracks in the tracks array
-//     const audioTrack = tracks.tracks?.find((track) => track.type === 'audio')
-
-//     return audioTrack?.id || null
-//   } catch (error) {
-//     console.error('Error retrieving audio track:', error)
-//     return null
-//   }
-// }
-
 export async function getUpload(
   uploadId: string,
   userGenerated: boolean
