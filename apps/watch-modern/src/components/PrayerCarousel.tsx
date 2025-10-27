@@ -7,7 +7,36 @@ import {
   useState
 } from 'react'
 
-import { Bot } from 'lucide-react'
+import { Book, Target } from 'lucide-react'
+
+function TypingIndicator() {
+  return (
+    <div className="flex items-start gap-3">
+      <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-500/15 text-amber-700">
+        <img
+          src="/robot-book.gif?new"
+          alt=""
+          className="h-8 w-8 rounded-full"
+          aria-hidden
+        />
+      </span>
+      <div className="relative max-w-[min(100%,_38rem)] flex-1 rounded-3xl bg-white/95 p-5 shadow-md ring-1 ring-amber-200/70 backdrop-blur">
+        <span
+          aria-hidden
+          className="absolute -left-2 top-10 block h-3 w-3 origin-bottom-left rotate-45 rounded-sm bg-white/95 ring-1 ring-amber-200/70"
+        />
+        <div className="flex items-center justify-center py-2">
+          <div className="flex space-x-1">
+            <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+            <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+            <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 
 function usePrefersReducedMotion() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
@@ -57,7 +86,8 @@ export function PrayerCarousel({
   isActive,
   onCollapseComplete
 }: PrayerCarouselProps) {
-  const MESSAGE_DELAY = 2500
+  const MESSAGE_DELAY = 2000 // Show typing indicator 1 second after message appears
+  const TYPING_DURATION = 4000 // How long typing indicator shows (3 seconds)
   const prefersReducedMotion = usePrefersReducedMotion()
   const carouselId = useId()
   const messagesRegionId = `${carouselId}-messages`
@@ -96,14 +126,24 @@ export function PrayerCarousel({
 
   const [visibleMessageCount, setVisibleMessageCount] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
+  const [typingMessageIndex, setTypingMessageIndex] = useState<number | null>(null)
   const collapseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const revealTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([])
+  const typingTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([])
 
   const clearRevealTimeouts = useCallback(() => {
     for (const timeoutId of revealTimeoutsRef.current) {
       clearTimeout(timeoutId)
     }
     revealTimeoutsRef.current = []
+  }, [])
+
+  const clearTypingTimeouts = useCallback(() => {
+    for (const timeoutId of typingTimeoutsRef.current) {
+      clearTimeout(timeoutId)
+    }
+    typingTimeoutsRef.current = []
+    setTypingMessageIndex(null)
   }, [])
 
   useEffect(() => {
@@ -119,6 +159,7 @@ export function PrayerCarousel({
     setIsVisible(false)
     setVisibleMessageCount(0)
     clearRevealTimeouts()
+    clearTypingTimeouts()
 
     collapseTimeoutRef.current = setTimeout(() => {
       onCollapseComplete?.()
@@ -130,6 +171,7 @@ export function PrayerCarousel({
         collapseTimeoutRef.current = null
       }
       clearRevealTimeouts()
+      clearTypingTimeouts()
     }
   }, [clearRevealTimeouts, isActive, onCollapseComplete])
 
@@ -139,34 +181,52 @@ export function PrayerCarousel({
     }
 
     clearRevealTimeouts()
+    clearTypingTimeouts()
 
     if (prefersReducedMotion) {
       setVisibleMessageCount(messages.length)
       return
     }
 
-    setVisibleMessageCount(messages.length > 0 ? 1 : 0)
-    messages.slice(1).forEach((_, index) => {
-      const timeoutId = setTimeout(() => {
-        setVisibleMessageCount((prev) => {
-          const nextCount = Math.max(prev, index + 2)
-          return nextCount > messages.length ? messages.length : nextCount
-        })
-      }, MESSAGE_DELAY * (index + 1))
+    // Start with first message visible
+    setVisibleMessageCount(1)
 
-      revealTimeoutsRef.current.push(timeoutId)
+    // Sequential timing: each message waits for the previous one to complete
+    let cumulativeDelay = 0
+
+    messages.slice(1).forEach((_, index) => {
+      const messageIndex = index + 1
+
+      // Show typing indicator after the previous message + 1 second delay
+      const typingTimeoutId = setTimeout(() => {
+        setTypingMessageIndex(messageIndex)
+      }, cumulativeDelay + MESSAGE_DELAY)
+
+      // Hide typing and show message after typing duration
+      const revealTimeoutId = setTimeout(() => {
+        setTypingMessageIndex(null)
+        setVisibleMessageCount((prev) => Math.max(prev, messageIndex + 1))
+      }, cumulativeDelay + MESSAGE_DELAY + TYPING_DURATION)
+
+      // Update cumulative delay for next message
+      cumulativeDelay += MESSAGE_DELAY + TYPING_DURATION
+
+      typingTimeoutsRef.current.push(typingTimeoutId)
+      revealTimeoutsRef.current.push(revealTimeoutId)
     })
 
     return () => {
       clearRevealTimeouts()
+      clearTypingTimeouts()
     }
-  }, [clearRevealTimeouts, isActive, isVisible, messages, prefersReducedMotion])
+  }, [clearRevealTimeouts, clearTypingTimeouts, isActive, isVisible, messages, prefersReducedMotion, MESSAGE_DELAY, TYPING_DURATION])
 
   useEffect(() => {
     return () => {
       clearRevealTimeouts()
+      clearTypingTimeouts()
     }
-  }, [clearRevealTimeouts])
+  }, [clearRevealTimeouts, clearTypingTimeouts])
 
   return (
     <div
@@ -189,7 +249,18 @@ export function PrayerCarousel({
           {messages.slice(0, visibleMessageCount).map((message) => (
             <div key={message.title} className="flex items-start gap-3">
               <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-500/15 text-amber-700">
-                <Bot aria-hidden className="h-4 w-4" />
+                {message.title === 'What Truly Brings Change' ? (
+                  <Book aria-hidden className="h-4 w-4" />
+                ) : message.title === 'The Purpose of This Tool' ? (
+                  <Target aria-hidden className="h-4 w-4" />
+                ) : (
+                  <img
+                    src="/robot-book.gif?new"
+                    alt=""
+                    className="h-8 w-8 rounded-full"
+                    aria-hidden
+                  />
+                )}
               </span>
               <div className="relative max-w-[min(100%,_38rem)] flex-1 rounded-3xl bg-white/95 p-5 shadow-md ring-1 ring-amber-200/70 backdrop-blur">
                 <span
@@ -231,6 +302,9 @@ export function PrayerCarousel({
               </div>
             </div>
           ))}
+          {typingMessageIndex !== null && (
+            <TypingIndicator key={`typing-${typingMessageIndex}`} />
+          )}
         </div>
       </div>
     </div>
