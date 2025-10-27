@@ -57,4 +57,17 @@ describe('StepHeader', () => {
     )
     expect(screen.getByTestId('StepHeaderMenu')).toBeInTheDocument()
   })
+
+  it('should render information icon when menu button icon is null', () => {
+    render(
+      <JourneyProvider
+        value={{
+          journey: { ...defaultJourney, menuButtonIcon: null }
+        }}
+      >
+        <StepHeader />
+      </JourneyProvider>
+    )
+    expect(screen.getByTestId('InformationButton')).toBeInTheDocument()
+  })
 })
