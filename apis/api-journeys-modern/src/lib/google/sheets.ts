@@ -125,7 +125,7 @@ export async function writeValues({
   const method = append === true ? 'post' : 'put'
 
   await axios({
-    method: method as 'post' | 'put',
+    method: method,
     url,
     params,
     headers: { Authorization: `Bearer ${accessToken}` },
