@@ -129,7 +129,6 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                   hasVerseContent: boolean
                   hasWhy: boolean
                   whyText: string
-                  conversationExamples: { tone?: string; message: string }[]
                 }[]
               >((accumulator, option, optionIndex) => {
                 const text =
@@ -150,32 +149,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                     : ''
                 const hasWhy = whyText.length > 0
 
-                const conversationExamples = Array.isArray(
-                  option?.conversationExamples
-                )
-                  ? option.conversationExamples.reduce<
-                      { tone?: string; message: string }[]
-                    >((examplesAccumulator, example) => {
-                      const message =
-                        typeof example?.message === 'string'
-                          ? example.message.trim()
-                          : ''
-
-                      if (!message) {
-                        return examplesAccumulator
-                      }
-
-                      examplesAccumulator.push({
-                        ...example,
-                        message
-                      })
-
-                      return examplesAccumulator
-                    }, [])
-                  : []
-                const hasExamples = conversationExamples.length > 0
-
-                if (!hasVerseContent && !hasWhy && !hasExamples) {
+                if (!hasVerseContent && !hasWhy) {
                   return accumulator
                 }
 
@@ -187,8 +161,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                   verseReference,
                   hasVerseContent,
                   hasWhy,
-                  whyText,
-                  conversationExamples
+                  whyText
                 })
 
                 return accumulator
@@ -378,74 +351,71 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                     {scriptureSlides
                       .filter((slide) => slide.verseId === selectedScriptureOption)
                       .map((slide) => {
-                        const exampleBaseId = `scripture-example-${index}-${slide.optionIndex}`
+                        const scriptureMessageId = `scripture-message-${index}-${slide.optionIndex}`
 
                         return (
-                          <div key={`selected-examples-${slide.verseId}`} className="space-y-3">
-                            <div className="flex items-center gap-2 text-xs uppercase font-semibold tracking-wide text-muted-foreground">
-                              <Book className="w-4 h-4 text-muted-foreground" />
-                              Conversation Examples
+                          <div key={`selected-scripture-${slide.verseId}`} className="space-y-3">
+                            <div className="flex items-center justify-start space-x-2">
+                              <User className="w-4 h-4 text-muted-foreground" />
+                              <span className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
+                                You selected
+                              </span>
                             </div>
-                            <div className="space-y-2">
-                              {slide.conversationExamples.map((example, exampleIndex) => {
-                                const exampleId = `${exampleBaseId}-${exampleIndex}`
-
-                                return (
-                                  <div
-                                    key={exampleId}
-                                    className="relative rounded-2xl border border-amber-200/70 bg-white p-3 shadow group"
-                                  >
-                                    <div className="mb-2 flex items-center justify-between gap-2">
-                                      <span className="text-xs uppercase font-semibold tracking-wide text-amber-900/80">
-                                        {example.tone || 'Example'}
-                                      </span>
-                                      <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-6 w-6 gap-1 p-0 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-transparent"
-                                        onClick={(event) => {
-                                          event.preventDefault()
-                                          event.stopPropagation()
-                                          void handleCopyMessage(
-                                            example.message,
-                                            exampleId
-                                          )
-                                        }}
-                                        onMouseDown={(event) => event.preventDefault()}
-                                        title={
-                                          copiedMessageId === exampleId
-                                            ? 'Copied!'
-                                            : 'Copy message'
-                                        }
-                                      >
-                                        {copiedMessageId === exampleId ? (
-                                          <Check className="h-3 w-3 text-green-500" />
-                                        ) : (
-                                          <Copy className="h-3 w-3" />
-                                        )}
-                                      </Button>
-                                    </div>
-                                    <AutoResizeTextarea
-                                      value={
-                                        editingMessageId === exampleId
-                                          ? localMessageContent
-                                          : example.message
-                                      }
-                                      onChange={(event) =>
-                                        handleMessageChange(event.target.value)
-                                      }
-                                      onClick={() =>
-                                        handleMessageClick(example.message, exampleId)
-                                      }
-                                      onBlur={handleMessageBlur}
-                                      readOnly={editingMessageId !== exampleId}
-                                      className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 text-sm leading-relaxed"
-                                      data-message-id={exampleId}
-                                    />
-                                  </div>
-                                )
-                              })}
+                            <div className="flex justify-start">
+                              <div className="relative w-full max-w-[400px] rounded-2xl bg-[#098CFF] text-white shadow-xl group">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  className="absolute top-2 right-2 gap-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-transparent text-white"
+                                  onClick={(event) => {
+                                    event.preventDefault()
+                                    event.stopPropagation()
+                                    void handleCopyMessage(
+                                      slide.verseDisplay,
+                                      scriptureMessageId
+                                    )
+                                  }}
+                                  onMouseDown={(event) => event.preventDefault()}
+                                  title={
+                                    copiedMessageId === scriptureMessageId
+                                      ? 'Copied!'
+                                      : 'Copy verse'
+                                  }
+                                >
+                                  {copiedMessageId === scriptureMessageId ? (
+                                    <Check className="h-3 w-3 text-green-300" />
+                                  ) : (
+                                    <Copy className="h-3 w-3" />
+                                  )}
+                                </Button>
+                                <span
+                                  aria-hidden="true"
+                                  className="absolute left-3 -bottom-1 h-3 w-3 rotate-45 bg-[#098CFF]"
+                                />
+                                <AutoResizeTextarea
+                                  value={
+                                    editingMessageId === scriptureMessageId
+                                      ? localMessageContent
+                                      : slide.verseDisplay
+                                  }
+                                  onChange={(event) =>
+                                    handleMessageChange(event.target.value)
+                                  }
+                                  onClick={() =>
+                                    handleMessageClick(
+                                      slide.verseDisplay,
+                                      scriptureMessageId
+                                    )
+                                  }
+                                  onBlur={handleMessageBlur}
+                                  readOnly={
+                                    editingMessageId !== scriptureMessageId
+                                  }
+                                  className="border-none shadow-none bg-transparent focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 px-4 py-3 rounded-2xl"
+                                  data-message-id={scriptureMessageId}
+                                />
+                              </div>
                             </div>
                           </div>
                         )
