@@ -2,9 +2,8 @@ import { Check, Copy } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { ReactElement } from 'react'
 
+import { AutoResizeTextarea } from '@core/shared/uimodern/components/textarea'
 import { Button } from '../ui/button'
-
-import { AutoResizeTextarea } from '@/components/ui/textarea'
 
 export type StepContentRendererProps = {
   content: string

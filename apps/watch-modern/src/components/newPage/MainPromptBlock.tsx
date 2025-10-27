@@ -11,6 +11,7 @@ import type {
   SetStateAction
 } from 'react'
 
+import { AutoResizeTextarea, Textarea } from '@core/shared/uimodern/components/textarea'
 import type { ImageAnalysisResult } from '../../libs/storage'
 import { Button } from '../ui/button'
 import {
@@ -22,8 +23,6 @@ import {
   DialogTrigger
 } from '../ui/dialog'
 import { Input } from '../ui/input'
-
-import { AutoResizeTextarea, Textarea } from '@/components/ui/textarea'
 
 const AnimatedLoadingText = dynamic(
   async () => {

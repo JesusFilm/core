@@ -2,11 +2,10 @@ import { Check, Copy } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 
+import { AutoResizeTextarea } from '@core/shared/uimodern/components/textarea'
 import type { GeneratedStepContent } from '../../libs/storage'
 import { Button } from '../ui/button'
 import { Card, CardContent } from '../ui/card'
-
-import { AutoResizeTextarea } from '@/components/ui/textarea'
 
 type StepHandlers = {
   onContentChange?: (value: string) => void

@@ -1,10 +1,9 @@
 import { ArrowLeft, ArrowUp, Book, Check, Copy, Layers, User, X } from 'lucide-react'
 import { memo, useCallback, useEffect, useState } from 'react'
 
+import { AutoResizeTextarea } from '@core/shared/uimodern/components/textarea'
 import type { ConversationMap } from '../../libs/storage'
 import { Button } from '../ui/button'
-
-import { AutoResizeTextarea } from '@/components/ui/textarea'
 
 export type ConversationMapViewProps = {
   map: ConversationMap
