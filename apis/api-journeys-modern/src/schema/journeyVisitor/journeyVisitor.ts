@@ -119,6 +119,7 @@ interface JourneyVisitorExportRow {
 async function* getJourneyVisitors(
   journeyId: string,
   eventWhere: Prisma.EventWhereInput,
+  timezone: string,
   batchSize: number = 1000
 ): AsyncGenerator<JourneyVisitorExportRow> {
   let offset = 0
@@ -158,7 +159,15 @@ async function* getJourneyVisitors(
       break
     }
     for (const journeyVisitor of journeyVisitors) {
-      const date = journeyVisitor.createdAt.toISOString().split('T')[0]
+      // Format date in user's timezone to match frontend display
+      const date = journeyVisitor.createdAt
+        .toLocaleString('en-CA', { 
+          timeZone: timezone,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        })
+        .split(',')[0] // Extract YYYY-MM-DD part
       const row: JourneyVisitorExportRow = {
         date
       }
@@ -197,9 +206,13 @@ builder.queryField('journeyVisitorExport', (t) => {
       args: {
         journeyId: t.arg.id({ required: true }),
         filter: t.arg({ type: JourneyEventsFilter, required: false }),
-        select: t.arg({ type: JourneyVisitorExportSelect, required: false })
+        select: t.arg({ type: JourneyVisitorExportSelect, required: false }),
+        timezone: t.arg.string({
+          required: false,
+          description: 'IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.'
+        })
       },
-      resolve: async (_, { journeyId, filter, select }, context) => {
+      resolve: async (_, { journeyId, filter, select, timezone }, context) => {
         const journey = await prisma.journey.findUnique({
           where: {
             id: journeyId
@@ -567,7 +580,9 @@ builder.queryField('journeyVisitorExport', (t) => {
         stringifier.write(sanitizedCardHeadingRow)
         stringifier.write(sanitizedLabelRow)
 
-        for await (const row of getJourneyVisitors(journeyId, eventWhere)) {
+        // Use user's timezone or default to UTC
+        const userTimezone = timezone ?? 'UTC'
+        for await (const row of getJourneyVisitors(journeyId, eventWhere, userTimezone)) {
           stringifier.write(row)
         }
         stringifier.end()
