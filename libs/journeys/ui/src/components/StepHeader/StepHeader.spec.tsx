@@ -5,6 +5,15 @@ import { defaultJourney } from '../TemplateView/data'
 
 import { StepHeader } from '.'
 
+jest.mock('next/legacy/image', () => ({
+  __esModule: true,
+  default: jest.fn(
+    ({ priority, blurDataURL, objectFit, objectPosition, ...props }) => {
+      return <img {...props} />
+    }
+  )
+}))
+
 describe('StepHeader', () => {
   it('should handleClick', () => {
     const onHeaderClick = jest.fn()
