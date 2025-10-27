@@ -249,7 +249,18 @@ export function PrayerCarousel({
           {messages.slice(0, visibleMessageCount).map((message) => (
             <div key={message.title} className="flex items-start gap-3">
               <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-500/15 text-amber-700">
-                <Bot aria-hidden className="h-4 w-4" />
+                {message.title === 'What Truly Brings Change' ? (
+                  <Book aria-hidden className="h-4 w-4" />
+                ) : message.title === 'The Purpose of This Tool' ? (
+                  <Target aria-hidden className="h-4 w-4" />
+                ) : (
+                  <img
+                    src="/robot-book.gif?new"
+                    alt=""
+                    className="h-8 w-8 rounded-full"
+                    aria-hidden
+                  />
+                )}
               </span>
               <div className="relative max-w-[min(100%,_38rem)] flex-1 rounded-3xl bg-white/95 p-5 shadow-md ring-1 ring-amber-200/70 backdrop-blur">
                 <span
