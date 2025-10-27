@@ -166,8 +166,8 @@ export function ExportDialog({
         .build()
 
       picker.setVisible(true)
-      // Force picker to top-most layer
-      setTimeout(() => elevatePickerZIndex(), 0)
+      // Force picker to top-most layer (retry in case DOM attaches late)
+      elevatePickerZIndexWithRetries()
     } catch (err) {
       enqueueSnackbar(t('Failed to open Google Picker'), { variant: 'error' })
     }
@@ -245,6 +245,15 @@ export function ExportDialog({
     if (dialog != null) dialog.style.zIndex = z
     if (bg != null) bg.style.zIndex = z
     if (modal != null) modal.style.zIndex = z
+  }
+
+  function elevatePickerZIndexWithRetries(attempts = 10, delayMs = 50): void {
+    elevatePickerZIndex()
+    if (attempts <= 1) return
+    setTimeout(
+      () => elevatePickerZIndexWithRetries(attempts - 1, delayMs),
+      delayMs
+    )
   }
 
   useEffect(() => {
