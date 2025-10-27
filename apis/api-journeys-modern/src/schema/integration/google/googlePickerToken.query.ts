@@ -2,14 +2,20 @@ import { GraphQLError } from 'graphql'
 
 import { prisma } from '@core/prisma/journeys/client'
 
-import { getTeamGoogleAccessToken } from '../../../lib/google/googleAuth'
+import {
+  getIntegrationGoogleAccessToken,
+  getTeamGoogleAccessToken
+} from '../../../lib/google/googleAuth'
 import { builder } from '../../builder'
 
 builder.queryField('integrationGooglePickerToken', (t) =>
   t.withAuth({ isAuthenticated: true }).string({
-    args: { teamId: t.arg.id({ required: true }) },
+    args: {
+      teamId: t.arg.id({ required: true }),
+      integrationId: t.arg.id()
+    },
     nullable: false,
-    resolve: async (_parent, { teamId }, context) => {
+    resolve: async (_parent, { teamId, integrationId }, context) => {
       const userId = context.user?.id
       if (userId == null)
         throw new GraphQLError('unauthenticated', {
@@ -38,6 +44,11 @@ builder.queryField('integrationGooglePickerToken', (t) =>
           extensions: { code: 'BAD_REQUEST' }
         })
 
+      // If a specific integrationId is provided, use that; else any team integration
+      if (integrationId != null) {
+        const token = await getIntegrationGoogleAccessToken(integrationId)
+        return token.accessToken
+      }
       const { accessToken } = await getTeamGoogleAccessToken(teamId)
       return accessToken
     }

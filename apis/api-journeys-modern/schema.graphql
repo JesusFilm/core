@@ -1278,7 +1278,7 @@ type Mutation {
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
-  journeyVisitorExportToGoogleSheet(journeyId: ID!, filter: JourneyEventsFilter, select: JourneyVisitorExportSelect, destination: JourneyVisitorGoogleSheetDestinationInput!): JourneyVisitorGoogleSheetExportResult!
+  journeyVisitorExportToGoogleSheet(journeyId: ID!, filter: JourneyEventsFilter, select: JourneyVisitorExportSelect, destination: JourneyVisitorGoogleSheetDestinationInput!, integrationId: ID): JourneyVisitorGoogleSheetExportResult!
 }
 
 input MutationJourneyLanguageAiDetectInput {
@@ -1434,6 +1434,7 @@ input QrCodesFilter {
 type Query {
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
+  integrationGooglePickerToken(teamId: ID!, integrationId: ID): String!
   journeySimpleGet(id: ID!): Json
 
   """

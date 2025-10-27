@@ -69,3 +69,61 @@ export async function getTeamGoogleAccessToken(
   // Fallback: treat secret as access_token
   return { accessToken: secret, accountEmail: integration.accountEmail }
 }
+
+export async function getIntegrationGoogleAccessToken(
+  integrationId: string
+): Promise<GoogleAuthResult> {
+  const integration = await prisma.integration.findUnique({
+    where: { id: integrationId },
+    select: {
+      accessSecretCipherText: true,
+      accessSecretIv: true,
+      accessSecretTag: true,
+      accountEmail: true
+    }
+  })
+
+  if (
+    integration?.accessSecretCipherText == null ||
+    integration?.accessSecretIv == null ||
+    integration?.accessSecretTag == null
+  ) {
+    throw new Error('Google integration not found')
+  }
+
+  const secret = await decryptSymmetric(
+    integration.accessSecretCipherText,
+    integration.accessSecretIv,
+    integration.accessSecretTag,
+    process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
+  )
+
+  const clientId = process.env.GOOGLE_CLIENT_ID
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET
+
+  if (clientId == null || clientSecret == null) {
+    throw new Error('Google OAuth client is not configured')
+  }
+
+  try {
+    const params = new URLSearchParams({
+      client_id: clientId,
+      client_secret: clientSecret,
+      grant_type: 'refresh_token',
+      refresh_token: secret
+    })
+    const res = await axios.post(
+      'https://oauth2.googleapis.com/token',
+      params,
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+    )
+    if (typeof res.data?.access_token === 'string') {
+      return {
+        accessToken: res.data.access_token,
+        accountEmail: integration.accountEmail
+      }
+    }
+  } catch {}
+
+  return { accessToken: secret, accountEmail: integration.accountEmail }
+}

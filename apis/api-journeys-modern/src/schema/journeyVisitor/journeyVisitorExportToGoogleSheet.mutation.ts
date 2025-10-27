@@ -4,7 +4,10 @@ import { GraphQLError } from 'graphql'
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
-import { getTeamGoogleAccessToken } from '../../lib/google/googleAuth'
+import {
+  getIntegrationGoogleAccessToken,
+  getTeamGoogleAccessToken
+} from '../../lib/google/googleAuth'
 import {
   createSpreadsheet,
   ensureSheet,
@@ -142,11 +145,12 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       journeyId: t.arg.id({ required: true }),
       filter: t.arg({ type: JourneyEventsFilter, required: false }),
       select: t.arg({ type: JourneyVisitorExportSelect, required: false }),
-      destination: t.arg({ type: ExportDestinationInput, required: true })
+      destination: t.arg({ type: ExportDestinationInput, required: true }),
+      integrationId: t.arg.id({ required: false })
     },
     resolve: async (
       _parent,
-      { journeyId, filter, select, destination },
+      { journeyId, filter, select, destination, integrationId },
       context
     ) => {
       const journey = await prisma.journey.findUnique({
@@ -224,7 +228,9 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         values.push(v)
       }
 
-      const { accessToken } = await getTeamGoogleAccessToken(journey.teamId)
+      const accessToken = integrationId
+        ? (await getIntegrationGoogleAccessToken(integrationId)).accessToken
+        : (await getTeamGoogleAccessToken(journey.teamId)).accessToken
 
       let spreadsheetId: string
       let spreadsheetUrl: string

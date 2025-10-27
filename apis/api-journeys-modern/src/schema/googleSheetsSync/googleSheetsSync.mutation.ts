@@ -22,6 +22,7 @@ const CreateGoogleSheetsSyncInput = builder.inputType(
   {
     fields: (t) => ({
       journeyId: t.string({ required: true }),
+      integrationId: t.string({ required: true }),
       spreadsheetId: t.string({ required: true }),
       sheetName: t.string({ required: true }),
       folderId: t.string(),
@@ -53,10 +54,14 @@ builder.mutationField('createGoogleSheetsSync', (t) =>
           extensions: { code: 'NOT_FOUND' }
         })
 
-      // Only integration originating user may create a sync
-      const googleIntegration = journey.team.integrations.find(
-        (i) => i.type === 'google'
-      )
+      // Only the specified integration's originating user may create a sync
+      const googleIntegration = await prisma.integration.findFirst({
+        where: {
+          id: input.integrationId,
+          teamId: journey.teamId,
+          type: 'google'
+        }
+      })
       if (googleIntegration == null)
         throw new GraphQLError('Google integration not found for team', {
           extensions: { code: 'BAD_REQUEST' }

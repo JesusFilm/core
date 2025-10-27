@@ -14,6 +14,7 @@ import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 
 import { useJourneyContactsExport } from '../../../../libs/useJourneyContactsExport'
 import { useJourneyEventsExport } from '../../../../libs/useJourneyEventsExport'
+import { useIntegrationQuery } from '../../../../libs/useIntegrationQuery/useIntegrationQuery'
 
 import { ContactDataForm } from './ContactDataForm'
 import { DateRangePicker } from './DateRangePicker'
@@ -34,8 +35,8 @@ export const GET_JOURNEY_CREATED_AT = gql`
 `
 
 const GET_GOOGLE_PICKER_TOKEN = gql`
-  query IntegrationGooglePickerToken($teamId: ID!) {
-    integrationGooglePickerToken(teamId: $teamId)
+  query IntegrationGooglePickerToken($teamId: ID!, $integrationId: ID) {
+    integrationGooglePickerToken(teamId: $teamId, integrationId: $integrationId)
   }
 `
 
@@ -45,12 +46,14 @@ const EXPORT_TO_SHEETS = gql`
     $filter: JourneyEventsFilter
     $select: JourneyVisitorExportSelect
     $destination: JourneyVisitorGoogleSheetDestinationInput!
+    $integrationId: ID
   ) {
     journeyVisitorExportToGoogleSheet(
       journeyId: $journeyId
       filter: $filter
       select: $select
       destination: $destination
+      integrationId: $integrationId
     ) {
       spreadsheetId
       spreadsheetUrl
@@ -85,6 +88,9 @@ export function ExportDialog({
   const { data: journeyData } = useQuery(GET_JOURNEY_CREATED_AT, {
     variables: { id: journeyId }
   })
+  const { data: integrationsData } = useIntegrationQuery({
+    teamId: journeyData?.journey?.team?.id as string
+  })
 
   const [startDate, setStartDate] = useState<Date | null>(() =>
     journeyData?.journey?.createdAt
@@ -98,6 +104,9 @@ export function ExportDialog({
 
   const [googleDialogOpen, setGoogleDialogOpen] = useState(false)
   const [googleMode, setGoogleMode] = useState<'create' | 'existing'>('create')
+  const [integrationId, setIntegrationId] = useState<string | undefined>(
+    undefined
+  )
   const [spreadsheetTitle, setSpreadsheetTitle] = useState('')
   const [sheetName, setSheetName] = useState('')
   const [folderId, setFolderId] = useState<string | undefined>(undefined)
@@ -119,16 +128,20 @@ export function ExportDialog({
         enqueueSnackbar(t('Missing Google API key'), { variant: 'error' })
         return
       }
-      // Prefer user token via GIS; fallback to integration token
-      let oauthToken = await getUserDriveAccessToken()
-      if (oauthToken == null || oauthToken === '') {
-        const teamId = journeyData?.journey?.team?.id
-        if (teamId != null) {
-          const { data: tokenData } = await getPickerToken({
-            variables: { teamId }
-          })
-          oauthToken = tokenData?.integrationGooglePickerToken
-        }
+      // Use selected integration token only
+      if (integrationId == null || integrationId === '') {
+        enqueueSnackbar(t('Select an integration account first'), {
+          variant: 'error'
+        })
+        return
+      }
+      let oauthToken: string | undefined | null
+      const teamId = journeyData?.journey?.team?.id
+      if (teamId != null) {
+        const { data: tokenData } = await getPickerToken({
+          variables: { teamId, integrationId }
+        })
+        oauthToken = tokenData?.integrationGooglePickerToken
       }
       if (oauthToken == null || oauthToken === '') {
         enqueueSnackbar(t('Unable to authorize Google Picker'), {
@@ -173,35 +186,7 @@ export function ExportDialog({
     }
   }
 
-  async function getUserDriveAccessToken(): Promise<string | null> {
-    await ensureGisLoaded()
-    return await new Promise<string | null>((resolve) => {
-      const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
-      const scope = [
-        'https://www.googleapis.com/auth/drive.readonly',
-        'https://www.googleapis.com/auth/drive.metadata.readonly'
-      ].join(' ')
-      const googleAny: any = (window as any).google
-      if (
-        clientId == null ||
-        clientId === '' ||
-        googleAny?.accounts?.oauth2 == null
-      ) {
-        resolve(null)
-        return
-      }
-      const tokenClient = googleAny.accounts.oauth2.initTokenClient({
-        client_id: clientId,
-        scope,
-        prompt: '',
-        callback: (resp: any) => {
-          if (resp?.access_token) resolve(resp.access_token)
-          else resolve(null)
-        }
-      })
-      tokenClient.requestAccessToken()
-    })
-  }
+  // Removed GIS fallback to enforce integration usage
 
   async function ensurePickerLoaded(): Promise<void> {
     const win = window as any
@@ -289,7 +274,8 @@ export function ExportDialog({
           variables: {
             journeyId,
             filter: filterArg,
-            destination
+            destination,
+            integrationId
           }
         })
       } else if (exportBy === 'Contact Data') {
@@ -308,7 +294,8 @@ export function ExportDialog({
               email: contactData.includes('email'),
               phone: contactData.includes('phone')
             },
-            destination
+            destination,
+            integrationId
           }
         })
       }
@@ -487,6 +474,57 @@ export function ExportDialog({
         }
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          {/* Integration selector */}
+          <FormControl fullWidth>
+            <Typography variant="subtitle2">
+              {t('Use integration account (optional)')}
+            </Typography>
+            <Select
+              value={integrationId ?? ''}
+              onChange={(e) =>
+                setIntegrationId(
+                  (e.target.value as string) === ''
+                    ? undefined
+                    : (e.target.value as string)
+                )
+              }
+              displayEmpty
+              inputProps={{ 'aria-label': t('Integration account') }}
+              IconComponent={ChevronDown}
+              renderValue={(selected) => {
+                if (selected === '') return t('Select integration account')
+                const found = integrationsData?.integrations.find(
+                  (i) => i.id === selected
+                )
+                const label =
+                  found?.accessSecretPart != null
+                    ? `${t('Google')} (${found.accessSecretPart}...)`
+                    : selected
+                return label
+              }}
+            >
+              <MenuItem value="" disabled>
+                {t('Select integration account')}
+              </MenuItem>
+              {integrationsData?.integrations
+                ?.filter((i) => i.type === 'google')
+                .map((i) => (
+                  <MenuItem key={i.id} value={i.id}>
+                    {i.accessSecretPart != null
+                      ? `${t('Google')} (${i.accessSecretPart}...)`
+                      : i.id}
+                  </MenuItem>
+                ))}
+            </Select>
+            <Button
+              variant="text"
+              href={`/teams/${journeyData?.journey?.team?.id}/integrations/new/google`}
+              sx={{ alignSelf: 'flex-start', mt: 1 }}
+            >
+              {t('Add new Google integration')}
+            </Button>
+          </FormControl>
+
           <FormControl fullWidth>
             <Select
               value={googleMode}
