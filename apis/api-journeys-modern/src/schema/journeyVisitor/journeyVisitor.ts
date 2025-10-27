@@ -501,7 +501,7 @@ builder.queryField('journeyVisitorExport', (t) => {
             const counts = cardPollCounts.get(cardId)!
             if (header.typename === 'RadioQuestionBlock') {
               counts.pollCount++
-            } else if (header.typename === 'RadioMultiselectBlock') {
+            } else if (header.typename === 'MultiselectBlock') {
               counts.multiselectCount++
             }
           }
@@ -520,7 +520,7 @@ builder.queryField('journeyVisitorExport', (t) => {
           if (
             cardBlock &&
             (col.typename === 'RadioQuestionBlock' ||
-              col.typename === 'RadioMultiselectBlock')
+              col.typename === 'MultiselectBlock')
           ) {
             const cardId = cardBlock.id
             if (!currentCardCounts.has(cardId)) {
@@ -539,7 +539,7 @@ builder.queryField('journeyVisitorExport', (t) => {
               return totalCounts.pollCount > 1
                 ? `Poll ${counts.pollCount}`
                 : 'Poll'
-            } else if (col.typename === 'RadioMultiselectBlock') {
+            } else if (col.typename === 'MultiselectBlock') {
               counts.multiselectCount++
               // Only add number if there are multiple multiselects on this card
               return totalCounts.multiselectCount > 1
