@@ -160,14 +160,18 @@ async function* getJourneyVisitors(
     }
     for (const journeyVisitor of journeyVisitors) {
       // Format date in user's timezone to match frontend display
-      const date = journeyVisitor.createdAt
-        .toLocaleString('en-CA', {
-          timeZone: timezone,
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit'
-        })
-        .split(',')[0] // Extract YYYY-MM-DD part
+      const date = (() => {
+        try {
+          return journeyVisitor.createdAt.toLocaleDateString('en-CA', {
+            timeZone: timezone,
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          })
+        } catch {
+          return journeyVisitor.createdAt.toISOString().slice(0, 10)
+        }
+      })()
       const row: JourneyVisitorExportRow = {
         date
       }
