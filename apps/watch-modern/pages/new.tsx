@@ -61,7 +61,7 @@ import {
   userInputStorage
 } from '../src/libs/storage'
 
-import { AutoResizeTextarea } from '@core/shared/uimodern/components/ui/textarea'
+import { AutoResizeTextarea } from '@core/shared/uimodern/components/textarea'
 // Dynamic imports for components to avoid hydration issues
 
 const FormatSelection = dynamic(

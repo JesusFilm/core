@@ -1,6 +1,9 @@
 //@ts-check
 
 import { fileURLToPath } from 'node:url'
+import path from 'node:path'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { composePlugins, withNx } from '@nx/next'
@@ -58,6 +61,7 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false
   },
+  transpilePackages: ['shared', 'uimodern'],
   experimental: {
     reactCompiler: true
   },
