@@ -477,7 +477,7 @@ builder.queryField('journeyVisitorExport', (t) => {
           }))
         const columns = [
           { key: 'date', label: 'Date', blockId: null, typename: '' },
-          ...(filter?.typenames == null || filter.typenames.length > 0
+          ...(filter?.typenames == null || Array.isArray(filter.typenames)
             ? blockHeaders
             : [])
         ].filter((value) => value != null)
