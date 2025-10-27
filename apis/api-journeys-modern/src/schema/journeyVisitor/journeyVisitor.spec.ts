@@ -221,7 +221,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'Date\nDate\n2024-01-01\n'
+      'Date,\nDate,Button Click\n2024-01-01,Submit\n'
     )
 
     expect(prismaMock.event.findMany).toHaveBeenCalledWith({
