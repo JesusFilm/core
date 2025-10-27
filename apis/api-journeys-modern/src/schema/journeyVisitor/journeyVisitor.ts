@@ -12,12 +12,11 @@ import { JourneyVisitorExportSelect } from './inputs'
 
 // Sanitize CSV cells to prevent injection attacks and preserve leading zeros
 function sanitizeCSVCell(value: string): string {
-  if (!value) return ''
+  // Trim the value to remove leading and trailing whitespace
+  const trimmed = value?.trim()
+  if (!trimmed) return ''
   // Check for formulas that could be executed in Excel/CSV viewers
-  if (/^[=+\-@]/.test(value)) {
-    return `'${value}` // Prefix with single quote to treat as text
-  }
-  return value
+  return /^[=+\-@]/.test(trimmed) ? `'${trimmed}` : trimmed
 }
 
 export const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
