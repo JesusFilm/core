@@ -23,6 +23,7 @@ export function StepHeader({
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const { menuButtonIcon } = journey ?? {}
+  const hasMenuButtonIcon = menuButtonIcon != null
   const isWebsite = journey?.website === true
 
   return (
@@ -89,7 +90,7 @@ export function StepHeader({
                 {journey?.displayTitle ?? journey?.seoTitle}
               </Typography>
             </Stack>
-            {menuButtonIcon != null ? (
+            {hasMenuButtonIcon ? (
               <StepHeaderMenu />
             ) : (
               <InformationButton sx={{ p: 0 }} />

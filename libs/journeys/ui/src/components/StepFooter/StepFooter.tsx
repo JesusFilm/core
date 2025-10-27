@@ -20,6 +20,7 @@ import { ChatButtons } from './ChatButtons'
 import { FooterButtonList } from './FooterButtonList'
 import { HostAvatars } from './HostAvatars'
 import { HostTitleLocation } from './HostTitleLocation'
+import { useParams } from 'next/navigation'
 
 interface StepFooterProps {
   onFooterClick?: () => void
@@ -41,7 +42,15 @@ export function StepFooter({
   const footerMobileHeight = getFooterMobileHeight({ journey, variant })
   const combinedFooter = hasCombinedFooter({ journey, variant })
 
+  const { menuButtonIcon } = journey ?? {}
+  const hasMenuButtonIcon = menuButtonIcon != null
+
+  const menuStepBlockId = journey?.menuStepBlock?.id
+  const urlParams = useParams()
+  const currentPath = urlParams?.['stepSlug']
+
   const isWebsite = journey?.website === true
+  const isMenu = menuStepBlockId === currentPath
 
   return (
     <Box
@@ -85,7 +94,10 @@ export function StepFooter({
             height: { xs: footerMobileHeight, sm: 52 },
             flexDirection: rtl ? 'row-reverse' : 'row',
             alignItems: 'center',
-            justifyContent: isWebsite ? 'flex-end' : undefined,
+            justifyContent:
+              isWebsite && isMenu && hasMenuButtonIcon
+                ? 'space-between'
+                : 'flex-end',
             mt: '0px !important'
           }}
           gap={4}
@@ -93,6 +105,11 @@ export function StepFooter({
           {!isWebsite && combinedFooter && (
             <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
               <FooterButtonList />
+            </Box>
+          )}
+          {isMenu && hasMenuButtonIcon && (
+            <Box>
+              <InformationButton sx={{ p: 0 }} />
             </Box>
           )}
           {!isWebsite && (
