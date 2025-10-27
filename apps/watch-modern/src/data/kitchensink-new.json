@@ -1,0 +1,896 @@
+{
+  "selectedContext": "Conversations",
+  "selectedContextDetail": "Encourage a friend",
+  "prompt": "Offer words of encouragement and support to someone going through a difficult time.",
+  "personaSettings": {
+    "personaName": "Compassionate Shepherd",
+    "audienceDescription": "A close friend who feels exhausted and unsure how to move forward.",
+    "tone": "Gentle, empathetic, scripture-rooted",
+    "goals": "Comfort them with God's presence, remind them of hope, and invite ongoing connection."
+  },
+  "aiResponse": "{\n  \"conversationMap\": \"See structured data below\"\n}",
+  "editableSteps": [
+    {
+      "content": "# Listen First\n\nStart by asking gentle questions and mirror back what you hear so they feel safe opening up.\n\n- Give them room to name the hardest part of this week.\n- Repeat one key phrase you heard to show you're tracking with them.\n- Affirm that God can handle every honest emotion they bring.",
+      "keywords": [
+        "listen",
+        "care",
+        "presence"
+      ],
+      "mediaPrompt": "Warm, sunlit photo of two friends talking over coffee, soft focus, comforting atmosphere"
+    },
+    {
+      "content": "# Share Hope\n\nOffer a short story of God's faithfulness in your own life and connect it to a verse about His steady love.\n\n- Keep it under two minutes and highlight God's character.\n- Use Romans 8:38-39 or another promise that anchors the moment.\n- Invite them to notice how God has met them before.",
+      "keywords": [
+        "hope",
+        "story",
+        "promise"
+      ],
+      "mediaPrompt": "Notebook with open Bible and mug on table, golden hour lighting, hopeful mood"
+    },
+    {
+      "content": "# Pray Together\n\nAsk if you can pray right now, using simple language that thanks God for His presence and asks for fresh strength.\n\n- Keep the prayer under a minute.\n- Name one specific burden they mentioned.\n- Close by reminding them you'll check in again soon.",
+      "keywords": [
+        "prayer",
+        "support",
+        "care"
+      ],
+      "mediaPrompt": "Hands joined in prayer, natural light, peaceful background"
+    }
+  ],
+  "conversationMap": {
+    "flow": {
+      "sequence": [
+        "Acknowledge Struggle",
+        "Express Empathy",
+        "Affirm God's Love",
+        "Share Hope in Trials",
+        "Highlight God's Presence",
+        "Encourage Through Scripture",
+        "Invite Prayerful Support",
+        "Offer Ongoing Companionship"
+      ],
+      "rationale": "This sequence starts by validating the person's pain, builds empathy and hope, gently weaves in gospel truths about God's love and presence, and ends with practical support, fostering trust and opening hearts to faith without pressure."
+    },
+    "steps": [
+      {
+        "title": "Acknowledge the Struggle",
+        "purpose": "Validates their feelings to build trust and show you're listening.",
+        "guideMessage": "I'm so sorry you're going through this tough time\u2014it sounds really heavy. It's okay to feel overwhelmed; many of us have been there. Tell me more about what's been hardest for you lately.",
+        "scriptureOptions": [
+          {
+            "text": "The Lord is close to the brokenhearted and saves those who are crushed in spirit.",
+            "reference": "Psalm 34:18",
+            "whyItFits": "This verse reassures that God sees and draws near in pain, transitioning naturally by asking how they've sensed comfort amid hardship.",
+            "conversationExamples": [
+              {
+                "tone": "Gentle",
+                "message": "I've found comfort in knowing God is especially close when our hearts are hurting\u2014does that resonate with you right now?"
+              },
+              {
+                "tone": "Empathetic",
+                "message": "Psalm 34 reminds us God doesn't leave us alone in brokenness; how has that idea landed for you during this?"
+              },
+              {
+                "tone": "Warm",
+                "message": "It's beautiful how Scripture says God stays near the brokenhearted\u2014want to explore that together?"
+              }
+            ]
+          },
+          {
+            "text": "Come to me, all you who are weary and burdened, and I will give you rest.",
+            "reference": "Matthew 11:28",
+            "whyItFits": "Jesus invites those in difficulty to find rest, allowing a shift to sharing personal burdens and inviting deeper conversation.",
+            "conversationExamples": [
+              {
+                "tone": "Inviting",
+                "message": "Jesus offers rest to the weary\u2014 what burdens feel heaviest that you'd like to lay down here?"
+              },
+              {
+                "tone": "Supportive",
+                "message": "In Matthew, Jesus calls us to come as we are; how might that invitation feel for you today?"
+              },
+              {
+                "tone": "Compassionate",
+                "message": "This promise from Jesus is like a gentle hug\u2014does it speak to your weariness?"
+              }
+            ]
+          },
+          {
+            "text": "Even though I walk through the darkest valley, I will fear no evil, for you are with me.",
+            "reference": "Psalm 23:4",
+            "whyItFits": "It acknowledges dark times while pointing to God's companionship, easing into questions about fears they're facing.",
+            "conversationExamples": [
+              {
+                "tone": "Reassuring",
+                "message": "Psalm 23 talks about walking through valleys without fear because God's with us\u2014 what's one fear this stirs for you?"
+              },
+              {
+                "tone": "Encouraging",
+                "message": "Even in dark valleys, we're not alone; how does that truth touch your current path?"
+              },
+              {
+                "tone": "Pastoral",
+                "message": "This verse holds space for our struggles\u2014care to share what's feeling like a valley for you?"
+              }
+            ]
+          },
+          {
+            "text": "My comfort in my suffering is that your promise gives me life.",
+            "reference": "Psalm 119:50",
+            "whyItFits": "Emphasizes finding life in God's promises during suffering, transitioning by exploring what promises they've clung to.",
+            "conversationExamples": [
+              {
+                "tone": "Hopeful",
+                "message": "God's promises bring life even in suffering\u2014has any word from Him comforted you lately?"
+              },
+              {
+                "tone": "Reflective",
+                "message": "Psalm 119 shows comfort in trials through promises; what promise might you need to hear?"
+              },
+              {
+                "tone": "Gentle",
+                "message": "In tough times, Scripture's promises revive us\u2014how has that been for you?"
+              }
+            ]
+          },
+          {
+            "text": null,
+            "reference": null,
+            "whyItFits": "No specific verse needed here to keep focus on active listening; transition by reflecting back what they've shared to deepen connection.",
+            "conversationExamples": [
+              {
+                "tone": "Attentive",
+                "message": "It sounds like the loneliness has been the toughest part\u2014am I hearing that right?"
+              },
+              {
+                "tone": "Supportive",
+                "message": "Your words paint a picture of real exhaustion; thank you for trusting me with that."
+              },
+              {
+                "tone": "Warm",
+                "message": "I hear the weight in your voice\u2014let's sit with that for a moment."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Express Empathy",
+        "purpose": "Builds emotional connection by sharing in their humanity.",
+        "guideMessage": "I can only imagine how exhausting this must be for you\u2014it's brave to keep going. You're not alone in this; I'm here with you. What would help you feel supported right now?",
+        "scriptureOptions": [
+          {
+            "text": "He was despised and rejected by mankind, a man of suffering, and familiar with pain.",
+            "reference": "Isaiah 53:3",
+            "whyItFits": "Shows Jesus understands suffering intimately, transitioning by relating it to shared human experience.",
+            "conversationExamples": [
+              {
+                "tone": "Empathetic",
+                "message": "Jesus knew deep pain Himself\u2014it's comforting to know He gets what you're feeling."
+              },
+              {
+                "tone": "Relatable",
+                "message": "Isaiah describes Jesus as acquainted with sorrow; does that make His empathy feel real to you?"
+              },
+              {
+                "tone": "Compassionate",
+                "message": "Even the Savior experienced rejection\u2014how might His understanding touch your hurt?"
+              }
+            ]
+          },
+          {
+            "text": "Since he himself has gone through suffering and testing, he knows how to help us when we're tested.",
+            "reference": "Hebrews 2:18",
+            "whyItFits": "Highlights Jesus' ability to help because of His own trials, leading to questions about needing help.",
+            "conversationExamples": [
+              {
+                "tone": "Encouraging",
+                "message": "Jesus endured testing so He could help us\u2014where do you need His aid most?"
+              },
+              {
+                "tone": "Supportive",
+                "message": "Hebrews assures us Jesus sympathizes from experience; how does that encourage you?"
+              },
+              {
+                "tone": "Gentle",
+                "message": "Because He suffered, He truly helps\u2014want to talk about a specific need?"
+              }
+            ]
+          },
+          {
+            "text": "Carry each other\u2019s burdens, and in this way you will fulfill the law of Christ.",
+            "reference": "Galatians 6:2",
+            "whyItFits": "Encourages community support, transitioning to offering to share their load practically.",
+            "conversationExamples": [
+              {
+                "tone": "Inviting",
+                "message": "Scripture calls us to bear burdens together\u2014how can I carry some of yours?"
+              },
+              {
+                "tone": "Warm",
+                "message": "Galatians reminds us we're meant to help each other; I'm ready to listen more."
+              },
+              {
+                "tone": "Solidarity",
+                "message": "Let's fulfill Christ's law by sharing this\u2014 what's one burden to lighten?"
+              }
+            ]
+          },
+          {
+            "text": "Praise be to the God and Father of our Lord Jesus Christ, the Father of compassion and the God of all comfort.",
+            "reference": "2 Corinthians 1:3",
+            "whyItFits": "Portrays God as compassionate, easing into sharing how God's comfort flows through others.",
+            "conversationExamples": [
+              {
+                "tone": "Reassuring",
+                "message": "God is the source of all comfort\u2014may His compassion reach you through our talk."
+              },
+              {
+                "tone": "Hopeful",
+                "message": "2 Corinthians calls God the Father of compassion; how might that comfort show up for you?"
+              },
+              {
+                "tone": "Pastoral",
+                "message": "In empathy, we reflect God's comfort\u2014does that feel present here?"
+              }
+            ]
+          },
+          {
+            "text": null,
+            "reference": null,
+            "whyItFits": "Focus on personal empathy without Scripture to keep it relational; transition by mirroring their emotions.",
+            "conversationExamples": [
+              {
+                "tone": "Attentive",
+                "message": "Your pain echoes in my heart too\u2014it's okay to let it out."
+              },
+              {
+                "tone": "Empathetic",
+                "message": "I feel the depth of this with you; you're held in this moment."
+              },
+              {
+                "tone": "Warm",
+                "message": "Sharing this vulnerability strengthens us both\u2014thank you."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Affirm God's Love",
+        "purpose": "Reminds them of unchanging divine love amid chaos.",
+        "guideMessage": "Even in the midst of hardship, God's love for you remains steady and deep. He sees you fully and cares tenderly. How has His love shown up in small ways before?",
+        "scriptureOptions": [
+          {
+            "text": "For I am convinced that neither death nor life... will be able to separate us from the love of God.",
+            "reference": "Romans 8:38-39",
+            "whyItFits": "Assures unbreakable love, transitioning by asking about times they've felt separated or connected.",
+            "conversationExamples": [
+              {
+                "tone": "Reassuring",
+                "message": "Nothing can separate us from God's love\u2014 what might be trying to, for you?"
+              },
+              {
+                "tone": "Encouraging",
+                "message": "Romans declares God's love unbreakable; how does that steady your heart?"
+              },
+              {
+                "tone": "Warm",
+                "message": "This promise holds us tight\u2014has it ever felt true in your storms?"
+              }
+            ]
+          },
+          {
+            "text": "The Lord your God is with you, the Mighty Warrior who saves. He will take great delight in you.",
+            "reference": "Zephaniah 3:17",
+            "whyItFits": "Depicts God's delight and presence, leading to reflection on feeling delighted or protected.",
+            "conversationExamples": [
+              {
+                "tone": "Joyful",
+                "message": "God delights in you like a warrior saving His beloved\u2014does that spark joy?"
+              },
+              {
+                "tone": "Gentle",
+                "message": "Zephaniah shows God's quiet delight; how might you sense that now?"
+              },
+              {
+                "tone": "Supportive",
+                "message": "He saves and delights in us\u2014where do you need that delight most?"
+              }
+            ]
+          },
+          {
+            "text": "See what great love the Father has lavished on us, that we should be called children of God!",
+            "reference": "1 John 3:1",
+            "whyItFits": "Emphasizes lavish fatherly love, transitioning to identity as beloved children.",
+            "conversationExamples": [
+              {
+                "tone": "Affirming",
+                "message": "We're lavished with God's love as His children\u2014how does being called that feel?"
+              },
+              {
+                "tone": "Inviting",
+                "message": "1 John marvels at this great love; want to unpack what it means for you?"
+              },
+              {
+                "tone": "Pastoral",
+                "message": "God's love makes us family\u2014has that truth comforted you before?"
+              }
+            ]
+          },
+          {
+            "text": "I have loved you with an everlasting love; I have drawn you with unfailing kindness.",
+            "reference": "Jeremiah 31:3",
+            "whyItFits": "Highlights eternal, kind love, easing into stories of God's drawing near.",
+            "conversationExamples": [
+              {
+                "tone": "Tender",
+                "message": "God's love is everlasting and kind\u2014how has He drawn you in the past?"
+              },
+              {
+                "tone": "Hopeful",
+                "message": "Jeremiah speaks of unfailing kindness; does that pull at your heart today?"
+              },
+              {
+                "tone": "Encouraging",
+                "message": "This everlasting love pursues us\u2014where might you feel it calling?"
+              }
+            ]
+          },
+          {
+            "text": null,
+            "reference": null,
+            "whyItFits": "Reinforce through personal affirmation; transition by affirming their worth directly.",
+            "conversationExamples": [
+              {
+                "tone": "Affirming",
+                "message": "You are deeply loved, just as you are\u2014let that sink in."
+              },
+              {
+                "tone": "Warm",
+                "message": "God's love surrounds you like a warm embrace right now."
+              },
+              {
+                "tone": "Gentle",
+                "message": "In your difficulty, remember: you are cherished beyond measure."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Share Hope in Trials",
+        "purpose": "Shifts focus from despair to eternal perspective.",
+        "guideMessage": "Trials like these don't have the final word\u2014there's real hope waiting on the other side. God can bring beauty from ashes in ways we can't yet see. What hope are you holding onto today?",
+        "scriptureOptions": [
+          {
+            "text": "And we know that in all things God works for the good of those who love him.",
+            "reference": "Romans 8:28",
+            "whyItFits": "Promises good from all things, transitioning by exploring what 'good' might look like.",
+            "conversationExamples": [
+              {
+                "tone": "Optimistic",
+                "message": "God weaves good even from hard things\u2014 what good do you hope to see?"
+              },
+              {
+                "tone": "Encouraging",
+                "message": "Romans 8:28 offers this assurance; how might it apply to your story?"
+              },
+              {
+                "tone": "Reflective",
+                "message": "In trials, God works for good\u2014has that ever unfolded for you before?"
+              }
+            ]
+          },
+          {
+            "text": "Not only so, but we also glory in our sufferings, because we know that suffering produces perseverance.",
+            "reference": "Romans 5:3",
+            "whyItFits": "Views suffering as producing character, leading to discussion of growth through pain.",
+            "conversationExamples": [
+              {
+                "tone": "Inspirational",
+                "message": "Suffering builds perseverance and hope\u2014 what strength are you gaining?"
+              },
+              {
+                "tone": "Supportive",
+                "message": "This verse sees purpose in trials; does that shift your view at all?"
+              },
+              {
+                "tone": "Gentle",
+                "message": "God uses hardships to shape us\u2014how might this trial refine you?"
+              }
+            ]
+          },
+          {
+            "text": "Blessed are those who mourn, for they will be comforted.",
+            "reference": "Matthew 5:4",
+            "whyItFits": "Promises comfort for mourners, transitioning to hopes for comfort.",
+            "conversationExamples": [
+              {
+                "tone": "Comforting",
+                "message": "Jesus blesses the mourning with comfort\u2014 what comfort do you long for?"
+              },
+              {
+                "tone": "Hopeful",
+                "message": "In the Beatitudes, mourning leads to blessing; how does that hope feel?"
+              },
+              {
+                "tone": "Warm",
+                "message": "There's a promise of comfort ahead\u2014let's hold onto that together."
+              }
+            ]
+          },
+          {
+            "text": "He will wipe every tear from their eyes. There will be no more death or mourning.",
+            "reference": "Revelation 21:4",
+            "whyItFits": "Envisions ultimate hope beyond trials, easing into eternal perspective.",
+            "conversationExamples": [
+              {
+                "tone": "Visionary",
+                "message": "One day, all tears will end\u2014 what peace does that future bring you?"
+              },
+              {
+                "tone": "Reassuring",
+                "message": "Revelation paints a tearless hope; how might it sustain you now?"
+              },
+              {
+                "tone": "Encouraging",
+                "message": "God's final victory over pain\u2014does that light your current darkness?"
+              }
+            ]
+          },
+          {
+            "text": null,
+            "reference": null,
+            "whyItFits": "Build hope through shared stories; transition by asking about past hopes realized.",
+            "conversationExamples": [
+              {
+                "tone": "Inspirational",
+                "message": "I've seen hope rise from hard places\u2014 what's a hope stirring in you?"
+              },
+              {
+                "tone": "Optimistic",
+                "message": "Brighter days are coming; what do they look like for you?"
+              },
+              {
+                "tone": "Supportive",
+                "message": "Hold onto hope\u2014I'm believing with you for breakthrough."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Highlight God's Presence",
+        "purpose": "Assures they're not alone, pointing to Jesus' companionship.",
+        "guideMessage": "God is right there with you in this storm, closer than you might feel. His presence brings peace that surpasses understanding. Have you ever sensed Him near during tough moments?",
+        "scriptureOptions": [
+          {
+            "text": "The Lord himself goes before you and will be with you; he will never leave you nor forsake you.",
+            "reference": "Deuteronomy 31:8",
+            "whyItFits": "Promises unwavering presence, transitioning to experiences of God's faithfulness.",
+            "conversationExamples": [
+              {
+                "tone": "Reassuring",
+                "message": "God never leaves us\u2014 when have you felt His nearness before?"
+              },
+              {
+                "tone": "Steadfast",
+                "message": "Deuteronomy guarantees His company; how does that ease your isolation?"
+              },
+              {
+                "tone": "Warm",
+                "message": "He's going before and with you\u2014trust that promise today?"
+              }
+            ]
+          },
+          {
+            "text": "And surely I am with you always, to the very end of the age.",
+            "reference": "Matthew 28:20",
+            "whyItFits": "Jesus' words affirm constant presence, leading to reflection on daily awareness.",
+            "conversationExamples": [
+              {
+                "tone": "Faithful",
+                "message": "Jesus promises to be with us always\u2014does that feel real in your day-to-day?"
+              },
+              {
+                "tone": "Encouraging",
+                "message": "This Great Commission ends with presence; how might it change your now?"
+              },
+              {
+                "tone": "Gentle",
+                "message": "He's with you to the end\u2014let's notice Him together."
+              }
+            ]
+          },
+          {
+            "text": "When you pass through the waters, I will be with you; and when you pass through the rivers, they will not sweep over you.",
+            "reference": "Isaiah 43:2",
+            "whyItFits": "Depicts protection in trials, transitioning to fears of being overwhelmed.",
+            "conversationExamples": [
+              {
+                "tone": "Protective",
+                "message": "God walks through waters with us\u2014 what 'river' feels overwhelming?"
+              },
+              {
+                "tone": "Hopeful",
+                "message": "Isaiah assures no sweeping away; how does His presence guard you?"
+              },
+              {
+                "tone": "Supportive",
+                "message": "He's beside you in the flood\u2014feel that strength?"
+              }
+            ]
+          },
+          {
+            "text": "The eternal God is your refuge, and underneath are the everlasting arms.",
+            "reference": "Deuteronomy 33:27",
+            "whyItFits": "Portrays God as refuge, easing into needs for shelter and support.",
+            "conversationExamples": [
+              {
+                "tone": "Comforting",
+                "message": "God's arms hold you eternally\u2014 where do you need that refuge?"
+              },
+              {
+                "tone": "Tender",
+                "message": "This verse offers everlasting support; how might it cradle your fears?"
+              },
+              {
+                "tone": "Reassuring",
+                "message": "Rest in His refuge\u2014He's got you underneath it all."
+              }
+            ]
+          },
+          {
+            "text": null,
+            "reference": null,
+            "whyItFits": "Emphasize sensed presence personally; transition by pausing for silence or breath.",
+            "conversationExamples": [
+              {
+                "tone": "Attentive",
+                "message": "Take a breath\u2014God's here in this quiet space with us."
+              },
+              {
+                "tone": "Warm",
+                "message": "I sense His presence as we talk; do you?"
+              },
+              {
+                "tone": "Inviting",
+                "message": "Let's just be aware of God being with us right now."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Encourage Through Scripture",
+        "purpose": "Uses God's Word to provide timeless strength and truth.",
+        "guideMessage": "Let's turn to Scripture for some encouragement\u2014it's like a lifeline in rough seas. These words have carried many through dark times. Which one speaks to your heart most?",
+        "scriptureOptions": [
+          {
+            "text": "Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.",
+            "reference": "Joshua 1:9",
+            "whyItFits": "Builds courage through presence, transitioning to areas needing strength.",
+            "conversationExamples": [
+              {
+                "tone": "Bold",
+                "message": "Joshua calls for courage because God's with us\u2014 where do you need boldness?"
+              },
+              {
+                "tone": "Encouraging",
+                "message": "This verse steels the heart; how might it empower you today?"
+              },
+              {
+                "tone": "Supportive",
+                "message": "Don't be discouraged\u2014God's promise stands; lean on it?"
+              }
+            ]
+          },
+          {
+            "text": "I can do all this through him who gives me strength.",
+            "reference": "Philippians 4:13",
+            "whyItFits": "Empowers through Christ's strength, leading to personal applications of reliance.",
+            "conversationExamples": [
+              {
+                "tone": "Empowering",
+                "message": "Christ's strength sustains us\u2014 what task feels possible with Him?"
+              },
+              {
+                "tone": "Inspirational",
+                "message": "Philippians reminds us of divine power; where will you draw from it?"
+              },
+              {
+                "tone": "Gentle",
+                "message": "Through Him, we find strength\u2014let's claim that for your challenge."
+              }
+            ]
+          },
+          {
+            "text": "Cast all your anxiety on him because he cares for you.",
+            "reference": "1 Peter 5:7",
+            "whyItFits": "Invites releasing worries, transitioning to specific anxieties to cast.",
+            "conversationExamples": [
+              {
+                "tone": "Releasing",
+                "message": "God cares enough to carry your anxieties\u2014 what can you cast today?"
+              },
+              {
+                "tone": "Caring",
+                "message": "This promise is tender; how might handing over worries free you?"
+              },
+              {
+                "tone": "Warm",
+                "message": "He cares deeply\u2014trust Him with that weight?"
+              }
+            ]
+          },
+          {
+            "text": "The joy of the Lord is your strength.",
+            "reference": "Nehemiah 8:10",
+            "whyItFits": "Links joy to strength, easing into sources of joy amid trials.",
+            "conversationExamples": [
+              {
+                "tone": "Uplifting",
+                "message": "God's joy strengthens us\u2014 what sparks of joy can we find?"
+              },
+              {
+                "tone": "Hopeful",
+                "message": "Nehemiah points to joy as power; how might it bolster you?"
+              },
+              {
+                "tone": "Encouraging",
+                "message": "Draw strength from His joy\u2014 even a little can renew."
+              }
+            ]
+          },
+          {
+            "text": null,
+            "reference": null,
+            "whyItFits": "Encourage meditation on shared verses; transition by suggesting rereading together.",
+            "conversationExamples": [
+              {
+                "tone": "Reflective",
+                "message": "These words are powerful\u2014 which one to linger on?"
+              },
+              {
+                "tone": "Attentive",
+                "message": "Scripture speaks uniquely; what stirs in you from this?"
+              },
+              {
+                "tone": "Supportive",
+                "message": "Let's let these truths sink deep\u2014your thoughts?"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Invite Prayerful Support",
+        "purpose": "Brings God's intervention through prayer, fostering intimacy.",
+        "guideMessage": "Would you like us to pray together right now? It's a way to invite God's peace and strength into this moment. I'm honored to lift you up\u2014let's do that.",
+        "scriptureOptions": [
+          {
+            "text": "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God.",
+            "reference": "Philippians 4:6",
+            "whyItFits": "Encourages prayer over anxiety, transitioning to specific requests.",
+            "conversationExamples": [
+              {
+                "tone": "Peaceful",
+                "message": "Prayer replaces anxiety with peace\u2014 what request shall we bring?"
+              },
+              {
+                "tone": "Inviting",
+                "message": "Philippians guides us to pray in every situation; ready to start?"
+              },
+              {
+                "tone": "Gentle",
+                "message": "Let's present it to God with thanks\u2014your words first?"
+              }
+            ]
+          },
+          {
+            "text": "The prayer of a righteous person is powerful and effective.",
+            "reference": "James 5:16",
+            "whyItFits": "Affirms prayer's power, leading to confidence in praying together.",
+            "conversationExamples": [
+              {
+                "tone": "Confident",
+                "message": "Our prayers have real power\u2014let's tap into that for you."
+              },
+              {
+                "tone": "Encouraging",
+                "message": "James says prayer works wonders; how exciting to pray now!"
+              },
+              {
+                "tone": "Supportive",
+                "message": "Effective prayer changes things\u2014shall we make it effective together?"
+              }
+            ]
+          },
+          {
+            "text": "Call to me and I will answer you and tell you great and unsearchable things you do not know.",
+            "reference": "Jeremiah 33:3",
+            "whyItFits": "Invites calling on God, transitioning to what they want to ask Him.",
+            "conversationExamples": [
+              {
+                "tone": "Responsive",
+                "message": "God answers when we call\u2014 what do you want to ask Him?"
+              },
+              {
+                "tone": "Hopeful",
+                "message": "Jeremiah promises answers; let's call and listen."
+              },
+              {
+                "tone": "Warm",
+                "message": "He's ready to reveal\u2014join me in calling to Him?"
+              }
+            ]
+          },
+          {
+            "text": "Pray continually, give thanks in all circumstances.",
+            "reference": "1 Thessalonians 5:17-18",
+            "whyItFits": "Promotes ongoing prayer, easing into a habit of thankfulness.",
+            "conversationExamples": [
+              {
+                "tone": "Habitual",
+                "message": "Prayer is continual\u2014 what thanks can we weave in?"
+              },
+              {
+                "tone": "Grateful",
+                "message": "Even now, thanks in prayer strengthens; what are you thankful for?"
+              },
+              {
+                "tone": "Encouraging",
+                "message": "Let's pray ongoing\u2014starting with gratitude."
+              }
+            ]
+          },
+          {
+            "text": null,
+            "reference": null,
+            "whyItFits": "Focus on the act of prayer; transition by beginning a simple prayer.",
+            "conversationExamples": [
+              {
+                "tone": "Prayful",
+                "message": "Father, we come to You now... (continue with their need)."
+              },
+              {
+                "tone": "Intimate",
+                "message": "Let's pray simply: God, be with my friend in this."
+              },
+              {
+                "tone": "Supportive",
+                "message": "I'll start: Thank You for holding them close."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Offer Ongoing Companionship",
+        "purpose": "Ensures they feel supported long-term, embodying gospel community.",
+        "guideMessage": "I'm here for the long haul\u2014let's check in regularly as you walk this out. You're valuable, and walking together makes all the difference. What's one way I can support you moving forward?",
+        "scriptureOptions": [
+          {
+            "text": "Let us not give up meeting together... but encouraging one another.",
+            "reference": "Hebrews 10:25",
+            "whyItFits": "Urges ongoing encouragement, transitioning to plans for continued connection.",
+            "conversationExamples": [
+              {
+                "tone": "Committed",
+                "message": "Hebrews calls us to keep encouraging\u2014 let's plan our next chat."
+              },
+              {
+                "tone": "Relational",
+                "message": "Staying connected builds us up; when works for you?"
+              },
+              {
+                "tone": "Warm",
+                "message": "Don't go it alone\u2014I'm in for the journey with you."
+              }
+            ]
+          },
+          {
+            "text": "Bear with each other and forgive one another... as the Lord forgave you.",
+            "reference": "Colossians 3:13",
+            "whyItFits": "Promotes patient companionship, leading to mutual support discussions.",
+            "conversationExamples": [
+              {
+                "tone": "Patient",
+                "message": "We bear with each other in love\u2014 how can I bear with you?"
+              },
+              {
+                "tone": "Forgiving",
+                "message": "Colossians models ongoing grace; let's extend that here."
+              },
+              {
+                "tone": "Supportive",
+                "message": "Together in forgiveness and care\u2014 what's next for us?"
+              }
+            ]
+          },
+          {
+            "text": "Two are better than one... If either of them falls down, one can help the other up.",
+            "reference": "Ecclesiastes 4:9-10",
+            "whyItFits": "Highlights benefits of companionship, transitioning to practical help ideas.",
+            "conversationExamples": [
+              {
+                "tone": "Practical",
+                "message": "Friends help each other up\u2014 where can I lend a hand?"
+              },
+              {
+                "tone": "Solidarity",
+                "message": "Better together, says Ecclesiastes; let's team up."
+              },
+              {
+                "tone": "Encouraging",
+                "message": "If you fall, I've got you\u2014count on it."
+              }
+            ]
+          },
+          {
+            "text": "And let us consider how we may spur one another on toward love and good deeds.",
+            "reference": "Hebrews 10:24",
+            "whyItFits": "Encourages spurring toward good, easing into goals for growth.",
+            "conversationExamples": [
+              {
+                "tone": "Motivational",
+                "message": "Let's spur each other to love\u2014 what good deed can we pursue?"
+              },
+              {
+                "tone": "Inspirational",
+                "message": "Hebrews inspires ongoing motivation; how can we do that?"
+              },
+              {
+                "tone": "Warm",
+                "message": "Together toward love\u2014I'm cheering you on always."
+              }
+            ]
+          },
+          {
+            "text": null,
+            "reference": null,
+            "whyItFits": "Reinforce through commitment; transition by scheduling or affirming availability.",
+            "conversationExamples": [
+              {
+                "tone": "Reliable",
+                "message": "Reach out anytime\u2014I'm here consistently."
+              },
+              {
+                "tone": "Caring",
+                "message": "Ongoing support means walking side by side; let's make it happen."
+              },
+              {
+                "tone": "Affirming",
+                "message": "You're not alone long-term\u2014 we've got this together."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "imageAnalysisResults": [
+    {
+      "imageSrc": "https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=600&q=80",
+      "contentType": "personal_message",
+      "extractedText": "Let's grab coffee soon",
+      "detailedDescription": "Warm close-up of two friends holding mugs at a small table with sunlight streaming through a nearby window.",
+      "confidence": "high",
+      "contentIdeas": [
+        "Invite honest conversation",
+        "Share a hopeful scripture",
+        "Pray during coffee meetup"
+      ],
+      "isAnalyzing": false
+    }
+  ],
+  "imageAttachments": [
+    "https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=1200&q=80"
+  ],
+  "tokensUsed": {
+    "input": 1820,
+    "output": 3640
+  }
+}

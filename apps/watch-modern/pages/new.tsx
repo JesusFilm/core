@@ -74,6 +74,29 @@ const FormatSelection = dynamic(
   { ssr: false }
 )
 
+type KitchenSinkPersonaSettings = {
+  personaName: string
+  audienceDescription: string
+  tone: string
+  goals: string
+}
+
+type KitchenSinkData = {
+  selectedContext: string
+  selectedContextDetail: string
+  prompt: string
+  personaSettings: KitchenSinkPersonaSettings
+  aiResponse: string
+  editableSteps: GeneratedStepContent[]
+  conversationMap: ConversationMap
+  imageAnalysisResults: ImageAnalysisResult[]
+  imageAttachments?: string[]
+  tokensUsed: {
+    input: number
+    output: number
+  }
+}
+
 const DEFAULT_OUTPUT_FORMAT_INSTRUCTIONS = `Provide the response as JSON with this structure:
 {
   "steps": [
@@ -791,6 +814,7 @@ export default function NewPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const cameraInputRef = useRef<HTMLInputElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
+  const hasPrefilledKitchenSink = useRef(false)
   // Toggle X-ray mode (Cmd+Shift+X) to show minimalistic component labels from data-id
   useEffect(() => {
     const getPageRoot = (): Element =>
@@ -995,6 +1019,63 @@ export default function NewPage() {
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+
+  useEffect(() => {
+    if (router.pathname !== '/kitchensink-new') return
+    if (hasPrefilledKitchenSink.current) return
+
+    let isCancelled = false
+
+    const prefillKitchenSink = async (): Promise<void> => {
+      try {
+        const module = await import('../src/data/kitchensink-new.json')
+        if (isCancelled) return
+
+        const data = module.default as KitchenSinkData
+
+        if (data.selectedContext) {
+          setSelectedContext(data.selectedContext)
+        }
+        if (data.selectedContextDetail) {
+          setSelectedContextDetail(data.selectedContextDetail)
+        }
+
+        setTextContent(data.prompt)
+        if (textareaRef.current) {
+          textareaRef.current.value = data.prompt
+        }
+
+        setPersonaSettings(data.personaSettings)
+        setAiResponse(data.aiResponse)
+        setEditableSteps(Array.isArray(data.editableSteps) ? data.editableSteps : [])
+        setConversationMap(data.conversationMap ?? null)
+        setImageAttachments(data.imageAttachments ?? [])
+        setImageAnalysisResults(
+          Array.isArray(data.imageAnalysisResults)
+            ? data.imageAnalysisResults.map((result) => ({
+                ...result,
+                isAnalyzing: result.isAnalyzing ?? false
+              }))
+            : []
+        )
+        setTotalTokensUsed(
+          data.tokensUsed ?? {
+            input: 0,
+            output: 0
+          }
+        )
+      } catch (error) {
+        console.error('Failed to load kitchensink data', error)
+      }
+    }
+
+    void prefillKitchenSink()
+    hasPrefilledKitchenSink.current = true
+
+    return () => {
+      isCancelled = true
+    }
+  }, [router.pathname, setTotalTokensUsed])
 
   useEffect(() => {
     if (copiedStepIndex === null) return
