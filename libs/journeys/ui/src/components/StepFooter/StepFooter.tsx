@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { useParams } from 'next/navigation'
 import { ReactElement } from 'react'
 
 import { useJourney } from '../../libs/JourneyProvider'
@@ -20,7 +21,6 @@ import { ChatButtons } from './ChatButtons'
 import { FooterButtonList } from './FooterButtonList'
 import { HostAvatars } from './HostAvatars'
 import { HostTitleLocation } from './HostTitleLocation'
-import { useParams } from 'next/navigation'
 
 interface StepFooterProps {
   onFooterClick?: () => void
