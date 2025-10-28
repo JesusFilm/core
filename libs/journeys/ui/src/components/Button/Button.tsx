@@ -269,12 +269,14 @@ export function Button({
     e.stopPropagation()
 
     if (submitEnabled && formik != null) {
-      // Ensure form submission completes (records events) before navigating
+      // Control submission flow to ensure events are recorded before navigation
       e.preventDefault()
       const errors = await formik.validateForm(formik.values)
-      if (isEmptyForm()) return
-      if (Object.keys(errors).length > 0) return
-      await formik.submitForm()
+
+      if (!isEmptyForm()) {
+        if (Object.keys(errors).length > 0) return
+        await formik.submitForm()
+      }
     }
 
     const hasMessagePlatform = messagePlatform != null

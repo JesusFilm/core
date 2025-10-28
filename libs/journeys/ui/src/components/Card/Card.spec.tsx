@@ -410,12 +410,13 @@ describe('CardBlock', () => {
       ).toBeInTheDocument()
     })
 
-    fireEvent.change(
-      screen.getByRole('textbox', { name: 'Text Response 2*' }),
-      {
-        target: { value: 'Test response for field 2' }
-      }
-    )
+    const field1 = screen.getByRole('textbox', { name: 'Text Response 1*' })
+    const field2 = screen.getByRole('textbox', { name: 'Text Response 2*' })
+    // blur both required fields to mark them as touched so Formik shows errors
+    fireEvent.blur(field1)
+    fireEvent.change(field2, { target: { value: 'Test response for field 2' } })
+    // blur to mark touched so errors appear
+    fireEvent.blur(field2)
 
     fireEvent.click(screen.getByRole('button', { name: 'This is a button' }))
 
@@ -435,16 +436,15 @@ describe('CardBlock', () => {
       expect(mockButtonClickEvent.result).not.toHaveBeenCalled()
     })
 
-    await waitFor(() => {
-      expect(screen.getByText('This field is required')).toBeInTheDocument()
-    })
-
-    fireEvent.change(
-      screen.getByRole('textbox', { name: 'Text Response 1*' }),
-      {
-        target: { value: 'Test response for field 1' }
-      }
+    // ensure formik validation/touched has flushed
+    await waitFor(() =>
+      expect(
+        screen.getAllByText('This field is required').length
+      ).toBeGreaterThan(0)
     )
+
+    fireEvent.change(field1, { target: { value: 'Test response for field 1' } })
+    fireEvent.blur(field1)
 
     fireEvent.click(screen.getByRole('button', { name: 'This is a button' }))
 
@@ -530,12 +530,11 @@ describe('CardBlock', () => {
       ).toBeInTheDocument()
     })
 
-    fireEvent.change(
-      screen.getByRole('textbox', { name: 'Text Response 1*' }),
-      {
-        target: { value: 'Test response for field 2' }
-      }
-    )
+    const emailField = screen.getByRole('textbox', { name: 'Text Response 1*' })
+    fireEvent.change(emailField, {
+      target: { value: 'Test response for field 2' }
+    })
+    fireEvent.blur(emailField)
 
     fireEvent.click(screen.getByRole('button', { name: 'This is a button' }))
 
@@ -549,18 +548,16 @@ describe('CardBlock', () => {
       expect(mockButtonClickEvent.result).not.toHaveBeenCalled()
     })
 
-    await waitFor(() => {
+    await waitFor(() =>
       expect(
-        screen.getByText('Please enter a valid email address')
-      ).toBeInTheDocument()
-    })
-
-    fireEvent.change(
-      screen.getByRole('textbox', { name: 'Text Response 1*' }),
-      {
-        target: { value: 'test@example.com' }
-      }
+        screen.getAllByText('Please enter a valid email address').length
+      ).toBeGreaterThan(0)
     )
+
+    fireEvent.change(emailField, {
+      target: { value: 'test@example.com' }
+    })
+    fireEvent.blur(emailField)
 
     fireEvent.click(screen.getByRole('button', { name: 'This is a button' }))
 
