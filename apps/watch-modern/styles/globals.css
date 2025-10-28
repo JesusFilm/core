@@ -1,6 +1,5 @@
 @import 'tailwindcss';
-@source "../../../@/components/**/*.{js,ts,jsx,tsx}";
-@source "./**/*.{js,ts,jsx,tsx}";
+@source "./src/**/*.{js,ts,jsx,tsx}";
 @source "../../libs/**/*.{js,ts,jsx,tsx}";
 
 @theme {
@@ -41,6 +40,20 @@
   }
   /* Hide old pseudo-labels in favor of real clickable labels */
   .xray-on [data-id]::after { display: none; }
+
+  /* Floating animation for levitating effect */
+  @keyframes levitate {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+
+  .levitate {
+    animation: levitate 3s ease-in-out infinite;
+  }
 
   /* Clickable X-ray label element */
   .xray-on .xray-label {
@@ -295,5 +308,62 @@
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;  /* Safari and Chrome */
+  }
+
+  /* Message bubble with white tail */
+  .message-bubble {
+    position: relative;
+    background: white;
+    border-radius: 1rem;
+  }
+
+  /* Center tail (default) */
+  .message-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid white;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  }
+
+  /* Right tail */
+  .message-bubble-tail-right::after {
+    left: auto;
+    right: 24px;
+    transform: none;
+  }
+
+  /* Left tail */
+  .message-bubble-tail-left::after {
+    left: 24px;
+    transform: none;
+  }
+
+  /* Line reveal animation with masking */
+  @keyframes reveal-line {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+      clip-path: inset(100% 0 0 0); /* Start completely hidden from bottom */
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      clip-path: inset(0 0 0 0); /* Fully revealed */
+    }
+  }
+
+  .reveal-line {
+    animation: reveal-line 1.2s ease-out forwards;
+    /* Ensure initial state before animation */
+    opacity: 0;
+    transform: translateY(20px);
+    clip-path: inset(100% 0 0 0);
   }
 }
