@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography'
 import { useParams } from 'next/navigation'
 import { ReactElement } from 'react'
 
+import { useEditor } from '../../libs/EditorProvider'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 import {
@@ -21,7 +22,6 @@ import { ChatButtons } from './ChatButtons'
 import { FooterButtonList } from './FooterButtonList'
 import { HostAvatars } from './HostAvatars'
 import { HostTitleLocation } from './HostTitleLocation'
-import { useEditor } from '../../libs/EditorProvider'
 
 interface StepFooterProps {
   onFooterClick?: () => void

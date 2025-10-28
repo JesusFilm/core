@@ -1,10 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
+import { JourneyMenuButtonIcon } from '../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { defaultJourney } from '../TemplateView/data'
 
 import { StepHeader } from '.'
-import { JourneyMenuButtonIcon } from '../../../__generated__/globalTypes'
 
 jest.mock('next/legacy/image', () => ({
   __esModule: true,

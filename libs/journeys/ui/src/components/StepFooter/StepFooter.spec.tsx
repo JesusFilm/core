@@ -8,16 +8,16 @@ import {
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
+import { TreeBlock } from '../../libs/block'
+import { EditorProvider } from '../../libs/EditorProvider'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import {
   JourneyFields as Journey,
   JourneyFields_menuStepBlock as MenuStepBlock
 } from '../../libs/JourneyProvider/__generated__/JourneyFields'
+import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../libs/useJourneyQuery/__generated__/GetJourney'
 
 import { StepFooter } from './StepFooter'
-import { EditorProvider } from '../../libs/EditorProvider'
-import { TreeBlock } from '../../libs/block'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../libs/useJourneyQuery/__generated__/GetJourney'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
