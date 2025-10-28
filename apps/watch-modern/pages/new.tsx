@@ -2608,6 +2608,89 @@ export default function NewPage() {
                       handlePersonaFieldChange={handlePersonaFieldChange}
                       handlePersonaSubmit={handlePersonaSubmit}
                     />
+
+                    {/* Context detail options */}
+                    {selectedContextOptions.length > 0 && (
+                      <div
+                        className={`mt-6 max-w-4xl mx-auto transition-all duration-500 ease-out ${
+                          hidingSuggestionsCarousel
+                            ? 'opacity-0 max-h-0 overflow-hidden'
+                            : 'opacity-100 max-h-96'
+                        }`}
+                      >
+                        <Carousel data-id="SuggestionTilesContainer" className="relative w-full" opts={{ align: 'start' }}>
+                          <CarouselContent>
+                            {selectedContextOptions.map((option, index) => {
+                              const isSelected = selectedContextDetail === option.text
+
+                              return (
+                                <CarouselItem
+                                  key={option.text}
+                                  className="basis-1/3  md:basis-1/5 lg:basis-1/6 py-2"
+                                  style={{
+                                    animationDelay: `${index * 0.1}s`,
+                                    animationFillMode: 'forwards'
+                                  }}
+                                >
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedContextDetail(option.text)
+
+                                      // Append prompt to the top of textarea with empty line
+                                      const currentValue = textareaRef.current?.value || ''
+                                      const newText = option.prompt + '\n\n' + currentValue
+
+                                      setTextContent(newText)
+
+                                      // Update textarea value directly
+                                      if (textareaRef.current) {
+                                        textareaRef.current.value = newText
+                                        // Focus the textarea
+                                        textareaRef.current.focus()
+                                        // Position cursor at the end
+                                        textareaRef.current.setSelectionRange(newText.length, newText.length)
+                                      }
+
+                                      // Trigger textarea animation
+                                      setAnimatingTextarea(true)
+                                      setTimeout(() => {
+                                        setAnimatingTextarea(false)
+                                      }, 800)
+
+                                      // Hide suggestions carousel with animation
+                                      setHidingSuggestionsCarousel(true)
+                                    }}
+                                    className={`group relative flex h-full w-full flex-col justify-between rounded-2xl border-2 p-4 text-left transition-all duration-300 cursor-pointer hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:border-transparent md:aspect-square ${
+                                      isSelected
+                                        ? 'border-primary shadow-lg ring-2 ring-primary/60'
+                                        : 'border-gray-200 hover:border-white hover:'
+                                    }`}
+                                    aria-pressed={isSelected}
+                                  >
+                                    <ArrowUp
+                                      className={`absolute right-4 top-4 h-4 w-4 transition-colors ${
+                                        isSelected
+                                          ? 'text-primary'
+                                          : 'text-muted-foreground group-hover:text-primary'
+                                      }`}
+                                    />
+                                    <span className="text-3xl md:text-4xl mb-2" aria-hidden="true">
+                                      {option.emoji}
+                                    </span>
+                                    <span className="mt-auto text-xs md:text-sm font-semibold text-balance leading-snug text-gray-900 line-clamp-4 word-break-all">
+                                      {option.text}
+                                    </span>
+                                  </button>
+                                </CarouselItem>
+                              )
+                            })}
+                          </CarouselContent>
+                          <CarouselPrevious className="-left-6" />
+                          <CarouselNext className="-right-6" />
+                        </Carousel>
+                      </div>
+                    )}
                     {aiError && (
                       <div
                         className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-400/40 dark:bg-amber-500/10 dark:text-amber-100"
@@ -2869,87 +2952,6 @@ export default function NewPage() {
               </div>
             </>
           )}
-
-          {/* Context detail options */}
-
-            {selectedContextOptions.length > 0 && (
-              <div className={`mb-8 max-w-4xl mx-auto  transition-all duration-500 ease-out ${
-                hidingSuggestionsCarousel ? 'opacity-0 max-h-0 overflow-hidden' : 'opacity-100 max-h-96'
-              }`}>
-                <Carousel data-id="SuggestionTilesContainer" className="relative w-full" opts={{ align: 'start' }}>
-                  <CarouselContent>
-                    {selectedContextOptions.map((option, index) => {
-                      const isSelected = selectedContextDetail === option.text
-
-                      return (
-                        <CarouselItem
-                          key={option.text}
-                          className="basis-1/3  md:basis-1/5 lg:basis-1/6 py-2"
-                          style={{
-                            animationDelay: `${index * 0.1}s`,
-                            animationFillMode: 'forwards'
-                          }}
-                        >
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSelectedContextDetail(option.text)
-
-                              // Append prompt to the top of textarea with empty line
-                              const currentValue = textareaRef.current?.value || ''
-                              const newText = option.prompt + '\n\n' + currentValue
-
-                              setTextContent(newText)
-
-                              // Update textarea value directly
-                              if (textareaRef.current) {
-                                textareaRef.current.value = newText
-                                // Focus the textarea
-                                textareaRef.current.focus()
-                                // Position cursor at the end
-                                textareaRef.current.setSelectionRange(newText.length, newText.length)
-                              }
-
-                              // Trigger textarea animation
-                              setAnimatingTextarea(true)
-                              setTimeout(() => {
-                                setAnimatingTextarea(false)
-                              }, 800)
-
-                              // Hide suggestions carousel with animation
-                              setHidingSuggestionsCarousel(true)
-                            }}
-                            className={`group relative flex h-full w-full flex-col justify-between rounded-2xl border-2 p-4 text-left transition-all duration-300 cursor-pointer hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:border-transparent md:aspect-square ${
-                              isSelected
-                                ? 'border-primary shadow-lg ring-2 ring-primary/60'
-                                : 'border-gray-200 hover:border-white hover:'
-                            }`}
-                            aria-pressed={isSelected}
-                          >
-                            <ArrowUp
-                              className={`absolute right-4 top-4 h-4 w-4 transition-colors ${
-                                isSelected
-                                  ? 'text-primary'
-                                  : 'text-muted-foreground group-hover:text-primary'
-                              }`}
-                            />
-                            <span className="text-3xl md:text-4xl mb-2" aria-hidden="true">
-                              {option.emoji}
-                            </span>
-                            <span className="mt-auto text-xs md:text-sm font-semibold text-balance leading-snug text-gray-900 line-clamp-4 word-break-all">
-                              {option.text}
-                            </span>
-                          </button>
-                        </CarouselItem>
-                      )
-                    })}
-                  </CarouselContent>
-                  <CarouselPrevious className="-left-6" />
-                  <CarouselNext className="-right-6" />
-                </Carousel>
-              </div>
-            )}
-
         </main>
       </div>
     </>
