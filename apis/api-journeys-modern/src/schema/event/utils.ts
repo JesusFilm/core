@@ -1,5 +1,5 @@
-import { GraphQLError } from 'graphql'
 import { format } from 'date-fns'
+import { GraphQLError } from 'graphql'
 
 import {
   Block,
@@ -7,6 +7,7 @@ import {
   Visitor,
   prisma
 } from '@core/prisma/journeys/client'
+
 import { getTeamGoogleAccessToken } from '../../lib/google/googleAuth'
 import { ensureSheet, writeValues } from '../../lib/google/sheets'
 
@@ -227,7 +228,8 @@ export async function appendEventToGoogleSheets({
   if (sync == null) return
 
   const { accessToken } = await getTeamGoogleAccessToken(teamId)
-  const tabName = sheetName ?? `${format(new Date(), 'yyyy-MM-dd')}`
+  const tabName =
+    sheetName ?? sync.sheetName ?? `${format(new Date(), 'yyyy-MM-dd')}`
   await ensureSheet({
     accessToken,
     spreadsheetId: sync.spreadsheetId,
