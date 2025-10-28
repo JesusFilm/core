@@ -1,5 +1,3 @@
-import axios from 'axios'
-
 export interface CreateSpreadsheetParams {
   accessToken: string
   title: string
@@ -20,20 +18,28 @@ export async function createSpreadsheet({
 }: CreateSpreadsheetParams): Promise<CreateSpreadsheetResult> {
   // If folder is specified, use Drive API to create the file in the folder
   if (folderId != null) {
-    const driveRes = await axios.post(
-      'https://www.googleapis.com/drive/v3/files',
-      {
+    const url =
+      'https://www.googleapis.com/drive/v3/files?fields=id%2C%20webViewLink'
+    const driveRes = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
         name: title,
         mimeType: 'application/vnd.google-apps.spreadsheet',
         parents: [folderId]
-      },
-      {
-        headers: { Authorization: `Bearer ${accessToken}` },
-        params: { fields: 'id, webViewLink' }
-      }
-    )
-    const spreadsheetId: string = driveRes.data.id
-    const spreadsheetUrl: string = driveRes.data.webViewLink
+      })
+    })
+    if (!driveRes.ok) {
+      throw new Error(
+        `Drive create file failed: ${driveRes.status} ${await driveRes.text()}`
+      )
+    }
+    const driveJson = await driveRes.json()
+    const spreadsheetId: string = driveJson.id
+    const spreadsheetUrl: string = driveJson.webViewLink
 
     if (initialSheetTitle != null) {
       await ensureSheet({
@@ -47,21 +53,32 @@ export async function createSpreadsheet({
   }
 
   // Otherwise use Sheets API to create
-  const sheetsRes = await axios.post(
+  const sheetsRes = await fetch(
     'https://sheets.googleapis.com/v4/spreadsheets',
     {
-      properties: { title },
-      sheets:
-        initialSheetTitle != null
-          ? [{ properties: { title: initialSheetTitle } }]
-          : undefined
-    },
-    { headers: { Authorization: `Bearer ${accessToken}` } }
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        properties: { title },
+        sheets:
+          initialSheetTitle != null
+            ? [{ properties: { title: initialSheetTitle } }]
+            : undefined
+      })
+    }
   )
-
+  if (!sheetsRes.ok) {
+    throw new Error(
+      `Sheets create spreadsheet failed: ${sheetsRes.status} ${await sheetsRes.text()}`
+    )
+  }
+  const sheetsJson = await sheetsRes.json()
   return {
-    spreadsheetId: sheetsRes.data.spreadsheetId,
-    spreadsheetUrl: sheetsRes.data.spreadsheetUrl
+    spreadsheetId: sheetsJson.spreadsheetId,
+    spreadsheetUrl: sheetsJson.spreadsheetUrl
   }
 }
 
@@ -74,31 +91,48 @@ export async function ensureSheet({
   spreadsheetId: string
   sheetTitle: string
 }): Promise<void> {
-  const meta = await axios.get(
+  const metaRes = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}`,
     { headers: { Authorization: `Bearer ${accessToken}` } }
   )
+  if (!metaRes.ok) {
+    throw new Error(
+      `Sheets metadata fetch failed: ${metaRes.status} ${await metaRes.text()}`
+    )
+  }
+  const meta = await metaRes.json()
 
-  const hasSheet = (meta.data.sheets ?? []).some(
+  const hasSheet = (meta.sheets ?? []).some(
     (s: any) => s.properties?.title === sheetTitle
   )
   if (hasSheet) return
 
-  await axios.post(
+  const batchRes = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`,
     {
-      requests: [
-        {
-          addSheet: {
-            properties: {
-              title: sheetTitle
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        requests: [
+          {
+            addSheet: {
+              properties: {
+                title: sheetTitle
+              }
             }
           }
-        }
-      ]
-    },
-    { headers: { Authorization: `Bearer ${accessToken}` } }
+        ]
+      })
+    }
   )
+  if (!batchRes.ok) {
+    throw new Error(
+      `Sheets batchUpdate failed: ${batchRes.status} ${await batchRes.text()}`
+    )
+  }
 }
 
 export async function writeValues({
@@ -115,20 +149,89 @@ export async function writeValues({
   append?: boolean
 }): Promise<void> {
   const range = `${sheetTitle}!A1`
+  const baseUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}`
   const url =
     append === true
-      ? `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}:append`
-      : `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}`
-
-  const params =
-    append === true ? { valueInputOption: 'RAW' } : { valueInputOption: 'RAW' }
-  const method = append === true ? 'post' : 'put'
-
-  await axios({
-    method: method,
-    url,
-    params,
-    headers: { Authorization: `Bearer ${accessToken}` },
-    data: { values }
+      ? `${baseUrl}:append?valueInputOption=RAW`
+      : `${baseUrl}?valueInputOption=RAW`
+  const method = append === true ? 'POST' : 'PUT'
+  const res = await fetch(url, {
+    method,
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ values })
   })
+  if (!res.ok) {
+    throw new Error(
+      `Sheets writeValues failed: ${res.status} ${await res.text()}`
+    )
+  }
+}
+
+// Read values for a given A1 range
+export async function readValues({
+  accessToken,
+  spreadsheetId,
+  range
+}: {
+  accessToken: string
+  spreadsheetId: string
+  range: string
+}): Promise<(string | null)[][]> {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}`
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${accessToken}` }
+  })
+  if (!res.ok) {
+    throw new Error(
+      `Sheets readValues failed: ${res.status} ${await res.text()}`
+    )
+  }
+  const json = await res.json()
+  const values: (string | null)[][] = (json.values ?? []).map((row: any[]) =>
+    row.map((v) => (v == null ? null : String(v)))
+  )
+  return values
+}
+
+// Convert a 0-based column index to A1 column letters
+export function columnIndexToA1(colIndexZeroBased: number): string {
+  let n = colIndexZeroBased + 1
+  let s = ''
+  while (n > 0) {
+    const mod = (n - 1) % 26
+    s = String.fromCharCode(65 + mod) + s
+    n = Math.floor((n - mod) / 26)
+  }
+  return s
+}
+
+// Update a specific range with provided values (PUT)
+export async function updateRangeValues({
+  accessToken,
+  spreadsheetId,
+  range,
+  values
+}: {
+  accessToken: string
+  spreadsheetId: string
+  range: string
+  values: (string | number | null)[][]
+}): Promise<void> {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}?valueInputOption=RAW`
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ values })
+  })
+  if (!res.ok) {
+    throw new Error(
+      `Sheets updateRangeValues failed: ${res.status} ${await res.text()}`
+    )
+  }
 }

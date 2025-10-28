@@ -11,6 +11,7 @@ import {
 import {
   createSpreadsheet,
   ensureSheet,
+  readValues,
   writeValues
 } from '../../lib/google/sheets'
 import { builder } from '../builder'
@@ -19,7 +20,7 @@ import { JourneyEventsFilter } from '../event/journey/inputs'
 import { JourneyVisitorExportSelect } from './inputs'
 
 interface JourneyVisitorExportRow {
-  id: string
+  visitorId: string
   createdAt: string
   name: string
   email: string
@@ -80,7 +81,7 @@ async function* getJourneyVisitors(
 
     for (const journeyVisitor of journeyVisitors) {
       const row: JourneyVisitorExportRow = {
-        id: journeyVisitor.visitor.id,
+        visitorId: journeyVisitor.visitor.id,
         createdAt: journeyVisitor.createdAt.toISOString(),
         name: journeyVisitor.visitor.name || '',
         email: journeyVisitor.visitor.email || '',
@@ -209,7 +210,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         }))
 
       const columns = [
-        { key: 'id' },
+        { key: 'visitorId' },
         select?.createdAt !== false ? { key: 'createdAt' } : null,
         select?.name !== false ? { key: 'name' } : null,
         select?.email !== false ? { key: 'email' } : null,
@@ -219,14 +220,8 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           : [])
       ].filter((v) => v != null) as Array<{ key: string }>
 
-      const headerRow = columns.map((c) => (c.key === 'id' ? 'id' : c.key))
-
-      // Build data rows
-      const values: (string | null)[][] = [headerRow]
-      for await (const row of getJourneyVisitors(journeyId, eventWhere)) {
-        const v = columns.map((c) => row[c.key] ?? '')
-        values.push(v)
-      }
+      // Compute the desired header row for this export
+      const desiredHeader = columns.map((c) => c.key)
 
       const accessToken = integrationId
         ? (await getIntegrationGoogleAccessToken(integrationId)).accessToken
@@ -269,6 +264,37 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         spreadsheetId = destination.spreadsheetId
         spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}`
         await ensureSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
+      }
+
+      // Read existing header (for existing sheets) and merge to preserve/extend columns
+      let finalHeader = desiredHeader
+      if (destination.mode === 'existing') {
+        const headerRes = await readValues({
+          accessToken,
+          spreadsheetId,
+          range: `${sheetName}!A1:ZZ1`
+        })
+        const existingHeader: string[] = (headerRes[0] ?? []).map(
+          (v) => v ?? ''
+        )
+        if (existingHeader.length > 0) {
+          // Ensure base headers exist in the correct order at start
+          const base = ['visitorId', 'createdAt', 'name', 'email', 'phone']
+          const merged: string[] = []
+          for (const b of base) if (!merged.includes(b)) merged.push(b)
+          for (const h of existingHeader)
+            if (h !== '' && !merged.includes(h)) merged.push(h)
+          for (const h of desiredHeader)
+            if (h !== '' && !merged.includes(h)) merged.push(h)
+          finalHeader = merged
+        }
+      }
+
+      // Build data rows aligned to finalHeader
+      const values: (string | null)[][] = [finalHeader]
+      for await (const row of getJourneyVisitors(journeyId, eventWhere)) {
+        const aligned = finalHeader.map((k) => row[k] ?? '')
+        values.push(aligned)
       }
 
       await writeValues({

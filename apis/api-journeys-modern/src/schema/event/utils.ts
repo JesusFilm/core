@@ -9,7 +9,13 @@ import {
 } from '@core/prisma/journeys/client'
 
 import { getTeamGoogleAccessToken } from '../../lib/google/googleAuth'
-import { ensureSheet, writeValues } from '../../lib/google/sheets'
+import {
+  columnIndexToA1,
+  ensureSheet,
+  readValues,
+  updateRangeValues,
+  writeValues
+} from '../../lib/google/sheets'
 
 // Queue for visitor interaction emails
 let emailQueue: any
@@ -235,11 +241,113 @@ export async function appendEventToGoogleSheets({
     spreadsheetId: sync.spreadsheetId,
     sheetTitle: tabName
   })
-  await writeValues({
+  // Expected incoming row format from callers:
+  // [visitorId, createdAtISO, name, email, phone, dynamicKey, dynamicValue]
+  const safe = (v: string | number | null | undefined): string =>
+    v == null ? '' : String(v)
+  const visitorId = safe(row[0])
+  const createdAt = safe(row[1])
+  const name = safe(row[2])
+  const email = safe(row[3])
+  const phone = safe(row[4])
+  const dynamicKey = safe(row[5])
+  const dynamicValue = safe(row[6])
+
+  // Load current header
+  const headerRange = `${tabName}!A1:ZZ1`
+  const headerRows = await readValues({
     accessToken,
     spreadsheetId: sync.spreadsheetId,
-    sheetTitle: tabName,
-    values: [row],
-    append: true
+    range: headerRange
   })
+  const existingHeader: string[] = (headerRows[0] ?? []).map((v) => v ?? '')
+
+  // Ensure base headers
+  const baseHeaders = ['visitorId', 'createdAt', 'name', 'email', 'phone']
+  let headers: string[] = existingHeader.length > 0 ? existingHeader : []
+  if (headers.length === 0) headers = [...baseHeaders]
+
+  // Ensure base headers are present (prepend if missing)
+  for (let i = 0; i < baseHeaders.length; i++) {
+    if (!headers.includes(baseHeaders[i])) headers.splice(i, 0, baseHeaders[i])
+  }
+  // Ensure dynamic key column exists (if provided)
+  if (dynamicKey !== '' && !headers.includes(dynamicKey)) {
+    headers.push(dynamicKey)
+  }
+
+  // If headers changed, write them back
+  const headersChanged =
+    existingHeader.length === 0 ||
+    headers.length !== existingHeader.length ||
+    headers.some((h, i) => h !== (existingHeader[i] ?? ''))
+  if (headersChanged) {
+    await updateRangeValues({
+      accessToken,
+      spreadsheetId: sync.spreadsheetId,
+      range: `${tabName}!A1:${columnIndexToA1(headers.length - 1)}1`,
+      values: [headers]
+    })
+  }
+
+  // Build an aligned row matching headers
+  const alignedRow = new Array(headers.length).fill('') as string[]
+  const setIfPresent = (key: string, value: string) => {
+    const idx = headers.indexOf(key)
+    if (idx >= 0 && value !== '') alignedRow[idx] = value
+  }
+  setIfPresent('visitorId', visitorId)
+  setIfPresent('createdAt', createdAt)
+  setIfPresent('name', name)
+  setIfPresent('email', email)
+  setIfPresent('phone', phone)
+  if (dynamicKey !== '') setIfPresent(dynamicKey, dynamicValue)
+
+  // Try to find an existing row for this visitorId in column A (which should be visitorId)
+  const idColumnRange = `${tabName}!A2:A1000000`
+  const idColumnValues = await readValues({
+    accessToken,
+    spreadsheetId: sync.spreadsheetId,
+    range: idColumnRange
+  })
+  let foundRowIndex: number | null = null // 1-based row index in the sheet
+  for (let i = 0; i < idColumnValues.length; i++) {
+    const cellVal = idColumnValues[i]?.[0] ?? ''
+    if (cellVal === visitorId && visitorId !== '') {
+      foundRowIndex = i + 2 // offset since A2 is index 0
+      break
+    }
+  }
+
+  const lastColA1 = columnIndexToA1(headers.length - 1)
+  if (foundRowIndex != null) {
+    // Read existing row to merge values (avoid blanking non-updated fields)
+    const existingRowRes = await readValues({
+      accessToken,
+      spreadsheetId: sync.spreadsheetId,
+      range: `${tabName}!A${foundRowIndex}:${lastColA1}${foundRowIndex}`
+    })
+    const existingRow: string[] = (existingRowRes[0] ?? []).map((v) => v ?? '')
+    const mergedRow = new Array(headers.length)
+      .fill('')
+      .map((_, i) =>
+        alignedRow[i] !== '' ? alignedRow[i] : (existingRow[i] ?? '')
+      )
+
+    await updateRangeValues({
+      accessToken,
+      spreadsheetId: sync.spreadsheetId,
+      range: `${tabName}!A${foundRowIndex}:${lastColA1}${foundRowIndex}`,
+      values: [mergedRow]
+    })
+  } else {
+    // Append as a new row
+    await writeValues({
+      accessToken,
+      spreadsheetId: sync.spreadsheetId,
+      sheetTitle: tabName,
+      values: [alignedRow],
+      append: true
+    })
+  }
 }
