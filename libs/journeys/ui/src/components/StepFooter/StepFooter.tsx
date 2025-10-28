@@ -28,6 +28,16 @@ interface StepFooterProps {
   sx?: SxProps
 }
 
+/**
+ * Render the footer for a journey step with host information, action buttons, and chat controls.
+ *
+ * Layout and visible controls adapt based on the current journey, variant, and route (for example:
+ * website vs non-website, menu state, combined footer, and RTL).
+ *
+ * @param onFooterClick - Optional callback invoked when the footer is clicked.
+ * @param sx - Optional system style overrides applied to the root container.
+ * @returns A ReactElement representing the step footer.
+ */
 export function StepFooter({
   onFooterClick,
   sx

@@ -16,6 +16,20 @@ interface StepHeaderProps {
   sx?: SxProps
 }
 
+/**
+ * Render the step header for a journey, adapting layout for website display and right-to-left direction.
+ *
+ * The header shows the journey title (preferring `displayTitle` then `seoTitle`) and conditionally renders
+ * controls based on the journey type and available menu icon. If `journey.website` is true the header displays
+ * a logo, centered title and either a menu button (when a menu icon exists) or an information button; otherwise
+ * it displays pagination bullets and an information button.
+ *
+ * If `onHeaderClick` is provided, clicking the header stops propagation and invokes that callback.
+ *
+ * @param onHeaderClick - Optional callback invoked when the header is clicked.
+ * @param sx - Optional style overrides applied to the root container.
+ * @returns The header element for the current journey step.
+ */
 export function StepHeader({
   onHeaderClick,
   sx
