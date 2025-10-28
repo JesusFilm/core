@@ -6,7 +6,10 @@ import { ReactElement } from 'react'
 
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import VideoJsPlayer from '../../utils/videoJsTypes'
-import { isYoutubeTech } from '../../utils/videoStatsUtils/isYoutubeTech'
+import { hideAllSubtitles } from '../../utils/hideAllSubtitles'
+import { getYouTubePlayer } from '../../utils/getYouTubePlayer'
+import { setYouTubeCaptionTrack } from '../../utils/setYouTubeCaptionTrack'
+import { unloadYouTubeCaptions } from '../../utils/unloadYouTubeCaptions'
 
 interface SubtitleMenuProps {
   anchorEl: HTMLElement | null
@@ -26,22 +29,14 @@ export function SubtitleMenu({
   const { t } = useTranslation('libs-journeys-ui')
 
   function handleToggleSubtitle(trackId: string | null): void {
-    const tech = player.tech()
+    // first hide all subtitles
+    hideAllSubtitles(player)
+    const ytPlayer = getYouTubePlayer(player)
 
     // Handle YouTube videos
-    if (source === VideoBlockSource.youTube && isYoutubeTech(tech)) {
-      const ytPlayer = tech.ytPlayer
-
+    if (source === VideoBlockSource.youTube) {
       if (trackId == null) {
-        // set track mode to hidden for all subtitles and captions
-        for (let i = 0; i < tracks.length; i++) {
-          const track = tracks[i]
-          if (track.kind === 'subtitles' || track.kind === 'captions') {
-            track.mode = 'hidden'
-          }
-        }
-        // Turn off captions for YouTube
-        ytPlayer?.unloadModule?.('captions')
+        unloadYouTubeCaptions(ytPlayer)
       } else {
         // Get the track info to find the language code
         const tracks = player.textTracks?.() ?? new TextTrackList()
@@ -50,11 +45,7 @@ export function SubtitleMenu({
           const track = tracks[i]
           if (track.id === trackId) {
             track.mode = 'showing'
-            // Activate captions with the specific language
-            ytPlayer?.loadModule?.('captions')
-            ytPlayer?.setOption?.('captions', 'track', {
-              languageCode: track.language
-            })
+            setYouTubeCaptionTrack(ytPlayer, track.language)
           } else {
             track.mode = 'hidden'
           }
@@ -63,18 +54,11 @@ export function SubtitleMenu({
     } else {
       // Handle HTML5/normal videos
       const tracks = player.textTracks?.() ?? new TextTrackList()
-
       for (let i = 0; i < tracks.length; i++) {
         const track = tracks[i]
-        if (trackId == null) {
-          // Turn off all subtitles
-          if (track.kind === 'subtitles' || track.kind === 'captions') {
-            track.mode = 'hidden'
-          }
-        } else if (track.id === trackId) {
+        if (track.id === trackId) {
           track.mode = track.mode === 'showing' ? 'hidden' : 'showing'
-        } else if (track.kind === 'subtitles' || track.kind === 'captions') {
-          track.mode = 'hidden'
+          break
         }
       }
     }

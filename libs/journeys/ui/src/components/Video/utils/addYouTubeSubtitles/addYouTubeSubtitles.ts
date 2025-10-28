@@ -1,6 +1,8 @@
 import type { YouTubeClosedCaptionLanguages_youtubeClosedCaptionLanguages_QueryYoutubeClosedCaptionLanguagesSuccess_data as YouTubeLanguage } from '../../../../libs/useYouTubeClosedCaptions/__generated__/YouTubeClosedCaptionLanguages'
 import { VideoFields_subtitleLanguage as SubtitleLanguage } from '../../__generated__/VideoFields'
+import { getYouTubePlayer } from '../getYouTubePlayer'
 import { removeAllRemoteTextTracks } from '../removeAllRemoteTextTracks'
+import { setYouTubeCaptionTrack } from '../setYouTubeCaptionTrack'
 import VideoJsPlayer from '../videoJsTypes'
 
 interface AddYouTubeSubtitlesParams {
@@ -29,6 +31,10 @@ export function addYouTubeSubtitles({
         },
         true
       )
+    }
+    if (subtitleLanguage?.id === language.id && language.bcp47 != null) {
+      const ytPlayer = getYouTubePlayer(player)
+      setYouTubeCaptionTrack(ytPlayer, language.bcp47)
     }
   })
 }
