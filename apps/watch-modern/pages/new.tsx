@@ -148,8 +148,10 @@ const DEFAULT_RESPONSE_GUIDELINES = `Guidelines:
 - Use markdown formatting inside the content field when helpful.
 - Begin each content field with a level-one markdown heading that states the step's short label (e.g., '# Let Your Light Shine') followed by a blank line.`
 
+const MAX_CONVERSATION_STEPS = 5
+
 const CONVERSATION_RESPONSE_GUIDELINES = `Guidelines:
-- Map an ideal path of 6-9 guide-led conversation moves that gently progress toward gospel hope.
+- Map an ideal path of up to ${MAX_CONVERSATION_STEPS} guide-led conversation moves that gently progress toward gospel hope.
 - Summarize the overall movement first with a 'flow' that lists each step's short theme in order and a brief rationale for why this journey helps the responder.
 - Every step must include a guide message, a purpose note (or null), and at least five scriptureOptions. Each scripture option needs the verse text/reference, a note on why it fits/how to migrate the conversation toward it, and multiple tone-tagged conversation examples.
  - Maintain warm, pastoral tone across the guide messages, verse explanations, and conversation examples. Keep each message concise enough to fit in a chat bubble.
@@ -1279,7 +1281,7 @@ export default function NewPage() {
 
       const sequence = ensureStringArray(
         input.sequence ?? input.steps ?? input.path ?? input.movement ?? input.flow
-      )
+      ).slice(0, MAX_CONVERSATION_STEPS)
 
       const rationale = ensureNullableString(
         input.rationale ?? input.reason ?? input.commentary ?? input.summary ?? input.context
@@ -1496,6 +1498,7 @@ export default function NewPage() {
         }
       })
       .filter((item): item is ConversationMap['steps'][number] => item !== null)
+      .slice(0, MAX_CONVERSATION_STEPS)
 
     return {
       flow: normalizeFlow(
