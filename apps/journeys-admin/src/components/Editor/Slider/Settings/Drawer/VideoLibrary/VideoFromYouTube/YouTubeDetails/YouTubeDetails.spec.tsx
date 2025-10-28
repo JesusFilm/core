@@ -11,7 +11,7 @@ import {
 
 import { YouTubeDetails } from '.'
 
-jest.mock('../../../../../../../../libs/useYouTubeClosedCaptions', () => ({
+jest.mock('@core/journeys/ui/useYouTubeClosedCaptions', () => ({
   useYouTubeClosedCaptions: jest.fn()
 }))
 
@@ -36,7 +36,7 @@ jest.mock('notistack', () => ({
 }))
 
 const mockUseYouTubeClosedCaptions = jest.requireMock(
-  '../../../../../../../../libs/useYouTubeClosedCaptions'
+  '@core/journeys/ui/useYouTubeClosedCaptions'
 ).useYouTubeClosedCaptions
 
 const mockVideoJs = jest.requireMock('video.js')

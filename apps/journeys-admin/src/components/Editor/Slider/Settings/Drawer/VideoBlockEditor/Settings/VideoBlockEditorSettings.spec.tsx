@@ -12,13 +12,13 @@ import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { VideoBlockEditorSettings } from '.'
 
-jest.mock('../../../../../../../libs/useYouTubeClosedCaptions', () => ({
+jest.mock('@core/journeys/ui/useYouTubeClosedCaptions', () => ({
   useYouTubeClosedCaptions: jest.fn()
 }))
 
 const mockUseYouTubeClosedCaptions =
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require('../../../../../../../libs/useYouTubeClosedCaptions')
+  require('@core/journeys/ui/useYouTubeClosedCaptions')
     .useYouTubeClosedCaptions as jest.Mock
 
 const mockYouTubeLanguages = [
@@ -365,7 +365,7 @@ describe('VideoBlockEditorSettings', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows SubtitleSelector for YouTube videos', () => {
+  it('shows YouTubeSubtitleSelector for YouTube videos', () => {
     mockUseYouTubeClosedCaptions.mockReturnValue({
       languages: mockYouTubeLanguages,
       loading: false,
@@ -393,7 +393,7 @@ describe('VideoBlockEditorSettings', () => {
     expect(getByText('Subtitles')).toBeInTheDocument()
   })
 
-  it('does not show SubtitleSelector for non-YouTube videos', () => {
+  it('does not show YouTubeSubtitleSelector for non-YouTube videos', () => {
     const { queryByText } = render(
       <ThemeProvider>
         <MockedProvider>

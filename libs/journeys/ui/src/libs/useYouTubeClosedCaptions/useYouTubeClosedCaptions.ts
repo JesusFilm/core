@@ -1,10 +1,9 @@
-import { ApolloError, gql, useLazyQuery } from '@apollo/client'
-import { useEffect } from 'react'
+import { ApolloError, gql, useQuery } from '@apollo/client'
 
 import {
   YouTubeClosedCaptionLanguages,
   YouTubeClosedCaptionLanguages_youtubeClosedCaptionLanguages_QueryYoutubeClosedCaptionLanguagesSuccess_data as YouTubeLanguage
-} from '../../../__generated__/YouTubeClosedCaptionLanguages'
+} from './__generated__/YouTubeClosedCaptionLanguages'
 
 export type { YouTubeLanguage }
 
@@ -28,7 +27,7 @@ export const YOUTUBE_CLOSED_CAPTION_LANGUAGES = gql`
 
 interface UseYouTubeClosedCaptionsOptions {
   videoId: string | null | undefined
-  enabled?: boolean
+  skip?: boolean
 }
 
 interface UseYouTubeClosedCaptionsReturn {
@@ -39,27 +38,15 @@ interface UseYouTubeClosedCaptionsReturn {
 
 export function useYouTubeClosedCaptions({
   videoId,
-  enabled = true
+  skip = false
 }: UseYouTubeClosedCaptionsOptions): UseYouTubeClosedCaptionsReturn {
-  const [getClosedCaptions, { data, loading, error }] =
-    useLazyQuery<YouTubeClosedCaptionLanguages>(
-      YOUTUBE_CLOSED_CAPTION_LANGUAGES,
-      {
-        fetchPolicy: 'cache-first',
-        nextFetchPolicy: 'cache-first'
-      }
-    )
-
-  useEffect(() => {
-    if (!enabled) return
-
-    const sanitizedVideoId = videoId?.trim()
-    if (sanitizedVideoId == null || sanitizedVideoId === '') return
-
-    void getClosedCaptions({
+  const { data, loading, error } = useQuery<YouTubeClosedCaptionLanguages>(
+    YOUTUBE_CLOSED_CAPTION_LANGUAGES,
+    {
+      skip: skip || videoId == null,
       variables: { videoId }
-    })
-  }, [videoId, enabled, getClosedCaptions])
+    }
+  )
 
   const languages =
     data?.youtubeClosedCaptionLanguages?.__typename ===

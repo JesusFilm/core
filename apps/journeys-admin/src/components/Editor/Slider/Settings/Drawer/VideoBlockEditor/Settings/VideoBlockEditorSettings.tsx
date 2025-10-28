@@ -35,10 +35,10 @@ import {
 import {
   type YouTubeLanguage,
   useYouTubeClosedCaptions
-} from '../../../../../../../libs/useYouTubeClosedCaptions'
+} from '@core/journeys/ui/useYouTubeClosedCaptions'
 
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
-import { SubtitleSelector } from './SubtitleSelector'
+import { YouTubeSubtitleSelector } from './SubtitleSelector'
 
 export type { YouTubeLanguage }
 
@@ -68,7 +68,9 @@ export function VideoBlockEditorSettings({
   // Fetch closed captions using custom hook
   const { languages: availableSubtitles } = useYouTubeClosedCaptions({
     videoId: selectedBlock?.videoId,
-    enabled: selectedBlock?.source === VideoBlockSource.youTube
+    skip:
+      selectedBlock?.source === VideoBlockSource.youTube &&
+      selectedBlock?.videoId != null
   })
 
   const initialValues: Values = {
@@ -172,7 +174,7 @@ export function VideoBlockEditorSettings({
             >
               {t('Subtitles')}
             </Typography>
-            <SubtitleSelector
+            <YouTubeSubtitleSelector
               selectedSubtitleId={values.subtitleLanguageId}
               availableLanguages={availableSubtitles}
               onChange={async (subtitleLanguageId) => {

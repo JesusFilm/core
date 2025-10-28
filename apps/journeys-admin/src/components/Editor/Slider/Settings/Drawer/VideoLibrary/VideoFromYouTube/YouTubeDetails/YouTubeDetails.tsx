@@ -16,7 +16,7 @@ import CheckIcon from '@core/shared/ui/icons/Check'
 
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { parseISO8601Duration } from '../../../../../../../../libs/parseISO8601Duration'
-import { useYouTubeClosedCaptions } from '../../../../../../../../libs/useYouTubeClosedCaptions'
+import { useYouTubeClosedCaptions } from '@core/journeys/ui/useYouTubeClosedCaptions'
 import { VideoDescription } from '../../VideoDescription'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 import type { YoutubeVideo, YoutubeVideosData } from '../VideoFromYouTube'
@@ -60,7 +60,7 @@ export function YouTubeDetails({
   const { languages: captionLanguages, loading: captionsLoading } =
     useYouTubeClosedCaptions({
       videoId: id,
-      enabled: open
+      enabled: open && id != null
     })
 
   // Derive bcp47 code from caption data by matching subtitleLanguageId

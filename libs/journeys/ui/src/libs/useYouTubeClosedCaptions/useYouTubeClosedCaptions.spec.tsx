@@ -1,8 +1,8 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { renderHook, waitFor } from '@testing-library/react'
-import { ReactElement } from 'react'
+import { ReactNode } from 'react'
 
-import { YouTubeClosedCaptionLanguages } from '../../../__generated__/YouTubeClosedCaptionLanguages'
+import { YouTubeClosedCaptionLanguages } from './__generated__/YouTubeClosedCaptionLanguages'
 
 import {
   YOUTUBE_CLOSED_CAPTION_LANGUAGES,
@@ -45,15 +45,15 @@ const getYouTubeClosedCaptionsMock: MockedResponse<YouTubeClosedCaptionLanguages
   }
 
 describe('useYouTubeClosedCaptions', () => {
-  it('fetches caption languages when videoId is provided and enabled is true', async () => {
+  it('fetches caption languages when videoId is provided and skip is false', async () => {
     const { result } = renderHook(
       () =>
         useYouTubeClosedCaptions({
           videoId: 'test-video-id',
-          enabled: true
+          skip: false
         }),
       {
-        wrapper: ({ children }: { children: ReactElement }) => (
+        wrapper: ({ children }: { children: ReactNode }) => (
           <MockedProvider mocks={[getYouTubeClosedCaptionsMock]}>
             {children}
           </MockedProvider>
@@ -77,10 +77,10 @@ describe('useYouTubeClosedCaptions', () => {
       () =>
         useYouTubeClosedCaptions({
           videoId: null,
-          enabled: true
+          skip: false
         }),
       {
-        wrapper: ({ children }: { children: ReactElement }) => (
+        wrapper: ({ children }: { children: ReactNode }) => (
           <MockedProvider mocks={[]}>{children}</MockedProvider>
         )
       }
@@ -94,15 +94,15 @@ describe('useYouTubeClosedCaptions', () => {
     expect(result.current.error).toBeUndefined()
   })
 
-  it('does not fetch when enabled is false', async () => {
+  it('does not fetch when skip is true', async () => {
     const { result } = renderHook(
       () =>
         useYouTubeClosedCaptions({
           videoId: 'test-video-id',
-          enabled: false
+          skip: true
         }),
       {
-        wrapper: ({ children }: { children: ReactElement }) => (
+        wrapper: ({ children }: { children: ReactNode }) => (
           <MockedProvider mocks={[]}>{children}</MockedProvider>
         )
       }
@@ -136,10 +136,10 @@ describe('useYouTubeClosedCaptions', () => {
       () =>
         useYouTubeClosedCaptions({
           videoId: 'test-video-id',
-          enabled: true
+          skip: false
         }),
       {
-        wrapper: ({ children }: { children: ReactElement }) => (
+        wrapper: ({ children }: { children: ReactNode }) => (
           <MockedProvider mocks={[emptyMock]}>{children}</MockedProvider>
         )
       }
@@ -157,10 +157,10 @@ describe('useYouTubeClosedCaptions', () => {
       () =>
         useYouTubeClosedCaptions({
           videoId: 'test-video-id',
-          enabled: true
+          skip: false
         }),
       {
-        wrapper: ({ children }: { children: ReactElement }) => (
+        wrapper: ({ children }: { children: ReactNode }) => (
           <MockedProvider mocks={[getYouTubeClosedCaptionsMock]}>
             {children}
           </MockedProvider>
@@ -182,10 +182,10 @@ describe('useYouTubeClosedCaptions', () => {
       () =>
         useYouTubeClosedCaptions({
           videoId: 'test-video-id',
-          enabled: true
+          skip: false
         }),
       {
-        wrapper: ({ children }: { children: ReactElement }) => (
+        wrapper: ({ children }: { children: ReactNode }) => (
           <MockedProvider mocks={[getYouTubeClosedCaptionsMock]}>
             {children}
           </MockedProvider>
