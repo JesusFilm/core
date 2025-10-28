@@ -74,7 +74,6 @@ builder.queryFields((t) => ({
       videoId: t.arg.id({ required: true })
     },
     resolve: async (_root, { videoId }) => {
-      // Validate FIREBASE_API_KEY is present and non-empty
       const apiKey = process.env.FIREBASE_API_KEY
       if (!apiKey || apiKey.trim() === '') {
         throw new Error('YouTube API key is not configured')
@@ -112,7 +111,6 @@ builder.queryFields((t) => ({
         throw new Error('Failed to fetch YouTube closed caption language IDs')
       }
 
-      // Validate the response structure with Zod
       let ytClosedCaptionResponse: YouTubeCaptionsResponse
       try {
         ytClosedCaptionResponse = youTubeCaptionsResponseSchema.parse(
