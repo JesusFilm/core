@@ -15,6 +15,10 @@ import { ReactElement, useEffect, useRef } from 'react'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import {
+  type YouTubeLanguage,
+  useYouTubeClosedCaptions
+} from '@core/journeys/ui/useYouTubeClosedCaptions'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 import Play2Icon from '@core/shared/ui/icons/Play2'
 import StopCircleContainedIcon from '@core/shared/ui/icons/StopCircleContained'
@@ -32,10 +36,6 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
-import {
-  type YouTubeLanguage,
-  useYouTubeClosedCaptions
-} from '@core/journeys/ui/useYouTubeClosedCaptions'
 
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 import { YouTubeSubtitleSelector } from './SubtitleSelector'
