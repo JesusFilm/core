@@ -103,6 +103,18 @@ type PhoneAction implements Action
   contactAction: ContactActionType!
 }
 
+type ChatAction implements Action
+  @shareable
+{
+  parentBlockId: ID!
+  parentBlock: Block!
+  gtmEventName: String
+  chatUrl: String!
+  target: String
+  customizable: Boolean
+  parentStepId: String
+}
+
 interface Block {
   id: ID!
   journeyId: ID!
@@ -1300,6 +1312,7 @@ type VideoBlock implements Block
 
   """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit @shareable
+  subtitleLanguage: Language @shareable
 }
 
 """
@@ -1407,6 +1420,7 @@ enum ButtonAction {
   LinkAction
   EmailAction
   PhoneAction
+  ChatAction
 }
 
 type ButtonClickEvent implements Event

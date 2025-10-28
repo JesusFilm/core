@@ -107,6 +107,7 @@ export type BlockDuplicateIdMap = {
 
 export type BlockUpdateActionInput = {
   blockId?: InputMaybe<Scalars['String']['input']>;
+  chatUrl?: InputMaybe<Scalars['String']['input']>;
   countryCode?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
@@ -127,6 +128,7 @@ export type Browser = {
 };
 
 export enum ButtonAction {
+  ChatAction = 'ChatAction',
   EmailAction = 'EmailAction',
   LinkAction = 'LinkAction',
   NavigateToBlockAction = 'NavigateToBlockAction',
@@ -307,6 +309,25 @@ export type CardBlockUpdateInput = {
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   themeMode?: InputMaybe<ThemeMode>;
   themeName?: InputMaybe<ThemeName>;
+};
+
+export type ChatAction = Action & {
+  __typename?: 'ChatAction';
+  chatUrl: Scalars['String']['output'];
+  customizable?: Maybe<Scalars['Boolean']['output']>;
+  gtmEventName?: Maybe<Scalars['String']['output']>;
+  parentBlock: Block;
+  parentBlockId: Scalars['ID']['output'];
+  parentStepId?: Maybe<Scalars['String']['output']>;
+  target?: Maybe<Scalars['String']['output']>;
+};
+
+export type ChatActionInput = {
+  chatUrl: Scalars['String']['input'];
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
+  gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  parentStepId?: InputMaybe<Scalars['String']['input']>;
+  target?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ChatButton = {
@@ -1553,6 +1574,7 @@ export type Mutation = {
   /** blockRestore is used for redo/undo */
   blockRestore: Array<Block>;
   blockUpdateAction: Action;
+  blockUpdateChatAction: ChatAction;
   blockUpdateEmailAction: EmailAction;
   blockUpdateLinkAction: LinkAction;
   blockUpdateNavigateToBlockAction: NavigateToBlockAction;
@@ -1822,6 +1844,13 @@ export type MutationBlockRestoreArgs = {
 export type MutationBlockUpdateActionArgs = {
   id: Scalars['ID']['input'];
   input: BlockUpdateActionInput;
+};
+
+
+export type MutationBlockUpdateChatActionArgs = {
+  id: Scalars['ID']['input'];
+  input: ChatActionInput;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -3472,6 +3501,7 @@ export type Query = {
   visitor: Visitor;
   /** A list of visitors that are connected with a specific team. */
   visitorsConnection: VisitorsConnection;
+  youtubeClosedCaptionLanguages: QueryYoutubeClosedCaptionLanguagesResult;
 };
 
 
@@ -3887,6 +3917,11 @@ export type QueryVisitorsConnectionArgs = {
   teamId?: InputMaybe<Scalars['String']['input']>;
 };
 
+
+export type QueryYoutubeClosedCaptionLanguagesArgs = {
+  videoId: Scalars['ID']['input'];
+};
+
 export type QueryPlaylistResult = NotFoundError | QueryPlaylistSuccess;
 
 export type QueryPlaylistSuccess = {
@@ -3939,6 +3974,13 @@ export type QueryShortLinksConnectionEdge = {
   __typename?: 'QueryShortLinksConnectionEdge';
   cursor: Scalars['String']['output'];
   node?: Maybe<ShortLink>;
+};
+
+export type QueryYoutubeClosedCaptionLanguagesResult = Error | QueryYoutubeClosedCaptionLanguagesSuccess | ZodError;
+
+export type QueryYoutubeClosedCaptionLanguagesSuccess = {
+  __typename?: 'QueryYoutubeClosedCaptionLanguagesSuccess';
+  data: Array<Language>;
 };
 
 export type RadioOptionBlock = Block & {
@@ -4958,6 +5000,7 @@ export type VideoBlock = Block & {
   source: VideoBlockSource;
   /** startAt dictates at which point of time the video should start playing */
   startAt?: Maybe<Scalars['Int']['output']>;
+  subtitleLanguage?: Maybe<Language>;
   /**
    * internal source videos: this field is not populated and instead only present
    * in the video field.
@@ -5001,6 +5044,7 @@ export type VideoBlockCreateInput = {
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
   source?: InputMaybe<VideoBlockSource>;
   startAt?: InputMaybe<Scalars['Int']['input']>;
+  subtitleLanguageId?: InputMaybe<Scalars['ID']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['ID']['input']>;
   videoVariantLanguageId?: InputMaybe<Scalars['ID']['input']>;
@@ -5055,6 +5099,7 @@ export type VideoBlockUpdateInput = {
    */
   source?: InputMaybe<VideoBlockSource>;
   startAt?: InputMaybe<Scalars['Int']['input']>;
+  subtitleLanguageId?: InputMaybe<Scalars['ID']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
   videoId?: InputMaybe<Scalars['ID']['input']>;
   videoVariantLanguageId?: InputMaybe<Scalars['ID']['input']>;

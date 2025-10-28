@@ -26,6 +26,7 @@ input BlockUpdateActionInput {
   phone: String
   countryCode: String
   target: String
+  chatUrl: String
   blockId: String
 }
 
@@ -46,6 +47,7 @@ enum ButtonAction {
   LinkAction
   EmailAction
   PhoneAction
+  ChatAction
 }
 
 enum ButtonAlignment {
@@ -232,6 +234,26 @@ input CardBlockUpdateInput {
   fullscreen: Boolean
   themeMode: ThemeMode
   themeName: ThemeName
+}
+
+type ChatAction implements Action
+  @shareable
+{
+  parentBlockId: ID!
+  gtmEventName: String
+  parentBlock: Block!
+  chatUrl: String!
+  target: String
+  customizable: Boolean
+  parentStepId: String
+}
+
+input ChatActionInput {
+  gtmEventName: String
+  chatUrl: String!
+  target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 type ChatButton
@@ -1174,6 +1196,7 @@ type Mutation {
   blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID): LinkAction! @override(from: "api-journeys")
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction! @override(from: "api-journeys")
   blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID): PhoneAction! @override(from: "api-journeys")
+  blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID): ChatAction! @override(from: "api-journeys")
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @override(from: "api-journeys")
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent! @override(from: "api-journeys")
@@ -1935,6 +1958,7 @@ type VideoBlock implements Block
   objectFit: VideoBlockObjectFit
   posterBlockId: ID
   fullsize: Boolean
+  subtitleLanguage: Language
   action: Action
   mediaVideo: MediaVideo
 }
@@ -1962,6 +1986,7 @@ input VideoBlockCreateInput {
   autoplay: Boolean
   fullsize: Boolean
   posterBlockId: ID
+  subtitleLanguageId: ID
 }
 
 enum VideoBlockObjectFit {
@@ -1992,6 +2017,7 @@ input VideoBlockUpdateInput {
   muted: Boolean
   autoplay: Boolean
   fullsize: Boolean
+  subtitleLanguageId: ID
 
   """
   internal source: videoId and videoVariantLanguageId required

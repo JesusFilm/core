@@ -30,6 +30,8 @@ import {
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
 import { ImageSource } from '../../../Drawer/ImageSource'
 import { Accordion } from '../../Properties/Accordion'
+import { FocalPoint } from '../../Properties/blocks/Card/BackgroundMedia/Image/FocalPoint'
+import { ZoomImage } from '../../Properties/blocks/Card/BackgroundMedia/Image/ZoomImage'
 import { IMAGE_BLOCK_UPDATE } from '../../Properties/blocks/Image/Options/ImageOptions'
 
 export const LOGO_BLOCK_CREATE = gql`
@@ -55,9 +57,6 @@ export function Logo(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const { add } = useCommand()
-  const [sliderValue, setSliderValue] = useState(
-    journey?.logoImageBlock?.scale ?? 1
-  )
 
   const [logoBlockCreate] = useMutation<
     LogoBlockCreate,
@@ -183,7 +182,6 @@ export function Logo(): ReactElement {
             imageBlockUpdate: block
           }
         })
-        setSliderValue(block.scale ?? 1)
       }
     })
   }
@@ -198,12 +196,6 @@ export function Logo(): ReactElement {
   async function deleteImageBlock(): Promise<void> {
     updateImageBlock({ src: null, alt: '' })
   }
-  function handleImageScaleChange(_, value: number): void {
-    setSliderValue(value)
-  }
-  function handleImageScaleCommit(_, value: number): void {
-    updateImageBlock({ scale: value })
-  }
 
   return (
     <Accordion id="logo" icon={<DiamondIcon />} name={t('Logo')}>
@@ -213,26 +205,14 @@ export function Logo(): ReactElement {
           onChange={async (input) => handleImageChange(input)}
           onDelete={deleteImageBlock}
         />
-        <Stack>
-          <Typography>{t('Size')}</Typography>
-          <Slider
-            aria-label="size-slider"
-            value={sliderValue}
-            onChange={handleImageScaleChange}
-            onChangeCommitted={handleImageScaleCommit}
-            min={1}
-            max={100}
-            size="medium"
-            sx={{
-              alignSelf: 'center',
-              width: '97%',
-              '& .MuiSlider-rail': {
-                color: (theme) => `${theme.palette.secondary.light}`,
-                opacity: '0.38'
-              }
-            }}
-          />
-        </Stack>
+        <FocalPoint
+          imageBlock={imageBlock}
+          updateImageBlock={updateImageBlock}
+        />
+        <ZoomImage
+          imageBlock={imageBlock}
+          updateImageBlock={updateImageBlock}
+        />
       </Stack>
     </Accordion>
   )

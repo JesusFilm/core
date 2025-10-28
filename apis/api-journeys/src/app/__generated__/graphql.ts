@@ -158,7 +158,8 @@ export enum ButtonAction {
     NavigateToBlockAction = "NavigateToBlockAction",
     LinkAction = "LinkAction",
     EmailAction = "EmailAction",
-    PhoneAction = "PhoneAction"
+    PhoneAction = "PhoneAction",
+    ChatAction = "ChatAction"
 }
 
 export enum MessagePlatform {
@@ -928,6 +929,17 @@ export class PhoneAction implements Action {
     contactAction: ContactActionType;
 }
 
+export class ChatAction implements Action {
+    __typename?: 'ChatAction';
+    parentBlockId: string;
+    parentBlock: Block;
+    gtmEventName?: Nullable<string>;
+    chatUrl: string;
+    target?: Nullable<string>;
+    customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
+}
+
 export class Journey {
     __typename?: 'Journey';
     blocks?: Nullable<Block[]>;
@@ -1472,6 +1484,7 @@ export class VideoBlock implements Block {
     duration?: Nullable<number>;
     action?: Nullable<Action>;
     objectFit?: Nullable<VideoBlockObjectFit>;
+    subtitleLanguage?: Nullable<Language>;
 }
 
 export class VideoTriggerBlock implements Block {
