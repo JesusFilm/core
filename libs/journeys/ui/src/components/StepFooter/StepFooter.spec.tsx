@@ -149,6 +149,7 @@ describe('StepFooter', () => {
     jest.mock('next/navigation', () => ({
       useParams: () => ({ stepSlug: 'menuStepBlockId' })
     }))
+
     it('should display social media title if no display title', () => {
       render(
         <MockedProvider>
