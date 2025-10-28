@@ -1,5 +1,4 @@
 import { MockedProvider } from '@apollo/client/testing'
-import * as ApolloClient from '@apollo/client'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useFormikContext } from 'formik'
