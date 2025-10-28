@@ -6,7 +6,13 @@ import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { Dispatch, ReactElement, SetStateAction, useEffect, useState } from 'react'
+import {
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  useEffect,
+  useState
+} from 'react'
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 
@@ -134,7 +140,9 @@ export function ContactDataForm({
           <IconButton
             size="small"
             sx={{
-              transform: isOptionalSettingsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+              transform: isOptionalSettingsOpen
+                ? 'rotate(180deg)'
+                : 'rotate(0deg)',
               transition: 'transform 0.2s ease-in-out'
             }}
           >
