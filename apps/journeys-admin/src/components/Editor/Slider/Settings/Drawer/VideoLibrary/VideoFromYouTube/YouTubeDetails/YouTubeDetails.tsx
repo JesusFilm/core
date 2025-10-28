@@ -54,13 +54,13 @@ export function YouTubeDetails({
   )
 
   // Get subtitle language ID from the active video block
-  const subtitleLanguageId = activeVideoBlock?.subtitleLanguage?.id
+  const subtitleLanguageId = activeVideoBlock?.subtitleLanguage?.id ?? null
 
   // Fetch closed captions using custom hook
   const { languages: captionLanguages, loading: captionsLoading } =
     useYouTubeClosedCaptions({
       videoId: id,
-      skip: open && id != null
+      skip: !open || id == null
     })
 
   // Derive bcp47 code from caption data by matching subtitleLanguageId
@@ -72,8 +72,16 @@ export function YouTubeDetails({
     onSelect({
       videoId: id,
       source: VideoBlockSource.youTube,
-      startAt: 0,
-      endAt: time
+      startAt:
+        activeVideoBlock?.videoId === id ? (activeVideoBlock?.startAt ?? 0) : 0,
+      endAt:
+        activeVideoBlock?.videoId === id
+          ? (activeVideoBlock?.endAt ?? time)
+          : time,
+      subtitleLanguageId:
+        activeVideoBlock?.videoId === id
+          ? (activeVideoBlock?.subtitleLanguage?.id ?? null)
+          : null
     })
   }
 

@@ -69,8 +69,8 @@ export function VideoBlockEditorSettings({
   const { languages: availableSubtitles } = useYouTubeClosedCaptions({
     videoId: selectedBlock?.videoId,
     skip:
-      selectedBlock?.source === VideoBlockSource.youTube &&
-      selectedBlock?.videoId != null
+      selectedBlock?.source !== VideoBlockSource.youTube ||
+      selectedBlock?.videoId == null
   })
 
   const initialValues: Values = {
@@ -156,7 +156,15 @@ export function VideoBlockEditorSettings({
               selectedSubtitleId={values.subtitleLanguageId}
               availableLanguages={availableSubtitles}
               onChange={async (subtitleLanguageId) => {
-                await setFieldValue('subtitleLanguageId', subtitleLanguageId)
+                await setFieldValue(
+                  'subtitleLanguageId',
+                  subtitleLanguageId,
+                  false
+                )
+                // Need to call onChange to persist the change
+                await onChange({
+                  subtitleLanguageId
+                })
               }}
               disabled={selectedBlock == null}
             />

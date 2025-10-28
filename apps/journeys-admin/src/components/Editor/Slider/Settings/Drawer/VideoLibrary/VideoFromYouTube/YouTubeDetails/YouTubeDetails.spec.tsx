@@ -170,7 +170,8 @@ describe('YouTubeDetails', () => {
       endAt: 363,
       startAt: 0,
       source: VideoBlockSource.youTube,
-      videoId: 'jQaeIJOA6J0'
+      videoId: 'jQaeIJOA6J0',
+      subtitleLanguageId: null
     })
   })
 
@@ -187,7 +188,7 @@ describe('YouTubeDetails', () => {
     await waitFor(() => {
       expect(mockUseYouTubeClosedCaptions).toHaveBeenCalledWith({
         videoId: 'jQaeIJOA6J0',
-        enabled: true
+        skip: false
       })
     })
   })
@@ -527,5 +528,203 @@ describe('YouTubeDetails', () => {
     fireEvent.click(dismissButton)
 
     expect(mockCloseSnackbar).toHaveBeenCalledWith('test-snackbar-id')
+  })
+
+  it('should preserve subtitleLanguageId when re-selecting same video with subtitles', async () => {
+    mswServer.use(getVideosWithOffsetAndUrl)
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: [
+        {
+          id: 'lang-en',
+          bcp47: 'en',
+          name: { value: 'English', primary: true }
+        }
+      ],
+      loading: false,
+      error: undefined
+    })
+
+    const activeVideoBlock = {
+      id: 'video1',
+      __typename: 'VideoBlock' as const,
+      parentBlockId: null,
+      parentOrder: 0,
+      muted: false,
+      autoplay: false,
+      startAt: 10,
+      endAt: 100,
+      posterBlockId: null,
+      fullsize: false,
+      videoId: 'jQaeIJOA6J0',
+      videoVariantLanguageId: null,
+      source: VideoBlockSource.youTube,
+      title: null,
+      description: null,
+      image: null,
+      duration: null,
+      objectFit: null,
+      subtitleLanguage: {
+        __typename: 'Language' as const,
+        id: 'lang-en'
+      },
+      mediaVideo: null,
+      action: null,
+      children: []
+    }
+
+    const onSelect = jest.fn()
+    const { getByRole } = render(
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails
+            id="jQaeIJOA6J0"
+            open
+            onSelect={onSelect}
+            activeVideoBlock={activeVideoBlock}
+          />
+        </SWRConfig>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(
+        getByRole('heading', { name: 'Blessing and Curse' })
+      ).toBeInTheDocument()
+    )
+    fireEvent.click(getByRole('button', { name: 'Select' }))
+    expect(onSelect).toHaveBeenCalledWith({
+      endAt: 100,
+      startAt: 10,
+      source: VideoBlockSource.youTube,
+      videoId: 'jQaeIJOA6J0',
+      subtitleLanguageId: 'lang-en'
+    })
+  })
+
+  it('should preserve startAt and endAt when re-selecting same video', async () => {
+    mswServer.use(getVideosWithOffsetAndUrl)
+    const activeVideoBlock = {
+      id: 'video1',
+      __typename: 'VideoBlock' as const,
+      parentBlockId: null,
+      parentOrder: 0,
+      muted: false,
+      autoplay: false,
+      startAt: 20,
+      endAt: 200,
+      posterBlockId: null,
+      fullsize: false,
+      videoId: 'jQaeIJOA6J0',
+      videoVariantLanguageId: null,
+      source: VideoBlockSource.youTube,
+      title: null,
+      description: null,
+      image: null,
+      duration: null,
+      objectFit: null,
+      subtitleLanguage: null,
+      mediaVideo: null,
+      action: null,
+      children: []
+    }
+
+    const onSelect = jest.fn()
+    const { getByRole } = render(
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails
+            id="jQaeIJOA6J0"
+            open
+            onSelect={onSelect}
+            activeVideoBlock={activeVideoBlock}
+          />
+        </SWRConfig>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(
+        getByRole('heading', { name: 'Blessing and Curse' })
+      ).toBeInTheDocument()
+    )
+    fireEvent.click(getByRole('button', { name: 'Select' }))
+    expect(onSelect).toHaveBeenCalledWith({
+      endAt: 200,
+      startAt: 20,
+      source: VideoBlockSource.youTube,
+      videoId: 'jQaeIJOA6J0',
+      subtitleLanguageId: null
+    })
+  })
+
+  it('should reset subtitleLanguageId to null when selecting different video', async () => {
+    mswServer.use(getVideosWithOffsetAndUrl)
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: [
+        {
+          id: 'lang-es',
+          bcp47: 'es',
+          name: { value: 'Spanish', primary: true }
+        }
+      ],
+      loading: false,
+      error: undefined
+    })
+
+    const activeVideoBlock = {
+      id: 'video1',
+      __typename: 'VideoBlock' as const,
+      parentBlockId: null,
+      parentOrder: 0,
+      muted: false,
+      autoplay: false,
+      startAt: 10,
+      endAt: 100,
+      posterBlockId: null,
+      fullsize: false,
+      videoId: 'differentVideoId',
+      videoVariantLanguageId: null,
+      source: VideoBlockSource.youTube,
+      title: null,
+      description: null,
+      image: null,
+      duration: null,
+      objectFit: null,
+      subtitleLanguage: {
+        __typename: 'Language' as const,
+        id: 'lang-es'
+      },
+      mediaVideo: null,
+      action: null,
+      children: []
+    }
+
+    const onSelect = jest.fn()
+    const { getByRole } = render(
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails
+            id="jQaeIJOA6J0"
+            open
+            onSelect={onSelect}
+            activeVideoBlock={activeVideoBlock}
+          />
+        </SWRConfig>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(
+        getByRole('heading', { name: 'Blessing and Curse' })
+      ).toBeInTheDocument()
+    )
+    fireEvent.click(getByRole('button', { name: 'Select' }))
+    expect(onSelect).toHaveBeenCalledWith({
+      endAt: 363,
+      startAt: 0,
+      source: VideoBlockSource.youTube,
+      videoId: 'jQaeIJOA6J0',
+      subtitleLanguageId: null
+    })
   })
 })
