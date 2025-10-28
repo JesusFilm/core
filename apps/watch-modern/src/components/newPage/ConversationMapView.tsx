@@ -10,20 +10,30 @@ export type ConversationMapViewProps = {
 }
 
 export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
-  const [selectedScriptureOption, setSelectedScriptureOption] = useState<string | null>(null)
+  const [selectedScriptureOptions, setSelectedScriptureOptions] = useState<Record<number, string>>({})
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null)
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [localMessageContent, setLocalMessageContent] = useState<string>('')
 
   useEffect(() => {
-    setSelectedScriptureOption(null)
+    setSelectedScriptureOptions({})
     setCopiedMessageId(null)
     setEditingMessageId(null)
     setLocalMessageContent('')
   }, [map])
 
-  const handleScriptureSelect = useCallback((verseId: string | null) => {
-    setSelectedScriptureOption(verseId)
+  const handleScriptureSelect = useCallback((stepIndex: number, verseId: string | null) => {
+    setSelectedScriptureOptions((previousSelections) => {
+      const nextSelections = { ...previousSelections }
+
+      if (verseId) {
+        nextSelections[stepIndex] = verseId
+      } else {
+        delete nextSelections[stepIndex]
+      }
+
+      return nextSelections
+    })
   }, [])
 
   const handleCopyMessage = useCallback(
@@ -118,6 +128,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
         )}
 
         {map.steps.map((step, index) => {
+          const selectedScriptureOption = selectedScriptureOptions[index] ?? null
           const scriptureSlides = Array.isArray(step.scriptureOptions)
             ? step.scriptureOptions.reduce<
                 {
@@ -278,8 +289,8 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                                 type="button"
                                 onClick={() =>
                                   isSelected
-                                    ? handleScriptureSelect(null)
-                                    : handleScriptureSelect(slide.verseId)
+                                    ? handleScriptureSelect(index, null)
+                                    : handleScriptureSelect(index, slide.verseId)
                                 }
                                 className={`flex items-center justify-center w-5 h-5 mt-2 rounded-full cursor-pointer transition-all duration-200 flex-shrink-0 group/checkbox ${
                                   isSelected
@@ -298,7 +309,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
 
                               <button
                                 type="button"
-                                onClick={() => handleScriptureSelect(slide.verseId)}
+                                onClick={() => handleScriptureSelect(index, slide.verseId)}
                                 className={`flex-1 text-left cursor-pointer transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary group ${
                                   isSelected
                                     ? 'rounded-2xl'
@@ -426,7 +437,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                                 type="button"
                                 variant="link"
                                 className="h-auto p-0 text-xs font-semibold text-muted-foreground"
-                                onClick={() => handleScriptureSelect(null)}
+                                onClick={() => handleScriptureSelect(index, null)}
                               >
                                 Choose a different verse
                               </Button>
