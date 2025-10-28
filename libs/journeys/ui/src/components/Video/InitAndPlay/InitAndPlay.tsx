@@ -17,7 +17,10 @@ import { TreeBlock, useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { useYouTubeClosedCaptions } from '../../../libs/useYouTubeClosedCaptions'
-import { VideoFields_mediaVideo } from '../__generated__/VideoFields'
+import {
+  VideoFields_mediaVideo,
+  VideoFields_subtitleLanguage
+} from '../__generated__/VideoFields'
 import { addYouTubeSubtitles } from '../utils/addYouTubeSubtitles'
 import { getMuxMetadata } from '../utils/getMuxMetadata'
 import VideoJsPlayer from '../utils/videoJsTypes'
@@ -45,6 +48,7 @@ interface InitAndPlayProps {
   title: string | null
   mediaVideo: VideoFields_mediaVideo | null
   videoVariantLanguageId: string | null
+  subtitleLanguage: VideoFields_subtitleLanguage | null
 }
 
 export function InitAndPlay({
@@ -67,7 +71,8 @@ export function InitAndPlay({
   activeStep = false,
   title,
   mediaVideo,
-  videoVariantLanguageId
+  videoVariantLanguageId,
+  subtitleLanguage
 }: InitAndPlayProps): ReactElement {
   const { journey, variant } = useJourney()
   const { blockHistory } = useBlocks()
@@ -266,14 +271,15 @@ export function InitAndPlay({
     }
   }, [activeStep, player, selectedBlock])
 
-  // Set YouTube closed captions when loaded
+  // Set subtitles and closed captions when loaded
   useEffect(() => {
     if (player == null || captionsLoading || captionLanguages.length === 0)
       return
     if (source === VideoBlockSource.youTube)
       addYouTubeSubtitles({
         player,
-        languages: captionLanguages
+        languages: captionLanguages,
+        subtitleLanguage
       })
   }, [player, source, captionLanguages, captionsLoading])
 

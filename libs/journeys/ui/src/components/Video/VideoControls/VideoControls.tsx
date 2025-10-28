@@ -16,6 +16,7 @@ import {
 import { isIOS, isIPhone } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import {
@@ -35,6 +36,7 @@ interface VideoControlProps {
   startAt: number
   endAt: number
   isYoutube?: boolean
+  source: VideoBlockSource
   loading?: boolean
   autoplay?: boolean
   muted?: boolean
@@ -46,6 +48,7 @@ export function VideoControls({
   startAt,
   endAt,
   isYoutube = false,
+  source,
   loading = false,
   muted: initialMuted = false,
   activeStep = false
@@ -448,6 +451,7 @@ export function VideoControls({
               handleFullscreen={handleFullscreen}
               handleToggleStats={handleToggleStats}
               player={player}
+              source={source}
             />
           </Container>
         </Fade>

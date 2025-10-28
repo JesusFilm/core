@@ -75,7 +75,8 @@ export function Video({
   children,
   action,
   objectFit,
-  videoVariantLanguageId
+  videoVariantLanguageId,
+  subtitleLanguage
 }: TreeBlock<VideoFields>): ReactElement {
   const theme = useTheme()
   const hundredVh = use100vh()
@@ -208,6 +209,7 @@ export function Video({
         title={title}
         mediaVideo={mediaVideo}
         videoVariantLanguageId={videoVariantLanguageId}
+        subtitleLanguage={subtitleLanguage}
       />
       {activeStep &&
         player != null &&
@@ -293,6 +295,7 @@ export function Video({
                 startAt={videoControlsStartAt}
                 endAt={videoEndTime}
                 isYoutube={source === VideoBlockSource.youTube}
+                source={source}
                 loading={loading}
                 autoplay={autoplay ?? false}
                 muted={muted ?? false}

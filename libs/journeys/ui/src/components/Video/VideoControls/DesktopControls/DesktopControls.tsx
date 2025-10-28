@@ -12,6 +12,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { JSX, MouseEvent } from 'react'
 
+import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import VideoJsPlayer from '../../utils/videoJsTypes'
 import { VideoSettings } from '../VideoSettings'
 import { SubtitleButton } from '../SubtitleButton'
@@ -36,6 +37,7 @@ interface DesktopControlsProps {
   handleFullscreen: () => void
   handleToggleStats: (event: React.MouseEvent) => void
   player: VideoJsPlayer
+  source: VideoBlockSource
 }
 
 export function DesktopControls({
@@ -57,7 +59,8 @@ export function DesktopControls({
   fullscreen,
   handleFullscreen,
   handleToggleStats,
-  player
+  player,
+  source
 }: DesktopControlsProps): JSX.Element {
   return (
     <Stack
@@ -174,7 +177,7 @@ export function DesktopControls({
           )}
         </IconButton>
       </Stack>
-      <SubtitleButton player={player} />
+      <SubtitleButton player={player} source={source} />
       <VideoSettings player={player} onToggleStats={handleToggleStats} />
       {showFullscreenButton && (
         <IconButton

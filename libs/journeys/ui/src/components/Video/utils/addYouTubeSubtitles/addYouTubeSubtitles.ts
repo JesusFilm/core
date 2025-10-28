@@ -1,24 +1,31 @@
 import type { YouTubeClosedCaptionLanguages_youtubeClosedCaptionLanguages_QueryYoutubeClosedCaptionLanguagesSuccess_data as YouTubeLanguage } from '../../../../libs/useYouTubeClosedCaptions/__generated__/YouTubeClosedCaptionLanguages'
+import { VideoFields_subtitleLanguage as SubtitleLanguage } from '../../__generated__/VideoFields'
+import { removeAllRemoteTextTracks } from '../removeAllRemoteTextTracks'
 import VideoJsPlayer from '../videoJsTypes'
 
 interface AddYouTubeSubtitlesParams {
   player: VideoJsPlayer
   languages: YouTubeLanguage[]
+  subtitleLanguage: SubtitleLanguage | null
 }
 
 export function addYouTubeSubtitles({
   player,
-  languages
+  languages,
+  subtitleLanguage
 }: AddYouTubeSubtitlesParams): void {
+  // Remove all existing remote text tracks to prevent duplicates on re-render
+  removeAllRemoteTextTracks(player)
+
   languages.forEach((language: YouTubeLanguage) => {
     if (language.bcp47 != null && language.name?.[0]?.value != null) {
       player.addRemoteTextTrack(
         {
           id: language.id,
           kind: 'captions',
-          srcLang: language.bcp47,
+          srclang: language.bcp47,
           label: language.name[0].value,
-          mode: 'hidden'
+          mode: subtitleLanguage?.id === language.id ? 'showing' : 'hidden'
         },
         true
       )

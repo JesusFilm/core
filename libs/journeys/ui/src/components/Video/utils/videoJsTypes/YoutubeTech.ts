@@ -9,5 +9,8 @@ export interface YoutubeTech extends Tech {
     getPlaybackQuality: () => string
     getAvailableQualityLevels: () => string[]
     getVideoLoadedFraction: () => number
+    loadModule?: (module: string) => void
+    unloadModule?: (module: string) => void
+    setOption?: (category: string, name: string, value: any) => void
   }
 }
