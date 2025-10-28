@@ -360,6 +360,7 @@ export interface GetJourney_journey_blocks_TypographyBlock {
 export interface GetJourney_journey_blocks_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_title {

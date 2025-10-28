@@ -346,6 +346,7 @@ export interface CardIntroRestore_subtitle_TypographyBlock {
 export interface CardIntroRestore_subtitle_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardIntroRestore_subtitle_VideoBlock_mediaVideo_Video_title {
@@ -917,6 +918,7 @@ export interface CardIntroRestore_title_TypographyBlock {
 export interface CardIntroRestore_title_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardIntroRestore_title_VideoBlock_mediaVideo_Video_title {
@@ -1488,6 +1490,7 @@ export interface CardIntroRestore_body_TypographyBlock {
 export interface CardIntroRestore_body_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardIntroRestore_body_VideoBlock_mediaVideo_Video_title {
@@ -2059,6 +2062,7 @@ export interface CardIntroRestore_button_TypographyBlock {
 export interface CardIntroRestore_button_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardIntroRestore_button_VideoBlock_mediaVideo_Video_title {
@@ -2630,6 +2634,7 @@ export interface CardIntroRestore_startIcon_TypographyBlock {
 export interface CardIntroRestore_startIcon_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardIntroRestore_startIcon_VideoBlock_mediaVideo_Video_title {
@@ -3201,6 +3206,7 @@ export interface CardIntroRestore_endIcon_TypographyBlock {
 export interface CardIntroRestore_endIcon_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardIntroRestore_endIcon_VideoBlock_mediaVideo_Video_title {
@@ -3772,6 +3778,7 @@ export interface CardIntroRestore_video_TypographyBlock {
 export interface CardIntroRestore_video_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardIntroRestore_video_VideoBlock_mediaVideo_Video_title {

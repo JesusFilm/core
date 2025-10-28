@@ -356,6 +356,7 @@ export interface BlockRestore_blockRestore_TypographyBlock {
 export interface BlockRestore_blockRestore_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface BlockRestore_blockRestore_VideoBlock_mediaVideo_Video_title {

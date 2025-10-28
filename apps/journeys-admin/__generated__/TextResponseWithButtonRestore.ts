@@ -346,6 +346,7 @@ export interface TextResponseWithButtonRestore_textResponse_TypographyBlock {
 export interface TextResponseWithButtonRestore_textResponse_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_title {
@@ -917,6 +918,7 @@ export interface TextResponseWithButtonRestore_button_TypographyBlock {
 export interface TextResponseWithButtonRestore_button_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_title {
@@ -1488,6 +1490,7 @@ export interface TextResponseWithButtonRestore_startIcon_TypographyBlock {
 export interface TextResponseWithButtonRestore_startIcon_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_title {
@@ -2059,6 +2062,7 @@ export interface TextResponseWithButtonRestore_endIcon_TypographyBlock {
 export interface TextResponseWithButtonRestore_endIcon_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_title {
