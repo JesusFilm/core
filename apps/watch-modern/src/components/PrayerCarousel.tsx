@@ -232,7 +232,7 @@ export function PrayerCarousel({
     <div
       className="mt-6 overflow-hidden rounded-3xl transition-all duration-700 ease-out"
       style={{
-        maxHeight: isVisible ? 720 : 0,
+        maxHeight: isVisible ? 7000 : 0,
         opacity: isVisible ? 1 : 0,
         paddingTop: isVisible ? '24px' : '0px',
         paddingBottom: isVisible ? '24px' : '0px'
