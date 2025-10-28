@@ -1,11 +1,11 @@
-import { FileText, Globe, Layers, MessageSquare, Users } from 'lucide-react'
+import { FileText, Globe, Layers, MessageSquare, Users, LucideIcon } from 'lucide-react'
 import React from 'react'
 
 interface ContextItem {
   id: string
   label: string
   shortLabel: string
-  icon: React.ComponentType<{ className?: string }>
+  icon: LucideIcon
   gradient: string
   selectedBorderColor: string
   highlightedBorderColor: string

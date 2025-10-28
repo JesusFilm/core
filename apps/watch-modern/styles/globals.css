@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@source "../../../@/components/**/*.{js,ts,jsx,tsx}";
+@source "../../libs/shared/uimodern/src/components/**/*.{js,ts,jsx,tsx}";
 @source "./**/*.{js,ts,jsx,tsx}";
 @source "../../libs/**/*.{js,ts,jsx,tsx}";
 
