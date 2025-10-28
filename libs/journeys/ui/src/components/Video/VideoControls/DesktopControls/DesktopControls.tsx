@@ -14,6 +14,7 @@ import { JSX, MouseEvent } from 'react'
 
 import VideoJsPlayer from '../../utils/videoJsTypes'
 import { VideoSettings } from '../VideoSettings'
+import { SubtitleButton } from '../SubtitleButton'
 
 interface DesktopControlsProps {
   playing: boolean
@@ -173,6 +174,7 @@ export function DesktopControls({
           )}
         </IconButton>
       </Stack>
+      <SubtitleButton player={player} />
       <VideoSettings player={player} onToggleStats={handleToggleStats} />
       {showFullscreenButton && (
         <IconButton
