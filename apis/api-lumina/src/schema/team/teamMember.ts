@@ -11,7 +11,10 @@ builder.prismaObject('TeamMember', {
   fields: (t) => ({
     id: t.exposeID('id'),
     userId: t.exposeString('userId'),
-    role: t.expose('role', { type: 'Role' }),
+    role: t.field({
+      type: 'Role',
+      resolve: (member) => member.role
+    }),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
     updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
     team: t.relation('team'),

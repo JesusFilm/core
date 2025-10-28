@@ -10,7 +10,10 @@ builder.prismaObject('Usage', {
     websiteId: t.expose('websiteId', { type: 'String', nullable: true }),
     apiKeyId: t.expose('apiKeyId', { type: 'String', nullable: true }),
     tokens: t.exposeInt('tokens'),
-    costUsd: t.expose('costUsd', { type: 'Decimal' }),
+    costUsd: t.field({
+      type: 'Decimal',
+      resolve: (usage) => usage.costUsd.toString()
+    }),
     model: t.exposeString('model'),
     provider: t.exposeString('provider'),
     requestId: t.expose('requestId', { type: 'String', nullable: true }),
