@@ -8,6 +8,137 @@ import type {
 
 import type { SaveSessionArgs } from './useNewPageSession'
 
+type HttpError = Error & {
+  status?: number
+  details?: unknown
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  value != null && typeof value === 'object'
+
+const tryParseJson = (value: string): unknown => {
+  try {
+    return JSON.parse(value)
+  } catch {
+    return null
+  }
+}
+
+const collectErrorMessages = (
+  value: unknown,
+  messages: string[] = [],
+  visited = new Set<unknown>()
+): string[] => {
+  if (value == null) {
+    return messages
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    if (trimmed.length === 0) return messages
+
+    const nestedJson = tryParseJson(trimmed)
+    if (nestedJson != null) {
+      return collectErrorMessages(nestedJson, messages, visited)
+    }
+
+    if (!messages.includes(trimmed)) {
+      messages.push(trimmed)
+    }
+
+    return messages
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    const stringified = String(value)
+    if (!messages.includes(stringified)) {
+      messages.push(stringified)
+    }
+    return messages
+  }
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      collectErrorMessages(item, messages, visited)
+    }
+    return messages
+  }
+
+  if (!isRecord(value) || visited.has(value)) {
+    return messages
+  }
+
+  visited.add(value)
+
+  const prioritizedKeys = ['detail', 'details', 'message', 'error', 'description']
+
+  for (const key of prioritizedKeys) {
+    if (key in value) {
+      collectErrorMessages(value[key], messages, visited)
+    }
+  }
+
+  for (const [key, fieldValue] of Object.entries(value)) {
+    if (prioritizedKeys.includes(key)) continue
+    collectErrorMessages(fieldValue, messages, visited)
+  }
+
+  return messages
+}
+
+const selectMeaningfulMessage = (messages: string[]): string | null => {
+  if (messages.length === 0) return null
+
+  const genericPatterns = [
+    /^unexpected error/i,
+    /^openrouter request failed/i,
+    /^apologist request failed/i,
+    /^invalid payload$/i,
+    /^error$/i
+  ]
+
+  for (const message of messages) {
+    if (genericPatterns.some((pattern) => pattern.test(message))) {
+      continue
+    }
+
+    return message
+  }
+
+  return messages[0] ?? null
+}
+
+const parseErrorResponse = (rawBody: string, status: number): HttpError => {
+  const trimmedBody = rawBody?.trim?.() ?? ''
+  let parsedBody: unknown = null
+
+  if (trimmedBody.length > 0) {
+    parsedBody = tryParseJson(trimmedBody)
+
+    if (parsedBody == null) {
+      const jsonStart = trimmedBody.indexOf('{')
+      if (jsonStart !== -1) {
+        const potentialJson = trimmedBody.slice(jsonStart)
+        parsedBody = tryParseJson(potentialJson)
+      }
+    }
+  }
+
+  const errorDetails = parsedBody ?? trimmedBody
+  const collectedMessages = collectErrorMessages(errorDetails)
+  const primaryMessage =
+    selectMeaningfulMessage(collectedMessages) ||
+    (status ? `Request failed with status ${status}` : 'Failed to process content')
+
+  const error: HttpError = new Error(primaryMessage)
+  if (status) {
+    error.status = status
+  }
+  error.details = errorDetails
+
+  return error
+}
+
 const isNetworkError = (error: unknown): boolean => {
   if (error instanceof TypeError) {
     const message = error.message?.toLowerCase?.() ?? ''
@@ -86,6 +217,42 @@ export const useAiContent = ({
       const previousSteps = editableSteps
       setAiResponse('')
 
+      const handleFailure = (error: unknown) => {
+        const networkError = isNetworkError(error)
+
+        if (networkError) {
+          console.warn(
+            'Network error while processing content. Ready for retry.',
+            error
+          )
+        } else {
+          console.error('Error processing content:', error)
+
+          if (isRecord(error) && 'status' in error && typeof error.status === 'number') {
+            const httpError = error as HttpError
+            const details = httpError.details
+
+            if (details !== undefined) {
+              console.error(
+                `AI proxy request failed with status ${httpError.status}. Details:`,
+                details
+              )
+            }
+          }
+        }
+
+        setAiResponse(previousResponse)
+        setEditableSteps(previousSteps)
+
+        if (!networkError) {
+          console.error(
+            'Failed to process content via the AI proxy. Please try again.'
+          )
+        }
+
+        onError?.(error, { isNetworkError: networkError })
+      }
+
       try {
         const messages = buildConversationHistory()
         const currentUserMessage = currentValue.trim()
@@ -106,8 +273,10 @@ export const useAiContent = ({
         })
 
         if (!response.ok) {
-          const errorMessage = await response.text()
-          throw new Error(errorMessage || 'Failed to process content')
+          const errorText = await response.text()
+          const error = parseErrorResponse(errorText, response.status)
+          handleFailure(error)
+          return
         }
 
         const data = await response.json()
@@ -142,21 +311,7 @@ export const useAiContent = ({
 
         updateTokens(sessionId, tokenUsage)
       } catch (error) {
-        const networkError = isNetworkError(error)
-
-        if (networkError) {
-          console.warn('Network error while processing content. Ready for retry.', error)
-        } else {
-          console.error('Error processing content:', error)
-        }
-
-        setAiResponse(previousResponse)
-        setEditableSteps(previousSteps)
-        if (!networkError) {
-          console.error('Failed to process content via the AI proxy. Please try again.')
-        }
-
-        onError?.(error, { isNetworkError: networkError })
+        handleFailure(error)
       } finally {
         setIsProcessing(false)
       }
