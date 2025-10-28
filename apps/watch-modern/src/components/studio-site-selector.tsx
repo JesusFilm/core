@@ -1,4 +1,4 @@
-import { Check, ChevronDown } from 'lucide-react'
+import { ChevronDown, CircleCheck } from 'lucide-react'
 import Image from 'next/image'
 import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -99,7 +99,7 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
   }
 
   const baseMenuItemClasses =
-    'flex w-full items-start justify-between gap-3 rounded-md px-3 py-2 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer'
+    'flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer'
 
   return (
     <div
@@ -112,7 +112,7 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
         aria-expanded={isSiteMenuOpen}
         aria-haspopup="menu"
         aria-controls="studio-site-menu"
-        className="flex items-center gap-2 rounded-md border border-transparent px-2 py-1 transition-colors hover:border-border hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Image
           src="/studio/jesusfilm-sign.svg"
@@ -135,7 +135,7 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
           className="absolute left-0 top-full z-50 mt-2 w-72 rounded-lg border border-border bg-popover shadow-lg"
         >
           <div className="px-4 py-3 text-left">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="pl-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               JesusFilm.org
             </p>
             <ul className="mt-3 space-y-1">
@@ -160,7 +160,7 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
                         <span className="text-xs text-muted-foreground">{description}</span>
                       </span>
                       {isSelected ? (
-                        <Check aria-hidden="true" className="h-4 w-4 text-primary" />
+                        <CircleCheck aria-hidden="true" className="h-5 w-5 self-center text-primary" />
                       ) : null}
                     </a>
                   ) : (
@@ -182,7 +182,7 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
                         <span className="text-xs text-muted-foreground">{description}</span>
                       </span>
                       {isSelected ? (
-                        <Check aria-hidden="true" className="h-4 w-4 text-primary" />
+                        <CircleCheck aria-hidden="true" className="h-5 w-5 self-center text-primary" />
                       ) : null}
                     </button>
                   )}
@@ -190,7 +190,7 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
               ))}
             </ul>
             <div className="my-4 h-px bg-border" role="separator" />
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <p className="mb-2 pl-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
               Our Other Projects
             </p>
             <ul className="space-y-1">
