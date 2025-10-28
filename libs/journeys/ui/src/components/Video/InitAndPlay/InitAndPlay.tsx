@@ -16,12 +16,11 @@ import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { TreeBlock, useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
-import { useYouTubeClosedCaptions } from '../../../libs/useYouTubeClosedCaptions'
 import {
   VideoFields_mediaVideo,
   VideoFields_subtitleLanguage
 } from '../__generated__/VideoFields'
-import { addYouTubeSubtitles } from '../utils/addYouTubeSubtitles'
+import { extractYouTubeCaptionsAndAddTextTracks } from '../utils/extractYouTubeCaptionsAndAddTextTracks'
 import { getMuxMetadata } from '../utils/getMuxMetadata'
 import VideoJsPlayer from '../utils/videoJsTypes'
 
@@ -84,13 +83,6 @@ export function InitAndPlay({
     source === VideoBlockSource.youTube && mediaVideo?.__typename === 'YouTube'
       ? mediaVideo.id
       : null
-
-  // Fetch YouTube closed captions
-  const { languages: captionLanguages, loading: captionsLoading } =
-    useYouTubeClosedCaptions({
-      videoId: youtubeVideoId,
-      enabled: source === VideoBlockSource.youTube
-    })
 
   const muxMetadata = useMemo(() => {
     return journey != null
@@ -273,15 +265,16 @@ export function InitAndPlay({
 
   // Set subtitles and closed captions when loaded
   useEffect(() => {
-    if (player == null || captionsLoading || captionLanguages.length === 0)
-      return
-    if (source === VideoBlockSource.youTube)
-      addYouTubeSubtitles({
+    if (player == null || player?.readyState() !== 4) return
+
+    if (source === VideoBlockSource.youTube) {
+      extractYouTubeCaptionsAndAddTextTracks({
         player,
-        languages: captionLanguages,
         subtitleLanguage
       })
-  }, [player, source, captionLanguages, captionsLoading])
+    }
+    // player ready state is needed in deps array to ensure useEffect is fired at correct time
+  }, [player, source, subtitleLanguage, player?.readyState()])
 
   return <></>
 }
