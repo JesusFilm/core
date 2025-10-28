@@ -16,10 +16,11 @@ jest.mock('@core/journeys/ui/useYouTubeClosedCaptions', () => ({
   useYouTubeClosedCaptions: jest.fn()
 }))
 
+import { useYouTubeClosedCaptions } from '@core/journeys/ui/useYouTubeClosedCaptions'
 const mockUseYouTubeClosedCaptions =
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  require('@core/journeys/ui/useYouTubeClosedCaptions')
-    .useYouTubeClosedCaptions as jest.Mock
+  useYouTubeClosedCaptions as jest.MockedFunction<
+    typeof useYouTubeClosedCaptions
+  >
 
 const mockYouTubeLanguages = [
   {
@@ -29,10 +30,10 @@ const mockYouTubeLanguages = [
       {
         value: 'English',
         primary: true,
-        __typename: 'YouTubeLanguageName' as const
+        __typename: 'LanguageName' as const
       }
     ],
-    __typename: 'YouTubeLanguage' as const
+    __typename: 'Language' as const
   },
   {
     id: 'lang-es',
@@ -41,10 +42,10 @@ const mockYouTubeLanguages = [
       {
         value: 'Spanish',
         primary: true,
-        __typename: 'YouTubeLanguageName' as const
+        __typename: 'LanguageName' as const
       }
     ],
-    __typename: 'YouTubeLanguage' as const
+    __typename: 'Language' as const
   }
 ]
 
