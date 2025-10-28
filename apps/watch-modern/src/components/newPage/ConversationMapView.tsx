@@ -1,9 +1,10 @@
-import { ArrowLeft, ArrowUp, Book, Check, Copy, Layers, User, X } from 'lucide-react'
+import { ArrowLeft, ArrowUp, Book, Check, Copy, User, X } from 'lucide-react'
 import { memo, useCallback, useEffect, useState } from 'react'
 
 import { AutoResizeTextarea } from '@core/shared/uimodern/components/textarea'
 import type { ConversationMap } from '../../libs/storage'
 import { Button } from '../ui/button'
+import { ConversationPathOverview } from './ConversationPathOverview'
 
 export type ConversationMapViewProps = {
   map: ConversationMap
@@ -85,37 +86,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
       />
 
       <div className="space-y-10">
-        {(flowSequence.length > 0 || flowRationale) && (
-          <section className="relative pl-0 sm:pl-12" aria-label="Conversation flow overview">
-            <div
-              aria-hidden="true"
-              className="hidden sm:block absolute left-[9px] top-1.5 h-4 w-4 rounded-full border-4 border-background bg-primary shadow"
-            />
-            <div className="rounded-3xl border border-primary/20 bg-primary/5 p-6 space-y-4">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-primary font-semibold">
-                <Layers className="h-4 w-4" />
-                Conversation Path
-              </div>
-              {flowSequence.length ? (
-                <div className="flex flex-wrap items-center gap-2 text-sm text-primary/90">
-                  {flowSequence.map((movement, movementIndex) => (
-                    <span key={`${movement}-${movementIndex}`} className="flex items-center gap-2">
-                      <span className="rounded-full bg-primary/10 px-3 py-1 font-medium capitalize text-primary">
-                        {movement}
-                      </span>
-                      {movementIndex < flowSequence.length - 1 && (
-                        <span aria-hidden className="text-primary/60">→</span>
-                      )}
-                    </span>
-                  ))}
-                </div>
-              ) : null}
-              {flowRationale && (
-                <p className="text-sm text-primary/80 leading-relaxed">{flowRationale}</p>
-              )}
-            </div>
-          </section>
-        )}
+        <ConversationPathOverview sequence={flowSequence} rationale={flowRationale} />
 
         {map.steps.map((step, index) => {
           const scriptureSlides = Array.isArray(step.scriptureOptions)
