@@ -23,7 +23,8 @@ jest.mock('video.js', () => {
     tech_: {
       ytPlayer: {
         loadModule: jest.fn(),
-        setOption: jest.fn()
+        setOption: jest.fn(),
+        unloadModule: jest.fn()
       }
     }
   }
@@ -301,6 +302,9 @@ describe('YouTubeDetails', () => {
     expect(mockVideoJs).toHaveBeenCalledWith(
       expect.any(HTMLVideoElement),
       expect.objectContaining({
+        youtube: {
+          cc_load_policy: 0
+        },
         fluid: true,
         controls: true,
         poster: 'https://i.ytimg.com/vi/jQaeIJOA6J0/default.jpg',
@@ -313,12 +317,6 @@ describe('YouTubeDetails', () => {
           nativeAudioTracks: false,
           nativeVideoTracks: false
         })
-      })
-    )
-    expect(mockVideoJs).toHaveBeenCalledWith(
-      expect.any(HTMLVideoElement),
-      expect.not.objectContaining({
-        youtube: expect.anything()
       })
     )
   })
@@ -341,6 +339,124 @@ describe('YouTubeDetails', () => {
 
     const mockPlayer = mockVideoJs.mock.results[0].value
     expect(mockPlayer.on).toHaveBeenCalledWith('playing', expect.any(Function))
+  })
+
+  it('should load subtitles when playing event is triggered with subtitleLanguageId', async () => {
+    mswServer.use(getVideosWithOffsetAndUrl)
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: [
+        { id: 'lang1', bcp47: 'en', name: { value: 'English', primary: true } },
+        { id: 'lang2', bcp47: 'es', name: { value: 'Spanish', primary: false } }
+      ],
+      loading: false,
+      error: undefined
+    })
+
+    const activeVideoBlock = {
+      id: 'video1',
+      __typename: 'VideoBlock' as const,
+      parentBlockId: null,
+      parentOrder: 0,
+      muted: false,
+      autoplay: false,
+      startAt: 0,
+      endAt: null,
+      posterBlockId: null,
+      fullsize: false,
+      videoId: 'jQaeIJOA6J0',
+      videoVariantLanguageId: null,
+      source: VideoBlockSource.youTube,
+      title: null,
+      description: null,
+      image: null,
+      duration: null,
+      objectFit: null,
+      subtitleLanguage: {
+        __typename: 'Language' as const,
+        id: 'lang2'
+      },
+      mediaVideo: null,
+      action: null,
+      children: []
+    }
+
+    const { getByRole } = render(
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails
+            id="jQaeIJOA6J0"
+            open
+            onSelect={jest.fn()}
+            activeVideoBlock={activeVideoBlock}
+          />
+        </SWRConfig>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(
+        getByRole('heading', { name: 'Blessing and Curse' })
+      ).toBeInTheDocument()
+    )
+
+    const mockPlayer = mockVideoJs.mock.results[0].value
+    const playingHandler = mockPlayer.on.mock.calls.find(
+      (call) => call[0] === 'playing'
+    )?.[1]
+
+    expect(playingHandler).toBeDefined()
+
+    // Trigger the playing event
+    playingHandler()
+
+    expect(mockPlayer.tech_.ytPlayer.loadModule).toHaveBeenCalledWith(
+      'captions'
+    )
+    expect(mockPlayer.tech_.ytPlayer.setOption).toHaveBeenCalledWith(
+      'captions',
+      'track',
+      { languageCode: 'es' }
+    )
+    expect(mockPlayer.tech_.ytPlayer.unloadModule).not.toHaveBeenCalled()
+  })
+
+  it('should unload subtitles when playing event is triggered without subtitleLanguageId', async () => {
+    mswServer.use(getVideosWithOffsetAndUrl)
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: [],
+      loading: false,
+      error: undefined
+    })
+
+    const { getByRole } = render(
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails id="jQaeIJOA6J0" open onSelect={jest.fn()} />
+        </SWRConfig>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(
+        getByRole('heading', { name: 'Blessing and Curse' })
+      ).toBeInTheDocument()
+    )
+
+    const mockPlayer = mockVideoJs.mock.results[0].value
+    const playingHandler = mockPlayer.on.mock.calls.find(
+      (call) => call[0] === 'playing'
+    )?.[1]
+
+    expect(playingHandler).toBeDefined()
+
+    // Trigger the playing event
+    playingHandler()
+
+    expect(mockPlayer.tech_.ytPlayer.unloadModule).toHaveBeenCalledWith(
+      'captions'
+    )
+    expect(mockPlayer.tech_.ytPlayer.loadModule).not.toHaveBeenCalled()
+    expect(mockPlayer.tech_.ytPlayer.setOption).not.toHaveBeenCalled()
   })
 
   it('should disable select button while loading', () => {

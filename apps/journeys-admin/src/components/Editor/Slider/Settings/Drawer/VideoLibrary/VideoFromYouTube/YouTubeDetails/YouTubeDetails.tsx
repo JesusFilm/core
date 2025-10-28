@@ -97,15 +97,14 @@ export function YouTubeDetails({
   // Create visible player (only recreate when data or subtitleLanguageBcp47 changes)
   useEffect(() => {
     if (videoRef.current != null && data != null) {
-      const youtubeOptions =
-        subtitleLanguageBcp47 != null
-          ? {
-              youtube: {
-                cc_load_policy: 1,
-                cc_lang_pref: subtitleLanguageBcp47
-              }
-            }
-          : {}
+      const youtubeOptions = {
+        youtube: {
+          cc_load_policy: subtitleLanguageBcp47 != null ? 1 : 0,
+          ...(subtitleLanguageBcp47 != null && {
+            cc_lang_pref: subtitleLanguageBcp47
+          })
+        }
+      }
 
       playerRef.current = videojs(videoRef.current, {
         ...defaultVideoJsOptions,
@@ -117,10 +116,14 @@ export function YouTubeDetails({
 
       playerRef.current.on('playing', () => {
         setPlaying(true)
-        playerRef?.current?.tech_?.ytPlayer?.loadModule('captions')
-        playerRef?.current?.tech_?.ytPlayer?.setOption('captions', 'track', {
-          languageCode: subtitleLanguageBcp47
-        })
+        if (subtitleLanguageBcp47 != null) {
+          playerRef?.current?.tech_?.ytPlayer?.loadModule('captions')
+          playerRef?.current?.tech_?.ytPlayer?.setOption('captions', 'track', {
+            languageCode: subtitleLanguageBcp47
+          })
+        } else {
+          playerRef?.current?.tech_?.ytPlayer?.unloadModule('captions')
+        }
       })
     }
   }, [data, subtitleLanguageBcp47])

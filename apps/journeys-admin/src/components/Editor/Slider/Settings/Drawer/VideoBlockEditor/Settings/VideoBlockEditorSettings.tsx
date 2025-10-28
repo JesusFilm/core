@@ -161,7 +161,7 @@ export function VideoBlockEditorSettings({
                   subtitleLanguageId,
                   false
                 )
-                // Need to call onChange to persist the change
+                // Need to call onChange to persist the change to active video block
                 await onChange({
                   subtitleLanguageId
                 })
