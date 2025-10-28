@@ -16,7 +16,7 @@ import CheckIcon from '@core/shared/ui/icons/Check'
 
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { parseISO8601Duration } from '../../../../../../../../libs/parseISO8601Duration'
-import { useYouTubeClosedCaptions } from '../../../../../../../../libs/useYouTubeClosedCaptions'
+import { useYouTubeClosedCaptions } from '../../../../../../../../../../../libs/journeys/ui/src/libs/useYouTubeClosedCaptions'
 import { VideoDescription } from '../../VideoDescription'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 import type { YoutubeVideo, YoutubeVideosData } from '../VideoFromYouTube'

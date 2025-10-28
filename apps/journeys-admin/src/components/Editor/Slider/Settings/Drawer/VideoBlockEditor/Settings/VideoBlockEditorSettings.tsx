@@ -35,7 +35,7 @@ import {
 import {
   type YouTubeLanguage,
   useYouTubeClosedCaptions
-} from '../../../../../../../libs/useYouTubeClosedCaptions'
+} from '@core/journeys/ui/useYouTubeClosedCaptions'
 
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 import { SubtitleSelector } from './SubtitleSelector'

@@ -4,9 +4,7 @@ import { useEffect } from 'react'
 import {
   YouTubeClosedCaptionLanguages,
   YouTubeClosedCaptionLanguages_youtubeClosedCaptionLanguages_QueryYoutubeClosedCaptionLanguagesSuccess_data as YouTubeLanguage
-} from '../../../__generated__/YouTubeClosedCaptionLanguages'
-
-export type { YouTubeLanguage }
+} from './__generated__/YouTubeClosedCaptionLanguages'
 
 export const YOUTUBE_CLOSED_CAPTION_LANGUAGES = gql`
   query YouTubeClosedCaptionLanguages($videoId: ID!) {
