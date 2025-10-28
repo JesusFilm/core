@@ -180,7 +180,8 @@ describe('VideoOptions', () => {
         source: VideoBlockSource.internal,
         startAt: 0,
         endAt: 144,
-        duration: 144
+        duration: 144,
+        subtitleLanguageId: null
       }
     }
     render(
@@ -250,7 +251,8 @@ describe('VideoOptions', () => {
                   source: VideoBlockSource.internal,
                   startAt: 0,
                   endAt: 144,
-                  duration: 144
+                  duration: 144,
+                  subtitleLanguageId: null
                 }
               }
             },

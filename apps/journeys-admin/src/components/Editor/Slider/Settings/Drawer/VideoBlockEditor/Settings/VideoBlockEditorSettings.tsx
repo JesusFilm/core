@@ -123,9 +123,8 @@ export function VideoBlockEditorSettings({
           preventDuplicate: true
         })
       } else {
-        const { subtitleLanguageId, ...videoBlockValues } = values
         await onChange({
-          ...videoBlockValues,
+          ...values,
           startAt: convertedStartAt,
           endAt: convertedEndAt
         })
@@ -134,27 +133,6 @@ export function VideoBlockEditorSettings({
     },
     onSubmit: noop
   })
-
-  // Clear subtitle when video changes (covers both source changes and video changes)
-  const prevVideoIdRef = useRef(selectedBlock?.videoId)
-
-  useEffect(() => {
-    const currentVideoId = selectedBlock?.videoId
-    const prevVideoId = prevVideoIdRef.current
-
-    // Check if videoId changed (covers both source changes and video changes)
-    const isChangingVideo =
-      prevVideoId != null &&
-      currentVideoId != null &&
-      prevVideoId !== currentVideoId
-
-    if (isChangingVideo) {
-      void setFieldValue('subtitleLanguageId', null)
-      void onChange({ subtitleLanguageId: null })
-    }
-
-    prevVideoIdRef.current = currentVideoId
-  }, [selectedBlock?.videoId, onChange, setFieldValue])
 
   return (
     <Box
@@ -179,9 +157,6 @@ export function VideoBlockEditorSettings({
               availableLanguages={availableSubtitles}
               onChange={async (subtitleLanguageId) => {
                 await setFieldValue('subtitleLanguageId', subtitleLanguageId)
-                await onChange({
-                  subtitleLanguageId
-                })
               }}
               disabled={selectedBlock == null}
             />

@@ -415,7 +415,7 @@ describe('VideoBlockEditorSettings', () => {
     expect(queryByText('Subtitles')).not.toBeInTheDocument()
   })
 
-  it('calls onChange with subtitleLanguageId when subtitle is selected', async () => {
+  it('updates formik field when subtitle is selected', async () => {
     mockUseYouTubeClosedCaptions.mockReturnValue({
       languages: mockYouTubeLanguages,
       loading: false,
@@ -446,111 +446,7 @@ describe('VideoBlockEditorSettings', () => {
     fireEvent.click(getByRole('option', { name: 'English' }))
 
     await waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith({
-        subtitleLanguageId: 'lang-en'
-      })
-    })
-  })
-
-  it('clears subtitleLanguageId when videoId changes', async () => {
-    mockUseYouTubeClosedCaptions.mockReturnValue({
-      languages: mockYouTubeLanguages,
-      loading: false,
-      error: undefined
-    })
-
-    const onChange = jest.fn()
-    const { rerender } = render(
-      <ThemeProvider>
-        <MockedProvider>
-          <SnackbarProvider>
-            <VideoBlockEditorSettings
-              selectedBlock={{
-                ...video,
-                source: VideoBlockSource.youTube,
-                videoId: 'test-youtube-id-1',
-                subtitleLanguage: { __typename: 'Language', id: 'lang-en' }
-              }}
-              posterBlock={null}
-              onChange={onChange}
-            />
-          </SnackbarProvider>
-        </MockedProvider>
-      </ThemeProvider>
-    )
-
-    // Change videoId
-    rerender(
-      <ThemeProvider>
-        <MockedProvider>
-          <SnackbarProvider>
-            <VideoBlockEditorSettings
-              selectedBlock={{
-                ...video,
-                source: VideoBlockSource.youTube,
-                videoId: 'test-youtube-id-2',
-                subtitleLanguage: { __typename: 'Language', id: 'lang-en' }
-              }}
-              posterBlock={null}
-              onChange={onChange}
-            />
-          </SnackbarProvider>
-        </MockedProvider>
-      </ThemeProvider>
-    )
-
-    await waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith({
-        subtitleLanguageId: null
-      })
-    })
-  })
-
-  it('clears subtitleLanguageId when source changes', async () => {
-    const onChange = jest.fn()
-    const { rerender } = render(
-      <ThemeProvider>
-        <MockedProvider>
-          <SnackbarProvider>
-            <VideoBlockEditorSettings
-              selectedBlock={{
-                ...video,
-                source: VideoBlockSource.youTube,
-                videoId: 'test-youtube-id',
-                subtitleLanguage: { __typename: 'Language', id: 'lang-en' }
-              }}
-              posterBlock={null}
-              onChange={onChange}
-            />
-          </SnackbarProvider>
-        </MockedProvider>
-      </ThemeProvider>
-    )
-
-    // Change source (which requires changing videoId too)
-    rerender(
-      <ThemeProvider>
-        <MockedProvider>
-          <SnackbarProvider>
-            <VideoBlockEditorSettings
-              selectedBlock={{
-                ...video,
-                source: VideoBlockSource.internal,
-                videoId: '2_0-FallingPlates',
-                subtitleLanguage: { __typename: 'Language', id: 'lang-en' }
-              }}
-              posterBlock={null}
-              onChange={onChange}
-            />
-          </SnackbarProvider>
-        </MockedProvider>
-      </ThemeProvider>
-    )
-
-    await waitFor(() => {
-      expect(onChange).toHaveBeenCalledWith({
-        subtitleLanguageId: null
-      })
+      expect(onChange).not.toHaveBeenCalled()
     })
   })
 })
