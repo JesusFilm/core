@@ -1431,16 +1431,20 @@ describe('video', () => {
       ])
     })
 
-    it('should include unpublished/incomplete children for non videos-admin clients', async () => {
+    it('should include unpublished/incomplete children for videos-admin client', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
+      prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
+      prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
+        id: 'variantId'
+      } as unknown as VideoVariant)
 
-      const nonAdminClient = getClient({
+      const videosAdminClient = getClient({
         headers: {
-          'x-graphql-client-name': 'test-client'
+          'x-graphql-client-name': 'videos-admin'
         }
       })
 
-      await nonAdminClient({
+      await videosAdminClient({
         document: VIDEOS_QUERY
       })
 
@@ -1458,16 +1462,20 @@ describe('video', () => {
       )
     })
 
-    it('should keep children filters for videos-admin client', async () => {
+    it('should keep children filters for non videos-admin clients', async () => {
       prismaMock.video.findMany.mockResolvedValueOnce(videos)
+      prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
+      prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
+        id: 'variantId'
+      } as unknown as VideoVariant)
 
-      const videosAdminClient = getClient({
+      const nonAdminClient = getClient({
         headers: {
-          'x-graphql-client-name': 'videos-admin'
+          'x-graphql-client-name': 'test-client'
         }
       })
 
-      await videosAdminClient({
+      await nonAdminClient({
         document: VIDEOS_QUERY
       })
 
