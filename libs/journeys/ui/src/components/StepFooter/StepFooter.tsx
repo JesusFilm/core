@@ -21,6 +21,7 @@ import { ChatButtons } from './ChatButtons'
 import { FooterButtonList } from './FooterButtonList'
 import { HostAvatars } from './HostAvatars'
 import { HostTitleLocation } from './HostTitleLocation'
+import { useEditor } from '../../libs/EditorProvider'
 
 interface StepFooterProps {
   onFooterClick?: () => void
@@ -33,6 +34,9 @@ export function StepFooter({
 }: StepFooterProps): ReactElement {
   const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
+  const {
+    state: { selectedStep }
+  } = useEditor()
 
   const hostAvatar = hasHostAvatar({ journey, variant })
   const hostDetails = hasHostDetails({ journey })
@@ -50,7 +54,8 @@ export function StepFooter({
   const currentPath = urlParams?.['stepSlug']
 
   const isWebsite = journey?.website === true
-  const isMenu = menuStepBlockId === currentPath
+  const isMenu =
+    menuStepBlockId === currentPath || selectedStep?.id === menuStepBlockId
 
   return (
     <Box
@@ -107,7 +112,7 @@ export function StepFooter({
               <FooterButtonList />
             </Box>
           )}
-          {isMenu && hasMenuButtonIcon && (
+          {isWebsite && isMenu && hasMenuButtonIcon && (
             <Box>
               <InformationButton sx={{ p: 0 }} />
             </Box>
