@@ -250,7 +250,14 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                 </div>
 
                 {scriptureSlides.length > 0 ? (
-                  <div className="space-y-3">
+                  <div
+                    className={`space-y-3 overflow-hidden transition-all duration-500 ease-in-out ${
+                      selectedScriptureOption
+                        ? 'max-h-0 opacity-0 -translate-y-2 pointer-events-none'
+                        : 'max-h-[999px] opacity-100 translate-y-0'
+                    }`}
+                    aria-hidden={Boolean(selectedScriptureOption)}
+                  >
                     <div className="flex items-center gap-2 text-xs uppercase font-semibold tracking-wide text-muted-foreground">
                       <Book className="w-4 h-4 text-muted-foreground" />
                       Scripture Options
@@ -263,9 +270,6 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
 
                       {scriptureSlides.map((slide, slideIndex) => {
                         const isSelected = selectedScriptureOption === slide.verseId
-                        const shouldShow = !selectedScriptureOption || isSelected
-
-                        if (!shouldShow) return null
 
                         return (
                           <div key={`scripture-option-${index}-${slide.optionIndex}`}>
@@ -416,6 +420,16 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                                   data-message-id={scriptureMessageId}
                                 />
                               </div>
+                            </div>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <Button
+                                type="button"
+                                variant="link"
+                                className="h-auto p-0 text-xs font-semibold text-muted-foreground"
+                                onClick={() => handleScriptureSelect(null)}
+                              >
+                                Choose a different verse
+                              </Button>
                             </div>
                           </div>
                         )
