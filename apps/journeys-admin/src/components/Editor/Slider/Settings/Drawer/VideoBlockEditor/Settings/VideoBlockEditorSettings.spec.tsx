@@ -3,6 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useYouTubeClosedCaptions } from '@core/journeys/ui/useYouTubeClosedCaptions'
 
 import {
   VideoBlockObjectFit as ObjectFit,
@@ -15,8 +16,6 @@ import { VideoBlockEditorSettings } from '.'
 jest.mock('@core/journeys/ui/useYouTubeClosedCaptions', () => ({
   useYouTubeClosedCaptions: jest.fn()
 }))
-
-import { useYouTubeClosedCaptions } from '@core/journeys/ui/useYouTubeClosedCaptions'
 const mockUseYouTubeClosedCaptions =
   useYouTubeClosedCaptions as jest.MockedFunction<
     typeof useYouTubeClosedCaptions

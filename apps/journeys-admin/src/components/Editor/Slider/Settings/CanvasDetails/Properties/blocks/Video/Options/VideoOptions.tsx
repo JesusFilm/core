@@ -50,7 +50,7 @@ export function VideoOptions(): ReactElement {
       inverseInput.duration = selectedBlock.duration
     if (input.videoId !== undefined)
       inverseInput.videoId = selectedBlock.videoId
-      input.subtitleLanguageId = null
+    input.subtitleLanguageId = null
     if (input.videoVariantLanguageId !== undefined)
       inverseInput.videoVariantLanguageId = selectedBlock.videoVariantLanguageId
     if (input.source !== undefined) inverseInput.source = selectedBlock.source
@@ -61,8 +61,7 @@ export function VideoOptions(): ReactElement {
     if (input.objectFit !== undefined)
       inverseInput.objectFit = selectedBlock.objectFit
     if (input.subtitleLanguageId !== undefined)
-      inverseInput.subtitleLanguageId =
-        selectedBlock.subtitleLanguage?.id
+      inverseInput.subtitleLanguageId = selectedBlock.subtitleLanguage?.id
 
     add({
       parameters: {

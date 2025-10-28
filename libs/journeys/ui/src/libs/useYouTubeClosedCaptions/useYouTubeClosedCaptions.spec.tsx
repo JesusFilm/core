@@ -3,7 +3,6 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { ReactNode } from 'react'
 
 import { YouTubeClosedCaptionLanguages } from './__generated__/YouTubeClosedCaptionLanguages'
-
 import {
   YOUTUBE_CLOSED_CAPTION_LANGUAGES,
   useYouTubeClosedCaptions
