@@ -4,6 +4,7 @@ import { JourneyProvider } from '../../libs/JourneyProvider'
 import { defaultJourney } from '../TemplateView/data'
 
 import { StepHeader } from '.'
+import { JourneyMenuButtonIcon } from '../../../__generated__/globalTypes'
 
 jest.mock('next/legacy/image', () => ({
   __esModule: true,
@@ -37,6 +38,7 @@ describe('StepHeader', () => {
           journey: {
             ...defaultJourney,
             website: true,
+            menuButtonIcon: JourneyMenuButtonIcon.home3,
             displayTitle: 'Journey display title',
             logoImageBlock: {
               __typename: 'ImageBlock',
