@@ -3,6 +3,10 @@ import Head from 'next/head'
 import { DefaultSeo } from 'next-seo'
 import '../styles/globals.css'
 
+import { initAuth } from '../src/libs/auth/initAuth'
+
+initAuth()
+
 function StudioApp({ Component, pageProps }: AppProps) {
   return (
     <>

@@ -154,3 +154,80 @@
 ## Follow-up Ideas
 
 - Consider extracting a shared alert component for consistent warning styling across Studio experiences.
+
+# WatchModern Authentication Controls
+
+## Goals
+
+- [x] Bootstrap `next-firebase-auth` in WatchModern with shared Firebase config, login/logout endpoints, and session cookies.
+- [x] Add Google sign-in UX for `/studio/new`, including modal CTA and inline button for media actions.
+- [x] Gate image uploads, Unsplash search, and high-volume prompt runs behind authentication while tracking guest usage.
+- [x] Enforce anonymous prompt limits server-side and persist usage in a signed guest cookie with device fingerprinting.
+
+## Obstacles
+
+- `pnpm dlx nx lint watch-modern` fails because of legacy `i18next/no-literal-string` violations across untouched components.
+
+## Resolutions
+
+- Documented the lint failure output and confirmed it stems from existing literals outside the auth changes.
+- Isolated the new auth UI strings so they can be localized alongside the future i18n clean-up.
+- Captured guest usage client-side to provide contextual messaging before the server-side cap triggers.
+
+## Test Coverage
+
+- `pnpm dlx nx lint watch-modern` *(fails: existing i18next/no-literal-string violations across legacy files)*
+- `pnpm dlx nx test watch-modern --testFile=apps/watch-modern/src/hooks/useGuestPromptLimit.spec.tsx`
+- `pnpm dlx nx test watch-modern --testFile=apps/watch-modern/pages/api/ai/respond.spec.ts`
+
+## User Flows
+
+- Guest adds text prompts → up to five completions allowed → limit reached triggers sign-in modal and server 429 guard.
+- Guest tries to upload or paste an image → upload button disabled and modal invites Google sign-in.
+- Signed-in user authenticates via Google popup → redirects back to `/studio/new` with media tools unlocked.
+- Server receives AI request → validates Firebase cookie or guest fingerprint cookie → rejects unauthenticated overage with 429.
+
+## Follow-up Ideas
+
+- Localize the new auth dialog/button copy and audit existing literal strings flagged by lint.
+- Extend guest usage telemetry to surface demand for higher limits in analytics dashboards.
+- Consider wiring the same guest cookie into other API routes (exports, drafts) before enabling additional premium features.
+
+# WatchModern Auth UX V4 Enhancements
+
+## Goals
+
+- [x] Replace the modal prompt with a reusable AuthRequiredDialog that resumes blocked actions after sign-in.
+- [x] Fix `/studio/api/login` so only POST requests exchange Firebase ID tokens for secure cookies.
+- [x] Decode redirect hints on login success to reliably send creators back to `/studio/new`.
+- [x] Cover the new dialog controller, redirect hook, and login API with focused Jest specs.
+
+## Obstacles
+
+- Resuming guest actions after the Google popup meant tracking pending callbacks across auth state changes.
+- Next router query parameters arrive URL-encoded, so redirect validation needed careful decoding.
+- Jest hoisting rules rejected mock factories that referenced non-prefixed variables.
+
+## Resolutions
+
+- Added `useAuthRequiredDialog` to manage pending actions, run them once auth is restored, and feed context into `AuthRequiredDialog`.
+- Updated `useRedirectAfterLogin` to decode safe redirect URLs while rejecting cross-origin destinations.
+- Guarded the login handler with a POST-only check before calling `setAuthCookies`.
+- Prefixed mocked dependencies and added dedicated specs for the dialog hook, redirect hook, and login API to verify the fixes.
+
+## Test Coverage
+
+- `pnpm dlx nx test watch-modern --testFile=apps/watch-modern/pages/api/login.spec.ts`
+- `pnpm dlx nx test watch-modern --testFile=apps/watch-modern/src/hooks/useAuthRequiredDialog.spec.ts`
+- `pnpm dlx nx test watch-modern --testFile=apps/watch-modern/src/hooks/useRedirectAfterLogin.spec.ts`
+
+## User Flows
+
+- Guest exceeds prompt cap or attempts media upload → Auth dialog explains the requirement → user signs in with Google → dialog closes → blocked action resumes automatically.
+- Developers hit the login API with GET → receive 405 with Allow header; POST with valid Firebase ID token sets auth cookies.
+- Signed-in creators arriving from the auth page are redirected (after decoding) back to `/studio/new` without losing context.
+
+## Follow-up Ideas
+
+- Localize the new dialog copy and align SignInButton messaging with studio tone once translations are available.
+- Extend `useAuthRequiredDialog` to centralize telemetry for auth gating (e.g., capture gated feature name).

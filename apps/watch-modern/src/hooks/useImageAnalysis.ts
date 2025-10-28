@@ -8,16 +8,24 @@ interface UseImageAnalysisOptions {
   extractTextFromResponse: (data: any) => string
   accumulateUsage: (usage: any) => void
   prompt: string
+  isEnabled?: boolean
+  onBlocked?: (resume: () => Promise<void> | void) => void
 }
 
 export const useImageAnalysis = ({
   setImageAnalysisResults,
   extractTextFromResponse,
   accumulateUsage,
-  prompt
+  prompt,
+  isEnabled = true,
+  onBlocked
 }: UseImageAnalysisOptions) => {
   const analyzeImageWithAI = useCallback(
     async (imageSrc: string, imageIndex: number) => {
+      if (!isEnabled) {
+        onBlocked?.(() => analyzeImageWithAI(imageSrc, imageIndex))
+        return
+      }
       setImageAnalysisResults((prev) => {
         const updated = [...prev]
         if (!updated[imageIndex]) {
@@ -133,7 +141,14 @@ export const useImageAnalysis = ({
         })
       }
     },
-    [accumulateUsage, extractTextFromResponse, prompt, setImageAnalysisResults]
+    [
+      accumulateUsage,
+      extractTextFromResponse,
+      isEnabled,
+      onBlocked,
+      prompt,
+      setImageAnalysisResults
+    ]
   )
 
   return { analyzeImageWithAI }

@@ -1,3 +1,5 @@
+import { createHash, createHmac, randomUUID } from 'node:crypto'
+
 import { createOpenAI } from '@ai-sdk/openai'
 import {
   type CoreMessage,
@@ -5,7 +7,15 @@ import {
   convertToCoreMessages,
   generateText
 } from 'ai'
+import { verifyIdToken } from 'next-firebase-auth'
 import type { NextApiRequest, NextApiResponse } from 'next'
+
+import { authCookieHeaderName, initAuth } from '../../../src/libs/auth/initAuth'
+
+initAuth()
+
+const GUEST_USAGE_COOKIE = 'watch-modern.guest-usage'
+const GUEST_PROMPT_LIMIT = 5
 
 const OPENROUTER_BASE_URL =
   process.env.OPENROUTER_BASE_URL ?? 'https://openrouter.ai/api/v1'
@@ -23,6 +33,77 @@ const isNumber = (value: unknown): value is number =>
 const isBoolean = (value: unknown): value is boolean => typeof value === 'boolean'
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   value != null && typeof value === 'object'
+
+type GuestUsagePayload = {
+  id: string
+  count: number
+  resetAt: number
+  fingerprint: string
+}
+
+const getAuthSecret = () => process.env.AUTH_SECRET ?? 'watch-modern-dev-secret'
+
+const signGuestUsage = (payload: string) =>
+  createHmac('sha256', getAuthSecret()).update(payload).digest('hex')
+
+const encodeGuestUsage = (usage: GuestUsagePayload) => {
+  const payload = JSON.stringify(usage)
+  const signature = signGuestUsage(payload)
+  return Buffer.from(`${payload}.${signature}`).toString('base64url')
+}
+
+const decodeGuestUsage = (
+  encoded: string | undefined,
+  fingerprint: string
+): GuestUsagePayload | null => {
+  if (encoded == null) return null
+  try {
+    const decoded = Buffer.from(encoded, 'base64url').toString('utf8')
+    const [payload, signature] = decoded.split('.')
+    if (!payload || !signature || signGuestUsage(payload) !== signature) {
+      return null
+    }
+
+    const parsed = JSON.parse(payload) as GuestUsagePayload
+    if (parsed.fingerprint !== fingerprint) return null
+
+    return parsed
+  } catch (error) {
+    console.warn('Failed to decode guest usage cookie.', error)
+    return null
+  }
+}
+
+const secureCookie =
+  process.env.NODE_ENV === 'production' ||
+  process.env.NEXT_PUBLIC_VERCEL_ENV === 'prod' ||
+  process.env.NEXT_PUBLIC_VERCEL_ENV === 'stage' ||
+  process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview'
+
+const buildGuestCookieHeader = (usage: GuestUsagePayload): string => {
+  const maxAgeMs = Math.max(usage.resetAt - Date.now(), 60 * 60 * 1000)
+  const maxAgeSeconds = Math.round(maxAgeMs / 1000)
+  const encoded = encodeGuestUsage(usage)
+
+  const attributes = [
+    `${GUEST_USAGE_COOKIE}=${encoded}`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    `Max-Age=${maxAgeSeconds}`
+  ]
+
+  if (secureCookie) {
+    attributes.push('Secure')
+  }
+
+  return attributes.join('; ')
+}
+
+const createFingerprint = (req: NextApiRequest): string =>
+  createHash('sha256')
+    .update(req.headers['user-agent'] ?? 'unknown')
+    .digest('hex')
 
 const buildOpenRouterHeaders = (): Record<string, string> => {
   const headers: Record<string, string> = {
@@ -266,6 +347,67 @@ export default async function handler(
     return
   }
 
+  const fingerprint = createFingerprint(req)
+  let guestCookieHeader: string | null = null
+
+  const authCookie = req.cookies?.[authCookieHeaderName]
+  let authenticatedUserId: string | null = null
+
+  if (authCookie != null) {
+    try {
+      const decoded = await verifyIdToken(authCookie)
+      authenticatedUserId =
+        (decoded as { uid?: string }).uid ??
+        (decoded as { user_id?: string }).user_id ??
+        (decoded as { sub?: string }).sub ??
+        null
+    } catch (error) {
+      console.warn('Failed to verify Firebase ID token. Treating request as guest.', error)
+    }
+  }
+
+  if (authenticatedUserId == null) {
+    const now = Date.now()
+    const existingUsage = decodeGuestUsage(req.cookies?.[GUEST_USAGE_COOKIE], fingerprint)
+
+    const usage: GuestUsagePayload =
+      existingUsage != null
+        ? { ...existingUsage }
+        : {
+            id: randomUUID(),
+            count: 0,
+            resetAt: now + 24 * 60 * 60 * 1000,
+            fingerprint
+          }
+
+    if (now > usage.resetAt) {
+      usage.count = 0
+      usage.resetAt = now + 24 * 60 * 60 * 1000
+    }
+
+    if (usage.count >= GUEST_PROMPT_LIMIT) {
+      guestCookieHeader = buildGuestCookieHeader(usage)
+      res.setHeader('Set-Cookie', guestCookieHeader)
+      res.status(429).json({
+        error: 'Daily guest limit reached. Sign in to continue.',
+        requiresAuth: true,
+        limit: GUEST_PROMPT_LIMIT
+      })
+      console.info('Guest prompt limit enforced via API.', {
+        fingerprint,
+        limit: GUEST_PROMPT_LIMIT
+      })
+      return
+    }
+
+    usage.count += 1
+    guestCookieHeader = buildGuestCookieHeader(usage)
+  }
+
+  if (guestCookieHeader != null) {
+    res.setHeader('Set-Cookie', guestCookieHeader)
+  }
+
   // Handle Apologist provider
   if (provider === 'apologist') {
     if (!isString(APOLOGIST_AGENT_DOMAIN) || APOLOGIST_AGENT_DOMAIN.trim() === '') {
@@ -393,9 +535,9 @@ export default async function handler(
       return
     }
 
-    res.status(500).json({
-      error: 'Unexpected error while contacting OpenRouter.',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    })
+      res.status(500).json({
+        error: 'Unexpected error while contacting OpenRouter.',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      })
   }
 }

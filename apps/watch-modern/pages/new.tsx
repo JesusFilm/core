@@ -60,6 +60,15 @@ import {
   type UserInputData,
   userInputStorage
 } from '../src/libs/storage'
+import { AuthRequiredDialog } from '../src/components/auth/AuthRequiredDialog'
+import { SignInButton } from '../src/components/auth/SignInButton'
+import { useAuthUser } from '../src/hooks/useAuthUser'
+import {
+  GUEST_PROMPT_LIMIT,
+  useGuestPromptLimit
+} from '../src/hooks/useGuestPromptLimit'
+import { useAuthRequiredDialog } from '../src/hooks/useAuthRequiredDialog'
+import { useRedirectAfterLogin } from '../src/hooks/useRedirectAfterLogin'
 
 import { AutoResizeTextarea } from '@core/shared/uimodern/components/textarea'
 // Dynamic imports for components to avoid hydration issues
@@ -812,6 +821,38 @@ export default function NewPage() {
   )
   const [showTestimonialBackground, setShowTestimonialBackground] =
     useState(true)
+  const { isAuthenticated } = useAuthUser()
+  const redirectAfterLogin = useRedirectAfterLogin()
+  const { isAtLimit, remaining, registerPrompt } = useGuestPromptLimit(
+    isAuthenticated
+  )
+  const {
+    dialogState: authDialogState,
+    isOpen: isAuthDialogOpen,
+    requestAuth,
+    onOpenChange: handleAuthDialogChange,
+    onSignInSuccess: handleAuthDialogSignIn,
+    resumeRequested,
+    runPendingAction
+  } = useAuthRequiredDialog({
+    onSignedIn: () => redirectAfterLogin()
+  })
+  const guestPromptsRemaining = useMemo(
+    () => (isAuthenticated ? Infinity : remaining),
+    [isAuthenticated, remaining]
+  )
+  const inlineSignInCta = useMemo(() => {
+    if (isAuthenticated) return undefined
+    return (
+      <SignInButton size="sm" variant="outline" afterSignIn={redirectAfterLogin}>
+        Sign in to unlock
+      </SignInButton>
+    )
+  }, [isAuthenticated, redirectAfterLogin])
+  const attachmentSignInMessage =
+    'Sign in to upload images, paste screenshots, and analyze media with AI.'
+  const mediaSignInMessage =
+    'Sign in to explore Unsplash image searches and save your media preferences.'
   const [isGeneratingDesign, setIsGeneratingDesign] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const cameraInputRef = useRef<HTMLInputElement | null>(null)
@@ -898,6 +939,12 @@ export default function NewPage() {
     }
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
+
+  useEffect(() => {
+    if (isAuthenticated && resumeRequested) {
+      void runPendingAction()
+    }
+  }, [isAuthenticated, resumeRequested, runPendingAction])
 
   const handleStepContentChange = useCallback((index: number, value: string) => {
     setEditableSteps((prev) => {
@@ -1665,7 +1712,51 @@ export default function NewPage() {
   }
 
   const handleAiError = useCallback(
-    (_error: unknown, { isNetworkError }: { isNetworkError: boolean }) => {
+    (
+      _error: unknown,
+      {
+        isNetworkError,
+        status,
+        errorBody,
+        retry
+      }: {
+        isNetworkError: boolean
+        status?: number
+        errorBody?: unknown
+        retry: () => Promise<boolean>
+      }
+    ) => {
+      if (status === 429 || status === 401) {
+        const limitMessage =
+          typeof (errorBody as { error?: string })?.error === 'string'
+            ? (errorBody as { error?: string }).error ?? undefined
+            : undefined
+
+        const remainingForDialog =
+          Number.isFinite(guestPromptsRemaining) && guestPromptsRemaining !== Infinity
+            ? Math.max(0, guestPromptsRemaining)
+            : undefined
+
+        requestAuth({
+          reason: 'limit',
+          message: limitMessage,
+          remaining: remainingForDialog,
+          resumeAction: retry
+            ? async () => {
+                setAiError(null)
+                await retry()
+              }
+            : undefined
+        })
+        setAiError({
+          isNetworkError: false,
+          message:
+            limitMessage ??
+            'Sign in with Google to continue creating more prompts today.'
+        })
+        return
+      }
+
       setAiError({
         isNetworkError,
         message: isNetworkError
@@ -1673,7 +1764,7 @@ export default function NewPage() {
           : 'Something went wrong while generating content. Please try again.'
       })
     },
-    [setAiError]
+    [guestPromptsRemaining, requestAuth, setAiError]
   )
 
   const { processContentWithAI } = useAiContent({
@@ -1702,7 +1793,14 @@ export default function NewPage() {
     setImageAnalysisResults,
     extractTextFromResponse,
     accumulateUsage,
-    prompt: IMAGE_ANALYSIS_PROMPT
+    prompt: IMAGE_ANALYSIS_PROMPT,
+    isEnabled: isAuthenticated,
+    onBlocked: (resume) =>
+      requestAuth({
+        reason: 'attachment',
+        message: attachmentSignInMessage,
+        resumeAction: resume
+      })
   })
 
   const { loadUnsplashImagesForStep, testUnsplashAPI } =
@@ -1712,7 +1810,14 @@ export default function NewPage() {
       setUnsplashImages,
       setLoadingUnsplashSteps,
       setIsSettingsOpen,
-      deriveHeadingFromContent
+      deriveHeadingFromContent,
+      isEnabled: isAuthenticated,
+      onBlocked: (resume) =>
+        requestAuth({
+          reason: 'unsplash',
+          message: mediaSignInMessage,
+          resumeAction: resume
+        })
     })
 
   // Expose test function to window for debugging
@@ -1723,7 +1828,15 @@ export default function NewPage() {
   }, [])
 
   const processFiles = (files: FileList | File[]) => {
-    const fileArray = Array.from(files)
+    const fileArray = Array.isArray(files) ? [...files] : Array.from(files)
+    if (!isAuthenticated) {
+      requestAuth({
+        reason: 'attachment',
+        message: attachmentSignInMessage,
+        resumeAction: () => processFiles(fileArray)
+      })
+      return
+    }
     const imageFiles = fileArray.filter((file) =>
       file.type.startsWith('image/')
     )
@@ -1794,13 +1907,34 @@ export default function NewPage() {
   }
 
   const handleOpenCamera = () => {
+    if (!isAuthenticated) {
+      requestAuth({
+        reason: 'attachment',
+        message: attachmentSignInMessage,
+        resumeAction: () => {
+          if (cameraInputRef.current) {
+            cameraInputRef.current.click()
+          }
+        }
+      })
+      return
+    }
     cameraInputRef.current?.click()
   }
 
   const handleCameraChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files
-    if (files && files.length > 0) {
-      processFiles(files)
+    const fileList = event.target.files ? Array.from(event.target.files) : []
+    if (!isAuthenticated) {
+      requestAuth({
+        reason: 'attachment',
+        message: attachmentSignInMessage,
+        resumeAction: fileList.length ? () => processFiles(fileList) : undefined
+      })
+      event.target.value = ''
+      return
+    }
+    if (fileList.length > 0) {
+      processFiles(fileList)
     }
 
     if (cameraInputRef.current) {
@@ -1827,8 +1961,19 @@ export default function NewPage() {
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (files && files.length > 0) {
+    const files = e.target.files ? Array.from(e.target.files) : []
+    if (!isAuthenticated) {
+      requestAuth({
+        reason: 'attachment',
+        message: attachmentSignInMessage,
+        resumeAction: files.length
+          ? () => processFiles(files)
+          : undefined
+      })
+      e.target.value = ''
+      return
+    }
+    if (files.length > 0) {
       processFiles(files)
     }
     // Reset the input value so the same file can be selected again
@@ -1845,12 +1990,28 @@ export default function NewPage() {
       return
     }
 
+    if (!isAuthenticated && isAtLimit) {
+      requestAuth({
+        reason: 'limit',
+        message: `Guests can run up to ${GUEST_PROMPT_LIMIT} prompts per day before signing in.`,
+        remaining:
+          Number.isFinite(guestPromptsRemaining) && guestPromptsRemaining !== Infinity
+            ? Math.max(0, guestPromptsRemaining)
+            : undefined,
+        resumeAction: () => handleSubmit()
+      })
+      return
+    }
+
     const currentValue = textareaRef.current?.value || ''
     if (currentValue.trim() && !isProcessing) {
       setAiError(null)
       // Update textContent state before processing
       setTextContent(currentValue)
-      await processContentWithAI(currentValue)
+      const wasSuccessful = await processContentWithAI(currentValue)
+      if (wasSuccessful && !isAuthenticated) {
+        registerPrompt()
+      }
     }
   }
 
@@ -2037,6 +2198,21 @@ export default function NewPage() {
       <Head data-id="Head">
         <title>Create New Content | Studio | Jesus Film Project</title>
       </Head>
+      <AuthRequiredDialog
+        open={isAuthDialogOpen}
+        onOpenChange={handleAuthDialogChange}
+        reason={authDialogState?.reason ?? 'limit'}
+        message={authDialogState?.message}
+        remaining={
+          authDialogState?.reason === 'limit'
+            ? authDialogState?.remaining ??
+              (Number.isFinite(guestPromptsRemaining) && guestPromptsRemaining !== Infinity
+                ? Math.max(0, guestPromptsRemaining)
+                : undefined)
+            : undefined
+        }
+        onSignInSuccess={handleAuthDialogSignIn}
+      />
       <div className="min-h-screen bg-stone-100 text-foreground" data-id="PageRoot">
         <header className="border-b border-border bg-background backdrop-blur relative z-100" data-id="Header">
           <div className="container mx-auto px-4 py-6" data-id="HeaderContainer">
@@ -2691,7 +2867,26 @@ export default function NewPage() {
                       personaSettings={personaSettings}
                       handlePersonaFieldChange={handlePersonaFieldChange}
                       handlePersonaSubmit={handlePersonaSubmit}
+                      canAttachImages={isAuthenticated}
+                      onRequestSignIn={() =>
+                        requestAuth({
+                          reason: 'attachment',
+                          message: attachmentSignInMessage,
+                          resumeAction: () => handleOpenCamera()
+                        })
+                      }
+                      signInCta={inlineSignInCta}
                     />
+                    {!isAuthenticated &&
+                      Number.isFinite(guestPromptsRemaining) && (
+                        <p className="text-xs text-muted-foreground">
+                          {guestPromptsRemaining > 0
+                            ? `You can run ${guestPromptsRemaining} more prompt${
+                                guestPromptsRemaining === 1 ? '' : 's'
+                              } today before signing in.`
+                            : 'Guest limit reached. Sign in to keep creating.'}
+                        </p>
+                      )}
                     {aiError && (
                       <div
                         className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary bg-primary/10 px-4 py-3 text-sm font-medium text-primary shadow-sm dark:border-primary dark:bg-primary/20 dark:text-primary-foreground"

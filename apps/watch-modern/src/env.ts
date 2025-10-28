@@ -7,6 +7,7 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
+    AUTH_SECRET: z.string().default('watch-modern-dev-secret'),
     ANALYZE: z
       .string()
       .optional()
@@ -36,7 +37,12 @@ export const env = createEnv({
     VERCEL_GIT_COMMIT_AUTHOR_LOGIN: z.string().optional(),
     VERCEL_GIT_COMMIT_AUTHOR_NAME: z.string().optional(),
     VERCEL_GIT_PREVIOUS_SHA: z.string().optional(),
-    VERCEL_GIT_PULL_REQUEST_ID: z.string().optional()
+    VERCEL_GIT_PULL_REQUEST_ID: z.string().optional(),
+    FIREBASE_CLIENT_EMAIL: z.string().optional(),
+    FIREBASE_PRIVATE_KEY: z.string().optional(),
+    PRIVATE_FIREBASE_CLIENT_EMAIL: z.string().optional(),
+    PRIVATE_FIREBASE_PRIVATE_KEY: z.string().optional(),
+    AUTH_SECRET_PREVIOUS: z.string().optional()
   },
 
   /**
@@ -60,7 +66,11 @@ export const env = createEnv({
         'ap2.datadoghq.com'
       ])
       .default('datadoghq.com'),
-    NEXT_PUBLIC_DATADOG_VERSION: z.string().optional()
+    NEXT_PUBLIC_DATADOG_VERSION: z.string().optional(),
+    NEXT_PUBLIC_FIREBASE_API_KEY: z.string().optional(),
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: z.string().optional(),
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID: z.string().optional(),
+    NEXT_PUBLIC_FIREBASE_APP_ID: z.string().optional()
   },
 
   /**
@@ -79,6 +89,10 @@ export const env = createEnv({
     NEXT_PUBLIC_DATADOG_ENV: process.env['VERCEL_ENV'],
     NEXT_PUBLIC_DATADOG_SITE: process.env['NEXT_PUBLIC_DATADOG_SITE'],
     NEXT_PUBLIC_DATADOG_VERSION: process.env['VERCEL_GIT_COMMIT_SHA'],
+    NEXT_PUBLIC_FIREBASE_API_KEY: process.env['NEXT_PUBLIC_FIREBASE_API_KEY'],
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: process.env['NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN'],
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID: process.env['NEXT_PUBLIC_FIREBASE_PROJECT_ID'],
+    NEXT_PUBLIC_FIREBASE_APP_ID: process.env['NEXT_PUBLIC_FIREBASE_APP_ID'],
     VERCEL: process.env['VERCEL'],
     VERCEL_ENV: process.env['VERCEL_ENV'],
     VERCEL_URL: process.env['VERCEL_URL'],
@@ -101,7 +115,12 @@ export const env = createEnv({
       process.env['VERCEL_GIT_COMMIT_AUTHOR_LOGIN'],
     VERCEL_GIT_COMMIT_AUTHOR_NAME: process.env['VERCEL_GIT_COMMIT_AUTHOR_NAME'],
     VERCEL_GIT_PREVIOUS_SHA: process.env['VERCEL_GIT_PREVIOUS_SHA'],
-    VERCEL_GIT_PULL_REQUEST_ID: process.env['VERCEL_GIT_PULL_REQUEST_ID']
+    VERCEL_GIT_PULL_REQUEST_ID: process.env['VERCEL_GIT_PULL_REQUEST_ID'],
+    FIREBASE_CLIENT_EMAIL: process.env['FIREBASE_CLIENT_EMAIL'],
+    FIREBASE_PRIVATE_KEY: process.env['FIREBASE_PRIVATE_KEY'],
+    PRIVATE_FIREBASE_CLIENT_EMAIL: process.env['PRIVATE_FIREBASE_CLIENT_EMAIL'],
+    PRIVATE_FIREBASE_PRIVATE_KEY: process.env['PRIVATE_FIREBASE_PRIVATE_KEY'],
+    AUTH_SECRET_PREVIOUS: process.env['AUTH_SECRET_PREVIOUS']
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
