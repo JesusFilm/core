@@ -24,10 +24,6 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: () => true
 }))
 
-jest.mock('next/navigation', () => ({
-  useParams: () => ({ stepSlug: 'menuStepBlockId' })
-}))
-
 describe('StepFooter', () => {
   const journey: Journey = {
     __typename: 'Journey',
@@ -150,6 +146,9 @@ describe('StepFooter', () => {
   })
 
   describe('Journey', () => {
+    jest.mock('next/navigation', () => ({
+      useParams: () => ({ stepSlug: 'menuStepBlockId' })
+    }))
     it('should display social media title if no display title', () => {
       render(
         <MockedProvider>
