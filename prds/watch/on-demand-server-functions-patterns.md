@@ -9,6 +9,7 @@ This document outlines the established patterns in the monorepo for creating ser
 The monorepo uses **BullMQ** with Redis for all background job processing. Here's the established structure:
 
 ### Worker Directory Structure
+
 ```
 apis/api-media/src/workers/[workerName]/
 ├── config.ts          # Queue name and job name constants
@@ -23,12 +24,14 @@ apis/api-media/src/workers/[workerName]/
 ### Key Components
 
 #### 1. Configuration (`config.ts`)
+
 ```typescript
 export const queueName = 'api-media-process-video-uploads'
 export const jobName = `${queueName}-job`
 ```
 
 #### 2. Queue Setup (`queue.ts`)
+
 ```typescript
 import { Queue } from 'bullmq'
 import { connection } from '../lib/connection'
@@ -37,16 +40,15 @@ export const queue = new Queue(queueName, { connection })
 ```
 
 #### 3. Service Logic (`service/service.ts`)
+
 ```typescript
-export async function service(
-  job: Job<JobData>,
-  logger?: Logger
-): Promise<void> {
+export async function service(job: Job<JobData>, logger?: Logger): Promise<void> {
   // Business logic here
 }
 ```
 
 #### 4. Worker (`worker.ts`)
+
 ```typescript
 import { Worker } from 'bullmq'
 export const worker = new Worker(queueName, processJob, { connection })
@@ -66,7 +68,7 @@ await processVideoUploadsQueue.add(
   {
     videoId,
     edition,
-    languageId,
+    languageId
     // ... job data
   },
   {

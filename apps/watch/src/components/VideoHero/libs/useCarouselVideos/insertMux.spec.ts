@@ -42,7 +42,9 @@ describe('mergeMuxInserts', () => {
 
     expect(slides[0].source).toBe('mux')
     expect(slides[1].source).toBe('video')
-    expect((slides[0] as any).overlay.title).toBe('Oct 15: Morning Nature Background')
+    expect((slides[0] as any).overlay.title).toBe(
+      'Oct 15: Morning Nature Background'
+    )
   })
 
   it('inserts after the configured count', async () => {

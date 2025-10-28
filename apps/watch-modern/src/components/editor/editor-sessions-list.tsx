@@ -11,7 +11,10 @@ interface EditorSessionsListProps {
   sessions: UserInputData[]
   onLoad: (session: UserInputData) => void
   onDelete: (sessionId: string) => void
-  summarizeTokens: (tokens?: { input: number; output: number }) => TokenSummary | null
+  summarizeTokens: (tokens?: {
+    input: number
+    output: number
+  }) => TokenSummary | null
 }
 
 export const EditorSessionsList: FC<EditorSessionsListProps> = ({
@@ -55,9 +58,8 @@ export const EditorSessionsList: FC<EditorSessionsListProps> = ({
                             {sessionTokenSummary && (
                               <>
                                 {' '}
-                                • Tokens: {sessionTokenSummary.formattedTotal}
-                                {' '}
-                                • ${sessionTokenSummary.estimatedCost}
+                                • Tokens: {sessionTokenSummary.formattedTotal} •
+                                ${sessionTokenSummary.estimatedCost}
                               </>
                             )}
                           </>

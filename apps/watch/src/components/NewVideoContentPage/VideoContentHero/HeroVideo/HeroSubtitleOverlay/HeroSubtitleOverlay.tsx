@@ -52,8 +52,10 @@ function extractSegmentsFromCue(
   )
 
   const cueWithTiming = cue as Partial<{ startTime: number; endTime: number }>
-  const startTime = typeof cueWithTiming.startTime === 'number' ? cueWithTiming.startTime : 0
-  const endTime = typeof cueWithTiming.endTime === 'number' ? cueWithTiming.endTime : 0
+  const startTime =
+    typeof cueWithTiming.startTime === 'number' ? cueWithTiming.startTime : 0
+  const endTime =
+    typeof cueWithTiming.endTime === 'number' ? cueWithTiming.endTime : 0
   const cueDurationMs = Math.max((endTime - startTime) * 1000, 0)
 
   const segmentDurationMs = Math.min(
@@ -244,7 +246,6 @@ export function HeroSubtitleOverlay({
             <span
               key={segments[currentSegmentIndex].id}
               className="hero-subtitle-line mx-auto px-6 py-4 text-2xl font-semibold leading-tight  tracking-wider md:text-xl text-shadow-lg"
-
             >
               {segments[currentSegmentIndex].text}
             </span>

@@ -33,8 +33,11 @@ export function Header({
 
   return (
     <>
-      <ThemeProvider themeName={ThemeName.website} themeMode={themeMode} nested>
-      </ThemeProvider>
+      <ThemeProvider
+        themeName={ThemeName.website}
+        themeMode={themeMode}
+        nested
+      ></ThemeProvider>
       <ThemeProvider
         themeName={ThemeName.website}
         themeMode={ThemeMode.light}

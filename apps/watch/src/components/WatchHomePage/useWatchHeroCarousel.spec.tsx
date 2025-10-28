@@ -3,10 +3,7 @@ import { act, renderHook } from '@testing-library/react'
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import type { PlayerState } from '../../libs/playerContext'
 import { usePlayer } from '../../libs/playerContext'
-import type {
-  CarouselMuxSlide,
-  VideoCarouselSlide
-} from '../../types/inserts'
+import type { CarouselMuxSlide, VideoCarouselSlide } from '../../types/inserts'
 import {
   type CarouselVideo,
   useCarouselVideos
@@ -26,7 +23,9 @@ describe('useWatchHeroCarousel', () => {
   const useCarouselVideosMock = jest.mocked(useCarouselVideos)
   const usePlayerMock = jest.mocked(usePlayer)
 
-  const createVideo = (overrides: Partial<CarouselVideo> = {}): CarouselVideo => ({
+  const createVideo = (
+    overrides: Partial<CarouselVideo> = {}
+  ): CarouselVideo => ({
     id: 'video-1',
     slug: 'video-1/english',
     title: [{ value: 'Video 1' }],

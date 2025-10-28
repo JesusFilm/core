@@ -23,7 +23,9 @@ interface CollectionsRailProps {
   languageId?: string
 }
 
-export function CollectionsRail({ languageId }: CollectionsRailProps): ReactElement {
+export function CollectionsRail({
+  languageId
+}: CollectionsRailProps): ReactElement {
   return (
     <>
       <SectionVideoCarousel

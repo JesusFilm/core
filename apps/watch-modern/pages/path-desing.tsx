@@ -20,9 +20,12 @@ export default function ConversationPathDesignPreview(): JSX.Element {
       </Head>
       <main className="min-h-screen bg-muted/40 py-12">
         <div className="mx-auto max-w-5xl px-4">
-          <h1 className="text-3xl font-semibold text-foreground">Conversation Path</h1>
+          <h1 className="text-3xl font-semibold text-foreground">
+            Conversation Path
+          </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Preview page for validating the updated Conversation Path component styling.
+            Preview page for validating the updated Conversation Path component
+            styling.
           </p>
           <div className="mt-8">
             <ConversationPathOverview

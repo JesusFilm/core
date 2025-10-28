@@ -29,7 +29,10 @@ export const EditorHeader: FC<EditorHeaderProps> = ({
   children
 }) => {
   return (
-    <header className="border-b border-border bg-background backdrop-blur  relative z-100" data-id="Header">
+    <header
+      className="border-b border-border bg-background backdrop-blur  relative z-100"
+      data-id="Header"
+    >
       <div className="container mx-auto px-4 py-6" data-id="HeaderContainer">
         <div className="flex items-center justify-between" data-id="HeaderRow">
           <div className="flex items-center gap-4" data-id="HeaderBranding">
@@ -53,12 +56,26 @@ export const EditorHeader: FC<EditorHeaderProps> = ({
                   isTokensUpdated ? 'bg-red-500 text-white' : 'bg-muted'
                 }`}
               >
-                <span className={isTokensUpdated ? 'text-white' : 'text-muted-foreground'}>
+                <span
+                  className={
+                    isTokensUpdated ? 'text-white' : 'text-muted-foreground'
+                  }
+                >
                   Tokens:
                 </span>
-                <span className="font-medium">{tokenSummary.formattedTotal}</span>
-                <span className={isTokensUpdated ? 'text-white' : 'text-muted-foreground'}>•</span>
-                <span className="font-medium">${tokenSummary.estimatedCost}</span>
+                <span className="font-medium">
+                  {tokenSummary.formattedTotal}
+                </span>
+                <span
+                  className={
+                    isTokensUpdated ? 'text-white' : 'text-muted-foreground'
+                  }
+                >
+                  •
+                </span>
+                <span className="font-medium">
+                  ${tokenSummary.estimatedCost}
+                </span>
               </div>
             )}
             <Button

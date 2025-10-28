@@ -86,7 +86,6 @@ export function CategoryGrid({
                   <IconComponent
                     className="w-12 h-12 drop-shadow-lg opacity-20 mix-blend-overlay"
                     style={{
-
                       transform: 'scale(5)',
                       transformOrigin: 'top right'
                     }}

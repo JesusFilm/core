@@ -1,4 +1,4 @@
-"use client"
+'use client'
 
 import React, {
   createContext,
@@ -9,7 +9,7 @@ import React, {
   useState
 } from 'react'
 
-import { cn } from "@core/shared/uimodern/utils"
+import { cn } from '@core/shared/uimodern/utils'
 
 type TabsContextValue = {
   value: string
@@ -33,8 +33,20 @@ type TabsProps = React.HTMLAttributes<HTMLDivElement> & {
 }
 
 const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
-  ({ value: controlledValue, defaultValue, onValueChange, className, children, ...props }, ref) => {
-    const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue ?? '')
+  (
+    {
+      value: controlledValue,
+      defaultValue,
+      onValueChange,
+      className,
+      children,
+      ...props
+    },
+    ref
+  ) => {
+    const [uncontrolledValue, setUncontrolledValue] = useState(
+      defaultValue ?? ''
+    )
     const isControlled = controlledValue !== undefined
     const currentValue = isControlled ? controlledValue : uncontrolledValue
 

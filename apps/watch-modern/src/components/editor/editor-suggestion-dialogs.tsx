@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import type { FC } from 'react'
 
-import { cn } from "@core/shared/uimodern/utils"
+import { cn } from '@core/shared/uimodern/utils'
 import type { ImageAnalysisResult } from '../../libs/storage'
 import {
   Dialog,
@@ -54,7 +54,10 @@ export const EditorSuggestionDialogs: FC<EditorSuggestionDialogsProps> = ({
 
   return (
     <>
-      <Dialog open={selectedImageForDetails !== null} onOpenChange={handleDetailsDialogChange}>
+      <Dialog
+        open={selectedImageForDetails !== null}
+        onOpenChange={handleDetailsDialogChange}
+      >
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>AI Image Analysis Details</DialogTitle>
@@ -74,7 +77,8 @@ export const EditorSuggestionDialogs: FC<EditorSuggestionDialogsProps> = ({
           <DialogHeader>
             <DialogTitle>All Content Ideas for {contentTypeLabel}</DialogTitle>
             <DialogDescription>
-              Click any idea below to add it to your content. These ideas are tailored to your uploaded images.
+              Click any idea below to add it to your content. These ideas are
+              tailored to your uploaded images.
             </DialogDescription>
           </DialogHeader>
           <AllContentIdeas
@@ -104,8 +108,8 @@ const SelectedAnalysisContent: FC<SelectedAnalysisContentProps> = ({
     return (
       <div className="text-center py-8 text-muted-foreground">
         <p>
-          No analysis available. Try again once the AI proxy finishes processing, or re-run the
-          analysis.
+          No analysis available. Try again once the AI proxy finishes
+          processing, or re-run the analysis.
         </p>
       </div>
     )
@@ -114,7 +118,10 @@ const SelectedAnalysisContent: FC<SelectedAnalysisContentProps> = ({
   return (
     <div className="space-y-6">
       <div className="flex justify-center">
-        <AnalysisImagePreview imageSrc={analysis.imageSrc} index={selectedIndex} />
+        <AnalysisImagePreview
+          imageSrc={analysis.imageSrc}
+          index={selectedIndex}
+        />
       </div>
       {analysis.isAnalyzing ? (
         <AnalyzingState />
@@ -126,7 +133,9 @@ const SelectedAnalysisContent: FC<SelectedAnalysisContentProps> = ({
           />
           <ExtractedTextSection text={analysis.extractedText} />
           <ContentIdeasSection ideas={analysis.contentIdeas} />
-          <DetailedDescriptionSection description={analysis.detailedDescription} />
+          <DetailedDescriptionSection
+            description={analysis.detailedDescription}
+          />
         </div>
       )}
     </div>
@@ -136,7 +145,9 @@ const SelectedAnalysisContent: FC<SelectedAnalysisContentProps> = ({
 const AnalyzingState = () => (
   <div className="flex items-center justify-center gap-2 py-8">
     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
-    <span className="text-sm font-medium text-muted-foreground">Analyzing image...</span>
+    <span className="text-sm font-medium text-muted-foreground">
+      Analyzing image...
+    </span>
   </div>
 )
 
@@ -145,7 +156,10 @@ interface AnalysisImagePreviewProps {
   index: number
 }
 
-const AnalysisImagePreview: FC<AnalysisImagePreviewProps> = ({ imageSrc, index }) => (
+const AnalysisImagePreview: FC<AnalysisImagePreviewProps> = ({
+  imageSrc,
+  index
+}) => (
   <div className="w-64 h-64 rounded-lg overflow-hidden bg-muted border">
     {imageSrc ? (
       <Image
@@ -222,13 +236,17 @@ interface DetailedDescriptionSectionProps {
   description?: string
 }
 
-const DetailedDescriptionSection: FC<DetailedDescriptionSectionProps> = ({ description }) => {
+const DetailedDescriptionSection: FC<DetailedDescriptionSectionProps> = ({
+  description
+}) => {
   if (!description) return null
 
   return (
     <div>
       <h4 className="text-sm font-medium mb-2">Detailed Description:</h4>
-      <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+      <p className="text-sm text-muted-foreground leading-relaxed">
+        {description}
+      </p>
     </div>
   )
 }
@@ -249,7 +267,8 @@ const AllContentIdeas: FC<AllContentIdeasProps> = ({
   if (analyses.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
-        No content ideas are available yet. Try running image analysis to generate suggestions.
+        No content ideas are available yet. Try running image analysis to
+        generate suggestions.
       </p>
     )
   }
@@ -278,7 +297,10 @@ interface AllIdeasHeaderProps {
   analysisIndex: number
 }
 
-const AllIdeasHeader: FC<AllIdeasHeaderProps> = ({ analysis, analysisIndex }) => (
+const AllIdeasHeader: FC<AllIdeasHeaderProps> = ({
+  analysis,
+  analysisIndex
+}) => (
   <div className="flex items-center gap-2">
     <div className="w-8 h-8 rounded-full overflow-hidden bg-muted border flex-shrink-0">
       {analysis.imageSrc ? (
@@ -317,12 +339,18 @@ const AllIdeasGrid: FC<AllIdeasGridProps> = ({
   onSuggestionSelected,
   animatingSuggestion
 }) => {
-  const suggestions = Array.isArray(analysis.contentIdeas) ? analysis.contentIdeas : []
+  const suggestions = Array.isArray(analysis.contentIdeas)
+    ? analysis.contentIdeas
+    : []
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
       {suggestions.map((idea, ideaIndex) => {
-        const suggestionKey = createSuggestionKey('modal', analysisIndex, ideaIndex)
+        const suggestionKey = createSuggestionKey(
+          'modal',
+          analysisIndex,
+          ideaIndex
+        )
         if (hiddenSuggestions.has(suggestionKey)) return null
 
         const isAnimating =
@@ -365,7 +393,12 @@ const ContentTypeBadge: FC<ContentTypeBadgeProps> = ({ type }) => {
     .replace(/\b\w/g, (letter) => letter.toUpperCase())
 
   return (
-    <span className={cn('text-xs px-3 py-1 rounded-full', getContentTypeClassName(type))}>
+    <span
+      className={cn(
+        'text-xs px-3 py-1 rounded-full',
+        getContentTypeClassName(type)
+      )}
+    >
       {formattedType}
     </span>
   )
@@ -407,5 +440,8 @@ const ConfidenceBadge: FC<ConfidenceBadgeProps> = ({ confidence }) => {
   )
 }
 
-const createSuggestionKey = (prefix: string, analysisIndex: number, ideaIndex: number) =>
-  `${prefix}-${analysisIndex}-${ideaIndex}`
+const createSuggestionKey = (
+  prefix: string,
+  analysisIndex: number,
+  ideaIndex: number
+) => `${prefix}-${analysisIndex}-${ideaIndex}`

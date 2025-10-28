@@ -84,8 +84,13 @@ class UserInputStorage {
     } catch (error) {
       console.error('Failed to save data:', error)
       // If it's a quota exceeded error, suggest running cleanup
-      if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-        console.warn('localStorage quota exceeded. Try running cleanup: userInputStorage.cleanupImageData()')
+      if (
+        error instanceof DOMException &&
+        error.name === 'QuotaExceededError'
+      ) {
+        console.warn(
+          'localStorage quota exceeded. Try running cleanup: userInputStorage.cleanupImageData()'
+        )
       }
     }
   }
@@ -102,7 +107,7 @@ class UserInputStorage {
     const sessionData: UserInputData = {
       ...data,
       id: this.generateId(),
-      timestamp: Date.now(),
+      timestamp: Date.now()
     }
 
     const existingData = this.getStoredData()
@@ -119,14 +124,19 @@ class UserInputStorage {
   }
 
   // Update existing session
-  updateSession(sessionId: string, data: Partial<Omit<UserInputData, 'id' | 'timestamp'>>): void {
+  updateSession(
+    sessionId: string,
+    data: Partial<Omit<UserInputData, 'id' | 'timestamp'>>
+  ): void {
     const existingData = this.getStoredData()
-    const sessionIndex = existingData.findIndex(session => session.id === sessionId)
+    const sessionIndex = existingData.findIndex(
+      (session) => session.id === sessionId
+    )
 
     if (sessionIndex !== -1) {
       existingData[sessionIndex] = {
         ...existingData[sessionIndex],
-        ...data,
+        ...data
       }
       this.saveStoredData(existingData)
     }
@@ -140,7 +150,7 @@ class UserInputStorage {
     if (!currentSessionId) return null
 
     const allData = this.getStoredData()
-    return allData.find(session => session.id === currentSessionId) || null
+    return allData.find((session) => session.id === currentSessionId) || null
   }
 
   // Get all saved sessions
@@ -151,7 +161,9 @@ class UserInputStorage {
   // Delete a specific session
   deleteSession(sessionId: string): void {
     const existingData = this.getStoredData()
-    const filteredData = existingData.filter(session => session.id !== sessionId)
+    const filteredData = existingData.filter(
+      (session) => session.id !== sessionId
+    )
     this.saveStoredData(filteredData)
 
     // Clear current session if it was deleted
@@ -172,12 +184,16 @@ class UserInputStorage {
   }
 
   // Cleanup images from all sessions while preserving analysis data
-  cleanupImageData(): { sessionsProcessed: number; imagesRemoved: number; spaceSaved: number } {
+  cleanupImageData(): {
+    sessionsProcessed: number
+    imagesRemoved: number
+    spaceSaved: number
+  } {
     const existingData = this.getStoredData()
     let imagesRemoved = 0
     let spaceSaved = 0
 
-    const cleanedData = existingData.map(session => {
+    const cleanedData = existingData.map((session) => {
       if (session.images && session.images.length > 0) {
         // Calculate space saved (rough estimate)
         const imagesSize = JSON.stringify(session.images).length
@@ -196,7 +212,9 @@ class UserInputStorage {
     // Only save if there were changes
     if (imagesRemoved > 0) {
       this.saveStoredData(cleanedData)
-      console.log(`Storage cleanup completed: ${imagesRemoved} images removed from ${existingData.length} sessions, ~${Math.round(spaceSaved / 1024)}KB saved`)
+      console.log(
+        `Storage cleanup completed: ${imagesRemoved} images removed from ${existingData.length} sessions, ~${Math.round(spaceSaved / 1024)}KB saved`
+      )
     }
 
     return {
@@ -230,27 +248,32 @@ class UserInputStorage {
             : [],
           conversationMap: data.conversationMap ?? null,
           imageAnalysisResults: Array.isArray(data.imageAnalysisResults)
-            ? data.imageAnalysisResults.map(result => ({
+            ? data.imageAnalysisResults.map((result) => ({
                 imageSrc: result?.imageSrc || '',
                 contentType: result?.contentType || 'unknown',
                 extractedText: result?.extractedText || '',
                 detailedDescription: result?.detailedDescription || '',
                 confidence: result?.confidence || 'unknown',
-                contentIdeas: Array.isArray(result?.contentIdeas) ? result.contentIdeas : [],
-                isAnalyzing: result?.isAnalyzing || false,
+                contentIdeas: Array.isArray(result?.contentIdeas)
+                  ? result.contentIdeas
+                  : [],
+                isAnalyzing: result?.isAnalyzing || false
               }))
             : []
         }
 
         const dataToSave = {
           ...sanitizedData,
-          lastSaved: Date.now(),
+          lastSaved: Date.now()
         }
 
         // Check if data is too large for localStorage (limit is ~5MB)
         const dataString = JSON.stringify(dataToSave)
-        if (dataString.length > 4 * 1024 * 1024) { // 4MB limit to be safe
-          console.warn('Draft data too large for localStorage, skipping auto-save')
+        if (dataString.length > 4 * 1024 * 1024) {
+          // 4MB limit to be safe
+          console.warn(
+            'Draft data too large for localStorage, skipping auto-save'
+          )
           return
         }
 
@@ -263,7 +286,9 @@ class UserInputStorage {
   }
 
   // Load draft data
-  loadDraft(): (Omit<UserInputData, 'id' | 'timestamp'> & { lastSaved: number }) | null {
+  loadDraft():
+    | (Omit<UserInputData, 'id' | 'timestamp'> & { lastSaved: number })
+    | null {
     if (typeof window === 'undefined') return null
 
     try {

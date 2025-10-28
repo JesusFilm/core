@@ -11,7 +11,9 @@ export type ConversationMapViewProps = {
 }
 
 export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
-  const [selectedScriptureOptions, setSelectedScriptureOptions] = useState<Record<number, string>>({})
+  const [selectedScriptureOptions, setSelectedScriptureOptions] = useState<
+    Record<number, string>
+  >({})
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null)
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [localMessageContent, setLocalMessageContent] = useState<string>('')
@@ -23,19 +25,22 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
     setLocalMessageContent('')
   }, [map])
 
-  const handleScriptureSelect = useCallback((stepIndex: number, verseId: string | null) => {
-    setSelectedScriptureOptions((previousSelections) => {
-      const nextSelections = { ...previousSelections }
+  const handleScriptureSelect = useCallback(
+    (stepIndex: number, verseId: string | null) => {
+      setSelectedScriptureOptions((previousSelections) => {
+        const nextSelections = { ...previousSelections }
 
-      if (verseId) {
-        nextSelections[stepIndex] = verseId
-      } else {
-        delete nextSelections[stepIndex]
-      }
+        if (verseId) {
+          nextSelections[stepIndex] = verseId
+        } else {
+          delete nextSelections[stepIndex]
+        }
 
-      return nextSelections
-    })
-  }, [])
+        return nextSelections
+      })
+    },
+    []
+  )
 
   const handleCopyMessage = useCallback(
     async (content: string, messageId: string) => {
@@ -57,10 +62,13 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
     []
   )
 
-  const handleMessageClick = useCallback((content: string, messageId: string) => {
-    setEditingMessageId(messageId)
-    setLocalMessageContent(content)
-  }, [])
+  const handleMessageClick = useCallback(
+    (content: string, messageId: string) => {
+      setEditingMessageId(messageId)
+      setLocalMessageContent(content)
+    },
+    []
+  )
 
   const handleMessageBlur = useCallback(() => {
     setEditingMessageId(null)
@@ -83,7 +91,8 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
   if (!hasSteps) {
     return (
       <div className="text-sm text-muted-foreground border border-dashed border-border rounded-2xl p-6 bg-muted/40">
-        The AI will map an ideal set of guide-led messages once you provide context above.
+        The AI will map an ideal set of guide-led messages once you provide
+        context above.
       </div>
     )
   }
@@ -96,10 +105,14 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
       />
 
       <div className="space-y-10">
-        <ConversationPathOverview sequence={flowSequence} rationale={flowRationale} />
+        <ConversationPathOverview
+          sequence={flowSequence}
+          rationale={flowRationale}
+        />
 
         {map.steps.map((step, index) => {
-          const selectedScriptureOption = selectedScriptureOptions[index] ?? null
+          const selectedScriptureOption =
+            selectedScriptureOptions[index] ?? null
           const scriptureSlides = Array.isArray(step.scriptureOptions)
             ? step.scriptureOptions.reduce<
                 {
@@ -169,7 +182,9 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                   </span>
                 </div>
                 {step.purpose && (
-                  <p className="text-sm text-muted-foreground">{step.purpose}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {step.purpose}
+                  </p>
                 )}
               </header>
 
@@ -185,7 +200,10 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                         onClick={(event) => {
                           event.preventDefault()
                           event.stopPropagation()
-                          void handleCopyMessage(step.guideMessage, `guide-${index}`)
+                          void handleCopyMessage(
+                            step.guideMessage,
+                            `guide-${index}`
+                          )
                         }}
                         onMouseDown={(event) => event.preventDefault()}
                         title={
@@ -214,7 +232,10 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                           handleMessageChange(event.target.value)
                         }
                         onClick={() =>
-                          handleMessageClick(step.guideMessage, `guide-${index}`)
+                          handleMessageClick(
+                            step.guideMessage,
+                            `guide-${index}`
+                          )
                         }
                         onBlur={handleMessageBlur}
                         readOnly={editingMessageId !== `guide-${index}`}
@@ -251,24 +272,34 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                       </h3>
 
                       {scriptureSlides.map((slide, slideIndex) => {
-                        const isSelected = selectedScriptureOption === slide.verseId
+                        const isSelected =
+                          selectedScriptureOption === slide.verseId
 
                         return (
-                          <div key={`scripture-option-${index}-${slide.optionIndex}`}>
+                          <div
+                            key={`scripture-option-${index}-${slide.optionIndex}`}
+                          >
                             <div className="flex w-full items-start gap-4">
                               <button
                                 type="button"
                                 onClick={() =>
                                   isSelected
                                     ? handleScriptureSelect(index, null)
-                                    : handleScriptureSelect(index, slide.verseId)
+                                    : handleScriptureSelect(
+                                        index,
+                                        slide.verseId
+                                      )
                                 }
                                 className={`flex items-center justify-center w-5 h-5 mt-2 rounded-full cursor-pointer transition-all duration-200 flex-shrink-0 group/checkbox ${
                                   isSelected
                                     ? 'bg-primary border-2 border-primary text-primary-foreground hover:bg-red-500 hover:border-red-500 hover:text-white'
                                     : 'border-2 border-muted-foreground/40 hover:border-primary'
                                 }`}
-                                title={isSelected ? 'Reset selection' : 'Select verse'}
+                                title={
+                                  isSelected
+                                    ? 'Reset selection'
+                                    : 'Select verse'
+                                }
                               >
                                 {isSelected ? (
                                   <div className="relative">
@@ -280,7 +311,9 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
 
                               <button
                                 type="button"
-                                onClick={() => handleScriptureSelect(index, slide.verseId)}
+                                onClick={() =>
+                                  handleScriptureSelect(index, slide.verseId)
+                                }
                                 className={`flex-1 text-left cursor-pointer transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary group ${
                                   isSelected
                                     ? 'rounded-2xl'
@@ -335,12 +368,17 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                 {selectedScriptureOption && (
                   <div className="space-y-3">
                     {scriptureSlides
-                      .filter((slide) => slide.verseId === selectedScriptureOption)
+                      .filter(
+                        (slide) => slide.verseId === selectedScriptureOption
+                      )
                       .map((slide) => {
                         const scriptureMessageId = `scripture-message-${index}-${slide.optionIndex}`
 
                         return (
-                          <div key={`selected-scripture-${slide.verseId}`} className="space-y-3">
+                          <div
+                            key={`selected-scripture-${slide.verseId}`}
+                            className="space-y-3"
+                          >
                             <div className="flex items-center justify-start space-x-2">
                               <User className="w-4 h-4 text-muted-foreground" />
                               <span className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">
@@ -362,7 +400,9 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                                       scriptureMessageId
                                     )
                                   }}
-                                  onMouseDown={(event) => event.preventDefault()}
+                                  onMouseDown={(event) =>
+                                    event.preventDefault()
+                                  }
                                   title={
                                     copiedMessageId === scriptureMessageId
                                       ? 'Copied!'
@@ -408,7 +448,9 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                                 type="button"
                                 variant="link"
                                 className="h-auto p-0 text-xs font-semibold text-muted-foreground"
-                                onClick={() => handleScriptureSelect(index, null)}
+                                onClick={() =>
+                                  handleScriptureSelect(index, null)
+                                }
                               >
                                 Choose a different verse
                               </Button>
@@ -418,7 +460,6 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                       })}
                   </div>
                 )}
-
               </div>
             </section>
           )

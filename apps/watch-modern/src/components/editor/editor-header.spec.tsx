@@ -29,7 +29,9 @@ describe('EditorHeader site selector', () => {
   it('opens and closes the site selector menu', () => {
     render(<EditorHeader {...defaultProps} />)
 
-    const toggleButton = screen.getByRole('button', { name: /open site selector/i })
+    const toggleButton = screen.getByRole('button', {
+      name: /open site selector/i
+    })
     expect(toggleButton).toHaveAttribute('aria-expanded', 'false')
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
 
@@ -63,7 +65,9 @@ describe('EditorHeader site selector', () => {
   it('closes the menu when clicking outside', () => {
     render(<EditorHeader {...defaultProps} />)
 
-    const toggleButton = screen.getByRole('button', { name: /open site selector/i })
+    const toggleButton = screen.getByRole('button', {
+      name: /open site selector/i
+    })
     fireEvent.click(toggleButton)
     expect(screen.getByRole('menu')).toBeInTheDocument()
 

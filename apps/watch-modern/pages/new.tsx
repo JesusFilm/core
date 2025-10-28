@@ -161,7 +161,7 @@ const CONVERSATION_RESPONSE_GUIDELINES = `Guidelines:
 const contextSystemPrompts: Record<string, string> = {
   default:
     'Default to producing ministry-ready resources that can flex between digital and in-person sharing when no specific context is selected. Provide balanced guidance that keeps the content adaptable.',
-  'Conversations':
+  Conversations:
     'Guide one-on-one or small group conversations that gently introduce gospel truths. Return structured JSON for a chat-style conversation map that begins with a flow overview (sequence plus rationale), then lists steps with guide messages and multi-verse scriptureOptions (each with why-it-fits notes and tone-labeled conversation examples). Emphasize listening, questions, prayerful transitions, and Scripture when natural. Avoid design instructions and image keywords in this mode.',
   'Social Media':
     'Operate like a Canva-style designer for social media campaigns. Treat each step as a templated design idea for stories, carousels, reels, or feed posts. Suggest layout direction, color palettes, typography moods, and short, scroll-stopping copy. Keep platform conventions (vertical ratios, accessibility, alt-text) in mind and tailor media prompts to energetic, template-friendly visuals.',
@@ -528,8 +528,7 @@ const createPolotnoDesignFromContent = ({
           ? ((step as { title?: string }).title ?? '').trim()
           : ''
 
-      let content =
-        typeof step?.content === 'string' ? step.content.trim() : ''
+      let content = typeof step?.content === 'string' ? step.content.trim() : ''
 
       if (!content && possibleTitle) {
         content = `# ${possibleTitle}`
@@ -568,14 +567,14 @@ const createPolotnoDesignFromContent = ({
       }
     })
     .filter(Boolean) as Array<{
-      heading: string
-      content: string
-      body: string
-      keywords: string[]
-      mediaPrompt: string
-      selectedImageUrl?: string
-      selectedVideoUrl?: string
-    }>
+    heading: string
+    content: string
+    body: string
+    keywords: string[]
+    mediaPrompt: string
+    selectedImageUrl?: string
+    selectedVideoUrl?: string
+  }>
 
   const hasStructuredSteps = normalizedSteps.length > 0
 
@@ -644,7 +643,8 @@ const createPolotnoDesignFromContent = ({
           name: step.heading.slice(0, 40) || `Step ${index + 1}`,
           children: elements,
           // background: '#0f172a',
-          background:'linear-gradient(0deg, rgba(31,29,29,1) 0%,rgba(255,0,0,1) 100%)',
+          background:
+            'linear-gradient(0deg, rgba(31,29,29,1) 0%,rgba(255,0,0,1) 100%)',
           bleed: 0,
           duration: 5000,
           width,
@@ -736,19 +736,19 @@ export default function NewPage() {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedContext, setSelectedContext] = useState<string>('')
-  const [selectedContextDetail, setSelectedContextDetail] =
-    useState<string>('')
+  const [selectedContextDetail, setSelectedContextDetail] = useState<string>('')
   const [collapsedTiles, setCollapsedTiles] = useState<boolean>(false)
-  const [isContextContainerHidden, setIsContextContainerHidden] = useState<boolean>(false)
+  const [isContextContainerHidden, setIsContextContainerHidden] =
+    useState<boolean>(false)
   const [highlightedCategory, setHighlightedCategory] = useState<string>('')
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [isHovering, setIsHovering] = useState<boolean>(false)
   const [isAnimationStopped, setIsAnimationStopped] = useState<boolean>(false)
   const [selectedOutputs] = useState<SelectedOutputsMap>({})
-  const [isTilesContainerHovered, setIsTilesContainerHovered] = useState<boolean>(false)
+  const [isTilesContainerHovered, setIsTilesContainerHovered] =
+    useState<boolean>(false)
 
-  const selectedContextOptions =
-    contextDetailOptions[selectedContext] ?? []
+  const selectedContextOptions = contextDetailOptions[selectedContext] ?? []
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isSessionsOpen, setIsSessionsOpen] = useState(false)
@@ -760,16 +760,23 @@ export default function NewPage() {
     isNetworkError: boolean
   } | null>(null)
   const [editableSteps, setEditableSteps] = useState<GeneratedStepContent[]>([])
-  const [conversationMap, setConversationMap] = useState<ConversationMap | null>(null)
+  const [conversationMap, setConversationMap] =
+    useState<ConversationMap | null>(null)
   const [copiedStepIndex, setCopiedStepIndex] = useState<number | null>(null)
-  const [editingStepIndices, setEditingStepIndices] = useState<Set<number>>(new Set())
+  const [editingStepIndices, setEditingStepIndices] = useState<Set<number>>(
+    new Set()
+  )
   const [isProcessing, setIsProcessing] = useState(false)
   const [imageAttachments, setImageAttachments] = useState<string[]>([])
-  const [unsplashImages, setUnsplashImages] = useState<Record<string, string[]>>({})
+  const [unsplashImages, setUnsplashImages] = useState<
+    Record<string, string[]>
+  >({})
   const [, setLoadingUnsplashSteps] = useState<Set<string>>(new Set())
   const [loadingSession, setLoadingSession] = useState<string | null>(null)
   const [isCollapsing, setIsCollapsing] = useState(false)
-  const [imageAnalysisResults, setImageAnalysisResults] = useState<ImageAnalysisResult[]>([])
+  const [imageAnalysisResults, setImageAnalysisResults] = useState<
+    ImageAnalysisResult[]
+  >([])
   const hasPendingImageAnalysis = useMemo(
     () =>
       imageAttachments.length > 0 &&
@@ -806,7 +813,8 @@ export default function NewPage() {
     ideaIndex: number
   } | null>(null)
   const [animatingTextarea, setAnimatingTextarea] = useState(false)
-  const [hidingSuggestionsCarousel, setHidingSuggestionsCarousel] = useState(false)
+  const [hidingSuggestionsCarousel, setHidingSuggestionsCarousel] =
+    useState(false)
   const [hiddenSuggestions, setHiddenSuggestions] = useState<Set<string>>(
     new Set()
   )
@@ -820,7 +828,8 @@ export default function NewPage() {
   // Toggle X-ray mode (Cmd+Shift+X) to show minimalistic component labels from data-id
   useEffect(() => {
     const getPageRoot = (): Element =>
-      (document.querySelector('[data-id="PageRoot"]') as Element) || document.body
+      (document.querySelector('[data-id="PageRoot"]') as Element) ||
+      document.body
 
     const removeXrayLabels = (root: Element) => {
       root.querySelectorAll('.xray-label').forEach((label) => label.remove())
@@ -882,7 +891,8 @@ export default function NewPage() {
       if (!event.metaKey || !event.shiftKey) return
       if (event.key.toLowerCase() !== 'x') return
       const target = event.target as HTMLElement | null
-      if (target && target.closest('input, textarea, [contenteditable="true"]')) return
+      if (target && target.closest('input, textarea, [contenteditable="true"]'))
+        return
       document.documentElement.classList.toggle('xray-on')
       const root = getPageRoot()
       if (document.documentElement.classList.contains('xray-on')) {
@@ -899,14 +909,17 @@ export default function NewPage() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  const handleStepContentChange = useCallback((index: number, value: string) => {
-    setEditableSteps((prev) => {
-      if (!prev[index]) return prev
-      const updated = [...prev]
-      updated[index] = { ...updated[index], content: value }
-      return updated
-    })
-  }, [])
+  const handleStepContentChange = useCallback(
+    (index: number, value: string) => {
+      setEditableSteps((prev) => {
+        if (!prev[index]) return prev
+        const updated = [...prev]
+        updated[index] = { ...updated[index], content: value }
+        return updated
+      })
+    },
+    []
+  )
 
   // Create stable handlers for step interactions to prevent re-renders
   const stepHandlers = useMemo(() => {
@@ -969,11 +982,19 @@ export default function NewPage() {
   }, [unsplashApiKey])
 
   // Intersection Observer for lazy loading Unsplash images
-  const loadImagesWhenVisible = (step: GeneratedStepContent, stepIndex: number) => {
+  const loadImagesWhenVisible = (
+    step: GeneratedStepContent,
+    stepIndex: number
+  ) => {
     if (selectedContext === 'Conversations') return
 
     const accessKey = unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
-    if (accessKey && accessKey.length >= 40 && step.keywords && step.keywords.length > 0) {
+    if (
+      accessKey &&
+      accessKey.length >= 40 &&
+      step.keywords &&
+      step.keywords.length > 0
+    ) {
       void loadUnsplashImagesForStep(step, stepIndex)
     }
   }
@@ -1049,7 +1070,9 @@ export default function NewPage() {
 
         setPersonaSettings(data.personaSettings)
         setAiResponse(data.aiResponse)
-        setEditableSteps(Array.isArray(data.editableSteps) ? data.editableSteps : [])
+        setEditableSteps(
+          Array.isArray(data.editableSteps) ? data.editableSteps : []
+        )
         setConversationMap(data.conversationMap ?? null)
         setImageAttachments(data.imageAttachments ?? [])
         setImageAnalysisResults(
@@ -1090,7 +1113,6 @@ export default function NewPage() {
     if (currentStep < steps.length) {
       const nextStep = currentStep + 1
       setCurrentStep(nextStep)
-
     }
   }
 
@@ -1192,7 +1214,10 @@ export default function NewPage() {
 
   const normalizeGeneratedSteps = (
     steps: Array<
-      Partial<GeneratedStepContent> & { title?: string; keywords?: string | string[] }
+      Partial<GeneratedStepContent> & {
+        title?: string
+        keywords?: string | string[]
+      }
     >
   ): GeneratedStepContent[] =>
     steps.map((step) => {
@@ -1207,18 +1232,16 @@ export default function NewPage() {
             .filter((keyword) => keyword.length > 0)
             .slice(0, 3)
         : typeof keywordsValue === 'string'
-        ? keywordsValue
-            .split(',')
-            .map((keyword) => keyword.trim())
-            .filter((keyword) => keyword.length > 0)
-            .slice(0, 3)
-        : []
+          ? keywordsValue
+              .split(',')
+              .map((keyword) => keyword.trim())
+              .filter((keyword) => keyword.length > 0)
+              .slice(0, 3)
+          : []
 
-      const rawTitle =
-        typeof step?.title === 'string' ? step.title.trim() : ''
+      const rawTitle = typeof step?.title === 'string' ? step.title.trim() : ''
 
-      let content =
-        typeof step?.content === 'string' ? step.content.trim() : ''
+      let content = typeof step?.content === 'string' ? step.content.trim() : ''
 
       if (rawTitle) {
         if (!content) {
@@ -1258,13 +1281,13 @@ export default function NewPage() {
 
     const ensureStringArray = (value: any): string[] => {
       if (Array.isArray(value)) {
-        return value.map(item => ensureString(item)).filter(Boolean)
+        return value.map((item) => ensureString(item)).filter(Boolean)
       }
 
       if (typeof value === 'string') {
         return value
           .split(/(?:→|➡️|>|-)+|,|\n+/)
-          .map(segment => segment.trim())
+          .map((segment) => segment.trim())
           .filter(Boolean)
       }
 
@@ -1280,11 +1303,19 @@ export default function NewPage() {
       }
 
       const sequence = ensureStringArray(
-        input.sequence ?? input.steps ?? input.path ?? input.movement ?? input.flow
+        input.sequence ??
+          input.steps ??
+          input.path ??
+          input.movement ??
+          input.flow
       ).slice(0, MAX_CONVERSATION_STEPS)
 
       const rationale = ensureNullableString(
-        input.rationale ?? input.reason ?? input.commentary ?? input.summary ?? input.context
+        input.rationale ??
+          input.reason ??
+          input.commentary ??
+          input.summary ??
+          input.context
       )
 
       if (sequence.length === 0 && !rationale) {
@@ -1348,7 +1379,10 @@ export default function NewPage() {
 
             if (typeof example === 'object') {
               const message = ensureString(
-                example.message ?? example.text ?? example.content ?? example.example
+                example.message ??
+                  example.text ??
+                  example.content ??
+                  example.example
               )
               if (!message) return null
 
@@ -1364,7 +1398,12 @@ export default function NewPage() {
 
             return null
           })
-          .filter((example): example is ConversationMap['steps'][number]['scriptureOptions'][number]['conversationExamples'][number] => example !== null)
+          .filter(
+            (
+              example
+            ): example is ConversationMap['steps'][number]['scriptureOptions'][number]['conversationExamples'][number] =>
+              example !== null
+          )
       }
 
       if (typeof input === 'object') {
@@ -1379,7 +1418,12 @@ export default function NewPage() {
               message
             }
           })
-          .filter((example): example is ConversationMap['steps'][number]['scriptureOptions'][number]['conversationExamples'][number] => example !== null)
+          .filter(
+            (
+              example
+            ): example is ConversationMap['steps'][number]['scriptureOptions'][number]['conversationExamples'][number] =>
+              example !== null
+          )
       }
 
       if (typeof input === 'string') {
@@ -1427,19 +1471,40 @@ export default function NewPage() {
 
           if (typeof option === 'object') {
             const text = ensureNullableString(
-              option.text ?? option.passage ?? option.quote ?? option.content ?? option.verseText
+              option.text ??
+                option.passage ??
+                option.quote ??
+                option.content ??
+                option.verseText
             )
             const reference = ensureNullableString(
-              option.reference ?? option.ref ?? option.citation ?? option.verse ?? option.book
+              option.reference ??
+                option.ref ??
+                option.citation ??
+                option.verse ??
+                option.book
             )
             const whyItFits = ensureNullableString(
-              option.whyItFits ?? option.reason ?? option.explanation ?? option.transition ?? option.structure ?? option.context
+              option.whyItFits ??
+                option.reason ??
+                option.explanation ??
+                option.transition ??
+                option.structure ??
+                option.context
             )
             const conversationExamples = normalizeConversationExamples(
-              option.conversationExamples ?? option.messageExamples ?? option.messages ?? option.examples
+              option.conversationExamples ??
+                option.messageExamples ??
+                option.messages ??
+                option.examples
             )
 
-            if (!text && !reference && !whyItFits && conversationExamples.length === 0) {
+            if (
+              !text &&
+              !reference &&
+              !whyItFits &&
+              conversationExamples.length === 0
+            ) {
               return null
             }
 
@@ -1453,16 +1518,26 @@ export default function NewPage() {
 
           return null
         })
-        .filter((option): option is ConversationMap['steps'][number]['scriptureOptions'][number] => option !== null)
+        .filter(
+          (
+            option
+          ): option is ConversationMap['steps'][number]['scriptureOptions'][number] =>
+            option !== null
+        )
 
       if (normalized.length === 0) {
-        const legacyScripture = normalizeLegacyScripture(item?.scripture ?? item?.scriptureSupport)
+        const legacyScripture = normalizeLegacyScripture(
+          item?.scripture ?? item?.scriptureSupport
+        )
         if (legacyScripture) {
           normalized.push({
             text: legacyScripture.text,
             reference: legacyScripture.reference,
             whyItFits: ensureNullableString(
-              item?.scriptureExplanation ?? item?.scriptureWhy ?? item?.whyItFits ?? item?.transition
+              item?.scriptureExplanation ??
+                item?.scriptureWhy ??
+                item?.whyItFits ??
+                item?.transition
             ),
             conversationExamples: []
           })
@@ -1482,7 +1557,9 @@ export default function NewPage() {
 
     const normalizedSteps = stepsSource
       .map((item, index) => {
-        const guideMessage = ensureString(item?.guideMessage ?? item?.guideResponse)
+        const guideMessage = ensureString(
+          item?.guideMessage ?? item?.guideResponse
+        )
         if (!guideMessage) return null
 
         const title = ensureString(item?.title ?? item?.stage)
@@ -1502,7 +1579,10 @@ export default function NewPage() {
 
     return {
       flow: normalizeFlow(
-        rawData?.flow ?? rawData?.flowSummary ?? rawData?.conversationFlow ?? rawData?.movement
+        rawData?.flow ??
+          rawData?.flowSummary ??
+          rawData?.conversationFlow ??
+          rawData?.movement
       ),
       steps: normalizedSteps
     }
@@ -1522,7 +1602,9 @@ export default function NewPage() {
     }
 
     let preparedContent = rawContent.trim()
-    const codeBlockMatch = preparedContent.match(/```(?:json)?\s*([\s\S]*?)```/i)
+    const codeBlockMatch = preparedContent.match(
+      /```(?:json)?\s*([\s\S]*?)```/i
+    )
     if (codeBlockMatch?.[1]) {
       preparedContent = codeBlockMatch[1].trim()
     }
@@ -1549,7 +1631,9 @@ export default function NewPage() {
           : []
 
       if (Array.isArray(stepsArray) && stepsArray.length > 0) {
-        return { steps: normalizeGeneratedSteps(stepsArray as GeneratedStepContent[]) }
+        return {
+          steps: normalizeGeneratedSteps(stepsArray as GeneratedStepContent[])
+        }
       }
 
       if (parsed?.steps && typeof parsed.steps === 'string') {
@@ -1574,7 +1658,8 @@ export default function NewPage() {
     }
 
     const fallbackSteps: GeneratedStepContent[] = []
-    const stepRegex = /(Step\s+\d+\s*[:-]?)([\s\S]*?)(?=(?:\nStep\s+\d+\s*[:-]?\b)|$)/gi
+    const stepRegex =
+      /(Step\s+\d+\s*[:-]?)([\s\S]*?)(?=(?:\nStep\s+\d+\s*[:-]?\b)|$)/gi
     let match = stepRegex.exec(preparedContent)
     if (match) {
       stepRegex.lastIndex = 0
@@ -1623,7 +1708,9 @@ export default function NewPage() {
       }
     } catch (error) {
       console.error('Failed to copy step content:', error)
-      console.warn('Unable to copy content automatically. Please copy manually.')
+      console.warn(
+        'Unable to copy content automatically. Please copy manually.'
+      )
     }
   }
 
@@ -1632,7 +1719,10 @@ export default function NewPage() {
       return ''
     }
 
-    if (typeof result.output_text === 'string' && result.output_text.trim().length > 0) {
+    if (
+      typeof result.output_text === 'string' &&
+      result.output_text.trim().length > 0
+    ) {
       return result.output_text
     }
 
@@ -1641,7 +1731,8 @@ export default function NewPage() {
         const content = item?.content
         if (Array.isArray(content)) {
           const textPart = content.find(
-            (part: any) => part?.type === 'output_text' && typeof part?.text === 'string'
+            (part: any) =>
+              part?.type === 'output_text' && typeof part?.text === 'string'
           )
           if (textPart?.text?.trim()) {
             return textPart.text
@@ -1705,20 +1796,19 @@ export default function NewPage() {
     prompt: IMAGE_ANALYSIS_PROMPT
   })
 
-  const { loadUnsplashImagesForStep, testUnsplashAPI } =
-    useUnsplashMedia({
-      unsplashApiKey,
-      unsplashImages,
-      setUnsplashImages,
-      setLoadingUnsplashSteps,
-      setIsSettingsOpen,
-      deriveHeadingFromContent
-    })
+  const { loadUnsplashImagesForStep, testUnsplashAPI } = useUnsplashMedia({
+    unsplashApiKey,
+    unsplashImages,
+    setUnsplashImages,
+    setLoadingUnsplashSteps,
+    setIsSettingsOpen,
+    deriveHeadingFromContent
+  })
 
   // Expose test function to window for debugging
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      (window as any).testUnsplashAPI = testUnsplashAPI
+      ;(window as any).testUnsplashAPI = testUnsplashAPI
     }
   }, [])
 
@@ -1808,12 +1898,9 @@ export default function NewPage() {
     }
   }
 
-  const handlePersonaFieldChange = (
-    field: keyof typeof personaSettings
-  ) =>
-    (
-      event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
+  const handlePersonaFieldChange =
+    (field: keyof typeof personaSettings) =>
+    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const value = event.target.value
       setPersonaSettings((prev) => ({
         ...prev,
@@ -2016,7 +2103,8 @@ export default function NewPage() {
             const progress = Math.min(timeElapsed / duration, 1)
 
             // Easing function for smoother animation
-            const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+            const easeInOutCubic = (t: number) =>
+              t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
             const run = easeInOutCubic(progress)
 
             window.scrollTo(0, startPosition + distance * run)
@@ -2037,14 +2125,28 @@ export default function NewPage() {
       <Head data-id="Head">
         <title>Create New Content | Studio | Jesus Film Project</title>
       </Head>
-      <div className="min-h-screen bg-stone-100 text-foreground" data-id="PageRoot">
-        <header className="border-b border-border bg-background backdrop-blur relative z-100" data-id="Header">
-          <div className="container mx-auto px-4 py-6" data-id="HeaderContainer">
-            <div className="flex items-center justify-between" data-id="HeaderRow">
+      <div
+        className="min-h-screen bg-stone-100 text-foreground"
+        data-id="PageRoot"
+      >
+        <header
+          className="border-b border-border bg-background backdrop-blur relative z-100"
+          data-id="Header"
+        >
+          <div
+            className="container mx-auto px-4 py-6"
+            data-id="HeaderContainer"
+          >
+            <div
+              className="flex items-center justify-between"
+              data-id="HeaderRow"
+            >
               <div className="flex items-center gap-4" data-id="HeaderBranding">
-                <StudioSiteSelector onNavigateHome={() => {
-                  void router.push('/')
-                }} />
+                <StudioSiteSelector
+                  onNavigateHome={() => {
+                    void router.push('/')
+                  }}
+                />
               </div>
               <div className="flex items-center gap-4" data-id="HeaderActions">
                 {(totalTokensUsed.input > 0 || totalTokensUsed.output > 0) && (
@@ -2092,7 +2194,7 @@ export default function NewPage() {
                 <Button
                   variant="ghost"
                   className="h-8 w-8 p-3 cursor-pointer hover:!bg-transparent group"
-                  onClick={() => setIsSessionsOpen(v => !v)}
+                  onClick={() => setIsSessionsOpen((v) => !v)}
                 >
                   <History className="!h-5 !w-5 group-hover:!text-primary transition-colors" />
                   <span className="sr-only">Sessions</span>
@@ -2120,7 +2222,8 @@ export default function NewPage() {
                           OpenAI Access
                         </span>
                         <p className="text-xs text-muted-foreground">
-                          Responses are now powered by a secure, server-managed OpenAI connection. No personal API key is required.
+                          Responses are now powered by a secure, server-managed
+                          OpenAI connection. No personal API key is required.
                         </p>
                       </div>
                       <div className="space-y-2">
@@ -2138,11 +2241,13 @@ export default function NewPage() {
                           onChange={(e) => setUnsplashApiKey(e.target.value)}
                           className={`w-full ${unsplashApiKey && !/^[A-Za-z0-9_-]{40,80}$/.test(unsplashApiKey) ? 'border-red-500' : ''}`}
                         />
-                        {unsplashApiKey && !/^[A-Za-z0-9_-]{40,80}$/.test(unsplashApiKey) && (
-                          <p className="text-xs text-red-600 mt-1">
-                            Access Key appears to be invalid format. Should be 40-80 characters.
-                          </p>
-                        )}
+                        {unsplashApiKey &&
+                          !/^[A-Za-z0-9_-]{40,80}$/.test(unsplashApiKey) && (
+                            <p className="text-xs text-red-600 mt-1">
+                              Access Key appears to be invalid format. Should be
+                              40-80 characters.
+                            </p>
+                          )}
                         <div className="flex items-center justify-between">
                           <p className="text-xs text-muted-foreground">
                             Your Unsplash Access Key is used to fetch relevant
@@ -2304,7 +2409,9 @@ export default function NewPage() {
                             ) : (
                               <div className="text-center py-8 text-muted-foreground">
                                 <p>
-                                  No analysis available. Try again once the AI proxy finishes processing, or re-run the analysis.
+                                  No analysis available. Try again once the AI
+                                  proxy finishes processing, or re-run the
+                                  analysis.
                                 </p>
                               </div>
                             )}
@@ -2424,8 +2531,14 @@ export default function NewPage() {
         </header>
 
         {/* Stepper */}
-        <div className="border-b border-border bg-stone-100 hidden" data-id="Stepper">
-          <div className="container mx-auto px-4 py-6" data-id="StepperContainer">
+        <div
+          className="border-b border-border bg-stone-100 hidden"
+          data-id="Stepper"
+        >
+          <div
+            className="container mx-auto px-4 py-6"
+            data-id="StepperContainer"
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 {steps.map((step, index) => (
@@ -2484,13 +2597,19 @@ export default function NewPage() {
 
         {/* Previous Sessions */}
         {isSessionsOpen && savedSessions.length > 0 && (
-          <div className={`max-w-4xl mx-auto mb-8 transition-all duration-500 ease-in-out ${
-            isCollapsing ? 'opacity-0 scale-95 transform' : 'opacity-100 scale-100'
-          }`}>
+          <div
+            className={`max-w-4xl mx-auto mb-8 transition-all duration-500 ease-in-out ${
+              isCollapsing
+                ? 'opacity-0 scale-95 transform'
+                : 'opacity-100 scale-100'
+            }`}
+          >
             <div className="border border-muted rounded-lg p-4">
               <div className="flex items-center gap-2 mb-4">
                 <History className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-medium text-muted-foreground">Previous Sessions</span>
+                <span className="text-sm font-medium text-muted-foreground">
+                  Previous Sessions
+                </span>
               </div>
               <div className="space-y-3">
                 {savedSessions.map((session, index) => (
@@ -2501,30 +2620,34 @@ export default function NewPage() {
                       }`}
                       onClick={() => !loadingSession && loadSession(session)}
                     >
-                    <div className="flex items-center gap-4">
-                      <div className="flex-shrink-0 text-center min-w-0">
-                        <div className="text-sm font-semibold text-muted-foreground leading-tight">
-                          {new Date(session.timestamp).getDate()}
+                      <div className="flex items-center gap-4">
+                        <div className="flex-shrink-0 text-center min-w-0">
+                          <div className="text-sm font-semibold text-muted-foreground leading-tight">
+                            {new Date(session.timestamp).getDate()}
+                          </div>
+                          <div className="text-xs text-muted-foreground uppercase tracking-wider">
+                            {new Date(session.timestamp).toLocaleString(
+                              'default',
+                              { month: 'short' }
+                            )}
+                          </div>
                         </div>
-                        <div className="text-xs text-muted-foreground uppercase tracking-wider">
-                          {new Date(session.timestamp).toLocaleString('default', { month: 'short' })}
-                        </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="mb-1">
-                          <h4 className="font-medium text-sm truncate">
-                            {session.textContent.substring(0, 60)}...
-                          </h4>
-                        </div>
-                        <div className="text-xs text-muted-foreground space-y-0.5">
-                          <p>
-                            {session.images.length > 0
-                              ? `${session.images.length} images • `
-                              : `${new Date(session.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • `}
+                        <div className="flex-1 min-w-0">
+                          <div className="mb-1">
+                            <h4 className="font-medium text-sm truncate">
+                              {session.textContent.substring(0, 60)}...
+                            </h4>
+                          </div>
+                          <div className="text-xs text-muted-foreground space-y-0.5">
+                            <p>
+                              {session.images.length > 0
+                                ? `${session.images.length} images • `
+                                : `${new Date(session.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • `}
                               {(() => {
                                 const tokens = session.tokensUsed
                                 if (!tokens) return ''
-                                const hasTokens = tokens.input > 0 || tokens.output > 0
+                                const hasTokens =
+                                  tokens.input > 0 || tokens.output > 0
                                 if (!hasTokens) return ''
 
                                 const total = tokens.input + tokens.output
@@ -2539,35 +2662,39 @@ export default function NewPage() {
                                 })()
 
                                 const cost =
-                                  (tokens.input / 1000000) * 0.05 + (tokens.output / 1000000) * 0.4
-                                const formattedCost = cost >= 0.01 ? cost.toFixed(2) : '0.00'
+                                  (tokens.input / 1000000) * 0.05 +
+                                  (tokens.output / 1000000) * 0.4
+                                const formattedCost =
+                                  cost >= 0.01 ? cost.toFixed(2) : '0.00'
 
                                 return `Tokens: ${formattedTotal} • $${formattedCost}`
                               })()}
-                          </p>
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 ml-3">
+                          {loadingSession === session.id ? (
+                            <div className="flex items-center gap-2 px-2 py-1">
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                              <span className="text-xs text-muted-foreground">
+                                Loading...
+                              </span>
+                            </div>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={(e) => {
+                                e.stopPropagation() // Prevent triggering the card click
+                                deleteSession(session.id)
+                              }}
+                              className="invisible group-hover:visible h-7 px-2 text-xs text-primary hover:!bg-primary hover:text-white"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 ml-3">
-                        {loadingSession === session.id ? (
-                          <div className="flex items-center gap-2 px-2 py-1">
-                            <Loader2 className="w-3 h-3 animate-spin" />
-                            <span className="text-xs text-muted-foreground">Loading...</span>
-                          </div>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={(e) => {
-                              e.stopPropagation() // Prevent triggering the card click
-                              deleteSession(session.id)
-                            }}
-                            className="invisible group-hover:visible h-7 px-2 text-xs text-primary hover:!bg-primary hover:text-white"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
-                        )}
-                      </div>
-                    </div>
                     </Card>
                     {index < savedSessions.length - 1 && (
                       <hr className="border-stone-600/10 my-2 mx-4 z-1 relative" />
@@ -2597,66 +2724,103 @@ export default function NewPage() {
           {/* Step 1: Content */}
           {currentStep === 1 && (
             <>
-              <div className={`max-w-4xl mx-auto transition-all duration-500 ease-in-out}`} suppressHydrationWarning data-id="Step1Container">
+              <div
+                className={`max-w-4xl mx-auto transition-all duration-500 ease-in-out}`}
+                suppressHydrationWarning
+                data-id="Step1Container"
+              >
                 <div className="bg-transparent border-0 shadow-none">
-                   
                   <div
-                  className={`relative w-full transition-[max-height] duration-700 ease-out pt-0 ${
-                    isContextContainerHidden
-                      ? 'opacity-0 max-h-0 py-0 pointer-events-none md:pt-10'
-                      : 'opacity-100 max-h-100  '
-                  }`}>
-                    <div className="flex items-start justify-between md:mb-4" data-id="HeroRow">
-                      <blockquote className="text-xl font-semibold md:font-semibold text-stone-950 text-balance w-full text-center z-30 animate-bible-quote-appear md:py-12 py-2" data-id="Verse">
+                    className={`relative w-full transition-[max-height] duration-700 ease-out pt-0 ${
+                      isContextContainerHidden
+                        ? 'opacity-0 max-h-0 py-0 pointer-events-none md:pt-10'
+                        : 'opacity-100 max-h-100  '
+                    }`}
+                  >
+                    <div
+                      className="flex items-start justify-between md:mb-4"
+                      data-id="HeroRow"
+                    >
+                      <blockquote
+                        className="text-xl font-semibold md:font-semibold text-stone-950 text-balance w-full text-center z-30 animate-bible-quote-appear md:py-12 py-2"
+                        data-id="Verse"
+                      >
                         &ldquo;Let your conversation be always{' '}
-                        <span className="animate-gradient-wave animate-glow-delay">full&nbsp;of&nbsp;grace,
-                        seasoned&nbsp;with&nbsp;salt</span>, so&nbsp;that&nbsp;you&nbsp;may know how to
-                        answer everyone.&rdquo;
+                        <span className="animate-gradient-wave animate-glow-delay">
+                          full&nbsp;of&nbsp;grace, seasoned&nbsp;with&nbsp;salt
+                        </span>
+                        , so&nbsp;that&nbsp;you&nbsp;may know how to answer
+                        everyone.&rdquo;
                         <cite className="block mt-2 text-sm font-medium text-stone-500">
                           Colossians 4:5–6
                         </cite>
                       </blockquote>
-                      <p className="absolute block bottom-0 md:-bottom-40 text-center w-full text-sm font-medium text-stone-400 opacity-0 animate-fade-in-out [animation-delay:1200ms] z-100 uppercase tracking-widest" data-id="IntroLabel">
-                        Introducing: <br />Sharing Studio...
+                      <p
+                        className="absolute block bottom-0 md:-bottom-40 text-center w-full text-sm font-medium text-stone-400 opacity-0 animate-fade-in-out [animation-delay:1200ms] z-100 uppercase tracking-widest"
+                        data-id="IntroLabel"
+                      >
+                        Introducing: <br />
+                        Sharing Studio...
                       </p>
 
-                    {showTestimonialBackground && (
-                      <div
-                        data-testid="testimonial-background"
-                        className="fixed inset-0 bg-stone-50 z-20 animate-background-dissolve"
-                        onAnimationEnd={() =>
-                          setShowTestimonialBackground(false)
-                        }
-                      />
-                    )}
+                      {showTestimonialBackground && (
+                        <div
+                          data-testid="testimonial-background"
+                          className="fixed inset-0 bg-stone-50 z-20 animate-background-dissolve"
+                          onAnimationEnd={() =>
+                            setShowTestimonialBackground(false)
+                          }
+                        />
+                      )}
                     </div>
                     <div className="flex flex-col md:flex-row md:justify-between md:items-center">
-                      <Button variant="outline" size="lg" asChild className="self-center md:self-auto md:size-sm block md:hidden my-8">
-                        <Link href="/" className="inline-flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        asChild
+                        className="self-center md:self-auto md:size-sm block md:hidden my-8"
+                      >
+                        <Link
+                          href="/"
+                          className="inline-flex items-center gap-2"
+                        >
                           <HelpCircle className="h-4 w-4" />
                           How it works
                         </Link>
                       </Button>
                       <div
-                      data-id="HeroTitle"
-                      className="text-xl text-left relative  font-semibold leading-[1.2] md:leading-1.2 py-4 md:py-6" 
+                        data-id="HeroTitle"
+                        className="text-xl text-left relative  font-semibold leading-[1.2] md:leading-1.2 py-4 md:py-6"
                       >
-                        Share God's grace… <RotatingText
+                        Share God's grace…{' '}
+                        <RotatingText
                           onCategoryChange={handleCategoryChange}
                           hoveredCategory={hoveredCategory}
                           isHovering={isHovering}
                           isAnimationStopped={isAnimationStopped}
                         />
                       </div>
-                      <Button variant="link" size="sm" asChild className="hidden md:inline-flex">
-                        <Link href="/" className="hidden md:inline-flex items-center gap-2">
+                      <Button
+                        variant="link"
+                        size="sm"
+                        asChild
+                        className="hidden md:inline-flex"
+                      >
+                        <Link
+                          href="/"
+                          className="hidden md:inline-flex items-center gap-2"
+                        >
                           <HelpCircle className="h-4 w-4" />
                           How it works
                         </Link>
                       </Button>
                     </div>
                   </div>
-                  <div data-testid="section-channels" className="space-y-6" data-id="ChannelsSection">
+                  <div
+                    data-testid="section-channels"
+                    className="space-y-6"
+                    data-id="ChannelsSection"
+                  >
                     {/* Context Selector */}
                     <ContextSelector
                       selectedContext={selectedContext}
@@ -2720,28 +2884,24 @@ export default function NewPage() {
                       ref={fileInputRef}
                       type="file"
                       multiple
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
 
-                <input
-                  ref={cameraInputRef}
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  onChange={handleCameraChange}
-                  className="hidden"
-                />
-                    
-                {isProcessing && (
-                  <PrayerCarousel
-                    isActive={isProcessing}
-                  />
-                )}
+                    <input
+                      ref={cameraInputRef}
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      onChange={handleCameraChange}
+                      className="hidden"
+                    />
 
-                {/* Content Ideas Grid */}
-                {imageAnalysisResults.some(
+                    {isProcessing && <PrayerCarousel isActive={isProcessing} />}
+
+                    {/* Content Ideas Grid */}
+                    {imageAnalysisResults.some(
                       (result) =>
                         result.contentIdeas &&
                         result.contentIdeas.length > 0 &&
@@ -2825,7 +2985,8 @@ export default function NewPage() {
                                               setTextContent(newText)
                                               // Update textarea value directly
                                               if (textareaRef.current) {
-                                                textareaRef.current.value = newText
+                                                textareaRef.current.value =
+                                                  newText
                                               }
                                               setAnimatingTextarea(true)
                                               setHiddenSuggestions((prev) =>
@@ -2858,15 +3019,17 @@ export default function NewPage() {
                     )}
 
                     {/* Content Type Selector */}
-                      <FormatSelection />
+                    <FormatSelection />
 
-                      {aiResponse && (
+                    {aiResponse && (
                       <div className="mt-12 space-y-6">
                         <Accordion
                           title="AI Response"
                           defaultOpen={false}
                           className="border-muted"
-                          icon={<Bot className="w-4 h-4 text-muted-foreground" />}
+                          icon={
+                            <Bot className="w-4 h-4 text-muted-foreground" />
+                          }
                         >
                           <div className="flex items-center gap-1 text-xs text-blue-600 mb-4">
                             <History className="w-3 h-3" />
@@ -2895,9 +3058,13 @@ export default function NewPage() {
                         {selectedContext === 'Conversations' ? (
                           <div className="space-y-4">
                             <div className="flex flex-wrap items-center justify-between gap-2">
-                              <label className="text-sm font-medium">Conversation Map</label>
+                              <label className="text-sm font-medium">
+                                Conversation Map
+                              </label>
                             </div>
-                            <ConversationMapView map={conversationMapForDisplay} />
+                            <ConversationMapView
+                              map={conversationMapForDisplay}
+                            />
                           </div>
                         ) : (
                           editableSteps.length > 0 && (
@@ -2913,7 +3080,9 @@ export default function NewPage() {
                                   editingStepIndices={editingStepIndices}
                                   stepHandlers={stepHandlers}
                                   copiedStepIndex={copiedStepIndex}
-                                  deriveHeadingFromContent={deriveHeadingFromContent}
+                                  deriveHeadingFromContent={
+                                    deriveHeadingFromContent
+                                  }
                                   onCopyStep={handleCopyStep}
                                   onStepVisible={loadImagesWhenVisible}
                                 />
@@ -2957,84 +3126,99 @@ export default function NewPage() {
 
           {/* Context detail options */}
 
-            {selectedContextOptions.length > 0 && (
-              <div className={`mb-8 max-w-4xl mx-auto  transition-all duration-500 ease-out ${
-                hidingSuggestionsCarousel ? 'opacity-0 max-h-0 overflow-hidden' : 'opacity-100 max-h-96'
-              }`}>
-                <Carousel data-id="SuggestionTilesContainer" className="relative w-full" opts={{ align: 'start' }}>
-                  <CarouselContent>
-                    {selectedContextOptions.map((option, index) => {
-                      const isSelected = selectedContextDetail === option.text
+          {selectedContextOptions.length > 0 && (
+            <div
+              className={`mb-8 max-w-4xl mx-auto  transition-all duration-500 ease-out ${
+                hidingSuggestionsCarousel
+                  ? 'opacity-0 max-h-0 overflow-hidden'
+                  : 'opacity-100 max-h-96'
+              }`}
+            >
+              <Carousel
+                data-id="SuggestionTilesContainer"
+                className="relative w-full"
+                opts={{ align: 'start' }}
+              >
+                <CarouselContent>
+                  {selectedContextOptions.map((option, index) => {
+                    const isSelected = selectedContextDetail === option.text
 
-                      return (
-                        <CarouselItem
-                          key={option.text}
-                          className="basis-1/3  md:basis-1/5 lg:basis-1/6 py-2"
-                          style={{
-                            animationDelay: `${index * 0.1}s`,
-                            animationFillMode: 'forwards'
+                    return (
+                      <CarouselItem
+                        key={option.text}
+                        className="basis-1/3  md:basis-1/5 lg:basis-1/6 py-2"
+                        style={{
+                          animationDelay: `${index * 0.1}s`,
+                          animationFillMode: 'forwards'
+                        }}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedContextDetail(option.text)
+
+                            // Append prompt to the top of textarea with empty line
+                            const currentValue =
+                              textareaRef.current?.value || ''
+                            const newText =
+                              option.prompt + '\n\n' + currentValue
+
+                            setTextContent(newText)
+
+                            // Update textarea value directly
+                            if (textareaRef.current) {
+                              textareaRef.current.value = newText
+                              // Focus the textarea
+                              textareaRef.current.focus()
+                              // Position cursor at the end
+                              textareaRef.current.setSelectionRange(
+                                newText.length,
+                                newText.length
+                              )
+                            }
+
+                            // Trigger textarea animation
+                            setAnimatingTextarea(true)
+                            setTimeout(() => {
+                              setAnimatingTextarea(false)
+                            }, 800)
+
+                            // Hide suggestions carousel with animation
+                            setHidingSuggestionsCarousel(true)
                           }}
+                          className={`group relative flex h-full w-full flex-col justify-between rounded-2xl border-2 p-4 text-left transition-all duration-300 cursor-pointer hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:border-transparent md:aspect-square ${
+                            isSelected
+                              ? 'border-primary shadow-lg ring-2 ring-primary/60'
+                              : 'border-gray-200 hover:border-white hover:'
+                          }`}
+                          aria-pressed={isSelected}
                         >
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSelectedContextDetail(option.text)
-
-                              // Append prompt to the top of textarea with empty line
-                              const currentValue = textareaRef.current?.value || ''
-                              const newText = option.prompt + '\n\n' + currentValue
-
-                              setTextContent(newText)
-
-                              // Update textarea value directly
-                              if (textareaRef.current) {
-                                textareaRef.current.value = newText
-                                // Focus the textarea
-                                textareaRef.current.focus()
-                                // Position cursor at the end
-                                textareaRef.current.setSelectionRange(newText.length, newText.length)
-                              }
-
-                              // Trigger textarea animation
-                              setAnimatingTextarea(true)
-                              setTimeout(() => {
-                                setAnimatingTextarea(false)
-                              }, 800)
-
-                              // Hide suggestions carousel with animation
-                              setHidingSuggestionsCarousel(true)
-                            }}
-                            className={`group relative flex h-full w-full flex-col justify-between rounded-2xl border-2 p-4 text-left transition-all duration-300 cursor-pointer hover:bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:border-transparent md:aspect-square ${
+                          <ArrowUp
+                            className={`absolute right-4 top-4 h-4 w-4 transition-colors ${
                               isSelected
-                                ? 'border-primary shadow-lg ring-2 ring-primary/60'
-                                : 'border-gray-200 hover:border-white hover:'
+                                ? 'text-primary'
+                                : 'text-muted-foreground group-hover:text-primary'
                             }`}
-                            aria-pressed={isSelected}
+                          />
+                          <span
+                            className="text-3xl md:text-4xl mb-2"
+                            aria-hidden="true"
                           >
-                            <ArrowUp
-                              className={`absolute right-4 top-4 h-4 w-4 transition-colors ${
-                                isSelected
-                                  ? 'text-primary'
-                                  : 'text-muted-foreground group-hover:text-primary'
-                              }`}
-                            />
-                            <span className="text-3xl md:text-4xl mb-2" aria-hidden="true">
-                              {option.emoji}
-                            </span>
-                            <span className="mt-auto text-xs md:text-sm font-semibold text-balance leading-snug text-gray-900 line-clamp-4 word-break-all">
-                              {option.text}
-                            </span>
-                          </button>
-                        </CarouselItem>
-                      )
-                    })}
-                  </CarouselContent>
-                  <CarouselPrevious className="-left-6" />
-                  <CarouselNext className="-right-6" />
-                </Carousel>
-              </div>
-            )}
-
+                            {option.emoji}
+                          </span>
+                          <span className="mt-auto text-xs md:text-sm font-semibold text-balance leading-snug text-gray-900 line-clamp-4 word-break-all">
+                            {option.text}
+                          </span>
+                        </button>
+                      </CarouselItem>
+                    )
+                  })}
+                </CarouselContent>
+                <CarouselPrevious className="-left-6" />
+                <CarouselNext className="-right-6" />
+              </Carousel>
+            </div>
+          )}
         </main>
       </div>
     </>

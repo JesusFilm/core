@@ -9,18 +9,19 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 const OPENROUTER_BASE_URL =
   process.env.OPENROUTER_BASE_URL ?? 'https://openrouter.ai/api/v1'
-const OPENROUTER_APP_TITLE =
-  process.env.OPENROUTER_APP_TITLE ?? 'JF Studio'
+const OPENROUTER_APP_TITLE = process.env.OPENROUTER_APP_TITLE ?? 'JF Studio'
 const DEFAULT_MODEL = 'x-ai/grok-4-fast'
 
 const APOLOGIST_AGENT_DOMAIN = process.env.APOLOGIST_AGENT_DOMAIN
 const APOLOGIST_API_KEY = process.env.APOLOGIST_API_KEY
-const APOLOGIST_DEFAULT_MODEL = process.env.APOLOGIST_DEFAULT_MODEL ?? 'openai/gpt/4o'
+const APOLOGIST_DEFAULT_MODEL =
+  process.env.APOLOGIST_DEFAULT_MODEL ?? 'openai/gpt/4o'
 
 const isString = (value: unknown): value is string => typeof value === 'string'
 const isNumber = (value: unknown): value is number =>
   typeof value === 'number' && Number.isFinite(value)
-const isBoolean = (value: unknown): value is boolean => typeof value === 'boolean'
+const isBoolean = (value: unknown): value is boolean =>
+  typeof value === 'boolean'
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   value != null && typeof value === 'object'
 
@@ -95,7 +96,10 @@ const mapUsage = (usage: LanguageModelUsage | undefined) => ({
     (usage?.promptTokens ?? 0) + (usage?.completionTokens ?? 0)
 })
 
-const buildApologistHeaders = (apiKey: string, cacheTtl?: number): Record<string, string> => {
+const buildApologistHeaders = (
+  apiKey: string,
+  cacheTtl?: number
+): Record<string, string> => {
   const headers: Record<string, string> = {
     'x-api-key': apiKey,
     'Content-Type': 'application/json'
@@ -126,9 +130,12 @@ const buildApologistRequestBody = (
 
   // Messages or prompt
   if (messages != null && messages.length > 0) {
-    requestBody.messages = messages.map(msg => ({
+    requestBody.messages = messages.map((msg) => ({
       role: msg.role,
-      content: typeof msg.content === 'string' ? msg.content : msg.content.map(c => c.type === 'text' ? c.text : '').join('')
+      content:
+        typeof msg.content === 'string'
+          ? msg.content
+          : msg.content.map((c) => (c.type === 'text' ? c.text : '')).join('')
     }))
   } else if (prompt != null) {
     requestBody.prompt = prompt
@@ -147,7 +154,8 @@ const buildApologistRequestBody = (
   if (maxTokens != null) requestBody.max_completion_tokens = maxTokens
 
   // Optional fields
-  if (body.response_format != null) requestBody.response_format = body.response_format
+  if (body.response_format != null)
+    requestBody.response_format = body.response_format
   if (body.metadata != null) requestBody.metadata = body.metadata
 
   return requestBody
@@ -173,7 +181,9 @@ const normalizeApologistResponse = (responseData: any, model: string) => {
   const mappedUsage = {
     input_tokens: usage.prompt_tokens ?? 0,
     output_tokens: usage.completion_tokens ?? 0,
-    total_tokens: usage.total_tokens ?? (usage.prompt_tokens ?? 0) + (usage.completion_tokens ?? 0)
+    total_tokens:
+      usage.total_tokens ??
+      (usage.prompt_tokens ?? 0) + (usage.completion_tokens ?? 0)
   }
 
   return {
@@ -223,13 +233,18 @@ export default async function handler(
 
   const body = isRecord(req.body) ? req.body : {}
 
-  const provider = isString(body.provider) && (body.provider === 'openrouter' || body.provider === 'apologist')
-    ? body.provider
-    : 'openrouter'
+  const provider =
+    isString(body.provider) &&
+    (body.provider === 'openrouter' || body.provider === 'apologist')
+      ? body.provider
+      : 'openrouter'
 
-  const model = isString(body.model) && body.model.trim() !== ''
-    ? body.model.trim()
-    : provider === 'apologist' ? APOLOGIST_DEFAULT_MODEL : DEFAULT_MODEL
+  const model =
+    isString(body.model) && body.model.trim() !== ''
+      ? body.model.trim()
+      : provider === 'apologist'
+        ? APOLOGIST_DEFAULT_MODEL
+        : DEFAULT_MODEL
 
   const maxOutputTokens = isNumber(body.max_output_tokens)
     ? body.max_output_tokens
@@ -268,13 +283,22 @@ export default async function handler(
 
   // Handle Apologist provider
   if (provider === 'apologist') {
-    if (!isString(APOLOGIST_AGENT_DOMAIN) || APOLOGIST_AGENT_DOMAIN.trim() === '') {
-      res.status(500).json({ error: 'APOLOGIST_AGENT_DOMAIN is not configured on the server.' })
+    if (
+      !isString(APOLOGIST_AGENT_DOMAIN) ||
+      APOLOGIST_AGENT_DOMAIN.trim() === ''
+    ) {
+      res
+        .status(500)
+        .json({
+          error: 'APOLOGIST_AGENT_DOMAIN is not configured on the server.'
+        })
       return
     }
 
     if (!isString(APOLOGIST_API_KEY) || APOLOGIST_API_KEY.trim() === '') {
-      res.status(500).json({ error: 'APOLOGIST_API_KEY is not configured on the server.' })
+      res
+        .status(500)
+        .json({ error: 'APOLOGIST_API_KEY is not configured on the server.' })
       return
     }
 
@@ -290,13 +314,18 @@ export default async function handler(
       const headers = buildApologistHeaders(APOLOGIST_API_KEY, cacheTtl)
       const requestBody = buildApologistRequestBody(body, messages, prompt)
 
-      console.log(`[AI Respond] Sending request to Apologist - Model: ${model}, Messages: ${messages?.length ?? 0}, Prompt: ${prompt ? 'yes' : 'no'}`)
+      console.log(
+        `[AI Respond] Sending request to Apologist - Model: ${model}, Messages: ${messages?.length ?? 0}, Prompt: ${prompt ? 'yes' : 'no'}`
+      )
 
-      const response = await fetch(`https://${APOLOGIST_AGENT_DOMAIN}/api/v1/chat/completions`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(requestBody)
-      })
+      const response = await fetch(
+        `https://${APOLOGIST_AGENT_DOMAIN}/api/v1/chat/completions`,
+        {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(requestBody)
+        }
+      )
 
       if (!response.ok) {
         const errorData = await response.text()
@@ -310,7 +339,9 @@ export default async function handler(
       const responseData = await response.json()
       const normalizedResponse = normalizeApologistResponse(responseData, model)
 
-      console.log(`[AI Respond] Received response from Apologist - Response ID: ${normalizedResponse.id}, Finish Reason: ${normalizedResponse.finish_reason}, Usage: ${JSON.stringify(normalizedResponse.usage)}`)
+      console.log(
+        `[AI Respond] Received response from Apologist - Response ID: ${normalizedResponse.id}, Finish Reason: ${normalizedResponse.finish_reason}, Usage: ${JSON.stringify(normalizedResponse.usage)}`
+      )
 
       res.status(200).json(normalizedResponse)
     } catch (error) {
@@ -349,7 +380,9 @@ export default async function handler(
       generationOptions.providerOptions = providerOptions as any
     }
 
-    console.log(`[AI Respond] Sending request to OpenRouter - Model: ${model}, Messages: ${messages?.length ?? 0}, Prompt: ${prompt ? 'yes' : 'no'}`)
+    console.log(
+      `[AI Respond] Sending request to OpenRouter - Model: ${model}, Messages: ${messages?.length ?? 0}, Prompt: ${prompt ? 'yes' : 'no'}`
+    )
 
     const result = await generateText(generationOptions)
 
@@ -357,7 +390,9 @@ export default async function handler(
     const createdAt = result.response?.timestamp ?? new Date()
     const text = result.text ?? ''
 
-    console.log(`[AI Respond] Received response from OpenRouter - Response ID: ${responseId}, Finish Reason: ${result.finishReason}, Usage: ${JSON.stringify(mapUsage(result.usage))}`)
+    console.log(
+      `[AI Respond] Received response from OpenRouter - Response ID: ${responseId}, Finish Reason: ${result.finishReason}, Usage: ${JSON.stringify(mapUsage(result.usage))}`
+    )
 
     res.status(200).json({
       id: responseId,

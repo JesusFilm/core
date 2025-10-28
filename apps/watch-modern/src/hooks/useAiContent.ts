@@ -1,10 +1,7 @@
 import { useCallback } from 'react'
 import type { Dispatch, RefObject, SetStateAction } from 'react'
 
-import type {
-  GeneratedStepContent,
-  ImageAnalysisResult
-} from '../libs/storage'
+import type { GeneratedStepContent, ImageAnalysisResult } from '../libs/storage'
 
 import type { SaveSessionArgs } from './useNewPageSession'
 
@@ -53,7 +50,10 @@ type UseAiContentOptions = {
   setEditableSteps: Dispatch<SetStateAction<GeneratedStepContent[]>>
   setIsProcessing: Dispatch<SetStateAction<boolean>>
   saveSession: (data: SaveSessionArgs) => string
-  updateTokens: (sessionId: string | null, usage: { input: number; output: number }) => void
+  updateTokens: (
+    sessionId: string | null,
+    usage: { input: number; output: number }
+  ) => void
   onError?: (error: unknown, context: { isNetworkError: boolean }) => void
 }
 
@@ -145,7 +145,10 @@ export const useAiContent = ({
         const networkError = isNetworkError(error)
 
         if (networkError) {
-          console.warn('Network error while processing content. Ready for retry.', error)
+          console.warn(
+            'Network error while processing content. Ready for retry.',
+            error
+          )
         } else {
           console.error('Error processing content:', error)
         }
@@ -153,7 +156,9 @@ export const useAiContent = ({
         setAiResponse(previousResponse)
         setEditableSteps(previousSteps)
         if (!networkError) {
-          console.error('Failed to process content via the AI proxy. Please try again.')
+          console.error(
+            'Failed to process content via the AI proxy. Please try again.'
+          )
         }
 
         onError?.(error, { isNetworkError: networkError })

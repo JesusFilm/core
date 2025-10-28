@@ -71,7 +71,7 @@ export function LanguageSelector(): JSX.Element {
       }
     })
     // Then select the new language if it's not already selected
-    if (!selectedLanguages.some(lang => lang.value === currentValue)) {
+    if (!selectedLanguages.some((lang) => lang.value === currentValue)) {
       refine(currentValue)
     }
     setOpen(false)
@@ -80,7 +80,10 @@ export function LanguageSelector(): JSX.Element {
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setOpen(false)
       }
     }
@@ -111,12 +114,12 @@ export function LanguageSelector(): JSX.Element {
   if (languagesLoading) {
     return (
       <div className="relative">
-      <Button
-        variant="outline"
-        role="combobox"
-        disabled
-        className="w-full justify-between opacity-50 h-12 px-4"
-      >
+        <Button
+          variant="outline"
+          role="combobox"
+          disabled
+          className="w-full justify-between opacity-50 h-12 px-4"
+        >
           <div className="flex items-center">
             <Globe className="mr-2 h-4 w-4 text-muted-foreground" />
             <span>{t('Loading languages...')}</span>
@@ -138,7 +141,9 @@ export function LanguageSelector(): JSX.Element {
       >
         <div className="flex items-center">
           <Globe className="mr-2 h-5 w-5 text-muted-foreground" />
-          <span className="truncate text-base font-medium">{getDisplayValue()}</span>
+          <span className="truncate text-base font-medium">
+            {getDisplayValue()}
+          </span>
         </div>
         <ChevronsUpDown className="ml-2 h-5 w-5 shrink-0 opacity-50" />
       </Button>
@@ -146,7 +151,10 @@ export function LanguageSelector(): JSX.Element {
       {open && (
         <div className="absolute top-full left-0 right-0 z-[200] mt-1 bg-popover border border-border rounded-md shadow-md">
           <Command>
-            <CommandInput ref={searchInputRef} placeholder={t('Search languages...')} />
+            <CommandInput
+              ref={searchInputRef}
+              placeholder={t('Search languages...')}
+            />
             <CommandList className="max-h-[60svh]">
               <CommandEmpty>{t('No languages found.')}</CommandEmpty>
               <CommandGroup>
@@ -158,7 +166,9 @@ export function LanguageSelector(): JSX.Element {
                     className="flex items-center justify-between cursor-pointer px-4 py-2 hover:bg-white/5"
                   >
                     <div className="flex flex-col items-start flex-1">
-                      <span className="font-medium text-base">{option.englishName}</span>
+                      <span className="font-medium text-base">
+                        {option.englishName}
+                      </span>
                       {option.nativeName !== option.englishName && (
                         <span className="text-sm text-muted-foreground">
                           {option.nativeName}

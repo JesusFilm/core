@@ -7,7 +7,9 @@ test.describe('Search Functionality', () => {
     await page.waitForLoadState('networkidle')
   })
 
-  test('should open search overlay when search input is focused', async ({ page }) => {
+  test('should open search overlay when search input is focused', async ({
+    page
+  }) => {
     // Find and click the search input
     const searchInput = page.getByTestId('SearchBarInput')
     await expect(searchInput).toBeVisible()
@@ -37,7 +39,12 @@ test.describe('Search Functionality', () => {
     await page.waitForTimeout(2000) // Give time for search results
 
     // Verify that the search was performed by checking for loading or results
-    const hasResults = await page.locator('[data-testid*="video"], [data-testid*="VideoCard"], .search-results').count() > 0
+    const hasResults =
+      (await page
+        .locator(
+          '[data-testid*="video"], [data-testid*="VideoCard"], .search-results'
+        )
+        .count()) > 0
     console.log('Search results found:', hasResults)
   })
 
@@ -66,11 +73,15 @@ test.describe('Search Functionality', () => {
 
     // Look for trending searches section
     // The component shows either "Trending Searches" or "Popular Searches"
-    const trendingSection = page.locator('text=/Trending Searches|Popular Searches/')
+    const trendingSection = page.locator(
+      'text=/Trending Searches|Popular Searches/'
+    )
     await expect(trendingSection).toBeVisible()
   })
 
-  test('should close overlay when clicking trending search item', async ({ page }) => {
+  test('should close overlay when clicking trending search item', async ({
+    page
+  }) => {
     const searchInput = page.getByTestId('SearchBarInput')
     await searchInput.click()
 
@@ -132,7 +143,10 @@ test.describe('Search Functionality', () => {
     await expect(searchOverlay).toBeVisible()
 
     // Look for language filter
-    const languageFilter = page.getByTestId('SearchOverlay').getByText('Filter by language').first()
+    const languageFilter = page
+      .getByTestId('SearchOverlay')
+      .getByText('Filter by language')
+      .first()
     await expect(languageFilter).toBeVisible()
   })
 
@@ -148,7 +162,10 @@ test.describe('Search Functionality', () => {
     // Monitor network requests to see if search is being triggered
     const requests = []
     page.on('request', (request) => {
-      if (request.url().includes('algolia') || request.url().includes('search')) {
+      if (
+        request.url().includes('algolia') ||
+        request.url().includes('search')
+      ) {
         requests.push(request.url())
         console.log('Search request:', request.url())
       }
@@ -161,7 +178,9 @@ test.describe('Search Functionality', () => {
 
     // Check if search is performing too many requests (indicating live search issue)
     if (requests.length > 5) {
-      console.log('WARNING: Detected potential live search issue - too many requests')
+      console.log(
+        'WARNING: Detected potential live search issue - too many requests'
+      )
       console.log('Requests:', requests)
     }
 

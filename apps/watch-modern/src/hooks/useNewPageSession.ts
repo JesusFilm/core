@@ -1,9 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 
-import {
-  type UserInputData,
-  userInputStorage
-} from '../libs/storage'
+import { type UserInputData, userInputStorage } from '../libs/storage'
 
 type TokenUsage = {
   input: number
@@ -53,7 +50,10 @@ export const useNewPageSession = () => {
       const currentSession = userInputStorage
         .getAllSessions()
         .find((session) => session.id === sessionId)
-      const existingTokens = currentSession?.tokensUsed ?? { input: 0, output: 0 }
+      const existingTokens = currentSession?.tokensUsed ?? {
+        input: 0,
+        output: 0
+      }
 
       userInputStorage.updateSession(sessionId, {
         tokensUsed: {

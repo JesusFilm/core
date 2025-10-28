@@ -25,14 +25,20 @@ export const useUnsplashMedia = ({
       const accessKey = unsplashApiKey || process.env.UNSPLASH_ACCESS_KEY
 
       console.log('🔑 API Key debug:', {
-        unsplashApiKey: unsplashApiKey ? `***${unsplashApiKey.slice(-4)}` : 'not set',
-        envVar: process.env.UNSPLASH_ACCESS_KEY ? `***${process.env.UNSPLASH_ACCESS_KEY.slice(-4)}` : 'not set',
+        unsplashApiKey: unsplashApiKey
+          ? `***${unsplashApiKey.slice(-4)}`
+          : 'not set',
+        envVar: process.env.UNSPLASH_ACCESS_KEY
+          ? `***${process.env.UNSPLASH_ACCESS_KEY.slice(-4)}`
+          : 'not set',
         accessKey: accessKey ? `***${accessKey.slice(-4)}` : 'not set',
         query
       })
 
       if (!accessKey) {
-        console.error('❌ UNSPLASH_ACCESS_KEY not found in environment variables or settings')
+        console.error(
+          '❌ UNSPLASH_ACCESS_KEY not found in environment variables or settings'
+        )
         return []
       }
 
@@ -40,22 +46,40 @@ export const useUnsplashMedia = ({
         const apiUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(
           query
         )}&per_page=${perPage}&content_filter=high&orientation=squarish&client_id=${accessKey}`
-        console.log('🌐 Making API request to:', apiUrl.replace(accessKey, `***${accessKey.slice(-4)}`))
+        console.log(
+          '🌐 Making API request to:',
+          apiUrl.replace(accessKey, `***${accessKey.slice(-4)}`)
+        )
 
         const response = await fetch(apiUrl)
         console.log('📡 Response status:', response.status, response.statusText)
 
         if (!response.ok) {
-          console.error('❌ Unsplash API error:', response.status, response.statusText)
+          console.error(
+            '❌ Unsplash API error:',
+            response.status,
+            response.statusText
+          )
           const errorText = await response.text()
           console.error('❌ Error response body:', errorText)
 
           try {
             const errorData = JSON.parse(errorText)
-            if (errorData.errors && errorData.errors.includes('OAuth error: The access token is invalid')) {
-              console.error('❌ INVALID API KEY: The Unsplash Access Key you entered is invalid.')
-              console.error('💡 SOLUTION: Get a new Access Key from https://unsplash.com/developers')
-              console.warn('Please check your Unsplash Access Key in Settings and get a new one from https://unsplash.com/developers if needed.')
+            if (
+              errorData.errors &&
+              errorData.errors.includes(
+                'OAuth error: The access token is invalid'
+              )
+            ) {
+              console.error(
+                '❌ INVALID API KEY: The Unsplash Access Key you entered is invalid.'
+              )
+              console.error(
+                '💡 SOLUTION: Get a new Access Key from https://unsplash.com/developers'
+              )
+              console.warn(
+                'Please check your Unsplash Access Key in Settings and get a new one from https://unsplash.com/developers if needed.'
+              )
             }
           } catch {
             // Ignore parse error
@@ -65,7 +89,9 @@ export const useUnsplashMedia = ({
         }
 
         const data = await response.json()
-        console.log(`✅ Unsplash Response for "${query}": ${data.results?.length || 0} images found`)
+        console.log(
+          `✅ Unsplash Response for "${query}": ${data.results?.length || 0} images found`
+        )
 
         if (data.results && data.results.length > 0) {
           console.log('🖼️ First image details:', {
@@ -75,8 +101,13 @@ export const useUnsplashMedia = ({
           })
         }
 
-        const imageUrls = data.results?.map((photo: any) => photo.urls?.regular).filter(Boolean) || []
-        console.log(`📸 Extracted ${imageUrls.length} image URLs for "${query}"`)
+        const imageUrls =
+          data.results
+            ?.map((photo: any) => photo.urls?.regular)
+            .filter(Boolean) || []
+        console.log(
+          `📸 Extracted ${imageUrls.length} image URLs for "${query}"`
+        )
 
         return imageUrls
       } catch (error) {
@@ -96,7 +127,10 @@ export const useUnsplashMedia = ({
 
       setLoadingUnsplashSteps((prev) => new Set(prev).add(stepKey))
 
-      const heading = deriveHeadingFromContent(step.content, `Step ${stepIndex + 1}`)
+      const heading = deriveHeadingFromContent(
+        step.content,
+        `Step ${stepIndex + 1}`
+      )
 
       try {
         let images: string[] = []
@@ -110,14 +144,20 @@ export const useUnsplashMedia = ({
           images = await searchUnsplash(keyword, 12)
 
           if (images.length > 0) {
-            console.log(`✅ Found ${images.length} images for Step ${stepIndex + 1} using keyword: "${keyword}"`)
+            console.log(
+              `✅ Found ${images.length} images for Step ${stepIndex + 1} using keyword: "${keyword}"`
+            )
             break
           } else {
-            console.log(`❌ No images found for Step ${stepIndex + 1} using keyword: "${keyword}". Trying next keyword...`)
+            console.log(
+              `❌ No images found for Step ${stepIndex + 1} using keyword: "${keyword}". Trying next keyword...`
+            )
           }
         }
 
-        console.log(`📸 Completed loading ${images.length} images for Step ${stepIndex + 1}`)
+        console.log(
+          `📸 Completed loading ${images.length} images for Step ${stepIndex + 1}`
+        )
 
         setUnsplashImages((prev) => ({
           ...prev,
@@ -133,14 +173,22 @@ export const useUnsplashMedia = ({
         })
       }
     },
-    [deriveHeadingFromContent, searchUnsplash, setLoadingUnsplashSteps, setUnsplashImages, unsplashImages]
+    [
+      deriveHeadingFromContent,
+      searchUnsplash,
+      setLoadingUnsplashSteps,
+      setUnsplashImages,
+      unsplashImages
+    ]
   )
 
   const testUnsplashAPI = useCallback(async () => {
     console.log('🧪 Testing Unsplash API...')
 
     if (!unsplashApiKey && !process.env.UNSPLASH_ACCESS_KEY) {
-      console.warn('No Unsplash Access Key found. Please enter one in Settings.')
+      console.warn(
+        'No Unsplash Access Key found. Please enter one in Settings.'
+      )
       setIsSettingsOpen(true)
       return
     }
@@ -154,7 +202,9 @@ export const useUnsplashMedia = ({
       }
     }
 
-    console.warn('⚠️ Unsplash API test completed without finding any images. Check your access key or try again later.')
+    console.warn(
+      '⚠️ Unsplash API test completed without finding any images. Check your access key or try again later.'
+    )
   }, [searchUnsplash, setIsSettingsOpen, unsplashApiKey])
 
   return { searchUnsplash, loadUnsplashImagesForStep, testUnsplashAPI }

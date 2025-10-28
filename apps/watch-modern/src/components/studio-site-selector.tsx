@@ -1,6 +1,13 @@
 import { ChevronDown } from 'lucide-react'
 import Image from 'next/image'
-import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  type FC,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 
 interface StudioSiteSelectorProps {
   onNavigateHome?: () => void
@@ -145,45 +152,51 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
               Jesus Film Project
             </p>
             <ul className="mt-3 space-y-1">
-              {jesusFilmLinks.map(({ href, label, description, isSelected, onSelect }) => (
-                <li key={label}>
-                  {href != null ? (
-                    <a
-                      className={`${baseMenuItemClasses} ${
-                        isSelected
-                          ? 'bg-muted text-foreground'
-                          : 'text-foreground hover:bg-muted hover:text-foreground'
-                      }`}
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={closeMenu}
-                      role="menuitem"
-                      aria-current={isSelected ? 'page' : undefined}
-                    >
-                      <span className="font-medium">{label}</span>
-                      <span className="text-xs text-muted-foreground">{description}</span>
-                    </a>
-                  ) : (
-                    <button
-                      type="button"
-                      role="menuitem"
-                      aria-current={isSelected ? 'page' : undefined}
-                      onClick={() => {
-                        onSelect?.()
-                      }}
-                      className={`${baseMenuItemClasses} ${
-                        isSelected
-                          ? 'bg-muted text-foreground'
-                          : 'text-foreground hover:bg-muted hover:text-foreground'
-                      }`}
-                    >
-                      <span className="font-medium">{label}</span>
-                      <span className="text-xs text-muted-foreground">{description}</span>
-                    </button>
-                  )}
-                </li>
-              ))}
+              {jesusFilmLinks.map(
+                ({ href, label, description, isSelected, onSelect }) => (
+                  <li key={label}>
+                    {href != null ? (
+                      <a
+                        className={`${baseMenuItemClasses} ${
+                          isSelected
+                            ? 'bg-muted text-foreground'
+                            : 'text-foreground hover:bg-muted hover:text-foreground'
+                        }`}
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={closeMenu}
+                        role="menuitem"
+                        aria-current={isSelected ? 'page' : undefined}
+                      >
+                        <span className="font-medium">{label}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {description}
+                        </span>
+                      </a>
+                    ) : (
+                      <button
+                        type="button"
+                        role="menuitem"
+                        aria-current={isSelected ? 'page' : undefined}
+                        onClick={() => {
+                          onSelect?.()
+                        }}
+                        className={`${baseMenuItemClasses} ${
+                          isSelected
+                            ? 'bg-muted text-foreground'
+                            : 'text-foreground hover:bg-muted hover:text-foreground'
+                        }`}
+                      >
+                        <span className="font-medium">{label}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {description}
+                        </span>
+                      </button>
+                    )}
+                  </li>
+                )
+              )}
             </ul>
             <div className="my-4 h-px bg-border" role="separator" />
             <ul className="space-y-1">
@@ -198,7 +211,9 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
                     role="menuitem"
                   >
                     <span className="font-medium">{label}</span>
-                    <span className="text-xs text-muted-foreground">{description}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {description}
+                    </span>
                   </a>
                 </li>
               ))}

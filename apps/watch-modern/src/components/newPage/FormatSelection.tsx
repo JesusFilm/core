@@ -1,4 +1,10 @@
-import { Globe, Image as ImageIcon, MessageCircle, Printer, Video } from 'lucide-react'
+import {
+  Globe,
+  Image as ImageIcon,
+  MessageCircle,
+  Printer,
+  Video
+} from 'lucide-react'
 import { useState } from 'react'
 import type { ReactElement } from 'react'
 
@@ -12,9 +18,7 @@ export function FormatSelection(): ReactElement {
   return (
     <div className="mt-12 hidden">
       <div className="flex items-center gap-4 mb-4">
-        <label className="text-lg font-semibold">
-          In what format?
-        </label>
+        <label className="text-lg font-semibold">In what format?</label>
         <span className="text-sm text-muted-foreground">
           Expected output format from this task
         </span>

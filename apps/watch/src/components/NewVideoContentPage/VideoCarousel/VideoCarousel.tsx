@@ -2,7 +2,7 @@ import { useTheme } from '@mui/material/styles'
 import { ReactElement, useEffect, useMemo, useRef } from 'react'
 import { A11y, FreeMode, Mousewheel, Navigation, Virtual } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { SwiperOptions , Swiper as SwiperType } from 'swiper/types'
+import { SwiperOptions, Swiper as SwiperType } from 'swiper/types'
 
 import { VideoChildFields } from '../../../../__generated__/VideoChildFields'
 import {
@@ -216,7 +216,11 @@ export function VideoCarousel({
                 >
                   <VideoCard
                     containerSlug={containerSlug}
-                    data={isMuxSlide(slide) ? transformMuxSlide(slide) : transformVideoChild(slide.video as VideoChildFields)}
+                    data={
+                      isMuxSlide(slide)
+                        ? transformMuxSlide(slide)
+                        : transformVideoChild(slide.video as VideoChildFields)
+                    }
                     active={activeVideoId === slide.id}
                     transparent={isAfterCurrentVideo}
                     onVideoSelect={handleVideoSelect}

@@ -27,9 +27,12 @@ export function VideoContentHero({
 
   const languageSlug = variant?.slug?.split('/')[1]
 
-  const handleMuteToggle = useCallback((isMuted: boolean): void => {
-    setCollapsed(isMuted)
-  }, [collapsed])
+  const handleMuteToggle = useCallback(
+    (isMuted: boolean): void => {
+      setCollapsed(isMuted)
+    },
+    [collapsed]
+  )
 
   return (
     <div

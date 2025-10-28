@@ -9,7 +9,13 @@ interface AccordionProps {
   icon?: React.ReactNode
 }
 
-export function Accordion({ title, children, defaultOpen = false, className = '', icon }: AccordionProps) {
+export function Accordion({
+  title,
+  children,
+  defaultOpen = false,
+  className = '',
+  icon
+}: AccordionProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen)
 
   return (
@@ -19,7 +25,9 @@ export function Accordion({ title, children, defaultOpen = false, className = ''
         className="w-full flex items-center justify-end p-4 hover:bg-muted/50 transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-muted-foreground">{title}</span>
+          <span className="text-sm font-medium text-muted-foreground">
+            {title}
+          </span>
           {icon}
         </div>
         <ChevronDown
@@ -28,11 +36,7 @@ export function Accordion({ title, children, defaultOpen = false, className = ''
           }`}
         />
       </button>
-      {isOpen && (
-        <div className="px-4 pb-4">
-          {children}
-        </div>
-      )}
+      {isOpen && <div className="px-4 pb-4">{children}</div>}
     </div>
   )
 }

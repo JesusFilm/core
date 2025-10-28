@@ -21,7 +21,9 @@ describe('SectionNewsletterSignup', () => {
     render(<SectionNewsletterSignup />)
 
     expect(
-      screen.getByText('Every month we add new gospel videos to our library, new translations, releases, and tools. Subscribe to our email to be notified about new tools and new media available for you.')
+      screen.getByText(
+        'Every month we add new gospel videos to our library, new translations, releases, and tools. Subscribe to our email to be notified about new tools and new media available for you.'
+      )
     ).toBeInTheDocument()
     expect(screen.getByLabelText('Email address')).toBeInTheDocument()
     expect(screen.getByText('Missionary')).toBeInTheDocument()
@@ -33,7 +35,9 @@ describe('SectionNewsletterSignup', () => {
     const emailInput = screen.getByLabelText('Email address')
     fireEvent.change(emailInput, { target: { value: 'person@example.com' } })
 
-    expect(screen.getByText('We will send updates to person@example.com.')).toBeInTheDocument()
+    expect(
+      screen.getByText('We will send updates to person@example.com.')
+    ).toBeInTheDocument()
   })
 
   it('displays confirmation after submitting the form', () => {

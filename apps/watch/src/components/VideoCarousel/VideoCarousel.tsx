@@ -137,7 +137,11 @@ export function VideoCarousel({
               }
             >
               <VideoCard
-                data={isMuxSlide(slide) ? transformMuxSlide(slide) : transformVideoChild(slide.video as VideoChildFields)}
+                data={
+                  isMuxSlide(slide)
+                    ? transformMuxSlide(slide)
+                    : transformVideoChild(slide.video as VideoChildFields)
+                }
                 active={activeVideoId === slide.id}
                 containerSlug={containerSlug}
                 onVideoSelect={onVideoSelect}

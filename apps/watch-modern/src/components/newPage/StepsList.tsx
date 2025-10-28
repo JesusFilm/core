@@ -148,7 +148,11 @@ const StepContentRenderer = ({
           return (
             <p key={`bold-${index}`} className="mb-2">
               {parts.map((part, partIndex) =>
-                partIndex % 2 === 1 ? <strong key={partIndex}>{part}</strong> : part
+                partIndex % 2 === 1 ? (
+                  <strong key={partIndex}>{part}</strong>
+                ) : (
+                  part
+                )
               )}
             </p>
           )
