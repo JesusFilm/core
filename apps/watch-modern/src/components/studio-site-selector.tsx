@@ -1,4 +1,4 @@
-import { ChevronDown } from 'lucide-react'
+import { Check, ChevronDown } from 'lucide-react'
 import Image from 'next/image'
 import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -99,7 +99,7 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
   }
 
   const baseMenuItemClasses =
-    'flex w-full flex-col items-start gap-1 rounded-md px-3 py-2 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer'
+    'flex w-full items-start justify-between gap-3 rounded-md px-3 py-2 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer'
 
   return (
     <div
@@ -155,8 +155,13 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
                       role="menuitem"
                       aria-current={isSelected ? 'page' : undefined}
                     >
-                      <span className="font-medium">{label}</span>
-                      <span className="text-xs text-muted-foreground">{description}</span>
+                      <span className="flex flex-col items-start gap-1">
+                        <span className="font-medium">{label}</span>
+                        <span className="text-xs text-muted-foreground">{description}</span>
+                      </span>
+                      {isSelected ? (
+                        <Check aria-hidden="true" className="h-4 w-4 text-primary" />
+                      ) : null}
                     </a>
                   ) : (
                     <button
@@ -172,8 +177,13 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
                           : 'text-foreground hover:bg-muted hover:text-foreground'
                       }`}
                     >
-                      <span className="font-medium">{label}</span>
-                      <span className="text-xs text-muted-foreground">{description}</span>
+                      <span className="flex flex-col items-start gap-1">
+                        <span className="font-medium">{label}</span>
+                        <span className="text-xs text-muted-foreground">{description}</span>
+                      </span>
+                      {isSelected ? (
+                        <Check aria-hidden="true" className="h-4 w-4 text-primary" />
+                      ) : null}
                     </button>
                   )}
                 </li>
@@ -194,8 +204,10 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
                     onClick={closeMenu}
                     role="menuitem"
                   >
-                    <span className="font-medium">{label}</span>
-                    <span className="text-xs text-muted-foreground">{description}</span>
+                    <span className="flex flex-col items-start gap-1">
+                      <span className="font-medium">{label}</span>
+                      <span className="text-xs text-muted-foreground">{description}</span>
+                    </span>
                   </a>
                 </li>
               ))}
