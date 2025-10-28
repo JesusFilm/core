@@ -1,0 +1,184 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  output        = env("PRISMA_LOCATION_LUMINA")
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+generator pothos {
+  provider     = "prisma-pothos-types"
+  clientOutput = ".prisma/api-lumina-client"
+  output       = "../src/__generated__/pothos-types.ts"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PG_DATABASE_URL_LUMINA")
+}
+
+model Team {
+  id           String        @id @default(uuid())
+  name         String
+  slug         String        @unique
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  members      TeamMember[]
+  agents       Agent[]
+  subscription Subscription?
+  usage        Usage[]
+}
+
+model TeamMember {
+  id        String   @id @default(uuid())
+  teamId    String
+  userId    String // References User from api-users (federated)
+  role      Role     @default(MEMBER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@index([userId])
+}
+
+model Subscription {
+  id                   String    @id @default(uuid())
+  teamId               String    @unique
+  stripeCustomerId     String    @unique
+  stripeSubscriptionId String?   @unique
+  status               String    @default("active")
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  team                 Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+model Agent {
+  id               String      @id @default(uuid())
+  teamId           String
+  name             String
+  description      String?
+  model            String
+  systemPrompt     String?     @db.Text
+  temperature      Float       @default(1.0)
+  maxTokens        Int?
+  topP             Float?
+  frequencyPenalty Float?
+  presencePenalty  Float?
+  logoUrl          String?
+  primaryColor     String?
+  secondaryColor   String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  team             Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  tools            AgentTool[]
+  widgets          Widget[]
+  websites         Website[]
+  apiKeys          ApiKey[]
+  usage            Usage[]
+
+  @@index([teamId])
+}
+
+model AgentTool {
+  id          String   @id @default(uuid())
+  agentId     String
+  type        String   @default("function")
+  name        String
+  description String?  @db.Text
+  parameters  String   @db.Text // JSON Schema
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  agent       Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+}
+
+model Widget {
+  id             String   @id @default(uuid())
+  agentId        String
+  name           String
+  enabled        Boolean  @default(true)
+  position       String   @default("bottom-right")
+  theme          String   @default("light")
+  triggerText    String   @default("Chat with us")
+  primaryColor   String?
+  allowedDomains String?  @db.Text
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  agent          Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  usage          Usage[]
+
+  @@index([agentId])
+}
+
+model Website {
+  id              String   @id @default(uuid())
+  agentId         String
+  name            String
+  enabled         Boolean  @default(true)
+  subdomain       String?  @unique
+  customDomain    String?  @unique
+  metaTitle       String?
+  metaDescription String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  agent           Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  usage           Usage[]
+
+  @@index([agentId])
+  @@index([subdomain])
+  @@index([customDomain])
+}
+
+model ApiKey {
+  id        String    @id @default(uuid())
+  agentId   String
+  name      String
+  keyHash   String    @unique
+  enabled   Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  lastUsed  DateTime?
+  agent     Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  usage     Usage[]
+
+  @@index([agentId])
+}
+
+model Usage {
+  id         String   @id @default(uuid())
+  teamId     String
+  agentId    String
+  widgetId   String?
+  websiteId  String?
+  apiKeyId   String?
+  tokens     Int
+  costUsd    Decimal  @db.Decimal(10, 6)
+  model      String
+  provider   String
+  requestId  String?
+  durationMs Int?
+  statusCode Int?
+  createdAt  DateTime @default(now())
+  team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  agent      Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  widget     Widget?  @relation(fields: [widgetId], references: [id], onDelete: SetNull)
+  website    Website? @relation(fields: [websiteId], references: [id], onDelete: SetNull)
+  apiKey     ApiKey?  @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+
+  @@index([teamId, createdAt])
+  @@index([agentId, createdAt])
+  @@index([widgetId, createdAt])
+  @@index([websiteId, createdAt])
+  @@index([apiKeyId, createdAt])
+}
+
+enum Role {
+  OWNER
+  MANAGER
+  MEMBER
+}

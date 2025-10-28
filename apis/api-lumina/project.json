@@ -1,0 +1,79 @@
+{
+  "name": "api-lumina",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apis/api-lumina/src",
+  "projectType": "application",
+  "tags": ["scope:api"],
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apis/api-lumina",
+        "main": "apis/api-lumina/src/index.ts",
+        "tsConfig": "apis/api-lumina/tsconfig.app.json",
+        "assets": [],
+        "isolatedConfig": true,
+        "webpackConfig": "apis/api-lumina/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "optimization": true,
+          "sourceMap": false,
+          "extractLicenses": true,
+          "vendorChunk": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "api-lumina:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "api-lumina:build:development"
+        },
+        "production": {
+          "buildTarget": "api-lumina:build:production"
+        }
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "DOPPLER_TOKEN=$DOPPLER_API_LUMINA_TOKEN doppler secrets download --no-file --format=env-no-quotes --project api-lumina > apis/api-lumina/.env"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "generate-graphql": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm exec tsx apis/api-lumina/src/schema/generate.ts > apis/api-lumina/schema.graphql"
+        ]
+      }
+    },
+    "subgraph-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "rover subgraph check https://voyager.jesus-film.org/graphql@main --name lumina --schema ./apis/api-lumina/schema.graphql --introduction-url https://voyager.jesus-film.org/graphql"
+        ]
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["pnpm exec tsc --noEmit -p apis/api-lumina/tsconfig.json"]
+      }
+    }
+  }
+}
