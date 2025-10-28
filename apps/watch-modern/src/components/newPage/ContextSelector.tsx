@@ -1,4 +1,11 @@
-import { FileText, Globe, Layers, MessageSquare, Users, LucideIcon } from 'lucide-react'
+import {
+  FileText,
+  Globe,
+  Layers,
+  MessageSquare,
+  Users,
+  LucideIcon
+} from 'lucide-react'
 import React from 'react'
 
 interface ContextItem {
@@ -115,7 +122,7 @@ export function ContextSelector({
             <div
               key={item.id}
               data-id={`Tile-${item.id.replace(' ', '')}`}
-              className={`${(collapsedTiles && !isTilesContainerHovered) ? 'p-3' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${(collapsedTiles && !isTilesContainerHovered) ? 'gap-1' : 'gap-1 md:gap-3'} ${
+              className={`${collapsedTiles && !isTilesContainerHovered ? 'p-3' : 'p-4'} border-2 rounded-xl transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center ${collapsedTiles && !isTilesContainerHovered ? 'gap-1' : 'gap-1 md:gap-3'} ${
                 isSelected
                   ? `bg-gradient-to-br ${item.gradient} ${item.selectedBorderColor}`
                   : isHighlighted
@@ -137,7 +144,10 @@ export function ContextSelector({
               }}
             >
               {!(collapsedTiles && !isTilesContainerHovered) && (
-                <div className="p-1 md:p-3" data-id={`Tile-${item.id.replace(' ', '')}-Icon`}>
+                <div
+                  className="p-1 md:p-3"
+                  data-id={`Tile-${item.id.replace(' ', '')}-Icon`}
+                >
                   <Icon
                     className={`w-6 h-6 md:w-8 md:h-8 ${
                       isSelected

@@ -78,7 +78,9 @@ export const useImageAnalysis = ({
         accumulateUsage(data.usage)
 
         if (analysisText.includes('```json') || analysisText.includes('```')) {
-          const jsonMatch = analysisText.match(/```\s*(?:json)?\s*([\s\S]*?)\s*```/)
+          const jsonMatch = analysisText.match(
+            /```\s*(?:json)?\s*([\s\S]*?)\s*```/
+          )
           if (jsonMatch && jsonMatch[1]) {
             analysisText = jsonMatch[1].trim()
           }
@@ -93,7 +95,9 @@ export const useImageAnalysis = ({
             extractedText: parsed.extractedText || '',
             detailedDescription: parsed.detailedDescription || '',
             confidence: parsed.confidence || 'low',
-            contentIdeas: Array.isArray(parsed.contentIdeas) ? parsed.contentIdeas : []
+            contentIdeas: Array.isArray(parsed.contentIdeas)
+              ? parsed.contentIdeas
+              : []
           }
         } catch (parseError) {
           console.error('Failed to parse analysis response:', parseError)

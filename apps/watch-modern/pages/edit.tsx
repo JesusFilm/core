@@ -4,12 +4,11 @@ import Head from 'next/head'
 // we MUST load the editor dynamically, otherwise server-side rendering will fail
 const Editor = dynamic(
   () =>
-    import(
-      /* webpackChunkName: "studio-editor" */ '../src/components/editor'
-    ),
+    import(/* webpackChunkName: "studio-editor" */ '../src/components/editor'),
   {
-  ssr: false,
-});
+    ssr: false
+  }
+)
 
 export default function EditPage() {
   return (

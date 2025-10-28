@@ -11,7 +11,10 @@ import type {
   SetStateAction
 } from 'react'
 
-import { AutoResizeTextarea, Textarea } from '@core/shared/uimodern/components/textarea'
+import {
+  AutoResizeTextarea,
+  Textarea
+} from '@core/shared/uimodern/components/textarea'
 import type { ImageAnalysisResult } from '../../libs/storage'
 import { Button } from '../ui/button'
 import {
@@ -179,7 +182,10 @@ export function MainPromptBlock({
         </div>
 
         {/* Action buttons - bottom right */}
-        <Dialog open={isPersonaDialogOpen} onOpenChange={setIsPersonaDialogOpen}>
+        <Dialog
+          open={isPersonaDialogOpen}
+          onOpenChange={setIsPersonaDialogOpen}
+        >
           <div className="absolute bottom-3 right-3 flex items-center gap-2">
             <DialogTrigger asChild>
               <button
@@ -208,7 +214,10 @@ export function MainPromptBlock({
               ) : hasPendingImageAnalysis ? (
                 <>Analyzing…</>
               ) : (
-                <>{aiResponse.trim() ? 'Retry' : 'Run'}&nbsp;&nbsp;&nbsp;&nbsp;⌘ + ↵</>
+                <>
+                  {aiResponse.trim() ? 'Retry' : 'Run'}&nbsp;&nbsp;&nbsp;&nbsp;⌘
+                  + ↵
+                </>
               )}
             </button>
           </div>
@@ -216,7 +225,8 @@ export function MainPromptBlock({
             <DialogHeader>
               <DialogTitle>Persona settings</DialogTitle>
               <DialogDescription>
-                Define the audience or persona preferences that should guide the generated content.
+                Define the audience or persona preferences that should guide the
+                generated content.
               </DialogDescription>
             </DialogHeader>
             <form className="grid gap-4" onSubmit={handlePersonaSubmit}>

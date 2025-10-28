@@ -25,8 +25,14 @@ test('Video Carousel Navigation', async ({ page }) => {
   await expect(videoCards.first()).toBeVisible()
 
   // Test navigation buttons if available
-  const nextButton = page.getByTestId('NavButton').filter({ hasText: /next/i }).or(page.locator('[aria-label="Next slide"]'))
-  const prevButton = page.getByTestId('NavButton').filter({ hasText: /prev/i }).or(page.locator('[aria-label="Previous slide"]'))
+  const nextButton = page
+    .getByTestId('NavButton')
+    .filter({ hasText: /next/i })
+    .or(page.locator('[aria-label="Next slide"]'))
+  const prevButton = page
+    .getByTestId('NavButton')
+    .filter({ hasText: /prev/i })
+    .or(page.locator('[aria-label="Previous slide"]'))
 
   // Check if navigation buttons exist and are functional
   if (await nextButton.isVisible()) {

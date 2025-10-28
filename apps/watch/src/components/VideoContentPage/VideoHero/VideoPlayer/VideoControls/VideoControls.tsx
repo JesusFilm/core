@@ -22,7 +22,14 @@ import debounce from 'lodash/debounce'
 import last from 'lodash/last'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { MouseEventHandler, ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import {
+  MouseEventHandler,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import Player from 'video.js/dist/types/player'
 
 import { isMobile } from '@core/shared/ui/deviceUtils'
@@ -133,8 +140,12 @@ export function VideoControls({
   const visible = !play || active || loading
 
   const videoTitle = last(title)?.value ?? ''
-  const videoLabel = isMuxInsert && muxOverlay ? muxOverlay.label : label?.replace(/_/g, ' ')
-  const videoDescription = isMuxInsert && muxOverlay ? muxOverlay.description : last(description)?.value
+  const videoLabel =
+    isMuxInsert && muxOverlay ? muxOverlay.label : label?.replace(/_/g, ' ')
+  const videoDescription =
+    isMuxInsert && muxOverlay
+      ? muxOverlay.description
+      : last(description)?.value
   const containerSlug = container?.slug ?? slug
   const collectionTitle = last(container?.title)?.value
 
@@ -232,7 +243,10 @@ export function VideoControls({
   }, [player, variant?.duration, customDuration])
 
   useEffect(() => {
-    const percent = durationSeconds > 0 ? Math.round((player?.currentTime() ?? 0) / durationSeconds * 100) : 0
+    const percent =
+      durationSeconds > 0
+        ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+        : 0
     if (percent > progressPercentNotYetEmitted[0]) {
       eventToDataLayer(
         `video_time_update_${progressPercentNotYetEmitted[0]}`,
@@ -270,9 +284,9 @@ export function VideoControls({
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
         Math.round(player?.currentTime() ?? 0),
-        durationSeconds > 0 ? Math.round(
-          ((player?.currentTime() ?? 0) / durationSeconds) * 100
-        ) : 0
+        durationSeconds > 0
+          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          : 0
       )
     } else {
       eventToDataLayer(
@@ -283,9 +297,9 @@ export function VideoControls({
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
         Math.round(player?.currentTime() ?? 0),
-        durationSeconds > 0 ? Math.round(
-          ((player?.currentTime() ?? 0) / durationSeconds) * 100
-        ) : 0
+        durationSeconds > 0
+          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          : 0
       )
     }
     dispatchPlayer({
@@ -304,9 +318,9 @@ export function VideoControls({
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
         Math.round(player?.currentTime() ?? 0),
-        durationSeconds > 0 ? Math.round(
-          ((player?.currentTime() ?? 0) / durationSeconds) * 100
-        ) : 0
+        durationSeconds > 0
+          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          : 0
       )
     }
     dispatchPlayer({
@@ -327,9 +341,9 @@ export function VideoControls({
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
         Math.round(player?.currentTime() ?? 0),
-        durationSeconds > 0 ? Math.round(
-          ((player?.currentTime() ?? 0) / durationSeconds) * 100
-        ) : 0
+        durationSeconds > 0
+          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          : 0
       )
     } else {
       eventToDataLayer(
@@ -340,9 +354,9 @@ export function VideoControls({
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
         Math.round(player?.currentTime() ?? 0),
-        durationSeconds > 0 ? Math.round(
-          ((player?.currentTime() ?? 0) / durationSeconds) * 100
-        ) : 0
+        durationSeconds > 0
+          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          : 0
       )
     }
   }, [player, id, variant, title, durationSeconds])
@@ -358,9 +372,9 @@ export function VideoControls({
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
         Math.round(player?.currentTime() ?? 0),
-        durationSeconds > 0 ? Math.round(
-          ((player?.currentTime() ?? 0) / durationSeconds) * 100
-        ) : 0
+        durationSeconds > 0
+          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          : 0
       )
     }
   }, [player, id, variant, title, durationSeconds])
@@ -374,9 +388,10 @@ export function VideoControls({
     })
     dispatchPlayer({
       type: 'SetProgress',
-      progress: durationSeconds > 0 ? Math.round(
-        ((player?.currentTime() ?? 0) / durationSeconds) * 100
-      ) : 0
+      progress:
+        durationSeconds > 0
+          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          : 0
     })
   }, [player, durationSeconds, dispatchPlayer])
 
@@ -398,23 +413,32 @@ export function VideoControls({
     })
   }, [player, dispatchPlayer])
 
-  const handleUserActive = useCallback(() =>
-    dispatchPlayer({
-      type: 'SetActive',
-      active: true
-    }), [dispatchPlayer])
+  const handleUserActive = useCallback(
+    () =>
+      dispatchPlayer({
+        type: 'SetActive',
+        active: true
+      }),
+    [dispatchPlayer]
+  )
 
-  const handleUserInactive = useCallback(() =>
-    dispatchPlayer({
-      type: 'SetActive',
-      active: false
-    }), [dispatchPlayer])
+  const handleUserInactive = useCallback(
+    () =>
+      dispatchPlayer({
+        type: 'SetActive',
+        active: false
+      }),
+    [dispatchPlayer]
+  )
 
-  const handleWaiting = useCallback(() =>
-    dispatchPlayer({
-      type: 'SetLoading',
-      loading: true
-    }), [dispatchPlayer])
+  const handleWaiting = useCallback(
+    () =>
+      dispatchPlayer({
+        type: 'SetLoading',
+        loading: true
+      }),
+    [dispatchPlayer]
+  )
 
   const handlePlaying = useCallback(() => {
     setInitialLoadComplete(true)
@@ -425,31 +449,37 @@ export function VideoControls({
   }, [dispatchPlayer])
 
   const handleEnded = useCallback(() => {
-      eventToDataLayer(
-        'video_ended',
-        id,
-        variant?.language.id,
-        title[0].value,
-        variant?.language?.name.find(({ primary }) => !primary)?.value ??
-          variant?.language?.name[0]?.value,
-        Math.round(player?.currentTime() ?? 0),
-        durationSeconds > 0 ? Math.round(
-          ((player?.currentTime() ?? 0) / durationSeconds) * 100
-        ) : 0
-      )
+    eventToDataLayer(
+      'video_ended',
+      id,
+      variant?.language.id,
+      title[0].value,
+      variant?.language?.name.find(({ primary }) => !primary)?.value ??
+        variant?.language?.name[0]?.value,
+      Math.round(player?.currentTime() ?? 0),
+      durationSeconds > 0
+        ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+        : 0
+    )
   }, [player, id, variant, title, durationSeconds])
 
-  const handleCanPlay = useCallback(() =>
-    dispatchPlayer({
-      type: 'SetLoading',
-      loading: false
-    }), [dispatchPlayer])
+  const handleCanPlay = useCallback(
+    () =>
+      dispatchPlayer({
+        type: 'SetLoading',
+        loading: false
+      }),
+    [dispatchPlayer]
+  )
 
-  const handleCanPlayThrough = useCallback(() =>
-    dispatchPlayer({
-      type: 'SetLoading',
-      loading: false
-    }), [dispatchPlayer])
+  const handleCanPlayThrough = useCallback(
+    () =>
+      dispatchPlayer({
+        type: 'SetLoading',
+        loading: false
+      }),
+    [dispatchPlayer]
+  )
 
   useEffect(() => {
     dispatchPlayer({
@@ -481,9 +511,9 @@ export function VideoControls({
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
-          durationSeconds > 0 ? Math.round(
-            ((player?.currentTime() ?? 0) / durationSeconds) * 100
-          ) : 0
+          durationSeconds > 0
+            ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+            : 0
         )
       } else {
         eventToDataLayer(
@@ -494,9 +524,9 @@ export function VideoControls({
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
-          durationSeconds > 0 ? Math.round(
-            ((player?.currentTime() ?? 0) / durationSeconds) * 100
-          ) : 0
+          durationSeconds > 0
+            ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+            : 0
         )
       }
       dispatchPlayer({

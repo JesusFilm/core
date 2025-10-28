@@ -77,8 +77,10 @@ function buildLanguagePoint({
 }): LanguageMapPoint | null {
   if (latitude == null || longitude == null) return null
 
-  const englishName = englishNames.find(({ value }) => value != null)?.value ?? undefined
-  const nativeName = nativeNames.find(({ value }) => value != null)?.value ?? undefined
+  const englishName =
+    englishNames.find(({ value }) => value != null)?.value ?? undefined
+  const nativeName =
+    nativeNames.find(({ value }) => value != null)?.value ?? undefined
   const languageName = englishName ?? nativeName ?? languageId
 
   return {
@@ -149,7 +151,10 @@ export default async function handler(
           )
           .filter((point): point is LanguageMapPoint => point != null)
       })
-      .filter((point, index, all) => all.findIndex(({ id }) => id === point.id) === index)
+      .filter(
+        (point, index, all) =>
+          all.findIndex(({ id }) => id === point.id) === index
+      )
 
     try {
       await redis.setex(LANGUAGE_MAP_CACHE_KEY, CACHE_TTL, points)

@@ -1,8 +1,11 @@
 import React from 'react'
 
-import { cn } from "@core/shared/uimodern/utils"
+import { cn } from '@core/shared/uimodern/utils'
 
-type CheckboxProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> & {
+type CheckboxProps = Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'type'
+> & {
   onCheckedChange?: (checked: boolean) => void
 }
 

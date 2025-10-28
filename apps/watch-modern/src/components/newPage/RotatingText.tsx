@@ -148,7 +148,7 @@ const rotatingItems = [
 ] as const
 
 const categoryColors = {
-  'Conversations': 'text-cyan-600',
+  Conversations: 'text-cyan-600',
   'Social Media': 'text-pink-500',
   Website: 'text-orange-500',
   Print: 'text-emerald-600',
@@ -208,7 +208,13 @@ const RotatingTextComponent = ({
       return hoveredCategoryOptions[currentTextIndex] ?? fallbackText
     }
     return currentItem?.text ?? ''
-  }, [currentItem, currentTextIndex, hoveredCategory, hoveredCategoryOptions, isHovering])
+  }, [
+    currentItem,
+    currentTextIndex,
+    hoveredCategory,
+    hoveredCategoryOptions,
+    isHovering
+  ])
 
   const colorClass = useMemo(() => {
     if (isHovering && hoveredCategory) {
@@ -217,9 +223,8 @@ const RotatingTextComponent = ({
     return currentItem?.colorClass ?? 'text-cyan-600'
   }, [currentItem, hoveredCategory, isHovering])
 
-  const category = isHovering && hoveredCategory
-    ? hoveredCategory
-    : currentItem?.category
+  const category =
+    isHovering && hoveredCategory ? hoveredCategory : currentItem?.category
 
   return (
     <span

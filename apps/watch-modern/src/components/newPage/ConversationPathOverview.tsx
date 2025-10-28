@@ -67,7 +67,7 @@ export function ConversationPathOverview({
 
   const hasSequence = normalizedSequence.length > 0
   const hasRationale = Boolean(
-    (typeof rationale === 'string' ? rationale.trim() : rationale)
+    typeof rationale === 'string' ? rationale.trim() : rationale
   )
 
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -79,7 +79,10 @@ export function ConversationPathOverview({
   const [animatedLines, setAnimatedLines] = useState<Set<number>>(new Set())
 
   stepRefs.current = stepRefs.current.slice(0, reversedSequence.length)
-  numberCircleRefs.current = numberCircleRefs.current.slice(0, reversedSequence.length)
+  numberCircleRefs.current = numberCircleRefs.current.slice(
+    0,
+    reversedSequence.length
+  )
 
   // Animation effect for steps - runs only on first render
   useEffect(() => {
@@ -97,7 +100,7 @@ export function ConversationPathOverview({
       const animationDelay = (reversedSequence.length - 1 - i) * 800
 
       const timeout = setTimeout(() => {
-        setVisibleSteps(prev => new Set(Array.from(prev).concat(stepIndex)))
+        setVisibleSteps((prev) => new Set(Array.from(prev).concat(stepIndex)))
       }, animationDelay)
 
       timeouts.push(timeout)
@@ -125,12 +128,15 @@ export function ConversationPathOverview({
 
     // Start line animations from bottom to top (highest index to lowest)
     // Since connections are in order from top to bottom, we need to reverse this
-    const connectionIndices = Array.from({ length: connections.length }, (_, i) => i).reverse()
+    const connectionIndices = Array.from(
+      { length: connections.length },
+      (_, i) => i
+    ).reverse()
 
     connectionIndices.forEach((connectionIndex, animationIndex) => {
       const animationDelay = animationIndex * 800 // Stagger each line by 800ms for smoother reveal
       const timeout = setTimeout(() => {
-        setAnimatedLines(prev => new Set([...prev, connectionIndex]))
+        setAnimatedLines((prev) => new Set([...prev, connectionIndex]))
       }, animationDelay)
 
       timeouts.push(timeout)
@@ -147,7 +153,11 @@ export function ConversationPathOverview({
       return
     }
 
-    if (!containerRef.current || reversedSequence.length < 2 || !animationsComplete) {
+    if (
+      !containerRef.current ||
+      reversedSequence.length < 2 ||
+      !animationsComplete
+    ) {
       setConnections([])
       return
     }
@@ -157,34 +167,40 @@ export function ConversationPathOverview({
 
       const containerRect = containerRef.current.getBoundingClientRect()
 
-      const nextConnections = stepRefs.current.slice(0, -1).map((step, index) => {
-        const nextStep = stepRefs.current[index + 1]
-        const circle = numberCircleRefs.current[index]
-        const nextCircle = numberCircleRefs.current[index + 1]
+      const nextConnections = stepRefs.current
+        .slice(0, -1)
+        .map((step, index) => {
+          const nextStep = stepRefs.current[index + 1]
+          const circle = numberCircleRefs.current[index]
+          const nextCircle = numberCircleRefs.current[index + 1]
 
-        if (!step || !nextStep || !circle || !nextCircle) {
-          return { x1: 0, y1: 0, x2: 0, y2: 0 }
-        }
+          if (!step || !nextStep || !circle || !nextCircle) {
+            return { x1: 0, y1: 0, x2: 0, y2: 0 }
+          }
 
-        const circleRect = circle.getBoundingClientRect()
-        const nextCircleRect = nextCircle.getBoundingClientRect()
-        const stepRect = step.getBoundingClientRect()
-        const nextStepRect = nextStep.getBoundingClientRect()
+          const circleRect = circle.getBoundingClientRect()
+          const nextCircleRect = nextCircle.getBoundingClientRect()
+          const stepRect = step.getBoundingClientRect()
+          const nextStepRect = nextStep.getBoundingClientRect()
 
-        // Get center X of number circles, center Y of step bubbles
-        const circleCenterX = circleRect.left + circleRect.width / 2 - containerRect.left
-        const circleCenterY = stepRect.top + stepRect.height / 2 - containerRect.top
+          // Get center X of number circles, center Y of step bubbles
+          const circleCenterX =
+            circleRect.left + circleRect.width / 2 - containerRect.left
+          const circleCenterY =
+            stepRect.top + stepRect.height / 2 - containerRect.top
 
-        const nextCircleCenterX = nextCircleRect.left + nextCircleRect.width / 2 - containerRect.left
-        const nextCircleCenterY = nextStepRect.top + nextStepRect.height / 2 - containerRect.top
+          const nextCircleCenterX =
+            nextCircleRect.left + nextCircleRect.width / 2 - containerRect.left
+          const nextCircleCenterY =
+            nextStepRect.top + nextStepRect.height / 2 - containerRect.top
 
-        return {
-          x1: circleCenterX,
-          y1: circleCenterY,
-          x2: nextCircleCenterX,
-          y2: nextCircleCenterY
-        }
-      })
+          return {
+            x1: circleCenterX,
+            y1: circleCenterY,
+            x2: nextCircleCenterX,
+            y2: nextCircleCenterY
+          }
+        })
 
       setConnections(nextConnections)
     }
@@ -268,7 +284,8 @@ export function ConversationPathOverview({
                   >
                     {connections.map(({ x1, y1, x2, y2 }, index) => {
                       // Check if both connected bubbles are visible (prerequisite for animation)
-                      const bubblesVisible = visibleSteps.has(index) && visibleSteps.has(index + 1)
+                      const bubblesVisible =
+                        visibleSteps.has(index) && visibleSteps.has(index + 1)
                       const shouldAnimate = animatedLines.has(index)
                       return (
                         <line
@@ -293,32 +310,46 @@ export function ConversationPathOverview({
                   {reversedSequence.map((movement, index) => {
                     // Calculate scale for perspective effect - bottom step largest, top step smallest
                     // Calculate scale: top item (index 0) = 60%, bottom item (last index) = 100%
-                    const progress = index / Math.max(1, reversedSequence.length - 1) // 0 to 1
+                    const progress =
+                      index / Math.max(1, reversedSequence.length - 1) // 0 to 1
                     const scaleValue = 60 + progress * 40 // 60% to 100%
-                    const roundedScale = Math.round(scaleValue / 5) * 5 as keyof typeof SCALE_CLASSES
-                    const scaleClass = SCALE_CLASSES[roundedScale] || SCALE_CLASSES[100]
+                    const roundedScale = (Math.round(scaleValue / 5) *
+                      5) as keyof typeof SCALE_CLASSES
+                    const scaleClass =
+                      SCALE_CLASSES[roundedScale] || SCALE_CLASSES[100]
 
                     // Calculate decreasing horizontal margin for each step (top has most, bottom has none)
                     const horizontalPaddingIndex = Math.min(
                       reversedSequence.length - 1 - index,
                       4
                     ) as keyof typeof PADDING_X_CLASSES
-                    const paddingClass = PADDING_X_CLASSES[horizontalPaddingIndex] || ''
+                    const paddingClass =
+                      PADDING_X_CLASSES[horizontalPaddingIndex] || ''
 
                     // Calculate increasing vertical spacing from top to bottom with scale compensation
                     const baseSpacingValue = index
-                    const scaleCompensation = Math.round((scaleValue - 60) / 40 * 3)
+                    const scaleCompensation = Math.round(
+                      ((scaleValue - 60) / 40) * 3
+                    )
                     const totalVerticalSpacing = Math.min(
                       baseSpacingValue + scaleCompensation,
                       12
                     ) as keyof typeof MARGIN_BOTTOM_CLASSES
-                    const marginClass = MARGIN_BOTTOM_CLASSES[totalVerticalSpacing] || ''
+                    const marginClass =
+                      MARGIN_BOTTOM_CLASSES[totalVerticalSpacing] || ''
 
-                    const tailClass = index % 2 === 0 ? 'message-bubble-tail-right' : 'message-bubble-tail-left'
-                    const positionClass = index % 2 === 0 ? 'self-start' : 'self-end'
+                    const tailClass =
+                      index % 2 === 0
+                        ? 'message-bubble-tail-right'
+                        : 'message-bubble-tail-left'
+                    const positionClass =
+                      index % 2 === 0 ? 'self-start' : 'self-end'
 
                     return (
-                      <li key={`${movement}-${index}`} className={`relative z-10 ${positionClass} ${paddingClass} ${marginClass}`}>
+                      <li
+                        key={`${movement}-${index}`}
+                        className={`relative z-10 ${positionClass} ${paddingClass} ${marginClass}`}
+                      >
                         <div
                           ref={(element) => {
                             stepRefs.current[index] = element
@@ -329,19 +360,19 @@ export function ConversationPathOverview({
                               : 'translate-y-8 opacity-0'
                           }`}
                         >
-                        <span className="flex items-center gap-3">
-                          <span
-                            ref={(element) => {
-                              numberCircleRefs.current[index] = element
-                            }}
-                            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground"
-                          >
-                            {reversedSequence.length - index}
+                          <span className="flex items-center gap-3">
+                            <span
+                              ref={(element) => {
+                                numberCircleRefs.current[index] = element
+                              }}
+                              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground"
+                            >
+                              {reversedSequence.length - index}
+                            </span>
+                            <span className="relative">{movement}</span>
                           </span>
-                          <span className="relative">{movement}</span>
-                        </span>
-                      </div>
-                    </li>
+                        </div>
+                      </li>
                     )
                   })}
                 </ol>

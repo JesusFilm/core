@@ -22,7 +22,5 @@
     ["2_FileZero-0-0"],
     ["10_DarkroomFaith"]
   ],
-  "blacklist": [
-    "7_Origins4Connect"
-  ]
+  "blacklist": ["7_Origins4Connect"]
 }

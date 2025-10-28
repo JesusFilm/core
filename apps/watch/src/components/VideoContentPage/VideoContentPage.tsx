@@ -118,7 +118,7 @@ export function VideoContentPage(): ReactElement {
                 (children.length === children.length ||
                   children.length > 0) && (
                   <Box pb={4}>
-                  <VideoCarousel
+                    <VideoCarousel
                       slides={carouselSlides}
                       loading={loading}
                       videos={children}

@@ -74,7 +74,9 @@ export interface CarouselMuxSlide {
 
 export type VideoCarouselSlide = CarouselVideoSlide | CarouselMuxSlide
 
-export function isMuxSlide(slide: VideoCarouselSlide): slide is CarouselMuxSlide {
+export function isMuxSlide(
+  slide: VideoCarouselSlide
+): slide is CarouselMuxSlide {
   return slide.source === 'mux'
 }
 
@@ -105,7 +107,9 @@ export function transformMuxSlide(slide: CarouselMuxSlide): UnifiedCardData {
   return {
     id: slide.id,
     title: slide.overlay.title,
-    images: [{ mobileCinematicHigh: slide.posterOverride ?? slide.urls.poster }],
+    images: [
+      { mobileCinematicHigh: slide.posterOverride ?? slide.urls.poster }
+    ],
     imageAlt: [{ value: slide.overlay.description }],
     label: slide.overlay.label,
     slug: slide.id, // Use ID as slug for mux inserts

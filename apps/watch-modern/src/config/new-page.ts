@@ -40,7 +40,7 @@ export const RESPONSE_GUIDELINES = `Guidelines:
 export const contextSystemPrompts: Record<string, string> = {
   default:
     'Default to producing ministry-ready resources that can flex between digital and in-person sharing when no specific context is selected. Provide balanced guidance that keeps the content adaptable.',
-  'Conversations':
+  Conversations:
     'Guide one-on-one or small group conversations that gently introduce gospel truths. Provide step-by-step talk tracks, reflective questions, prayer suggestions, and gracious transitions. Emphasize empathy, listening, and Scripture references when natural. Align media prompts with visuals that feel personal, calm, and suitable for private messaging.',
   'Social Media':
     'Operate like a Canva-style designer for social media campaigns. Treat each step as a templated design idea for stories, carousels, reels, or feed posts. Suggest layout direction, color palettes, typography moods, and short, scroll-stopping copy. Keep platform conventions (vertical ratios, accessibility, alt-text) in mind and tailor media prompts to energetic, template-friendly visuals.',
@@ -52,45 +52,184 @@ export const contextSystemPrompts: Record<string, string> = {
     'Support real-world ministry efforts beyond digital channels. Offer actionable steps for events, discipleship moments, pastoral care, missions, or community service. Provide talking points, activity ideas, and tangible follow-up resources that equip Christians, missionaries, and pastors. Encourage cultural sensitivity and spiritual discernment, and use media prompts to inspire helpful reference visuals, handouts, or props.'
 }
 
-export type ContextDetailOption = { text: string; emoji: string; prompt: string }
+export type ContextDetailOption = {
+  text: string
+  emoji: string
+  prompt: string
+}
 
 export const contextDetailOptions: Record<string, ContextDetailOption[]> = {
-  'Conversations': [
-    { text: 'Start a conversation', prompt: 'Start a friendly chat with someone I haven\'t talked to in a while, without sounding forced.', emoji: '💬' },
-    { text: 'Reconnect', prompt: 'Reach out to someone I\'ve lost touch with and express genuine interest in their life.', emoji: '🙋‍♂️' },
-    { text: 'Invite to talk more', prompt: 'Invite someone to continue our conversation and deepen our connection.', emoji: '💭' },
-    { text: "Say you're sorry", prompt: 'Apologize sincerely for something I\'ve done wrong and seek reconciliation.', emoji: '🙇' },
-    { text: 'Encourage a friend', prompt: 'Offer words of encouragement and support to someone going through a difficult time.', emoji: '🙌' },
-    { text: 'Share your story', prompt: 'Share a personal testimony or experience that could inspire or help others.', emoji: '📝' },
-    { text: 'Share a verse', prompt: 'Share a meaningful Bible verse that relates to the current situation.', emoji: '📖' },
-    { text: 'Offer a prayer', prompt: 'Offer to pray for someone or share a prayer that addresses their needs.', emoji: '🤲' }
+  Conversations: [
+    {
+      text: 'Start a conversation',
+      prompt:
+        "Start a friendly chat with someone I haven't talked to in a while, without sounding forced.",
+      emoji: '💬'
+    },
+    {
+      text: 'Reconnect',
+      prompt:
+        "Reach out to someone I've lost touch with and express genuine interest in their life.",
+      emoji: '🙋‍♂️'
+    },
+    {
+      text: 'Invite to talk more',
+      prompt:
+        'Invite someone to continue our conversation and deepen our connection.',
+      emoji: '💭'
+    },
+    {
+      text: "Say you're sorry",
+      prompt:
+        "Apologize sincerely for something I've done wrong and seek reconciliation.",
+      emoji: '🙇'
+    },
+    {
+      text: 'Encourage a friend',
+      prompt:
+        'Offer words of encouragement and support to someone going through a difficult time.',
+      emoji: '🙌'
+    },
+    {
+      text: 'Share your story',
+      prompt:
+        'Share a personal testimony or experience that could inspire or help others.',
+      emoji: '📝'
+    },
+    {
+      text: 'Share a verse',
+      prompt:
+        'Share a meaningful Bible verse that relates to the current situation.',
+      emoji: '📖'
+    },
+    {
+      text: 'Offer a prayer',
+      prompt:
+        'Offer to pray for someone or share a prayer that addresses their needs.',
+      emoji: '🤲'
+    }
   ],
   'Social Media': [
-    { text: 'Create a social post design', prompt: 'Design an engaging social media post that captures attention and communicates a clear message.', emoji: '🖼️' },
-    { text: 'Design a carousel series', prompt: 'Create a multi-slide carousel that tells a story or presents information progressively.', emoji: '🧩' },
-    { text: 'Plan a short-form video', prompt: 'Plan a brief, impactful video content for platforms like Instagram Reels or TikTok.', emoji: '🎬' },
-    { text: 'Write captions for reels & stories', prompt: 'Write compelling captions that complement short-form video content.', emoji: '✍️' },
-    { text: 'Map a community engagement idea', prompt: 'Develop an idea for engaging with the community through social media initiatives.', emoji: '📣' }
+    {
+      text: 'Create a social post design',
+      prompt:
+        'Design an engaging social media post that captures attention and communicates a clear message.',
+      emoji: '🖼️'
+    },
+    {
+      text: 'Design a carousel series',
+      prompt:
+        'Create a multi-slide carousel that tells a story or presents information progressively.',
+      emoji: '🧩'
+    },
+    {
+      text: 'Plan a short-form video',
+      prompt:
+        'Plan a brief, impactful video content for platforms like Instagram Reels or TikTok.',
+      emoji: '🎬'
+    },
+    {
+      text: 'Write captions for reels & stories',
+      prompt:
+        'Write compelling captions that complement short-form video content.',
+      emoji: '✍️'
+    },
+    {
+      text: 'Map a community engagement idea',
+      prompt:
+        'Develop an idea for engaging with the community through social media initiatives.',
+      emoji: '📣'
+    }
   ],
   Website: [
-    { text: 'Create an embeddable carousel', prompt: 'Design a carousel component that can be easily embedded in websites.', emoji: '🧷' },
-    { text: 'Build a simple landing page', prompt: 'Create an effective landing page that converts visitors into engaged users.', emoji: '🖥️' },
-    { text: 'Lay out a page with sections', prompt: 'Structure a webpage with clear, organized sections for optimal user experience.', emoji: '📐' },
-    { text: 'Draft copy for featured designs', prompt: 'Write persuasive copy highlighting key design elements and benefits.', emoji: '📝' }
+    {
+      text: 'Create an embeddable carousel',
+      prompt:
+        'Design a carousel component that can be easily embedded in websites.',
+      emoji: '🧷'
+    },
+    {
+      text: 'Build a simple landing page',
+      prompt:
+        'Create an effective landing page that converts visitors into engaged users.',
+      emoji: '🖥️'
+    },
+    {
+      text: 'Lay out a page with sections',
+      prompt:
+        'Structure a webpage with clear, organized sections for optimal user experience.',
+      emoji: '📐'
+    },
+    {
+      text: 'Draft copy for featured designs',
+      prompt:
+        'Write persuasive copy highlighting key design elements and benefits.',
+      emoji: '📝'
+    }
   ],
   Print: [
-    { text: 'Design church invite cards', prompt: 'Create attractive invitation cards for church events with clear details and compelling visuals.', emoji: '⛪' },
-    { text: 'Create outreach flyers', prompt: 'Design informative flyers to promote church programs and community outreach.', emoji: '📣' },
-    { text: 'Make shareable cards', prompt: 'Create cards with inspirational messages or Bible verses that people can easily share.', emoji: '💌' },
-    { text: 'Generate QR code posters', prompt: 'Design posters featuring QR codes that link to online resources or event registration.', emoji: '🔗' },
-    { text: 'Print sticker sheets', prompt: 'Create sheets of stickers with church branding, Bible verses, or motivational messages.', emoji: '🏷️' }
+    {
+      text: 'Design church invite cards',
+      prompt:
+        'Create attractive invitation cards for church events with clear details and compelling visuals.',
+      emoji: '⛪'
+    },
+    {
+      text: 'Create outreach flyers',
+      prompt:
+        'Design informative flyers to promote church programs and community outreach.',
+      emoji: '📣'
+    },
+    {
+      text: 'Make shareable cards',
+      prompt:
+        'Create cards with inspirational messages or Bible verses that people can easily share.',
+      emoji: '💌'
+    },
+    {
+      text: 'Generate QR code posters',
+      prompt:
+        'Design posters featuring QR codes that link to online resources or event registration.',
+      emoji: '🔗'
+    },
+    {
+      text: 'Print sticker sheets',
+      prompt:
+        'Create sheets of stickers with church branding, Bible verses, or motivational messages.',
+      emoji: '🏷️'
+    }
   ],
   'Real Life': [
-    { text: 'Write discussion questions', prompt: 'Create thoughtful questions to facilitate meaningful group discussions about faith topics.', emoji: '❓' },
-    { text: 'Plan life application ideas', prompt: 'Develop practical ways to apply biblical principles to everyday life situations.', emoji: '🧭' },
-    { text: 'Outline a short sermon', prompt: 'Structure a brief, focused message with clear main points and practical applications.', emoji: '🎙️' },
-    { text: 'Prepare a group lesson', prompt: 'Create an engaging lesson plan for small group Bible study or discipleship.', emoji: '👥' },
-    { text: 'Create a family devotion', prompt: 'Design a family-focused spiritual activity with Bible reading and discussion.', emoji: '🏠' }
+    {
+      text: 'Write discussion questions',
+      prompt:
+        'Create thoughtful questions to facilitate meaningful group discussions about faith topics.',
+      emoji: '❓'
+    },
+    {
+      text: 'Plan life application ideas',
+      prompt:
+        'Develop practical ways to apply biblical principles to everyday life situations.',
+      emoji: '🧭'
+    },
+    {
+      text: 'Outline a short sermon',
+      prompt:
+        'Structure a brief, focused message with clear main points and practical applications.',
+      emoji: '🎙️'
+    },
+    {
+      text: 'Prepare a group lesson',
+      prompt:
+        'Create an engaging lesson plan for small group Bible study or discipleship.',
+      emoji: '👥'
+    },
+    {
+      text: 'Create a family devotion',
+      prompt:
+        'Design a family-focused spiritual activity with Bible reading and discussion.',
+      emoji: '🏠'
+    }
   ]
 }
 
@@ -132,7 +271,7 @@ Content type definitions:
 Be thorough and accurate in your analysis.`
 
 export const categorySharingOptions: Record<string, string[]> = {
-  'Conversations': [
+  Conversations: [
     'in a text with your friends',
     'in a group chat with your family',
     'in a prayer group on WhatsApp',

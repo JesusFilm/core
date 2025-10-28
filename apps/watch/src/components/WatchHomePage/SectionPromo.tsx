@@ -86,11 +86,14 @@ export function SectionPromo(): ReactElement {
           <div className="relative flex flex-col gap-14">
             <div className="max-w-3xl space-y-4">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-red-100/70">
-                {t('PromoEyebrow', { defaultValue: 'Future-ready for global missions' })}
+                {t('PromoEyebrow', {
+                  defaultValue: 'Future-ready for global missions'
+                })}
               </p>
               <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
                 {t('PromoHeading', {
-                  defaultValue: 'The media landscape is changing—so is Jesus Film Project.'
+                  defaultValue:
+                    'The media landscape is changing—so is Jesus Film Project.'
                 })}
               </h2>
               <p className="text-lg text-white/80 lg:text-xl">
@@ -107,17 +110,31 @@ export function SectionPromo(): ReactElement {
                   className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-transform duration-300 hover:-translate-y-1 hover:bg-white/10"
                 >
                   <div className="mb-6">
-                    <point.icon style={{ fontSize: '80px', width: '80px', height: '80px', opacity: 0.2, mixBlendMode: 'overlay' }} />
+                    <point.icon
+                      style={{
+                        fontSize: '80px',
+                        width: '80px',
+                        height: '80px',
+                        opacity: 0.2,
+                        mixBlendMode: 'overlay'
+                      }}
+                    />
                   </div>
-                  <h3 className="text-xl font-semibold text-white">{point.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-white/70">{point.description}</p>
+                  <h3 className="text-xl font-semibold text-white">
+                    {point.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-relaxed text-white/70">
+                    {point.description}
+                  </p>
                 </div>
               ))}
             </div>
             <div className="space-y-6">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
-                  {t('PromoHighlightsLabel', { defaultValue: 'What we are building next' })}
+                  {t('PromoHighlightsLabel', {
+                    defaultValue: 'What we are building next'
+                  })}
                 </p>
                 <p className="mt-3 max-w-2xl text-sm text-white/70">
                   {t('PromoHighlightsIntro', {
@@ -132,8 +149,12 @@ export function SectionPromo(): ReactElement {
                     key={`${highlight.title}-${index}`}
                     className="group relative overflow-hidden rounded-2xl border border-white/10 bg-stone-950/20 p-6 transition-transform duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-stone-900/60"
                   >
-                    <h3 className="text-lg font-semibold text-white">{highlight.title}</h3>
-                    <p className="mt-3 text-sm leading-relaxed text-white/70">{highlight.description}</p>
+                    <h3 className="text-lg font-semibold text-white">
+                      {highlight.title}
+                    </h3>
+                    <p className="mt-3 text-sm leading-relaxed text-white/70">
+                      {highlight.description}
+                    </p>
                   </div>
                 ))}
               </div>

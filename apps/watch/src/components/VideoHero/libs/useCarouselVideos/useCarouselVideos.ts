@@ -299,7 +299,9 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       if (pool[0] === 'shortFilms') {
         // Handle short films
         const shortFilms = filterOutBlacklistedVideos(
-          (shortFilmsData?.videos || []).filter((v: any) => v.variant && v.variant.hls),
+          (shortFilmsData?.videos || []).filter(
+            (v: any) => v.variant && v.variant.hls
+          ),
           blacklistedVideoIds
         ).filter((video: any) => !isVideoAlreadyPlayed(video.id))
         if (shortFilms.length > 0) {
@@ -341,18 +343,23 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
         if (!video) {
           // Track consecutive failures for this collection to detect persistent depletion
           const failureKey = `pool-${collectionId}-failures`
-          const currentFailures = parseInt(sessionStorage.getItem(failureKey) || '0', 10)
+          const currentFailures = parseInt(
+            sessionStorage.getItem(failureKey) || '0',
+            10
+          )
           const newFailureCount = currentFailures + 1
           sessionStorage.setItem(failureKey, newFailureCount.toString())
 
           // If this collection has failed 3 times in a row, mark the entire pool as exhausted
           if (newFailureCount >= 3) {
-            const childrenCount = countsData?.videos?.find(
-              (n: any) => n.id === collectionId
-            )?.childrenCount || 0
+            const childrenCount =
+              countsData?.videos?.find((n: any) => n.id === collectionId)
+                ?.childrenCount || 0
             // Mark as exhausted by setting played videos equal to total count
             const poolVideosKey = `pool-${collectionId}-videos`
-            const playedVideos = JSON.parse(sessionStorage.getItem(poolVideosKey) || '[]')
+            const playedVideos = JSON.parse(
+              sessionStorage.getItem(poolVideosKey) || '[]'
+            )
             // Fill the played videos array to reach exhaustion threshold
             for (let i = playedVideos.length; i < childrenCount; i++) {
               playedVideos.push(`exhausted-${i}`)
@@ -596,9 +603,7 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
   const jumpToVideo = useCallback(
     (videoId: string): boolean => {
       // Find slide in the slides array
-      const slideIndex = slides.findIndex(
-        (slide) => slide.id === videoId
-      )
+      const slideIndex = slides.findIndex((slide) => slide.id === videoId)
       if (slideIndex === -1) {
         return false
       }

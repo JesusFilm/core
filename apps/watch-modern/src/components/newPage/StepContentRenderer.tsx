@@ -12,7 +12,10 @@ export type StepContentRendererProps = {
   onContentChange: (value: string) => void
   onFocus: () => void
   copiedStepIndex: number | null
-  onCopyStep: (payload: { content: string; keywords: string[]; mediaPrompt: string }, stepIndex: number) => Promise<void> | void
+  onCopyStep: (
+    payload: { content: string; keywords: string[]; mediaPrompt: string },
+    stepIndex: number
+  ) => Promise<void> | void
   onEditingComplete: (stepIndex: number) => void
   className?: string
 }

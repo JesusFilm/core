@@ -10,57 +10,59 @@ This plan adds background-video “insert” cards to the Watch carousel using *
 
 ## High-Level Summary
 
-- Store Playback IDs (not full URLs) for inserts in a JSON config.  
+- Store Playback IDs (not full URLs) for inserts in a JSON config.
 - Build URLs at render time:
-  - HLS: `https://stream.mux.com/{PLAYBACK_ID}.m3u8`  
-  - Poster: `https://image.mux.com/{PLAYBACK_ID}/thumbnail.jpg?time=1`  
-- Randomly pick one Playback ID from the array for each insert (simple uniform random).  
-- Render overlay text fields: `label`, `title`, `collection`, `description`.  
+  - HLS: `https://stream.mux.com/{PLAYBACK_ID}.m3u8`
+  - Poster: `https://image.mux.com/{PLAYBACK_ID}/thumbnail.jpg?time=1`
+- Randomly pick one Playback ID from the array for each insert (simple uniform random).
+- Render overlay text fields: `label`, `title`, `collection`, `description`.
 - Respect reduced motion and provide poster-first fallbacks.
 
 ---
 
 ## Scope
 
-**In scope**  
-- New slide source: `"mux"`  
-- Insert configuration JSON and schema validation  
-- Random uniform selection per insert  
-- HLS playback (or MP4 fallback) in `<video>` or existing player  
-- Overlay content (`label`, `title`, `collection`, `description`)  
-- Error/fallback visuals  
+**In scope**
+
+- New slide source: `"mux"`
+- Insert configuration JSON and schema validation
+- Random uniform selection per insert
+- HLS playback (or MP4 fallback) in `<video>` or existing player
+- Overlay content (`label`, `title`, `collection`, `description`)
+- Error/fallback visuals
 - Tests, Storybook, docs
 
-**Out of scope**  
-- Upload automation to MUX  
-- Analytics beyond basic logs  
-- Dynamic API resolution, caching, or rate limiting  
+**Out of scope**
+
+- Upload automation to MUX
+- Analytics beyond basic logs
+- Dynamic API resolution, caching, or rate limiting
 - Per-user personalization
 
 ---
 
 ## Acceptance Criteria
 
-- Given an insert with `source: "mux"` and ≥1 Playback ID, the carousel renders a background video with overlay fields.  
-- First visible insert renders without jank; offscreen inserts lazy-load.  
-- `prefers-reduced-motion` disables autoplay and uses poster-only until user interaction.  
-- No secrets appear in client bundles.  
-- Insert config is schema-validated at build; invalid config fails CI.  
+- Given an insert with `source: "mux"` and ≥1 Playback ID, the carousel renders a background video with overlay fields.
+- First visible insert renders without jank; offscreen inserts lazy-load.
+- `prefers-reduced-motion` disables autoplay and uses poster-only until user interaction.
+- No secrets appear in client bundles.
+- Insert config is schema-validated at build; invalid config fails CI.
 - Overlay meets WCAG AA contrast.
 
 ---
 
 ## Risks & Mitigations
 
-- **Broken/removed assets** → editors maintain JSON; fallback poster shows if video fails.  
-- **Large renditions** → allow MP4 fallback ≤1080p for constrained networks.  
+- **Broken/removed assets** → editors maintain JSON; fallback poster shows if video fails.
+- **Large renditions** → allow MP4 fallback ≤1080p for constrained networks.
 - **Visual flicker** → stable random choice seeded per session.
 
 ---
 
 ## Phase 0 — Planning Artifact
 
-- [ ] Create this plan at `/prds/watch/MUX-INSERTS-TODO.md`  
+- [ ] Create this plan at `/prds/watch/MUX-INSERTS-TODO.md`
 
 Rollback: delete the file.
 
@@ -68,24 +70,28 @@ Rollback: delete the file.
 
 ## Phase 1 — Types, Config, and Schema
 
-**Goal:** define data shapes and validation; no UI changes.  
+**Goal:** define data shapes and validation; no UI changes.
 
-Tasks  
-- [ ] Add discriminated union for `source: "mux"` to slide types.  
-- [ ] Introduce insert config with Playback IDs and overlay fields (`label`, `title`, `collection`, `description`).  
-- [ ] Add schema validation (Zod or JSON Schema) enforced in CI.  
-- [ ] Add simple RNG utility to pick one Playback ID uniformly.  
+Tasks
 
-Files  
-- `apps/watch/src/types/inserts.ts`  
-- `apps/watch/config/video-inserts.mux.json`  
-- `apps/watch/src/lib/validation/insertMux.schema.ts`  
-- `apps/watch/src/lib/rng/randomPick.ts`  
+- [ ] Add discriminated union for `source: "mux"` to slide types.
+- [ ] Introduce insert config with Playback IDs and overlay fields (`label`, `title`, `collection`, `description`).
+- [ ] Add schema validation (Zod or JSON Schema) enforced in CI.
+- [ ] Add simple RNG utility to pick one Playback ID uniformly.
 
-Validation  
+Files
+
+- `apps/watch/src/types/inserts.ts`
+- `apps/watch/config/video-inserts.mux.json`
+- `apps/watch/src/lib/validation/insertMux.schema.ts`
+- `apps/watch/src/lib/rng/randomPick.ts`
+
+Validation
+
 - Schema tests pass; CI fails on invalid JSON.
 
-Rollback  
+Rollback
+
 - Remove types, schema, and config.
 
 Reference config:
@@ -284,3 +290,4 @@ Overlay fields:
 
 Approval Gate
 	•	Approval: Implement according to this plan
+```

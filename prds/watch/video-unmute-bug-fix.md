@@ -11,6 +11,7 @@ The issue had two parts:
 ### 1. Boolean Logic Bug in Overlay Logic
 
 The `shouldShowOverlay` variable was calculated as:
+
 ```typescript
 const shouldShowOverlay = playerReady && (mute || subtitleOn)
 ```
@@ -28,6 +29,7 @@ useEffect(() => {
 ```
 
 Every mute/unmute action would:
+
 1. Dispose the existing videojs player
 2. Attempt to create a new player on the same DOM element
 3. Cause DOM state inconsistencies, resulting in "element not included in the DOM" errors
@@ -38,6 +40,7 @@ Every mute/unmute action would:
 ### 1. Fixed Boolean Logic
 
 Changed the overlay logic to properly handle undefined values:
+
 ```typescript
 const shouldShowOverlay = playerReady && (mute || Boolean(subtitleOn))
 ```
@@ -46,6 +49,7 @@ const shouldShowOverlay = playerReady && (mute || Boolean(subtitleOn))
 
 - Removed `mute` from the player initialization useEffect dependencies
 - Added a separate useEffect to handle mute changes dynamically:
+
 ```typescript
 useEffect(() => {
   if (playerRef.current) {
@@ -53,6 +57,7 @@ useEffect(() => {
   }
 }, [mute])
 ```
+
 - Initialize the player with `muted: false` and let the useEffect set the correct state
 
 ## Files Modified
@@ -62,6 +67,7 @@ useEffect(() => {
 ## Testing
 
 The fix ensures that:
+
 - Videos remain visible when unmuting
 - No console errors about DOM elements
 - Mute/unmute operations are performant (no player recreation)

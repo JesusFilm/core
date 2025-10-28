@@ -21,9 +21,10 @@ import { EditorSessionsList } from './editor/editor-sessions-list'
 import { EditorSettingsDialog } from './editor/editor-settings-dialog'
 import { EditorSuggestionDialogs } from './editor/editor-suggestion-dialogs'
 
-const summarizeTokens = (
-  tokens?: { input: number; output: number }
-): TokenSummary | null => {
+const summarizeTokens = (tokens?: {
+  input: number
+  output: number
+}): TokenSummary | null => {
   if (!tokens) return null
   const total = tokens.input + tokens.output
   if (total <= 0) return null
@@ -60,14 +61,20 @@ export const Editor = () => {
     output: 0
   })
   const [isTokensUpdated, setIsTokensUpdated] = useState(false)
-  const [selectedImageForDetails, setSelectedImageForDetails] = useState<number | null>(null)
-  const [imageAnalysisResults, setImageAnalysisResults] = useState<ImageAnalysisResult[]>([])
+  const [selectedImageForDetails, setSelectedImageForDetails] = useState<
+    number | null
+  >(null)
+  const [imageAnalysisResults, setImageAnalysisResults] = useState<
+    ImageAnalysisResult[]
+  >([])
   const [showAllIdeas, setShowAllIdeas] = useState(false)
   const [animatingSuggestion, setAnimatingSuggestion] = useState<{
     analysisIndex: number
     ideaIndex: number
   } | null>(null)
-  const [hiddenSuggestions, setHiddenSuggestions] = useState<Set<string>>(new Set())
+  const [hiddenSuggestions, setHiddenSuggestions] = useState<Set<string>>(
+    new Set()
+  )
 
   const tokenSummary = summarizeTokens(totalTokensUsed)
 
@@ -179,7 +186,10 @@ export const Editor = () => {
       <Head data-id="Head">
         <title>Editor | Studio | Jesus Film Project</title>
       </Head>
-      <div className="min-h-screen bg-stone-100 text-foreground" data-id="PageRoot">
+      <div
+        className="min-h-screen bg-stone-100 text-foreground"
+        data-id="PageRoot"
+      >
         <EditorHeader
           onNavigateHome={() => navigateTo('/')}
           onNavigatePlan={() => navigateTo('/new')}
@@ -213,13 +223,20 @@ export const Editor = () => {
           summarizeTokens={summarizeTokens}
         />
 
-        <PolotnoContainer style={{ width: '100vw', height: 'calc(100vh - 80px)', paddingTop: '0' }}>
+        <PolotnoContainer
+          style={{
+            width: '100vw',
+            height: 'calc(100vh - 80px)',
+            paddingTop: '0'
+          }}
+        >
           <link
             rel="stylesheet"
             href="https://unpkg.com/@blueprintjs/core@5/lib/css/blueprint.css"
           />
-          <style dangerouslySetInnerHTML={{
-            __html: `
+          <style
+            dangerouslySetInnerHTML={{
+              __html: `
               body .polotno-workspace-inner .polotno-page-container:after {
               content:'';
                 background: #E8E8E8 !important;
@@ -231,7 +248,8 @@ export const Editor = () => {
                 z-index: 1000 !important;
               }
             `
-          }} />
+            }}
+          />
           <SidePanelWrap>
             <SidePanel store={store} />
           </SidePanelWrap>
@@ -244,7 +262,7 @@ export const Editor = () => {
         </PolotnoContainer>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default Editor;
+export default Editor

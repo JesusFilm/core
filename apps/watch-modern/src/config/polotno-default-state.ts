@@ -9,7 +9,8 @@ export const POLOTNO_STORAGE_META_KEY = 'studio-polotno-design-meta'
 
 const cloneDesign = <T>(design: T): T => JSON.parse(JSON.stringify(design))
 
-export const getDefaultPolotnoDesign = (): PolotnoDesignData => cloneDesign(defaultDesign)
+export const getDefaultPolotnoDesign = (): PolotnoDesignData =>
+  cloneDesign(defaultDesign)
 
 export const parsePolotnoDesign = (
   storedValue: string | null

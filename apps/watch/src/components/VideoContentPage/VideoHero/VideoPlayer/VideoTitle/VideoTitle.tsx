@@ -58,8 +58,8 @@ export function VideoTitle({
         ? true
         : false
 
-        // console.log('mute', mute)
-        // console.log('volume', volume)
+  // console.log('mute', mute)
+  // console.log('volume', volume)
 
   const watchNowHref = getWatchUrl(containerSlug, label, videoVariant?.slug)
 
@@ -76,20 +76,18 @@ export function VideoTitle({
       `}
       style={{ transitionTimingFunction: 'ease-out' }}
     >
-
       {isPreview && !isMuxInsert && !(mute || volume === 0) && (
         <NextLink
           href={action?.url || watchNowHref}
           scroll={false}
           locale={false}
-          id={action ? "mux-action-button" : "watch-now-button"}
+          id={action ? 'mux-action-button' : 'watch-now-button'}
           className={clsx(
-            "inline-flex z-1 items-center justify-center gap-2 px-5 py-3 flex-shrink-0",
-            "bg-[#CB333B] text-lg font-medium text-stone-100",
-            "rounded-full shadow-md transition-colors duration-200",
-            "hover:bg-[#A4343A] font-sans cursor-pointer no-underline",
-            "animate-fade-in-up animation-delay-500",
-
+            'inline-flex z-1 items-center justify-center gap-2 px-5 py-3 flex-shrink-0',
+            'bg-[#CB333B] text-lg font-medium text-stone-100',
+            'rounded-full shadow-md transition-colors duration-200',
+            'hover:bg-[#A4343A] font-sans cursor-pointer no-underline',
+            'animate-fade-in-up animation-delay-500'
           )}
         >
           <PlayArrowRounded fontSize="medium" className="-ml-1" />
@@ -110,9 +108,7 @@ export function VideoTitle({
               {videoLabel}
             </div>
           )}
-          <h2
-            className="font-bold text-stone-50 text-shadow-xs mb-0 font-sans animate-fade-in-up animation-delay-200 text-xl md:text-xl lg:text-2xl xl:text-2xl"
-          >
+          <h2 className="font-bold text-stone-50 text-shadow-xs mb-0 font-sans animate-fade-in-up animation-delay-200 text-xl md:text-xl lg:text-2xl xl:text-2xl">
             {videoTitle.replace(/^\d+\.\s*/, '')}
           </h2>
           {collectionTitle && isPreview && (
@@ -179,21 +175,20 @@ export function VideoTitle({
           href={action?.url || watchNowHref}
           scroll={false}
           locale={false}
-          id={action ? "mux-action-button" : "watch-now-button"}
+          id={action ? 'mux-action-button' : 'watch-now-button'}
           className={clsx(
-            "inline-flex z-1 items-center justify-center gap-2 px-5 py-3",
-            "bg-[#CB333B] text-lg font-medium text-stone-100",
-            "rounded-full shadow-md transition-colors duration-200",
-            "hover:bg-[#A4343A] font-sans cursor-pointer self-start no-underline",
-            "animate-fade-in-up animation-delay-500",
-
+            'inline-flex z-1 items-center justify-center gap-2 px-5 py-3',
+            'bg-[#CB333B] text-lg font-medium text-stone-100',
+            'rounded-full shadow-md transition-colors duration-200',
+            'hover:bg-[#A4343A] font-sans cursor-pointer self-start no-underline',
+            'animate-fade-in-up animation-delay-500'
           )}
         >
           <PlayArrowRounded fontSize="medium" className="-ml-1" />
           {action?.label || t('Watch Now')}
         </NextLink>
       )}
-      
+
       {isPreview && (onMuteToggle != null || onSkip != null) && (
         <div className="absolute z-0 bottom-7 right-0 flex items-center gap-2 scale-150">
           {onSkip != null && (

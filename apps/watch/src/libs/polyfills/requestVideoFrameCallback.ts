@@ -14,17 +14,39 @@ declare global {
   }
 
   interface HTMLVideoElement {
-    requestVideoFrameCallback(callback: (now: DOMHighResTimeStamp, metadata: VideoFrameCallbackMetadata) => void): number
+    requestVideoFrameCallback(
+      callback: (
+        now: DOMHighResTimeStamp,
+        metadata: VideoFrameCallbackMetadata
+      ) => void
+    ): number
     cancelVideoFrameCallback(handle: number): void
   }
 }
 
 // Polyfill implementation
-if (typeof HTMLVideoElement !== 'undefined' && !HTMLVideoElement.prototype.requestVideoFrameCallback) {
-  const videoFrameCallbacks = new Map<number, { callback: (now: DOMHighResTimeStamp, metadata: VideoFrameCallbackMetadata) => void; video: HTMLVideoElement }>()
+if (
+  typeof HTMLVideoElement !== 'undefined' &&
+  !HTMLVideoElement.prototype.requestVideoFrameCallback
+) {
+  const videoFrameCallbacks = new Map<
+    number,
+    {
+      callback: (
+        now: DOMHighResTimeStamp,
+        metadata: VideoFrameCallbackMetadata
+      ) => void
+      video: HTMLVideoElement
+    }
+  >()
   let nextCallbackId = 1
 
-  HTMLVideoElement.prototype.requestVideoFrameCallback = function(callback: (now: DOMHighResTimeStamp, metadata: VideoFrameCallbackMetadata) => void): number {
+  HTMLVideoElement.prototype.requestVideoFrameCallback = function (
+    callback: (
+      now: DOMHighResTimeStamp,
+      metadata: VideoFrameCallbackMetadata
+    ) => void
+  ): number {
     // Guard against null/undefined this (e.g., when Video.js calls on disposed elements)
     if (!this || !this.tagName || this.tagName !== 'VIDEO') {
       console.warn('requestVideoFrameCallback called on invalid element:', this)
@@ -71,7 +93,9 @@ if (typeof HTMLVideoElement !== 'undefined' && !HTMLVideoElement.prototype.reque
     return callbackId
   }
 
-  HTMLVideoElement.prototype.cancelVideoFrameCallback = function(handle: number): void {
+  HTMLVideoElement.prototype.cancelVideoFrameCallback = function (
+    handle: number
+  ): void {
     // Guard against null/undefined this
     if (!this || !this.tagName || this.tagName !== 'VIDEO') {
       return

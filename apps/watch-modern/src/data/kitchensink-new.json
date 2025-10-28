@@ -12,29 +12,17 @@
   "editableSteps": [
     {
       "content": "# Listen First\n\nStart by asking gentle questions and mirror back what you hear so they feel safe opening up.\n\n- Give them room to name the hardest part of this week.\n- Repeat one key phrase you heard to show you're tracking with them.\n- Affirm that God can handle every honest emotion they bring.",
-      "keywords": [
-        "listen",
-        "care",
-        "presence"
-      ],
+      "keywords": ["listen", "care", "presence"],
       "mediaPrompt": "Warm, sunlit photo of two friends talking over coffee, soft focus, comforting atmosphere"
     },
     {
       "content": "# Share Hope\n\nOffer a short story of God's faithfulness in your own life and connect it to a verse about His steady love.\n\n- Keep it under two minutes and highlight God's character.\n- Use Romans 8:38-39 or another promise that anchors the moment.\n- Invite them to notice how God has met them before.",
-      "keywords": [
-        "hope",
-        "story",
-        "promise"
-      ],
+      "keywords": ["hope", "story", "promise"],
       "mediaPrompt": "Notebook with open Bible and mug on table, golden hour lighting, hopeful mood"
     },
     {
       "content": "# Pray Together\n\nAsk if you can pray right now, using simple language that thanks God for His presence and asks for fresh strength.\n\n- Keep the prayer under a minute.\n- Name one specific burden they mentioned.\n- Close by reminding them you'll check in again soon.",
-      "keywords": [
-        "prayer",
-        "support",
-        "care"
-      ],
+      "keywords": ["prayer", "support", "care"],
       "mediaPrompt": "Hands joined in prayer, natural light, peaceful background"
     }
   ],

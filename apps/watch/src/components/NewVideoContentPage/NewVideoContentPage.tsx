@@ -116,21 +116,29 @@ export function NewVideoContentPage(): ReactElement {
   }, [studyQuestions, t])
 
   // Handle video/insert selection from carousel
-  const handleVideoSelect = useCallback((videoId: string) => {
-    setCurrentPlayingId(videoId)
-    const slideIndex = carouselSlides.findIndex(slide => slide.id === videoId)
-    if (slideIndex >= 0) {
-      setCurrentSlideIndex(slideIndex)
-    }
-  }, [carouselSlides])
+  const handleVideoSelect = useCallback(
+    (videoId: string) => {
+      setCurrentPlayingId(videoId)
+      const slideIndex = carouselSlides.findIndex(
+        (slide) => slide.id === videoId
+      )
+      if (slideIndex >= 0) {
+        setCurrentSlideIndex(slideIndex)
+      }
+    },
+    [carouselSlides]
+  )
 
   // Handle slide change for duration tracking
-  const handleSlideChange = useCallback((activeIndex: number) => {
-    setCurrentSlideIndex(activeIndex)
-    if (carouselSlides[activeIndex]) {
-      setCurrentPlayingId(carouselSlides[activeIndex].id)
-    }
-  }, [carouselSlides])
+  const handleSlideChange = useCallback(
+    (activeIndex: number) => {
+      setCurrentSlideIndex(activeIndex)
+      if (carouselSlides[activeIndex]) {
+        setCurrentPlayingId(carouselSlides[activeIndex].id)
+      }
+    },
+    [carouselSlides]
+  )
 
   // Handle Mux insert completion - automatically progress to next item
   const handleMuxInsertComplete = useCallback(() => {
@@ -198,7 +206,12 @@ export function NewVideoContentPage(): ReactElement {
         }}
       />
       <PageWrapper
-        hero={<VideoContentHero currentMuxInsert={currentMuxInsert} onMuxInsertComplete={handleMuxInsertComplete} />}
+        hero={
+          <VideoContentHero
+            currentMuxInsert={currentMuxInsert}
+            onMuxInsertComplete={handleMuxInsertComplete}
+          />
+        }
         headerThemeMode={ThemeMode.dark}
         hideHeader
         hideFooter

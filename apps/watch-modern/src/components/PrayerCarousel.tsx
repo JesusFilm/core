@@ -1,11 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState
-} from 'react'
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 
 import { Book, Target } from 'lucide-react'
 
@@ -36,7 +29,6 @@ function TypingIndicator() {
     </div>
   )
 }
-
 
 function usePrefersReducedMotion() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
@@ -95,8 +87,7 @@ export function PrayerCarousel({
     () => [
       {
         title: 'What’s Happening Now',
-        body:
-          'We’re looking at your request.\nGathering Bible verses and conversation ideas\nto help you respond with grace and wisdom.'
+        body: 'We’re looking at your request.\nGathering Bible verses and conversation ideas\nto help you respond with grace and wisdom.'
       },
       {
         title: 'What Truly Brings Change',
@@ -115,9 +106,9 @@ export function PrayerCarousel({
       },
       {
         title: 'The Real Source of Power',
-        body:
-          'All of this means nothing\nwithout the Holy Spirit and your prayer.\n\nTake a moment to pray.\nAsk God to guide your heart, your words, and this conversation.',
-        verse: '“‘Not by might nor by power,\nbut by my Spirit,’ says the Lord Almighty.”',
+        body: 'All of this means nothing\nwithout the Holy Spirit and your prayer.\n\nTake a moment to pray.\nAsk God to guide your heart, your words, and this conversation.',
+        verse:
+          '“‘Not by might nor by power,\nbut by my Spirit,’ says the Lord Almighty.”',
         reference: '— Zechariah 4:6 (NIV)'
       }
     ],
@@ -126,7 +117,9 @@ export function PrayerCarousel({
 
   const [visibleMessageCount, setVisibleMessageCount] = useState(0)
   const [isVisible, setIsVisible] = useState(false)
-  const [typingMessageIndex, setTypingMessageIndex] = useState<number | null>(null)
+  const [typingMessageIndex, setTypingMessageIndex] = useState<number | null>(
+    null
+  )
   const collapseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const revealTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([])
   const typingTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([])
@@ -203,10 +196,13 @@ export function PrayerCarousel({
       }, cumulativeDelay + MESSAGE_DELAY)
 
       // Hide typing and show message after typing duration
-      const revealTimeoutId = setTimeout(() => {
-        setTypingMessageIndex(null)
-        setVisibleMessageCount((prev) => Math.max(prev, messageIndex + 1))
-      }, cumulativeDelay + MESSAGE_DELAY + TYPING_DURATION)
+      const revealTimeoutId = setTimeout(
+        () => {
+          setTypingMessageIndex(null)
+          setVisibleMessageCount((prev) => Math.max(prev, messageIndex + 1))
+        },
+        cumulativeDelay + MESSAGE_DELAY + TYPING_DURATION
+      )
 
       // Update cumulative delay for next message
       cumulativeDelay += MESSAGE_DELAY + TYPING_DURATION
@@ -219,7 +215,16 @@ export function PrayerCarousel({
       clearRevealTimeouts()
       clearTypingTimeouts()
     }
-  }, [clearRevealTimeouts, clearTypingTimeouts, isActive, isVisible, messages, prefersReducedMotion, MESSAGE_DELAY, TYPING_DURATION])
+  }, [
+    clearRevealTimeouts,
+    clearTypingTimeouts,
+    isActive,
+    isVisible,
+    messages,
+    prefersReducedMotion,
+    MESSAGE_DELAY,
+    TYPING_DURATION
+  ])
 
   useEffect(() => {
     return () => {
@@ -286,13 +291,14 @@ export function PrayerCarousel({
                       {message.verse}
                     </p>
                   )}
-                  {Array.isArray(message.bullets) && message.bullets.length > 0 && (
-                    <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-amber-900/80 marker:text-amber-500 md:text-base">
-                      {message.bullets.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  )}
+                  {Array.isArray(message.bullets) &&
+                    message.bullets.length > 0 && (
+                      <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-amber-900/80 marker:text-amber-500 md:text-base">
+                        {message.bullets.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    )}
                   {message.reference != null && (
                     <p className="text-xs font-medium uppercase tracking-[0.2em] text-amber-500/70">
                       {message.reference}

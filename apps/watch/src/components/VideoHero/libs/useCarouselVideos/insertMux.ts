@@ -34,7 +34,10 @@ function buildDatePrefix(): string {
 
 function prefixTitle(title: string, prefix: string): string {
   const normalizedPrefix = `${prefix}:`
-  if (title.startsWith(`${normalizedPrefix} `) || title.startsWith(normalizedPrefix)) {
+  if (
+    title.startsWith(`${normalizedPrefix} `) ||
+    title.startsWith(normalizedPrefix)
+  ) {
     return title
   }
 
@@ -61,10 +64,12 @@ export function mergeMuxInserts(
   )
 
   const firstSequenceStartId = sequenceStart[0]?.id
-  const firstSequenceStartDate = firstSequenceStartId != null ? buildDatePrefix() : undefined
+  const firstSequenceStartDate =
+    firstSequenceStartId != null ? buildDatePrefix() : undefined
 
   sequenceStart.forEach((insert) => {
-    const shouldPrefix = insert.id === firstSequenceStartId && firstSequenceStartDate != null
+    const shouldPrefix =
+      insert.id === firstSequenceStartId && firstSequenceStartDate != null
     const slide = prepareSlide(insert, seed, preparedSlides, {
       prefixTitleWithDate: shouldPrefix ? firstSequenceStartDate : undefined
     })
@@ -73,8 +78,11 @@ export function mergeMuxInserts(
   })
 
   const afterCount = enabledInserts.filter(
-    (insert): insert is MuxInsertConfig & { trigger: { type: 'after-count'; count: number } } =>
-      insert.trigger.type === 'after-count'
+    (
+      insert
+    ): insert is MuxInsertConfig & {
+      trigger: { type: 'after-count'; count: number }
+    } => insert.trigger.type === 'after-count'
   )
 
   videos.forEach((video, index) => {
@@ -199,7 +207,8 @@ function storePlayback(insertId: string, playbackId: string): void {
 
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY)
-    const parsed = raw != null ? (JSON.parse(raw) as Record<string, string>) : {}
+    const parsed =
+      raw != null ? (JSON.parse(raw) as Record<string, string>) : {}
     parsed[insertId] = playbackId
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(parsed))
   } catch (error) {

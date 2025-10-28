@@ -32,11 +32,7 @@ export function PageWrapper({
 }: PageWrapperProps): ReactElement {
   return (
     <Div100vh>
-      {hideHeader !== true && (
-        <Header
-          themeMode={headerThemeMode}
-        />
-      )}
+      {hideHeader !== true && <Header themeMode={headerThemeMode} />}
       <Stack
         justifyContent="space-between"
         sx={{
