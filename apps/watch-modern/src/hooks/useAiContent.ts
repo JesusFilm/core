@@ -13,6 +13,24 @@ type HttpError = Error & {
   details?: unknown
 }
 
+const getErrorMessage = (error: unknown): string | undefined => {
+  if (typeof error === 'string') {
+    const trimmed = error.trim()
+    return trimmed.length > 0 ? trimmed : undefined
+  }
+
+  if (error instanceof Error) {
+    return error.message
+  }
+
+  if (isRecord(error) && typeof error.message === 'string') {
+    const trimmed = error.message.trim()
+    return trimmed.length > 0 ? trimmed : undefined
+  }
+
+  return undefined
+}
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   value != null && typeof value === 'object'
 
@@ -219,24 +237,39 @@ export const useAiContent = ({
 
       const handleFailure = (error: unknown) => {
         const networkError = isNetworkError(error)
+        const extractedMessage = getErrorMessage(error)
 
         if (networkError) {
+          const messageSuffix = extractedMessage ? ` Details: ${extractedMessage}` : ''
           console.warn(
-            'Network error while processing content. Ready for retry.',
-            error
+            `Network error while processing content. Ready for retry.${messageSuffix}`
           )
         } else {
-          console.error('Error processing content:', error)
+          const status =
+            isRecord(error) &&
+            'status' in error &&
+            typeof (error as { status?: unknown }).status === 'number'
+              ? (error as { status: number }).status
+              : undefined
+          const logPrefix = status
+            ? `AI proxy request failed with status ${status}`
+            : 'AI proxy request failed'
+          const composedMessage = extractedMessage
+            ? `${logPrefix}: ${extractedMessage}`
+            : `${logPrefix}.`
 
-          if (isRecord(error) && 'status' in error && typeof error.status === 'number') {
+          if (status && status >= 400 && status < 500) {
+            console.warn(composedMessage)
+          } else {
+            console.error(composedMessage)
+          }
+
+          if (status) {
             const httpError = error as HttpError
             const details = httpError.details
 
             if (details !== undefined) {
-              console.error(
-                `AI proxy request failed with status ${httpError.status}. Details:`,
-                details
-              )
+              console.debug('AI proxy error details:', details)
             }
           }
         }
@@ -245,7 +278,7 @@ export const useAiContent = ({
         setEditableSteps(previousSteps)
 
         if (!networkError) {
-          console.error(
+          console.warn(
             'Failed to process content via the AI proxy. Please try again.'
           )
         }

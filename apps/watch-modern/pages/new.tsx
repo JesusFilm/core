@@ -1664,16 +1664,45 @@ export default function NewPage() {
     updateTokens(currentSessionId, newTokens)
   }
 
+  const getReadableErrorMessage = useCallback((error: unknown): string | null => {
+    if (typeof error === 'string') {
+      const trimmed = error.trim()
+      return trimmed.length > 0 ? trimmed : null
+    }
+
+    if (error instanceof Error) {
+      const trimmed = error.message?.trim?.()
+      return trimmed && trimmed.length > 0 ? trimmed : null
+    }
+
+    if (
+      error &&
+      typeof error === 'object' &&
+      'message' in error &&
+      typeof (error as { message?: unknown }).message === 'string'
+    ) {
+      const trimmed = (error as { message: string }).message.trim()
+      return trimmed.length > 0 ? trimmed : null
+    }
+
+    return null
+  }, [])
+
   const handleAiError = useCallback(
-    (_error: unknown, { isNetworkError }: { isNetworkError: boolean }) => {
+    (error: unknown, { isNetworkError }: { isNetworkError: boolean }) => {
+      const fallbackMessage = isNetworkError
+        ? 'We had trouble reaching the Studio AI service. Check your connection and try again.'
+        : 'Something went wrong while generating content. Please try again.'
+
+      const resolvedMessage =
+        isNetworkError ? fallbackMessage : getReadableErrorMessage(error) ?? fallbackMessage
+
       setAiError({
         isNetworkError,
-        message: isNetworkError
-          ? 'We had trouble reaching the Studio AI service. Check your connection and try again.'
-          : 'Something went wrong while generating content. Please try again.'
+        message: resolvedMessage
       })
     },
-    [setAiError]
+    [getReadableErrorMessage, setAiError]
   )
 
   const { processContentWithAI } = useAiContent({
