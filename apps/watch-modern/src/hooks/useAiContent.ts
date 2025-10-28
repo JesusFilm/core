@@ -54,7 +54,15 @@ type UseAiContentOptions = {
   setIsProcessing: Dispatch<SetStateAction<boolean>>
   saveSession: (data: SaveSessionArgs) => string
   updateTokens: (sessionId: string | null, usage: { input: number; output: number }) => void
-  onError?: (error: unknown, context: { isNetworkError: boolean }) => void
+  onError?: (
+    error: unknown,
+    context: {
+      isNetworkError: boolean
+      status?: number
+      errorBody?: unknown
+      retry: () => Promise<boolean>
+    }
+  ) => void
 }
 
 export const useAiContent = ({
@@ -78,13 +86,15 @@ export const useAiContent = ({
       const currentValue = inputText || textareaRef.current?.value || ''
       if (!currentValue.trim()) {
         console.warn('Please enter some content to process.')
-        return
+        return false
       }
 
       setIsProcessing(true)
       const previousResponse = aiResponse
       const previousSteps = editableSteps
       setAiResponse('')
+
+      let wasSuccessful = false
 
       try {
         const messages = buildConversationHistory()
@@ -105,12 +115,25 @@ export const useAiContent = ({
           })
         })
 
+        const rawPayload = await response.text()
+
         if (!response.ok) {
-          const errorMessage = await response.text()
-          throw new Error(errorMessage || 'Failed to process content')
+          let errorBody: any = undefined
+          try {
+            errorBody = rawPayload ? JSON.parse(rawPayload) : undefined
+          } catch {
+            errorBody = { error: rawPayload }
+          }
+
+          const error = new Error(
+            (errorBody as { error?: string })?.error ?? 'Failed to process content'
+          ) as Error & { status?: number; errorBody?: unknown }
+          error.status = response.status
+          error.errorBody = errorBody
+          throw error
         }
 
-        const data = await response.json()
+        const data = rawPayload ? JSON.parse(rawPayload) : {}
         const processedContent =
           extractTextFromResponse(data) || 'No response generated'
         setAiResponse(processedContent)
@@ -141,8 +164,13 @@ export const useAiContent = ({
         })
 
         updateTokens(sessionId, tokenUsage)
+        wasSuccessful = true
       } catch (error) {
         const networkError = isNetworkError(error)
+        const status = typeof (error as { status?: number })?.status === 'number'
+          ? (error as { status?: number }).status
+          : undefined
+        const errorBody = (error as { errorBody?: unknown })?.errorBody
 
         if (networkError) {
           console.warn('Network error while processing content. Ready for retry.', error)
@@ -156,10 +184,16 @@ export const useAiContent = ({
           console.error('Failed to process content via the AI proxy. Please try again.')
         }
 
-        onError?.(error, { isNetworkError: networkError })
+        onError?.(error, {
+          isNetworkError: networkError,
+          status,
+          errorBody,
+          retry: () => processContentWithAI(currentValue)
+        })
       } finally {
         setIsProcessing(false)
       }
+      return wasSuccessful
     },
     [
       aiResponse,

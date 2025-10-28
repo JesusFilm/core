@@ -63,6 +63,9 @@ type MainPromptBlockProps = {
     field: keyof PersonaSettings
   ) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
   handlePersonaSubmit: FormEventHandler<HTMLFormElement>
+  canAttachImages: boolean
+  onRequestSignIn?: () => void
+  signInCta?: ReactElement
 }
 
 export function MainPromptBlock({
@@ -84,7 +87,10 @@ export function MainPromptBlock({
   aiResponse,
   personaSettings,
   handlePersonaFieldChange,
-  handlePersonaSubmit
+  handlePersonaSubmit,
+  canAttachImages,
+  onRequestSignIn,
+  signInCta
 }: MainPromptBlockProps): ReactElement {
   return (
     <div
@@ -166,16 +172,33 @@ export function MainPromptBlock({
         />
 
         {/* Camera button - bottom left */}
-        <div className="absolute bottom-3 left-3">
+        <div className="absolute bottom-3 left-3 flex flex-wrap items-center gap-2">
           <button
-            onClick={handleOpenCamera}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-full bg-transparent text-foreground hover:bg-muted/30 transition-colors cursor-pointer"
-            title="Add image"
+            onClick={() => {
+              if (!canAttachImages) {
+                onRequestSignIn?.()
+                return
+              }
+              handleOpenCamera()
+            }}
+            className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-full bg-transparent transition-colors ${
+              canAttachImages
+                ? 'text-foreground hover:bg-muted/30 cursor-pointer'
+                : 'text-muted-foreground cursor-not-allowed'
+            }`}
+            title={
+              canAttachImages
+                ? 'Add image'
+                : 'Sign in to add images and analyze media attachments'
+            }
             type="button"
+            disabled={!canAttachImages}
+            aria-disabled={!canAttachImages}
           >
             <Camera className="w-4 h-4" />
             <span className="hidden md:inline">Add Image</span>
           </button>
+          {!canAttachImages && signInCta}
         </div>
 
         {/* Action buttons - bottom right */}

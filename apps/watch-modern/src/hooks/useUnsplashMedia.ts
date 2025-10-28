@@ -10,6 +10,8 @@ interface UseUnsplashMediaOptions {
   setLoadingUnsplashSteps: Dispatch<SetStateAction<Set<string>>>
   setIsSettingsOpen: (open: boolean) => void
   deriveHeadingFromContent: (content: string, fallback: string) => string
+  isEnabled?: boolean
+  onBlocked?: (resume: () => Promise<void> | void) => void
 }
 
 export const useUnsplashMedia = ({
@@ -18,7 +20,9 @@ export const useUnsplashMedia = ({
   setUnsplashImages,
   setLoadingUnsplashSteps,
   setIsSettingsOpen,
-  deriveHeadingFromContent
+  deriveHeadingFromContent,
+  isEnabled = true,
+  onBlocked
 }: UseUnsplashMediaOptions) => {
   const searchUnsplash = useCallback(
     async (query: string, perPage: number = 3): Promise<string[]> => {
@@ -89,6 +93,10 @@ export const useUnsplashMedia = ({
 
   const loadUnsplashImagesForStep = useCallback(
     async (step: GeneratedStepContent, stepIndex: number) => {
+      if (!isEnabled) {
+        onBlocked?.(() => loadUnsplashImagesForStep(step, stepIndex))
+        return
+      }
       if (!step.keywords.length) return
 
       const stepKey = `step-${stepIndex}`
@@ -133,10 +141,22 @@ export const useUnsplashMedia = ({
         })
       }
     },
-    [deriveHeadingFromContent, searchUnsplash, setLoadingUnsplashSteps, setUnsplashImages, unsplashImages]
+    [
+      deriveHeadingFromContent,
+      isEnabled,
+      onBlocked,
+      searchUnsplash,
+      setLoadingUnsplashSteps,
+      setUnsplashImages,
+      unsplashImages
+    ]
   )
 
   const testUnsplashAPI = useCallback(async () => {
+    if (!isEnabled) {
+      onBlocked?.(() => testUnsplashAPI())
+      return
+    }
     console.log('🧪 Testing Unsplash API...')
 
     if (!unsplashApiKey && !process.env.UNSPLASH_ACCESS_KEY) {
@@ -155,7 +175,7 @@ export const useUnsplashMedia = ({
     }
 
     console.warn('⚠️ Unsplash API test completed without finding any images. Check your access key or try again later.')
-  }, [searchUnsplash, setIsSettingsOpen, unsplashApiKey])
+  }, [isEnabled, onBlocked, searchUnsplash, setIsSettingsOpen, unsplashApiKey])
 
   return { searchUnsplash, loadUnsplashImagesForStep, testUnsplashAPI }
 }
