@@ -1,8 +1,7 @@
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { appendEventToGoogleSheets } from '../utils'
-import { validateBlockEvent } from '../utils'
+import { appendEventToGoogleSheets , validateBlockEvent } from '../utils'
 
 import { ButtonClickEventRef } from './buttonClickEvent'
 import { ButtonClickEventCreateInput } from './inputs'
