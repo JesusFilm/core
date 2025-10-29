@@ -44,11 +44,12 @@ const chatActionInputSchema = z.object({
   target: z.string().nullish()
 })
 
-const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
+export const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
   url: null,
   target: null,
   email: null,
   phone: null,
+  contactAction: null,
   chatUrl: null,
   journey: { disconnect: true },
   block: { disconnect: true }
