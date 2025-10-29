@@ -89,14 +89,19 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
   }
 
   return (
+    <div>
+      <ConversationPathOverview sequence={flowSequence} rationale={flowRationale} />
+      
+      <h2 className="text-xl font-medium mb-10 text-center text-stone-400">Conversation Map</h2>
     <div className="relative">
       <div
         aria-hidden="true"
-        className="hidden sm:block absolute left-4 top-0 bottom-0 w-px bg-border"
+        className="hidden sm:block absolute left-4 top-2 bottom-0 w-px bg-border"
       />
 
+                              
+
       <div className="space-y-10">
-        <ConversationPathOverview sequence={flowSequence} rationale={flowRationale} />
 
         {map.steps.map((step, index) => {
           const selectedScriptureOption = selectedScriptureOptions[index] ?? null
@@ -161,7 +166,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                 className="hidden sm:block absolute left-[9px] top-1.5 h-4 w-4 rounded-full border-4 border-background bg-primary shadow"
               />
 
-              <header className="mb-4 space-y-1">
+              <header className="mb-8 space-y-1">
                 <div className="text-md leading-tight uppercase tracking-wide text-muted-foreground">
                   Step {index + 1}:<br />
                   <span className="text-xl text-foreground normal-case font-semibold">
@@ -424,6 +429,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
           )
         })}
       </div>
+    </div>
     </div>
   )
 })

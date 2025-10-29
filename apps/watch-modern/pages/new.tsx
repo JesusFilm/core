@@ -75,6 +75,7 @@ const FormatSelection = dynamic(
 )
 
 const isDebugLoggingEnabled = process.env.NODE_ENV !== 'production'
+const SHOW_PRAYER_CAROUSEL = false // Temporarily hide prayer messages while awaiting AI responses
 
 type KitchenSinkPersonaSettings = {
   personaName: string
@@ -2963,7 +2964,7 @@ export default function NewPage() {
                   className="hidden"
                 />
                     
-                {isProcessing && (
+                {SHOW_PRAYER_CAROUSEL && isProcessing && (
                   <PrayerCarousel
                     isActive={isProcessing}
                   />
@@ -3124,9 +3125,8 @@ export default function NewPage() {
                         {selectedContext === 'Conversations' ? (
                           <div className="space-y-4">
                             <div className="flex flex-wrap items-center justify-between gap-2">
-                              <label className="text-sm font-medium">Conversation Map</label>
+                              <ConversationMapView map={conversationMapForDisplay} />
                             </div>
-                            <ConversationMapView map={conversationMapForDisplay} />
                           </div>
                         ) : (
                           editableSteps.length > 0 && (
