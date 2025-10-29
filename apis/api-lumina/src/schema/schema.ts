@@ -5,6 +5,7 @@ import './agent'
 import './subscription'
 import './team'
 import './usage'
+import './user'
 
 import { builder } from './builder'
 

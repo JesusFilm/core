@@ -1,7 +1,7 @@
 import { builder } from '../builder'
 
-builder.prismaObject('Subscription', {
-  name: 'LuminaTeamSubscription',
+builder.prismaObject('BillingSubscription', {
+  name: 'LuminaBillingSubscription',
   fields: (t) => ({
     id: t.exposeID('id'),
     teamId: t.exposeString('teamId'),

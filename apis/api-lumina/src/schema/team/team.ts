@@ -10,7 +10,7 @@ builder.prismaObject('Team', {
     updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
     members: t.relation('members'),
     agents: t.relation('agents'),
-    subscription: t.relation('subscription', { nullable: true }),
+    billingSubscription: t.relation('billingSubscription', { nullable: true }),
     usage: t.relation('usage')
   })
 })

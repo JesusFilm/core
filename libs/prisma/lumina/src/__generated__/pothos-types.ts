@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, Team, TeamMember, Subscription, Agent, AgentTool, Widget, Website, ApiKey, Usage } from ".prisma/api-lumina-client/index.js";
+import type { Prisma, Team, TeamMember, BillingSubscription, Agent, AgentTool, Widget, Website, ApiKey, Usage } from ".prisma/api-lumina-client/index.js";
 export default interface PrismaTypes {
     Team: {
         Name: "Team";
@@ -11,7 +11,7 @@ export default interface PrismaTypes {
         Where: Prisma.TeamWhereInput;
         Create: {};
         Update: {};
-        RelationName: "members" | "agents" | "subscription" | "usage";
+        RelationName: "members" | "agents" | "billingSubscription" | "usage";
         ListRelations: "members" | "agents" | "usage";
         Relations: {
             members: {
@@ -24,9 +24,9 @@ export default interface PrismaTypes {
                 Name: "Agent";
                 Nullable: false;
             };
-            subscription: {
-                Shape: Subscription | null;
-                Name: "Subscription";
+            billingSubscription: {
+                Shape: BillingSubscription | null;
+                Name: "BillingSubscription";
                 Nullable: true;
             };
             usage: {
@@ -56,14 +56,14 @@ export default interface PrismaTypes {
             };
         };
     };
-    Subscription: {
-        Name: "Subscription";
-        Shape: Subscription;
-        Include: Prisma.SubscriptionInclude;
-        Select: Prisma.SubscriptionSelect;
-        OrderBy: Prisma.SubscriptionOrderByWithRelationInput;
-        WhereUnique: Prisma.SubscriptionWhereUniqueInput;
-        Where: Prisma.SubscriptionWhereInput;
+    BillingSubscription: {
+        Name: "BillingSubscription";
+        Shape: BillingSubscription;
+        Include: Prisma.BillingSubscriptionInclude;
+        Select: Prisma.BillingSubscriptionSelect;
+        OrderBy: Prisma.BillingSubscriptionOrderByWithRelationInput;
+        WhereUnique: Prisma.BillingSubscriptionWhereUniqueInput;
+        Where: Prisma.BillingSubscriptionWhereInput;
         Create: {};
         Update: {};
         RelationName: "team";

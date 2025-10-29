@@ -108,7 +108,15 @@ export const builder = new SchemaBuilder<{
   }
 })
 
+// Add Role enum
+builder.enumType('Role', {
+  values: ['OWNER', 'MANAGER', 'MEMBER'] as const,
+  description: 'Team member role'
+})
+
 builder.queryType({})
+builder.mutationType({})
+
 builder.addScalarType('Date', DateResolver)
 builder.addScalarType('DateTimeISO', DateTimeISOResolver)
 builder.addScalarType('DateTime', DateTimeResolver)
