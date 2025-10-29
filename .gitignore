@@ -93,3 +93,6 @@ terraform.tfstate.backup
 
 # node sea
 sea-prep.blob
+
+# shortest ai testing artifacts
+.shortest/

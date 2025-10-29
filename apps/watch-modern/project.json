@@ -122,6 +122,13 @@
         "jestConfig": "apps/watch-modern/jest.config.ts"
       }
     },
+    "shortest": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec shortest",
+        "cwd": "apps/watch-modern"
+      }
+    },
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
