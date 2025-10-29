@@ -14,8 +14,8 @@ import { JSX, MouseEvent } from 'react'
 
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import VideoJsPlayer from '../../utils/videoJsTypes'
-import { VideoSettings } from '../VideoSettings'
 import { SubtitleButton } from '../SubtitleButton'
+import { VideoSettings } from '../VideoSettings'
 
 interface DesktopControlsProps {
   playing: boolean

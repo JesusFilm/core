@@ -3,12 +3,12 @@ import IconButton from '@mui/material/IconButton'
 import { ReactElement, useState } from 'react'
 
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
-import VideoJsPlayer from '../../utils/videoJsTypes'
 import { getCaptionsAndSubtitleTracks } from '../../utils/getCaptionsAndSubtitleTracks'
-import { hideAllSubtitles } from '../../utils/hideAllSubtitles'
 import { getYouTubePlayer } from '../../utils/getYouTubePlayer'
+import { hideAllSubtitles } from '../../utils/hideAllSubtitles'
 import { setYouTubeCaptionTrack } from '../../utils/setYouTubeCaptionTrack'
 import { unloadYouTubeCaptions } from '../../utils/unloadYouTubeCaptions'
+import VideoJsPlayer from '../../utils/videoJsTypes'
 
 import { SubtitleMenu } from './SubtitleMenu/SubtitleMenu'
 
