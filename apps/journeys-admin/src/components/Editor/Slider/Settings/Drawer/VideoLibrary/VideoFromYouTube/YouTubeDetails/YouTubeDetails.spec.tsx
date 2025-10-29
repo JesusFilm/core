@@ -226,7 +226,8 @@ describe('YouTubeDetails', () => {
       objectFit: null,
       subtitleLanguage: {
         __typename: 'Language' as const,
-        id: 'lang2'
+        id: '529',
+        bcp47: 'en'
       },
       mediaVideo: null,
       action: null,
@@ -373,7 +374,8 @@ describe('YouTubeDetails', () => {
       objectFit: null,
       subtitleLanguage: {
         __typename: 'Language' as const,
-        id: 'lang2'
+        id: '529',
+        bcp47: 'en'
       },
       mediaVideo: null,
       action: null,
@@ -579,7 +581,8 @@ describe('YouTubeDetails', () => {
       objectFit: null,
       subtitleLanguage: {
         __typename: 'Language' as const,
-        id: 'lang1'
+        id: '529',
+        bcp47: 'en'
       },
       mediaVideo: null,
       action: null,
@@ -681,7 +684,8 @@ describe('YouTubeDetails', () => {
       objectFit: null,
       subtitleLanguage: {
         __typename: 'Language' as const,
-        id: 'lang-en'
+        id: '529',
+        bcp47: 'en'
       },
       mediaVideo: null,
       action: null,
@@ -808,7 +812,8 @@ describe('YouTubeDetails', () => {
       objectFit: null,
       subtitleLanguage: {
         __typename: 'Language' as const,
-        id: 'lang-es'
+        id: '529',
+        bcp47: 'en'
       },
       mediaVideo: null,
       action: null,

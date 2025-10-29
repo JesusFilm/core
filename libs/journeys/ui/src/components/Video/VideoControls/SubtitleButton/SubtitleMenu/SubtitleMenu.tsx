@@ -60,23 +60,26 @@ export function SubtitleMenu({
         <MenuItem disabled>{t('No subtitles available')}</MenuItem>
       )}
       {youtubeCaptionTracks.length > 0 &&
-        youtubeCaptionTracks.map((track) => (
-          <MenuItem
-            key={track.id}
-            onClick={() => handleToggleSubtitle(track.id)}
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              minWidth: 150
-            }}
-          >
-            {track.label ?? track.language ?? 'Unknown'}
-            {activeYoutubeTrack?.id === track.id && (
-              <CheckIcon fontSize="small" sx={{ ml: 1 }} />
-            )}
-          </MenuItem>
-        ))}
+        youtubeCaptionTracks.map(
+          (track) =>
+            track.label != null && (
+              <MenuItem
+                key={track.id}
+                onClick={() => handleToggleSubtitle(track.id)}
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  minWidth: 150
+                }}
+              >
+                {track.label}
+                {activeYoutubeTrack?.id === track.id && (
+                  <CheckIcon fontSize="small" sx={{ ml: 1 }} />
+                )}
+              </MenuItem>
+            )
+        )}
     </Menu>
   )
 }

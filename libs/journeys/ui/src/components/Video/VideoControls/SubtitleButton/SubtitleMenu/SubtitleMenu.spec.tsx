@@ -218,7 +218,7 @@ describe('SubtitleMenu', () => {
     expect(screen.getByText('en')).toBeInTheDocument()
   })
 
-  it('should fallback to "Unknown" when neither label nor language is available', () => {
+  it('should not render menu item when label is null', () => {
     const tracksWithoutLabelsOrLanguage = [
       {
         id: 'track1',
@@ -235,7 +235,7 @@ describe('SubtitleMenu', () => {
       />
     )
 
-    expect(screen.getByText('Unknown')).toBeInTheDocument()
+    expect(screen.queryByText('track1')).not.toBeInTheDocument()
   })
 
   it('should handle empty caption tracks array', () => {

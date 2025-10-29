@@ -9,7 +9,7 @@ import { YoutubeTech } from './YoutubeTech'
 
 export default interface VideoJsPlayer extends Player {
   qualityLevels(): QualityLevelList
-  tech(): Html5 | YoutubeTech
+  tech(options: { IWillNotUseThisInPlugins: true }): Html5 | YoutubeTech
   textTracks?(): TextTrackList
   remoteTextTracks?(): TextTrackList
 }

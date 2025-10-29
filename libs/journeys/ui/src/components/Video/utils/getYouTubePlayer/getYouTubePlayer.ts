@@ -5,7 +5,7 @@ import { isYoutubeTech } from '../videoStatsUtils/isYoutubeTech'
 export function getYouTubePlayer(
   player: VideoJsPlayer
 ): YoutubeTech['ytPlayer'] | null {
-  const tech = player.tech()
+  const tech = player.tech({ IWillNotUseThisInPlugins: true })
 
   if (isYoutubeTech(tech)) {
     return tech.ytPlayer
