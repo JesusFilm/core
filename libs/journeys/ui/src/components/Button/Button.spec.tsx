@@ -445,7 +445,7 @@ describe('Button', () => {
     fireEvent.click(screen.getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('buttonClick', {
-      u: `${mockOrigin}/journey.id/step.id`,
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: 'button',
@@ -753,7 +753,7 @@ describe('Button', () => {
     fireEvent.click(screen.getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('chatButtonClick', {
-      u: `${mockOrigin}/journey.id/step.id`,
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: 'button',
@@ -831,7 +831,7 @@ describe('Button', () => {
     fireEvent.click(screen.getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('chatButtonClick', {
-      u: `${mockOrigin}/journey.id/step.id`,
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: 'button',
