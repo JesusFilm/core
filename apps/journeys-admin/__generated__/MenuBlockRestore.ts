@@ -356,7 +356,10 @@ export interface MenuBlockRestore_stepRestore_TypographyBlock {
 export interface MenuBlockRestore_stepRestore_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+<<<<<<< HEAD
   bcp47: string | null;
+=======
+>>>>>>> origin
 }
 
 export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_title {

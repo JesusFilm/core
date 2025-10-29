@@ -12,7 +12,10 @@ import { VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./../.
 export interface VideoFields_subtitleLanguage {
   __typename: "Language";
   id: string;
+<<<<<<< HEAD
   bcp47: string | null;
+=======
+>>>>>>> origin
 }
 
 export interface VideoFields_mediaVideo_Video_title {

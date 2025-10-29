@@ -12,7 +12,10 @@ import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit, ContactAc
 export interface VideoBlockCreate_videoBlockCreate_subtitleLanguage {
   __typename: "Language";
   id: string;
+<<<<<<< HEAD
   bcp47: string | null;
+=======
+>>>>>>> origin
 }
 
 export interface VideoBlockCreate_videoBlockCreate_mediaVideo_Video_title {

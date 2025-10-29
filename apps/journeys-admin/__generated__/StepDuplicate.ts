@@ -356,7 +356,10 @@ export interface StepDuplicate_blockDuplicate_TypographyBlock {
 export interface StepDuplicate_blockDuplicate_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+<<<<<<< HEAD
   bcp47: string | null;
+=======
+>>>>>>> origin
 }
 
 export interface StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_title {

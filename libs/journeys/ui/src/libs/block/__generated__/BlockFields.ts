@@ -346,7 +346,10 @@ export interface BlockFields_TypographyBlock {
 export interface BlockFields_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+<<<<<<< HEAD
   bcp47: string | null;
+=======
+>>>>>>> origin
 }
 
 export interface BlockFields_VideoBlock_mediaVideo_Video_title {

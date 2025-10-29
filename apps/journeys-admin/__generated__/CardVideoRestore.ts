@@ -16,7 +16,10 @@ export interface CardVideoRestore_video_ImageBlock {
 export interface CardVideoRestore_video_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+<<<<<<< HEAD
   bcp47: string | null;
+=======
+>>>>>>> origin
 }
 
 export interface CardVideoRestore_video_VideoBlock_mediaVideo_Video_title {
