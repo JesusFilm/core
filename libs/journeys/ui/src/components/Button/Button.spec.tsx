@@ -266,6 +266,7 @@ describe('Button', () => {
       mockUuidv4.mockReturnValueOnce('uuid')
       const validateFormMock = jest.fn().mockResolvedValue({})
       const handleSubmitMock = jest.fn()
+      const submitFormMock = jest.fn().mockResolvedValue(undefined)
 
       blockHistoryVar([activeBlock])
       treeBlocksVar([activeBlock])
@@ -273,6 +274,7 @@ describe('Button', () => {
       const formikContextMock = {
         values: { field1: 'asd', field2: '' },
         validateForm: validateFormMock,
+        submitForm: submitFormMock,
         handleSubmit: handleSubmitMock
       }
 
@@ -292,6 +294,7 @@ describe('Button', () => {
 
       await waitFor(() => {
         expect(validateFormMock).toHaveBeenCalled()
+        expect(submitFormMock).toHaveBeenCalled()
         expect(mockButtonClickEvent.result).toHaveBeenCalled()
         expect(handleAction).toHaveBeenCalled()
       })
@@ -958,15 +961,17 @@ describe('Button', () => {
   it('should call actionHandler on click', () => {
     render(
       <MockedProvider>
-        <Button
-          {...block}
-          action={{
-            __typename: 'NavigateToBlockAction',
-            parentBlockId: block.id,
-            gtmEventName: 'gtmEventName',
-            blockId: 'def'
-          }}
-        />
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <Button
+            {...block}
+            action={{
+              __typename: 'NavigateToBlockAction',
+              parentBlockId: block.id,
+              gtmEventName: 'gtmEventName',
+              blockId: 'def'
+            }}
+          />
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getByRole('button'))
@@ -1221,27 +1226,39 @@ describe('Button', () => {
     expect(button).toHaveAttribute('type', 'button')
   })
 
-  it('should trigger form submission when clicked in a form context', () => {
-    const handleSubmit = jest.fn((e) => e.preventDefault())
+  it('should trigger form submission when clicked in a form context', async () => {
+    const handleSubmit = jest.fn((e) => e?.preventDefault?.())
     const submitButtonMock = {
       ...block,
       label: 'Submit Form',
       submitEnabled: true
     }
 
+    // Provide a minimal Formik context; we won't rely on Apollo mutations in this test
+    const useFormikContextMock = useFormikContext as jest.Mock
+    const submitFormMock = jest.fn().mockResolvedValue(undefined)
+    const validateFormMock = jest.fn().mockResolvedValue({})
+    useFormikContextMock.mockReturnValue({
+      values: { field1: 'x' },
+      validateForm: validateFormMock,
+      submitForm: submitFormMock,
+      handleSubmit
+    })
+
     render(
-      <MockedProvider>
-        <form onSubmit={handleSubmit} data-testid="test-form">
-          <Button {...submitButtonMock} />
-        </form>
+      <MockedProvider mocks={[]}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <form onSubmit={handleSubmit} data-testid="test-form">
+            <Button {...submitButtonMock} />
+          </form>
+        </JourneyProvider>
       </MockedProvider>
     )
 
     const submitButton = screen.getByRole('button', { name: 'Submit Form' })
-    expect(submitButton).toHaveAttribute('type', 'submit')
-
     fireEvent.click(submitButton)
-    expect(handleSubmit).toHaveBeenCalledTimes(1)
+    await waitFor(() => expect(validateFormMock).toHaveBeenCalled())
+    await waitFor(() => expect(submitFormMock).toHaveBeenCalled())
   })
 
   describe('customization string resolution', () => {
