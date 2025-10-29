@@ -13,6 +13,11 @@ export interface CardVideoRestore_video_ImageBlock {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
 }
 
+export interface CardVideoRestore_video_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardVideoRestore_video_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -64,12 +69,6 @@ export interface CardVideoRestore_video_VideoBlock_mediaVideo_YouTube {
 
 export type CardVideoRestore_video_VideoBlock_mediaVideo = CardVideoRestore_video_VideoBlock_mediaVideo_Video | CardVideoRestore_video_VideoBlock_mediaVideo_MuxVideo | CardVideoRestore_video_VideoBlock_mediaVideo_YouTube;
 
-export interface CardVideoRestore_video_VideoBlock_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface CardVideoRestore_video_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -95,6 +94,15 @@ export interface CardVideoRestore_video_VideoBlock_action_EmailAction {
   parentStepId: string | null;
 }
 
+export interface CardVideoRestore_video_VideoBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
 export interface CardVideoRestore_video_VideoBlock_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
@@ -104,7 +112,7 @@ export interface CardVideoRestore_video_VideoBlock_action_PhoneAction {
   contactAction: ContactActionType;
 }
 
-export type CardVideoRestore_video_VideoBlock_action = CardVideoRestore_video_VideoBlock_action_ChatAction | CardVideoRestore_video_VideoBlock_action_NavigateToBlockAction | CardVideoRestore_video_VideoBlock_action_LinkAction | CardVideoRestore_video_VideoBlock_action_EmailAction | CardVideoRestore_video_VideoBlock_action_PhoneAction;
+export type CardVideoRestore_video_VideoBlock_action = CardVideoRestore_video_VideoBlock_action_NavigateToBlockAction | CardVideoRestore_video_VideoBlock_action_LinkAction | CardVideoRestore_video_VideoBlock_action_EmailAction | CardVideoRestore_video_VideoBlock_action_ChatAction | CardVideoRestore_video_VideoBlock_action_PhoneAction;
 
 export interface CardVideoRestore_video_VideoBlock {
   __typename: "VideoBlock";
@@ -174,6 +182,7 @@ export interface CardVideoRestore_video_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardVideoRestore_video_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardVideoRestore_video_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
