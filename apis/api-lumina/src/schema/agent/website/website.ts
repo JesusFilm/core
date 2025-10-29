@@ -1,17 +1,16 @@
-import { builder } from '../builder'
+import { builder } from '../../builder'
 
-builder.prismaObject('Widget', {
-  name: 'LuminaWidget',
+builder.prismaObject('Website', {
+  name: 'LuminaAgentWebsite',
   fields: (t) => ({
     id: t.exposeID('id'),
     agentId: t.exposeString('agentId'),
     name: t.exposeString('name'),
     enabled: t.exposeBoolean('enabled'),
-    position: t.exposeString('position'),
-    theme: t.exposeString('theme'),
-    triggerText: t.exposeString('triggerText'),
-    primaryColor: t.expose('primaryColor', { type: 'String', nullable: true }),
-    allowedDomains: t.expose('allowedDomains', {
+    subdomain: t.expose('subdomain', { type: 'String', nullable: true }),
+    customDomain: t.expose('customDomain', { type: 'String', nullable: true }),
+    metaTitle: t.expose('metaTitle', { type: 'String', nullable: true }),
+    metaDescription: t.expose('metaDescription', {
       type: 'String',
       nullable: true
     }),

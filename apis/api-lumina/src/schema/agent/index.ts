@@ -1,5 +1,5 @@
 import './agent'
-import './agentTool'
+import './tool'
 import './widget'
 import './website'
 import './apiKey'

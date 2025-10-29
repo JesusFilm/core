@@ -11,8 +11,8 @@ builder.prismaObject('Usage', {
     apiKeyId: t.expose('apiKeyId', { type: 'String', nullable: true }),
     tokens: t.exposeInt('tokens'),
     costUsd: t.field({
-      type: 'Decimal',
-      resolve: (usage) => usage.costUsd.toString()
+      type: 'Float',
+      resolve: (usage) => Number(usage.costUsd)
     }),
     model: t.exposeString('model'),
     provider: t.exposeString('provider'),

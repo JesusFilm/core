@@ -1,6 +1,7 @@
-import { builder } from '../builder'
+import { builder } from '../../builder'
 
 builder.prismaObject('ApiKey', {
+  name: 'LuminaAgentApiKey',
   fields: (t) => ({
     id: t.exposeID('id'),
     agentId: t.exposeString('agentId'),

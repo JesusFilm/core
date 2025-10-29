@@ -1,20 +1,14 @@
-import { builder } from '../builder'
+import { builder } from '../../builder'
+import { UserRef } from '../../user'
 
-// Reference User from api-users federation
-const UserRef = builder.externalRef(
-  'User',
-  builder.selection<{ id: string }>('id')
-)
+import { Role } from './enums/role'
 
 builder.prismaObject('TeamMember', {
   name: 'LuminaTeamMember',
   fields: (t) => ({
     id: t.exposeID('id'),
     userId: t.exposeString('userId'),
-    role: t.field({
-      type: 'Role',
-      resolve: (member) => member.role
-    }),
+    role: t.expose('role', { type: Role }),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
     updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
     team: t.relation('team'),
