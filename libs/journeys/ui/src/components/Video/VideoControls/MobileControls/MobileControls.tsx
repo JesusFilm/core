@@ -7,8 +7,10 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { JSX, MouseEvent } from 'react'
 
+import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import VideoJsPlayer from '../../utils/videoJsTypes'
 import { VideoSettings } from '../VideoSettings'
+import { SubtitleButton } from '../SubtitleButton'
 
 interface MobileControlsProps {
   showTime: boolean
@@ -24,6 +26,7 @@ interface MobileControlsProps {
   handleFullscreen: () => void
   handleToggleStats: (event: React.MouseEvent) => void
   player: VideoJsPlayer
+  source: VideoBlockSource
 }
 
 export function MobileControls({
@@ -39,7 +42,8 @@ export function MobileControls({
   fullscreen,
   handleFullscreen,
   handleToggleStats,
-  player
+  player,
+  source
 }: MobileControlsProps): JSX.Element {
   return (
     <Container
@@ -70,6 +74,7 @@ export function MobileControls({
           </Typography>
         )}
         <Stack direction="row" alignItems="center">
+          <SubtitleButton player={player} source={source} />
           <VideoSettings player={player} onToggleStats={handleToggleStats} />
           {showFullscreenButton && (
             <IconButton

@@ -430,6 +430,7 @@ export function VideoControls({
               handleFullscreen={handleFullscreen}
               handleToggleStats={handleToggleStats}
               player={player}
+              source={source}
             />
             <DesktopControls
               playing={state.playing}
