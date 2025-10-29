@@ -25,7 +25,7 @@ CREATE TABLE "TeamMember" (
 );
 
 -- CreateTable
-CREATE TABLE "Subscription" (
+CREATE TABLE "BillingSubscription" (
     "id" TEXT NOT NULL,
     "teamId" TEXT NOT NULL,
     "stripeCustomerId" TEXT NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE "Subscription" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Subscription_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "BillingSubscription_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -152,13 +152,13 @@ CREATE INDEX "TeamMember_userId_idx" ON "TeamMember"("userId");
 CREATE UNIQUE INDEX "TeamMember_teamId_userId_key" ON "TeamMember"("teamId", "userId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Subscription_teamId_key" ON "Subscription"("teamId");
+CREATE UNIQUE INDEX "BillingSubscription_teamId_key" ON "BillingSubscription"("teamId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Subscription_stripeCustomerId_key" ON "Subscription"("stripeCustomerId");
+CREATE UNIQUE INDEX "BillingSubscription_stripeCustomerId_key" ON "BillingSubscription"("stripeCustomerId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Subscription_stripeSubscriptionId_key" ON "Subscription"("stripeSubscriptionId");
+CREATE UNIQUE INDEX "BillingSubscription_stripeSubscriptionId_key" ON "BillingSubscription"("stripeSubscriptionId");
 
 -- CreateIndex
 CREATE INDEX "Agent_teamId_idx" ON "Agent"("teamId");
@@ -209,7 +209,7 @@ CREATE INDEX "Usage_apiKeyId_createdAt_idx" ON "Usage"("apiKeyId", "createdAt");
 ALTER TABLE "TeamMember" ADD CONSTRAINT "TeamMember_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "BillingSubscription" ADD CONSTRAINT "BillingSubscription_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Agent" ADD CONSTRAINT "Agent_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
