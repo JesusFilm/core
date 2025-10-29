@@ -343,6 +343,11 @@ export interface CardPollRestore_imageRestore_TypographyBlock {
   settings: CardPollRestore_imageRestore_TypographyBlock_settings | null;
 }
 
+export interface CardPollRestore_imageRestore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardPollRestore_imageRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -507,6 +512,7 @@ export interface CardPollRestore_imageRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardPollRestore_imageRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_imageRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -908,6 +914,11 @@ export interface CardPollRestore_subtitleRestore_TypographyBlock {
   settings: CardPollRestore_subtitleRestore_TypographyBlock_settings | null;
 }
 
+export interface CardPollRestore_subtitleRestore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardPollRestore_subtitleRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1072,6 +1083,7 @@ export interface CardPollRestore_subtitleRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardPollRestore_subtitleRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_subtitleRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -1473,6 +1485,11 @@ export interface CardPollRestore_titleRestore_TypographyBlock {
   settings: CardPollRestore_titleRestore_TypographyBlock_settings | null;
 }
 
+export interface CardPollRestore_titleRestore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardPollRestore_titleRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1637,6 +1654,7 @@ export interface CardPollRestore_titleRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardPollRestore_titleRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_titleRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -2038,6 +2056,11 @@ export interface CardPollRestore_radioQuestionRestore_TypographyBlock {
   settings: CardPollRestore_radioQuestionRestore_TypographyBlock_settings | null;
 }
 
+export interface CardPollRestore_radioQuestionRestore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardPollRestore_radioQuestionRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -2202,6 +2225,7 @@ export interface CardPollRestore_radioQuestionRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardPollRestore_radioQuestionRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_radioQuestionRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -2603,6 +2627,11 @@ export interface CardPollRestore_radioOption1Restore_TypographyBlock {
   settings: CardPollRestore_radioOption1Restore_TypographyBlock_settings | null;
 }
 
+export interface CardPollRestore_radioOption1Restore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardPollRestore_radioOption1Restore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -2767,6 +2796,7 @@ export interface CardPollRestore_radioOption1Restore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardPollRestore_radioOption1Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_radioOption1Restore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -3168,6 +3198,11 @@ export interface CardPollRestore_radioOption2Restore_TypographyBlock {
   settings: CardPollRestore_radioOption2Restore_TypographyBlock_settings | null;
 }
 
+export interface CardPollRestore_radioOption2Restore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardPollRestore_radioOption2Restore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -3332,6 +3367,7 @@ export interface CardPollRestore_radioOption2Restore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardPollRestore_radioOption2Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_radioOption2Restore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -3733,6 +3769,11 @@ export interface CardPollRestore_radioOption3Restore_TypographyBlock {
   settings: CardPollRestore_radioOption3Restore_TypographyBlock_settings | null;
 }
 
+export interface CardPollRestore_radioOption3Restore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardPollRestore_radioOption3Restore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -3897,6 +3938,7 @@ export interface CardPollRestore_radioOption3Restore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardPollRestore_radioOption3Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_radioOption3Restore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -4298,6 +4340,11 @@ export interface CardPollRestore_radioOption4Restore_TypographyBlock {
   settings: CardPollRestore_radioOption4Restore_TypographyBlock_settings | null;
 }
 
+export interface CardPollRestore_radioOption4Restore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardPollRestore_radioOption4Restore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -4462,6 +4509,7 @@ export interface CardPollRestore_radioOption4Restore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardPollRestore_radioOption4Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_radioOption4Restore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -4863,6 +4911,11 @@ export interface CardPollRestore_bodyRestore_TypographyBlock {
   settings: CardPollRestore_bodyRestore_TypographyBlock_settings | null;
 }
 
+export interface CardPollRestore_bodyRestore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardPollRestore_bodyRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -5027,6 +5080,7 @@ export interface CardPollRestore_bodyRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardPollRestore_bodyRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_bodyRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
