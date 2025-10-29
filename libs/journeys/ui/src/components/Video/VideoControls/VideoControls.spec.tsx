@@ -14,8 +14,8 @@ import videojs from 'video.js'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
-import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
+import { JourneyProvider } from '../../../libs/JourneyProvider'
 import VideoJsPlayer from '../utils/videoJsTypes'
 
 import { VideoControls } from './VideoControls'
