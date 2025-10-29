@@ -452,7 +452,58 @@ describe('VideoBlockEditorSettings', () => {
 
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith({
+        autoplay: true,
+        muted: true,
+        endAt: 60,
+        startAt: 0,
+        objectFit: ObjectFit.fill,
         subtitleLanguageId: 'lang-en'
+      })
+    })
+  })
+
+  it('updates subtitle language when changed', async () => {
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: mockYouTubeLanguages,
+      loading: false,
+      error: undefined
+    })
+
+    const onChange = jest.fn()
+    const { getByRole } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{
+                ...video,
+                source: VideoBlockSource.youTube,
+                videoId: 'test-youtube-id',
+                subtitleLanguage: {
+                  __typename: 'Language',
+                  id: 'lang-en'
+                }
+              }}
+              posterBlock={null}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    const combobox = getByRole('combobox')
+    fireEvent.mouseDown(combobox)
+    fireEvent.click(getByRole('option', { name: 'Spanish' }))
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith({
+        autoplay: true,
+        muted: true,
+        endAt: 60,
+        startAt: 0,
+        objectFit: ObjectFit.fill,
+        subtitleLanguageId: 'lang-es'
       })
     })
   })

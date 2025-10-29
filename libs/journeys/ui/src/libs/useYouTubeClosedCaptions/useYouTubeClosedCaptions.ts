@@ -43,7 +43,7 @@ export function useYouTubeClosedCaptions({
   const { data, loading, error } = useQuery<YouTubeClosedCaptionLanguages>(
     YOUTUBE_CLOSED_CAPTION_LANGUAGES,
     {
-      skip: skip || videoId == null,
+      skip: skip,
       variables: { videoId }
     }
   )

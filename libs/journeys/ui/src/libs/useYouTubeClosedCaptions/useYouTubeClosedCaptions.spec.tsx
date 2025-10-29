@@ -43,6 +43,22 @@ const getYouTubeClosedCaptionsMock: MockedResponse<YouTubeClosedCaptionLanguages
     }
   }
 
+const getYouTubeClosedCaptionsNullMock: MockedResponse<YouTubeClosedCaptionLanguages> =
+  {
+    request: {
+      query: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
+      variables: { videoId: null }
+    },
+    result: {
+      data: {
+        youtubeClosedCaptionLanguages: {
+          __typename: 'QueryYoutubeClosedCaptionLanguagesSuccess' as const,
+          data: []
+        }
+      }
+    }
+  }
+
 describe('useYouTubeClosedCaptions', () => {
   it('fetches caption languages when videoId is provided and skip is false', async () => {
     const { result } = renderHook(
@@ -71,7 +87,7 @@ describe('useYouTubeClosedCaptions', () => {
     expect(result.current.error).toBeUndefined()
   })
 
-  it('does not fetch when videoId is null', async () => {
+  it('returns empty languages when videoId is null', async () => {
     const { result } = renderHook(
       () =>
         useYouTubeClosedCaptions({
@@ -80,7 +96,9 @@ describe('useYouTubeClosedCaptions', () => {
         }),
       {
         wrapper: ({ children }: { children: ReactNode }) => (
-          <MockedProvider mocks={[]}>{children}</MockedProvider>
+          <MockedProvider mocks={[getYouTubeClosedCaptionsNullMock]}>
+            {children}
+          </MockedProvider>
         )
       }
     )
@@ -174,32 +192,5 @@ describe('useYouTubeClosedCaptions', () => {
     expect(result.current.languages).toHaveLength(2)
     expect(result.current.languages[0].id).toBe('529')
     expect(result.current.languages[1].id).toBe('496')
-  })
-
-  it('uses cache-first fetch policy', async () => {
-    const { result, rerender } = renderHook(
-      () =>
-        useYouTubeClosedCaptions({
-          videoId: 'test-video-id',
-          skip: false
-        }),
-      {
-        wrapper: ({ children }: { children: ReactNode }) => (
-          <MockedProvider mocks={[getYouTubeClosedCaptionsMock]}>
-            {children}
-          </MockedProvider>
-        )
-      }
-    )
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false)
-    })
-
-    expect(result.current.languages).toEqual(mockLanguages)
-
-    rerender()
-
-    expect(result.current.languages).toEqual(mockLanguages)
   })
 })

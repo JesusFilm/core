@@ -156,15 +156,7 @@ export function VideoBlockEditorSettings({
               selectedSubtitleId={values.subtitleLanguageId}
               availableLanguages={availableSubtitles}
               onChange={async (subtitleLanguageId) => {
-                await setFieldValue(
-                  'subtitleLanguageId',
-                  subtitleLanguageId,
-                  false
-                )
-                // Need to call onChange to persist the change to active video block
-                await onChange({
-                  subtitleLanguageId
-                })
+                await setFieldValue('subtitleLanguageId', subtitleLanguageId)
               }}
               disabled={selectedBlock == null}
             />
