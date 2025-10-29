@@ -243,19 +243,18 @@ describe('VideoControls', () => {
 
     await waitFor(() => expect(muteStub).toHaveBeenCalled())
 
-    // Add a small delay to allow the state to update
-    await new Promise((resolve) => setTimeout(resolve, 100))
-
-    await waitFor(
-      () => {
-        // Try to find either button, and as long as one exists, the test passes
-        const pauseButtons = screen.queryAllByRole('button', {
-          name: /bar-play-button|center-pause-button/
-        })
-        expect(pauseButtons.length).toBeGreaterThan(0)
-      },
-      { timeout: 5000 }
-    )
+    await act(async () => {
+      await waitFor(
+        () => {
+          // Try to find either button, and as long as one exists, the test passes
+          const pauseButtons = screen.queryAllByRole('button', {
+            name: /bar-play-button|center-pause-button/
+          })
+          expect(pauseButtons.length).toBeGreaterThan(0)
+        },
+        { timeout: 5000 }
+      )
+    })
   })
 
   it('should show video settings button by default', () => {
