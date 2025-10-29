@@ -8,8 +8,8 @@ interface SubtitleMenuProps {
   anchorEl: HTMLElement | null
   open: boolean
   onClose: () => void
-  captionTracks: TextTrack[]
-  activeTrack: TextTrack | undefined
+  youtubeCaptionTracks: TextTrack[]
+  activeYoutubeTrack: TextTrack | undefined
   onChange: (trackId: string | null) => void
 }
 
@@ -17,8 +17,8 @@ export function SubtitleMenu({
   anchorEl,
   open,
   onClose,
-  captionTracks,
-  activeTrack,
+  youtubeCaptionTracks,
+  activeYoutubeTrack,
   onChange
 }: SubtitleMenuProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
@@ -27,6 +27,8 @@ export function SubtitleMenu({
     onChange(trackId)
     onClose()
   }
+
+  const hasSubtitles = youtubeCaptionTracks.length > 0
 
   return (
     <Menu
@@ -52,12 +54,13 @@ export function SubtitleMenu({
         }}
       >
         {t('Off')}
-        {activeTrack == null && <CheckIcon fontSize="small" sx={{ ml: 1 }} />}
+        {!hasSubtitles && <CheckIcon fontSize="small" sx={{ ml: 1 }} />}
       </MenuItem>
-      {captionTracks.length === 0 ? (
+      {!hasSubtitles && (
         <MenuItem disabled>{t('No subtitles available')}</MenuItem>
-      ) : (
-        captionTracks.map((track) => (
+      )}
+      {youtubeCaptionTracks.length > 0 &&
+        youtubeCaptionTracks.map((track) => (
           <MenuItem
             key={track.id}
             onClick={() => handleToggleSubtitle(track.id)}
@@ -69,12 +72,11 @@ export function SubtitleMenu({
             }}
           >
             {track.label ?? track.language ?? 'Unknown'}
-            {activeTrack?.id === track.id && (
+            {activeYoutubeTrack?.id === track.id && (
               <CheckIcon fontSize="small" sx={{ ml: 1 }} />
             )}
           </MenuItem>
-        ))
-      )}
+        ))}
     </Menu>
   )
 }

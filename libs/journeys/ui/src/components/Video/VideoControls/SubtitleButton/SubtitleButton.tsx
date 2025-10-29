@@ -10,7 +10,7 @@ import { getYouTubePlayer } from '../../utils/getYouTubePlayer'
 import { setYouTubeCaptionTrack } from '../../utils/setYouTubeCaptionTrack'
 import { unloadYouTubeCaptions } from '../../utils/unloadYouTubeCaptions'
 
-import { SubtitleMenu } from './SubtitleMenu'
+import { SubtitleMenu } from './SubtitleMenu/SubtitleMenu'
 
 interface SubtitleButtonProps {
   player: VideoJsPlayer
@@ -69,12 +69,14 @@ export function SubtitleButton({
   const open = Boolean(anchorEl)
 
   // Get caption tracks and determine button state
-  const captionTracks = getCaptionsAndSubtitleTracks(player)
-  const activeTrack = captionTracks.find((track) => track.mode === 'showing')
+  const youtubeCaptionTracks = getCaptionsAndSubtitleTracks(player)
+  const activeYoutubeTrack = youtubeCaptionTracks.find(
+    (track) => track.mode === 'showing'
+  )
 
   // Determine button state based on available tracks and active track
-  const hasAvailableTracks = captionTracks.length > 0
-  const isTrackSelected = activeTrack != null
+  const hasAvailableTracks = youtubeCaptionTracks.length > 0
+  const isTrackSelected = youtubeCaptionTracks != null
   const isDisabled = !hasAvailableTracks
 
   return (
@@ -112,8 +114,8 @@ export function SubtitleButton({
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        captionTracks={captionTracks}
-        activeTrack={activeTrack}
+        youtubeCaptionTracks={youtubeCaptionTracks}
+        activeYoutubeTrack={activeYoutubeTrack}
         onChange={handleSubtitleChange}
       />
     </>
