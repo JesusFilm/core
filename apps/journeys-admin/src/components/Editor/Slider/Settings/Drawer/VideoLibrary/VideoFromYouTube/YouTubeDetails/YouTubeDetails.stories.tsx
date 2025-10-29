@@ -1,5 +1,5 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
 import { MockedProvider } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { SWRConfig } from 'swr'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
