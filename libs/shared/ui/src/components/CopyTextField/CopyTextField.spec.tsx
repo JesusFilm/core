@@ -74,15 +74,15 @@ describe('CopyTextField', () => {
         value="test"
         sx={{
           '.MuiFilledInput-root': {
-            backgroundColor: 'rgb (255, 255, 255)'
+            backgroundColor: 'rgb(255, 255, 255)'
           }
         }}
         buttonVariant="button"
       />
     )
     // Check that the TextField wrapper received the sx styling
-    const textField = container.querySelector('.MuiTextField-root')
-    expect(textField).toHaveStyle('background-color: rgb(255, 255, 255)')
+    const filledInputRoot = container.querySelector('.MuiFilledInput-root')
+    expect(filledInputRoot).toHaveStyle('background-color: rgb(255, 255, 255)')
   })
 
   it('renders icon button when buttonVariant is "icon"', () => {
