@@ -90,7 +90,8 @@ export function Accordion({
             sx={{
               maxWidth: '24ch',
               overflow: 'hidden',
-              transform: 'translateY(-2px)'
+              position: 'relative',
+              top: 2
             }}
           >
             {value != null ? (

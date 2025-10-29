@@ -11,12 +11,12 @@ import useSWR from 'swr'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
+import { useYouTubeClosedCaptions } from '@core/journeys/ui/useYouTubeClosedCaptions'
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import CheckIcon from '@core/shared/ui/icons/Check'
 
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { parseISO8601Duration } from '../../../../../../../../libs/parseISO8601Duration'
-import { useYouTubeClosedCaptions } from '../../../../../../../../../../../libs/journeys/ui/src/libs/useYouTubeClosedCaptions'
 import { VideoDescription } from '../../VideoDescription'
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 import type { YoutubeVideo, YoutubeVideosData } from '../VideoFromYouTube'
@@ -60,7 +60,7 @@ export function YouTubeDetails({
   const { languages: captionLanguages, loading: captionsLoading } =
     useYouTubeClosedCaptions({
       videoId: id,
-      enabled: open
+      skip: !open || id == null
     })
 
   // Derive bcp47 code from caption data by matching subtitleLanguageId
@@ -72,8 +72,16 @@ export function YouTubeDetails({
     onSelect({
       videoId: id,
       source: VideoBlockSource.youTube,
-      startAt: 0,
-      endAt: time
+      startAt:
+        activeVideoBlock?.videoId === id ? (activeVideoBlock?.startAt ?? 0) : 0,
+      endAt:
+        activeVideoBlock?.videoId === id
+          ? (activeVideoBlock?.endAt ?? time)
+          : time,
+      subtitleLanguageId:
+        activeVideoBlock?.videoId === id
+          ? (activeVideoBlock?.subtitleLanguage?.id ?? null)
+          : null
     })
   }
 
@@ -89,15 +97,14 @@ export function YouTubeDetails({
   // Create visible player (only recreate when data or subtitleLanguageBcp47 changes)
   useEffect(() => {
     if (videoRef.current != null && data != null) {
-      const youtubeOptions =
-        subtitleLanguageBcp47 != null
-          ? {
-              youtube: {
-                cc_load_policy: 1,
-                cc_lang_pref: subtitleLanguageBcp47
-              }
-            }
-          : {}
+      const youtubeOptions = {
+        youtube: {
+          cc_load_policy: subtitleLanguageBcp47 != null ? 1 : 0,
+          ...(subtitleLanguageBcp47 != null && {
+            cc_lang_pref: subtitleLanguageBcp47
+          })
+        }
+      }
 
       playerRef.current = videojs(videoRef.current, {
         ...defaultVideoJsOptions,
@@ -109,10 +116,14 @@ export function YouTubeDetails({
 
       playerRef.current.on('playing', () => {
         setPlaying(true)
-        playerRef?.current?.tech_?.ytPlayer?.loadModule('captions')
-        playerRef?.current?.tech_?.ytPlayer?.setOption('captions', 'track', {
-          languageCode: subtitleLanguageBcp47
-        })
+        if (subtitleLanguageBcp47 != null) {
+          playerRef?.current?.tech_?.ytPlayer?.loadModule('captions')
+          playerRef?.current?.tech_?.ytPlayer?.setOption('captions', 'track', {
+            languageCode: subtitleLanguageBcp47
+          })
+        } else {
+          playerRef?.current?.tech_?.ytPlayer?.unloadModule('captions')
+        }
       })
     }
   }, [data, subtitleLanguageBcp47])

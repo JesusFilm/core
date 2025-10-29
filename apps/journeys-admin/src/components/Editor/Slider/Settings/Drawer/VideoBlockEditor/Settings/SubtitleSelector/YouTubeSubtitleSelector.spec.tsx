@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 
-import { SubtitleSelector } from './SubtitleSelector'
+import { YouTubeSubtitleSelector } from './YouTubeSubtitleSelector'
 
 const mockYouTubeLanguages = [
   {
@@ -51,10 +51,10 @@ const mockYouTubeLanguages = [
   }
 ]
 
-describe('SubtitleSelector', () => {
+describe('YouTubeSubtitleSelector', () => {
   it('renders with "Off" selected when selectedSubtitleId is null', () => {
     render(
-      <SubtitleSelector
+      <YouTubeSubtitleSelector
         selectedSubtitleId={null}
         availableLanguages={mockYouTubeLanguages}
         onChange={jest.fn()}
@@ -66,7 +66,7 @@ describe('SubtitleSelector', () => {
 
   it('displays available subtitle languages in dropdown', () => {
     render(
-      <SubtitleSelector
+      <YouTubeSubtitleSelector
         selectedSubtitleId={null}
         availableLanguages={mockYouTubeLanguages}
         onChange={jest.fn()}
@@ -85,7 +85,7 @@ describe('SubtitleSelector', () => {
   it('handles language selection and calls onChange with correct ID', () => {
     const onChange = jest.fn()
     render(
-      <SubtitleSelector
+      <YouTubeSubtitleSelector
         selectedSubtitleId={null}
         availableLanguages={mockYouTubeLanguages}
         onChange={onChange}
@@ -101,7 +101,7 @@ describe('SubtitleSelector', () => {
   it('handles selecting "Off" and calls onChange with null', () => {
     const onChange = jest.fn()
     render(
-      <SubtitleSelector
+      <YouTubeSubtitleSelector
         selectedSubtitleId="lang-en"
         availableLanguages={mockYouTubeLanguages}
         onChange={onChange}
@@ -117,7 +117,7 @@ describe('SubtitleSelector', () => {
 
   it('shows "No subtitles available" message when availableLanguages is empty', () => {
     render(
-      <SubtitleSelector
+      <YouTubeSubtitleSelector
         selectedSubtitleId={null}
         availableLanguages={[]}
         onChange={jest.fn()}
@@ -131,7 +131,7 @@ describe('SubtitleSelector', () => {
 
   it('disables select when disabled prop is true', () => {
     render(
-      <SubtitleSelector
+      <YouTubeSubtitleSelector
         selectedSubtitleId={null}
         availableLanguages={mockYouTubeLanguages}
         onChange={jest.fn()}
@@ -145,7 +145,7 @@ describe('SubtitleSelector', () => {
 
   it('language search filters languages by name', () => {
     render(
-      <SubtitleSelector
+      <YouTubeSubtitleSelector
         selectedSubtitleId={null}
         availableLanguages={mockYouTubeLanguages}
         onChange={jest.fn()}
@@ -169,7 +169,7 @@ describe('SubtitleSelector', () => {
 
   it('language search filters languages by BCP47 code', () => {
     render(
-      <SubtitleSelector
+      <YouTubeSubtitleSelector
         selectedSubtitleId={null}
         availableLanguages={mockYouTubeLanguages}
         onChange={jest.fn()}
@@ -191,7 +191,7 @@ describe('SubtitleSelector', () => {
 
   it('displays language names correctly with primary and non-primary format', () => {
     render(
-      <SubtitleSelector
+      <YouTubeSubtitleSelector
         selectedSubtitleId="lang-en"
         availableLanguages={mockYouTubeLanguages}
         onChange={jest.fn()}

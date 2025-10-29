@@ -15,6 +15,10 @@ import { ReactElement, useEffect, useRef } from 'react'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import {
+  type YouTubeLanguage,
+  useYouTubeClosedCaptions
+} from '@core/journeys/ui/useYouTubeClosedCaptions'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 import Play2Icon from '@core/shared/ui/icons/Play2'
 import StopCircleContainedIcon from '@core/shared/ui/icons/StopCircleContained'
@@ -32,13 +36,9 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
-import {
-  type YouTubeLanguage,
-  useYouTubeClosedCaptions
-} from '@core/journeys/ui/useYouTubeClosedCaptions'
 
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
-import { SubtitleSelector } from './SubtitleSelector'
+import { YouTubeSubtitleSelector } from './SubtitleSelector'
 
 export type { YouTubeLanguage }
 
@@ -68,7 +68,9 @@ export function VideoBlockEditorSettings({
   // Fetch closed captions using custom hook
   const { languages: availableSubtitles } = useYouTubeClosedCaptions({
     videoId: selectedBlock?.videoId,
-    enabled: selectedBlock?.source === VideoBlockSource.youTube
+    skip:
+      selectedBlock?.source !== VideoBlockSource.youTube ||
+      selectedBlock?.videoId == null
   })
 
   const initialValues: Values = {
@@ -121,9 +123,8 @@ export function VideoBlockEditorSettings({
           preventDuplicate: true
         })
       } else {
-        const { subtitleLanguageId, ...videoBlockValues } = values
         await onChange({
-          ...videoBlockValues,
+          ...values,
           startAt: convertedStartAt,
           endAt: convertedEndAt
         })
@@ -132,27 +133,6 @@ export function VideoBlockEditorSettings({
     },
     onSubmit: noop
   })
-
-  // Clear subtitle when video changes (covers both source changes and video changes)
-  const prevVideoIdRef = useRef(selectedBlock?.videoId)
-
-  useEffect(() => {
-    const currentVideoId = selectedBlock?.videoId
-    const prevVideoId = prevVideoIdRef.current
-
-    // Check if videoId changed (covers both source changes and video changes)
-    const isChangingVideo =
-      prevVideoId != null &&
-      currentVideoId != null &&
-      prevVideoId !== currentVideoId
-
-    if (isChangingVideo) {
-      void setFieldValue('subtitleLanguageId', null)
-      void onChange({ subtitleLanguageId: null })
-    }
-
-    prevVideoIdRef.current = currentVideoId
-  }, [selectedBlock?.videoId, onChange, setFieldValue])
 
   return (
     <Box
@@ -172,14 +152,11 @@ export function VideoBlockEditorSettings({
             >
               {t('Subtitles')}
             </Typography>
-            <SubtitleSelector
+            <YouTubeSubtitleSelector
               selectedSubtitleId={values.subtitleLanguageId}
               availableLanguages={availableSubtitles}
               onChange={async (subtitleLanguageId) => {
                 await setFieldValue('subtitleLanguageId', subtitleLanguageId)
-                await onChange({
-                  subtitleLanguageId
-                })
               }}
               disabled={selectedBlock == null}
             />

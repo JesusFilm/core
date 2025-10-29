@@ -9,19 +9,19 @@ import { ReactElement, useMemo, useState } from 'react'
 
 import type { YouTubeLanguage } from '../VideoBlockEditorSettings'
 
-export interface SubtitleSelectorProps {
+export interface YouTubeSubtitleSelectorProps {
   selectedSubtitleId: string | null
   availableLanguages: YouTubeLanguage[]
   onChange: (subtitleLanguageId: string | null) => void
   disabled?: boolean
 }
 
-export function SubtitleSelector({
+export function YouTubeSubtitleSelector({
   selectedSubtitleId,
   availableLanguages,
   onChange,
   disabled = false
-}: SubtitleSelectorProps): ReactElement {
+}: YouTubeSubtitleSelectorProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [searchQuery, setSearchQuery] = useState('')
 

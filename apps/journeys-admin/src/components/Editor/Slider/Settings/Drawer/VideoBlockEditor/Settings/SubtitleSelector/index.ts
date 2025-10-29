@@ -1,2 +1,2 @@
-export { SubtitleSelector } from './SubtitleSelector'
-export type { SubtitleSelectorProps } from './SubtitleSelector'
+export { YouTubeSubtitleSelector } from './YouTubeSubtitleSelector'
+export type { YouTubeSubtitleSelectorProps } from './YouTubeSubtitleSelector'
