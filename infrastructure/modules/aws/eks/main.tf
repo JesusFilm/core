@@ -212,7 +212,7 @@ data "aws_ami" "eks-worker" {
 #   }
 # }
 
-resource "aws_eks_node_group" "az_2a" {
+resource "aws_eks_node_group" "az_2a_ondemand" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = "jfp-eks-node-group-2a-${var.env}"
   node_role_arn   = aws_iam_role.eks-node.arn
