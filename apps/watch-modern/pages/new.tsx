@@ -49,7 +49,7 @@ import {
   contextDetailOptions,
   steps
 } from '../src/config/new-page'
-import { useAiContent } from '../src/hooks/useAiContent'
+import { useAiStream } from '../src/hooks/useAiStream'
 import { useImageAnalysis } from '../src/hooks/useImageAnalysis'
 import { useNewPageSession } from '../src/hooks/useNewPageSession'
 import { useUnsplashMedia } from '../src/hooks/useUnsplashMedia'
@@ -73,6 +73,8 @@ const FormatSelection = dynamic(
   },
   { ssr: false }
 )
+
+const isDebugLoggingEnabled = process.env.NODE_ENV !== 'production'
 
 type KitchenSinkPersonaSettings = {
   personaName: string
@@ -284,6 +286,346 @@ const deriveBodyFromContent = (content: string) => {
   return body
 }
 
+const normalizeGeneratedSteps = (
+  steps: Array<
+    Partial<GeneratedStepContent> & { title?: string; keywords?: string | string[] }
+  >
+): GeneratedStepContent[] =>
+  steps.map((step) => {
+    const keywordsValue = step?.keywords as string | string[] | undefined
+    const normalizedKeywords = Array.isArray(keywordsValue)
+      ? keywordsValue
+          .map((keyword) =>
+            typeof keyword === 'string'
+              ? keyword.trim()
+              : String(keyword ?? '').trim()
+          )
+          .filter((keyword) => keyword.length > 0)
+          .slice(0, 3)
+      : typeof keywordsValue === 'string'
+      ? keywordsValue
+          .split(',')
+          .map((keyword) => keyword.trim())
+          .filter((keyword) => keyword.length > 0)
+          .slice(0, 3)
+      : []
+
+    const rawTitle =
+      typeof step?.title === 'string' ? step.title.trim() : ''
+
+    let content =
+      typeof step?.content === 'string' ? step.content.trim() : ''
+
+    if (rawTitle) {
+      if (!content) {
+        content = `# ${rawTitle}`
+      } else {
+        const firstMeaningfulLine =
+          content
+            .split('\n')
+            .map((line) => line.trim())
+            .find((line) => line.length > 0) ?? ''
+
+        if (!/^#{1,6}\s+/.test(firstMeaningfulLine)) {
+          content = `# ${rawTitle}\n\n${content}`.trim()
+        }
+      }
+    }
+
+    const mediaPrompt =
+      typeof step?.mediaPrompt === 'string' ? step.mediaPrompt.trim() : ''
+
+    return {
+      content,
+      keywords: normalizedKeywords,
+      mediaPrompt
+    }
+  })
+
+const normalizeConversationMap = (rawData: unknown): ConversationMap => {
+  const ensureString = (value: unknown): string =>
+    typeof value === 'string' ? value.trim() : ''
+
+  const ensureNullableString = (value: unknown): string | null => {
+    if (typeof value !== 'string') return null
+    const trimmed = value.trim()
+    return trimmed.length > 0 ? trimmed : null
+  }
+
+  const ensureStringArray = (value: unknown): string[] => {
+    if (Array.isArray(value)) {
+      return value.map(item => ensureString(item)).filter(Boolean)
+    }
+
+    if (typeof value === 'string') {
+      return value
+        .split(/(?:→|➡️|>|-)+|,|\n+/)
+        .map(segment => segment.trim())
+        .filter(Boolean)
+    }
+
+    return []
+  }
+
+  const normalizeFlow = (input: unknown): ConversationMap['flow'] => {
+    if (input == null) return null
+
+    if (typeof input !== 'object') {
+      const rationale = ensureNullableString(input)
+      return rationale ? { sequence: [], rationale } : null
+    }
+
+    const flowRecord = input as Record<string, unknown>
+    const sequence = ensureStringArray(
+      flowRecord.sequence ?? flowRecord.steps ?? flowRecord.path ?? flowRecord.movement ?? flowRecord.flow
+    ).slice(0, MAX_CONVERSATION_STEPS)
+
+    const rationale = ensureNullableString(
+      flowRecord.rationale ?? flowRecord.reason ?? flowRecord.commentary ?? flowRecord.summary ?? flowRecord.context
+    )
+
+    if (sequence.length === 0 && !rationale) {
+      return null
+    }
+
+    return {
+      sequence,
+      rationale
+    }
+  }
+
+  const normalizeLegacyScripture = (
+    input: unknown
+  ): { text: string | null; reference: string | null } | null => {
+    if (input == null) return null
+
+    if (typeof input === 'string') {
+      const text = input.trim()
+      if (!text) return null
+      return { text, reference: null }
+    }
+
+    if (typeof input === 'object') {
+      const record = input as Record<string, unknown>
+      const text = ensureNullableString(
+        record.text ?? record.passage ?? record.quote ?? record.content ?? record.verseText ?? record.verse
+      )
+      const reference = ensureNullableString(
+        record.reference ?? record.ref ?? record.citation ?? record.verse ?? record.book
+      )
+
+      if (!text && !reference) {
+        return null
+      }
+
+      return {
+        text,
+        reference
+      }
+    }
+
+    return null
+  }
+
+  const normalizeConversationExamples = (
+    input: unknown
+  ): ConversationMap['steps'][number]['scriptureOptions'][number]['conversationExamples'] => {
+    if (input == null) return []
+
+    if (Array.isArray(input)) {
+      return input
+        .map((example, index) => {
+          if (typeof example === 'string') {
+            const message = ensureString(example)
+            if (!message) return null
+            return {
+              tone: `Example ${index + 1}`,
+              message
+            }
+          }
+
+          if (typeof example === 'object' && example !== null) {
+            const record = example as Record<string, unknown>
+            const message = ensureString(
+              record.message ?? record.text ?? record.content ?? record.example
+            )
+            if (!message) return null
+
+            const tone = ensureString(
+              record.tone ?? record.style ?? record.label ?? record.title
+            )
+
+            return {
+              tone: tone || `Example ${index + 1}`,
+              message
+            }
+          }
+
+          return null
+        })
+        .filter((example): example is ConversationMap['steps'][number]['scriptureOptions'][number]['conversationExamples'][number] => example !== null)
+    }
+
+    if (typeof input === 'object') {
+      return Object.entries(input as Record<string, unknown>)
+        .map(([toneKey, value], index) => {
+          const message = ensureString(value)
+          if (!message) return null
+
+          const tone = ensureString(toneKey)
+          return {
+            tone: tone || `Example ${index + 1}`,
+            message
+          }
+        })
+        .filter((example): example is ConversationMap['steps'][number]['scriptureOptions'][number]['conversationExamples'][number] => example !== null)
+    }
+
+    if (typeof input === 'string') {
+      const message = ensureString(input)
+      return message
+        ? [
+            {
+              tone: 'Example',
+              message
+            }
+          ]
+        : []
+    }
+
+    return []
+  }
+
+  const normalizeScriptureOptions = (
+    item: unknown
+  ): ConversationMap['steps'][number]['scriptureOptions'] => {
+    if (typeof item !== 'object' || item === null) {
+      return []
+    }
+
+    const itemRecord = item as Record<string, unknown>
+
+    const optionsSource = Array.isArray(itemRecord.scriptureOptions)
+      ? itemRecord.scriptureOptions
+      : Array.isArray(itemRecord.scriptures)
+        ? itemRecord.scriptures
+        : Array.isArray(itemRecord.bibleVerses)
+          ? itemRecord.bibleVerses
+          : Array.isArray(itemRecord.verses)
+            ? itemRecord.verses
+            : []
+
+    const normalized = optionsSource
+      .map((option) => {
+        if (!option) return null
+
+        if (typeof option === 'string') {
+          const text = ensureString(option)
+          if (!text) return null
+          return {
+            text,
+            reference: null,
+            whyItFits: null,
+            conversationExamples: []
+          }
+        }
+
+        if (typeof option === 'object' && option !== null) {
+          const optionRecord = option as Record<string, unknown>
+          const text = ensureNullableString(
+            optionRecord.text ?? optionRecord.passage ?? optionRecord.quote ?? optionRecord.content ?? optionRecord.verseText
+          )
+          const reference = ensureNullableString(
+            optionRecord.reference ?? optionRecord.ref ?? optionRecord.citation ?? optionRecord.verse ?? optionRecord.book
+          )
+          const whyItFits = ensureNullableString(
+            optionRecord.whyItFits ?? optionRecord.reason ?? optionRecord.explanation ?? optionRecord.transition ?? optionRecord.structure ?? optionRecord.context
+          )
+          const conversationExamples = normalizeConversationExamples(
+            optionRecord.conversationExamples ?? optionRecord.messageExamples ?? optionRecord.messages ?? optionRecord.examples
+          )
+
+          if (!text && !reference && !whyItFits && conversationExamples.length === 0) {
+            return null
+          }
+
+          return {
+            text,
+            reference,
+            whyItFits,
+            conversationExamples
+          }
+        }
+
+        return null
+      })
+      .filter((option): option is ConversationMap['steps'][number]['scriptureOptions'][number] => option !== null)
+
+    if (normalized.length === 0) {
+      const legacyScripture = normalizeLegacyScripture(
+        itemRecord.scripture ?? itemRecord.scriptureSupport
+      )
+      if (legacyScripture) {
+        normalized.push({
+          text: legacyScripture.text,
+          reference: legacyScripture.reference,
+          whyItFits: ensureNullableString(
+            itemRecord.scriptureExplanation ?? itemRecord.scriptureWhy ?? itemRecord.whyItFits ?? itemRecord.transition
+          ),
+          conversationExamples: []
+        })
+      }
+    }
+
+    return normalized
+  }
+
+  const rawRecord =
+    (typeof rawData === 'object' && rawData !== null
+      ? rawData
+      : {}) as Record<string, unknown>
+
+  const legacyIdealPath = Array.isArray(rawRecord.idealPath)
+    ? rawRecord.idealPath
+    : []
+
+  const stepsSource = Array.isArray(rawRecord.steps)
+    ? rawRecord.steps
+    : legacyIdealPath
+
+  const normalizedSteps = stepsSource
+    .map((item, index) => {
+      const itemRecord =
+        (typeof item === 'object' && item !== null
+          ? item
+          : {}) as Record<string, unknown>
+
+      const guideMessage = ensureString(itemRecord.guideMessage ?? itemRecord.guideResponse)
+      if (!guideMessage) return null
+
+      const title = ensureString(itemRecord.title ?? itemRecord.stage)
+      const purpose = ensureNullableString(itemRecord.purpose)
+
+      const scriptureOptions = normalizeScriptureOptions(itemRecord)
+
+      return {
+        title: title || `Step ${index + 1}`,
+        purpose,
+        guideMessage,
+        scriptureOptions
+      }
+    })
+    .filter((item): item is ConversationMap['steps'][number] => item !== null)
+    .slice(0, MAX_CONVERSATION_STEPS)
+
+  return {
+    flow: normalizeFlow(
+      rawRecord.flow ?? rawRecord.flowSummary ?? rawRecord.conversationFlow ?? rawRecord.movement
+    ),
+    steps: normalizedSteps
+  }
+}
+
 const generateElementId = (prefix: string) =>
   `${prefix}-${Math.random().toString(36).slice(2, 10)}-${Date.now().toString(36)}`
 
@@ -318,6 +660,11 @@ type OverlayElementConfig = {
   height: number
   opacity?: number
 }
+
+type DesignElement =
+  | ReturnType<typeof createTextElement>
+  | ReturnType<typeof createMediaElement>
+  | ReturnType<typeof createOverlayElement>
 
 const createTextElement = ({
   id,
@@ -563,8 +910,8 @@ const createPolotnoDesignFromContent = ({
         body: bodyContent,
         keywords: keywords.slice(0, 5),
         mediaPrompt,
-        selectedImageUrl: (step as any).selectedImageUrl,
-        selectedVideoUrl: (step as any).selectedVideoUrl
+        selectedImageUrl: step.selectedImageUrl,
+        selectedVideoUrl: step.selectedVideoUrl
       }
     })
     .filter(Boolean) as Array<{
@@ -596,7 +943,7 @@ const createPolotnoDesignFromContent = ({
           lineHeight: 1.2
         })
 
-        const elements: any[] = []
+        const elements: DesignElement[] = []
 
         const mediaUrl = step.selectedVideoUrl ?? step.selectedImageUrl
         if (mediaUrl) {
@@ -675,7 +1022,7 @@ const createPolotnoDesignFromContent = ({
             lineHeight: 1.2
           })
 
-          const elements = [headingElement]
+          const elements: DesignElement[] = [headingElement]
 
           if (bodyText) {
             elements.push(
@@ -1190,425 +1537,110 @@ export default function NewPage() {
     return messages
   }
 
-  const normalizeGeneratedSteps = (
-    steps: Array<
-      Partial<GeneratedStepContent> & { title?: string; keywords?: string | string[] }
-    >
-  ): GeneratedStepContent[] =>
-    steps.map((step) => {
-      const keywordsValue = step?.keywords as string | string[] | undefined
-      const normalizedKeywords = Array.isArray(keywordsValue)
-        ? keywordsValue
-            .map((keyword) =>
-              typeof keyword === 'string'
-                ? keyword.trim()
-                : String(keyword ?? '').trim()
-            )
-            .filter((keyword) => keyword.length > 0)
-            .slice(0, 3)
-        : typeof keywordsValue === 'string'
-        ? keywordsValue
-            .split(',')
-            .map((keyword) => keyword.trim())
-            .filter((keyword) => keyword.length > 0)
-            .slice(0, 3)
-        : []
-
-      const rawTitle =
-        typeof step?.title === 'string' ? step.title.trim() : ''
-
-      let content =
-        typeof step?.content === 'string' ? step.content.trim() : ''
-
-      if (rawTitle) {
-        if (!content) {
-          content = `# ${rawTitle}`
-        } else {
-          const firstMeaningfulLine =
-            content
-              .split('\n')
-              .map((line) => line.trim())
-              .find((line) => line.length > 0) ?? ''
-
-          if (!/^#{1,6}\s+/.test(firstMeaningfulLine)) {
-            content = `# ${rawTitle}\n\n${content}`.trim()
-          }
-        }
-      }
-
-      const mediaPrompt =
-        typeof step?.mediaPrompt === 'string' ? step.mediaPrompt.trim() : ''
-
-      return {
-        content,
-        keywords: normalizedKeywords,
-        mediaPrompt
-      }
-    })
-
-  const normalizeConversationMap = (rawData: any): ConversationMap => {
-    const ensureString = (value: any): string =>
-      typeof value === 'string' ? value.trim() : ''
-
-    const ensureNullableString = (value: any): string | null => {
-      if (typeof value !== 'string') return null
-      const trimmed = value.trim()
-      return trimmed.length > 0 ? trimmed : null
-    }
-
-    const ensureStringArray = (value: any): string[] => {
-      if (Array.isArray(value)) {
-        return value.map(item => ensureString(item)).filter(Boolean)
-      }
-
-      if (typeof value === 'string') {
-        return value
-          .split(/(?:→|➡️|>|-)+|,|\n+/)
-          .map(segment => segment.trim())
-          .filter(Boolean)
-      }
-
-      return []
-    }
-
-    const normalizeFlow = (input: any): ConversationMap['flow'] => {
-      if (!input) return null
-
-      if (typeof input !== 'object') {
-        const rationale = ensureNullableString(input)
-        return rationale ? { sequence: [], rationale } : null
-      }
-
-      const sequence = ensureStringArray(
-        input.sequence ?? input.steps ?? input.path ?? input.movement ?? input.flow
-      ).slice(0, MAX_CONVERSATION_STEPS)
-
-      const rationale = ensureNullableString(
-        input.rationale ?? input.reason ?? input.commentary ?? input.summary ?? input.context
-      )
-
-      if (sequence.length === 0 && !rationale) {
-        return null
-      }
-
-      return {
-        sequence,
-        rationale
-      }
-    }
-
-    const normalizeLegacyScripture = (
-      input: any
-    ): { text: string | null; reference: string | null } | null => {
-      if (!input) return null
-
-      if (typeof input === 'string') {
-        const text = input.trim()
-        if (!text) return null
-        return { text, reference: null }
-      }
-
-      if (typeof input === 'object') {
-        const text = ensureNullableString(
-          input.text ?? input.passage ?? input.quote ?? input.content ?? null
-        )
-        const reference = ensureNullableString(
-          input.reference ?? input.ref ?? input.citation ?? input.verse ?? null
-        )
-
-        if (!text && !reference) {
-          return null
-        }
-
-        return {
-          text,
-          reference
-        }
-      }
-
-      return null
-    }
-
-    const normalizeConversationExamples = (
-      input: any
-    ): ConversationMap['steps'][number]['scriptureOptions'][number]['conversationExamples'] => {
-      if (!input) return []
-
-      if (Array.isArray(input)) {
-        return input
-          .map((example, index) => {
-            if (typeof example === 'string') {
-              const message = ensureString(example)
-              if (!message) return null
-              return {
-                tone: `Example ${index + 1}`,
-                message
-              }
-            }
-
-            if (typeof example === 'object') {
-              const message = ensureString(
-                example.message ?? example.text ?? example.content ?? example.example
-              )
-              if (!message) return null
-
-              const tone = ensureString(
-                example.tone ?? example.style ?? example.label ?? example.title
-              )
-
-              return {
-                tone: tone || `Example ${index + 1}`,
-                message
-              }
-            }
-
-            return null
-          })
-          .filter((example): example is ConversationMap['steps'][number]['scriptureOptions'][number]['conversationExamples'][number] => example !== null)
-      }
-
-      if (typeof input === 'object') {
-        return Object.entries(input)
-          .map(([toneKey, value], index) => {
-            const message = ensureString(value)
-            if (!message) return null
-
-            const tone = ensureString(toneKey)
-            return {
-              tone: tone || `Example ${index + 1}`,
-              message
-            }
-          })
-          .filter((example): example is ConversationMap['steps'][number]['scriptureOptions'][number]['conversationExamples'][number] => example !== null)
-      }
-
-      if (typeof input === 'string') {
-        const message = ensureString(input)
-        return message
-          ? [
-              {
-                tone: 'Example',
-                message
-              }
-            ]
-          : []
-      }
-
-      return []
-    }
-
-    const normalizeScriptureOptions = (
-      item: any
-    ): ConversationMap['steps'][number]['scriptureOptions'] => {
-      const optionsSource = Array.isArray(item?.scriptureOptions)
-        ? item.scriptureOptions
-        : Array.isArray(item?.scriptures)
-          ? item.scriptures
-          : Array.isArray(item?.bibleVerses)
-            ? item.bibleVerses
-            : Array.isArray(item?.verses)
-              ? item.verses
-              : []
-
-      const normalized = optionsSource
-        .map((option: any) => {
-          if (!option) return null
-
-          if (typeof option === 'string') {
-            const text = ensureString(option)
-            if (!text) return null
-            return {
-              text,
-              reference: null,
-              whyItFits: null,
-              conversationExamples: []
-            }
-          }
-
-          if (typeof option === 'object') {
-            const text = ensureNullableString(
-              option.text ?? option.passage ?? option.quote ?? option.content ?? option.verseText
-            )
-            const reference = ensureNullableString(
-              option.reference ?? option.ref ?? option.citation ?? option.verse ?? option.book
-            )
-            const whyItFits = ensureNullableString(
-              option.whyItFits ?? option.reason ?? option.explanation ?? option.transition ?? option.structure ?? option.context
-            )
-            const conversationExamples = normalizeConversationExamples(
-              option.conversationExamples ?? option.messageExamples ?? option.messages ?? option.examples
-            )
-
-            if (!text && !reference && !whyItFits && conversationExamples.length === 0) {
-              return null
-            }
-
-            return {
-              text,
-              reference,
-              whyItFits,
-              conversationExamples
-            }
-          }
-
-          return null
-        })
-        .filter((option): option is ConversationMap['steps'][number]['scriptureOptions'][number] => option !== null)
-
-      if (normalized.length === 0) {
-        const legacyScripture = normalizeLegacyScripture(item?.scripture ?? item?.scriptureSupport)
-        if (legacyScripture) {
-          normalized.push({
-            text: legacyScripture.text,
-            reference: legacyScripture.reference,
-            whyItFits: ensureNullableString(
-              item?.scriptureExplanation ?? item?.scriptureWhy ?? item?.whyItFits ?? item?.transition
-            ),
-            conversationExamples: []
-          })
-        }
-      }
-
-      return normalized
-    }
-
-    const legacyIdealPath = Array.isArray(rawData?.idealPath)
-      ? rawData.idealPath
-      : []
-
-    const stepsSource = Array.isArray(rawData?.steps)
-      ? rawData.steps
-      : legacyIdealPath
-
-    const normalizedSteps = stepsSource
-      .map((item, index) => {
-        const guideMessage = ensureString(item?.guideMessage ?? item?.guideResponse)
-        if (!guideMessage) return null
-
-        const title = ensureString(item?.title ?? item?.stage)
-        const purpose = ensureNullableString(item?.purpose)
-
-        const scriptureOptions = normalizeScriptureOptions(item)
-
-        return {
-          title: title || `Step ${index + 1}`,
-          purpose,
-          guideMessage,
-          scriptureOptions
-        }
-      })
-      .filter((item): item is ConversationMap['steps'][number] => item !== null)
-      .slice(0, MAX_CONVERSATION_STEPS)
-
-    return {
-      flow: normalizeFlow(
-        rawData?.flow ?? rawData?.flowSummary ?? rawData?.conversationFlow ?? rawData?.movement
-      ),
-      steps: normalizedSteps
-    }
-  }
-
-  const parseGeneratedResponse = (
-    rawContent: string
-  ): { steps: GeneratedStepContent[]; conversationMap?: ConversationMap } => {
-    if (!rawContent) {
-      return {
-        steps: [],
-        conversationMap:
-          selectedContext === 'Conversations'
-            ? normalizeConversationMap({})
-            : undefined
-      }
-    }
-
-    let preparedContent = rawContent.trim()
-    const codeBlockMatch = preparedContent.match(/```(?:json)?\s*([\s\S]*?)```/i)
-    if (codeBlockMatch?.[1]) {
-      preparedContent = codeBlockMatch[1].trim()
-    }
-
-    try {
-      const parsed = JSON.parse(preparedContent)
-
-      if (selectedContext === 'Conversations') {
-        const conversationData =
-          parsed?.conversationMap && typeof parsed.conversationMap === 'object'
-            ? parsed.conversationMap
-            : parsed
-
+  const parseGeneratedResponse = useCallback(
+    (
+      rawContent: string
+    ): { steps: GeneratedStepContent[]; conversationMap?: ConversationMap } => {
+      if (!rawContent) {
         return {
           steps: [],
-          conversationMap: normalizeConversationMap(conversationData)
+          conversationMap:
+            selectedContext === 'Conversations'
+              ? normalizeConversationMap({})
+              : undefined
         }
       }
 
-      const stepsArray = Array.isArray(parsed?.steps)
-        ? parsed.steps
-        : Array.isArray(parsed)
-          ? parsed
-          : []
-
-      if (Array.isArray(stepsArray) && stepsArray.length > 0) {
-        return { steps: normalizeGeneratedSteps(stepsArray as GeneratedStepContent[]) }
+      let preparedContent = rawContent.trim()
+      const codeBlockMatch = preparedContent.match(/```(?:json)?\s*([\s\S]*?)```/i)
+      if (codeBlockMatch?.[1]) {
+        preparedContent = codeBlockMatch[1].trim()
       }
 
-      if (parsed?.steps && typeof parsed.steps === 'string') {
-        try {
-          const nestedSteps = JSON.parse(parsed.steps)
-          if (Array.isArray(nestedSteps) && nestedSteps.length > 0) {
-            return { steps: normalizeGeneratedSteps(nestedSteps) }
+      try {
+        const parsed = JSON.parse(preparedContent)
+
+        if (selectedContext === 'Conversations') {
+          const conversationData =
+            parsed?.conversationMap && typeof parsed.conversationMap === 'object'
+              ? parsed.conversationMap
+              : parsed
+
+          return {
+            steps: [],
+            conversationMap: normalizeConversationMap(conversationData)
           }
-        } catch (nestedError) {
-          console.warn('Failed to parse nested steps JSON:', nestedError)
+        }
+
+        const stepsArray = Array.isArray(parsed?.steps)
+          ? parsed.steps
+          : Array.isArray(parsed)
+            ? parsed
+            : []
+
+        if (Array.isArray(stepsArray) && stepsArray.length > 0) {
+          return { steps: normalizeGeneratedSteps(stepsArray as GeneratedStepContent[]) }
+        }
+
+        if (parsed?.steps && typeof parsed.steps === 'string') {
+          try {
+            const nestedSteps = JSON.parse(parsed.steps)
+            if (Array.isArray(nestedSteps) && nestedSteps.length > 0) {
+              return { steps: normalizeGeneratedSteps(nestedSteps) }
+            }
+          } catch (nestedError) {
+            console.warn('Failed to parse nested steps JSON:', nestedError)
+          }
+        }
+      } catch (error) {
+        console.warn(
+          'Failed to parse structured multi-step content. Falling back to default format.',
+          error
+        )
+      }
+
+      if (selectedContext === 'Conversations') {
+        return { steps: [], conversationMap: normalizeConversationMap({}) }
+      }
+
+      const fallbackSteps: GeneratedStepContent[] = []
+      const stepRegex = /(Step\s+\d+\s*[:-]?)([\s\S]*?)(?=(?:\nStep\s+\d+\s*[:-]?\b)|$)/gi
+      let match = stepRegex.exec(preparedContent)
+      if (match) {
+        stepRegex.lastIndex = 0
+        let fallbackIndex = 0
+        while ((match = stepRegex.exec(preparedContent)) !== null) {
+          const [, rawTitle, rawBody] = match
+          const normalizedTitle =
+            rawTitle?.replace(/[:-]+$/, '').trim() || `Step ${fallbackIndex + 1}`
+          const normalizedBody = rawBody?.trim() || ''
+          fallbackSteps.push({
+            content: normalizedTitle
+              ? `# ${normalizedTitle}\n\n${normalizedBody}`.trim()
+              : normalizedBody,
+            keywords: [],
+            mediaPrompt: ''
+          })
+          fallbackIndex += 1
         }
       }
-    } catch (error) {
-      console.warn(
-        'Failed to parse structured multi-step content. Falling back to default format.',
-        error
-      )
-    }
 
-    if (selectedContext === 'Conversations') {
-      return { steps: [], conversationMap: normalizeConversationMap({}) }
-    }
-
-    const fallbackSteps: GeneratedStepContent[] = []
-    const stepRegex = /(Step\s+\d+\s*[:-]?)([\s\S]*?)(?=(?:\nStep\s+\d+\s*[:-]?\b)|$)/gi
-    let match = stepRegex.exec(preparedContent)
-    if (match) {
-      stepRegex.lastIndex = 0
-      let fallbackIndex = 0
-      while ((match = stepRegex.exec(preparedContent)) !== null) {
-        const [, rawTitle, rawBody] = match
-        const normalizedTitle =
-          rawTitle?.replace(/[:-]+$/, '').trim() || `Step ${fallbackIndex + 1}`
-        const normalizedBody = rawBody?.trim() || ''
-        fallbackSteps.push({
-          content: normalizedTitle
-            ? `# ${normalizedTitle}\n\n${normalizedBody}`.trim()
-            : normalizedBody,
-          keywords: [],
-          mediaPrompt: ''
-        })
-        fallbackIndex += 1
+      if (fallbackSteps.length > 0) {
+        return { steps: normalizeGeneratedSteps(fallbackSteps) }
       }
-    }
 
-    if (fallbackSteps.length > 0) {
-      return { steps: normalizeGeneratedSteps(fallbackSteps) }
-    }
-
-    return {
-      steps: normalizeGeneratedSteps([
-        {
-          content: rawContent.trim(),
-          keywords: [],
-          mediaPrompt: ''
-        }
-      ])
-    }
-  }
+      return {
+        steps: normalizeGeneratedSteps([
+          {
+            content: rawContent.trim(),
+            keywords: [],
+            mediaPrompt: ''
+          }
+        ])
+      }
+    },
+    [selectedContext]
+  )
 
   const handleCopyStep = async (
     content: string,
@@ -1627,21 +1659,31 @@ export default function NewPage() {
     }
   }
 
-  const extractTextFromResponse = (result: any): string => {
-    if (!result) {
+  const extractTextFromResponse = (result: unknown): string => {
+    if (result == null || typeof result !== 'object') {
       return ''
     }
 
-    if (typeof result.output_text === 'string' && result.output_text.trim().length > 0) {
-      return result.output_text
+    const resultRecord = result as Record<string, unknown>
+
+    const outputText = resultRecord.output_text
+    if (typeof outputText === 'string' && outputText.trim().length > 0) {
+      return outputText
     }
 
-    if (Array.isArray(result.output)) {
-      for (const item of result.output) {
-        const content = item?.content
+    const output = resultRecord.output
+    if (Array.isArray(output)) {
+      for (const rawItem of output) {
+        if (!rawItem || typeof rawItem !== 'object') continue
+        const item = rawItem as Record<string, unknown>
+        const content = item.content
         if (Array.isArray(content)) {
           const textPart = content.find(
-            (part: any) => part?.type === 'output_text' && typeof part?.text === 'string'
+            (part): part is { type: string; text?: string } =>
+              typeof part === 'object' &&
+              part !== null &&
+              (part as Record<string, unknown>).type === 'output_text' &&
+              typeof (part as Record<string, unknown>).text === 'string'
           )
           if (textPart?.text?.trim()) {
             return textPart.text
@@ -1653,19 +1695,25 @@ export default function NewPage() {
     return ''
   }
 
-  const accumulateUsage = (usage: any) => {
-    if (!usage) return
+  const accumulateUsage = (usage: unknown) => {
+    if (!usage || typeof usage !== 'object') return
+
+    const usageRecord = usage as Record<string, unknown>
 
     const newTokens = {
-      input: usage.input_tokens ?? 0,
-      output: usage.output_tokens ?? 0
+      input: typeof usageRecord.input_tokens === 'number' ? usageRecord.input_tokens : 0,
+      output: typeof usageRecord.output_tokens === 'number' ? usageRecord.output_tokens : 0
     }
 
     updateTokens(currentSessionId, newTokens)
   }
 
   const handleAiError = useCallback(
-    (_error: unknown, { isNetworkError }: { isNetworkError: boolean }) => {
+    (
+      _error: unknown,
+      errorMeta?: { isNetworkError: boolean }
+    ) => {
+      const isNetworkError = errorMeta?.isNetworkError ?? false
       setAiError({
         isNetworkError,
         message: isNetworkError
@@ -1676,27 +1724,163 @@ export default function NewPage() {
     [setAiError]
   )
 
-  const { processContentWithAI } = useAiContent({
-    textareaRef,
-    aiResponse,
-    editableSteps,
-    imageAttachments,
-    imageAnalysisResults,
-    buildConversationHistory,
-    extractTextFromResponse,
-    parseGeneratedSteps: (content: string) => {
-      const parsed = parseGeneratedResponse(content)
-      setConversationMap(parsed.conversationMap || null)
-      return parsed.steps
-    },
+  const {
+    isStreaming,
+    text: streamingText,
+    usage: streamingUsage,
+    error: streamingError,
+    conversationMap: streamingConversationMap,
+    steps: streamingSteps,
+    startStream
+  } = useAiStream()
 
-    setAiResponse,
-    setEditableSteps,
-    setIsProcessing,
+  // Handle streaming updates and completion
+  useEffect(() => {
+    if (selectedContext === 'Conversations') {
+      if (isStreaming) {
+        setAiResponse(streamingText)
+      }
+
+      if (streamingConversationMap) {
+        try {
+          const normalized = normalizeConversationMap(streamingConversationMap)
+          setConversationMap(normalized)
+        } catch (error) {
+          if (isDebugLoggingEnabled) {
+            console.debug('[Streaming] Ignoring conversation map parse error:', error)
+          }
+        }
+      }
+
+      if (!isStreaming) {
+        if (streamingText && streamingUsage) {
+          setIsProcessing(false)
+
+          const parsed = parseGeneratedResponse(streamingText)
+          setEditableSteps(parsed.steps)
+          setConversationMap(parsed.conversationMap || null)
+          setAiResponse(streamingText)
+
+          const sessionId = saveSession({
+            textContent,
+            images: imageAttachments,
+            aiResponse: streamingText,
+            aiSteps: parsed.steps,
+            conversationMap: parsed.conversationMap || null,
+            imageAnalysisResults: imageAnalysisResults.map((result) => ({
+              imageSrc: result.imageSrc,
+              contentType: result.contentType,
+              extractedText: result.extractedText,
+              detailedDescription: result.detailedDescription,
+              confidence: result.confidence,
+              contentIdeas: result.contentIdeas
+            })),
+            tokensUsed: {
+              input: streamingUsage.input_tokens,
+              output: streamingUsage.output_tokens
+            }
+          })
+
+          updateTokens(sessionId, {
+            input: streamingUsage.input_tokens,
+            output: streamingUsage.output_tokens
+          })
+        } else if (!streamingText && !streamingConversationMap) {
+          setIsProcessing(false)
+        }
+      }
+    } else {
+      if (isStreaming) {
+        setAiResponse(streamingText)
+
+        if (streamingSteps) {
+          try {
+            const stepsRecord = streamingSteps as Record<string, unknown>
+            const rawSteps = Array.isArray(stepsRecord)
+              ? stepsRecord
+              : Array.isArray(stepsRecord.steps)
+                ? stepsRecord.steps
+                : []
+
+            if (Array.isArray(rawSteps) && rawSteps.length > 0) {
+              const normalizedSteps = normalizeGeneratedSteps(
+                rawSteps as GeneratedStepContent[]
+              )
+              setEditableSteps(normalizedSteps)
+            }
+          } catch (error) {
+            if (isDebugLoggingEnabled) {
+              console.debug('[Streaming] Ignoring steps normalization error:', error)
+            }
+          }
+        }
+
+        if (streamingText && !streamingSteps) {
+          try {
+            const parsedSteps = parseGeneratedResponse(streamingText)
+            setEditableSteps(parsedSteps.steps)
+            setConversationMap(parsedSteps.conversationMap || null)
+          } catch (error) {
+            if (isDebugLoggingEnabled) {
+              console.debug('[Streaming] Ignoring parse error during streaming:', error)
+            }
+          }
+        }
+      } else if (streamingText && streamingUsage) {
+        setIsProcessing(false)
+
+        const parsedSteps = parseGeneratedResponse(streamingText)
+        setEditableSteps(parsedSteps.steps)
+        setConversationMap(parsedSteps.conversationMap || null)
+
+        const sessionId = saveSession({
+          textContent: textContent,
+          images: imageAttachments,
+          aiResponse: streamingText,
+          aiSteps: parsedSteps.steps,
+          imageAnalysisResults: imageAnalysisResults.map((result) => ({
+            imageSrc: result.imageSrc,
+            contentType: result.contentType,
+            extractedText: result.extractedText,
+            detailedDescription: result.detailedDescription,
+            confidence: result.confidence,
+            contentIdeas: result.contentIdeas
+          })),
+          tokensUsed: {
+            input: streamingUsage.input_tokens,
+            output: streamingUsage.output_tokens
+          }
+        })
+
+        updateTokens(sessionId, {
+          input: streamingUsage.input_tokens,
+          output: streamingUsage.output_tokens
+        })
+      } else if (!isStreaming && !streamingText) {
+        setIsProcessing(false)
+      }
+    }
+
+    if (streamingError) {
+      handleAiError(new Error(streamingError))
+    }
+  }, [
+    isStreaming,
+    streamingText,
+    streamingUsage,
+    streamingError,
+    streamingConversationMap,
+    streamingSteps,
+    selectedContext,
     saveSession,
     updateTokens,
-    onError: handleAiError
-  })
+    textContent,
+    imageAttachments,
+    imageAnalysisResults,
+    parseGeneratedResponse,
+    normalizeGeneratedSteps,
+    handleAiError
+  ])
 
   const { analyzeImageWithAI } = useImageAnalysis({
     setImageAnalysisResults,
@@ -1717,10 +1901,16 @@ export default function NewPage() {
 
   // Expose test function to window for debugging
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      (window as any).testUnsplashAPI = testUnsplashAPI
+    if (typeof window === 'undefined') {
+      return
     }
-  }, [])
+
+    Object.assign(window, { testUnsplashAPI })
+
+    return () => {
+      delete (window as typeof window & { testUnsplashAPI?: typeof testUnsplashAPI }).testUnsplashAPI
+    }
+  }, [testUnsplashAPI])
 
   const processFiles = (files: FileList | File[]) => {
     const fileArray = Array.from(files)
@@ -1846,11 +2036,50 @@ export default function NewPage() {
     }
 
     const currentValue = textareaRef.current?.value || ''
-    if (currentValue.trim() && !isProcessing) {
-      setAiError(null)
-      // Update textContent state before processing
-      setTextContent(currentValue)
-      await processContentWithAI(currentValue)
+
+    if (!currentValue.trim() || isProcessing || isStreaming) {
+      return
+    }
+
+    setAiError(null)
+    // Update textContent state before processing
+    setTextContent(currentValue)
+
+    await handleStreamingSubmit(currentValue)
+  }
+
+  const handleStreamingSubmit = async (inputText: string) => {
+    setIsProcessing(true)
+    setAiResponse('')
+    setEditableSteps([])
+    setConversationMap(null)
+
+    try {
+      const messages = buildConversationHistory()
+      const currentUserMessage = inputText.trim()
+      messages.push({
+        role: 'user',
+        content: currentUserMessage
+      })
+
+      await startStream({
+        messages,
+        // Use OpenRouter by default, can be extended for Apologist
+        provider: 'openrouter',
+        mode: selectedContext === 'Conversations' ? 'conversation' : 'default'
+      })
+
+    } catch (error) {
+      const networkError = isNetworkError(error)
+
+      if (networkError) {
+        console.warn('Network error while streaming content. Ready for retry.', error)
+      } else {
+        console.error('Error streaming content:', error)
+      }
+
+      handleAiError(error)
+      setIsProcessing(false)
     }
   }
 
@@ -2682,12 +2911,12 @@ export default function NewPage() {
                       handlePaste={handlePaste}
                       setTextContent={setTextContent}
                       handleSubmit={handleSubmit}
-                      isProcessing={isProcessing}
+                      isProcessing={isProcessing || isStreaming}
                       hasPendingImageAnalysis={hasPendingImageAnalysis}
                       handleOpenCamera={handleOpenCamera}
                       isPersonaDialogOpen={isPersonaDialogOpen}
                       setIsPersonaDialogOpen={setIsPersonaDialogOpen}
-                      aiResponse={aiResponse}
+                      aiResponse={isStreaming ? streamingText : aiResponse}
                       personaSettings={personaSettings}
                       handlePersonaFieldChange={handlePersonaFieldChange}
                       handlePersonaSubmit={handlePersonaSubmit}

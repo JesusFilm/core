@@ -241,6 +241,47 @@ export const StepsList = ({
 }: StepsListProps) => {
   const containerClass = className ? `${className}` : ''
 
+  const StepCard = ({
+    step,
+    index
+  }: {
+    step: GeneratedStepContent
+    index: number
+  }) => {
+    const { ref: cardRef } = useIntersectionObserver(
+      () => onStepVisible(step, index),
+      { threshold: 0.1 }
+    )
+
+    return (
+      <div ref={cardRef}>
+        <Card className="bg-transparent shadow-none">
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <StepContentRenderer
+                content={step.content}
+                className="-mx-6"
+                stepIndex={index}
+                isEditing={editingStepIndices.has(index)}
+                copiedStepIndex={copiedStepIndex}
+                onCopy={onCopyStep}
+                onContentChange={stepHandlers[index]?.onContentChange}
+                onFocus={stepHandlers[index]?.onFocus}
+                onExitEditMode={stepHandlers[index]?.onExitEditMode}
+              />
+            </div>
+            <div className="space-y-2 hidden">
+              <h4 className="text-sm font-medium">Media Prompt</h4>
+              <p className="text-sm whitespace-pre-wrap text-muted-foreground">
+                {step.mediaPrompt || 'No prompt provided.'}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   return (
     <div className={containerClass}>
       {editableSteps.map((step, index) => {
@@ -249,38 +290,8 @@ export const StepsList = ({
           `Step ${index + 1}`
         )
         const cardKey = heading ? `${heading}-${index}` : `step-${index}`
-        const { ref: cardRef } = useIntersectionObserver(
-          () => onStepVisible(step, index),
-          { threshold: 0.1 }
-        )
 
-        return (
-          <div key={cardKey} ref={cardRef}>
-            <Card className="bg-transparent shadow-none">
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <StepContentRenderer
-                    content={step.content}
-                    className="-mx-6"
-                    stepIndex={index}
-                    isEditing={editingStepIndices.has(index)}
-                    copiedStepIndex={copiedStepIndex}
-                    onCopy={onCopyStep}
-                    onContentChange={stepHandlers[index]?.onContentChange}
-                    onFocus={stepHandlers[index]?.onFocus}
-                    onExitEditMode={stepHandlers[index]?.onExitEditMode}
-                  />
-                </div>
-                <div className="space-y-2 hidden">
-                  <h4 className="text-sm font-medium">Media Prompt</h4>
-                  <p className="text-sm whitespace-pre-wrap text-muted-foreground">
-                    {step.mediaPrompt || 'No prompt provided.'}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )
+        return <StepCard key={cardKey} step={step} index={index} />
       })}
     </div>
   )
