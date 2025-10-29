@@ -374,6 +374,11 @@ export interface GetAdminJourney_journey_blocks_TypographyBlock {
   settings: GetAdminJourney_journey_blocks_TypographyBlock_settings | null;
 }
 
+export interface GetAdminJourney_journey_blocks_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface GetAdminJourney_journey_blocks_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -538,6 +543,7 @@ export interface GetAdminJourney_journey_blocks_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: GetAdminJourney_journey_blocks_VideoBlock_subtitleLanguage | null;
   mediaVideo: GetAdminJourney_journey_blocks_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

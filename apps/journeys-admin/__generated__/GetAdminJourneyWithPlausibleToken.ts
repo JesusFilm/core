@@ -374,6 +374,11 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBloc
   settings: GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBlock_settings | null;
 }
 
+export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -538,6 +543,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_subtitleLanguage | null;
   mediaVideo: GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

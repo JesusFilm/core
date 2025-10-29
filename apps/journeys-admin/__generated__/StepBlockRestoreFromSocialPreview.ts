@@ -370,6 +370,11 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_TypographyBlock 
   settings: StepBlockRestoreFromSocialPreview_blockRestore_TypographyBlock_settings | null;
 }
 
+export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -534,6 +539,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

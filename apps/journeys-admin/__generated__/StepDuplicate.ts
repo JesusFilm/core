@@ -370,6 +370,11 @@ export interface StepDuplicate_blockDuplicate_TypographyBlock {
   settings: StepDuplicate_blockDuplicate_TypographyBlock_settings | null;
 }
 
+export interface StepDuplicate_blockDuplicate_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface StepDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -534,6 +539,7 @@ export interface StepDuplicate_blockDuplicate_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: StepDuplicate_blockDuplicate_VideoBlock_subtitleLanguage | null;
   mediaVideo: StepDuplicate_blockDuplicate_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

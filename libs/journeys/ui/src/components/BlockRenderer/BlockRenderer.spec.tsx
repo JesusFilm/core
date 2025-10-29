@@ -778,6 +778,7 @@ describe('BlockRenderer', () => {
       duration: null,
       image: null,
       objectFit: null,
+      subtitleLanguage: null,
       mediaVideo: {
         __typename: 'Video',
         id: '2_0-FallingPlates',
@@ -834,6 +835,7 @@ describe('BlockRenderer', () => {
       duration: null,
       image: null,
       objectFit: null,
+      subtitleLanguage: null,
       mediaVideo: {
         __typename: 'Video',
         id: '2_0-FallingPlates',

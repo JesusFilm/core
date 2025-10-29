@@ -370,6 +370,11 @@ export interface MenuBlockRestore_stepRestore_TypographyBlock {
   settings: MenuBlockRestore_stepRestore_TypographyBlock_settings | null;
 }
 
+export interface MenuBlockRestore_stepRestore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface MenuBlockRestore_stepRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -534,6 +539,7 @@ export interface MenuBlockRestore_stepRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: MenuBlockRestore_stepRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: MenuBlockRestore_stepRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

@@ -360,6 +360,11 @@ export interface CardQuoteRestore_image_TypographyBlock {
   settings: CardQuoteRestore_image_TypographyBlock_settings | null;
 }
 
+export interface CardQuoteRestore_image_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardQuoteRestore_image_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -524,6 +529,7 @@ export interface CardQuoteRestore_image_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardQuoteRestore_image_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardQuoteRestore_image_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -942,6 +948,11 @@ export interface CardQuoteRestore_subtitle_TypographyBlock {
   settings: CardQuoteRestore_subtitle_TypographyBlock_settings | null;
 }
 
+export interface CardQuoteRestore_subtitle_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1106,6 +1117,7 @@ export interface CardQuoteRestore_subtitle_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardQuoteRestore_subtitle_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardQuoteRestore_subtitle_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -1524,6 +1536,11 @@ export interface CardQuoteRestore_title_TypographyBlock {
   settings: CardQuoteRestore_title_TypographyBlock_settings | null;
 }
 
+export interface CardQuoteRestore_title_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardQuoteRestore_title_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1688,6 +1705,7 @@ export interface CardQuoteRestore_title_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardQuoteRestore_title_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardQuoteRestore_title_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -2106,6 +2124,11 @@ export interface CardQuoteRestore_body_TypographyBlock {
   settings: CardQuoteRestore_body_TypographyBlock_settings | null;
 }
 
+export interface CardQuoteRestore_body_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardQuoteRestore_body_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -2270,6 +2293,7 @@ export interface CardQuoteRestore_body_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardQuoteRestore_body_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardQuoteRestore_body_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

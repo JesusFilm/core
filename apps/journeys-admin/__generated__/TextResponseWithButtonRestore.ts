@@ -360,6 +360,11 @@ export interface TextResponseWithButtonRestore_textResponse_TypographyBlock {
   settings: TextResponseWithButtonRestore_textResponse_TypographyBlock_settings | null;
 }
 
+export interface TextResponseWithButtonRestore_textResponse_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -524,6 +529,7 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: TextResponseWithButtonRestore_textResponse_VideoBlock_subtitleLanguage | null;
   mediaVideo: TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -942,6 +948,11 @@ export interface TextResponseWithButtonRestore_button_TypographyBlock {
   settings: TextResponseWithButtonRestore_button_TypographyBlock_settings | null;
 }
 
+export interface TextResponseWithButtonRestore_button_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1106,6 +1117,7 @@ export interface TextResponseWithButtonRestore_button_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: TextResponseWithButtonRestore_button_VideoBlock_subtitleLanguage | null;
   mediaVideo: TextResponseWithButtonRestore_button_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -1524,6 +1536,11 @@ export interface TextResponseWithButtonRestore_startIcon_TypographyBlock {
   settings: TextResponseWithButtonRestore_startIcon_TypographyBlock_settings | null;
 }
 
+export interface TextResponseWithButtonRestore_startIcon_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1688,6 +1705,7 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: TextResponseWithButtonRestore_startIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -2106,6 +2124,11 @@ export interface TextResponseWithButtonRestore_endIcon_TypographyBlock {
   settings: TextResponseWithButtonRestore_endIcon_TypographyBlock_settings | null;
 }
 
+export interface TextResponseWithButtonRestore_endIcon_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -2270,6 +2293,7 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: TextResponseWithButtonRestore_endIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
