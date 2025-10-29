@@ -51,6 +51,7 @@ const defaultVideo: TreeBlock<VideoBlock> = {
   description: null,
   duration: null,
   image: null,
+  subtitleLanguage: null,
   mediaVideo: null,
   posterBlockId: null,
   objectFit: null,

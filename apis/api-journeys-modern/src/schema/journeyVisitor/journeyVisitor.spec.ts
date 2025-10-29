@@ -483,7 +483,7 @@ describe('journeyVisitorExport', () => {
     expect(result).toHaveProperty('errors[0].message', 'Journey not found')
   })
 
-  it('should error when user is not allowed to manage journey', async () => {
+  it('should error when user is not allowed to export journey', async () => {
     prismaMock.journey.findUnique.mockResolvedValueOnce({
       id: 'journey1',
       team: { userTeams: [{ userId: 'otherUserId', role: 'manager' }] },
@@ -498,7 +498,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'errors[0].message',
-      'User is not allowed to manage journey'
+      'User is not allowed to export visitors'
     )
   })
 

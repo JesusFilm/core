@@ -8,6 +8,7 @@
 //==============================================================
 
 export enum ButtonAction {
+  ChatAction = "ChatAction",
   EmailAction = "EmailAction",
   LinkAction = "LinkAction",
   NavigateToBlockAction = "NavigateToBlockAction",
@@ -40,10 +41,16 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum ContactActionType {
+  call = "call",
+  text = "text",
+}
+
 export enum EventType {
   ButtonClickEvent = "ButtonClickEvent",
   ChatOpenEvent = "ChatOpenEvent",
   JourneyViewEvent = "JourneyViewEvent",
+  MultiselectSubmissionEvent = "MultiselectSubmissionEvent",
   RadioQuestionSubmissionEvent = "RadioQuestionSubmissionEvent",
   SignUpSubmissionEvent = "SignUpSubmissionEvent",
   StepNextEvent = "StepNextEvent",
@@ -296,6 +303,7 @@ export interface BlockUpdateActionInput {
   phone?: string | null;
   countryCode?: string | null;
   target?: string | null;
+  chatUrl?: string | null;
   blockId?: string | null;
 }
 
@@ -357,6 +365,14 @@ export interface CardBlockUpdateInput {
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+}
+
+export interface ChatActionInput {
+  gtmEventName?: string | null;
+  chatUrl: string;
+  target?: string | null;
+  customizable?: boolean | null;
+  parentStepId?: string | null;
 }
 
 export interface ChatButtonCreateInput {
@@ -606,6 +622,13 @@ export interface MeInput {
   redirect?: string | null;
 }
 
+export interface PhoneActionInput {
+  gtmEventName?: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction?: ContactActionType | null;
+}
+
 export interface QrCodeCreateInput {
   teamId: string;
   journeyId: string;
@@ -814,6 +837,7 @@ export interface VideoBlockCreateInput {
   autoplay?: boolean | null;
   fullsize?: boolean | null;
   posterBlockId?: string | null;
+  subtitleLanguageId?: string | null;
 }
 
 export interface VideoBlockUpdateInput {
@@ -831,6 +855,7 @@ export interface VideoBlockUpdateInput {
   muted?: boolean | null;
   autoplay?: boolean | null;
   fullsize?: boolean | null;
+  subtitleLanguageId?: string | null;
   source?: VideoBlockSource | null;
 }
 

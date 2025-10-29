@@ -1,4 +1,5 @@
 import { Meta, StoryObj } from '@storybook/nextjs'
+import { MockedProvider } from '@apollo/client/testing'
 import { SWRConfig } from 'swr'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
@@ -21,9 +22,11 @@ const YouTubeDetailsStory: Meta<typeof YouTubeDetails> = {
 const Template: StoryObj<typeof YouTubeDetails> = {
   render: ({ id, onSelect }) => {
     return (
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <YouTubeDetails id={id} open onSelect={onSelect} />
-      </SWRConfig>
+      <MockedProvider mocks={[]}>
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <YouTubeDetails id={id} open onSelect={onSelect} />
+        </SWRConfig>
+      </MockedProvider>
     )
   }
 }

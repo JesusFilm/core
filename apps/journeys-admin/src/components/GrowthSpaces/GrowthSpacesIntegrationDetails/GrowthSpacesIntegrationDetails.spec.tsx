@@ -104,6 +104,13 @@ xdescribe('GrowthSpacesIntegrationDetails', () => {
         ).toBeInTheDocument()
       )
 
+      await waitFor(() => {
+        expect(screen.getByDisplayValue('new.access.id')).toBeInTheDocument()
+        expect(
+          screen.getByDisplayValue('new.access.secret')
+        ).toBeInTheDocument()
+      })
+
       fireEvent.click(screen.getByRole('button', { name: 'Save' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
       expect(
