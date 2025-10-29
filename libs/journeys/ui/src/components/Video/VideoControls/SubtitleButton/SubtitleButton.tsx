@@ -1,9 +1,14 @@
-import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
+import Subtitles from '@mui/icons-material/Subtitles'
 import IconButton from '@mui/material/IconButton'
 import { ReactElement, useState } from 'react'
 
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import VideoJsPlayer from '../../utils/videoJsTypes'
+import { getCaptionsAndSubtitleTracks } from '../../utils/getCaptionsAndSubtitleTracks'
+import { hideAllSubtitles } from '../../utils/hideAllSubtitles'
+import { getYouTubePlayer } from '../../utils/getYouTubePlayer'
+import { setYouTubeCaptionTrack } from '../../utils/setYouTubeCaptionTrack'
+import { unloadYouTubeCaptions } from '../../utils/unloadYouTubeCaptions'
 
 import { SubtitleMenu } from './SubtitleMenu'
 
@@ -26,7 +31,51 @@ export function SubtitleButton({
     setAnchorEl(null)
   }
 
+  function handleSubtitleChange(trackId: string | null): void {
+    // first hide all subtitles
+    hideAllSubtitles(player)
+    const ytPlayer = getYouTubePlayer(player)
+
+    // Handle YouTube videos
+    if (source === VideoBlockSource.youTube) {
+      if (trackId == null) {
+        unloadYouTubeCaptions(ytPlayer)
+      } else {
+        // Get the track info to find the language code
+        const tracks = player.textTracks?.() ?? new TextTrackList()
+
+        for (let i = 0; i < tracks.length; i++) {
+          const track = tracks[i]
+          if (track.id === trackId) {
+            track.mode = 'showing'
+            setYouTubeCaptionTrack(ytPlayer, track.language)
+            break
+          }
+        }
+      }
+    } else {
+      // Handle HTML5/normal videos
+      const tracks = player.textTracks?.() ?? new TextTrackList()
+      for (let i = 0; i < tracks.length; i++) {
+        const track = tracks[i]
+        if (track.id === trackId) {
+          track.mode = track.mode === 'showing' ? 'hidden' : 'showing'
+          break
+        }
+      }
+    }
+  }
+
   const open = Boolean(anchorEl)
+
+  // Get caption tracks and determine button state
+  const captionTracks = getCaptionsAndSubtitleTracks(player)
+  const activeTrack = captionTracks.find((track) => track.mode === 'showing')
+
+  // Determine button state based on available tracks and active track
+  const hasAvailableTracks = captionTracks.length > 0
+  const isTrackSelected = activeTrack != null
+  const isDisabled = !hasAvailableTracks
 
   return (
     <>
@@ -36,21 +85,36 @@ export function SubtitleButton({
         aria-expanded={open}
         aria-haspopup={open}
         onClick={handleClick}
+        disabled={isDisabled}
         sx={{
-          color: 'common.white',
+          color: isDisabled ? 'text.disabled' : 'common.white',
+          position: 'relative',
           '&:hover': {
-            backgroundColor: 'action.hover'
-          }
+            backgroundColor: isDisabled ? 'transparent' : 'action.hover'
+          },
+          // Add red underline when track is selected
+          '&::after': isTrackSelected
+            ? {
+                content: '""',
+                position: 'absolute',
+                bottom: 5,
+                width: '50%',
+                height: 2,
+                backgroundColor: 'error.main',
+                borderRadius: '2px'
+              }
+            : {}
         }}
       >
-        <SubtitlesOutlined />
+        <Subtitles />
       </IconButton>
       <SubtitleMenu
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        player={player}
-        source={source}
+        captionTracks={captionTracks}
+        activeTrack={activeTrack}
+        onChange={handleSubtitleChange}
       />
     </>
   )
