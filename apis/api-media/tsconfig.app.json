@@ -18,5 +18,5 @@
     "**/__mocks/*.ts",
     "**/test/*.ts"
   ],
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts", "../api-lumina/src/schema/error/ForbiddenError.ts"]
 }

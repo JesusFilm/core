@@ -19,15 +19,15 @@ datasource db {
 }
 
 model Team {
-  id               String              @id @default(uuid())
-  name              String
-  slug              String              @unique
-  createdAt         DateTime            @default(now())
-  updatedAt         DateTime            @updatedAt
-  members           TeamMember[]
-  agents            Agent[]
+  id                  String               @id @default(uuid())
+  name                String
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  members             TeamMember[]
+  agents              Agent[]
   billingSubscription BillingSubscription?
-  usage             Usage[]
+  usage               Usage[]
+  invitations         TeamInvitation[]
 }
 
 model TeamMember {
@@ -41,6 +41,21 @@ model TeamMember {
 
   @@unique([teamId, userId])
   @@index([userId])
+}
+
+model TeamInvitation {
+  id        String   @id @default(uuid())
+  teamId    String
+  email     String
+  role      Role     @default(MEMBER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+
+  @@unique([teamId, email])
+  @@index([teamId])
+  @@index([email])
 }
 
 model BillingSubscription {
@@ -68,9 +83,6 @@ model Agent {
   topP             Float?
   frequencyPenalty Float?
   presencePenalty  Float?
-  logoUrl          String?
-  primaryColor     String?
-  secondaryColor   String?
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
   team             Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
@@ -135,16 +147,16 @@ model Website {
 }
 
 model ApiKey {
-  id        String    @id @default(uuid())
-  agentId   String
-  name      String
-  keyHash   String    @unique
-  enabled   Boolean   @default(true)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  lastUsed  DateTime?
-  agent     Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  usage     Usage[]
+  id         String    @id @default(uuid())
+  agentId    String
+  name       String
+  keyHash    String    @unique
+  enabled    Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  lastUsedAt DateTime?
+  agent      Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  usage      Usage[]
 
   @@index([agentId])
 }

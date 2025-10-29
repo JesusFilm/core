@@ -1,2 +1,5 @@
 import './team'
 import './member'
+import './invitation'
+import './queries'
+import './mutations'

@@ -5,7 +5,6 @@ CREATE TYPE "Role" AS ENUM ('OWNER', 'MANAGER', 'MEMBER');
 CREATE TABLE "Team" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "slug" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -22,6 +21,19 @@ CREATE TABLE "TeamMember" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "TeamMember_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "TeamInvitation" (
+    "id" TEXT NOT NULL,
+    "teamId" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'MEMBER',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "tokenHash" TEXT NOT NULL,
+
+    CONSTRAINT "TeamInvitation_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -52,9 +64,6 @@ CREATE TABLE "Agent" (
     "topP" DOUBLE PRECISION,
     "frequencyPenalty" DOUBLE PRECISION,
     "presencePenalty" DOUBLE PRECISION,
-    "logoUrl" TEXT,
-    "primaryColor" TEXT,
-    "secondaryColor" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -117,7 +126,7 @@ CREATE TABLE "ApiKey" (
     "enabled" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "lastUsed" TIMESTAMP(3),
+    "lastUsedAt" TIMESTAMP(3),
 
     CONSTRAINT "ApiKey_pkey" PRIMARY KEY ("id")
 );
@@ -143,13 +152,22 @@ CREATE TABLE "Usage" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Team_slug_key" ON "Team"("slug");
-
--- CreateIndex
 CREATE INDEX "TeamMember_userId_idx" ON "TeamMember"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "TeamMember_teamId_userId_key" ON "TeamMember"("teamId", "userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "TeamInvitation_tokenHash_key" ON "TeamInvitation"("tokenHash");
+
+-- CreateIndex
+CREATE INDEX "TeamInvitation_teamId_idx" ON "TeamInvitation"("teamId");
+
+-- CreateIndex
+CREATE INDEX "TeamInvitation_email_idx" ON "TeamInvitation"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "TeamInvitation_teamId_email_key" ON "TeamInvitation"("teamId", "email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "BillingSubscription_teamId_key" ON "BillingSubscription"("teamId");
@@ -207,6 +225,9 @@ CREATE INDEX "Usage_apiKeyId_createdAt_idx" ON "Usage"("apiKeyId", "createdAt");
 
 -- AddForeignKey
 ALTER TABLE "TeamMember" ADD CONSTRAINT "TeamMember_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TeamInvitation" ADD CONSTRAINT "TeamInvitation_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "BillingSubscription" ADD CONSTRAINT "BillingSubscription_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;

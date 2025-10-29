@@ -5,7 +5,6 @@ builder.prismaObject('Team', {
   fields: (t) => ({
     id: t.exposeID('id'),
     name: t.exposeString('name'),
-    slug: t.exposeString('slug'),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
     updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
     members: t.relation('members'),
