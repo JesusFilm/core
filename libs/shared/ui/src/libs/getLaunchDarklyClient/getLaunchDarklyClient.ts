@@ -1,17 +1,11 @@
-import { LDClient, LDUser, init } from 'launchdarkly-node-server-sdk'
+import { LDClient, LDUser, init } from '@launchdarkly/node-server-sdk'
 
 let launchDarklyClient: LDClient
 
-/**
- * Simple stub client that returns empty objects for flag methods
- * Used as fallback when LaunchDarkly initialization fails or times out
- */
 const createStubClient = (): LDClient => {
   return {
     waitForInitialization: async () => Promise.resolve(),
-    identify: (user: LDUser) => {
-      // Stub implementation - no-op
-    },
+    identify: (user: LDUser) => ({}),
     allFlagsState: () => ({
       valid: false,
       allValues: {},
@@ -30,9 +24,8 @@ export async function getLaunchDarklyClient(user?: LDUser): Promise<LDClient> {
   }
 
   try {
-    // Use Promise.race to implement 1-second timeout
     await Promise.race([
-      launchDarklyClient.waitForInitialization(),
+      launchDarklyClient.waitForInitialization({ timeout: 1000 }),
       new Promise((_, reject) =>
         setTimeout(
           () => reject(new Error('LaunchDarkly initialization timeout')),
@@ -45,9 +38,8 @@ export async function getLaunchDarklyClient(user?: LDUser): Promise<LDClient> {
 
     return launchDarklyClient
   } catch (error) {
-    // Return stub client if initialization fails or times out
     console.warn(
-      'LaunchDarkly client initiaation failed or timed out, using stub client:',
+      'LaunchDarkly client initiation failed or timed out, using stub client:',
       error
     )
     return createStubClient()
