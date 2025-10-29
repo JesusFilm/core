@@ -360,10 +360,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock {
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
-<<<<<<< HEAD
   bcp47: string | null;
-=======
->>>>>>> origin
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_title {

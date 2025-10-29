@@ -356,10 +356,7 @@ export interface StepBlockRestoreFromSocialPreview_blockRestore_TypographyBlock 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
-<<<<<<< HEAD
   bcp47: string | null;
-=======
->>>>>>> origin
 }
 
 export interface StepBlockRestoreFromSocialPreview_blockRestore_VideoBlock_mediaVideo_Video_title {

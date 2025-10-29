@@ -346,10 +346,7 @@ export interface BlockDuplicate_blockDuplicate_TypographyBlock {
 export interface BlockDuplicate_blockDuplicate_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
-<<<<<<< HEAD
   bcp47: string | null;
-=======
->>>>>>> origin
 }
 
 export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_title {

@@ -360,10 +360,7 @@ export interface JourneyFields_blocks_TypographyBlock {
 export interface JourneyFields_blocks_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
-<<<<<<< HEAD
   bcp47: string | null;
-=======
->>>>>>> origin
 }
 
 export interface JourneyFields_blocks_VideoBlock_mediaVideo_Video_title {
