@@ -10,15 +10,6 @@ import { TemplateSettingsFormValues } from '../../useTemplateSettingsForm'
 
 import { CustomizeTemplate } from './CustomizeTemplate'
 
-function isTextEditableElement(
-  element: Element
-): element is HTMLInputElement | HTMLTextAreaElement {
-  return (
-    element instanceof HTMLInputElement ||
-    element instanceof HTMLTextAreaElement
-  )
-}
-
 describe('CustomizeTemplate', () => {
   it('renders heading and refresh button', () => {
     const journey = defaultJourney as Journey

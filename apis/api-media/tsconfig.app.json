@@ -13,7 +13,8 @@
     "target": "es2021"
   },
   "exclude": [
-    "**/*.spec.{ts,tsx}",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
     "jest.config.ts",
     "**/__mocks/*.ts",
     "**/test/*.ts"
