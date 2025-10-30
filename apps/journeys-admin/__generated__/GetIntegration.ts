@@ -48,6 +48,7 @@ export interface GetIntegration_integrations_IntegrationGoogle {
   accessId: string | null;
   accessSecretPart: string | null;
   user: GetIntegration_integrations_IntegrationGoogle_user | null;
+  accountEmail: string | null;
 }
 
 export type GetIntegration_integrations = GetIntegration_integrations_IntegrationGrowthSpaces | GetIntegration_integrations_IntegrationGoogle;

@@ -304,6 +304,15 @@ enum ContactActionType {
   text
 }
 
+input CreateGoogleSheetsSyncInput {
+  journeyId: String!
+  integrationId: String!
+  spreadsheetId: String!
+  sheetName: String!
+  folderId: String
+  appendMode: Boolean
+}
+
 type CustomDomain
   @shareable
 {
@@ -409,6 +418,16 @@ enum EventType {
 enum GoogleSheetExportMode {
   create
   existing
+}
+
+type GoogleSheetsSync {
+  id: ID
+  teamId: String
+  journeyId: String
+  spreadsheetId: String
+  sheetName: String
+  folderId: String
+  appendMode: Boolean
 }
 
 enum GridAlignItems {
@@ -1272,6 +1291,8 @@ type Mutation {
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @override(from: "api-journeys")
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent! @override(from: "api-journeys")
+  googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!): GoogleSheetsSync!
+  googleSheetsSyncDelete(id: ID!): GoogleSheetsSync!
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!): IntegrationGoogle!
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!): IntegrationGoogle!
   journeySimpleUpdate(id: ID!, journey: Json!): Json
@@ -1434,6 +1455,7 @@ input QrCodesFilter {
 type Query {
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
+  googleSheetsSyncs(journeyId: ID!): [GoogleSheetsSync!]!
   integrationGooglePickerToken(teamId: ID!, integrationId: ID): String!
   journeySimpleGet(id: ID!): Json
 

@@ -402,6 +402,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   buttonClickEventCreate(input: ButtonClickEventCreateInput!) : ButtonClickEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   chatOpenEventCreate(input: ChatOpenEventCreateInput!) : ChatOpenEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!) : MultiselectSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!) : GoogleSheetsSync! @join__field(graph: API_JOURNEYS_MODERN) 
+  googleSheetsSyncDelete(id: ID!) : GoogleSheetsSync! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
   journeySimpleUpdate(id: ID!, journey: Json!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
@@ -788,6 +790,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   visitor(id: ID!) : Visitor! @join__field(graph: API_JOURNEYS) 
   node(id: ID!) : Node @join__field(graph: API_JOURNEYS_MODERN) 
   nodes(ids: [ID!]!) : [Node]! @join__field(graph: API_JOURNEYS_MODERN) 
+  googleSheetsSyncs(journeyId: ID!) : [GoogleSheetsSync!]! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGooglePickerToken(teamId: ID!, integrationId: ID) : String! @join__field(graph: API_JOURNEYS_MODERN) 
   journeySimpleGet(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -2418,6 +2421,16 @@ type Translation @join__type(graph: API_JOURNEYS)  {
   value: String!
   language: Language!
   primary: Boolean!
+}
+
+type GoogleSheetsSync @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  teamId: String
+  journeyId: String
+  spreadsheetId: String
+  sheetName: String
+  folderId: String
+  appendMode: Boolean
 }
 
 type JourneyAiTranslateProgress @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4623,6 +4636,15 @@ input ChatOpenEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   messagePlatform of the link used for chat
   """
   value: MessagePlatform
+}
+
+input CreateGoogleSheetsSyncInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyId: String!
+  integrationId: String!
+  spreadsheetId: String!
+  sheetName: String!
+  folderId: String
+  appendMode: Boolean
 }
 
 input EmailActionInput @join__type(graph: API_JOURNEYS_MODERN)  {

@@ -11,6 +11,7 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { useJourneyContactsExport } from '../../../../libs/useJourneyContactsExport'
 import { useJourneyEventsExport } from '../../../../libs/useJourneyEventsExport'
@@ -37,6 +38,20 @@ export const GET_JOURNEY_CREATED_AT = gql`
 const GET_GOOGLE_PICKER_TOKEN = gql`
   query IntegrationGooglePickerToken($teamId: ID!, $integrationId: ID) {
     integrationGooglePickerToken(teamId: $teamId, integrationId: $integrationId)
+  }
+`
+
+const GET_GOOGLE_SHEETS_SYNCS = gql`
+  query GoogleSheetsSyncs($journeyId: ID!) {
+    googleSheetsSyncs(journeyId: $journeyId) {
+      id
+      spreadsheetId
+      sheetName
+      folderId
+      appendMode
+      journeyId
+      teamId
+    }
   }
 `
 
@@ -103,6 +118,7 @@ export function ExportDialog({
   const [exportBy, setExportBy] = useState<string>('')
 
   const [googleDialogOpen, setGoogleDialogOpen] = useState(false)
+  const [syncsDialogOpen, setSyncsDialogOpen] = useState(false)
   const [googleMode, setGoogleMode] = useState<'create' | 'existing'>('create')
   const [integrationId, setIntegrationId] = useState<string | undefined>(
     undefined
@@ -117,6 +133,9 @@ export function ExportDialog({
   const [exportToSheets, { loading: sheetsLoading }] =
     useMutation(EXPORT_TO_SHEETS)
   const [getPickerToken] = useLazyQuery(GET_GOOGLE_PICKER_TOKEN)
+  const [loadSyncs, { data: syncsData, loading: syncsLoading }] = useLazyQuery(
+    GET_GOOGLE_SHEETS_SYNCS
+  )
 
   // Drive Picker integration
   async function handleOpenDrivePicker(
@@ -354,9 +373,12 @@ export function ExportDialog({
       dialogActionChildren={
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Button
-            variant="outlined"
+            variant="contained"
             color="secondary"
-            onClick={() => setGoogleDialogOpen(true)}
+            onClick={async () => {
+              setSyncsDialogOpen(true)
+              await loadSyncs({ variables: { journeyId } })
+            }}
             loading={eventsDownloading || contactsDownloading}
             disabled={
               exportBy === '' ||
@@ -365,10 +387,10 @@ export function ExportDialog({
             }
             sx={{ mb: { xs: 0, sm: 3 } }}
           >
-            {t('Export to Google Sheets')}
+            {t('Sync to Google Sheets')}
           </Button>
           <Button
-            variant="contained"
+            variant="outlined"
             color="secondary"
             onClick={handleExport}
             loading={eventsDownloading || contactsDownloading}
@@ -451,10 +473,84 @@ export function ExportDialog({
         </Box>
       )}
       {/* Google Sheets Dialog */}
+      {/* Pre-modal: show existing syncs before opening Google Sheets export modal */}
+      <Dialog
+        open={syncsDialogOpen}
+        onClose={() => setSyncsDialogOpen(false)}
+        dialogTitle={{
+          title: t('Existing Google Sheets Syncs'),
+          closeButton: true
+        }}
+        divider={false}
+        dialogActionChildren={
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button
+              variant="contained"
+              color="secondary"
+              startIcon={<Plus2Icon />}
+              onClick={() => {
+                setSyncsDialogOpen(false)
+                setGoogleDialogOpen(true)
+              }}
+              disabled={syncsLoading}
+            >
+              {t('New Sync')}
+            </Button>
+          </Box>
+        }
+      >
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {syncsLoading && (
+            <Typography variant="body2">{t('Loading...')}</Typography>
+          )}
+          {!syncsLoading &&
+            (syncsData?.googleSheetsSyncs?.length ?? 0) === 0 && (
+              <Typography variant="body2">
+                {t(
+                  'There are no active Google Sheet syncs. Add a new sync to start syncing your data.'
+                )}
+              </Typography>
+            )}
+          {!syncsLoading && (syncsData?.googleSheetsSyncs?.length ?? 0) > 0 && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              {syncsData?.googleSheetsSyncs?.map((s: any) => (
+                <Box
+                  key={s.id}
+                  sx={{
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 1,
+                    p: 2
+                  }}
+                  role="group"
+                  aria-label={t('Existing sync')}
+                >
+                  <Typography variant="subtitle2">
+                    {t('Sheet')}: {s.sheetName}
+                  </Typography>
+                  <Typography variant="body2" sx={{ wordBreak: 'break-all' }}>
+                    {t('Spreadsheet ID')}: {s.spreadsheetId}
+                  </Typography>
+                  {s.folderId && (
+                    <Typography variant="body2" sx={{ wordBreak: 'break-all' }}>
+                      {t('Folder ID')}: {s.folderId}
+                    </Typography>
+                  )}
+                  <Typography variant="body2">
+                    {t('Append Mode')}: {s.appendMode ? t('On') : t('Off')}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          )}
+        </Box>
+      </Dialog>
+
+      {/* Existing Google Sheets export dialog */}
       <Dialog
         open={googleDialogOpen}
         onClose={() => setGoogleDialogOpen(false)}
-        dialogTitle={{ title: t('Export to Google Sheets'), closeButton: true }}
+        dialogTitle={{ title: t('Sync to Google Sheets'), closeButton: true }}
         divider={false}
         dialogActionChildren={
           <Button
