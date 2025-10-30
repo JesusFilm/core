@@ -185,14 +185,14 @@ test.describe('Preview Screen Slides', () => {
     })
 
     // Not showing that Video
-    await test.step(`Commented Out- 24. Verify the Repeat steps 18-22 on this card and then swipe to go to next card. 
+    await test.skip(`Commented Out- 24. Verify the Repeat steps 18-22 on this card and then swipe to go to next card. 
       - (Video from Youtube Link)
       - This is testing a video from YouTube library
       - (Verified the video should be Visibled, Pause, Play, Full Screen, Video Playback time Changing, Automatically Navigate the Next Card)`, async () => {
       // await previewScreenPage.verifyYoutubeVideos()
     })
 
-    await test.step(`Commented Out - 25. Verify the Repeat steps 18-22 on this card and then swipe to go to next card. 
+    await test.skip(`Commented Out - 25. Verify the Repeat steps 18-22 on this card and then swipe to go to next card. 
       - (Video from Youtube Link)
       - This is testing a video from YouTube library
       - (Verified the video should be Visibled, Pause, Play, Full Screen, Video Playback time Changing, Automatically Navigate the Next Card)`, async () => {
@@ -200,7 +200,7 @@ test.describe('Preview Screen Slides', () => {
     })
 
     // Video Loading Issue
-    await test.step(`Commented Out - 26. Verify the Repeat steps 18-22 on this card and then swipe to go to next card. 
+    await test.skip(`Commented Out - 26. Verify the Repeat steps 18-22 on this card and then swipe to go to next card. 
       - Uploaded Video
       - This is testing a Uploded video
       - (Verified the video should be Visibled, Pause, Play, Full Screen, Video Playback time Changing, Automatically Navigate the Next Card)`, async () => {
@@ -208,7 +208,7 @@ test.describe('Preview Screen Slides', () => {
     })
 
     // Video Loading Issue
-    await test.step(`Commented Out - 27. Verify the Swipe to go to next card. 
+    await test.skip(`Commented Out - 27. Verify the Swipe to go to next card. 
       - Should take you to this card with image blocks and a poll
       
       28. Verify the Select 'House by the beach' option. 
