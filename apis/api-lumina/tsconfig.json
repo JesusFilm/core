@@ -1,12 +1,5 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "allowJs": true,
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "strict": true,
-    "incremental": false
-  },
   "files": [],
   "include": [],
   "references": [
@@ -16,5 +9,13 @@
     {
       "path": "./tsconfig.spec.json"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "allowJs": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "strict": true,
+    "incremental": true,
+    "tsBuildInfoFile": "../../.cache/api-journeys-modern/tsc/.tsbuildinfo"
+  }
 }

@@ -6,26 +6,14 @@ builder.prismaObject('Agent', {
     id: t.exposeID('id'),
     teamId: t.exposeString('teamId'),
     name: t.exposeString('name'),
-    description: t.expose('description', { type: 'String', nullable: true }),
+    description: t.exposeString('description', { nullable: true }),
     model: t.exposeString('model'),
-    systemPrompt: t.expose('systemPrompt', { type: 'String', nullable: true }),
+    systemPrompt: t.exposeString('systemPrompt', { nullable: true }),
     temperature: t.exposeFloat('temperature'),
-    maxTokens: t.expose('maxTokens', { type: 'Int', nullable: true }),
-    topP: t.expose('topP', { type: 'Float', nullable: true }),
-    frequencyPenalty: t.expose('frequencyPenalty', {
-      type: 'Float',
-      nullable: true
-    }),
-    presencePenalty: t.expose('presencePenalty', {
-      type: 'Float',
-      nullable: true
-    }),
-    logoUrl: t.expose('logoUrl', { type: 'String', nullable: true }),
-    primaryColor: t.expose('primaryColor', { type: 'String', nullable: true }),
-    secondaryColor: t.expose('secondaryColor', {
-      type: 'String',
-      nullable: true
-    }),
+    maxTokens: t.exposeInt('maxTokens', { nullable: true }),
+    topP: t.exposeFloat('topP', { nullable: true }),
+    frequencyPenalty: t.exposeFloat('frequencyPenalty', { nullable: true }),
+    presencePenalty: t.exposeFloat('presencePenalty', { nullable: true }),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
     updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
     team: t.relation('team'),

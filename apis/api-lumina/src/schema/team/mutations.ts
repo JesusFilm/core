@@ -6,10 +6,9 @@ import { builder } from '../builder'
 import { ForbiddenError } from '../error/ForbiddenError'
 import { NotFoundError } from '../error/NotFoundError'
 
+import { TeamCreateInput } from './inputs/createInput'
 import { TeamUpdateInput } from './inputs/updateInput'
-import {
-  TeamInvitationCreateInput
-} from './invitation/inputs/createInput'
+import { TeamInvitationCreateInput } from './invitation/inputs/createInput'
 import {
   generateToken,
   generateTokenHash
@@ -20,14 +19,17 @@ import { TeamMemberUpdateInput } from './member/inputs/updateInput'
 builder.mutationField('luminaTeamCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'Team',
-    args: {
-      name: t.arg.string({ required: true })
+    errors: {
+      types: [ZodError]
     },
-    resolve: async (query, _parent, { name }, { currentUser }) => {
+    args: {
+      input: t.arg({ required: true, type: TeamCreateInput })
+    },
+    resolve: async (query, _parent, { input }, { currentUser }) => {
       return await prisma.team.create({
         ...query,
         data: {
-          name,
+          ...input,
           members: { create: { userId: currentUser.id, role: 'OWNER' } }
         }
       })
@@ -39,7 +41,7 @@ builder.mutationField('luminaTeamUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'Team',
     errors: {
-      types: [ForbiddenError, NotFoundError]
+      types: [ForbiddenError, NotFoundError, ZodError]
     },
     args: {
       id: t.arg.id({ required: true }),

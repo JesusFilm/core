@@ -1,60 +1,25 @@
-FROM node:20-alpine AS base
+FROM node:22-alpine3.20
 
-# Install dependencies only when needed
-FROM base AS deps
-RUN apk add --no-cache libc6-compat
+EXPOSE 4006
+
+ARG SERVICE_VERSION=0.0.1
+ENV OTEL_RESOURCE_ATTRIBUTES="service.version=$SERVICE_VERSION"
+ENV PRISMA_LOCATION_LUMINA=/app/node_modules/.prisma/api-lumina-client
+ENV PNPM_HOME="/usr/local/share/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+RUN apk upgrade --update-cache --available && \
+    apk add g++ make python3 py3-pip curl-dev && \
+    rm -rf /var/cache/apk/*
+
 WORKDIR /app
+COPY ./dist/apps/api-lumina .
+COPY ./libs/prisma/lumina/db ./prisma
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
-
-# Copy package files
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY nx.json tsconfig.base.json ./
-
-# Copy prisma schemas
-COPY libs/prisma/*/db/schema.prisma ./
-# Copy only required prisma packages
-COPY libs/prisma/lumina ./libs/prisma/lumina
-COPY libs/prisma/lumina/db ./libs/prisma/lumina/db
-
-# Install dependencies
-RUN pnpm install --frozen-lockfile
-
-# Build the application
-FROM base AS builder
-WORKDIR /app
-RUN corepack enable && corepack prepare pnpm@latest --activate
-
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/pnpm-lock.yaml ./pnpm-lock.yaml
-COPY --from=deps /app/pnpm-workspace.yaml ./pnpm-workspace.yaml
-
-COPY . .
-
-# Generate Prisma clients
-RUN pnpm nx prisma-generate prisma-lumina
-
-# Build the API
-RUN pnpm nx build api-lumina
-
-# Production image
-FROM base AS runner
-WORKDIR /app
-
-ENV NODE_ENV=production
-
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 api
-
-# Copy built application
-COPY --from=builder --chown=api:nodejs /app/dist/apps/api-lumina ./dist
-COPY --from=builder --chown=api:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=api:nodejs /app/libs/prisma/lumina ./libs/prisma/lumina
-
-USER api
-
-EXPOSE 4004
-
-CMD ["node", "dist/main.js"]
-
+RUN corepack enable && corepack prepare pnpm --activate
+RUN pnpm install --prod --silent
+RUN pnpm add @prisma/client@6.5.0
+RUN pnpm add -D prisma@6.5.0
+RUN pnpm exec prisma generate --generator client --schema ./prisma/schema.prisma
+    
+CMD pnpm exec prisma migrate deploy --schema ./prisma/schema.prisma && node ./main.js

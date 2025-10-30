@@ -90,11 +90,12 @@ CREATE TABLE "Widget" (
     "agentId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "enabled" BOOLEAN NOT NULL DEFAULT true,
-    "position" TEXT NOT NULL DEFAULT 'bottom-right',
-    "theme" TEXT NOT NULL DEFAULT 'light',
-    "triggerText" TEXT NOT NULL DEFAULT 'Chat with us',
+    "position" TEXT,
+    "theme" TEXT,
+    "buttonText" TEXT,
+    "buttonIcon" TEXT,
     "primaryColor" TEXT,
-    "allowedDomains" TEXT,
+    "allowedDomains" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -122,7 +123,7 @@ CREATE TABLE "ApiKey" (
     "id" TEXT NOT NULL,
     "agentId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "keyHash" TEXT NOT NULL,
+    "key" TEXT NOT NULL,
     "enabled" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -203,7 +204,7 @@ CREATE INDEX "Website_subdomain_idx" ON "Website"("subdomain");
 CREATE INDEX "Website_customDomain_idx" ON "Website"("customDomain");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ApiKey_keyHash_key" ON "ApiKey"("keyHash");
+CREATE UNIQUE INDEX "ApiKey_key_key" ON "ApiKey"("key");
 
 -- CreateIndex
 CREATE INDEX "ApiKey_agentId_idx" ON "ApiKey"("agentId");

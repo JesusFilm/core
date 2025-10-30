@@ -6,7 +6,7 @@ const schema = z.object({
   name: z.string().min(1, 'Name is required')
 })
 
-export const TeamUpdateInput = builder.inputType('LuminaTeamUpdateInput', {
+export const TeamCreateInput = builder.inputType('LuminaTeamCreateInput', {
   fields: (t) => ({
     name: t.string({ required: true })
   }),

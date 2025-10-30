@@ -1,3 +1,8 @@
-import commonConfig from '../../libs/shared/eslint/common.mjs'
+import yogaConfig from '../../libs/shared/eslint/yogaWithReactEmail.mjs'
 
-export default commonConfig
+export default [
+  ...yogaConfig,
+  {
+    ignores: ['apis/api-lumina/webpack.config.js']
+  }
+]

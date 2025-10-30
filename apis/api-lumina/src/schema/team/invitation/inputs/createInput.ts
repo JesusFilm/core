@@ -6,7 +6,7 @@ import { builder } from '../../../builder'
 import { Role } from '../../enums/role'
 
 const schema = z.object({
-  teamId: z.string(),
+  teamId: z.string().uuid('Team ID must be a valid UUID'),
   email: z.string().email(),
   role: z.nativeEnum(PrismaRole)
 })

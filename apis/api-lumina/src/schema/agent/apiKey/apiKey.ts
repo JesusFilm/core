@@ -6,12 +6,11 @@ builder.prismaObject('ApiKey', {
     id: t.exposeID('id'),
     agentId: t.exposeString('agentId'),
     name: t.exposeString('name'),
-    keyHash: t.exposeString('keyHash'),
+    key: t.exposeString('key'),
     enabled: t.exposeBoolean('enabled'),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
     updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
-    lastUsed: t.expose('lastUsed', { type: 'DateTime', nullable: true }),
-    agent: t.relation('agent'),
-    usage: t.relation('usage')
+    lastUsedAt: t.expose('lastUsedAt', { type: 'DateTime', nullable: true }),
+    agent: t.relation('agent')
   })
 })

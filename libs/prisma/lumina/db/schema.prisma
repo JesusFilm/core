@@ -114,11 +114,12 @@ model Widget {
   agentId        String
   name           String
   enabled        Boolean  @default(true)
-  position       String   @default("bottom-right")
-  theme          String   @default("light")
-  triggerText    String   @default("Chat with us")
+  position       String?
+  theme          String?
+  buttonText     String?
+  buttonIcon     String?
   primaryColor   String?
-  allowedDomains String?  @db.Text
+  allowedDomains String[] @default([])
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   agent          Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
@@ -150,7 +151,7 @@ model ApiKey {
   id         String    @id @default(uuid())
   agentId    String
   name       String
-  keyHash    String    @unique
+  key        String    @unique
   enabled    Boolean   @default(true)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
