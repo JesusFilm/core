@@ -272,7 +272,6 @@ model Integration {
   accessSecretIv         String?
   accessSecretTag        String?
   accountEmail           String?
-  // Google Sheets sync configuration (optional)
   googleSheetsSyncs      GoogleSheetsSync[]
   team                   Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
 

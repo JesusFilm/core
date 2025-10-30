@@ -1,6 +1,18 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
+import CircularProgress from '@mui/material/CircularProgress'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -12,6 +24,9 @@ import { GET_INTEGRATION } from '../../../libs/useIntegrationQuery'
 import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvitesQuery'
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
+import Trash2Icon from '@core/shared/ui/icons/Trash2'
+
+import { format } from 'date-fns'
 
 export const INTEGRATION_GOOGLE_UPDATE = gql`
   mutation IntegrationGoogleUpdate(
@@ -31,6 +46,44 @@ export const INTEGRATION_DELETE = gql`
     }
   }
 `
+
+const GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION = gql`
+  query GoogleSheetsSyncsByIntegration($integrationId: ID!) {
+    googleSheetsSyncsByIntegration(integrationId: $integrationId) {
+      id
+      spreadsheetId
+      sheetName
+      createdAt
+      journey {
+        id
+        slug
+        title
+      }
+    }
+  }
+`
+
+const DELETE_GOOGLE_SHEETS_SYNC = gql`
+  mutation GoogleSheetsSyncDelete($id: ID!) {
+    googleSheetsSyncDelete(id: $id) {
+      id
+    }
+  }
+`
+
+interface GoogleSheetsSyncsByIntegrationQuery {
+  googleSheetsSyncsByIntegration: Array<{
+    id: string
+    spreadsheetId: string | null
+    sheetName: string | null
+    createdAt: string
+    journey: {
+      id: string
+      slug: string | null
+      title: string | null
+    } | null
+  }>
+}
 
 export function GoogleIntegrationDetails(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -57,6 +110,57 @@ export function GoogleIntegrationDetails(): ReactElement {
 
   const [integrationGoogleUpdate] = useMutation(INTEGRATION_GOOGLE_UPDATE)
   const [integrationDelete] = useMutation(INTEGRATION_DELETE)
+  const [deleteSync] = useMutation(DELETE_GOOGLE_SHEETS_SYNC)
+
+  const { data: syncsData, loading: syncsLoading } =
+    useQuery<GoogleSheetsSyncsByIntegrationQuery>(
+      GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION,
+      {
+        variables: { integrationId: integrationId as string },
+        skip: typeof integrationId !== 'string'
+      }
+    )
+
+  const googleSheetsSyncs = syncsData?.googleSheetsSyncsByIntegration ?? []
+  const [syncPendingDelete, setSyncPendingDelete] = useState<string | null>(
+    null
+  )
+  const [deletingSyncId, setDeletingSyncId] = useState<string | null>(null)
+
+  function handleRequestDeleteSync(syncId: string): void {
+    setSyncPendingDelete(syncId)
+  }
+
+  function handleCloseDeleteDialog(): void {
+    if (deletingSyncId != null) return
+    setSyncPendingDelete(null)
+  }
+
+  async function handleConfirmDeleteSync(): Promise<void> {
+    if (syncPendingDelete == null) return
+
+    try {
+      setDeletingSyncId(syncPendingDelete)
+      await deleteSync({
+        variables: { id: syncPendingDelete },
+        refetchQueries: [
+          {
+            query: GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION,
+            variables: { integrationId }
+          }
+        ],
+        awaitRefetchQueries: true
+      })
+      enqueueSnackbar(t('Sync deleted'), { variant: 'success' })
+      setSyncPendingDelete(null)
+    } catch (error) {
+      if (error instanceof Error) {
+        enqueueSnackbar(error.message, { variant: 'error' })
+      }
+    } finally {
+      setDeletingSyncId(null)
+    }
+  }
   useEffect(() => {
     void loadUser()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -88,6 +192,8 @@ export function GoogleIntegrationDetails(): ReactElement {
       ) === true
     )
   }, [teamData?.userTeams, currentUser.id])
+
+  const canManageSyncs = isOwner || isTeamManager
 
   const staticRedirectUri = useMemo(() => {
     if (typeof window === 'undefined') return undefined
@@ -286,6 +392,189 @@ export function GoogleIntegrationDetails(): ReactElement {
               'Removing this Google integration will permanently delete all active Google Sheets syncs for this team. This cannot be undone.'
             )}
           </span>
+        </Stack>
+      </Dialog>
+
+      <Stack gap={2}>
+        <Typography variant="h6">{t('Google Sheets Syncs')}</Typography>
+        {syncsLoading ? (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              py: 4
+            }}
+          >
+            <CircularProgress size={24} aria-label={t('Loading')} />
+          </Box>
+        ) : googleSheetsSyncs.length === 0 ? (
+          <Typography variant="body2">
+            {t('There are no Google Sheets syncs for this integration yet.')}
+          </Typography>
+        ) : (
+          <TableContainer>
+            <Table
+              size="small"
+              stickyHeader
+              aria-label={t('Google Sheets Syncs')}
+            >
+              <TableHead>
+                <TableRow>
+                  <TableCell>{t('Sheet ID')}</TableCell>
+                  <TableCell>{t('Tab Name')}</TableCell>
+                  <TableCell>{t('Journey')}</TableCell>
+                  <TableCell sx={{ width: 120 }}>{t('Sync Start')}</TableCell>
+                  <TableCell sx={{ width: 120 }}>{t('Status')}</TableCell>
+                  {canManageSyncs && (
+                    <TableCell sx={{ width: 80 }} align="right">
+                      {t('Actions')}
+                    </TableCell>
+                  )}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {googleSheetsSyncs.map((sync) => {
+                  const createdAtDate = new Date(sync.createdAt)
+                  const formattedDate = !Number.isNaN(createdAtDate.getTime())
+                    ? format(createdAtDate, 'yyyy-MM-dd')
+                    : 'N/A'
+                  const journeySlug = sync.journey?.slug ?? 'N/A'
+                  const journeyTitle = sync.journey?.title ?? ''
+
+                  return (
+                    <TableRow key={sync.id} hover>
+                      <TableCell width="40%">
+                        <Tooltip
+                          title={sync.spreadsheetId ?? ''}
+                          arrow
+                          placement="top"
+                        >
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              maxWidth: 240,
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis'
+                            }}
+                          >
+                            {sync.spreadsheetId ?? 'N/A'}
+                          </Typography>
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell>
+                        <Tooltip
+                          title={sync.sheetName ?? ''}
+                          arrow
+                          placement="top"
+                        >
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              maxWidth: 200,
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis'
+                            }}
+                          >
+                            {sync.sheetName ?? 'N/A'}
+                          </Typography>
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell>
+                        <Tooltip title={journeyTitle} arrow placement="top">
+                          <Typography
+                            component="span"
+                            variant="body2"
+                            sx={{
+                              maxWidth: 200,
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis'
+                            }}
+                          >
+                            {journeySlug}
+                          </Typography>
+                        </Tooltip>
+                      </TableCell>
+                      <TableCell sx={{ width: 120 }}>{formattedDate}</TableCell>
+                      <TableCell sx={{ width: 120 }}>
+                        <Chip
+                          label={t('Active')}
+                          color="success"
+                          size="small"
+                        />
+                      </TableCell>
+                      {canManageSyncs && (
+                        <TableCell sx={{ width: 80 }} align="right">
+                          <IconButton
+                            aria-label={t('Delete sync')}
+                            color="error"
+                            size="small"
+                            disabled={deletingSyncId === sync.id}
+                            onClick={() => handleRequestDeleteSync(sync.id)}
+                          >
+                            {deletingSyncId === sync.id ? (
+                              <CircularProgress
+                                size={18}
+                                color="inherit"
+                                aria-label={t('Deleting sync')}
+                              />
+                            ) : (
+                              <Trash2Icon width={18} height={18} />
+                            )}
+                          </IconButton>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+      </Stack>
+
+      <Dialog
+        open={syncPendingDelete != null}
+        onClose={handleCloseDeleteDialog}
+        dialogTitle={{
+          title: t('Delete Google Sheets Sync'),
+          closeButton: true
+        }}
+        divider={false}
+        maxWidth="sm"
+        dialogActionChildren={
+          <Stack direction="row" gap={2}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleCloseDeleteDialog}
+              disabled={deletingSyncId != null}
+            >
+              {t('Cancel')}
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleConfirmDeleteSync}
+              loading={deletingSyncId != null}
+            >
+              {t('Delete Sync')}
+            </Button>
+          </Stack>
+        }
+      >
+        <Stack gap={2}>
+          <Typography variant="body1">
+            {t(
+              "Data will no longer update in the associated Google Sheet if you delete this sync. Existing data will remain, but new updates won't be sent."
+            )}
+          </Typography>
+          <Typography variant="body1">
+            {t('You will have to start a new sync to re-start syncing.')}
+          </Typography>
         </Stack>
       </Dialog>
     </Stack>

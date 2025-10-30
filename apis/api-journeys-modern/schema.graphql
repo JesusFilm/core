@@ -432,6 +432,7 @@ type GoogleSheetsSync {
   createdAt: DateTime!
   updatedAt: DateTime!
   integration: Integration!
+  journey: Journey!
 }
 
 enum GridAlignItems {
@@ -1295,11 +1296,11 @@ type Mutation {
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @override(from: "api-journeys")
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent! @override(from: "api-journeys")
+  journeySimpleUpdate(id: ID!, journey: Json!): Json
   googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!): GoogleSheetsSync!
   googleSheetsSyncDelete(id: ID!): GoogleSheetsSync!
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!): IntegrationGoogle!
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!): IntegrationGoogle!
-  journeySimpleUpdate(id: ID!, journey: Json!): Json
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
@@ -1459,9 +1460,10 @@ input QrCodesFilter {
 type Query {
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
-  googleSheetsSyncs(journeyId: ID!): [GoogleSheetsSync!]!
-  integrationGooglePickerToken(teamId: ID!, integrationId: ID): String!
   journeySimpleGet(id: ID!): Json
+  googleSheetsSyncs(journeyId: ID!): [GoogleSheetsSync!]!
+  googleSheetsSyncsByIntegration(integrationId: ID!): [GoogleSheetsSync!]!
+  integrationGooglePickerToken(teamId: ID!, integrationId: ID): String!
 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information

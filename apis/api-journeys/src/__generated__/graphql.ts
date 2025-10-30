@@ -654,6 +654,7 @@ export type GoogleSheetsSync = {
   createdAt: Scalars['DateTime']['output'];
   updatedAt: Scalars['DateTime']['output'];
   integration: Integration;
+  journey: Journey;
 };
 
 export enum GridAlignItems {

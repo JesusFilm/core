@@ -1,5 +1,6 @@
 import { builder } from '../builder'
 import { IntegrationRef } from '../integration/integration'
+import { JourneyRef } from '../journey/journey'
 
 export const GoogleSheetsSync = builder.prismaObject('GoogleSheetsSync', {
   fields: (t) => ({
@@ -15,6 +16,10 @@ export const GoogleSheetsSync = builder.prismaObject('GoogleSheetsSync', {
     updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     integration: t.relation('integration', {
       type: IntegrationRef,
+      nullable: false
+    }),
+    journey: t.relation('journey', {
+      type: JourneyRef,
       nullable: false
     })
   })

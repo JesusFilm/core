@@ -181,6 +181,7 @@ export function ExportDialog({
   const [spreadsheetTitle, setSpreadsheetTitle] = useState('')
   const [sheetName, setSheetName] = useState('')
   const [folderId, setFolderId] = useState<string | undefined>(undefined)
+  const [folderName, setFolderName] = useState<string | undefined>(undefined)
   const [existingSpreadsheetId, setExistingSpreadsheetId] = useState<
     string | undefined
   >(undefined)
@@ -261,6 +262,8 @@ export function ExportDialog({
                 setExistingSpreadsheetId(doc.id)
               } else {
                 setFolderId(doc.id)
+                const docName = doc?.name ?? doc?.title ?? doc?.id ?? null
+                setFolderName(docName ?? undefined)
               }
             }
           }
@@ -600,6 +603,12 @@ export function ExportDialog({
               startIcon={<Plus2Icon />}
               onClick={() => {
                 onSyncsDialogClose()
+                setGoogleMode('create')
+                setSpreadsheetTitle('')
+                setSheetName('')
+                setFolderId(undefined)
+                setFolderName(undefined)
+                setExistingSpreadsheetId(undefined)
                 setGoogleDialogOpen(true)
               }}
               disabled={syncsLoading}
@@ -866,7 +875,7 @@ export function ExportDialog({
                 onClick={() => handleOpenDrivePicker('folder')}
               >
                 {folderId
-                  ? t('Folder selected')
+                  ? (folderName ?? folderId)
                   : t('Choose Folder (optional)')}
               </Button>
             ) : (
