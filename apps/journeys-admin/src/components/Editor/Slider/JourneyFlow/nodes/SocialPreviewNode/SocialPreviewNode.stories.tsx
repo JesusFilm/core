@@ -1,7 +1,7 @@
 import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
-import { StoryObj } from '@storybook/react'
+import { StoryObj } from '@storybook/nextjs'
 import { SnackbarProvider } from 'notistack'
 import { Background, ReactFlow } from 'reactflow'
 

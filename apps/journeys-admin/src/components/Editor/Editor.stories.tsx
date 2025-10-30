@@ -1,7 +1,7 @@
 import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { screen, userEvent, waitFor } from 'storybook/test'
 
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import {

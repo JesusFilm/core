@@ -1,5 +1,5 @@
 import { MockLink } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { User } from 'next-firebase-auth'
 import { ComponentProps, ReactElement, useState } from 'react'
 

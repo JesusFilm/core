@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
-import { userEvent } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
+import { userEvent } from 'storybook/test'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
@@ -41,6 +41,7 @@ const emptyVideo: Omit<ComponentProps<typeof Video>, 'source'> = {
   fullsize: null,
   action: null,
   objectFit: null,
+  subtitleLanguage: null,
   children: []
 }
 

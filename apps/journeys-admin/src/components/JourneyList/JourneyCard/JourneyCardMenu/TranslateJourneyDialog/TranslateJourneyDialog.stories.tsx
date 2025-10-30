@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ReactElement, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'

@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing/react'
 import Stack from '@mui/material/Stack'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps } from 'react'
 

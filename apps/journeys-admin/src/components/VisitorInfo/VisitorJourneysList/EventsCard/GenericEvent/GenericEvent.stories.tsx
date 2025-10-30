@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import CheckContainedIcon from '@core/shared/ui/icons/CheckContained'
 import CircleIcon from '@core/shared/ui/icons/Circle'

@@ -1,6 +1,6 @@
 import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'

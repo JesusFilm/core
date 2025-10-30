@@ -9,8 +9,8 @@ import { CardBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ContactAc
 // GraphQL mutation operation: CardFormRestore
 // ====================================================
 
-export interface CardFormRestore_image_MultiselectBlock {
-  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
+export interface CardFormRestore_image_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -149,6 +149,23 @@ export interface CardFormRestore_image_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+}
+
+export interface CardFormRestore_image_MultiselectOptionBlock {
+  __typename: "MultiselectOptionBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+}
+
+export interface CardFormRestore_image_MultiselectBlock {
+  __typename: "MultiselectBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  min: number | null;
+  max: number | null;
 }
 
 export interface CardFormRestore_image_RadioOptionBlock_action_NavigateToBlockAction {
@@ -343,6 +360,11 @@ export interface CardFormRestore_image_TypographyBlock {
   settings: CardFormRestore_image_TypographyBlock_settings | null;
 }
 
+export interface CardFormRestore_image_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardFormRestore_image_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -507,6 +529,7 @@ export interface CardFormRestore_image_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardFormRestore_image_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_image_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -572,10 +595,10 @@ export interface CardFormRestore_image_VideoTriggerBlock {
   triggerAction: CardFormRestore_image_VideoTriggerBlock_triggerAction;
 }
 
-export type CardFormRestore_image = CardFormRestore_image_MultiselectBlock | CardFormRestore_image_ButtonBlock | CardFormRestore_image_CardBlock | CardFormRestore_image_IconBlock | CardFormRestore_image_ImageBlock | CardFormRestore_image_RadioOptionBlock | CardFormRestore_image_RadioQuestionBlock | CardFormRestore_image_SignUpBlock | CardFormRestore_image_SpacerBlock | CardFormRestore_image_StepBlock | CardFormRestore_image_TextResponseBlock | CardFormRestore_image_TypographyBlock | CardFormRestore_image_VideoBlock | CardFormRestore_image_VideoTriggerBlock;
+export type CardFormRestore_image = CardFormRestore_image_GridContainerBlock | CardFormRestore_image_ButtonBlock | CardFormRestore_image_CardBlock | CardFormRestore_image_IconBlock | CardFormRestore_image_ImageBlock | CardFormRestore_image_MultiselectOptionBlock | CardFormRestore_image_MultiselectBlock | CardFormRestore_image_RadioOptionBlock | CardFormRestore_image_RadioQuestionBlock | CardFormRestore_image_SignUpBlock | CardFormRestore_image_SpacerBlock | CardFormRestore_image_StepBlock | CardFormRestore_image_TextResponseBlock | CardFormRestore_image_TypographyBlock | CardFormRestore_image_VideoBlock | CardFormRestore_image_VideoTriggerBlock;
 
-export interface CardFormRestore_subtitle_MultiselectBlock {
-  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
+export interface CardFormRestore_subtitle_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -714,6 +737,23 @@ export interface CardFormRestore_subtitle_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+}
+
+export interface CardFormRestore_subtitle_MultiselectOptionBlock {
+  __typename: "MultiselectOptionBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+}
+
+export interface CardFormRestore_subtitle_MultiselectBlock {
+  __typename: "MultiselectBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  min: number | null;
+  max: number | null;
 }
 
 export interface CardFormRestore_subtitle_RadioOptionBlock_action_NavigateToBlockAction {
@@ -908,6 +948,11 @@ export interface CardFormRestore_subtitle_TypographyBlock {
   settings: CardFormRestore_subtitle_TypographyBlock_settings | null;
 }
 
+export interface CardFormRestore_subtitle_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardFormRestore_subtitle_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1072,6 +1117,7 @@ export interface CardFormRestore_subtitle_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardFormRestore_subtitle_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_subtitle_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -1137,10 +1183,10 @@ export interface CardFormRestore_subtitle_VideoTriggerBlock {
   triggerAction: CardFormRestore_subtitle_VideoTriggerBlock_triggerAction;
 }
 
-export type CardFormRestore_subtitle = CardFormRestore_subtitle_MultiselectBlock | CardFormRestore_subtitle_ButtonBlock | CardFormRestore_subtitle_CardBlock | CardFormRestore_subtitle_IconBlock | CardFormRestore_subtitle_ImageBlock | CardFormRestore_subtitle_RadioOptionBlock | CardFormRestore_subtitle_RadioQuestionBlock | CardFormRestore_subtitle_SignUpBlock | CardFormRestore_subtitle_SpacerBlock | CardFormRestore_subtitle_StepBlock | CardFormRestore_subtitle_TextResponseBlock | CardFormRestore_subtitle_TypographyBlock | CardFormRestore_subtitle_VideoBlock | CardFormRestore_subtitle_VideoTriggerBlock;
+export type CardFormRestore_subtitle = CardFormRestore_subtitle_GridContainerBlock | CardFormRestore_subtitle_ButtonBlock | CardFormRestore_subtitle_CardBlock | CardFormRestore_subtitle_IconBlock | CardFormRestore_subtitle_ImageBlock | CardFormRestore_subtitle_MultiselectOptionBlock | CardFormRestore_subtitle_MultiselectBlock | CardFormRestore_subtitle_RadioOptionBlock | CardFormRestore_subtitle_RadioQuestionBlock | CardFormRestore_subtitle_SignUpBlock | CardFormRestore_subtitle_SpacerBlock | CardFormRestore_subtitle_StepBlock | CardFormRestore_subtitle_TextResponseBlock | CardFormRestore_subtitle_TypographyBlock | CardFormRestore_subtitle_VideoBlock | CardFormRestore_subtitle_VideoTriggerBlock;
 
-export interface CardFormRestore_title_MultiselectBlock {
-  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
+export interface CardFormRestore_title_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -1279,6 +1325,23 @@ export interface CardFormRestore_title_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+}
+
+export interface CardFormRestore_title_MultiselectOptionBlock {
+  __typename: "MultiselectOptionBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+}
+
+export interface CardFormRestore_title_MultiselectBlock {
+  __typename: "MultiselectBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  min: number | null;
+  max: number | null;
 }
 
 export interface CardFormRestore_title_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1473,6 +1536,11 @@ export interface CardFormRestore_title_TypographyBlock {
   settings: CardFormRestore_title_TypographyBlock_settings | null;
 }
 
+export interface CardFormRestore_title_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardFormRestore_title_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -1637,6 +1705,7 @@ export interface CardFormRestore_title_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardFormRestore_title_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_title_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -1702,10 +1771,10 @@ export interface CardFormRestore_title_VideoTriggerBlock {
   triggerAction: CardFormRestore_title_VideoTriggerBlock_triggerAction;
 }
 
-export type CardFormRestore_title = CardFormRestore_title_MultiselectBlock | CardFormRestore_title_ButtonBlock | CardFormRestore_title_CardBlock | CardFormRestore_title_IconBlock | CardFormRestore_title_ImageBlock | CardFormRestore_title_RadioOptionBlock | CardFormRestore_title_RadioQuestionBlock | CardFormRestore_title_SignUpBlock | CardFormRestore_title_SpacerBlock | CardFormRestore_title_StepBlock | CardFormRestore_title_TextResponseBlock | CardFormRestore_title_TypographyBlock | CardFormRestore_title_VideoBlock | CardFormRestore_title_VideoTriggerBlock;
+export type CardFormRestore_title = CardFormRestore_title_GridContainerBlock | CardFormRestore_title_ButtonBlock | CardFormRestore_title_CardBlock | CardFormRestore_title_IconBlock | CardFormRestore_title_ImageBlock | CardFormRestore_title_MultiselectOptionBlock | CardFormRestore_title_MultiselectBlock | CardFormRestore_title_RadioOptionBlock | CardFormRestore_title_RadioQuestionBlock | CardFormRestore_title_SignUpBlock | CardFormRestore_title_SpacerBlock | CardFormRestore_title_StepBlock | CardFormRestore_title_TextResponseBlock | CardFormRestore_title_TypographyBlock | CardFormRestore_title_VideoBlock | CardFormRestore_title_VideoTriggerBlock;
 
-export interface CardFormRestore_textResponse_MultiselectBlock {
-  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
+export interface CardFormRestore_textResponse_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -1844,6 +1913,23 @@ export interface CardFormRestore_textResponse_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+}
+
+export interface CardFormRestore_textResponse_MultiselectOptionBlock {
+  __typename: "MultiselectOptionBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+}
+
+export interface CardFormRestore_textResponse_MultiselectBlock {
+  __typename: "MultiselectBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  min: number | null;
+  max: number | null;
 }
 
 export interface CardFormRestore_textResponse_RadioOptionBlock_action_NavigateToBlockAction {
@@ -2038,6 +2124,11 @@ export interface CardFormRestore_textResponse_TypographyBlock {
   settings: CardFormRestore_textResponse_TypographyBlock_settings | null;
 }
 
+export interface CardFormRestore_textResponse_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardFormRestore_textResponse_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -2202,6 +2293,7 @@ export interface CardFormRestore_textResponse_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardFormRestore_textResponse_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_textResponse_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -2267,10 +2359,10 @@ export interface CardFormRestore_textResponse_VideoTriggerBlock {
   triggerAction: CardFormRestore_textResponse_VideoTriggerBlock_triggerAction;
 }
 
-export type CardFormRestore_textResponse = CardFormRestore_textResponse_MultiselectBlock | CardFormRestore_textResponse_ButtonBlock | CardFormRestore_textResponse_CardBlock | CardFormRestore_textResponse_IconBlock | CardFormRestore_textResponse_ImageBlock | CardFormRestore_textResponse_RadioOptionBlock | CardFormRestore_textResponse_RadioQuestionBlock | CardFormRestore_textResponse_SignUpBlock | CardFormRestore_textResponse_SpacerBlock | CardFormRestore_textResponse_StepBlock | CardFormRestore_textResponse_TextResponseBlock | CardFormRestore_textResponse_TypographyBlock | CardFormRestore_textResponse_VideoBlock | CardFormRestore_textResponse_VideoTriggerBlock;
+export type CardFormRestore_textResponse = CardFormRestore_textResponse_GridContainerBlock | CardFormRestore_textResponse_ButtonBlock | CardFormRestore_textResponse_CardBlock | CardFormRestore_textResponse_IconBlock | CardFormRestore_textResponse_ImageBlock | CardFormRestore_textResponse_MultiselectOptionBlock | CardFormRestore_textResponse_MultiselectBlock | CardFormRestore_textResponse_RadioOptionBlock | CardFormRestore_textResponse_RadioQuestionBlock | CardFormRestore_textResponse_SignUpBlock | CardFormRestore_textResponse_SpacerBlock | CardFormRestore_textResponse_StepBlock | CardFormRestore_textResponse_TextResponseBlock | CardFormRestore_textResponse_TypographyBlock | CardFormRestore_textResponse_VideoBlock | CardFormRestore_textResponse_VideoTriggerBlock;
 
-export interface CardFormRestore_button_MultiselectBlock {
-  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
+export interface CardFormRestore_button_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -2409,6 +2501,23 @@ export interface CardFormRestore_button_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+}
+
+export interface CardFormRestore_button_MultiselectOptionBlock {
+  __typename: "MultiselectOptionBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+}
+
+export interface CardFormRestore_button_MultiselectBlock {
+  __typename: "MultiselectBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  min: number | null;
+  max: number | null;
 }
 
 export interface CardFormRestore_button_RadioOptionBlock_action_NavigateToBlockAction {
@@ -2603,6 +2712,11 @@ export interface CardFormRestore_button_TypographyBlock {
   settings: CardFormRestore_button_TypographyBlock_settings | null;
 }
 
+export interface CardFormRestore_button_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardFormRestore_button_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -2767,6 +2881,7 @@ export interface CardFormRestore_button_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardFormRestore_button_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_button_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -2832,10 +2947,10 @@ export interface CardFormRestore_button_VideoTriggerBlock {
   triggerAction: CardFormRestore_button_VideoTriggerBlock_triggerAction;
 }
 
-export type CardFormRestore_button = CardFormRestore_button_MultiselectBlock | CardFormRestore_button_ButtonBlock | CardFormRestore_button_CardBlock | CardFormRestore_button_IconBlock | CardFormRestore_button_ImageBlock | CardFormRestore_button_RadioOptionBlock | CardFormRestore_button_RadioQuestionBlock | CardFormRestore_button_SignUpBlock | CardFormRestore_button_SpacerBlock | CardFormRestore_button_StepBlock | CardFormRestore_button_TextResponseBlock | CardFormRestore_button_TypographyBlock | CardFormRestore_button_VideoBlock | CardFormRestore_button_VideoTriggerBlock;
+export type CardFormRestore_button = CardFormRestore_button_GridContainerBlock | CardFormRestore_button_ButtonBlock | CardFormRestore_button_CardBlock | CardFormRestore_button_IconBlock | CardFormRestore_button_ImageBlock | CardFormRestore_button_MultiselectOptionBlock | CardFormRestore_button_MultiselectBlock | CardFormRestore_button_RadioOptionBlock | CardFormRestore_button_RadioQuestionBlock | CardFormRestore_button_SignUpBlock | CardFormRestore_button_SpacerBlock | CardFormRestore_button_StepBlock | CardFormRestore_button_TextResponseBlock | CardFormRestore_button_TypographyBlock | CardFormRestore_button_VideoBlock | CardFormRestore_button_VideoTriggerBlock;
 
-export interface CardFormRestore_startIcon_MultiselectBlock {
-  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
+export interface CardFormRestore_startIcon_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -2974,6 +3089,23 @@ export interface CardFormRestore_startIcon_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+}
+
+export interface CardFormRestore_startIcon_MultiselectOptionBlock {
+  __typename: "MultiselectOptionBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+}
+
+export interface CardFormRestore_startIcon_MultiselectBlock {
+  __typename: "MultiselectBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  min: number | null;
+  max: number | null;
 }
 
 export interface CardFormRestore_startIcon_RadioOptionBlock_action_NavigateToBlockAction {
@@ -3168,6 +3300,11 @@ export interface CardFormRestore_startIcon_TypographyBlock {
   settings: CardFormRestore_startIcon_TypographyBlock_settings | null;
 }
 
+export interface CardFormRestore_startIcon_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardFormRestore_startIcon_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -3332,6 +3469,7 @@ export interface CardFormRestore_startIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardFormRestore_startIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_startIcon_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -3397,10 +3535,10 @@ export interface CardFormRestore_startIcon_VideoTriggerBlock {
   triggerAction: CardFormRestore_startIcon_VideoTriggerBlock_triggerAction;
 }
 
-export type CardFormRestore_startIcon = CardFormRestore_startIcon_MultiselectBlock | CardFormRestore_startIcon_ButtonBlock | CardFormRestore_startIcon_CardBlock | CardFormRestore_startIcon_IconBlock | CardFormRestore_startIcon_ImageBlock | CardFormRestore_startIcon_RadioOptionBlock | CardFormRestore_startIcon_RadioQuestionBlock | CardFormRestore_startIcon_SignUpBlock | CardFormRestore_startIcon_SpacerBlock | CardFormRestore_startIcon_StepBlock | CardFormRestore_startIcon_TextResponseBlock | CardFormRestore_startIcon_TypographyBlock | CardFormRestore_startIcon_VideoBlock | CardFormRestore_startIcon_VideoTriggerBlock;
+export type CardFormRestore_startIcon = CardFormRestore_startIcon_GridContainerBlock | CardFormRestore_startIcon_ButtonBlock | CardFormRestore_startIcon_CardBlock | CardFormRestore_startIcon_IconBlock | CardFormRestore_startIcon_ImageBlock | CardFormRestore_startIcon_MultiselectOptionBlock | CardFormRestore_startIcon_MultiselectBlock | CardFormRestore_startIcon_RadioOptionBlock | CardFormRestore_startIcon_RadioQuestionBlock | CardFormRestore_startIcon_SignUpBlock | CardFormRestore_startIcon_SpacerBlock | CardFormRestore_startIcon_StepBlock | CardFormRestore_startIcon_TextResponseBlock | CardFormRestore_startIcon_TypographyBlock | CardFormRestore_startIcon_VideoBlock | CardFormRestore_startIcon_VideoTriggerBlock;
 
-export interface CardFormRestore_endIcon_MultiselectBlock {
-  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
+export interface CardFormRestore_endIcon_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -3539,6 +3677,23 @@ export interface CardFormRestore_endIcon_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+}
+
+export interface CardFormRestore_endIcon_MultiselectOptionBlock {
+  __typename: "MultiselectOptionBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+}
+
+export interface CardFormRestore_endIcon_MultiselectBlock {
+  __typename: "MultiselectBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  min: number | null;
+  max: number | null;
 }
 
 export interface CardFormRestore_endIcon_RadioOptionBlock_action_NavigateToBlockAction {
@@ -3733,6 +3888,11 @@ export interface CardFormRestore_endIcon_TypographyBlock {
   settings: CardFormRestore_endIcon_TypographyBlock_settings | null;
 }
 
+export interface CardFormRestore_endIcon_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardFormRestore_endIcon_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -3897,6 +4057,7 @@ export interface CardFormRestore_endIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardFormRestore_endIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_endIcon_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -3962,10 +4123,10 @@ export interface CardFormRestore_endIcon_VideoTriggerBlock {
   triggerAction: CardFormRestore_endIcon_VideoTriggerBlock_triggerAction;
 }
 
-export type CardFormRestore_endIcon = CardFormRestore_endIcon_MultiselectBlock | CardFormRestore_endIcon_ButtonBlock | CardFormRestore_endIcon_CardBlock | CardFormRestore_endIcon_IconBlock | CardFormRestore_endIcon_ImageBlock | CardFormRestore_endIcon_RadioOptionBlock | CardFormRestore_endIcon_RadioQuestionBlock | CardFormRestore_endIcon_SignUpBlock | CardFormRestore_endIcon_SpacerBlock | CardFormRestore_endIcon_StepBlock | CardFormRestore_endIcon_TextResponseBlock | CardFormRestore_endIcon_TypographyBlock | CardFormRestore_endIcon_VideoBlock | CardFormRestore_endIcon_VideoTriggerBlock;
+export type CardFormRestore_endIcon = CardFormRestore_endIcon_GridContainerBlock | CardFormRestore_endIcon_ButtonBlock | CardFormRestore_endIcon_CardBlock | CardFormRestore_endIcon_IconBlock | CardFormRestore_endIcon_ImageBlock | CardFormRestore_endIcon_MultiselectOptionBlock | CardFormRestore_endIcon_MultiselectBlock | CardFormRestore_endIcon_RadioOptionBlock | CardFormRestore_endIcon_RadioQuestionBlock | CardFormRestore_endIcon_SignUpBlock | CardFormRestore_endIcon_SpacerBlock | CardFormRestore_endIcon_StepBlock | CardFormRestore_endIcon_TextResponseBlock | CardFormRestore_endIcon_TypographyBlock | CardFormRestore_endIcon_VideoBlock | CardFormRestore_endIcon_VideoTriggerBlock;
 
-export interface CardFormRestore_body_MultiselectBlock {
-  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
+export interface CardFormRestore_body_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -4104,6 +4265,23 @@ export interface CardFormRestore_body_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+}
+
+export interface CardFormRestore_body_MultiselectOptionBlock {
+  __typename: "MultiselectOptionBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+}
+
+export interface CardFormRestore_body_MultiselectBlock {
+  __typename: "MultiselectBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  min: number | null;
+  max: number | null;
 }
 
 export interface CardFormRestore_body_RadioOptionBlock_action_NavigateToBlockAction {
@@ -4298,6 +4476,11 @@ export interface CardFormRestore_body_TypographyBlock {
   settings: CardFormRestore_body_TypographyBlock_settings | null;
 }
 
+export interface CardFormRestore_body_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
 export interface CardFormRestore_body_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -4462,6 +4645,7 @@ export interface CardFormRestore_body_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardFormRestore_body_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_body_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -4527,7 +4711,7 @@ export interface CardFormRestore_body_VideoTriggerBlock {
   triggerAction: CardFormRestore_body_VideoTriggerBlock_triggerAction;
 }
 
-export type CardFormRestore_body = CardFormRestore_body_MultiselectBlock | CardFormRestore_body_ButtonBlock | CardFormRestore_body_CardBlock | CardFormRestore_body_IconBlock | CardFormRestore_body_ImageBlock | CardFormRestore_body_RadioOptionBlock | CardFormRestore_body_RadioQuestionBlock | CardFormRestore_body_SignUpBlock | CardFormRestore_body_SpacerBlock | CardFormRestore_body_StepBlock | CardFormRestore_body_TextResponseBlock | CardFormRestore_body_TypographyBlock | CardFormRestore_body_VideoBlock | CardFormRestore_body_VideoTriggerBlock;
+export type CardFormRestore_body = CardFormRestore_body_GridContainerBlock | CardFormRestore_body_ButtonBlock | CardFormRestore_body_CardBlock | CardFormRestore_body_IconBlock | CardFormRestore_body_ImageBlock | CardFormRestore_body_MultiselectOptionBlock | CardFormRestore_body_MultiselectBlock | CardFormRestore_body_RadioOptionBlock | CardFormRestore_body_RadioQuestionBlock | CardFormRestore_body_SignUpBlock | CardFormRestore_body_SpacerBlock | CardFormRestore_body_StepBlock | CardFormRestore_body_TextResponseBlock | CardFormRestore_body_TypographyBlock | CardFormRestore_body_VideoBlock | CardFormRestore_body_VideoTriggerBlock;
 
 export interface CardFormRestore_cardBlockUpdate {
   __typename: "CardBlock";

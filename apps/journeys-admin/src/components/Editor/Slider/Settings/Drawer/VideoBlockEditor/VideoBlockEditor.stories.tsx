@@ -1,8 +1,8 @@
 import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { screen, userEvent, waitFor } from 'storybook/test'
 
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -69,6 +69,7 @@ const videoInternal: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
+  subtitleLanguage: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -136,6 +137,7 @@ const videoYouTube: TreeBlock<VideoBlock> = {
     id: 'videoId'
   },
   objectFit: null,
+  subtitleLanguage: null,
   posterBlockId: 'poster1.id',
   children: []
 }

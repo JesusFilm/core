@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing/react'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -127,6 +127,7 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
+  subtitleLanguage: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
