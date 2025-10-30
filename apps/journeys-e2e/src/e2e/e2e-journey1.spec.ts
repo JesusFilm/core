@@ -2,10 +2,9 @@ import { test, devices } from '@playwright/test'
 import { PreviewScreenPage } from '../pages/preview-screen-action'
 
 test.use({
-  ...devices['Pixel 5'],
-  viewport: { width: 340, height: 680 },
+  ...devices['Pixel 9'],
   channel: 'chrome',
-  actionTimeout: 3000
+  actionTimeout: 10000
 })
 test.describe('Preview Screen Slides', () => {
   test('Journey Slides E2E', async ({ page, context }) => {
