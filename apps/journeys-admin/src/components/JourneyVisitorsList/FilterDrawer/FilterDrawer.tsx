@@ -50,6 +50,7 @@ export function FilterDrawer({
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [showExportDialog, setShowExportDialog] = useState(false)
+  const [showSyncsDialog, setShowSyncsDialog] = useState(false)
 
   return (
     <Stack sx={{ height: '100vh' }} data-testid="FilterDrawer">
@@ -150,11 +151,20 @@ export function FilterDrawer({
             <Button
               variant="contained"
               color="secondary"
+              sx={{ width: '100%', mb: 2 }}
+              onClick={() => setShowSyncsDialog(true)}
+              disabled={disableExportButton}
+            >
+              {t('Sync to Google Sheets')}
+            </Button>
+            <Button
+              variant="outlined"
+              color="secondary"
               sx={{ width: '100%' }}
               onClick={() => setShowExportDialog(true)}
               disabled={disableExportButton}
             >
-              {t('Export Data')}
+              {t('Download (CSV)')}
             </Button>
             <Button
               size="small"
@@ -176,6 +186,8 @@ export function FilterDrawer({
             open={showExportDialog}
             onClose={() => setShowExportDialog(false)}
             journeyId={journeyId}
+            syncsDialogOpen={showSyncsDialog}
+            onSyncsDialogClose={() => setShowSyncsDialog(false)}
           />
         </>
       )}

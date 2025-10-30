@@ -111,6 +111,8 @@ interface ExportDialogProps {
   open: boolean
   onClose: () => void
   journeyId: string
+  syncsDialogOpen: boolean
+  onSyncsDialogClose: () => void
 }
 
 interface GoogleSheetsSyncIntegration {
@@ -143,7 +145,9 @@ interface GoogleSheetsSyncsQueryVariables {
 export function ExportDialog({
   open,
   onClose,
-  journeyId
+  journeyId,
+  syncsDialogOpen,
+  onSyncsDialogClose
 }: ExportDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -169,7 +173,6 @@ export function ExportDialog({
   const [exportBy, setExportBy] = useState<string>('')
 
   const [googleDialogOpen, setGoogleDialogOpen] = useState(false)
-  const [syncsDialogOpen, setSyncsDialogOpen] = useState(false)
   const [googleMode, setGoogleMode] = useState<'create' | 'existing'>('create')
   const [integrationId, setIntegrationId] = useState<string | undefined>(
     undefined
@@ -190,6 +193,9 @@ export function ExportDialog({
   >(GET_GOOGLE_SHEETS_SYNCS)
   const [deleteSync] = useMutation(DELETE_GOOGLE_SHEETS_SYNC)
   const [deletingSyncId, setDeletingSyncId] = useState<string | null>(null)
+  const [syncIdPendingDelete, setSyncIdPendingDelete] = useState<string | null>(
+    null
+  )
 
   // Drive Picker integration
   async function handleOpenDrivePicker(
@@ -320,6 +326,20 @@ export function ExportDialog({
     }
   }, [journeyData])
 
+  useEffect(() => {
+    if (!syncsDialogOpen) return
+    void loadSyncs({
+      variables: { journeyId },
+      fetchPolicy: 'network-only'
+    })
+  }, [syncsDialogOpen, loadSyncs, journeyId])
+
+  useEffect(() => {
+    if (syncsDialogOpen) return
+    if (deletingSyncId != null) return
+    setSyncIdPendingDelete(null)
+  }, [syncsDialogOpen, deletingSyncId])
+
   const filterArg = {
     typenames: selectedEvents,
     ...(startDate && { periodRangeStart: startDate.toISOString() }),
@@ -340,6 +360,21 @@ export function ExportDialog({
     } finally {
       setDeletingSyncId(null)
     }
+  }
+
+  function handleRequestDeleteSync(syncId: string): void {
+    setSyncIdPendingDelete(syncId)
+  }
+
+  function handleDeleteDialogClose(): void {
+    if (deletingSyncId != null && deletingSyncId === syncIdPendingDelete) return
+    setSyncIdPendingDelete(null)
+  }
+
+  const handleConfirmDeleteSync = async (): Promise<void> => {
+    if (syncIdPendingDelete == null) return
+    await handleDeleteSync(syncIdPendingDelete)
+    setSyncIdPendingDelete(null)
   }
 
   async function handleExportToSheets(): Promise<void> {
@@ -432,38 +467,18 @@ export function ExportDialog({
   }
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      dialogTitle={{
-        title: t('Export Analytics'),
-        closeButton: true
-      }}
-      divider={false}
-      dialogActionChildren={
-        <Box sx={{ display: 'flex', gap: 2 }}>
+    <>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        dialogTitle={{
+          title: t('Export Analytics'),
+          closeButton: true
+        }}
+        divider={false}
+        dialogActionChildren={
           <Button
             variant="contained"
-            color="secondary"
-            onClick={async () => {
-              setSyncsDialogOpen(true)
-              await loadSyncs({
-                variables: { journeyId },
-                fetchPolicy: 'network-only'
-              })
-            }}
-            loading={eventsDownloading || contactsDownloading}
-            disabled={
-              exportBy === '' ||
-              (exportBy === 'Visitor Actions' && selectedEvents.length === 0) ||
-              (exportBy === 'Contact Data' && contactData.length === 0)
-            }
-            sx={{ mb: { xs: 0, sm: 3 } }}
-          >
-            {t('Sync to Google Sheets')}
-          </Button>
-          <Button
-            variant="outlined"
             color="secondary"
             onClick={handleExport}
             loading={eventsDownloading || contactsDownloading}
@@ -479,77 +494,80 @@ export function ExportDialog({
           >
             {t('Export (CSV)')}
           </Button>
-        </Box>
-      }
-    >
-      <DateRangePicker
-        startDate={startDate}
-        endDate={endDate}
-        onStartDateChange={setStartDate}
-        onEndDateChange={setEndDate}
-      />
-      <Box
-        sx={{
-          pt: 4,
-          pr: 2,
-          display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          alignItems: { xs: 'stretch', sm: 'center' },
-          gap: 2
-        }}
+        }
       >
-        <Typography
-          variant="subtitle2"
-          sx={{ whiteSpace: 'nowrap', minWidth: 'fit-content' }}
+        <DateRangePicker
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={setStartDate}
+          onEndDateChange={setEndDate}
+        />
+        <Box
+          sx={{
+            pt: 4,
+            pr: 2,
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: { xs: 'stretch', sm: 'center' },
+            gap: 2
+          }}
         >
-          {t('Export By:')}
-        </Typography>
-        <FormControl fullWidth>
-          <Select
-            value={exportBy}
-            onChange={(e) => setExportBy(e.target.value)}
-            displayEmpty
-            inputProps={{ 'aria-label': t('Export By:') }}
-            IconComponent={ChevronDown}
-            renderValue={(selected) => {
-              if (!selected) {
-                return t('Select Data')
-              }
-              return selected
-            }}
+          <Typography
+            variant="subtitle2"
+            sx={{ whiteSpace: 'nowrap', minWidth: 'fit-content' }}
           >
-            <MenuItem value="" disabled hidden>
-              {t('Select Data')}
-            </MenuItem>
-            <MenuItem value="Visitor Actions">{t('Visitor Actions')}</MenuItem>
-            <MenuItem value="Contact Data">{t('Contact Data')}</MenuItem>
-          </Select>
-        </FormControl>
-      </Box>
-      {exportBy === 'Visitor Actions' && (
-        <Box sx={{ pt: 4 }}>
-          <Typography variant="subtitle2" gutterBottom>
-            {t('Select visitor actions:')}
+            {t('Export By:')}
           </Typography>
-          <FilterForm setSelectedEvents={setSelectedEvents} />
+          <FormControl fullWidth>
+            <Select
+              value={exportBy}
+              onChange={(e) => setExportBy(e.target.value)}
+              displayEmpty
+              inputProps={{ 'aria-label': t('Export By:') }}
+              IconComponent={ChevronDown}
+              renderValue={(selected) => {
+                if (!selected) {
+                  return t('Select Data')
+                }
+                return selected
+              }}
+            >
+              <MenuItem value="" disabled hidden>
+                {t('Select Data')}
+              </MenuItem>
+              <MenuItem value="Visitor Actions">
+                {t('Visitor Actions')}
+              </MenuItem>
+              <MenuItem value="Contact Data">{t('Contact Data')}</MenuItem>
+            </Select>
+          </FormControl>
         </Box>
-      )}
-      {exportBy === 'Contact Data' && (
-        <Box sx={{ pt: 4 }}>
-          <Typography variant="subtitle2" gutterBottom>
-            {t('Select contact data:')}
-          </Typography>
-          <ContactDataForm
-            setSelectedFields={setContactData}
-            selectedFields={contactData}
-          />
-        </Box>
-      )}
+        {exportBy === 'Visitor Actions' && (
+          <Box sx={{ pt: 4 }}>
+            <Typography variant="subtitle2" gutterBottom>
+              {t('Select visitor actions:')}
+            </Typography>
+            <FilterForm setSelectedEvents={setSelectedEvents} />
+          </Box>
+        )}
+        {exportBy === 'Contact Data' && (
+          <Box sx={{ pt: 4 }}>
+            <Typography variant="subtitle2" gutterBottom>
+              {t('Select contact data:')}
+            </Typography>
+            <ContactDataForm
+              setSelectedFields={setContactData}
+              selectedFields={contactData}
+            />
+          </Box>
+        )}
+      </Dialog>
+
       {/* Google Sheets Dialog */}
       {/* Pre-modal: show existing syncs before opening Google Sheets export modal */}
       <Dialog
         open={syncsDialogOpen}
-        onClose={() => setSyncsDialogOpen(false)}
+        onClose={onSyncsDialogClose}
         dialogTitle={{
           title: t('Sync to Google Sheets'),
           closeButton: true
@@ -563,7 +581,7 @@ export function ExportDialog({
               color="secondary"
               startIcon={<Plus2Icon />}
               onClick={() => {
-                setSyncsDialogOpen(false)
+                onSyncsDialogClose()
                 setGoogleDialogOpen(true)
               }}
               disabled={syncsLoading}
@@ -658,7 +676,7 @@ export function ExportDialog({
                               aria-label={t('Delete sync')}
                               color="error"
                               disabled={isDeleting}
-                              onClick={() => handleDeleteSync(sync.id)}
+                              onClick={() => handleRequestDeleteSync(sync.id)}
                               size="small"
                             >
                               {isDeleting ? (
@@ -820,6 +838,52 @@ export function ExportDialog({
           </Box>
         </Box>
       </Dialog>
-    </Dialog>
+
+      <Dialog
+        open={syncIdPendingDelete != null}
+        onClose={handleDeleteDialogClose}
+        dialogTitle={{
+          title: t('Delete Google Sheets Sync'),
+          closeButton: true
+        }}
+        divider={false}
+        maxWidth="sm"
+        dialogActionChildren={
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleDeleteDialogClose}
+              disabled={
+                deletingSyncId != null && deletingSyncId === syncIdPendingDelete
+              }
+            >
+              {t('Cancel')}
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleConfirmDeleteSync}
+              loading={
+                deletingSyncId != null && deletingSyncId === syncIdPendingDelete
+              }
+            >
+              {t('Delete Sync')}
+            </Button>
+          </Box>
+        }
+      >
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Typography variant="body1">
+            {t(
+              "Data will no longer update in your Google Sheet if you delete this sync. Existing data will remain, but new updates won't be sent."
+            )}
+          </Typography>
+          <Typography variant="body1">
+            {t('You will have to start a new sync to re-start syncing.')}
+          </Typography>
+        </Box>
+      </Dialog>
+    </>
   )
 }

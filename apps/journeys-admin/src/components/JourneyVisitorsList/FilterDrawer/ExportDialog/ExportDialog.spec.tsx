@@ -25,6 +25,7 @@ import { FILTERED_EVENTS } from '../../../../libs/useJourneyEventsExport/utils/c
 import { ExportDialog, GET_JOURNEY_CREATED_AT } from './ExportDialog'
 
 const mockOnClose = jest.fn()
+const mockOnSyncsDialogClose = jest.fn()
 
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
 const mockJourneyCreatedAt: MockedResponse<
@@ -68,7 +69,9 @@ jest.mock('../../../../libs/useJourneyContactsExport', () => ({
 const defaultProps = {
   open: true,
   onClose: mockOnClose,
-  journeyId: 'journey1'
+  journeyId: 'journey1',
+  syncsDialogOpen: false,
+  onSyncsDialogClose: mockOnSyncsDialogClose
 }
 
 describe('ExportDialog', () => {
@@ -83,6 +86,7 @@ describe('ExportDialog', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    mockOnSyncsDialogClose.mockClear()
   })
 
   describe('Visitor Actions', () => {
