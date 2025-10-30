@@ -17,6 +17,7 @@ interface DialogProps {
   dialogActionChildren?: ReactNode
   divider?: boolean
   fullscreen?: boolean
+  maxWidth?: false | 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   children?: ReactNode
   container?: HTMLElement
   loading?: boolean
@@ -82,6 +83,7 @@ export function Dialog({
   dialogActionChildren,
   divider,
   fullscreen,
+  maxWidth = 'sm',
   children,
   container,
   loading = false,
@@ -93,7 +95,7 @@ export function Dialog({
     <StyledDialog
       open={open === true}
       fullScreen={fullscreen}
-      maxWidth="sm"
+      maxWidth={maxWidth}
       fullWidth
       onClose={onClose}
       container={container}

@@ -2427,10 +2427,14 @@ type GoogleSheetsSync @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   teamId: String
   journeyId: String
+  integrationId: String
   spreadsheetId: String
   sheetName: String
   folderId: String
   appendMode: Boolean
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  integration: Integration!
 }
 
 type JourneyAiTranslateProgress @join__type(graph: API_JOURNEYS_MODERN)  {

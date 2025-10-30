@@ -424,10 +424,14 @@ type GoogleSheetsSync {
   id: ID
   teamId: String
   journeyId: String
+  integrationId: String
   spreadsheetId: String
   sheetName: String
   folderId: String
   appendMode: Boolean
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  integration: Integration!
 }
 
 enum GridAlignItems {

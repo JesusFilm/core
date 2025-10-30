@@ -1,9 +1,20 @@
 import { gql, useQuery, useMutation, useLazyQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
+import CircularProgress from '@mui/material/CircularProgress'
 import FormControl from '@mui/material/FormControl'
+import IconButton from '@mui/material/IconButton'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import TextField from '@mui/material/TextField'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -12,6 +23,9 @@ import { ReactElement, useEffect, useState } from 'react'
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
+import Trash2Icon from '@core/shared/ui/icons/Trash2'
+
+import { format } from 'date-fns'
 
 import { useJourneyContactsExport } from '../../../../libs/useJourneyContactsExport'
 import { useJourneyEventsExport } from '../../../../libs/useJourneyEventsExport'
@@ -51,6 +65,22 @@ const GET_GOOGLE_SHEETS_SYNCS = gql`
       appendMode
       journeyId
       teamId
+      createdAt
+      integration {
+        __typename
+        id
+        ... on IntegrationGoogle {
+          accountEmail
+        }
+      }
+    }
+  }
+`
+
+const DELETE_GOOGLE_SHEETS_SYNC = gql`
+  mutation GoogleSheetsSyncDelete($id: ID!) {
+    googleSheetsSyncDelete(id: $id) {
+      id
     }
   }
 `
@@ -80,6 +110,27 @@ const EXPORT_TO_SHEETS = gql`
 interface ExportDialogProps {
   open: boolean
   onClose: () => void
+  journeyId: string
+}
+
+interface GoogleSheetsSyncIntegration {
+  __typename: string
+  id: string
+  accountEmail?: string | null
+}
+
+interface GoogleSheetsSyncItem {
+  id: string
+  spreadsheetId: string | null
+  createdAt: string
+  integration: GoogleSheetsSyncIntegration | null
+}
+
+interface GoogleSheetsSyncsQueryData {
+  googleSheetsSyncs: GoogleSheetsSyncItem[]
+}
+
+interface GoogleSheetsSyncsQueryVariables {
   journeyId: string
 }
 
@@ -133,9 +184,12 @@ export function ExportDialog({
   const [exportToSheets, { loading: sheetsLoading }] =
     useMutation(EXPORT_TO_SHEETS)
   const [getPickerToken] = useLazyQuery(GET_GOOGLE_PICKER_TOKEN)
-  const [loadSyncs, { data: syncsData, loading: syncsLoading }] = useLazyQuery(
-    GET_GOOGLE_SHEETS_SYNCS
-  )
+  const [loadSyncs, { data: syncsData, loading: syncsLoading }] = useLazyQuery<
+    GoogleSheetsSyncsQueryData,
+    GoogleSheetsSyncsQueryVariables
+  >(GET_GOOGLE_SHEETS_SYNCS)
+  const [deleteSync] = useMutation(DELETE_GOOGLE_SHEETS_SYNC)
+  const [deletingSyncId, setDeletingSyncId] = useState<string | null>(null)
 
   // Drive Picker integration
   async function handleOpenDrivePicker(
@@ -272,6 +326,22 @@ export function ExportDialog({
     ...(endDate && { periodRangeEnd: endDate.toISOString() })
   }
 
+  async function handleDeleteSync(syncId: string): Promise<void> {
+    setDeletingSyncId(syncId)
+    try {
+      await deleteSync({ variables: { id: syncId } })
+      await loadSyncs({
+        variables: { journeyId },
+        fetchPolicy: 'network-only'
+      })
+      enqueueSnackbar(t('Sync deleted'), { variant: 'success' })
+    } catch (error) {
+      enqueueSnackbar((error as Error).message, { variant: 'error' })
+    } finally {
+      setDeletingSyncId(null)
+    }
+  }
+
   async function handleExportToSheets(): Promise<void> {
     const destination =
       googleMode === 'create'
@@ -377,7 +447,10 @@ export function ExportDialog({
             color="secondary"
             onClick={async () => {
               setSyncsDialogOpen(true)
-              await loadSyncs({ variables: { journeyId } })
+              await loadSyncs({
+                variables: { journeyId },
+                fetchPolicy: 'network-only'
+              })
             }}
             loading={eventsDownloading || contactsDownloading}
             disabled={
@@ -478,10 +551,11 @@ export function ExportDialog({
         open={syncsDialogOpen}
         onClose={() => setSyncsDialogOpen(false)}
         dialogTitle={{
-          title: t('Existing Google Sheets Syncs'),
+          title: t('Sync to Google Sheets'),
           closeButton: true
         }}
         divider={false}
+        maxWidth="lg"
         dialogActionChildren={
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button
@@ -501,7 +575,16 @@ export function ExportDialog({
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           {syncsLoading && (
-            <Typography variant="body2">{t('Loading...')}</Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                py: 4
+              }}
+            >
+              <CircularProgress size={24} aria-label={t('Loading')} />
+            </Box>
           )}
           {!syncsLoading &&
             (syncsData?.googleSheetsSyncs?.length ?? 0) === 0 && (
@@ -512,36 +595,90 @@ export function ExportDialog({
               </Typography>
             )}
           {!syncsLoading && (syncsData?.googleSheetsSyncs?.length ?? 0) > 0 && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {syncsData?.googleSheetsSyncs?.map((s: any) => (
-                <Box
-                  key={s.id}
-                  sx={{
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    borderRadius: 1,
-                    p: 2
-                  }}
-                  role="group"
-                  aria-label={t('Existing sync')}
-                >
-                  <Typography variant="subtitle2">
-                    {t('Sheet')}: {s.sheetName}
-                  </Typography>
-                  <Typography variant="body2" sx={{ wordBreak: 'break-all' }}>
-                    {t('Spreadsheet ID')}: {s.spreadsheetId}
-                  </Typography>
-                  {s.folderId && (
-                    <Typography variant="body2" sx={{ wordBreak: 'break-all' }}>
-                      {t('Folder ID')}: {s.folderId}
-                    </Typography>
+            <TableContainer sx={{ maxHeight: 320 }}>
+              <Table stickyHeader size="small" aria-label={t('Existing syncs')}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>{t('Sheet ID')}</TableCell>
+                    <TableCell>{t('Sync start')}</TableCell>
+                    <TableCell>{t('Started by')}</TableCell>
+                    <TableCell>{t('Status')}</TableCell>
+                    <TableCell align="right">{t('Actions')}</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {(syncsData?.googleSheetsSyncs ?? []).map(
+                    (sync: GoogleSheetsSyncItem) => {
+                      if (sync.id == null) return null
+                      const createdAtDate =
+                        sync.createdAt != null ? new Date(sync.createdAt) : null
+                      const formattedDate =
+                        createdAtDate != null &&
+                        !Number.isNaN(createdAtDate.getTime())
+                          ? format(createdAtDate, 'yyyy-MM-dd')
+                          : 'N/A'
+                      const startedBy =
+                        sync.integration?.__typename === 'IntegrationGoogle'
+                          ? (sync.integration.accountEmail ?? 'N/A')
+                          : 'N/A'
+                      const isDeleting = deletingSyncId === sync.id
+
+                      return (
+                        <TableRow key={sync.id} hover>
+                          <TableCell width="40%">
+                            <Tooltip
+                              title={sync.spreadsheetId ?? ''}
+                              arrow
+                              placement="top"
+                            >
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  maxWidth: 240,
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis'
+                                }}
+                              >
+                                {sync.spreadsheetId ?? 'N/A'}
+                              </Typography>
+                            </Tooltip>
+                          </TableCell>
+                          <TableCell>{formattedDate}</TableCell>
+                          <TableCell>{startedBy}</TableCell>
+                          <TableCell>
+                            <Chip
+                              label={t('Active')}
+                              color="success"
+                              size="small"
+                            />
+                          </TableCell>
+                          <TableCell align="right">
+                            <IconButton
+                              aria-label={t('Delete sync')}
+                              color="error"
+                              disabled={isDeleting}
+                              onClick={() => handleDeleteSync(sync.id)}
+                              size="small"
+                            >
+                              {isDeleting ? (
+                                <CircularProgress
+                                  size={18}
+                                  color="inherit"
+                                  aria-label={t('Deleting sync')}
+                                />
+                              ) : (
+                                <Trash2Icon width={18} height={18} />
+                              )}
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    }
                   )}
-                  <Typography variant="body2">
-                    {t('Append Mode')}: {s.appendMode ? t('On') : t('Off')}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
+                </TableBody>
+              </Table>
+            </TableContainer>
           )}
         </Box>
       </Dialog>
@@ -550,7 +687,10 @@ export function ExportDialog({
       <Dialog
         open={googleDialogOpen}
         onClose={() => setGoogleDialogOpen(false)}
-        dialogTitle={{ title: t('Sync to Google Sheets'), closeButton: true }}
+        dialogTitle={{
+          title: t('Add Google Sheets Sync'),
+          closeButton: true
+        }}
         divider={false}
         dialogActionChildren={
           <Button
@@ -573,7 +713,7 @@ export function ExportDialog({
           {/* Integration selector */}
           <FormControl fullWidth>
             <Typography variant="subtitle2">
-              {t('Use integration account (optional)')}
+              {t('Integration Account')}
             </Typography>
             <Select
               value={integrationId ?? ''}
@@ -590,25 +730,25 @@ export function ExportDialog({
               renderValue={(selected) => {
                 if (selected === '') return t('Select integration account')
                 const found = integrationsData?.integrations.find(
-                  (i) => i.id === selected
+                  (integration) => integration.id === selected
                 )
-                const label =
-                  found?.accessSecretPart != null
-                    ? `${t('Google')} (${found.accessSecretPart}...)`
-                    : selected
-                return label
+                if (found?.__typename === 'IntegrationGoogle') {
+                  return found.accountEmail ?? t('Unknown email')
+                }
+                return t('Unknown integration')
               }}
             >
               <MenuItem value="" disabled>
                 {t('Select integration account')}
               </MenuItem>
               {integrationsData?.integrations
-                ?.filter((i) => i.type === 'google')
-                .map((i) => (
-                  <MenuItem key={i.id} value={i.id}>
-                    {i.accessSecretPart != null
-                      ? `${t('Google')} (${i.accessSecretPart}...)`
-                      : i.id}
+                ?.filter(
+                  (integration) =>
+                    integration.__typename === 'IntegrationGoogle'
+                )
+                .map((integration) => (
+                  <MenuItem key={integration.id} value={integration.id}>
+                    {integration.accountEmail ?? t('Unknown email')}
                   </MenuItem>
                 ))}
             </Select>
@@ -637,43 +777,37 @@ export function ExportDialog({
             </Select>
           </FormControl>
 
-          {googleMode === 'create' && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Typography variant="subtitle2">
-                {t('Spreadsheet title')}
-              </Typography>
-              <input
-                aria-label={t('Spreadsheet title')}
-                value={spreadsheetTitle}
-                onChange={(e) => setSpreadsheetTitle(e.target.value)}
-              />
-              <Typography variant="subtitle2">
-                {t('Sheet (tab) name')}
-              </Typography>
-              <input
-                aria-label={t('Sheet name')}
-                value={sheetName}
-                onChange={(e) => setSheetName(e.target.value)}
-              />
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {googleMode === 'create' && (
+              <>
+                <Typography variant="subtitle2">{t('Sheet Name')}</Typography>
+                <TextField
+                  value={spreadsheetTitle}
+                  onChange={(event) => setSpreadsheetTitle(event.target.value)}
+                  placeholder={t('Enter Sheet title')}
+                  inputProps={{ 'aria-label': t('Sheet title') }}
+                  size="small"
+                  required
+                />
+              </>
+            )}
+            <Typography variant="subtitle2">{t('Sheet Tab Name')}</Typography>
+            <TextField
+              value={sheetName}
+              onChange={(event) => setSheetName(event.target.value)}
+              placeholder={t('Enter Sheet tab name')}
+              inputProps={{ 'aria-label': t('Sheet tab name') }}
+              size="small"
+              required
+            />
+            {googleMode === 'create' ? (
               <Button
                 variant="outlined"
                 onClick={() => handleOpenDrivePicker('folder')}
               >
                 {folderId ? t('Folder selected') : t('Choose folder')}
               </Button>
-            </Box>
-          )}
-
-          {googleMode === 'existing' && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Typography variant="subtitle2">
-                {t('Sheet (tab) name')}
-              </Typography>
-              <input
-                aria-label={t('Sheet name')}
-                value={sheetName}
-                onChange={(e) => setSheetName(e.target.value)}
-              />
+            ) : (
               <Button
                 variant="outlined"
                 onClick={() => handleOpenDrivePicker('sheet')}
@@ -682,8 +816,8 @@ export function ExportDialog({
                   ? t('Spreadsheet selected')
                   : t('Choose spreadsheet')}
               </Button>
-            </Box>
-          )}
+            )}
+          </Box>
         </Box>
       </Dialog>
     </Dialog>

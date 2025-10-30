@@ -646,10 +646,14 @@ export type GoogleSheetsSync = {
   appendMode?: Maybe<Scalars['Boolean']['output']>;
   folderId?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
+  integrationId?: Maybe<Scalars['String']['output']>;
   journeyId?: Maybe<Scalars['String']['output']>;
   sheetName?: Maybe<Scalars['String']['output']>;
   spreadsheetId?: Maybe<Scalars['String']['output']>;
   teamId?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['DateTime']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+  integration: Integration;
 };
 
 export enum GridAlignItems {
