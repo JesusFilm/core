@@ -22,19 +22,7 @@ Object.defineProperty(
   }))(window.navigator.userAgent)
 )
 
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: () => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    prefetch: jest.fn(),
-    back: jest.fn(),
-    pathname: '/',
-    route: '/',
-    asPath: '/',
-    query: {}
-  })
-}))
+jest.mock('next/router', () => require('next-router-mock'))
 
 if (process.env.CI === 'true')
   jest.retryTimes(3, { logErrorsBeforeRetry: true })

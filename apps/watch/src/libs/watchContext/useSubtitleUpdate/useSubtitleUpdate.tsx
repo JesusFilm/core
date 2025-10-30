@@ -1,4 +1,5 @@
 import { useLazyQuery } from '@apollo/client'
+import { useCallback } from 'react'
 import Player from 'video.js/dist/types/player'
 
 import { graphql } from '@core/shared/gql'
@@ -35,11 +36,17 @@ export function useSubtitleUpdate() {
     useLazyQuery(GET_SUBTITLES)
   const { variant } = useVideo()
 
-  const subtitleUpdate = async ({
+  const subtitleUpdate = useCallback(async ({
     player,
     subtitleLanguageId,
     subtitleOn
   }: SubtitleUpdateParams): Promise<void> => {
+    // Guard against invalid player state
+    if (!player || !player.el_ || !player.el_.parentNode) {
+      console.warn('Skipping subtitle update: player or element is invalid')
+      return
+    }
+
     const tracks = player.textTracks?.() ?? new TextTrackList()
 
     if (subtitleOn !== true || subtitleLanguageId == null) {
@@ -74,34 +81,48 @@ export function useSubtitleUpdate() {
         return
       }
 
-      player.addRemoteTextTrack(
-        {
-          id: subtitleLanguageId,
-          src: selected.value,
-          kind: 'subtitles',
-          srclang: selected.language.bcp47 ?? undefined,
-          label: selected.language.name.at(0)?.value,
-          mode: 'showing',
-          default: true
-        },
-        true
-      )
+      // Additional guard before adding remote text track
+      if (!player || !player.el_ || !player.el_.parentNode) {
+        console.warn('Cannot add remote text track: player or element is invalid')
+        return
+      }
+
+      try {
+        player.addRemoteTextTrack(
+          {
+            id: subtitleLanguageId,
+            src: selected.value,
+            kind: 'subtitles',
+            srclang: selected.language.bcp47 ?? undefined,
+            label: selected.language.name.at(0)?.value,
+            mode: 'showing',
+            default: true
+          },
+          true
+        )
+      } catch (error) {
+        console.warn('Error adding remote text track:', error)
+      }
 
       // Update track modes: show selected language, disable others
-      const updatedTracks = player.textTracks?.() ?? new TextTrackList()
-      for (let i = 0; i < updatedTracks.length; i++) {
-        const track = updatedTracks[i]
-        if (track.kind === 'subtitles') {
-          if (track.id === subtitleLanguageId) {
-            track.mode = 'showing'
-          } else {
-            track.mode = 'disabled'
+      try {
+        const updatedTracks = player.textTracks?.() ?? new TextTrackList()
+        for (let i = 0; i < updatedTracks.length; i++) {
+          const track = updatedTracks[i]
+          if (track.kind === 'subtitles') {
+            if (track.id === subtitleLanguageId) {
+              track.mode = 'showing'
+            } else {
+              track.mode = 'disabled'
+            }
           }
         }
+      } catch (error) {
+        console.warn('Error updating track modes:', error)
       }
       return
     }
-  }
+  }, [getSubtitleLanguages, variant])
 
   return { subtitleUpdate, subtitlesLoading }
 }

@@ -1,0 +1,369 @@
+@import 'tailwindcss';
+@source "./src/**/*.{js,ts,jsx,tsx}";
+@source "../../libs/**/*.{js,ts,jsx,tsx}";
+
+@theme {
+  --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  --color-background: var(--color-stone-50);
+  --color-foreground: var(--color-stone-900);
+  --color-card: var(--color-white);
+  --color-card-foreground: var(--color-stone-900);
+  --color-popover: var(--color-white);
+  --color-popover-foreground: var(--color-stone-900);
+  --color-primary: #cb333b;
+  --color-primary-foreground: var(--color-white);
+  --color-secondary: var(--color-stone-100);
+  --color-secondary-foreground: var(--color-stone-900);
+  --color-muted: var(--color-stone-100);
+  --color-muted-foreground: var(--color-stone-500);
+  --color-accent: #cb333b;
+  --color-accent-foreground: var(--color-white);
+  --color-destructive: var(--color-red-500);
+  --color-destructive-foreground: var(--color-white);
+  --color-border: var(--color-stone-200);
+  --color-input: var(--color-stone-200);
+  --color-ring: var(--color-primary);
+
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius: var(--radius-md);
+}
+
+@layer components {
+  .xray-on [data-id] {
+    outline: 1px dashed rgba(0, 0, 0, 0.35);
+    position: relative;
+  }
+  /* Hide old pseudo-labels in favor of real clickable labels */
+  .xray-on [data-id]::after { display: none; }
+
+  /* Floating animation for levitating effect */
+  @keyframes levitate {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+
+  .levitate {
+    animation: levitate 3s ease-in-out infinite;
+  }
+
+  /* Clickable X-ray label element */
+  .xray-on .xray-label {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 10px;
+    line-height: 1.2;
+    padding: 1px 4px;
+    border-radius: 3px;
+    pointer-events: auto;
+    z-index: 2147483647;
+    white-space: nowrap;
+    cursor: copy;
+    user-select: none;
+  }
+  .xray-on .xray-label:active {
+    filter: brightness(1.2);
+  }
+
+  /* Depth-based top offset (+4px per inner level) */
+  .xray-on [data-id] > .xray-label { top: 8px; }
+  .xray-on [data-id] [data-id] > .xray-label { top: 12px; }
+  .xray-on [data-id] [data-id] [data-id] > .xray-label { top: 16px; }
+  .xray-on [data-id] [data-id] [data-id] [data-id] > .xray-label { top: 20px; }
+  .xray-on [data-id] [data-id] [data-id] [data-id] [data-id] > .xray-label { top: 24px; }
+  .xray-on [data-id] [data-id] [data-id] [data-id] [data-id] [data-id] > .xray-label { top: 28px; }
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-border);
+  }
+
+  html {
+    font-family: var(--font-sans);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    color-scheme: light;
+  }
+}
+
+@layer components {
+  .inverted-effect {
+    position: relative;
+    filter: invert(1) brightness(1);
+    mix-blend-mode: exclusion;
+    isolation: isolate;
+  }
+
+  .line-clamp-4 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .animate-fade-in-out {
+    animation: fadeInOut 3s ease-out forwards;
+  }
+
+  .animate-fade-in-left {
+    animation: fadeInLeft 0.6s ease-out forwards;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInOut {
+    0% {
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes fadeInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-suggestion-disappear {
+    animation: suggestionDisappear 0.5s ease-out forwards;
+  }
+
+  .animate-text-appear {
+    animation: textAppear 0.8s ease-out forwards;
+  }
+
+  @keyframes suggestionDisappear {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      opacity: 0.9;
+      transform: translateY(-10px) scale(1.05);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-30px) scale(0.95);
+    }
+  }
+
+  @keyframes textAppear {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    50% {
+      opacity: 0.5;
+      transform: translateY(-2px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-bible-quote-appear {
+    animation: bibleQuoteAppear 0.85s ease-out forwards;
+  }
+
+  .animate-background-dissolve {
+    animation: backgroundDissolve 2s ease-out 3s forwards;
+  }
+
+  .animate-glow-delay {
+    animation: glowDelay 3s ease-out 0.9s forwards;
+  }
+
+  .animate-text-rotate {
+    animation: textRotate 0.6s ease-in-out;
+  }
+
+  @keyframes bibleQuoteAppear {
+    0% {
+      opacity: 0;
+      transform: translateY(15px) scale(0.95);
+    }
+    30% {
+      opacity: 0.7;
+      transform: translateY(-5px) scale(1.1);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes backgroundDissolve {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes glowDelay {
+    0% {
+      filter: drop-shadow(0 0 12px rgba(202, 138, 4, 0));
+    }
+
+    50% {
+      filter: drop-shadow(0 0 12px rgba(202, 138, 4, 0.8));
+    }
+    100% {
+      filter: drop-shadow(0 0 12px rgba(202, 138, 4, 0));
+    }
+  }
+
+  @keyframes textRotate {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    50% {
+      opacity: 0.5;
+      transform: translateY(-5px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-gradient-wave {
+    background: linear-gradient(
+      90deg,
+      rgb(12 9 10) 0%,
+      rgb(41 37 36) 25%,
+      rgb(194, 150, 119) 50%,
+      rgb(41 37 36) 75%,
+      rgb(12 9 10) 100%
+    );
+    background-size: 200% 200%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientWave 10s ease-in-out infinite;
+  }
+
+  @keyframes gradientWave {
+    0% {
+      background-position: 0% 50%;
+    }
+    15% {
+      background-position: 150% 50%;
+    }
+    100% {
+      background-position:0% 50%;
+    }
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Safari and Chrome */
+  }
+
+  /* Message bubble with white tail */
+  .message-bubble {
+    position: relative;
+    background: white;
+    border-radius: 1rem;
+  }
+
+  /* Center tail (default) */
+  .message-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid white;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  }
+
+  /* Right tail */
+  .message-bubble-tail-right::after {
+    left: auto;
+    right: 24px;
+    transform: none;
+  }
+
+  /* Left tail */
+  .message-bubble-tail-left::after {
+    left: 24px;
+    transform: none;
+  }
+
+  /* Line reveal animation with masking */
+  @keyframes reveal-line {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+      clip-path: inset(100% 0 0 0); /* Start completely hidden from bottom */
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      clip-path: inset(0 0 0 0); /* Fully revealed */
+    }
+  }
+
+  .reveal-line {
+    animation: reveal-line 1.2s ease-out forwards;
+    /* Ensure initial state before animation */
+    opacity: 0;
+    transform: translateY(20px);
+    clip-path: inset(100% 0 0 0);
+  }
+}

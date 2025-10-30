@@ -1,6 +1,9 @@
 //@ts-check
 
 import { fileURLToPath } from 'node:url'
+import path from 'node:path'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { composePlugins, withNx } from '@nx/next'
@@ -22,9 +25,6 @@ const withBundleAnalyzerPlugin = withBundleAnalyzer({
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  assetPrefix: ['production', 'prod', 'stage'].includes(env.VERCEL_ENV ?? '')
-    ? '/watch/modern'
-    : '',
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
@@ -58,6 +58,7 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false
   },
+  transpilePackages: ['shared', 'uimodern'],
   experimental: {
     reactCompiler: true
   },
@@ -70,7 +71,14 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: env.CI
   },
-  basePath: '/watch',
+  async rewrites() {
+    return [
+      {
+        source: '/studio/:path*',
+        destination: '/:path*'
+      }
+    ]
+  },
   async redirects() {
     return [
       {
@@ -80,8 +88,7 @@ const nextConfig = {
       },
       {
         source: '/',
-        destination: '/watch',
-        basePath: false,
+        destination: '/studio',
         permanent: false
       }
     ]

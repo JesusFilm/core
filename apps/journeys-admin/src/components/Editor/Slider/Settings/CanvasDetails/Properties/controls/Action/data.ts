@@ -184,9 +184,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               parentBlockId: 'button1.id',
               __typename: 'LinkAction',
               gtmEventName: 'gtmEventName',
-              url: 'https://www.google.com',
-              customizable: false,
-              parentStepId: null
+              url: 'https://www.google.com'
             },
             children: [],
             settings: null
@@ -207,9 +205,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               parentBlockId: 'button2.id',
               __typename: 'EmailAction',
               gtmEventName: 'gtmEventName',
-              email: 'imissedmondshen@gmail.com',
-              customizable: false,
-              parentStepId: null
+              email: 'imissedmondshen@gmail.com'
             },
             children: [],
             settings: null

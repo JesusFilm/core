@@ -1,11 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import {
-  fireEvent,
-  getByTestId,
-  render,
-  waitFor,
-  within
-} from '@testing-library/react'
+import { fireEvent, render, waitFor, within } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -16,7 +10,6 @@ import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
 import { JOURNEY_SETTINGS_UPDATE } from '../../../../../../libs/useJourneyUpdateMutation/useJourneyUpdateMutation'
 
 import {
-  JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE,
   JOURNEY_FEATURE_UPDATE,
   TemplateSettingsDialog
 } from './TemplateSettingsDialog'
@@ -74,16 +67,6 @@ describe('TemplateSettingsDialog', () => {
 
     const result2 = jest.fn(() => ({
       data: {
-        journeyCustomizationDescriptionUpdate: {
-          id: defaultJourney.id,
-          __typename: 'Journey',
-          journeyCustomizationDescription: 'New Description'
-        }
-      }
-    }))
-
-    const result3 = jest.fn(() => ({
-      data: {
         journeyFeature: {
           id: defaultJourney.id,
           __typename: 'Journey',
@@ -123,7 +106,7 @@ describe('TemplateSettingsDialog', () => {
       }
     }))
 
-    const { getByRole, getAllByRole, getByTestId } = render(
+    const { getByRole, getAllByRole } = render(
       <MockedProvider
         mocks={[
           {
@@ -190,23 +173,13 @@ describe('TemplateSettingsDialog', () => {
           },
           {
             request: {
-              query: JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE,
-              variables: {
-                journeyId: defaultJourney.id,
-                string: ''
-              }
-            },
-            result: result2
-          },
-          {
-            request: {
               query: JOURNEY_FEATURE_UPDATE,
               variables: {
                 id: defaultJourney.id,
                 feature: true
               }
             },
-            result: result3
+            result: result2
           }
         ]}
       >
@@ -237,14 +210,9 @@ describe('TemplateSettingsDialog', () => {
 
     fireEvent.click(getByRole('tab', { name: 'About' }))
 
-    fireEvent.change(
-      getByTestId('StrategySlugEdit')?.querySelector(
-        'input'
-      ) as HTMLInputElement,
-      {
-        target: { value: 'https://www.canva.com/design/DAFvDBw1z1A/view' }
-      }
-    )
+    fireEvent.change(getAllByRole('textbox')[1], {
+      target: { value: 'https://www.canva.com/design/DAFvDBw1z1A/view' }
+    })
 
     fireEvent.click(getByRole('tab', { name: 'Categories' }))
 
@@ -262,7 +230,6 @@ describe('TemplateSettingsDialog', () => {
     await waitFor(() => {
       expect(result).toHaveBeenCalled()
       expect(result2).toHaveBeenCalled()
-      expect(result3).toHaveBeenCalled()
       expect(onClose).toHaveBeenCalled()
     })
   })
@@ -446,16 +413,6 @@ describe('TemplateSettingsDialog', () => {
       }
     }))
 
-    const result2 = jest.fn(() => ({
-      data: {
-        journeyCustomizationDescriptionUpdate: {
-          id: defaultJourney.id,
-          __typename: 'Journey',
-          journeyCustomizationDescription: ''
-        }
-      }
-    }))
-
     const { getByRole } = render(
       <MockedProvider
         mocks={[
@@ -496,16 +453,6 @@ describe('TemplateSettingsDialog', () => {
               }
             },
             result
-          },
-          {
-            request: {
-              query: JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE,
-              variables: {
-                journeyId: defaultJourney.id,
-                string: ''
-              }
-            },
-            result: result2
           }
         ]}
       >

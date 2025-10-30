@@ -12,7 +12,7 @@ import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
 
-import { VideoControls } from './VideoControls'
+import { MuxInsertLogoOverlay , VideoControls } from './VideoControls'
 
 interface VideoPlayerProps {
   setControlsVisible: (visible: boolean) => void
@@ -51,7 +51,6 @@ export function VideoPlayer({
             hotkeys: true,
             doubleClick: true
           },
-          responsive: true,
           plugins: {
             mux: {
               debug: false,
@@ -91,6 +90,7 @@ export function VideoPlayer({
           }
         />
       )}
+      <MuxInsertLogoOverlay variantId={variant?.id} />
     </>
   )
 }

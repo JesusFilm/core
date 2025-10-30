@@ -44,7 +44,7 @@ describe('VideoContentHero', () => {
               subtitleOn: false
             }}
           >
-            <VideoContentHero isFullscreen setIsFullscreen={setIsFullscreen} />
+            <VideoContentHero />
           </WatchProvider>
         </VideoProvider>
       </MockedProvider>
@@ -76,10 +76,7 @@ describe('VideoContentHero', () => {
                 subtitleOn: false
               }}
             >
-              <VideoContentHero
-                isFullscreen
-                setIsFullscreen={setIsFullscreen}
-              />
+              <VideoContentHero isPreview />
             </WatchProvider>
           </VideoProvider>
         </MockedProvider>
@@ -109,10 +106,7 @@ describe('VideoContentHero', () => {
                 subtitleOn: false
               }}
             >
-              <VideoContentHero
-                isFullscreen
-                setIsFullscreen={setIsFullscreen}
-              />
+              <VideoContentHero isPreview />
             </WatchProvider>
           </VideoProvider>
         </MockedProvider>
@@ -142,10 +136,7 @@ describe('VideoContentHero', () => {
                 subtitleOn: false
               }}
             >
-              <VideoContentHero
-                isFullscreen
-                setIsFullscreen={setIsFullscreen}
-              />
+              <VideoContentHero isPreview />
             </WatchProvider>
           </VideoProvider>
         </MockedProvider>

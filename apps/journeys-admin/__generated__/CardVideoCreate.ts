@@ -77,8 +77,6 @@ export interface CardVideoCreate_video_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardVideoCreate_video_action_EmailAction {
@@ -86,8 +84,6 @@ export interface CardVideoCreate_video_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardVideoCreate_video_action_ChatAction {

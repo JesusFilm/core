@@ -41,12 +41,7 @@ describe('useBlockActionEmailUpdateMutation', () => {
     })
 
     await act(async () => {
-      await result.current[0](
-        block1,
-        'edmondwashere@gmail.com',
-        false,
-        'step.id'
-      )
+      await result.current[0](block1, 'edmondwashere@gmail.com')
 
       expect(mockResult).toHaveBeenCalled()
     })
@@ -69,12 +64,7 @@ describe('useBlockActionEmailUpdateMutation', () => {
     })
 
     await act(async () => {
-      await result.current[0](
-        block1,
-        'edmondwashere@gmail.com',
-        false,
-        'step.id'
-      )
+      await result.current[0](block1, 'edmondwashere@gmail.com')
 
       await waitFor(() =>
         expect(cache.extract()['ButtonBlock:button2.id']).toEqual({
@@ -83,9 +73,7 @@ describe('useBlockActionEmailUpdateMutation', () => {
             __typename: 'EmailAction',
             gtmEventName: null,
             parentBlockId: 'button2.id',
-            email: 'edmondwashere@gmail.com',
-            customizable: false,
-            parentStepId: 'step.id'
+            email: 'edmondwashere@gmail.com'
           }
         })
       )

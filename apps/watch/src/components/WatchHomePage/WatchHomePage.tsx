@@ -1,115 +1,107 @@
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import { useTranslation } from 'next-i18next'
 import { type ReactElement } from 'react'
 import { Index } from 'react-instantsearch'
 
-import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
-import { SearchBar } from '@core/journeys/ui/SearchBar'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
-import { PageWrapper } from '../PageWrapper'
-import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
+import { PlayerProvider } from '../../libs/playerContext'
+import { WatchProvider } from '../../libs/watchContext'
+import { Header } from '../Header'
+import { SearchComponent } from '../SearchComponent'
 
-import { HomeHero } from './HomeHero'
+import { AboutProjectSection } from './AboutProjectSection'
+import { CollectionsRail } from './CollectionsRail'
+import { SectionLanguageMap } from './SectionLanguageMap'
+import { SectionNewsletterSignup } from './SectionNewsletterSignup'
+import { SectionPromo } from './SectionPromo'
 import { SeeAllVideos } from './SeeAllVideos'
+import { useWatchHeroCarousel } from './useWatchHeroCarousel'
+import { WatchHero } from './WatchHero'
 
 interface WatchHomePageProps {
   languageId?: string | undefined
 }
 
-export function WatchHomePage({
+function WatchHomePageContent({
   languageId
 }: WatchHomePageProps): ReactElement {
-  const { t } = useTranslation('apps-watch')
-  useAlgoliaRouter()
-
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   return (
-    <PageWrapper
-      hero={<HomeHero />}
-      headerThemeMode={ThemeMode.dark}
-      hideHeaderSpacer
-      showLanguageSwitcher
-    >
-      <ThemeProvider
-        themeName={ThemeName.website}
+    <Index indexName={indexName}>
+      <WatchHomePageBody languageId={languageId} />
+    </Index>
+  )
+}
+
+function WatchHomePageBody({ languageId }: WatchHomePageProps): ReactElement {
+  useAlgoliaRouter()
+
+  const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+  const {
+    slides,
+    loading,
+    activeVideoId,
+    activeVideo,
+    currentMuxInsert,
+    handleVideoSelect,
+    handleMuxInsertComplete,
+    handleSkipActiveVideo
+  } = useWatchHeroCarousel({ locale: '529' })
+
+  return (
+    <div>
+      <Header
         themeMode={ThemeMode.dark}
-        nested
+        hideTopAppBar
+        hideBottomAppBar
+        hideSpacer
+        showLanguageSwitcher
+      />
+      <Index indexName={indexName}>
+        <SearchComponent languageId={languageId} />
+      </Index>
+      <WatchHero
+        slides={slides}
+        activeVideoId={activeVideoId}
+        activeVideo={activeVideo}
+        currentMuxInsert={currentMuxInsert}
+        loading={loading}
+        onSelectSlide={handleVideoSelect}
+        onMuxInsertComplete={handleMuxInsertComplete}
+        onSkipActiveVideo={handleSkipActiveVideo}
       >
-        <Box
-          sx={{ backgroundColor: 'background.default' }}
+        <div
           data-testid="WatchHomePage"
+          className="flex flex-col z-10 responsive-container"
         >
-          <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
-            <Index indexName={indexName}>
-              <Box sx={{ pb: 10 }}>
-                <SearchBarProvider>
-                  <SearchBar showDropdown showLanguageButton />
-                </SearchBarProvider>
-              </Box>
-              <AlgoliaVideoGrid variant="contained" languageId={languageId} />
-            </Index>
-            <SeeAllVideos />
-            <Box
-              sx={{
-                display: 'flex',
-                width: '100%',
-                alignItems: 'center',
-                position: 'relative',
-                py: { xs: 10, lg: 20 }
-              }}
-            >
-              <Stack spacing={10}>
-                <Typography variant="h3" component="h2" color="text.primary">
-                  {t('About Our Project')}
-                </Typography>
-                <Stack direction="row" spacing={4}>
-                  <Box
-                    sx={{
-                      backgroundColor: 'primary.main',
-                      height: 'inherit',
-                      width: { xs: 38, lg: 14 }
-                    }}
-                  />
-                  <Typography
-                    variant="subtitle2"
-                    component="h3"
-                    sx={{ opacity: 0.85 }}
-                    color="text.primary"
-                  >
-                    {t(
-                      'With 70% of the world not being able to speak English, there ' +
-                        'is a huge opportunity for the gospel to spread to unreached ' +
-                        'places. We have a vision to make it easier to watch, ' +
-                        'download and share Christian videos with people in their ' +
-                        'native heart language.'
-                    )}
-                  </Typography>
-                </Stack>
-                <Typography
-                  variant="subtitle1"
-                  component="h3"
-                  sx={{ opacity: 0.8 }}
-                  color="text.primary"
-                >
-                  {t(
-                    'Jesus Film Project is a Christian ministry with a vision to ' +
-                      'reach the world with the gospel of Jesus Christ through ' +
-                      'evangelistic videos. Watch from over 2000 languages on any ' +
-                      'device and share it with others.'
-                  )}
-                </Typography>
-              </Stack>
-            </Box>
-          </Container>
-        </Box>
-      </ThemeProvider>
-    </PageWrapper>
+          <ThemeProvider
+            themeName={ThemeName.website}
+            themeMode={ThemeMode.dark}
+            nested
+          >
+            {/* <SeeAllVideos /> */}
+            {/* <AboutProjectSection /> */}
+          </ThemeProvider>
+        </div>
+        <CollectionsRail languageId={languageId} />
+        <SectionNewsletterSignup />
+        <SectionLanguageMap />
+        <SectionPromo />
+      </WatchHero>
+    </div>
+  )
+}
+
+export function WatchHomePage({
+  languageId
+}: WatchHomePageProps): ReactElement {
+  return (
+    <PlayerProvider>
+      <WatchProvider>
+        <WatchHomePageContent languageId={languageId} />
+      </WatchProvider>
+    </PlayerProvider>
   )
 }

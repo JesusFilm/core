@@ -108,12 +108,9 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  journeyTheme: null,
-  journeyCustomizationDescription: null,
-  journeyCustomizationFields: [],
-  fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null
+  socialNodeY: null,
+  journeyTheme: null
 }
 
 const radioOption: TreeBlock<RadioOptionBlock> = {
@@ -128,9 +125,7 @@ const radioOption: TreeBlock<RadioOptionBlock> = {
     __typename: 'LinkAction',
     url: 'https://example.com',
     parentBlockId: 'radioQuestion1.id',
-    gtmEventName: 'radioOption1.id',
-    customizable: false,
-    parentStepId: null
+    gtmEventName: 'radioOption1.id'
   }
 }
 

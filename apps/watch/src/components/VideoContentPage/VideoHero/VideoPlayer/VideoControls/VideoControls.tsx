@@ -22,7 +22,7 @@ import debounce from 'lodash/debounce'
 import last from 'lodash/last'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { MouseEventHandler, ReactElement, useEffect, useState } from 'react'
+import { MouseEventHandler, ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
 import { isMobile } from '@core/shared/ui/deviceUtils'
@@ -31,6 +31,7 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import { usePlayer } from '../../../../../libs/playerContext'
 import { useVideo } from '../../../../../libs/videoContext'
 import { useLanguageActions } from '../../../../../libs/watchContext'
+import type { InsertAction, InsertOverlay } from '../../../../../types/inserts'
 import { HeroOverlay } from '../../../../HeroOverlay/HeroOverlay'
 import { AudioLanguageButton } from '../../../AudioLanguageButton'
 import { VideoTitle } from '../VideoTitle'
@@ -55,6 +56,13 @@ const DynamicLanguageSwitchDialog = dynamic<{
 interface VideoControlProps {
   player?: Player
   onVisibleChanged?: (active: boolean) => void
+  isPreview?: boolean
+  onMuteToggle?: (isMuted: boolean) => void
+  customDuration?: number
+  action?: InsertAction
+  isMuxInsert?: boolean
+  muxOverlay?: InsertOverlay
+  onSkip?: () => void
 }
 
 function evtToDataLayer(
@@ -81,7 +89,14 @@ const eventToDataLayer = debounce(evtToDataLayer, 500)
 
 export function VideoControls({
   player,
-  onVisibleChanged
+  onVisibleChanged,
+  isPreview = false,
+  onMuteToggle,
+  customDuration,
+  action,
+  isMuxInsert = false,
+  muxOverlay,
+  onSkip
 }: VideoControlProps): ReactElement {
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const {
@@ -104,18 +119,42 @@ export function VideoControls({
     useState<boolean>()
 
   const { updateSubtitlesOn } = useLanguageActions()
-  const { id, title, variant, images, imageAlt } = useVideo()
+  const {
+    id,
+    title,
+    variant,
+    images,
+    imageAlt,
+    label,
+    description,
+    container,
+    slug
+  } = useVideo()
   const visible = !play || active || loading
 
   const videoTitle = last(title)?.value ?? ''
+  const videoLabel = isMuxInsert && muxOverlay ? muxOverlay.label : label?.replace(/_/g, ' ')
+  const videoDescription = isMuxInsert && muxOverlay ? muxOverlay.description : last(description)?.value
+  const containerSlug = container?.slug ?? slug
+  const collectionTitle = last(container?.title)?.value
 
   useEffect(() => {
     onVisibleChanged?.(!play || active || loading)
   }, [play, active, loading, onVisibleChanged])
 
-  // Set duration from variant data instead of trying to detect from HLS stream
+  // Set duration from custom duration, variant data, or try to detect from HLS stream
   useEffect(() => {
-    if (variant?.duration != null && variant.duration > 0) {
+    if (customDuration != null && customDuration > 0) {
+      const roundedDuration = Math.round(customDuration)
+      dispatchPlayer({
+        type: 'SetDurationSeconds',
+        durationSeconds: roundedDuration
+      })
+      dispatchPlayer({
+        type: 'SetDuration',
+        duration: secondsToTimeFormat(roundedDuration, { trimZeroes: true })
+      })
+    } else if (variant?.duration != null && variant.duration > 0) {
       const roundedDuration = Math.round(variant.duration)
       dispatchPlayer({
         type: 'SetDurationSeconds',
@@ -172,8 +211,11 @@ export function VideoControls({
       }
       // Only add fallback listeners if variant duration is not available
       const events = ['durationchange', 'loadedmetadata', 'canplay']
+      const durationHandlers: { [key: string]: () => void } = {}
+
       events.forEach((event) => {
-        player?.on(event, () => updateDuration(event))
+        durationHandlers[event] = () => updateDuration(event)
+        player?.on(event, durationHandlers[event])
       })
 
       updateDuration('initial')
@@ -183,14 +225,15 @@ export function VideoControls({
           clearTimeout(retryTimeout)
         }
         events.forEach((event) => {
-          player?.off(event, updateDuration)
+          player?.off(event, durationHandlers[event])
         })
       }
     }
-  }, [player, variant?.duration])
+  }, [player, variant?.duration, customDuration])
 
   useEffect(() => {
-    if ((progress / durationSeconds) * 100 > progressPercentNotYetEmitted[0]) {
+    const percent = durationSeconds > 0 ? Math.round((player?.currentTime() ?? 0) / durationSeconds * 100) : 0
+    if (percent > progressPercentNotYetEmitted[0]) {
       eventToDataLayer(
         `video_time_update_${progressPercentNotYetEmitted[0]}`,
         id,
@@ -199,7 +242,7 @@ export function VideoControls({
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
         Math.round(player?.currentTime() ?? 0),
-        Math.round((progress / durationSeconds) * 100)
+        percent
       )
       const [, ...rest] = progressPercentNotYetEmitted
       dispatchPlayer({
@@ -213,122 +256,175 @@ export function VideoControls({
     durationSeconds,
     progressPercentNotYetEmitted,
     title,
-    variant,
-    player
+    variant
   ])
 
-  useEffect(() => {
+  // Define stable event handlers using useCallback
+  const handlePlay = useCallback(() => {
+    if ((player?.currentTime() ?? 0) < 0.02) {
+      eventToDataLayer(
+        'video_start',
+        id,
+        variant?.language.id,
+        title[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player?.currentTime() ?? 0),
+        durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
+      )
+    } else {
+      eventToDataLayer(
+        'video_play',
+        id,
+        variant?.language.id,
+        title[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player?.currentTime() ?? 0),
+        durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
+      )
+    }
+    dispatchPlayer({
+      type: 'SetPlay',
+      play: true
+    })
+  }, [player, id, variant, title, durationSeconds, dispatchPlayer])
+
+  const handlePause = useCallback(() => {
+    if ((player?.currentTime() ?? 0) > 0.02) {
+      eventToDataLayer(
+        'video_pause',
+        id,
+        variant?.language.id,
+        title[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player?.currentTime() ?? 0),
+        durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
+      )
+    }
+    dispatchPlayer({
+      type: 'SetPlay',
+      play: false
+    })
+  }, [player, id, variant, title, durationSeconds, dispatchPlayer])
+
+  // Separate handlers for player events that don't update global state
+  const handlePlayerEventPlay = useCallback(() => {
+    // Just analytics for player events, don't update global state
+    if ((player?.currentTime() ?? 0) < 0.02) {
+      eventToDataLayer(
+        'video_start',
+        id,
+        variant?.language.id,
+        title[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player?.currentTime() ?? 0),
+        durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
+      )
+    } else {
+      eventToDataLayer(
+        'video_play',
+        id,
+        variant?.language.id,
+        title[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player?.currentTime() ?? 0),
+        durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
+      )
+    }
+  }, [player, id, variant, title, durationSeconds])
+
+  const handlePlayerEventPause = useCallback(() => {
+    // Just analytics for player events, don't update global state
+    if ((player?.currentTime() ?? 0) > 0.02) {
+      eventToDataLayer(
+        'video_pause',
+        id,
+        variant?.language.id,
+        title[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player?.currentTime() ?? 0),
+        durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
+      )
+    }
+  }, [player, id, variant, title, durationSeconds])
+
+  const handleTimeUpdate = useCallback(() => {
+    dispatchPlayer({
+      type: 'SetCurrentTime',
+      currentTime: secondsToTimeFormat(player?.currentTime() ?? 0, {
+        trimZeroes: true
+      })
+    })
+    dispatchPlayer({
+      type: 'SetProgress',
+      progress: durationSeconds > 0 ? Math.round(
+        ((player?.currentTime() ?? 0) / durationSeconds) * 100
+      ) : 0
+    })
+  }, [player, durationSeconds, dispatchPlayer])
+
+  const handleVolumeChange = useCallback(() => {
+    dispatchPlayer({
+      type: 'SetMute',
+      mute: player?.muted() ?? false
+    })
     dispatchPlayer({
       type: 'SetVolume',
       volume: (player?.volume() ?? 1) * 100
     })
-    player?.on('play', () => {
-      if ((player?.currentTime() ?? 0) < 0.02) {
-        eventToDataLayer(
-          'video_start',
-          id,
-          variant?.language.id,
-          title[0].value,
-          variant?.language?.name.find(({ primary }) => !primary)?.value ??
-            variant?.language?.name[0]?.value,
-          Math.round(player?.currentTime() ?? 0),
-          Math.round(
-            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-          )
-        )
-      } else {
-        eventToDataLayer(
-          'video_play',
-          id,
-          variant?.language.id,
-          title[0].value,
-          variant?.language?.name.find(({ primary }) => !primary)?.value ??
-            variant?.language?.name[0]?.value,
-          Math.round(player?.currentTime() ?? 0),
-          Math.round(
-            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-          )
-        )
-      }
-      dispatchPlayer({
-        type: 'SetPlay',
-        play: true
-      })
+  }, [player, dispatchPlayer])
+
+  const handleFullscreenChange = useCallback(() => {
+    dispatchPlayer({
+      type: 'SetFullscreen',
+      fullscreen: player?.isFullscreen() ?? false
     })
-    player?.on('pause', () => {
-      if ((player?.currentTime() ?? 0) > 0.02) {
-        eventToDataLayer(
-          'video_pause',
-          id,
-          variant?.language.id,
-          title[0].value,
-          variant?.language?.name.find(({ primary }) => !primary)?.value ??
-            variant?.language?.name[0]?.value,
-          Math.round(player?.currentTime() ?? 0),
-          Math.round(
-            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-          )
-        )
-      }
-      dispatchPlayer({
-        type: 'SetPlay',
-        play: false
-      })
+  }, [player, dispatchPlayer])
+
+  const handleUserActive = useCallback(() =>
+    dispatchPlayer({
+      type: 'SetActive',
+      active: true
+    }), [dispatchPlayer])
+
+  const handleUserInactive = useCallback(() =>
+    dispatchPlayer({
+      type: 'SetActive',
+      active: false
+    }), [dispatchPlayer])
+
+  const handleWaiting = useCallback(() =>
+    dispatchPlayer({
+      type: 'SetLoading',
+      loading: true
+    }), [dispatchPlayer])
+
+  const handlePlaying = useCallback(() => {
+    setInitialLoadComplete(true)
+    dispatchPlayer({
+      type: 'SetLoading',
+      loading: false
     })
-    player?.on('timeupdate', () => {
-      dispatchPlayer({
-        type: 'SetCurrentTime',
-        currentTime: secondsToTimeFormat(player?.currentTime() ?? 0, {
-          trimZeroes: true
-        })
-      })
-      dispatchPlayer({
-        type: 'SetProgress',
-        progress: Math.round(player?.currentTime() ?? 0)
-      })
-    })
-    player?.on('volumechange', () => {
-      dispatchPlayer({
-        type: 'SetMute',
-        mute: player?.muted() ?? false
-      })
-      dispatchPlayer({
-        type: 'SetVolume',
-        volume: (player?.volume() ?? 1) * 100
-      })
-    })
-    player?.on('fullscreenchange', () => {
-      dispatchPlayer({
-        type: 'SetFullscreen',
-        fullscreen: player?.isFullscreen() ?? false
-      })
-    })
-    player?.on('useractive', () =>
-      dispatchPlayer({
-        type: 'SetActive',
-        active: true
-      })
-    )
-    player?.on('userinactive', () =>
-      dispatchPlayer({
-        type: 'SetActive',
-        active: false
-      })
-    )
-    player?.on('waiting', () =>
-      dispatchPlayer({
-        type: 'SetLoading',
-        loading: true
-      })
-    )
-    player?.on('playing', () => {
-      setInitialLoadComplete(true)
-      dispatchPlayer({
-        type: 'SetLoading',
-        loading: false
-      })
-    })
-    player?.on('ended', () => {
+  }, [dispatchPlayer])
+
+  const handleEnded = useCallback(() => {
       eventToDataLayer(
         'video_ended',
         id,
@@ -337,24 +433,45 @@ export function VideoControls({
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
         Math.round(player?.currentTime() ?? 0),
-        Math.round(
-          ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-        )
+        durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
       )
+  }, [player, id, variant, title, durationSeconds])
+
+  const handleCanPlay = useCallback(() =>
+    dispatchPlayer({
+      type: 'SetLoading',
+      loading: false
+    }), [dispatchPlayer])
+
+  const handleCanPlayThrough = useCallback(() =>
+    dispatchPlayer({
+      type: 'SetLoading',
+      loading: false
+    }), [dispatchPlayer])
+
+  useEffect(() => {
+    dispatchPlayer({
+      type: 'SetVolume',
+      volume: (player?.volume() ?? 1) * 100
     })
-    player?.on('canplay', () =>
-      dispatchPlayer({
-        type: 'SetLoading',
-        loading: false
-      })
-    )
-    player?.on('canplaythrough', () =>
-      dispatchPlayer({
-        type: 'SetLoading',
-        loading: false
-      })
-    )
-    fscreen.addEventListener('fullscreenchange', () => {
+
+    // Attach handlers - use separate handlers for player events vs user interactions
+    player?.on('play', handlePlayerEventPlay)
+    player?.on('pause', handlePlayerEventPause)
+    player?.on('timeupdate', handleTimeUpdate)
+    player?.on('volumechange', handleVolumeChange)
+    player?.on('fullscreenchange', handleFullscreenChange)
+    player?.on('useractive', handleUserActive)
+    player?.on('userinactive', handleUserInactive)
+    player?.on('waiting', handleWaiting)
+    player?.on('playing', handlePlaying)
+    player?.on('ended', handleEnded)
+    player?.on('canplay', handleCanPlay)
+    player?.on('canplaythrough', handleCanPlayThrough)
+
+    const fscreenHandler = () => {
       if (fscreen.fullscreenElement != null) {
         eventToDataLayer(
           'video_enter_full_screen',
@@ -364,9 +481,9 @@ export function VideoControls({
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
-          Math.round(
-            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-          )
+          durationSeconds > 0 ? Math.round(
+            ((player?.currentTime() ?? 0) / durationSeconds) * 100
+          ) : 0
         )
       } else {
         eventToDataLayer(
@@ -377,25 +494,60 @@ export function VideoControls({
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
-          Math.round(
-            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-          )
+          durationSeconds > 0 ? Math.round(
+            ((player?.currentTime() ?? 0) / durationSeconds) * 100
+          ) : 0
         )
       }
       dispatchPlayer({
         type: 'SetFullscreen',
         fullscreen: fscreen.fullscreenElement != null
       })
-    })
-  }, [id, player, dispatchPlayer, loading, title, variant])
-
-  function handlePlay(): void {
-    if (!play) {
-      void player?.play()
-    } else {
-      void player?.pause()
     }
-  }
+
+    fscreen.addEventListener('fullscreenchange', fscreenHandler)
+
+    return () => {
+      // Clean up player event handlers
+      player?.off('play', handlePlayerEventPlay)
+      player?.off('pause', handlePlayerEventPause)
+      player?.off('timeupdate', handleTimeUpdate)
+      player?.off('volumechange', handleVolumeChange)
+      player?.off('fullscreenchange', handleFullscreenChange)
+      player?.off('useractive', handleUserActive)
+      player?.off('userinactive', handleUserInactive)
+      player?.off('waiting', handleWaiting)
+      player?.off('playing', handlePlaying)
+      player?.off('ended', handleEnded)
+      player?.off('canplay', handleCanPlay)
+      player?.off('canplaythrough', handleCanPlayThrough)
+
+      // Clean up fscreen handler
+      fscreen.removeEventListener('fullscreenchange', fscreenHandler)
+    }
+  }, [
+    id,
+    player,
+    dispatchPlayer,
+    loading,
+    title,
+    variant,
+    durationSeconds,
+    handlePlay,
+    handlePause,
+    handlePlayerEventPlay,
+    handlePlayerEventPause,
+    handleTimeUpdate,
+    handleVolumeChange,
+    handleFullscreenChange,
+    handleUserActive,
+    handleUserInactive,
+    handleWaiting,
+    handlePlaying,
+    handleEnded,
+    handleCanPlay,
+    handleCanPlayThrough
+  ])
 
   async function handleFullscreen(): Promise<void> {
     if (fullscreen) {
@@ -432,11 +584,15 @@ export function VideoControls({
   }
 
   function handleMute(): void {
-    player?.muted(!mute)
+    const newMuteState = !mute
+    player?.muted(newMuteState)
     dispatchPlayer({
       type: 'SetMute',
-      mute: !mute
+      mute: newMuteState
     })
+    if (onMuteToggle) {
+      onMuteToggle(newMuteState)
+    }
   }
 
   function handleVolume(_event: Event, value: number | number[]): void {
@@ -486,10 +642,10 @@ export function VideoControls({
         bottom: 0,
         left: 0,
         cursor: visible ? undefined : 'none',
-        zIndex: 1,
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        zIndex: 2
       }}
       onClick={getClickHandler(handlePlay, () => {
         void handleFullscreen()
@@ -497,12 +653,23 @@ export function VideoControls({
       onMouseMove={() => player?.userActive(true)}
       data-testid="VideoControls"
     >
-      {!loading ? (
-        <Container maxWidth="xxl" sx={{ zIndex: 2 }}>
+      {!loading || isPreview ? (
+        <div className="responsive-container">
           <VideoTitle
             videoTitle={videoTitle}
             variant="unmute"
             showButton
+            isPreview={isPreview}
+            videoLabel={videoLabel}
+            videoDescription={videoDescription}
+            containerSlug={containerSlug}
+            collectionTitle={collectionTitle}
+            action={action}
+            isMuxInsert={isMuxInsert}
+            onSkip={onSkip}
+            onMuteToggle={() => {
+              handleMute()
+            }}
             onClick={(e) => {
               e.stopPropagation()
               handleVideoTitleClick({
@@ -514,8 +681,9 @@ export function VideoControls({
               })
             }}
           />
-        </Container>
-      ) : (
+        </div>
+      ) : null}
+      {loading && !isPreview && (
         <>
           <Box
             sx={{
@@ -544,6 +712,17 @@ export function VideoControls({
             <VideoTitle
               showButton={!initialLoadComplete}
               videoTitle={videoTitle}
+              isPreview={isPreview}
+              videoLabel={videoLabel}
+              videoDescription={videoDescription}
+              containerSlug={containerSlug}
+              collectionTitle={collectionTitle}
+              action={action}
+              isMuxInsert={isMuxInsert}
+              onSkip={onSkip}
+              onMuteToggle={() => {
+                handleMute()
+              }}
               onClick={(e) => {
                 e.stopPropagation()
                 handleVideoTitleClick({
@@ -570,72 +749,34 @@ export function VideoControls({
           </Box>
         </>
       )}
-      <Fade
-        in={visible}
-        style={{
-          transitionDelay: visible ? undefined : '2s',
-          transitionDuration: '225ms'
-        }}
-        timeout={{ exit: 2225 }}
-      >
-        <Box>
-          <Box
-            sx={{
-              background:
-                'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%)'
-            }}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <Container
-              data-testid="vjs-jfp-custom-controls"
-              maxWidth="xxl"
+      {!isPreview && (
+        <Fade
+          in={visible}
+          style={{
+            transitionDelay: visible ? undefined : '2s',
+            transitionDuration: '225ms'
+          }}
+          timeout={{ exit: 2225 }}
+        >
+          <Box>
+            <Box
               sx={{
-                zIndex: 5,
-                pb: 4,
-                transitionDelay: visible ? undefined : '0.5s'
+                background:
+                  'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%)'
               }}
+              onClick={(event) => event.stopPropagation()}
             >
-              <Slider
-                aria-label="mobile-progress-control"
-                min={0}
-                max={durationSeconds}
-                value={progress}
-                valueLabelFormat={(value) => {
-                  return secondsToTimeFormat(value, { trimZeroes: true })
-                }}
-                valueLabelDisplay="auto"
-                onChange={handleSeek}
+              <Container
+                data-testid="vjs-jfp-custom-controls"
+                maxWidth="xxl"
                 sx={{
-                  height: 8.4,
-                  display: { xs: 'flex', md: 'none' },
-                  '& .MuiSlider-thumb': {
-                    width: 13,
-                    height: 13
-                  },
-                  '& .MuiSlider-rail': {
-                    backgroundColor: 'secondary.main'
-                  }
+                  zIndex: 5,
+                  pb: 4,
+                  transitionDelay: visible ? undefined : '0.5s'
                 }}
-              />
-              <Stack
-                direction="row"
-                gap={5}
-                justifyContent={{ xs: 'space-between', md: 'none' }}
-                alignItems="center"
               >
-                <IconButton
-                  id={play ? 'pause-button' : 'play-button'}
-                  onClick={handlePlay}
-                  sx={{ display: { xs: 'none', md: 'flex' } }}
-                >
-                  {!play ? (
-                    <PlayArrowRounded fontSize="large" />
-                  ) : (
-                    <PauseRounded fontSize="large" />
-                  )}
-                </IconButton>
                 <Slider
-                  aria-label="desktop-progress-control"
+                  aria-label="mobile-progress-control"
                   min={0}
                   max={durationSeconds}
                   value={progress}
@@ -646,7 +787,7 @@ export function VideoControls({
                   onChange={handleSeek}
                   sx={{
                     height: 8.4,
-                    display: { xs: 'none', md: 'flex' },
+                    display: { xs: 'flex', md: 'none' },
                     '& .MuiSlider-thumb': {
                       width: 13,
                       height: 13
@@ -656,126 +797,168 @@ export function VideoControls({
                     }
                   }}
                 />
-                {player != null && (
-                  <Typography
-                    variant="body2"
-                    color="secondary.contrastText"
-                    sx={{ display: 'flex', gap: 1, zIndex: 2 }}
+                <Stack
+                  direction="row"
+                  gap={5}
+                  justifyContent={{ xs: 'space-between', md: 'none' }}
+                  alignItems="center"
+                  className="responsive-container"
+                >
+                  <IconButton
+                    id={play ? 'pause-button' : 'play-button'}
+                    onClick={handlePlay}
+                    sx={{ display: { xs: 'none', md: 'flex' } }}
                   >
-                    <span className="font-sans">{currentTime ?? '0:00'}</span>
-                    <span>/</span>
-                    {duration === '0:00' ? (
-                      <Skeleton width={27} sx={{ bgcolor: 'grey.800' }} />
+                    {!play ? (
+                      <PlayArrowRounded fontSize="large" />
                     ) : (
-                      <span className="font-sans">{duration}</span>
+                      <PauseRounded fontSize="large" />
                     )}
-                  </Typography>
-                )}
-                <Stack direction="row" spacing={2}>
-                  <Stack
-                    alignItems="center"
-                    spacing={2}
-                    direction="row"
-                    sx={{
-                      display: { xs: 'flex', md: 'none' }
+                  </IconButton>
+                  <Slider
+                    aria-label="desktop-progress-control"
+                    min={0}
+                    max={durationSeconds}
+                    value={progress}
+                    valueLabelFormat={(value) => {
+                      return secondsToTimeFormat(value, { trimZeroes: true })
                     }}
-                  >
-                    <IconButton onClick={handleMute}>
-                      {mute || volume === 0 ? (
-                        <VolumeOffOutlined />
-                      ) : volume > 60 ? (
-                        <VolumeUpOutlined />
-                      ) : volume > 30 ? (
-                        <VolumeDownOutlined />
-                      ) : (
-                        <VolumeMuteOutlined />
-                      )}
-                    </IconButton>
-                  </Stack>
-                  <Stack
-                    alignItems="center"
-                    spacing={2}
-                    direction="row"
+                    valueLabelDisplay="auto"
+                    onChange={handleSeek}
                     sx={{
+                      height: 8.4,
                       display: { xs: 'none', md: 'flex' },
-                      '> .MuiSlider-root': {
-                        width: 0,
-                        opacity: 0,
-                        transition: 'all 0.2s ease-out'
+                      '& .MuiSlider-thumb': {
+                        width: 13,
+                        height: 13
                       },
-                      '&:hover': {
-                        '> .MuiSlider-root': {
-                          width: 70,
-                          opacity: 1
-                        }
+                      '& .MuiSlider-rail': {
+                        backgroundColor: 'secondary.main'
                       }
                     }}
-                  >
-                    <IconButton onClick={handleMute}>
-                      {mute || volume === 0 ? (
-                        <VolumeOffOutlined />
-                      ) : volume > 60 ? (
-                        <VolumeUpOutlined />
-                      ) : volume > 30 ? (
-                        <VolumeDownOutlined />
+                  />
+                  {player != null && (
+                    <Typography
+                      variant="body2"
+                      color="secondary.contrastText"
+                      sx={{ display: 'flex', gap: 1, zIndex: 2 }}
+                    >
+                      <span className="font-sans">{currentTime ?? '0:00'}</span>
+                      <span>/</span>
+                      {duration === '0:00' ? (
+                        <Skeleton width={27} sx={{ bgcolor: 'grey.800' }} />
                       ) : (
-                        <VolumeMuteOutlined />
+                        <span className="font-sans">{duration}</span>
                       )}
-                    </IconButton>
-                    <Slider
-                      aria-label="volume-control"
-                      min={0}
-                      max={100}
-                      value={mute ? 0 : volume}
-                      valueLabelFormat={(value) => {
-                        return `${value}%`
-                      }}
-                      valueLabelDisplay="auto"
-                      onChange={handleVolume}
+                    </Typography>
+                  )}
+                  <Stack direction="row" spacing={2}>
+                    <Stack
+                      alignItems="center"
+                      spacing={2}
+                      direction="row"
                       sx={{
-                        width: 70,
-                        '& .MuiSlider-thumb': {
-                          width: 10,
-                          height: 10
+                        display: { xs: 'flex', md: 'none' }
+                      }}
+                    >
+                      <IconButton onClick={handleMute}>
+                        {mute || volume === 0 ? (
+                          <VolumeOffOutlined />
+                        ) : volume > 60 ? (
+                          <VolumeUpOutlined />
+                        ) : volume > 30 ? (
+                          <VolumeDownOutlined />
+                        ) : (
+                          <VolumeMuteOutlined />
+                        )}
+                      </IconButton>
+                    </Stack>
+                    <Stack
+                      alignItems="center"
+                      spacing={2}
+                      direction="row"
+                      sx={{
+                        display: { xs: 'none', md: 'flex' },
+                        '> .MuiSlider-root': {
+                          width: 0,
+                          opacity: 0,
+                          transition: 'all 0.2s ease-out'
                         },
-                        '& .MuiSlider-rail': {
-                          backgroundColor: 'secondary.main'
+                        '&:hover': {
+                          '> .MuiSlider-root': {
+                            width: 70,
+                            opacity: 1
+                          }
                         }
                       }}
-                    />
+                    >
+                      <IconButton onClick={handleMute}>
+                        {mute || volume === 0 ? (
+                          <VolumeOffOutlined />
+                        ) : volume > 60 ? (
+                          <VolumeUpOutlined />
+                        ) : volume > 30 ? (
+                          <VolumeDownOutlined />
+                        ) : (
+                          <VolumeMuteOutlined />
+                        )}
+                      </IconButton>
+                      <Slider
+                        aria-label="volume-control"
+                        min={0}
+                        max={100}
+                        value={mute ? 0 : volume}
+                        valueLabelFormat={(value) => {
+                          return `${value}%`
+                        }}
+                        valueLabelDisplay="auto"
+                        onChange={handleVolume}
+                        sx={{
+                          width: 70,
+                          '& .MuiSlider-thumb': {
+                            width: 10,
+                            height: 10
+                          },
+                          '& .MuiSlider-rail': {
+                            backgroundColor: 'secondary.main'
+                          }
+                        }}
+                      />
+                    </Stack>
+                    <AudioLanguageButton componentVariant="icon" />
+                    <IconButton
+                      onClick={handleClick}
+                      disabled={
+                        variant?.subtitleCount === undefined ||
+                        variant?.subtitleCount < 1
+                      }
+                    >
+                      <SubtitlesOutlined />
+                    </IconButton>
+                    <IconButton
+                      onClick={handleFullscreen}
+                      data-testid="FullscreenButton"
+                      aria-pressed={fullscreen}
+                    >
+                      {fullscreen ? (
+                        <FullscreenExitOutlined />
+                      ) : (
+                        <FullscreenOutlined />
+                      )}
+                    </IconButton>
                   </Stack>
-                  <AudioLanguageButton componentVariant="icon" />
-                  <IconButton
-                    onClick={handleClick}
-                    disabled={
-                      variant?.subtitleCount === undefined ||
-                      variant?.subtitleCount < 1
-                    }
-                  >
-                    <SubtitlesOutlined />
-                  </IconButton>
-                  <IconButton
-                    onClick={handleFullscreen}
-                    data-testid="FullscreenButton"
-                  >
-                    {fullscreen ? (
-                      <FullscreenExitOutlined />
-                    ) : (
-                      <FullscreenOutlined />
-                    )}
-                  </IconButton>
                 </Stack>
-              </Stack>
-              {openLanguageSwitchDialog != null && (
-                <DynamicLanguageSwitchDialog
-                  open={openLanguageSwitchDialog}
-                  handleClose={() => setOpenLanguageSwitchDialog(false)}
-                />
-              )}
-            </Container>
+                {openLanguageSwitchDialog != null && (
+                  <DynamicLanguageSwitchDialog
+                    open={openLanguageSwitchDialog}
+                    handleClose={() => setOpenLanguageSwitchDialog(false)}
+                  />
+                )}
+              </Container>
+            </Box>
           </Box>
-        </Box>
-      </Fade>
+        </Fade>
+      )}
     </Box>
   )
 }

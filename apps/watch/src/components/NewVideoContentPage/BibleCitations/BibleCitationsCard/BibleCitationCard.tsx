@@ -97,22 +97,22 @@ export function BibleCitationCard({
 
   return (
     <div
-      className="relative flex h-[400px] w-[400px] flex-col justify-end overflow-hidden rounded-lg border border-white/10 bg-black/10"
+      className="relative h-[400px] w-[400px] flex flex-col justify-end rounded-lg overflow-hidden border border-white/10 bg-black/10"
       style={{ backgroundColor: '#1A1815' }}
     >
       <Image
         fill
         src={imageUrl}
         alt="Bible Citation"
-        className="absolute top-0 overflow-hidden rounded-lg [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_20%,transparent_100%)] [mask-size:cover] object-cover"
+        className="absolute top-0 object-cover overflow-hidden rounded-lg [mask-image:linear-gradient(to_bottom,rgba(0,0,0,1)_20%,transparent_100%)] [mask-size:cover]"
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
       />
-      <div className="z-10 p-8">
-        <span className="relative text-xs font-bold tracking-wider text-white/80 uppercase">
+      <div className="p-8 z-10">
+        <span className="relative font-bold text-xs uppercase tracking-wider text-white/80">
           {`${citation.bibleBook.name[0].value} ${citation.chapterStart}${citation.chapterEnd != null ? `-${citation.chapterEnd}` : ''}:${citation.verseEnd != null ? `${citation.verseStart}-${citation.verseEnd}` : citation.verseStart}`}
         </span>
         {scripture != null && (
-          <p className="relative mt-4 text-sm text-white/90">
+          <p className="relative mt-4 text-white/90 text-sm">
             {formatScripture(scripture.text)}
           </p>
         )}
@@ -121,7 +121,7 @@ export function BibleCitationCard({
             href={bibleGatewayUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative mt-4 block text-sm text-white/80 underline transition-colors duration-200 hover:text-white"
+            className="relative mt-4 block text-white/80 text-sm hover:text-white transition-colors duration-200 underline"
           >
             {t('Read more...')}
           </a>

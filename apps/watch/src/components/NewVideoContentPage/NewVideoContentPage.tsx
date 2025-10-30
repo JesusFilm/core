@@ -2,7 +2,7 @@ import { sendGTMEvent } from '@next/third-parties/google'
 import last from 'lodash/last'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import Bible from '@core/shared/ui/icons/Bible'
@@ -13,8 +13,10 @@ import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../__
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
+import type { CarouselMuxSlide, VideoCarouselSlide } from '../../types/inserts'
 import { PageWrapper } from '../PageWrapper'
 import { ShareDialog } from '../ShareDialog'
+import { mergeMuxInserts } from '../VideoHero/libs/useCarouselVideos/insertMux'
 
 import { BibleCitations } from './BibleCitations'
 import { ContentMetadata } from './ContentMetadata'
@@ -45,12 +47,22 @@ export function NewVideoContentPage(): ReactElement {
   const [showShare, setShowShare] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)
 
+  // State for managing current playing content (video or Mux insert)
+  const [currentPlayingId, setCurrentPlayingId] = useState<string>(id) // Default to main video
+  const [currentSlideIndex, setCurrentSlideIndex] = useState<number>(0)
+
   const variantSlug = container?.variant?.slug ?? variant?.slug
   const watchUrl = getWatchUrl(container?.slug, label, variant?.slug)
   const { children, loading } = useVideoChildren(
     variantSlug,
     variant?.language.bcp47 ?? 'en'
   )
+
+  // Merge Mux inserts with video children to create carousel slides
+  const carouselSlides = useMemo<VideoCarouselSlide[]>(() => {
+    if (loading || children.length === 0) return []
+    return mergeMuxInserts(children)
+  }, [children, loading])
 
   const makeDefaultQuestion = (value: string): StudyQuestions => ({
     __typename: 'VideoStudyQuestion',
@@ -103,6 +115,39 @@ export function NewVideoContentPage(): ReactElement {
     ]
   }, [studyQuestions, t])
 
+  // Handle video/insert selection from carousel
+  const handleVideoSelect = useCallback((videoId: string) => {
+    setCurrentPlayingId(videoId)
+    const slideIndex = carouselSlides.findIndex(slide => slide.id === videoId)
+    if (slideIndex >= 0) {
+      setCurrentSlideIndex(slideIndex)
+    }
+  }, [carouselSlides])
+
+  // Handle slide change for duration tracking
+  const handleSlideChange = useCallback((activeIndex: number) => {
+    setCurrentSlideIndex(activeIndex)
+    if (carouselSlides[activeIndex]) {
+      setCurrentPlayingId(carouselSlides[activeIndex].id)
+    }
+  }, [carouselSlides])
+
+  // Handle Mux insert completion - automatically progress to next item
+  const handleMuxInsertComplete = useCallback(() => {
+    const nextIndex = currentSlideIndex + 1
+    if (nextIndex < carouselSlides.length) {
+      setCurrentSlideIndex(nextIndex)
+      setCurrentPlayingId(carouselSlides[nextIndex].id)
+    } else {
+      setCurrentSlideIndex(0)
+      setCurrentPlayingId(carouselSlides[0]?.id || id)
+    }
+  }, [currentSlideIndex, carouselSlides, id])
+
+  // Get current playing content
+  const currentSlide = carouselSlides[currentSlideIndex]
+  const currentMuxInsert = currentSlide?.source === 'mux' ? currentSlide : null
+
   const handleFreeResourceClick = () => {
     sendGTMEvent({
       event: 'join_study_button_click',
@@ -153,12 +198,7 @@ export function NewVideoContentPage(): ReactElement {
         }}
       />
       <PageWrapper
-        hero={
-          <VideoContentHero
-            isFullscreen={isFullscreen}
-            setIsFullscreen={setIsFullscreen}
-          />
-        }
+        hero={<VideoContentHero currentMuxInsert={currentMuxInsert} onMuxInsertComplete={handleMuxInsertComplete} />}
         headerThemeMode={ThemeMode.dark}
         hideHeader
         hideFooter
@@ -167,19 +207,21 @@ export function NewVideoContentPage(): ReactElement {
         <ContentPageBlurFilter>
           <NewVideoContentHeader loading={loading} videos={children} />
           {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&
-            (children.length === children.length || children.length > 0) && (
+            (carouselSlides.length > 0 || loading) && (
               <VideoCarousel
-                videos={children}
+                slides={carouselSlides}
                 containerSlug={container?.slug ?? videoSlug}
-                activeVideoId={id}
+                activeVideoId={currentPlayingId}
                 loading={loading}
+                onVideoSelect={handleVideoSelect}
+                onSlideChange={handleSlideChange}
               />
             )}
           <div
             data-testid="ContentPageContent"
-            className="z-10 mx-auto flex w-full max-w-[1920px] flex-col gap-20 px-4 py-20 sm:px-6 md:px-8 lg:px-10 xl:px-12"
+            className="flex flex-col gap-20 py-20 z-10 responsive-container"
           >
-            <div className="z-10 grid grid-cols-1 gap-20 xl:grid-cols-[3fr_2fr]">
+            <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] z-10 gap-20">
               <ContentMetadata
                 title={last(title)?.value ?? ''}
                 description={last(description)?.value ?? ''}
@@ -187,16 +229,16 @@ export function NewVideoContentPage(): ReactElement {
               />
               <DiscussionQuestions questions={questions} />
             </div>
-            <div className="z-10 flex flex-row justify-between gap-2">
-              <h3 className="text-sm font-semibold tracking-wider text-red-100/70 uppercase xl:text-base 2xl:text-lg">
+            <div className="z-10 flex flex-row gap-2 justify-between">
+              <h3 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
                 {t('Bible Quotes')}
               </h3>
               <div className="flex flex-row gap-2">
                 <button
                   onClick={() => setShowShare(true)}
-                  className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold tracking-wider text-gray-900 uppercase transition-colors duration-200 hover:bg-[#cb333b] hover:text-white"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-gray-900 font-bold uppercase tracking-wider bg-white hover:bg-[#cb333b] hover:text-white transition-colors duration-200 text-sm cursor-pointer"
                 >
-                  <LinkExternal className="h-4 w-4" />
+                  <LinkExternal className="w-4 h-4" />
                   {t('Share')}
                 </button>
               </div>
