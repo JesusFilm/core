@@ -26,7 +26,7 @@ export function EmailAction({ ref }: EmailActionProps): ReactElement {
   const {
     state: { selectedBlock: stateSelectedBlock, selectedStep }
   } = useEditor()
-  const selectedBlock = stateSelectedBlock as TreeBlock<ButtonBlock> | undefined
+  const selectedBlock = stateSelectedBlock as TreeBlock<ButtonBlock>
 
   const { addAction } = useActionCommand()
 
