@@ -2,7 +2,7 @@ import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import fscreen from 'fscreen'
 import {
@@ -42,6 +42,21 @@ interface VideoControlProps {
   muted?: boolean
   activeStep?: boolean
 }
+
+const StyledVideoGradient = styled(Box)`
+  width: 100%;
+  height: 25%;
+  position: absolute;
+  bottom: 0;
+  z-index: 1;
+  /* @noflip */
+  background: linear-gradient(
+    to top,
+    #000000a6 0%,
+    #00000080 15%,
+    #00000000 95%
+  );
+`
 
 export function VideoControls({
   player,
@@ -346,117 +361,131 @@ export function VideoControls({
   }
 
   return (
-    <Box
-      aria-label="video-controls"
-      role="region"
-      dir="ltr"
-      sx={{
-        position: 'absolute',
-        zIndex: 1000,
-        top: 0,
-        right: 0,
-        bottom: { xs: 0, lg: 4 },
-        left: 0,
-        cursor: visible ? undefined : 'none',
-        userSelect: 'none',
-        WebkitUserSelect: 'none'
-      }}
-      onClick={getClickHandler(handlePlaybackEvent, handleFullscreen)}
-      onMouseMove={() => player.userActive(true)}
-      onTouchEnd={(e) => {
-        const target = e.target as Element
-        const controlsHidden = !(player.userActive() ?? true)
-        const videoControlsNotClicked =
-          !target.classList.contains('MuiSlider-root') &&
-          !target.classList.contains('MuiSlider-rail') &&
-          !target.classList.contains('MuiSlider-track') &&
-          !target.classList.contains('MuiSvgIcon-root') &&
-          target.nodeName !== 'path'
-        // iOS: pause video on first click, default just shows controls.
-        if (controlsHidden && videoControlsNotClicked && isIOS()) {
-          void player.pause()
-          dispatch({ type: PlaybackEvent.PAUSE })
-        }
-        player.userActive(true)
-      }}
-      data-testid="JourneysVideoControls"
-    >
-      <Stack
-        justifyContent="center"
-        sx={{ height: '100%' }}
-        flexGrow={1}
-        alignItems="center"
+    <>
+      <Fade
+        in={visible}
+        style={{
+          transitionDelay: visible ? undefined : '2s',
+          transitionDuration: '225ms'
+        }}
+        timeout={{ exit: 1000 }}
       >
-        <PlaybackIcon state={state} loading={loading} visible={visible} />
-
-        {/* Add VideoStats component outside of the Fade component so it stays visible */}
-        {showStats && (
-          <VideoStats player={player} startAt={startAt} endAt={endAt} />
-        )}
-
-        <Fade
-          in
-          style={{ transitionDuration: '500ms' }}
-          timeout={{ exit: 3000 }}
+        <StyledVideoGradient />
+      </Fade>
+      <Box
+        aria-label="video-controls"
+        role="region"
+        dir="ltr"
+        sx={{
+          position: 'absolute',
+          zIndex: 1000,
+          top: 0,
+          right: 0,
+          bottom: { xs: 0, lg: 4 },
+          left: 0,
+          cursor: visible ? undefined : 'none',
+          userSelect: 'none',
+          WebkitUserSelect: 'none'
+        }}
+        onClick={getClickHandler(handlePlaybackEvent, handleFullscreen)}
+        onMouseMove={() => player.userActive(true)}
+        onTouchEnd={(e) => {
+          const target = e.target as Element
+          const controlsHidden = !(player.userActive() ?? true)
+          const videoControlsNotClicked =
+            !target.classList.contains('MuiSlider-root') &&
+            !target.classList.contains('MuiSlider-rail') &&
+            !target.classList.contains('MuiSlider-track') &&
+            !target.classList.contains('MuiSvgIcon-root') &&
+            target.nodeName !== 'path'
+          // iOS: pause video on first click, default just shows controls.
+          if (controlsHidden && videoControlsNotClicked && isIOS()) {
+            void player.pause()
+            dispatch({ type: PlaybackEvent.PAUSE })
+          }
+          player.userActive(true)
+        }}
+        data-testid="JourneysVideoControls"
+      >
+        <Stack
+          justifyContent="center"
+          sx={{ height: '100%' }}
+          flexGrow={1}
+          alignItems="center"
         >
-          {/* Mobile and Desktop Video Controls */}
-          <Container
-            data-testid="vjs-jfp-custom-controls"
-            maxWidth="xxl"
-            sx={{
-              zIndex: 1,
-              transitionDelay: visible ? undefined : '0.5s',
-              pb: {
-                xs: showHeaderFooter || isYoutube ? 28 : 2,
-                sm: showHeaderFooter || isYoutube ? 15 : 2,
-                lg: 2
-              },
-              position: 'absolute',
-              bottom: 0
+          <PlaybackIcon state={state} loading={loading} visible={visible} />
+
+          {/* Add VideoStats component outside of the Fade component so it stays visible */}
+          {showStats && (
+            <VideoStats player={player} startAt={startAt} endAt={endAt} />
+          )}
+
+          <Fade
+            in={visible}
+            style={{
+              transitionDelay: visible ? undefined : '2s',
+              transitionDuration: '225ms'
             }}
-            onClick={(event) => event.stopPropagation()}
+            timeout={{ exit: 1000 }}
           >
-            <MobileControls
-              showTime={player != null && duration != null}
-              displayTime={displayTime}
-              duration={duration}
-              startAt={startAt}
-              endAt={endAt}
-              progress={progress}
-              handleSeek={handleSeek}
-              disableProgress={!player.hasStarted_}
-              showFullscreenButton={variant !== 'embed' || isIPhone()}
-              fullscreen={fullscreen}
-              handleFullscreen={handleFullscreen}
-              handleToggleStats={handleToggleStats}
-              player={player}
-              source={source}
-            />
-            <DesktopControls
-              playing={state.playing}
-              handlePlay={handlePlay}
-              showTime={player != null && duration != null}
-              displayTime={displayTime}
-              duration={duration}
-              startAt={startAt}
-              endAt={endAt}
-              progress={progress}
-              handleSeek={handleSeek}
-              volume={volume}
-              handleVolume={handleVolume}
-              muted={state.muted}
-              handleMute={handleMute}
-              playerMuted={player.muted() ?? false}
-              showFullscreenButton={variant !== 'embed' || isIPhone()}
-              fullscreen={fullscreen}
-              handleFullscreen={handleFullscreen}
-              handleToggleStats={handleToggleStats}
-              player={player}
-              source={source}
-            />
-          </Container>
-        </Fade>
-      </Stack>
-    </Box>
+            <Container
+              data-testid="vjs-jfp-custom-controls"
+              maxWidth="xxl"
+              sx={{
+                zIndex: 1,
+                transitionDelay: visible ? undefined : '0.5s',
+                pb: {
+                  xs: showHeaderFooter || isYoutube ? 28 : 2,
+                  sm: showHeaderFooter || isYoutube ? 15 : 2,
+                  lg: 2
+                },
+                position: 'absolute',
+                bottom: 0
+              }}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <MobileControls
+                showTime={player != null && duration != null}
+                displayTime={displayTime}
+                duration={duration}
+                startAt={startAt}
+                endAt={endAt}
+                progress={progress}
+                handleSeek={handleSeek}
+                disableProgress={!player.hasStarted_}
+                showFullscreenButton={variant !== 'embed' || isIPhone()}
+                fullscreen={fullscreen}
+                handleFullscreen={handleFullscreen}
+                handleToggleStats={handleToggleStats}
+                player={player}
+                source={source}
+              />
+              <DesktopControls
+                playing={state.playing}
+                handlePlay={handlePlay}
+                showTime={player != null && duration != null}
+                displayTime={displayTime}
+                duration={duration}
+                startAt={startAt}
+                endAt={endAt}
+                progress={progress}
+                handleSeek={handleSeek}
+                volume={volume}
+                handleVolume={handleVolume}
+                muted={state.muted}
+                handleMute={handleMute}
+                playerMuted={player.muted() ?? false}
+                showFullscreenButton={variant !== 'embed' || isIPhone()}
+                fullscreen={fullscreen}
+                handleFullscreen={handleFullscreen}
+                handleToggleStats={handleToggleStats}
+                player={player}
+                source={source}
+              />
+            </Container>
+          </Fade>
+        </Stack>
+      </Box>
+    </>
   )
 }

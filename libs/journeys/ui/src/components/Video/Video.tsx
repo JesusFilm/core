@@ -45,21 +45,6 @@ const VIDEO_FOREGROUND_COLOR = '#FFF'
 
 const StyledVideo = styled('video')(() => ({}))
 
-const StyledVideoGradient = styled(Box)`
-  width: 100%;
-  height: 25%;
-  position: absolute;
-  bottom: 0;
-  z-index: 1;
-  /* @noflip */
-  background: linear-gradient(
-    to top,
-    #000000a6 0%,
-    #00000080 15%,
-    #00000000 95%
-  );
-`
-
 export function Video({
   id: blockId,
   mediaVideo,
@@ -86,6 +71,8 @@ export function Video({
   const [player, setPlayer] = useState<VideoJsPlayer>()
   const [showPoster, setShowPoster] = useState(true)
   const [activeStep, setActiveStep] = useState(false)
+  const [active, setActive] = useState(true)
+  const [visible, setVisible] = useState(false)
 
   const { blockHistory } = useBlocks()
   const { variant } = useJourney()
@@ -229,7 +216,6 @@ export function Video({
 
       {videoId != null ? (
         <>
-          <StyledVideoGradient />
           <Box
             height={{
               xs: isFillAndNotYoutube() ? hundredVh : '100%',
