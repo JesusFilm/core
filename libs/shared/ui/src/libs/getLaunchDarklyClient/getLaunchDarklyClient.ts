@@ -2,18 +2,6 @@ import { LDClient, LDUser, init } from '@launchdarkly/node-server-sdk'
 
 let launchDarklyClient: LDClient
 
-const createStubClient = (): LDClient => {
-  return {
-    waitForInitialization: async () => Promise.resolve(),
-    identify: (user: LDUser) => ({}),
-    allFlagsState: () => ({
-      valid: false,
-      allValues: {},
-      toJSON: () => ({})
-    })
-  } as unknown as LDClient
-}
-
 /**
  * This requires the LAUNCH_DARKLY_SDK_KEY environment variable to be set.
  * @returns a LaunchDarkly server-side client as a singleton, or a stub client if initialization fails or times out.
@@ -42,6 +30,17 @@ export async function getLaunchDarklyClient(user?: LDUser): Promise<LDClient> {
       'LaunchDarkly client initiation failed or timed out, using stub client:',
       error
     )
-    return createStubClient()
+
+    const stubClient = {
+      waitForInitialization: async () => Promise.resolve(),
+      identify: (user: LDUser) => ({}),
+      allFlagsState: () => ({
+        valid: false,
+        allValues: {},
+        toJSON: () => ({})
+      })
+    } as unknown as LDClient
+
+    return stubClient
   }
 }
