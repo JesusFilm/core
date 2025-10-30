@@ -395,66 +395,82 @@ export function VideoControls({
         )}
 
         <Fade
-          in
-          style={{ transitionDuration: '500ms' }}
-          timeout={{ exit: 3000 }}
+          in={visible}
+          style={{
+            transitionDelay: visible ? undefined : '2s',
+            transitionDuration: '225ms'
+          }}
+          timeout={{ exit: 2225 }}
         >
-          {/* Mobile and Desktop Video Controls */}
-          <Container
-            data-testid="vjs-jfp-custom-controls"
-            maxWidth="xxl"
-            sx={{
-              zIndex: 1,
-              transitionDelay: visible ? undefined : '0.5s',
-              pb: {
-                xs: showHeaderFooter || isYoutube ? 28 : 2,
-                sm: showHeaderFooter || isYoutube ? 15 : 2,
-                lg: 2
-              },
-              position: 'absolute',
-              bottom: 0
-            }}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <MobileControls
-              showTime={player != null && duration != null}
-              displayTime={displayTime}
-              duration={duration}
-              startAt={startAt}
-              endAt={endAt}
-              progress={progress}
-              handleSeek={handleSeek}
-              disableProgress={!player.hasStarted_}
-              showFullscreenButton={variant !== 'embed' || isIPhone()}
-              fullscreen={fullscreen}
-              handleFullscreen={handleFullscreen}
-              handleToggleStats={handleToggleStats}
-              player={player}
-              source={source}
+          <Box sx={{ position: 'relative', height: '100%', width: '100%' }}>
+            <Box
+              sx={{
+                width: '100%',
+                height: '25%',
+                position: 'absolute',
+                bottom: -1,
+                zIndex: 1,
+                background:
+                  'linear-gradient(to top, #000000a6 0%, #00000080 15%, #00000000 95%)'
+              }}
             />
-            <DesktopControls
-              playing={state.playing}
-              handlePlay={handlePlay}
-              showTime={player != null && duration != null}
-              displayTime={displayTime}
-              duration={duration}
-              startAt={startAt}
-              endAt={endAt}
-              progress={progress}
-              handleSeek={handleSeek}
-              volume={volume}
-              handleVolume={handleVolume}
-              muted={state.muted}
-              handleMute={handleMute}
-              playerMuted={player.muted() ?? false}
-              showFullscreenButton={variant !== 'embed' || isIPhone()}
-              fullscreen={fullscreen}
-              handleFullscreen={handleFullscreen}
-              handleToggleStats={handleToggleStats}
-              player={player}
-              source={source}
-            />
-          </Container>
+            {/* Mobile and Desktop Video Controls */}
+            <Container
+              data-testid="vjs-jfp-custom-controls"
+              maxWidth="xxl"
+              sx={{
+                zIndex: 1,
+                transitionDelay: visible ? undefined : '0.5s',
+                pb: {
+                  xs: showHeaderFooter || isYoutube ? 28 : 2,
+                  sm: showHeaderFooter || isYoutube ? 15 : 2,
+                  lg: 2
+                },
+                position: 'absolute',
+                bottom: 0
+              }}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <MobileControls
+                showTime={player != null && duration != null}
+                displayTime={displayTime}
+                duration={duration}
+                startAt={startAt}
+                endAt={endAt}
+                progress={progress}
+                handleSeek={handleSeek}
+                disableProgress={!player.hasStarted_}
+                showFullscreenButton={variant !== 'embed' || isIPhone()}
+                fullscreen={fullscreen}
+                handleFullscreen={handleFullscreen}
+                handleToggleStats={handleToggleStats}
+                player={player}
+                source={source}
+              />
+              <DesktopControls
+                playing={state.playing}
+                handlePlay={handlePlay}
+                showTime={player != null && duration != null}
+                displayTime={displayTime}
+                duration={duration}
+                startAt={startAt}
+                endAt={endAt}
+                progress={progress}
+                handleSeek={handleSeek}
+                volume={volume}
+                handleVolume={handleVolume}
+                muted={state.muted}
+                handleMute={handleMute}
+                playerMuted={player.muted() ?? false}
+                showFullscreenButton={variant !== 'embed' || isIPhone()}
+                fullscreen={fullscreen}
+                handleFullscreen={handleFullscreen}
+                handleToggleStats={handleToggleStats}
+                player={player}
+                source={source}
+              />
+            </Container>
+          </Box>
         </Fade>
       </Stack>
     </Box>
