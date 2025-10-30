@@ -124,6 +124,7 @@ interface GoogleSheetsSyncIntegration {
 interface GoogleSheetsSyncItem {
   id: string
   spreadsheetId: string | null
+  sheetName: string | null
   createdAt: string
   integration: GoogleSheetsSyncIntegration | null
 }
@@ -201,10 +202,17 @@ export function ExportDialog({
   async function handleOpenDrivePicker(
     mode: 'folder' | 'sheet'
   ): Promise<void> {
+    const shouldReopenGoogleDialog = googleDialogOpen
+
     try {
+      if (shouldReopenGoogleDialog) {
+        setGoogleDialogOpen(false)
+      }
+
       const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY
       if (apiKey == null || apiKey === '') {
         enqueueSnackbar(t('Missing Google API key'), { variant: 'error' })
+        if (shouldReopenGoogleDialog) setGoogleDialogOpen(true)
         return
       }
       // Use selected integration token only
@@ -212,6 +220,7 @@ export function ExportDialog({
         enqueueSnackbar(t('Select an integration account first'), {
           variant: 'error'
         })
+        if (shouldReopenGoogleDialog) setGoogleDialogOpen(true)
         return
       }
       let oauthToken: string | undefined | null
@@ -226,6 +235,7 @@ export function ExportDialog({
         enqueueSnackbar(t('Unable to authorize Google Picker'), {
           variant: 'error'
         })
+        if (shouldReopenGoogleDialog) setGoogleDialogOpen(true)
         return
       }
 
@@ -254,6 +264,13 @@ export function ExportDialog({
               }
             }
           }
+
+          if (
+            pickerData?.action === googleAny.picker.Action.PICKED ||
+            pickerData?.action === googleAny.picker.Action.CANCEL
+          ) {
+            if (shouldReopenGoogleDialog) setGoogleDialogOpen(true)
+          }
         })
         .build()
 
@@ -262,6 +279,7 @@ export function ExportDialog({
       elevatePickerZIndexWithRetries()
     } catch (err) {
       enqueueSnackbar(t('Failed to open Google Picker'), { variant: 'error' })
+      if (shouldReopenGoogleDialog) setGoogleDialogOpen(true)
     }
   }
 
@@ -618,10 +636,13 @@ export function ExportDialog({
                 <TableHead>
                   <TableRow>
                     <TableCell>{t('Sheet ID')}</TableCell>
-                    <TableCell>{t('Sync start')}</TableCell>
-                    <TableCell>{t('Started by')}</TableCell>
-                    <TableCell>{t('Status')}</TableCell>
-                    <TableCell align="right">{t('Actions')}</TableCell>
+                    <TableCell>{t('Tab Name')}</TableCell>
+                    <TableCell sx={{ width: 120 }}>{t('Sync Start')}</TableCell>
+                    <TableCell>{t('Started By')}</TableCell>
+                    <TableCell sx={{ width: 120 }}>{t('Status')}</TableCell>
+                    <TableCell sx={{ width: 80 }} align="right">
+                      {t('Actions')}
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -662,16 +683,37 @@ export function ExportDialog({
                               </Typography>
                             </Tooltip>
                           </TableCell>
-                          <TableCell>{formattedDate}</TableCell>
-                          <TableCell>{startedBy}</TableCell>
                           <TableCell>
+                            <Tooltip
+                              title={sync.sheetName ?? ''}
+                              arrow
+                              placement="top"
+                            >
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  maxWidth: 200,
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis'
+                                }}
+                              >
+                                {sync.sheetName ?? 'N/A'}
+                              </Typography>
+                            </Tooltip>
+                          </TableCell>
+                          <TableCell sx={{ width: 120 }}>
+                            {formattedDate}
+                          </TableCell>
+                          <TableCell>{startedBy}</TableCell>
+                          <TableCell sx={{ width: 120 }}>
                             <Chip
                               label={t('Active')}
                               color="success"
                               size="small"
                             />
                           </TableCell>
-                          <TableCell align="right">
+                          <TableCell sx={{ width: 80 }} align="right">
                             <IconButton
                               aria-label={t('Delete sync')}
                               color="error"
@@ -823,7 +865,9 @@ export function ExportDialog({
                 variant="outlined"
                 onClick={() => handleOpenDrivePicker('folder')}
               >
-                {folderId ? t('Folder selected') : t('Choose folder')}
+                {folderId
+                  ? t('Folder selected')
+                  : t('Choose Folder (optional)')}
               </Button>
             ) : (
               <Button
@@ -832,7 +876,7 @@ export function ExportDialog({
               >
                 {existingSpreadsheetId
                   ? t('Spreadsheet selected')
-                  : t('Choose spreadsheet')}
+                  : t('Choose Spreadsheet')}
               </Button>
             )}
           </Box>
