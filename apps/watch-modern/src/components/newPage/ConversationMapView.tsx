@@ -15,26 +15,57 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null)
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [localMessageContent, setLocalMessageContent] = useState<string>('')
+  const [animatingScriptureId, setAnimatingScriptureId] = useState<string | null>(null)
+  const [showMessageBubble, setShowMessageBubble] = useState<boolean>(false)
+
+  // Animation constants
+  const ANIMATION_DURATION = 300 // ms - bounce animation duration
+  const ANIMATION_DELAY = 250 // ms - delay before hiding animating block
+  const BOUNCE_DISTANCE = 300 // px - how far the block bounces down
+  const BOUNCE_SCALE = 0.95 // scale factor during bounce
+  const BOUNCE_TIMING = 'cubic-bezier(0.68, -0.55, 0.265, 1.55)' // bounce easing function
+  const DISSOLVE_OPACITY = 0.3 // opacity for dissolving other blocks
+  const DISSOLVE_DURATION = 100 // ms - dissolve transition duration
+  const MESSAGE_FADE_DURATION = 500 // ms - message bubble fade duration
+const MESSAGE_DELAY = 150 // ms - delay before message bubble appears
 
   useEffect(() => {
     setSelectedScriptureOptions({})
     setCopiedMessageId(null)
     setEditingMessageId(null)
     setLocalMessageContent('')
+    setAnimatingScriptureId(null)
+    setShowMessageBubble(false)
   }, [map])
 
   const handleScriptureSelect = useCallback((stepIndex: number, verseId: string | null) => {
-    setSelectedScriptureOptions((previousSelections) => {
-      const nextSelections = { ...previousSelections }
+    if (verseId) {
+      // Start animation when selecting
+      const scriptureId = `scripture-${stepIndex}-${verseId.split('-').pop()}`
+      setAnimatingScriptureId(scriptureId)
 
-      if (verseId) {
-        nextSelections[stepIndex] = verseId
-      } else {
+      // After animation starts, update selection state and show message bubble
+      setTimeout(() => {
+        setSelectedScriptureOptions((previousSelections) => ({
+          ...previousSelections,
+          [stepIndex]: verseId
+        }))
+        setAnimatingScriptureId(null)
+
+        // Show message bubble with bounce animation after dissolve completes
+        setTimeout(() => {
+          setShowMessageBubble(true)
+        }, MESSAGE_DELAY + DISSOLVE_DURATION)
+      }, ANIMATION_DELAY) // Wait for animation to complete
+    } else {
+      // When deselecting, just update state immediately
+      setSelectedScriptureOptions((previousSelections) => {
+        const nextSelections = { ...previousSelections }
         delete nextSelections[stepIndex]
-      }
-
-      return nextSelections
-    })
+        return nextSelections
+      })
+      setShowMessageBubble(false)
+    }
   }, [])
 
   const handleCopyMessage = useCallback(
@@ -166,16 +197,36 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                 className="hidden sm:block absolute left-[9px] top-1.5 h-4 w-4 rounded-full border-4 border-background bg-primary shadow"
               />
 
-              <header className="mb-8 space-y-1">
-                <div className="text-md leading-tight uppercase tracking-wide text-muted-foreground">
-                  Step {index + 1}:<br />
-                  <span className="text-xl text-foreground normal-case font-semibold">
-                    {step.title}
-                  </span>
+              <header className="relative mb-6 sm:mb-2">
+                <div className="flex items-start gap-3">
+                  <span className="hidden" aria-hidden />
+                  <div className="relative w-full max-w-[400px] rounded-none bg-transparent p-0 text-amber-900 shadow-none ring-0">
+                    <span aria-hidden className="hidden" />
+                    <div className="space-y-3">
+                      <span className="text-[0.65rem] font-semibold uppercase tracking-[0.35em] text-primary/90">
+                        Step {index + 1}
+                      </span>
+                      <div className="space-y-3">
+                        <h3 className="text-lg font-semibold leading-snug text-foreground md:text-xl">
+                          {step.title}
+                        </h3>
+                        {step.purpose && (
+                          <p className="whitespace-pre-line text-sm leading-relaxed text-amber-900/80 md:text-base">
+                            {step.purpose}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                {step.purpose && (
-                  <p className="text-sm text-muted-foreground">{step.purpose}</p>
-                )}
+                <div className="absolute opacity-20 -bottom-25 left-[-500%] xs:left-[-5%] sm:left-[5%] md:left-[20%] lg:left-[35%]">
+                  <img
+                    src={`/arrow${(index % 4) + 1}.svg`}
+                    alt=""
+                    className="w-28 h-28"
+                    aria-hidden="true"
+                  />
+                </div>
               </header>
 
               <div className="space-y-6">
@@ -241,7 +292,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                     className={`space-y-3 overflow-hidden transition-all duration-500 ease-in-out ${
                       selectedScriptureOption
                         ? 'max-h-0 opacity-0 -translate-y-2 pointer-events-none'
-                        : 'max-h-[999px] opacity-100 translate-y-0'
+                        : 'max-h-[2999px] opacity-100 translate-y-0'
                     }`}
                     aria-hidden={Boolean(selectedScriptureOption)}
                   >
@@ -250,17 +301,25 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                       Scripture Options
                     </div>
 
-                    <div className="space-y-8">
+                    <div className="space-y-6">
                       <h3 className="text-lg font-semibold text-foreground">
                         Prayerfully select the bible verse to use
                       </h3>
 
-                      {scriptureSlides.map((slide, slideIndex) => {
-                        const isSelected = selectedScriptureOption === slide.verseId
+                      <div className="columns-1 sm:columns-2 lg:columns-3 gap-[1.5rem] space-y-0">
+                        {scriptureSlides.map((slide, slideIndex) => {
+                          const isSelected = selectedScriptureOption === slide.verseId
 
-                        return (
-                          <div key={`scripture-option-${index}-${slide.optionIndex}`}>
-                            <div className="flex w-full items-start gap-4">
+                          const isAnimating = animatingScriptureId === slide.verseId
+                          const hasActiveAnimation = animatingScriptureId !== null
+
+                          return (
+                            <div
+                              key={`scripture-option-${index}-${slide.optionIndex}`}
+                              className={`break-inside-avoid min-w-0 mb-6 transition-opacity duration-100 ${
+                                hasActiveAnimation && !isAnimating ? `opacity-30 pointer-events-none` : 'opacity-100'
+                              }`}
+                            >
                               <button
                                 type="button"
                                 onClick={() =>
@@ -268,77 +327,55 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                                     ? handleScriptureSelect(index, null)
                                     : handleScriptureSelect(index, slide.verseId)
                                 }
-                                className={`flex items-center justify-center w-5 h-5 mt-2 rounded-full cursor-pointer transition-all duration-200 flex-shrink-0 group/checkbox ${
-                                  isSelected
-                                    ? 'bg-primary border-2 border-primary text-primary-foreground hover:bg-red-500 hover:border-red-500 hover:text-white'
-                                    : 'border-2 border-muted-foreground/40 hover:border-primary'
-                                }`}
-                                title={isSelected ? 'Reset selection' : 'Select verse'}
-                              >
-                                {isSelected ? (
-                                  <div className="relative">
-                                    <Check className="w-3 h-3 opacity-100 group-hover/checkbox:opacity-0 transition-opacity duration-200" />
-                                    <X className="w-3 h-3 absolute inset-0 opacity-0 group-hover/checkbox:opacity-100 transition-opacity duration-200" />
-                                  </div>
-                                ) : null}
-                              </button>
-
-                              <button
-                                type="button"
-                                onClick={() => handleScriptureSelect(index, slide.verseId)}
-                                className={`flex-1 text-left cursor-pointer transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary group ${
-                                  isSelected
-                                    ? 'rounded-2xl'
-                                    : 'rounded-2xl border-2 border-transparent'
+                                className={`group relative block w-full max-w-full p-8 box-border cursor-pointer overflow-hidden rounded-3xl border-2 text-left hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                                  isAnimating
+                                    ? `bg-[#098CFF] text-white shadow-xl border-transparent transform translate-y-[300px] scale-95 pointer-events-none transition-all duration-300 cubic-bezier(0.68, -0.55, 0.265, 1.55)`
+                                    : isSelected
+                                    ? 'bg-[#098CFF] text-white shadow-xl border-transparent'
+                                    : 'border-border hover:border-transparent hover:-translate-y-1 hover:shadow-lg'
                                 }`}
                                 aria-pressed={isSelected}
+                                aria-label={`Select scripture option ${slideIndex + 1}`}
                               >
-                                <div className="flex w-full items-start gap-4">
-                                  <div className="flex flex-1 flex-col lg:flex-row gap-2">
-                                    {slide.hasVerseContent && (
-                                      <div className="flex justify-start lg:flex-1">
-                                        <div className="relative w-full max-w-[500px]">
-                                          <div className="flex flex-col gap-2">
-                                            <div className="text-lg font-semibold leading-[1.25] whitespace-pre-line text-foreground">
-                                              {slide.verseText}
-                                            </div>
-                                            {slide.verseReference && (
-                                              <div className="text-sm font-regular text-muted-foreground">
-                                                {slide.verseReference}
-                                              </div>
-                                            )}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    )}
 
-                                    {slide.hasWhy && (
-                                      <div className="mt-2 lg:flex-1 lg:flex lg:items-start lg:justify-end">
-                                        <p className="text-sm text-stone-500 leading-relaxed lg:max-w-[300px]">
-                                          <ArrowUp className="inline w-3 h-3 mr-1 mb-0.5 md:hidden" />
-                                          <ArrowLeft className="hidden w-3 h-3 mr-1 mb-0.5 md:inline" />
-                                          {slide.whyText}
+                                <div className="space-y-4 min-w-0">
+                                  {slide.hasVerseContent && (
+                                    <div className="space-y-3">
+                                      <p className={`text-lg font-medium leading-relaxed ${(isSelected || isAnimating) ? 'text-white' : 'text-stone-800'}`}>
+                                        {slide.verseText}
+                                      </p>
+                                      {slide.verseReference && (
+                                        <p className={`text-sm font-medium uppercase tracking-wide ${(isSelected || isAnimating) ? 'text-white' : 'text-stone-500'}`}>
+                                          {slide.verseReference}
                                         </p>
+                                      )}
+                                    </div>
+                                  )}
+
+                                  {slide.hasWhy && (
+                                    <div className={`relative -rotate-[0.6deg] overflow-hidden pt-5 text-sm leading-relaxed border-t ${(isSelected || isAnimating) ? 'text-white border-white/20' : 'text-amber-900 border-stone-400/20'}`}>
+
+                                      <div className={`flex items-center gap-2 text-[0.65rem] font-semibold uppercase tracking-[0.3em] ${(isSelected || isAnimating) ? 'text-white' : 'text-amber-700'}`}>
+                                         <ArrowUp className={`h-3.5 w-3.5 ${(isSelected || isAnimating) ? 'text-white' : 'text-amber-500'}`} />
+
                                       </div>
-                                    )}
-                                  </div>
+                                      <p className={`mt-3 text-sm leading-relaxed ${(isSelected || isAnimating) ? 'text-white' : 'text-amber-900'}`}>
+                                        {slide.whyText}
+                                      </p>
+                                    </div>
+                                  )}
                                 </div>
                               </button>
                             </div>
-
-                            {/* Horizontal divider between items */}
-                            {slideIndex < scriptureSlides.length - 1 && (
-                              <div className="w-full h-px bg-border my-4" />
-                            )}
-                          </div>
-                        )
-                      })}
+                          )
+                        })}
+                      </div>
                     </div>
                   </div>
                 ) : null}
 
-                {selectedScriptureOption && (
-                  <div className="space-y-3">
+                {selectedScriptureOption && showMessageBubble && (
+                  <div className={`space-y-3`}>
                     {scriptureSlides
                       .filter((slide) => slide.verseId === selectedScriptureOption)
                       .map((slide) => {
@@ -352,8 +389,8 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                                 You selected
                               </span>
                             </div>
-                            <div className="flex justify-start">
-                              <div className="relative w-full max-w-[400px] rounded-2xl bg-[#098CFF] text-white shadow-xl group">
+                            <div className="flex justify-end">
+                              <div className="relative w-full max-w-[400px] rounded-2xl bg-[#098CFF] text-white shadow-xl group animate-in fade-in slide-in-from-top-4 duration-1000">
                                 <Button
                                   type="button"
                                   variant="ghost"
@@ -382,7 +419,7 @@ export const ConversationMapView = memo(({ map }: ConversationMapViewProps) => {
                                 </Button>
                                 <span
                                   aria-hidden="true"
-                                  className="absolute left-3 -bottom-1 h-3 w-3 rotate-45 bg-[#098CFF]"
+                                  className="absolute right-3 -bottom-1 h-3 w-3 rotate-45 bg-[#098CFF]"
                                 />
                                 <AutoResizeTextarea
                                   value={

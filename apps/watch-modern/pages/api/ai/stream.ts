@@ -2,7 +2,6 @@ import { createOpenAI } from '@ai-sdk/openai'
 import {
   type CoreMessage,
   type LanguageModelUsage,
-  convertToCoreMessages,
   streamObject
 } from 'ai'
 import type { NextApiRequest, NextApiResponse } from 'next'
@@ -73,11 +72,21 @@ const ensureMessages = (rawMessages: unknown): CoreMessage[] => {
   }
 
   try {
-    return convertToCoreMessages(rawMessages)
+    // Validate and cast messages to CoreMessage format
+    // AI SDK expects messages with role and content properties
+    return rawMessages.map((msg: any) => {
+      if (!msg.role || !msg.content) {
+        throw new Error(`Message missing required fields: ${JSON.stringify(msg)}`)
+      }
+      if (typeof msg.content !== 'string') {
+        throw new Error(`Message content must be a string: ${JSON.stringify(msg)}`)
+      }
+      return msg as CoreMessage
+    })
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Unable to normalize messages.'
-    throw new Error(message)
+    throw new Error(`${message} - Raw input: ${JSON.stringify(rawMessages)}`)
   }
 }
 
