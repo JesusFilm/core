@@ -49,7 +49,8 @@ const MuxVideo = builder.prismaObject('MuxVideo', {
     }),
     readyToStream: t.exposeBoolean('readyToStream', { nullable: false }),
     downloadable: t.exposeBoolean('downloadable', { nullable: false }),
-    videoVariants: t.relation('videoVariants', { nullable: false })
+    videoVariants: t.relation('videoVariants', { nullable: false }),
+    subtitles: t.relation('subtitles', { nullable: false })
   })
 })
 

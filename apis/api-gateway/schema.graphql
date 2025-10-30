@@ -2442,6 +2442,7 @@ type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId
   readyToStream: Boolean! @join__field(graph: API_MEDIA) 
   downloadable: Boolean! @join__field(graph: API_MEDIA) 
   videoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
+  subtitles: [MuxSubtitleTrack!]! @join__field(graph: API_MEDIA) 
 }
 
 type Subscription @join__type(graph: API_JOURNEYS_MODERN)  {

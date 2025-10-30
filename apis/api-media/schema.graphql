@@ -482,6 +482,7 @@ type MuxVideo
   readyToStream: Boolean!
   downloadable: Boolean!
   videoVariants: [VideoVariant!]!
+  subtitles: [MuxSubtitleTrack!]!
 }
 
 type NotFoundError implements BaseError
