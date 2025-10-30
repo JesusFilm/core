@@ -54,7 +54,7 @@ export function SubtitleMenu({
         }}
       >
         {t('Off')}
-        {!hasSubtitles && <CheckIcon fontSize="small" sx={{ ml: 1 }} />}
+        {!activeYoutubeTrack && <CheckIcon fontSize="small" sx={{ ml: 1 }} />}
       </MenuItem>
       {!hasSubtitles && (
         <MenuItem disabled>{t('No subtitles available')}</MenuItem>
