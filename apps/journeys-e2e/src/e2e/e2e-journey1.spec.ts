@@ -1,6 +1,5 @@
-/* eslint-disable playwright/expect-expect */
 import { test, devices } from '@playwright/test'
-import { PreviewScreenPage } from '@pages/preview-screen-action'
+import { PreviewScreenPage } from '../pages/preview-screen-action'
 
 test.use({
   ...devices['Pixel 5'],

@@ -22,27 +22,29 @@ test('journeys', async ({ page }) => {
   await expect(targetPage).toHaveURL(/.*fact-or-fiction/)
   // Test Fact or Fiction screen
   await expect(
-    page
+    targetPage
       .getByRole('heading', { name: 'Fact or Fiction' })
-      .and(page.getByTestId('JourneysTypography'))
+      .and(targetPage.getByTestId('JourneysTypography'))
   ).toBeInViewport()
-  await page.getByRole('button', { name: 'Explore Now' }).click()
+  await targetPage.getByRole('button', { name: 'Explore Now' }).click()
   // Test Video Screen
-  await page.getByTestId('ConductorNavigationButtonNext').click()
+  await targetPage.getByTestId('ConductorNavigationButtonNext').click()
   // Test Can we trust the story of Jesus? screen
   await expect(
-    page.getByText('Can we trust the story of Jesus?')
+    targetPage.getByText('Can we trust the story of Jesus?')
   ).toBeInViewport()
-  await page.getByText('Yes, it’s a true story 👍').click()
+  await targetPage.getByText('Yes, it’s a true story 👍').click()
   // Test Video Screen
-  await page.getByTestId('JourneysVideoControls').click()
-  await page.getByTestId('ConductorNavigationButtonNext').click()
+  await targetPage.getByTestId('JourneysVideoControls').click()
+  await targetPage.getByTestId('ConductorNavigationButtonNext').click()
   // Test Jesus in History screen
-  await expect(page.getByText('Jesus in History')).toBeInViewport()
-  await page.getByText('One question remains', { exact: false }).click()
+  await expect(targetPage.getByText('Jesus in History')).toBeInViewport()
+  await targetPage
+    .getByText('One question remains', { exact: false })
+    .click()
   // Test Who was this Jesus? screen
-  await expect(page.getByText('Who was this Jesus?')).toBeInViewport()
-  await page.getByText('The Son of God').click()
+  await expect(targetPage.getByText('Who was this Jesus?')).toBeInViewport()
+  await targetPage.getByText('The Son of God').click()
   // Test navigation to next journey
-  await expect(page).toHaveURL(/.*what-about-the-resurrection/)
+  await expect(targetPage).toHaveURL(/.*what-about-the-resurrection/)
 })
