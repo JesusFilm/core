@@ -402,8 +402,12 @@ export function VideoControls({
           }}
           timeout={{ exit: 2225 }}
         >
-          <Box sx={{ position: 'relative', height: '100%', width: '100%' }}>
+          <Box
+            sx={{ position: 'relative', height: '100%', width: '100%' }}
+            data-testid="VideoControlsContainer"
+          >
             <Box
+              data-testid="VideoControlsGradient"
               sx={{
                 width: '100%',
                 height: '25%',
