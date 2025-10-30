@@ -1,5 +1,15 @@
 import { LDClient, LDUser, init } from '@launchdarkly/node-server-sdk'
 
+const stubClient = {
+  waitForInitialization: async () => Promise.resolve(),
+  identify: (user: LDUser) => ({}),
+  allFlagsState: () => ({
+    valid: false,
+    allValues: {},
+    toJSON: () => ({})
+  })
+} as unknown as LDClient
+
 let launchDarklyClient: LDClient
 
 /**
@@ -30,16 +40,6 @@ export async function getLaunchDarklyClient(user?: LDUser): Promise<LDClient> {
       'LaunchDarkly client initiation failed or timed out, using stub client:',
       error
     )
-
-    const stubClient = {
-      waitForInitialization: async () => Promise.resolve(),
-      identify: (user: LDUser) => ({}),
-      allFlagsState: () => ({
-        valid: false,
-        allValues: {},
-        toJSON: () => ({})
-      })
-    } as unknown as LDClient
 
     return stubClient
   }
