@@ -44,7 +44,7 @@ builder.mutationField('luminaAgentCreate', (t) =>
   })
 )
 
-builder.mutationField('luminaUpdateAgent', (t) =>
+builder.mutationField('luminaAgentUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'Agent',
     errors: {

@@ -1,0 +1,482 @@
+extend schema
+  @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
+
+interface BaseError {
+  message: String
+}
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
+"""
+scalar DateTimeISO
+
+type Error implements BaseError
+  @shareable
+{
+  message: String
+}
+
+type ForbiddenError implements BaseError
+  @shareable
+{
+  message: String
+
+  """The arguments that caused the forbidden error"""
+  location: [ForbiddenErrorLocation!]
+}
+
+type ForbiddenErrorLocation {
+  """An array describing the path in the arguments that caused this error"""
+  path: [String!]
+
+  """The value that was provided at the path"""
+  value: String
+}
+
+type ForeignKeyConstraintError implements BaseError
+  @shareable
+{
+  message: String
+
+  """The arguments that caused the foriegn key constraint violation"""
+  location: [ForeignKeyConstraintErrorLocation!]
+}
+
+type ForeignKeyConstraintErrorLocation {
+  """An array describing the path in the arguments that caused this error"""
+  path: [String!]
+
+  """The value that was provided at the path"""
+  value: String
+}
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar Json
+
+type LuminaAgent {
+  id: ID
+  teamId: String
+  name: String
+  description: String
+  model: String
+  systemPrompt: String
+  temperature: Float
+  maxTokens: Int
+  topP: Float
+  frequencyPenalty: Float
+  presencePenalty: Float
+  createdAt: DateTime
+  updatedAt: DateTime
+  team: LuminaTeam
+  tools: [LuminaAgentTool!]
+  widgets: [LuminaAgentWidget!]
+  websites: [LuminaAgentWebsite!]
+  apiKeys: [LuminaAgentApiKey!]
+  usage: [LuminaUsage!]
+}
+
+type LuminaAgentApiKey {
+  id: ID
+  agentId: String
+  name: String
+  key: String
+  enabled: Boolean
+  createdAt: DateTime
+  updatedAt: DateTime
+  lastUsedAt: DateTime
+  agent: LuminaAgent
+}
+
+input LuminaAgentApiKeyCreateInput {
+  agentId: ID!
+  name: String!
+}
+
+input LuminaAgentApiKeyUpdateInput {
+  name: String
+  enabled: Boolean
+}
+
+input LuminaAgentCreateInput {
+  teamId: ID!
+  name: String!
+  description: String
+  model: String!
+  systemPrompt: String
+  temperature: Float!
+  maxTokens: Int
+  topP: Float
+  frequencyPenalty: Float
+  presencePenalty: Float
+}
+
+type LuminaAgentTool {
+  id: ID
+  agentId: String
+  type: String
+  name: String
+  description: String
+  parameters: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  agent: LuminaAgent
+}
+
+input LuminaAgentUpdateInput {
+  name: String
+  description: String
+  model: String
+  systemPrompt: String
+  temperature: Float
+  maxTokens: Int
+  topP: Float
+  frequencyPenalty: Float
+  presencePenalty: Float
+}
+
+type LuminaAgentWebsite {
+  id: ID
+  agentId: String
+  name: String
+  enabled: Boolean
+  subdomain: String
+  customDomain: String
+  metaTitle: String
+  metaDescription: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  agent: LuminaAgent
+  usage: [LuminaUsage!]
+}
+
+input LuminaAgentWebsiteCreateInput {
+  agentId: String!
+  name: String!
+  enabled: Boolean!
+  subdomain: String
+  customDomain: String
+  metaTitle: String
+  metaDescription: String
+}
+
+input LuminaAgentWebsiteUpdateInput {
+  name: String
+  enabled: Boolean
+  subdomain: String
+  customDomain: String
+  metaTitle: String
+  metaDescription: String
+}
+
+type LuminaAgentWidget {
+  id: ID
+  agentId: String
+  name: String
+  enabled: Boolean
+  position: String
+  theme: String
+  buttonText: String
+  buttonIcon: String
+  primaryColor: String
+  allowedDomains: [String!]
+  createdAt: DateTime
+  updatedAt: DateTime
+  agent: LuminaAgent
+  usage: [LuminaUsage!]
+}
+
+type LuminaBillingSubscription {
+  id: ID
+  teamId: String
+  stripeCustomerId: String
+  stripeSubscriptionId: String
+  status: String
+  currentPeriodEnd: DateTime
+  cancelAtPeriodEnd: Boolean
+  createdAt: DateTime
+  updatedAt: DateTime
+  team: LuminaTeam
+}
+
+type LuminaTeam {
+  id: ID
+  name: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  members: [LuminaTeamMember!]
+  agents: [LuminaAgent!]
+  billingSubscription: LuminaBillingSubscription
+  usage: [LuminaUsage!]
+}
+
+input LuminaTeamCreateInput {
+  name: String!
+}
+
+type LuminaTeamInvitation {
+  id: ID
+  email: String
+  role: LuminaTeamMemberRole
+  createdAt: DateTime
+  updatedAt: DateTime
+  team: LuminaTeam
+}
+
+input LuminaTeamInvitationCreateInput {
+  teamId: ID!
+  email: String!
+  role: LuminaTeamMemberRole!
+}
+
+type LuminaTeamMember {
+  id: ID
+  userId: String
+  role: LuminaTeamMemberRole
+  createdAt: DateTime
+  updatedAt: DateTime
+  team: LuminaTeam
+  user: User
+}
+
+enum LuminaTeamMemberRole {
+  OWNER
+  MANAGER
+  MEMBER
+}
+
+input LuminaTeamMemberUpdateInput {
+  role: LuminaTeamMemberRole!
+}
+
+input LuminaTeamUpdateInput {
+  name: String!
+}
+
+type LuminaUsage {
+  id: ID
+  teamId: String
+  agentId: String
+  widgetId: String
+  websiteId: String
+  apiKeyId: String
+  tokens: Int
+  costUsd: Float
+  model: String
+  provider: String
+  requestId: String
+  durationMs: Int
+  statusCode: Int
+  createdAt: DateTime
+  team: LuminaTeam
+  agent: LuminaAgent
+  widget: LuminaAgentWidget
+  website: LuminaAgentWebsite
+  apiKey: LuminaAgentApiKey
+}
+
+type Mutation {
+  luminaAgentWebsiteCreate(input: LuminaAgentWebsiteCreateInput!): MutationLuminaAgentWebsiteCreateResult
+  luminaAgentWebsiteUpdate(id: ID!, input: LuminaAgentWebsiteUpdateInput!): MutationLuminaAgentWebsiteUpdateResult
+  luminaAgentWebsiteDelete(id: ID!): MutationLuminaAgentWebsiteDeleteResult
+  luminaAgentApiKeyCreate(input: LuminaAgentApiKeyCreateInput!): MutationLuminaAgentApiKeyCreateResult
+  luminaAgentApiKeyUpdate(id: ID!, input: LuminaAgentApiKeyUpdateInput!): MutationLuminaAgentApiKeyUpdateResult
+  luminaAgentApiKeyDelete(id: ID!): MutationLuminaAgentApiKeyDeleteResult
+  luminaAgentCreate(input: LuminaAgentCreateInput!): MutationLuminaAgentCreateResult
+  luminaAgentUpdate(id: ID!, input: LuminaAgentUpdateInput!): MutationLuminaAgentUpdateResult
+  luminaAgentDelete(id: ID!): MutationLuminaAgentDeleteResult
+  luminaTeamCreate(input: LuminaTeamCreateInput!): MutationLuminaTeamCreateResult
+  luminaTeamUpdate(id: ID!, input: LuminaTeamUpdateInput!): MutationLuminaTeamUpdateResult
+  luminaTeamMemberUpdate(id: ID!, input: LuminaTeamMemberUpdateInput!): MutationLuminaTeamMemberUpdateResult
+  luminaTeamMemberPromoteOwner(id: ID!): MutationLuminaTeamMemberPromoteOwnerResult
+  luminaTeamMemberDelete(id: ID!): MutationLuminaTeamMemberDeleteResult
+  luminaTeamInvitationCreate(input: LuminaTeamInvitationCreateInput!): MutationLuminaTeamInvitationCreateResult
+  luminaTeamInvitationAccept(token: String!): MutationLuminaTeamInvitationAcceptResult
+  luminaTeamInvitationResend(id: ID!): MutationLuminaTeamInvitationResendResult
+  luminaTeamInvitationDelete(id: ID!): MutationLuminaTeamInvitationDeleteResult
+}
+
+union MutationLuminaAgentApiKeyCreateResult = ForbiddenError | NotFoundError | ZodError | MutationLuminaAgentApiKeyCreateSuccess
+
+type MutationLuminaAgentApiKeyCreateSuccess {
+  data: LuminaAgentApiKey!
+}
+
+union MutationLuminaAgentApiKeyDeleteResult = ForbiddenError | NotFoundError | MutationLuminaAgentApiKeyDeleteSuccess
+
+type MutationLuminaAgentApiKeyDeleteSuccess {
+  data: LuminaAgentApiKey!
+}
+
+union MutationLuminaAgentApiKeyUpdateResult = ForbiddenError | NotFoundError | ZodError | MutationLuminaAgentApiKeyUpdateSuccess
+
+type MutationLuminaAgentApiKeyUpdateSuccess {
+  data: LuminaAgentApiKey!
+}
+
+union MutationLuminaAgentCreateResult = ForbiddenError | MutationLuminaAgentCreateSuccess
+
+type MutationLuminaAgentCreateSuccess {
+  data: LuminaAgent!
+}
+
+union MutationLuminaAgentDeleteResult = ForbiddenError | NotFoundError | MutationLuminaAgentDeleteSuccess
+
+type MutationLuminaAgentDeleteSuccess {
+  data: LuminaAgent!
+}
+
+union MutationLuminaAgentUpdateResult = ForbiddenError | NotFoundError | ZodError | MutationLuminaAgentUpdateSuccess
+
+type MutationLuminaAgentUpdateSuccess {
+  data: LuminaAgent!
+}
+
+union MutationLuminaAgentWebsiteCreateResult = ForbiddenError | NotFoundError | ZodError | MutationLuminaAgentWebsiteCreateSuccess
+
+type MutationLuminaAgentWebsiteCreateSuccess {
+  data: LuminaAgentWebsite!
+}
+
+union MutationLuminaAgentWebsiteDeleteResult = ForbiddenError | NotFoundError | MutationLuminaAgentWebsiteDeleteSuccess
+
+type MutationLuminaAgentWebsiteDeleteSuccess {
+  data: LuminaAgentWebsite!
+}
+
+union MutationLuminaAgentWebsiteUpdateResult = ForbiddenError | NotFoundError | ZodError | MutationLuminaAgentWebsiteUpdateSuccess
+
+type MutationLuminaAgentWebsiteUpdateSuccess {
+  data: LuminaAgentWebsite!
+}
+
+union MutationLuminaTeamCreateResult = ZodError | MutationLuminaTeamCreateSuccess
+
+type MutationLuminaTeamCreateSuccess {
+  data: LuminaTeam!
+}
+
+union MutationLuminaTeamInvitationAcceptResult = ForbiddenError | NotFoundError | ZodError | MutationLuminaTeamInvitationAcceptSuccess
+
+type MutationLuminaTeamInvitationAcceptSuccess {
+  data: LuminaTeamMember!
+}
+
+union MutationLuminaTeamInvitationCreateResult = ForbiddenError | NotFoundError | ZodError | MutationLuminaTeamInvitationCreateSuccess
+
+type MutationLuminaTeamInvitationCreateSuccess {
+  data: LuminaTeamInvitation!
+}
+
+union MutationLuminaTeamInvitationDeleteResult = ForbiddenError | NotFoundError | MutationLuminaTeamInvitationDeleteSuccess
+
+type MutationLuminaTeamInvitationDeleteSuccess {
+  data: LuminaTeamInvitation!
+}
+
+union MutationLuminaTeamInvitationResendResult = ForbiddenError | NotFoundError | MutationLuminaTeamInvitationResendSuccess
+
+type MutationLuminaTeamInvitationResendSuccess {
+  data: LuminaTeamInvitation!
+}
+
+union MutationLuminaTeamMemberDeleteResult = ForbiddenError | NotFoundError | MutationLuminaTeamMemberDeleteSuccess
+
+type MutationLuminaTeamMemberDeleteSuccess {
+  data: LuminaTeamMember!
+}
+
+union MutationLuminaTeamMemberPromoteOwnerResult = ForbiddenError | NotFoundError | MutationLuminaTeamMemberPromoteOwnerSuccess
+
+type MutationLuminaTeamMemberPromoteOwnerSuccess {
+  data: LuminaTeamMember!
+}
+
+union MutationLuminaTeamMemberUpdateResult = ForbiddenError | NotFoundError | MutationLuminaTeamMemberUpdateSuccess
+
+type MutationLuminaTeamMemberUpdateSuccess {
+  data: LuminaTeamMember!
+}
+
+union MutationLuminaTeamUpdateResult = ForbiddenError | NotFoundError | ZodError | MutationLuminaTeamUpdateSuccess
+
+type MutationLuminaTeamUpdateSuccess {
+  data: LuminaTeam!
+}
+
+type NotFoundError implements BaseError
+  @shareable
+{
+  message: String
+
+  """The arguments that caused the not found error"""
+  location: [NotFoundErrorLocation!]
+}
+
+type NotFoundErrorLocation {
+  """An array describing the path in the arguments that caused this error"""
+  path: [String!]
+
+  """The value that was provided at the path"""
+  value: String
+}
+
+type NotUniqueError implements BaseError
+  @shareable
+{
+  message: String
+
+  """The arguments that caused the uniqueness violation"""
+  location: [NotUniqueErrorLocation!]
+}
+
+type NotUniqueErrorLocation {
+  """An array describing the path in the arguments that caused this error"""
+  path: [String!]
+
+  """The value that was provided at the path"""
+  value: String
+}
+
+type Query {
+  luminaTeams: [LuminaTeam!]
+  luminaTeam(id: ID!): LuminaTeam
+  luminaTeamMembers(teamId: ID!): [LuminaTeamMember!]
+}
+
+"""Team member role"""
+enum Role {
+  OWNER
+  MANAGER
+  MEMBER
+}
+
+type User
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
+}
+
+type ZodError implements BaseError
+  @shareable
+{
+  message: String
+  fieldErrors: [ZodFieldError!]!
+}
+
+type ZodFieldError {
+  message: String!
+  path: [String!]!
+}
