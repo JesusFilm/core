@@ -6,7 +6,7 @@ import {
   useTheme
 } from '@mui/material/styles'
 import Typography, { TypographyProps } from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ReactElement } from 'react'
 
 import { simpleComponentConfig } from '../../storybook'

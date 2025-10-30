@@ -1,4 +1,4 @@
-import { useApolloClient } from '@apollo/client'
+import { gql, useApolloClient, useMutation } from '@apollo/client'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -9,13 +9,32 @@ import {
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockFields_CardBlock as CardBlock } from '../../../../../__generated__/BlockFields'
+import {
+  BlockFields_CardBlock as CardBlock,
+  BlockFields_MultiselectBlock as MultiselectBlock
+} from '../../../../../__generated__/BlockFields'
 import { blockDeleteUpdate } from '../../../../libs/blockDeleteUpdate'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 
 import { setBlockRestoreEditorState } from './setBlockRestoreEditorState'
+
+export const MULTISELECT_BLOCK_UPDATE = gql`
+  mutation MultiselectBlockUpdate_DeleteFlow(
+    $id: ID!
+    $input: MultiselectBlockUpdateInput!
+  ) {
+    multiselectBlockUpdate(id: $id, input: $input) {
+      __typename
+      id
+      parentBlockId
+      parentOrder
+      min
+      max
+    }
+  }
+`
 
 export function useBlockDeleteCommand(): {
   addBlockDelete: (currentBlock: TreeBlock) => void
@@ -30,6 +49,8 @@ export function useBlockDeleteCommand(): {
   const [blockRestore] = useBlockRestoreMutation()
   const [journeyUpdate] = useJourneyUpdateMutation()
 
+  const [updateMultiselectBlock] = useMutation(MULTISELECT_BLOCK_UPDATE)
+
   function flatten(children: TreeBlock[]): TreeBlock[] {
     return children?.reduce<TreeBlock[]>((result, item) => {
       result.push(item)
@@ -38,6 +59,19 @@ export function useBlockDeleteCommand(): {
     }, [])
   }
   const client = useApolloClient()
+
+  function findBlockById(
+    root: TreeBlock | undefined,
+    targetId: string | null | undefined
+  ): TreeBlock | undefined {
+    if (root == null || targetId == null) return undefined
+    if (root.id === targetId) return root
+    for (const child of root.children ?? []) {
+      const found = findBlockById(child, targetId)
+      if (found != null) return found
+    }
+    return undefined
+  }
 
   function addBlockDelete(currentBlock: TreeBlock): void {
     if (
@@ -124,6 +158,40 @@ export function useBlockDeleteCommand(): {
             )
           }
         })
+
+        // If deleting a Multiselect option, ensure the parent Multiselect max is not above remaining options
+        if (
+          currentBlock.__typename === 'MultiselectOptionBlock' &&
+          currentBlock.parentBlockId != null
+        ) {
+          const parent = findBlockById(selectedStep, currentBlock.parentBlockId)
+          if (parent?.__typename === 'MultiselectBlock') {
+            const multiselectParent = parent as TreeBlock<MultiselectBlock>
+            const optionSiblings = (multiselectParent.children ?? []).filter(
+              (c) => c.__typename === 'MultiselectOptionBlock'
+            ).length
+            const remainingOptions = Math.max(0, optionSiblings - 1)
+            const parentMax = multiselectParent.max
+            if (parentMax != null && parentMax > remainingOptions) {
+              void updateMultiselectBlock({
+                variables: {
+                  id: multiselectParent.id,
+                  input: { max: remainingOptions }
+                },
+                optimisticResponse: {
+                  multiselectBlockUpdate: {
+                    __typename: 'MultiselectBlock',
+                    id: multiselectParent.id,
+                    parentBlockId: multiselectParent.parentBlockId ?? null,
+                    parentOrder: multiselectParent.parentOrder ?? 0,
+                    min: multiselectParent.min ?? null,
+                    max: remainingOptions
+                  }
+                }
+              })
+            }
+          }
+        }
 
         if (isMenuBlock) {
           void journeyUpdate({
