@@ -224,19 +224,19 @@ export class BasePage {
     })
   }
   async waitForFirstVideoCardToAutoNavigate() {
-    const currentCardIndex = await this.getCurrentPaginationIndex()
+    const currentCardIndex: number = await this.getCurrentPaginationIndex()
     // Wait for Auto Navigation
     const maxVideoDurationMs = 15000
-    const nextIndex = await this.autoNavigateCheck(
+    const nextIndex: number = await this.autoNavigateCheck(
       currentCardIndex,
       maxVideoDurationMs
     )
     console.log(
-      `Active Pagination index Current : ${currentCardIndex} | Next : ${nextIndex}`
+      `Active Pagination index Current : ${String(currentCardIndex)} | Next : ${String(nextIndex)}`
     )
   }
   async verifyVideoCard(maxVideoDurationMs: number = 30000) {
-    const currentIndex = await this.getCurrentPaginationIndex()
+    const currentIndex: number = await this.getCurrentPaginationIndex()
     const currentCard = await this.getCurrentCardLocator(currentIndex)
 
     try {
@@ -281,12 +281,12 @@ export class BasePage {
     }
 
     // Wait for Auto Navigation
-    const nextIndex = await this.autoNavigateCheck(
+    const nextIndex: number = await this.autoNavigateCheck(
       currentIndex,
       maxVideoDurationMs
     )
     console.log(
-      `Active Pagination index Current : ${currentIndex} | Next : ${nextIndex}`
+      `Active Pagination index Current : ${String(currentIndex)} | Next : ${String(nextIndex)}`
     )
   }
 
@@ -357,7 +357,7 @@ export class BasePage {
       )
       .not.toEqual(afterFullScreen)
 
-    if (beforeFullScreen != afterFullScreen) {
+    if (beforeFullScreen !== afterFullScreen) {
       await this.waitForvideoLoading()
       await this.page.locator(this.videoFullScreen).click()
     } else {

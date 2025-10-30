@@ -11,15 +11,11 @@ import {
   import { BasePage } from './preview-screen-page'
   
   export class PreviewScreenPage extends BasePage {
-    page: Page
     context: BrowserContext
-    test: TestType<any, any>
   
     constructor(page: Page, context: BrowserContext, test: TestType<any, any>) {
       super(page, test)
-      this.page = page
       this.context = context
-      this.test = test
     }
   
     async goto() {
@@ -197,6 +193,15 @@ import {
         const chatDomain = chatLinks.find((widgetUrl) =>
           chatUrl.includes(widgetUrl)
         )
+        // Ensure we never pass undefined into the template literal and give a helpful failure
+        if (chatDomain == null) {
+          expect
+            .soft(
+              chatDomain,
+              `Unexpected chat URL: ${chatUrl}. Allowed domains: ${chatLinks.join(', ')}`
+            )
+            .toBeDefined()
+        }
         expect
           .soft(
             chatDomain,
@@ -284,9 +289,10 @@ import {
       const termAndConditionDomain = termsAndConditionLink.find((widgetUrl) =>
         termAndConditionUrl.includes(widgetUrl)
       )
+      const domainForMsg = termAndConditionDomain ?? 'not-found'
       expect(
         termAndConditionDomain,
-        `URL from application : ${termAndConditionUrl} should be one of ${termsAndConditionLink}`
+        `URL from application : ${termAndConditionUrl} → matched: ${domainForMsg}; allowed: ${termsAndConditionLink.join(', ')}`
       ).toBeTruthy()
       newPage.close()
     }
@@ -651,7 +657,7 @@ import {
           expect
             .soft(
               color,
-              `Background Custom Video on Overlay Content in Text and Icon Color Should be White ${colorRegex}`
+              `Background Custom Video on Overlay Content in Text and Icon Color Should be White ${colorRegex.toString()}`
             )
             .toMatch(colorRegex)
         }
