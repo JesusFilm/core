@@ -8,9 +8,18 @@ test('journeys', async ({ page }) => {
   // Wait for and click the Fact or Fiction entry using a stable href-based locator
   const factOrFictionLink = page.locator('a[href="/fact-or-fiction"]')
   await expect(factOrFictionLink).toBeVisible({ timeout: 150000 })
+  // Click and handle potential new-tab navigation; fall back to same-page navigation
+  const newPageWait = page.context()
+    .waitForEvent('page', { timeout: 5000 })
+    .catch(() => null)
   await factOrFictionLink.click()
+  const newPage = await newPageWait
+  const targetPage = newPage ?? page
+  if (newPage) {
+    await newPage.waitForLoadState('domcontentloaded')
+  }
   // test that user actually navigated to the choosen journey
-  await expect(page).toHaveURL(/.*fact-or-fiction/)
+  await expect(targetPage).toHaveURL(/.*fact-or-fiction/)
   // Test Fact or Fiction screen
   await expect(
     page
