@@ -49,7 +49,7 @@ describe('MuxSubtitlesService', () => {
 
       mockGetVideo.mockResolvedValue(mockAsset as any)
       mockGetClient.mockReturnValue(mockMux)
-      mockMux.video.assets.generateSubtitles.mockResolvedValue(
+      ;(mockMux.video.assets.generateSubtitles as jest.Mock).mockResolvedValue(
         mockSubtitleResponse as any
       )
 
@@ -102,7 +102,8 @@ describe('MuxSubtitlesService', () => {
     it('should throw error when audio track exists but has no id', async () => {
       const mockAudioTrack = {
         type: 'audio',
-        language_code: 'en-US'
+        language_code: 'en-US',
+        primary: true
         // Missing id
       }
       const mockAsset = {
@@ -126,12 +127,14 @@ describe('MuxSubtitlesService', () => {
         {
           id: 'audio-track-1',
           type: 'audio',
-          language_code: 'en-US'
+          language_code: 'en-US',
+          primary: false
         },
         {
           id: 'audio-track-2',
           type: 'audio',
-          language_code: 'es-ES'
+          language_code: 'es-ES',
+          primary: true
         }
       ]
       const mockAsset = {
@@ -150,7 +153,7 @@ describe('MuxSubtitlesService', () => {
 
       mockGetVideo.mockResolvedValue(mockAsset as any)
       mockGetClient.mockReturnValue(mockMux)
-      mockMux.video.assets.generateSubtitles.mockResolvedValue(
+      ;(mockMux.video.assets.generateSubtitles as jest.Mock).mockResolvedValue(
         mockSubtitleResponse as any
       )
 
