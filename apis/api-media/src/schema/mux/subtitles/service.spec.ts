@@ -31,7 +31,7 @@ describe('MuxSubtitlesService', () => {
       const mockAudioTrack = {
         id: 'audio-track-123',
         type: 'audio',
-        language_code: 'en-US'
+        primary: true
       }
       const mockAsset = {
         tracks: [mockAudioTrack]

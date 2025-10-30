@@ -21,7 +21,7 @@ export async function createGeneratedSubtitlesByAssetId(
 ): Promise<Mux.Video.AssetGenerateSubtitlesResponse> {
   const muxAsset = await getVideo(assetId, userGenerated)
   const track = muxAsset.tracks?.find(
-    (track) => track.type === 'audio' && track.language_code === languageCode
+    (track) => track.type === 'audio' && track.primary === true
   )
   if (track == null || track.id == null)
     throw new Error('Audio track not found')
