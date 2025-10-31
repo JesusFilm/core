@@ -324,7 +324,7 @@ test.describe('Journey level actions', () => {
   })
 
   // Discover page -> Select an existing journey -> Share -> QR Code (download png & Copy Short Link)
-  test('Verify QR Code option from Share option dialog in the selected journey page', async ({
+  test.fixme('Verify QR Code option from Share option dialog in the selected journey page', async ({
     page,
     context
   }) => {

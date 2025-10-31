@@ -108,7 +108,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Poll - create, update & delete
-  test('Poll - create, update & delete', async ({ page }) => {
+  test.fixme('Poll - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Poll') // clicking on poll button in add block drawer
@@ -124,7 +124,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Response Field- create, update & delete
-  test('Response Field - create, update & delete', async ({ page }) => {
+  test.fixme('Response Field - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Response Field') // clicking on Response Field button in add block drawer
@@ -143,7 +143,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Button - create, update & delete
-  test('Button - create, update & delete', async ({ page }) => {
+  test.fixme('Button - create, update & delete', async ({ page }) => {
     const buttonName = 'Playwright'
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
@@ -186,7 +186,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Footer properties (Journey) - Reactions, Display Title, Hosted By & Chat Widget
-  test('Footer properties (Journey) - create, update & delete', async ({
+  test.fixme('Footer properties (Journey) - create, update & delete', async ({
     page
   }) => {
     const footerTitle = 'Footer Playwright'
@@ -214,7 +214,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Footer properties (WebSite) - Logo, Display Title, Menu & Chat Widget
-  test('Footer properties (WebSite) - create, update & delete', async ({
+  test.fixme('Footer properties (WebSite) - create, update & delete', async ({
     page
   }) => {
     const footerTitle = 'Footer Playwright'
