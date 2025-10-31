@@ -10,7 +10,18 @@ import { TeamsPage } from '../../pages/teams-page'
 
 let userEmail = ''
 
+/**
+ * Test suite for verifying journey-level actions in the journeys admin interface.
+ * This suite tests various journey-level operations including editing, access management,
+ * preview, duplication, and sharing functionality.
+ */
 test.describe('Journey level actions', () => {
+  /**
+   * Sets up the test environment by registering a new user account.
+   * This runs once before all tests in the suite.
+   *
+   * @param browser - Playwright browser instance
+   */
   test.beforeAll('Register new account', async ({ browser }) => {
     const page = await browser.newPage()
     const landingPage = new LandingPage(page)
@@ -22,6 +33,13 @@ test.describe('Journey level actions', () => {
     await page.close()
   })
 
+  /**
+   * Sets up the test environment before each test by navigating to the admin URL
+   * and logging in with the registered user.
+   * This ensures each test starts with a clean, consistent state.
+   *
+   * @param page - Playwright page instance
+   */
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
@@ -29,7 +47,13 @@ test.describe('Journey level actions', () => {
     await loginPage.logInWithCreatedNewUser(userEmail) // login as registered user
   })
 
-  // Discover page -> Existing journey -> Edit Details
+  /**
+   * Discover page -> Existing journey -> Edit Details
+   * Tests editing an existing journey from the journey card menu.
+   * Verifies that journey details can be edited and updated from the journey list.
+   *
+   * @param page - Playwright page instance
+   */
   test('Edit existing journey from journey card menu', async ({ page }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
@@ -44,7 +68,13 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.verifyJourneyRenamedInActiveList() // verifying the journey is renamed and updated in the journey list
   })
 
-  // Discover page -> Existing journey -> Custom Journey -> Edit details
+  /**
+   * Discover page -> Existing journey -> Custom Journey -> Edit details
+   * Tests editing an existing journey from within the custom journey page.
+   * Verifies that journey details can be edited from the journey creation/editing interface.
+   *
+   * @param page - Playwright page instance
+   */
   test('Edit existing journey from custom journey page', async ({ page }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
@@ -61,7 +91,13 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.verifyJourneyRenamedInActiveList() // verifying the journey is renamed and updated in the journey list
   })
 
-  // Discover page -> Existing journey -> Access
+  /**
+   * Discover page -> Existing journey -> Access
+   * Tests access management for an existing journey.
+   * Verifies that team members can be added to manage editors for a journey.
+   *
+   * @param page - Playwright page instance
+   */
   test('Access for existing journey', async ({ page }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
@@ -75,7 +111,14 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.clickDiaLogBoxCloseBtn() // clicking on x button at top right corner in the manage editors popup to close
   })
 
-  // Discover page -> Existing journey -> Preview
+  /**
+   * Discover page -> Existing journey -> Preview
+   * Tests previewing an existing journey.
+   * Verifies that the journey preview opens correctly in a new tab.
+   *
+   * @param page - Playwright page instance
+   * @param context - Playwright browser context instance
+   */
   test('Preview existing journey', async ({ page, context }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
@@ -87,7 +130,13 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.verifyPreviewForExistingJourney() // clicking on the preview option in three dot options and verifying the journey is loaded on the preview tab
   })
 
-  // Discover page -> Existing journey -> Duplicate
+  /**
+   * Discover page -> Existing journey -> Duplicate
+   * Tests duplicating an existing journey.
+   * Verifies that a journey can be duplicated and appears in the journey list with appropriate toast message.
+   *
+   * @param page - Playwright page instance
+   */
   test('Duplicate existing journey', async ({ page }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
@@ -100,7 +149,13 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.verifySnackBarMsg('Journey Duplicated') // verifying the toast message
   })
 
-  // Discover page -> Select an existing journey -> Three dots on top right -> Title
+  /**
+   * Discover page -> Select an existing journey -> Three dots on top right -> Title
+   * Tests the title option from the three dot menu on the selected journey page.
+   * Verifies that the journey title can be edited and updated from the journey creation page.
+   *
+   * @param page - Playwright page instance
+   */
   test('Verify title option from three dot options on top right in the selected journey page', async ({
     page
   }) => {
@@ -120,7 +175,13 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.verifyJourneyRenamedInActiveList() // verifying journey is displaying in the journey list with the entered title
   })
 
-  // Discover page -> Select an existing journey -> Three dots on top right -> Description
+  /**
+   * Discover page -> Select an existing journey -> Three dots on top right -> Description
+   * Tests the description option from the three dot menu on the selected journey page.
+   * Verifies that the journey description can be edited and updated.
+   *
+   * @param page - Playwright page instance
+   */
   test('Verify description option from three dot options on top right in the selected journey page', async ({
     page
   }) => {
@@ -142,7 +203,13 @@ test.describe('Journey level actions', () => {
     //await journeyLevelActions.verifyDescriptionAddedForSelectedJourney() // verifying the journey is displaying in the journey list with added description below the journey title
   })
 
-  // Discover page -> Select an existing journey -> Three dots on top right -> Language
+  /**
+   * Discover page -> Select an existing journey -> Three dots on top right -> Language
+   * Tests the language option from the three dot menu on the selected journey page.
+   * Verifies that the journey language can be changed and the selection persists.
+   *
+   * @param page - Playwright page instance
+   */
   test('Verify language option from three dot options on top right in the selected journey page', async ({
     page
   }) => {
@@ -166,7 +233,14 @@ test.describe('Journey level actions', () => {
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit language' popup
   })
 
-  // Discover page -> Select an existing journey -> Three dots on top right -> Copy Link
+  /**
+   * Discover page -> Select an existing journey -> Three dots on top right -> Copy Link
+   * Tests the copy link option from the three dot menu on the selected journey page.
+   * Verifies that the journey link can be copied and opens correctly when pasted.
+   *
+   * @param page - Playwright page instance
+   * @param context - Playwright browser context instance
+   */
   test('Verify copy link option from three dot options on top right in the selected journey page', async ({
     page,
     context
@@ -187,7 +261,13 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.verifyLinkIsCopied() // verifying the copied link by opening a new tab and load the copied link
   })
 
-  // Verify the user able to navigate to journey goal page
+  /**
+   * Verify the user able to navigate to journey goal page
+   * Tests navigation to the journey goal page from a selected journey.
+   * Verifies that the strategy/goal page loads correctly.
+   *
+   * @param page - Playwright page instance
+   */
   test('Navigate to journey goal page', async ({ page }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
@@ -198,7 +278,13 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.verifyPageIsNavigatedToGoalPage() // verifying the page is navigated to goal page
   })
 
-  // Verify the user able to hide and visible the side window through windows side button
+  /**
+   * Verify the user able to hide and visible the side window through windows side button
+   * Tests the navigation side menu toggle functionality.
+   * Verifies that the navigation drawer can be opened and closed via the toggle button.
+   *
+   * @param page - Playwright page instance
+   */
   test('Verify navigation side menu open and close via navigation list item toggle', async ({
     page
   }) => {
@@ -209,7 +295,13 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.verifyNavigationSideMenuClosed() // verify the navigation list drawer is closed
   })
 
-  // Verify the user able to display the help window through help button
+  /**
+   * Verify the user able to display the help window through help button
+   * Tests the help window display functionality.
+   * Verifies that clicking the help button opens the help window on the Discover page.
+   *
+   * @param page - Playwright page instance
+   */
   test('Verify the user able to display the help window through help button', async ({
     page
   }) => {
@@ -218,7 +310,13 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.verifyHelpWindowOpened() // verifying the help window is showing in the Discover page
   })
 
-  // Discover page -> Select an existing journey -> Three dots on top right -> Manage Access
+  /**
+   * Discover page -> Select an existing journey -> Three dots on top right -> Manage Access
+   * Tests the manage access option from the three dot menu on the selected journey page.
+   * Verifies that team members can be added to manage editors for a journey.
+   *
+   * @param page - Playwright page instance
+   */
   test('Verify manage access option from three dot options on top right in the selected journey page', async ({
     page
   }) => {
@@ -238,7 +336,13 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.clickDiaLogBoxCloseBtn() // clicking on x button at top right corner in the manage editors popup
   })
 
-  // Discover page -> Existing journey -> Copy to
+  /**
+   * Discover page -> Existing journey -> Copy to
+   * Tests copying a journey to another team.
+   * Verifies that a journey can be copied to a different team and appears in the selected team's journey list.
+   *
+   * @param page - Playwright page instance
+   */
   test('verify copy to option for existing journey', async ({ page }) => {
     const journeyLevelActions = new JourneyLevelActions(page)
     const journeyPage = new JourneyPage(page)
@@ -258,7 +362,14 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.verifyCopiedJournetInSelectedTeamList() // verifying the journey is copied to another team
   })
 
-  // Discover page -> Select an existing journey -> Share -> Copy icon
+  /**
+   * Discover page -> Select an existing journey -> Share -> Copy icon
+   * Tests the copy link icon from the Share dialog on the selected journey page.
+   * Verifies that the journey link can be copied and opens correctly when pasted.
+   *
+   * @param page - Playwright page instance
+   * @param context - Playwright browser context instance
+   */
   test('Verify copy link icon from Share option dialog in the selected journey page', async ({
     page,
     context
@@ -277,7 +388,14 @@ test.describe('Journey level actions', () => {
     await journeyLevelActions.verifyLinkIsCopied() // verifying the copied link by opening a new tab and load the copied link
   })
 
-  // Discover page -> Select an existing journey -> Share -> Edit Url
+  /**
+   * Discover page -> Select an existing journey -> Share -> Edit Url
+   * Tests the Edit Url option from the Share dialog on the selected journey page.
+   * Verifies that the URL slug can be edited and the updated URL loads correctly.
+   *
+   * @param page - Playwright page instance
+   * @param context - Playwright browser context instance
+   */
   test('Verify Edit Url option from Share option dialog in the selected journey page', async ({
     page,
     context
@@ -299,7 +417,14 @@ test.describe('Journey level actions', () => {
     await journeyPage.verifyUpdatedUrlSlugIsLoaded(urlSlug) // verifyinh that the updated url is loaded
   })
 
-  // Discover page -> Select an existing journey -> Share -> Embed Journey
+  /**
+   * Discover page -> Select an existing journey -> Share -> Embed Journey
+   * Tests the Embed Journey option from the Share dialog on the selected journey page.
+   * Verifies that the embed code can be generated, copied, and contains the correct URL.
+   *
+   * @param page - Playwright page instance
+   * @param context - Playwright browser context instance
+   */
   test('Verify Embed Journey option from Share option dialog in the selected journey page', async ({
     page,
     context
@@ -323,7 +448,15 @@ test.describe('Journey level actions', () => {
     await journeyPage.clickDialogActionBtnsInShareDialog('Cancel') //CLicking Cancel button to return to url slug page
   })
 
-  // Discover page -> Select an existing journey -> Share -> QR Code (download png & Copy Short Link)
+  /**
+   * Discover page -> Select an existing journey -> Share -> QR Code (download png & Copy Short Link)
+   * Tests the QR Code option from the Share dialog on the selected journey page.
+   * Verifies QR code generation, PNG download, and short link copying functionality.
+   * Currently marked as fixme and pending.
+   *
+   * @param page - Playwright page instance
+   * @param context - Playwright browser context instance
+   */
   test.fixme(
     'Verify QR Code option from Share option dialog in the selected journey page',
     async ({ page, context }) => {

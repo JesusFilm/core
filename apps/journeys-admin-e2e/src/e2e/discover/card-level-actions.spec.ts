@@ -10,7 +10,19 @@ import { Register } from '../../pages/register-Page'
 
 let userEmail = ''
 
+/**
+ * Test suite for verifying card-level actions in the journeys admin interface.
+ * This suite tests various card-level operations including creating, updating, and deleting
+ * different types of content blocks (text, image, video, poll, response field, button, spacer)
+ * and footer properties.
+ */
 test.describe('verify card level actions', () => {
+  /**
+   * Sets up the test environment by registering a new user account.
+   * This runs once before all tests in the suite.
+   *
+   * @param browser - Playwright browser instance
+   */
   test.beforeAll('Register new account', async ({ browser }) => {
     const page = await browser.newPage()
     const landingPage = new LandingPage(page)
@@ -22,6 +34,13 @@ test.describe('verify card level actions', () => {
     await page.close()
   })
 
+  /**
+   * Sets up the test environment before each test by navigating to the admin URL,
+   * logging in with the registered user, creating a custom journey, and setting up a journey title.
+   * This ensures each test starts with a clean, consistent state.
+   *
+   * @param page - Playwright page instance
+   */
   test.beforeEach(async ({ page }) => {
     const landingPage = new LandingPage(page)
     const loginPage = new LoginPage(page)
@@ -38,7 +57,13 @@ test.describe('verify card level actions', () => {
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
   })
 
-  // Text - create, update & delete
+  /**
+   * Text - create, update & delete
+   * Tests the creation, update, and deletion of text blocks in a journey card.
+   * Verifies that text can be added, edited (including font style changes), and removed.
+   *
+   * @param page - Playwright page instance
+   */
   test('Text - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
@@ -61,7 +86,14 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifyAddedTextDeletedFromJourneyCard() // verifying the added text is deleted from the card
   })
 
-  // Image - create, update & delete
+  /**
+   * Image - create, update & delete
+   * Tests the creation, update, and deletion of image blocks in a journey card.
+   * Verifies image upload from custom tab, selection from gallery tab, and deletion.
+   * Currently marked as fixme and pending.
+   *
+   * @param page - Playwright page instance
+   */
   test.fixme('Image - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
@@ -80,7 +112,14 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifyImageIsDeleted() // verifying the image is deleted from the image drawer
   })
 
-  // Video - create, update & delete
+  /**
+   * Video - create, update & delete
+   * Tests the creation, update, and deletion of video blocks in a journey card.
+   * Verifies video upload, selection from library, and deletion functionality.
+   * Currently skipped.
+   *
+   * @param page - Playwright page instance
+   */
   test.skip('Video - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.deleteAllAddedCardProperties() // deleting all the added properties in the card
@@ -107,7 +146,14 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifyVideoDeletedFromDrawer() // verifying video deleted from the video source property
   })
 
-  // Poll - create, update & delete
+  /**
+   * Poll - create, update & delete
+   * Tests the creation, update, and deletion of poll blocks in a journey card.
+   * Verifies poll option creation, navigation configuration, renaming, and deletion.
+   * Currently marked as fixme and pending.
+   *
+   * @param page - Playwright page instance
+   */
   test.fixme('Poll - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
@@ -123,7 +169,15 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifyPollOptionsDeletedFromCard() // verifying the poll section is deleted from the card
   })
 
-  // Response Field- create, update & delete
+  /**
+   * Response Field- create, update & delete
+   * Tests the creation, update, and deletion of response field blocks in a journey card.
+   * Verifies response field creation, label and hint configuration, minimum rows option,
+   * and deletion functionality.
+   * Currently marked as fixme and pending.
+   *
+   * @param page - Playwright page instance
+   */
   test.fixme('Response Field - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
@@ -142,7 +196,15 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifyFeedBackDeletedFromCard() // verifying the Response Field section is deleted from the card
   })
 
-  // Button - create, update & delete
+  /**
+   * Button - create, update & delete
+   * Tests the creation, update, and deletion of button blocks in a journey card.
+   * Verifies button creation, configuration of properties (color, size, variant, icons),
+   * action settings, and deletion functionality.
+   * Currently marked as fixme and pending.
+   *
+   * @param page - Playwright page instance
+   */
   test.fixme('Button - create, update & delete', async ({ page }) => {
     const buttonName = 'Playwright'
     const cardLevelActionPage = new CardLevelActionPage(page)
@@ -171,7 +233,14 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifyButtonRemovedFromCard() //Verifying the Button section is deleted from the card
   })
 
-  // Spacer - create & delete
+  /**
+   * Spacer - create & delete
+   * Tests the creation and deletion of spacer blocks in a journey card.
+   * Verifies spacer creation, height adjustment via slider, and deletion functionality.
+   * Currently marked as fixme and pending.
+   *
+   * @param page - Playwright page instance
+   */
   test.fixme('Spacer - create & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
@@ -185,7 +254,14 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifySpacerRemovedFromCard() //validate spacer got removed from the card after delete
   })
 
-  // Footer properties (Journey) - Reactions, Display Title, Hosted By & Chat Widget
+  /**
+   * Footer properties (Journey) - Reactions, Display Title, Hosted By & Chat Widget
+   * Tests the configuration of footer properties for Journey type.
+   * Verifies reactions, display title, hosted by, and chat widget configuration.
+   * Currently marked as fixme and pending.
+   *
+   * @param page - Playwright page instance
+   */
   test.fixme(
     'Footer properties (Journey) - create, update & delete',
     async ({ page }) => {
@@ -214,7 +290,14 @@ test.describe('verify card level actions', () => {
     }
   )
 
-  // Footer properties (WebSite) - Logo, Display Title, Menu & Chat Widget
+  /**
+   * Footer properties (WebSite) - Logo, Display Title, Menu & Chat Widget
+   * Tests the configuration of footer properties for Website type.
+   * Verifies logo, display title, menu, and chat widget configuration.
+   * Currently marked as fixme and pending.
+   *
+   * @param page - Playwright page instance
+   */
   test.fixme(
     'Footer properties (WebSite) - create, update & delete',
     async ({ page }) => {
