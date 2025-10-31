@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, SVGProps } from 'react'
 
 import Bible from '@core/shared/ui/icons/Bible'
 import Book from '@core/shared/ui/icons/Book'
@@ -10,7 +10,7 @@ import VideoOn from '@core/shared/ui/icons/VideoOn'
 
 interface CategoryItem {
   title: string
-  icon: React.ComponentType<any>
+  icon: React.ComponentType<SVGProps<SVGSVGElement>>
   gradient: string
   searchTerm: string
 }
@@ -82,7 +82,7 @@ export function CategoryGrid({
                   textShadow: '0 1px 2px rgba(0,0,0,0.3)'
                 }}
               >
-                <div className="absolute inset-0 flex items-start justify-end">
+                <div className="absolute inset-0 flex items-start justify-end pointer-events-none">
                   <IconComponent
                     className="w-12 h-12 drop-shadow-lg opacity-20 mix-blend-overlay"
                     style={{
@@ -92,7 +92,7 @@ export function CategoryGrid({
                     }}
                   />
                 </div>
-                <div className="absolute inset-0 bg-[url(/assets/overlay.svg)] bg-repeat mix-blend-multiply opacity-70"></div>
+                <div className="absolute inset-0 bg-[url(/assets/overlay.svg)] bg-repeat mix-blend-multiply opacity-70 pointer-events-none"></div>
                 <div
                   className="absolute bottom-3 left-3 text-3xl font-extrabold leading-tight"
                   style={{
