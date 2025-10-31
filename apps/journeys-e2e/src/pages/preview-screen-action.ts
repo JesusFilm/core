@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-
 import {
     Page,
     expect,
@@ -13,16 +10,16 @@ import {
   export class PreviewScreenPage extends BasePage {
     context: BrowserContext
   
-    constructor(page: Page, context: BrowserContext, test: TestType<any, any>) {
+    constructor(page: Page, context: BrowserContext, test: TestType<Record<string, unknown>, Record<string, unknown>>) {
       super(page, test)
       this.context = context
     }
   
-    async goto() {
+    async goto(): Promise<void> {
       await this.page.goto(this.url, { waitUntil: 'load' })
     }
   
-    async verifyLandingPage() {
+    async verifyLandingPage(): Promise<void> {
       await expect
         .soft(
           this.page.locator(this.adminLogo),
@@ -31,18 +28,18 @@ import {
         .toBeVisible()
     }
   
-    async verifyNextNavigation() {
+    async verifyNextNavigation(): Promise<void> {
       await this.clickWithPaginationBullet('right')
     }
   
-    async verifyCardIconsAndChatWidgets() {
+    async verifyCardIconsAndChatWidgets(): Promise<void> {
       const viewport = this.page.viewportSize()
       if (!viewport) throw new Error('Viewport not available')
   
       const { width, height } = viewport
   
       // Helper to get element position
-      const getPosition = async (selector: string, nth = 0) => {
+      const getPosition = async (selector: string, nth = 0): Promise<{ x: number; y: number; width: number; height: number }> => {
         const box = await this.page.locator(selector).nth(nth).boundingBox()
         if (!box) throw new Error(`Element ${selector} not visible`)
         return box
@@ -168,7 +165,7 @@ import {
       await this.validateChatWidgetWithLinks()
     }
   
-    async validateChatWidgetWithLinks() {
+    async validateChatWidgetWithLinks(): Promise<void> {
       const chatLinks = [
         'https://www.messenger.com',
         'https://api.whatsapp.com/',
@@ -212,7 +209,7 @@ import {
       }
     }
   
-    async verifyInfoIcon() {
+    async verifyInfoIcon(): Promise<void> {
       await expect
         .soft(this.page.locator(this.infoIcon), `Info Icon should be displayed`)
         .toBeVisible()
@@ -249,7 +246,7 @@ import {
         .toBeVisible()
     }
   
-    async verifyReportContent() {
+    async verifyReportContent(): Promise<void> {
       const reportBtn = this.page
         .locator(this.reportContentBtn)
         .filter({ hasText: 'Report this content' })
@@ -276,7 +273,7 @@ import {
         .toBe(decodedHrefMailLink)
     }
   
-    async validateTermsAndCondition() {
+    async validateTermsAndCondition(): Promise<void> {
       const termsAndConditionLink = ['https://www.cru.org/']
   
       await this.page.locator(this.infoIcon).click()
@@ -297,7 +294,7 @@ import {
       newPage.close()
     }
   
-    async verifyNextButtonCard() {
+    async verifyNextButtonCard(): Promise<void> {
       await this.clickWithPaginationBullet('right')
       await expect
         .soft(
@@ -307,12 +304,12 @@ import {
         .toBeVisible()
     }
   
-    async verifyTapLeftRight() {
+    async verifyTapLeftRight(): Promise<void> {
       await this.clickWithPaginationBullet('left')
       await this.clickWithPaginationBullet('right')
     }
   
-    async verifyBgVideoImgBtnCard() {
+    async verifyBgVideoImgBtnCard(): Promise<void> {
       await expect
         .soft(
           this.page.locator(this.nextBtn).filter({ hasText: 'Next' }),
@@ -320,7 +317,10 @@ import {
         )
         .toBeVisible()
       await this.page.locator(this.nextBtn).filter({ hasText: 'Next' }).click()
-      console.log('Slide moved from 3 → 4 (right)')
+      await this.test.info().attach('slide-navigation', {
+        body: JSON.stringify({ message: 'Slide moved from 3 → 4 (right)' }),
+        contentType: 'application/json'
+      })
       await expect
         .soft(
           this.page
@@ -339,7 +339,7 @@ import {
         .toBeVisible()
     }
   
-    async verifyJesusVideo() {
+    async verifyJesusVideo(): Promise<void> {
       const videoButton = this.page
         .locator(this.bgVideoBtn)
         .filter({ hasText: 'Background Video' })
@@ -384,12 +384,10 @@ import {
       const box = await video.boundingBox()
       const viewport = this.page.viewportSize()
       if (box && viewport) {
-        console.log(
-          `Filling the screen Video width`,
-          box.width,
-          `Viewport width:`,
-          viewport.width
-        )
+        await this.test.info().attach('video-dimensions', {
+          body: JSON.stringify({ videoWidth: box.width, viewportWidth: viewport.width }),
+          contentType: 'application/json'
+        })
         expect
           .soft(
             box.width,
@@ -397,12 +395,10 @@ import {
           )
           .toEqual(viewport.width)
   
-        console.log(
-          `Filling the screen Video Height`,
-          box.height,
-          `Viewport height:`,
-          viewport.height
-        )
+        await this.test.info().attach('video-dimensions-height', {
+          body: JSON.stringify({ videoHeight: box.height, viewportHeight: viewport.height }),
+          contentType: 'application/json'
+        })
         expect
           .soft(
             box.height,
@@ -437,7 +433,7 @@ import {
       await this.checkColorForTextImg(allElements, /rgb\(254,\s*254,\s*254\)/)
     }
   
-    async verifyYoutubeVideoOrLink() {
+    async verifyYoutubeVideoOrLink(): Promise<void> {
       await this.clickWithPaginationBullet('right')
   
       const video = this.page.locator(this.bgYoutubeVideo)
@@ -483,23 +479,19 @@ import {
       // Verify the filling the screen
       const box = await video.boundingBox()
       const viewport = this.page.viewportSize()
-      console.log(
-        `Filling the screen Video width:`,
-        box?.width,
-        `Viewport width:`,
-        viewport?.width
-      )
+      await this.test.info().attach('youtube-video-dimensions', {
+        body: JSON.stringify({ videoWidth: box?.width, viewportWidth: viewport?.width }),
+        contentType: 'application/json'
+      })
       expect(
         box?.width,
         `Background Youtube Video should be same width of video box and viewport size`
       ).toBeGreaterThanOrEqual((viewport?.width || 0) * 0.9)
   
-      console.log(
-        `Filling the screen Video Height`,
-        box?.height,
-        `Viewport height:`,
-        viewport?.height
-      )
+      await this.test.info().attach('youtube-video-dimensions-height', {
+        body: JSON.stringify({ videoHeight: box?.height, viewportHeight: viewport?.height }),
+        contentType: 'application/json'
+      })
       expect(
         box?.height,
         `Background Youtube Video should be same height of video box and viewport size`
@@ -530,7 +522,7 @@ import {
       await this.checkColorForTextImg(allElements, /rgb\(254,\s*254,\s*254\)/)
     }
   
-    async verifyVideoWithKeep() {
+    async verifyVideoWithKeep(): Promise<void> {
       await this.clickWithPaginationBullet('right')
   
       const video = this.page.locator(this.bgVideo)
@@ -590,12 +582,10 @@ import {
       const box = await video.boundingBox()
       const viewport = this.page.viewportSize()
       if (box && viewport) {
-        console.log(
-          `Filling the screen Video width`,
-          box?.width,
-          `Viewport width:`,
-          viewport?.width
-        )
+        await this.test.info().attach('custom-video-dimensions', {
+          body: JSON.stringify({ videoWidth: box.width, viewportWidth: viewport.width }),
+          contentType: 'application/json'
+        })
         expect
           .soft(
             box.width,
@@ -603,12 +593,10 @@ import {
           )
           .toBeGreaterThanOrEqual(viewport.width * 0.9)
   
-        console.log(
-          `Filling the screen Video Height`,
-          box?.height,
-          `Viewport height:`,
-          viewport?.height
-        )
+        await this.test.info().attach('custom-video-dimensions-height', {
+          body: JSON.stringify({ videoHeight: box.height, viewportHeight: viewport.height }),
+          contentType: 'application/json'
+        })
         expect
           .soft(
             box.height,
@@ -628,9 +616,12 @@ import {
   
         const startsInBottomHalf =
           overlayRect.top >= parentRect.top + parentRect.height / 3
-        console.log(`startsInBottomHalf:`, startsInBottomHalf)
-  
+
         return startsInBottomHalf
+      })
+      await this.test.info().attach('overlay-position', {
+        body: JSON.stringify({ startsInBottomHalf: isBottomHalfOverlay }),
+        contentType: 'application/json'
       })
       expect(
         isBottomHalfOverlay,
@@ -646,7 +637,7 @@ import {
     async checkColorForTextImg(
       allElements: Locator[],
       colorRegex = /rgb\(254,\s*254,\s*254\)/
-    ) {
+    ): Promise<void> {
       for (const el of allElements) {
         const count = await el.count()
         for (let i = 0; i < count; i++) {
@@ -663,7 +654,7 @@ import {
         }
       }
     }
-    async verifyBgImage() {
+    async verifyBgImage(): Promise<void> {
       await this.page
         .locator(this.bgOverLayBgImgBtn)
         .filter({ hasText: 'Check Background Images' })
@@ -695,7 +686,7 @@ import {
       await this.checkColorForTextImg(allElements, /rgb\(254,\s*254,\s*254\)/)
     }
   
-    async verifyOtherBgImage() {
+    async verifyOtherBgImage(): Promise<void> {
       await this.clickWithPaginationBullet('right')
       await expect(
         this.page.locator(this.bgImg),
@@ -720,7 +711,7 @@ import {
       await this.checkColorForTextImg(allElements, /rgb\(254,\s*254,\s*254\)/)
     }
   
-    async verifyAIBgImage() {
+    async verifyAIBgImage(): Promise<void> {
       await this.clickWithPaginationBullet('right')
       await expect(
         this.page.locator(this.bgImg),
@@ -758,7 +749,7 @@ import {
       await this.checkColorForTextImg(allElements, /rgb\(254,\s*254,\s*254\)/)
     }
   
-    async verifyKeepGoing() {
+    async verifyKeepGoing(): Promise<void> {
       await this.page
         .locator(this.bgOverLayKeepBtn)
         .filter({ hasText: 'Keep Going' })
@@ -773,17 +764,17 @@ import {
       await this.page.close()
     }
   
-    async verifyYoutubeVideos() {
+    async verifyYoutubeVideos(): Promise<void> {
       await expect(this.page.locator(this.journeyVideoDataTestId)).toBeVisible()
       await this.verifyVideoCard()
     }
   
-    async verifyCustomVideos() {
+    async verifyCustomVideos(): Promise<void> {
       await expect(this.page.locator(this.cardVideo)).toBeVisible()
       await this.verifyVideoCard()
     }
   
-    async verifyPollContentWithSubmission() {
+    async verifyPollContentWithSubmission(): Promise<void> {
       await this.verifyPollContent()
       await this.verifySubmitPoll()
     }
