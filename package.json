@@ -88,9 +88,9 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/graphql": "^13.0.0",
     "@nestjs/platform-express": "^11.0.1",
-    "@next/bundle-analyzer": "^13.5.6",
-    "@next/eslint-plugin-next": "^15.5.2",
-    "@next/third-parties": "^15.1.7",
+    "@next/bundle-analyzer": "16.0.1",
+    "@next/eslint-plugin-next": "16.0.1",
+    "@next/third-parties": "16.0.1",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/exporter-trace-otlp-grpc": "^0.200.0",
     "@opentelemetry/instrumentation": "^0.200.0",
@@ -173,7 +173,7 @@
     "nanoid": "^3.3.7",
     "nestjs-ddtrace": "6.0.0",
     "nestjs-pino": "^4.0.0",
-    "next": "^15.1.7",
+    "next": "16.0.1",
     "next-absolute-url": "^1.2.2",
     "next-firebase-auth": "^1.0.1",
     "next-firebase-auth-edge": "^1.7.0-canary.2",
@@ -194,17 +194,17 @@
     "prop-types": "^15.8.1",
     "qrcode.react": "^4.2.0",
     "qs": "^6.13.1",
-    "react": "^19.0.0",
+    "react": "19.2.0",
     "react-colorful": "^5.5.1",
     "react-div-100vh": "^0.7.0",
-    "react-dom": "^19.0.0",
+    "react-dom": "19.2.0",
     "react-dropzone": "^14.2.3",
     "react-email": "^3.0.0",
     "react-hotkeys-hook": "^4.5.0",
     "react-i18next": "15.4.1",
     "react-instantsearch": "^7.5.0",
     "react-instantsearch-router-nextjs": "^7.12.3",
-    "react-is": "^19.0.0",
+    "react-is": "19.2.0",
     "react-loading-hook": "^1.1.2",
     "react-simple-timefield": "^3.3.1",
     "react-swipeable": "^7.0.1",
@@ -305,9 +305,9 @@
     "@types/moxios": "^0.4.17",
     "@types/node": "22.18.8",
     "@types/nodemailer": "^6.4.15",
-    "@types/react": "19.0.0",
+    "@types/react": "19.2.2",
     "@types/react-beautiful-dnd": "^13.1.7",
-    "@types/react-dom": "19.0.0",
+    "@types/react-dom": "19.2.2",
     "@types/react-transition-group": "4.4.12",
     "@types/rtl-detect": "^1.0.3",
     "@types/stylis": "^4.2.0",
@@ -337,7 +337,7 @@
     "esbuild": "^0.19.12",
     "eslint": "^9.22.0",
     "eslint-config-love": "^119.0.0",
-    "eslint-config-next": "^15.2.1",
+    "eslint-config-next": "16.0.1",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-i18next": "^6.1.1",
     "eslint-plugin-import": "^2.31.0",
@@ -407,9 +407,15 @@
     "workerDirectory": "./.storybook/static"
   },
   "overrides": {
-    "react-is": "^19.0.0",
+    "react-is": "^19.2.0",
     "html-tokenize": {
       "readable-stream": "^3.6.0"
+    }
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.2",
+      "@types/react-dom": "19.2.2"
     }
   }
 }

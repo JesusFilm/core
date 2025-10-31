@@ -12,10 +12,7 @@ const nextConfig = {
     // handled by github actions
     ignoreBuildErrors: process.env.CI === 'true'
   },
-  eslint: {
-    // handled by github actions
-    ignoreDuringBuilds: process.env.CI === 'true'
-  },
+  reactCompiler: true,
   outputFileTracingExcludes: {
     '*': [
       'node_modules/@swc/core-linux-x64-gnu',
@@ -24,8 +21,7 @@ const nextConfig = {
     ]
   },
   experimental: {
-    fallbackNodePolyfills: false,
-    reactCompiler: true
+    fallbackNodePolyfills: false
   }
 }
 
