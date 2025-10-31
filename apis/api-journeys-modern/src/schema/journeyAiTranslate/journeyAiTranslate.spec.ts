@@ -207,8 +207,8 @@ describe('journeyAiTranslateCreate mutation', () => {
       object: mockAnalysisAndTranslation,
       usage: {
         totalTokens: 1000,
-        promptTokens: 600,
-        completionTokens: 400
+        inputTokens: 600,
+        outputTokens: 400
       },
       finishReason: 'stop',
       warnings: [],
@@ -359,8 +359,8 @@ describe('journeyAiTranslateCreate mutation', () => {
       },
       usage: {
         totalTokens: 1000,
-        promptTokens: 600,
-        completionTokens: 400
+        inputTokens: 600,
+        outputTokens: 400
       },
       finishReason: 'stop',
       warnings: [],
@@ -407,8 +407,8 @@ describe('journeyAiTranslateCreate mutation', () => {
       },
       usage: {
         totalTokens: 1000,
-        promptTokens: 600,
-        completionTokens: 400
+        inputTokens: 600,
+        outputTokens: 400
       },
       finishReason: 'stop',
       warnings: [],
@@ -685,8 +685,8 @@ describe('journeyAiTranslateCreateSubscription', () => {
       object: mockAnalysisAndTranslation,
       usage: {
         totalTokens: 1000,
-        promptTokens: 600,
-        completionTokens: 400
+        inputTokens: 600,
+        outputTokens: 400
       },
       finishReason: 'stop',
       warnings: [],
