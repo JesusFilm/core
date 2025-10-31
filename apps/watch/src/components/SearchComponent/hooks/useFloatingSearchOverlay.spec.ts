@@ -113,4 +113,36 @@ describe('useFloatingSearchOverlay', () => {
     expect(result.current.trendingSearches).toEqual(['Hope', 'Faith', 'Love'])
     expect(result.current.isTrendingFallback).toBe(true)
   })
+
+  it('clears search query and focuses input', () => {
+    const refine = jest.fn()
+    const focus = jest.fn()
+    mockUseSearchBox.mockReturnValue({ refine })
+
+    const originalRaf = window.requestAnimationFrame
+    window.requestAnimationFrame = ((callback: FrameRequestCallback) => {
+      callback(0)
+      return 0
+    }) as typeof window.requestAnimationFrame
+
+    const { result } = renderHook(() => useFloatingSearchOverlay())
+
+    act(() => {
+      result.current.searchInputRef.current = {
+        focus
+      } as unknown as HTMLInputElement
+      result.current.handleSearch('query')
+    })
+
+    act(() => {
+      result.current.handleClearSearch()
+    })
+
+    expect(result.current.searchValue).toBe('')
+    expect(result.current.searchQuery).toBe('')
+    expect(refine).toHaveBeenLastCalledWith('')
+    expect(focus).toHaveBeenCalled()
+
+    window.requestAnimationFrame = originalRaf
+  })
 })

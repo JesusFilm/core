@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react'
+import { FishOff, Plus } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
 import type { ComponentProps, MouseEvent, ReactElement } from 'react'
 
@@ -17,6 +17,9 @@ export interface VideoGridProps {
   onCardClick?: (videoId?: string) => (event: MouseEvent) => void
   analyticsTag?: string
   showSequenceNumbers?: boolean
+  fallbackVideos?: VideoChildFields[]
+  fallbackLoading?: boolean
+  onClearSearch?: () => void
 }
 
 export function VideoGrid({
@@ -30,9 +33,20 @@ export function VideoGrid({
   hasNoResults = false,
   onCardClick,
   analyticsTag,
-  showSequenceNumbers = false
+  showSequenceNumbers = false,
+  fallbackVideos = [],
+  fallbackLoading = false,
+  onClearSearch
 }: VideoGridProps): ReactElement {
   const { t } = useTranslation('apps-watch')
+
+  const fallbackGridColumns =
+    orientation === 'vertical'
+      ? 'grid-cols-2 md:grid-cols-4 xl:grid-cols-5'
+      : 'grid-cols-1 md:grid-cols-3 xl:grid-cols-4'
+
+  const fallbackSkeletonCount =
+    orientation === 'vertical' ? 5 : 4
 
   return (
     <div
@@ -71,13 +85,54 @@ export function VideoGrid({
       )}
       {!loading && hasNoResults && (
         <div className="w-full flex justify-center items-center col-span-full">
-          <div className="w-full rounded-lg border border-gray-200 bg-white p-8 text-center">
-            <h6 className="text-xl font-semibold text-primary mb-2">
-              {t('Sorry, no results')}
-            </h6>
-            <p className="text-base mt-2">
-              {t('Try removing or changing something from your request')}
-            </p>
+          <div className="w-full rounded-lg border border-gray-200 bg-white p-6 md:p-8">
+            <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-8">
+              <div className="flex justify-center md:justify-start">
+                <FishOff className="h-16 w-16 md:h-20 md:w-20 text-stone-300" aria-hidden="true" />
+              </div>
+              <div className="flex-1 flex flex-col gap-4 text-center md:text-left">
+                <h6 className="text-xl font-semibold text-primary">
+                  {t('No catch here—try the other side of the boat.')}
+                </h6>
+                {onClearSearch != null && (
+                  <div className="flex justify-center md:justify-start">
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      onClick={onClearSearch}
+                    >
+                      {t('Try another search')}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+            {(fallbackLoading || fallbackVideos.length > 0) && (
+              <div className="mt-8 flex flex-col gap-4">
+                <div className="text-left">
+                  <h6 className="text-lg font-semibold text-stone-900">
+                    {t('Latest videos in this language')}
+                  </h6>
+                </div>
+                <div className={`grid gap-4 ${fallbackGridColumns}`}>
+                  {(fallbackLoading ? Array.from({ length: fallbackSkeletonCount }) : fallbackVideos).map(
+                    (video, index) => (
+                      <div key={index} className="w-full">
+                        <VideoCard
+                          video={fallbackLoading ? undefined : video}
+                          orientation={orientation}
+                          containerSlug={containerSlug}
+                          index={index}
+                          onClick={onCardClick}
+                          analyticsTag={analyticsTag}
+                          showSequenceNumber={showSequenceNumbers}
+                        />
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

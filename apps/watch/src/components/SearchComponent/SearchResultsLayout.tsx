@@ -10,6 +10,7 @@ export interface SearchResultsLayoutProps {
   searchQuery: string
   onSelectQuickValue: (value: string) => void
   languageId?: string
+  onClearSearch: () => void
 }
 
 export function generateRelatedSearches(query: string): string[] {
@@ -66,7 +67,8 @@ export function generateRelatedSearches(query: string): string[] {
 export function SearchResultsLayout({
   searchQuery,
   onSelectQuickValue,
-  languageId
+  languageId,
+  onClearSearch
 }: SearchResultsLayoutProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const relatedSearches = useMemo(
@@ -97,6 +99,7 @@ export function SearchResultsLayout({
         variant="contained"
         languageId={languageId}
         showLoadMore
+        onClearSearch={onClearSearch}
       />
     </div>
   )

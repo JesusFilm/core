@@ -3,14 +3,19 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
 import { type CoreVideo } from '../../../libs/algolia/transformAlgoliaVideos'
+import { useLatestVideos } from '../../../hooks/useLatestVideos'
 
 import { AlgoliaVideoGrid } from './AlgoliaVideoGrid'
 
 jest.mock('react-instantsearch')
 jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
+jest.mock('../../../hooks/useLatestVideos')
 
 const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
   typeof useAlgoliaVideos
+>
+const mockedUseLatestVideos = useLatestVideos as jest.MockedFunction<
+  typeof useLatestVideos
 >
 
 describe('AlgoliaVideoGrid', () => {
@@ -47,6 +52,13 @@ describe('AlgoliaVideoGrid', () => {
       }
     }
   ] as unknown as CoreVideo[]
+
+  beforeEach(() => {
+    mockedUseLatestVideos.mockReturnValue({
+      videos: [],
+      loading: false
+    })
+  })
 
   it('should render a video within the grid', async () => {
     mockedUseAlgoliaVideos.mockReturnValue({
@@ -127,6 +139,8 @@ describe('AlgoliaVideoGrid', () => {
 
     render(<AlgoliaVideoGrid showLoadMore />)
 
-    expect(screen.getByText('Sorry, no results')).toBeInTheDocument()
+    expect(
+      screen.getByText('No catch here—try the other side of the boat.')
+    ).toBeInTheDocument()
   })
 })

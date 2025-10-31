@@ -6,6 +6,7 @@ import {
   type CoreVideo,
   transformAlgoliaVideos as transformItems
 } from '../../../libs/algolia/transformAlgoliaVideos'
+import { useLatestVideos } from '../../../hooks/useLatestVideos'
 import { VideoGrid, VideoGridProps } from '../VideoGrid'
 
 export function AlgoliaVideoGrid({
@@ -20,6 +21,15 @@ export function AlgoliaVideoGrid({
     noResults,
     sendEvent
   } = useAlgoliaVideos<CoreVideo>({ transformItems, languageId })
+
+  const orientation = props.orientation ?? 'horizontal'
+  const latestLimit = orientation === 'vertical' ? 10 : 8
+
+  const { videos: latestVideos, loading: latestLoading } = useLatestVideos({
+    languageId,
+    limit: latestLimit,
+    skip: !noResults
+  })
 
   const handleClick =
     (videoId?: string) =>
@@ -38,6 +48,8 @@ export function AlgoliaVideoGrid({
       hasNextPage={!isLastPage}
       hasNoResults={noResults}
       onCardClick={handleClick}
+      fallbackVideos={latestVideos}
+      fallbackLoading={latestLoading}
       {...props}
     />
   )

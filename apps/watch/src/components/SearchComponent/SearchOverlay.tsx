@@ -24,6 +24,7 @@ export interface SearchOverlayProps {
   trendingSearches: string[]
   isTrendingLoading: boolean
   isTrendingFallback: boolean
+  onClearSearch: () => void
 }
 
 export function SearchOverlay({
@@ -37,7 +38,8 @@ export function SearchOverlay({
   onClose,
   trendingSearches,
   isTrendingLoading,
-  isTrendingFallback
+  isTrendingFallback,
+  onClearSearch
 }: SearchOverlayProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const trendingTitle = isTrendingFallback
@@ -88,6 +90,7 @@ export function SearchOverlay({
                 searchQuery={searchQuery}
                 onSelectQuickValue={onSelectQuickValue}
                 languageId={languageId}
+                onClearSearch={onClearSearch}
               />
             )}
           </div>
