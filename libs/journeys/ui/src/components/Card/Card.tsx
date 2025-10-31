@@ -24,6 +24,7 @@ import { VideoFields } from '../Video/__generated__/VideoFields'
 import { CardFields } from './__generated__/CardFields'
 import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
+import { ParallaxCover } from './ParallaxCover'
 import { getFormInitialValues } from './utils/getFormInitialValues'
 import { getTextResponseBlocks } from './utils/getTextResponseBlocks'
 import { getValidationSchema } from './utils/getValidationSchema/getValidationSchema'
@@ -92,7 +93,7 @@ export function Card({
   const { t } = useTranslation('journeys-ui')
   const theme = useTheme()
   const { blockHistory, treeBlocks } = useBlocks()
-  const { variant } = useJourney()
+  const { variant, journey } = useJourney()
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
@@ -215,6 +216,7 @@ export function Card({
   }
 
   const isContained = (coverBlock != null && !fullscreen) || videoBlock != null
+  const isParallax = isContained && journey?.website === true
 
   return (
     <Formik
@@ -253,7 +255,17 @@ export function Card({
             }}
             elevation={3}
           >
-            {isContained ? (
+            {isParallax ? (
+              <ParallaxCover
+                backgroundColor={cardColor}
+                backgroundBlur={blurUrl}
+                videoBlock={videoBlock}
+                imageBlock={imageBlock}
+                hasFullscreenVideo={hasFullscreenVideo}
+              >
+                {renderedChildren}
+              </ParallaxCover>
+            ) : isContained ? (
               <ContainedCover
                 backgroundColor={cardColor}
                 backgroundBlur={blurUrl}
