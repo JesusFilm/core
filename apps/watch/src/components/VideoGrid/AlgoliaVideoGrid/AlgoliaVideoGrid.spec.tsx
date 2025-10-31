@@ -1,14 +1,20 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
+import { useRefinementList } from 'react-instantsearch'
+
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
 import { type CoreVideo } from '../../../libs/algolia/transformAlgoliaVideos'
+import { useLanguages } from '../../../libs/useLanguages'
 import { useLatestVideos } from '../../../hooks/useLatestVideos'
 
 import { AlgoliaVideoGrid } from './AlgoliaVideoGrid'
 
-jest.mock('react-instantsearch')
+jest.mock('react-instantsearch', () => ({
+  useRefinementList: jest.fn()
+}))
 jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
+jest.mock('../../../libs/useLanguages')
 jest.mock('../../../hooks/useLatestVideos')
 
 const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
@@ -16,6 +22,12 @@ const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
 >
 const mockedUseLatestVideos = useLatestVideos as jest.MockedFunction<
   typeof useLatestVideos
+>
+const mockedUseRefinementList = useRefinementList as jest.MockedFunction<
+  typeof useRefinementList
+>
+const mockedUseLanguages = useLanguages as jest.MockedFunction<
+  typeof useLanguages
 >
 
 describe('AlgoliaVideoGrid', () => {
@@ -54,6 +66,9 @@ describe('AlgoliaVideoGrid', () => {
   ] as unknown as CoreVideo[]
 
   beforeEach(() => {
+    jest.clearAllMocks()
+    mockedUseRefinementList.mockReturnValue({ items: [] })
+    mockedUseLanguages.mockReturnValue({ languages: [], isLoading: false })
     mockedUseLatestVideos.mockReturnValue({
       videos: [],
       loading: false
@@ -142,5 +157,44 @@ describe('AlgoliaVideoGrid', () => {
     expect(
       screen.getByText('No catch here—try the other side of the boat.')
     ).toBeInTheDocument()
+  })
+
+  it('uses refined language when requesting latest videos', () => {
+    mockedUseRefinementList.mockReturnValue({
+      items: [
+        {
+          label: 'English',
+          value: 'English',
+          isRefined: true,
+          count: 10
+        }
+      ] as any
+    })
+    mockedUseLanguages.mockReturnValue({
+      languages: [
+        {
+          id: '529',
+          slug: 'english',
+          displayName: 'English',
+          englishName: { id: '529', primary: true, value: 'English' },
+          nativeName: { id: '529', primary: true, value: 'English' }
+        }
+      ],
+      isLoading: false
+    })
+    mockedUseAlgoliaVideos.mockReturnValue({
+      loading: false,
+      noResults: true,
+      items: [],
+      showMore: jest.fn(),
+      isLastPage: true,
+      sendEvent: jest.fn()
+    })
+
+    render(<AlgoliaVideoGrid />)
+
+    expect(mockedUseLatestVideos).toHaveBeenCalledWith(
+      expect.objectContaining({ languageId: '529', skip: false })
+    )
   })
 })

@@ -85,20 +85,31 @@ export function VideoGrid({
       )}
       {!loading && hasNoResults && (
         <div className="w-full flex justify-center items-center col-span-full">
-          <div className="w-full rounded-lg border border-gray-200 bg-white p-6 md:p-8">
-            <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-8">
+          <div className="w-full rounded-3xl border border-white/10 p-6 md:p-10">
+            <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
               <div className="flex justify-center md:justify-start">
-                <FishOff className="h-16 w-16 md:h-20 md:w-20 text-stone-300" aria-hidden="true" />
+                <FishOff
+                  className="h-48 w-48 md:h-56 md:w-56 text-stone-200/80"
+                  aria-hidden="true"
+                />
               </div>
-              <div className="flex-1 flex flex-col gap-4 text-center md:text-left">
-                <h6 className="text-xl font-semibold text-primary">
+              <div className="flex-1 flex flex-col gap-4 text-center md:text-left items-center md:items-start">
+                <span
+                  className="uppercase tracking-widest text-[#FF9E00] font-sans font-bold mb-0 animate-fade-in-up animation-delay-100 text-md"
+                >
+                  {t('No Results')}
+                </span>
+                <p
+                  className="font-bold text-stone-50 text-shadow-xs mb-0 font-sans animate-fade-in-up animation-delay-200 text-3xl md:text-4xl lg:text-5xl xl:text-6xl"
+                >
                   {t('No catch here—try the other side of the boat.')}
-                </h6>
+                </p>
                 {onClearSearch != null && (
-                  <div className="flex justify-center md:justify-start">
+                  <div className="flex justify-center md:justify-start animate-fade-in-up animation-delay-300">
                     <button
                       type="button"
                       className="btn-primary"
+                      onMouseDown={(event) => event.preventDefault()}
                       onClick={onClearSearch}
                     >
                       {t('Try another search')}
@@ -108,9 +119,9 @@ export function VideoGrid({
               </div>
             </div>
             {(fallbackLoading || fallbackVideos.length > 0) && (
-              <div className="mt-8 flex flex-col gap-4">
+              <div className="mt-10 flex flex-col gap-4">
                 <div className="text-left">
-                  <h6 className="text-lg font-semibold text-stone-900">
+                  <h6 className="text-lg font-semibold text-stone-100">
                     {t('Latest videos in this language')}
                   </h6>
                 </div>
