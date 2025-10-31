@@ -308,7 +308,13 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       // Record or update Google Sheets sync configuration for this journey
       if (integrationIdUsed != null) {
         const existingSync = await prisma.googleSheetsSync.findFirst({
-          where: { teamId: journey.teamId, journeyId }
+          where: {
+            teamId: journey.teamId,
+            journeyId,
+            integrationId: integrationIdUsed,
+            spreadsheetId,
+            sheetName
+          }
         })
 
         const syncData = {
