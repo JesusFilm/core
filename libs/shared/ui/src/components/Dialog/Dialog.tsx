@@ -83,7 +83,7 @@ export function Dialog({
   dialogActionChildren,
   divider,
   fullscreen,
-  maxWidth = 'sm',
+  maxWidth,
   children,
   container,
   loading = false,

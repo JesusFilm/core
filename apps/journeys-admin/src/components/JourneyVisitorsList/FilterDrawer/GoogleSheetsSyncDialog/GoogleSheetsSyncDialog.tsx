@@ -18,7 +18,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
@@ -28,8 +28,6 @@ import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import { format } from 'date-fns'
 
 import { useIntegrationQuery } from '../../../../libs/useIntegrationQuery/useIntegrationQuery'
-
-import { ExportSettings } from '../ExportDialog/ExportSettings'
 
 const GET_JOURNEY_CREATED_AT = gql`
   query GetJourneyCreatedAt($id: ID!) {
@@ -139,16 +137,6 @@ export function GoogleSheetsSyncDialog({
     teamId: journeyData?.journey?.team?.id as string
   })
 
-  const [startDate, setStartDate] = useState<Date | null>(() =>
-    journeyData?.journey?.createdAt
-      ? new Date(journeyData.journey.createdAt)
-      : null
-  )
-  const [endDate, setEndDate] = useState<Date | null>(new Date())
-  const [selectedEvents, setSelectedEvents] = useState<string[]>([])
-  const [contactData, setContactData] = useState<string[]>([])
-  const [exportBy, setExportBy] = useState<string>('')
-
   const [googleDialogOpen, setGoogleDialogOpen] = useState(false)
   const [googleMode, setGoogleMode] = useState<'create' | 'existing'>('create')
   const [integrationId, setIntegrationId] = useState<string | undefined>(
@@ -177,12 +165,6 @@ export function GoogleSheetsSyncDialog({
   )
 
   useEffect(() => {
-    if (journeyData?.journey?.createdAt != null) {
-      setStartDate(new Date(journeyData.journey.createdAt))
-    }
-  }, [journeyData])
-
-  useEffect(() => {
     if (!open) return
     void loadSyncs({
       variables: { journeyId },
@@ -196,22 +178,7 @@ export function GoogleSheetsSyncDialog({
     setSyncIdPendingDelete(null)
   }, [open, deletingSyncId])
 
-  const filterArg = useMemo(
-    () => ({
-      typenames: selectedEvents,
-      ...(startDate && { periodRangeStart: startDate.toISOString() }),
-      ...(endDate && { periodRangeEnd: endDate.toISOString() })
-    }),
-    [selectedEvents, startDate, endDate]
-  )
-
   const googleSheetsSyncs = syncsData?.googleSheetsSyncs ?? []
-  const isExportSelectionValid = useMemo(() => {
-    if (exportBy === '') return false
-    if (exportBy === 'Visitor Actions') return selectedEvents.length > 0
-    if (exportBy === 'Contact Data') return contactData.length > 0
-    return false
-  }, [exportBy, selectedEvents.length, contactData.length])
 
   async function handleOpenDrivePicker(
     mode: 'folder' | 'sheet'
@@ -353,34 +320,9 @@ export function GoogleSheetsSyncDialog({
           }
 
     try {
-      if (exportBy === '') {
-        enqueueSnackbar(t('Select the data to sync first'), {
-          variant: 'warning'
-        })
-        return
-      }
-
       await exportToSheets({
         variables: {
           journeyId,
-          filter:
-            exportBy === 'Visitor Actions'
-              ? filterArg
-              : {
-                  typenames: contactData.filter(
-                    (d) => d !== 'name' && d !== 'email' && d !== 'phone'
-                  ),
-                  ...(startDate && { periodRangeStart: startDate.toISOString() }),
-                  ...(endDate && { periodRangeEnd: endDate.toISOString() })
-                },
-          select:
-            exportBy === 'Contact Data'
-              ? {
-                  name: contactData.includes('name'),
-                  email: contactData.includes('email'),
-                  phone: contactData.includes('phone')
-                }
-              : undefined,
           destination,
           integrationId
         }
@@ -423,7 +365,7 @@ export function GoogleSheetsSyncDialog({
     setSyncIdPendingDelete(syncId)
   }
 
-  const isGoogleActionDisabled = !isExportSelectionValid || integrationsData == null
+  const isGoogleActionDisabled = integrationsData == null
 
   return (
     <>
@@ -457,18 +399,6 @@ export function GoogleSheetsSyncDialog({
         }
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <ExportSettings
-            startDate={startDate}
-            endDate={endDate}
-            onStartDateChange={setStartDate}
-            onEndDateChange={setEndDate}
-            exportBy={exportBy}
-            onExportByChange={setExportBy}
-            setSelectedEvents={setSelectedEvents}
-            contactData={contactData}
-            setContactData={setContactData}
-          />
-
           {syncsLoading ? (
             <Box
               sx={{
@@ -509,7 +439,7 @@ export function GoogleSheetsSyncDialog({
                       : 'N/A'
                     const startedBy =
                       sync.integration?.__typename === 'IntegrationGoogle'
-                        ? sync.integration.accountEmail ?? 'N/A'
+                        ? (sync.integration.accountEmail ?? 'N/A')
                         : 'N/A'
                     const isDeleting = deletingSyncId === sync.id
 
@@ -553,10 +483,16 @@ export function GoogleSheetsSyncDialog({
                             </Typography>
                           </Tooltip>
                         </TableCell>
-                        <TableCell sx={{ width: 120 }}>{formattedDate}</TableCell>
+                        <TableCell sx={{ width: 120 }}>
+                          {formattedDate}
+                        </TableCell>
                         <TableCell>{startedBy}</TableCell>
                         <TableCell sx={{ width: 120 }}>
-                          <Chip label={t('Active')} color="success" size="small" />
+                          <Chip
+                            label={t('Active')}
+                            color="success"
+                            size="small"
+                          />
                         </TableCell>
                         <TableCell sx={{ width: 80 }} align="right">
                           <IconButton
@@ -599,11 +535,10 @@ export function GoogleSheetsSyncDialog({
             onClick={handleExportToSheets}
             loading={sheetsLoading}
             disabled={
-              !isExportSelectionValid ||
-              (googleMode === 'create'
+              googleMode === 'create'
                 ? spreadsheetTitle === '' &&
                   (journeyData?.journey?.title ?? '') === ''
-                : existingSpreadsheetId == null || existingSpreadsheetId === '')
+                : existingSpreadsheetId == null || existingSpreadsheetId === ''
             }
           >
             {t('Start Sync')}
@@ -706,7 +641,7 @@ export function GoogleSheetsSyncDialog({
                 onClick={() => handleOpenDrivePicker('folder')}
               >
                 {folderId
-                  ? folderName ?? folderId
+                  ? (folderName ?? folderId)
                   : t('Choose Folder (optional)')}
               </Button>
             ) : (

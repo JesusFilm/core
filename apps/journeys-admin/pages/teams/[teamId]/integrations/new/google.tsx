@@ -10,7 +10,7 @@ import { ReactElement } from 'react'
 // eslint-disable-next-line no-restricted-imports
 import { useTranslation } from 'react-i18next'
 
-import { GoogleCreateIntegration } from '../../../../../src/components/GrowthSpaces'
+import { GoogleCreateIntegration } from '../../../../../src/components/Google'
 import { HelpScoutBeacon } from '../../../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../../src/libs/initAndAuthApp'
