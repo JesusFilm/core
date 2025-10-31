@@ -9,7 +9,8 @@ test('journeys', async ({ page }) => {
   const factOrFictionLink = page.locator('a[href="/fact-or-fiction"]')
   await expect(factOrFictionLink).toBeVisible({ timeout: 150000 })
   // Click and handle potential new-tab navigation; fall back to same-page navigation
-  const newPageWait = page.context()
+  const newPageWait = page
+    .context()
     .waitForEvent('page', { timeout: 5000 })
     .catch(() => null)
   await factOrFictionLink.click()
@@ -39,9 +40,7 @@ test('journeys', async ({ page }) => {
   await targetPage.getByTestId('ConductorNavigationButtonNext').click()
   // Test Jesus in History screen
   await expect(targetPage.getByText('Jesus in History')).toBeInViewport()
-  await targetPage
-    .getByText('One question remains', { exact: false })
-    .click()
+  await targetPage.getByText('One question remains', { exact: false }).click()
   // Test Who was this Jesus? screen
   await expect(targetPage.getByText('Who was this Jesus?')).toBeInViewport()
   await targetPage.getByText('The Son of God').click()
