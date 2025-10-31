@@ -2,7 +2,7 @@
 import { useLazyQuery, useMutation } from '@apollo/client/react'
 import axios from 'axios'
 import { useSnackbar } from 'notistack'
-import { ReactNode, createContext, useContext, useReducer } from 'react'
+import { ReactNode, createContext, useContext, useEffect, useReducer } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { graphql } from '@core/shared/gql'
@@ -179,31 +179,37 @@ export function UploadVideoVariantProvider({
   const [createR2Asset] = useCreateR2AssetMutation()
   const [createMuxVideo] = useMutation(CREATE_MUX_VIDEO_UPLOAD_BY_URL)
   const [createVideoVariant] = useMutation(CREATE_VIDEO_VARIANT)
-  const [getMyMuxVideo, { stopPolling }] = useLazyQuery(GET_MY_MUX_VIDEO, {
+  const [getMyMuxVideo, muxQuery] = useLazyQuery(GET_MY_MUX_VIDEO, {
     pollInterval: 1000,
-    notifyOnNetworkStatusChange: true,
-    onCompleted: async (data) => {
-      if (
-        data.getMyMuxVideo.playbackId != null &&
-        data.getMyMuxVideo.assetId != null &&
-        data.getMyMuxVideo.readyToStream &&
-        state.muxVideoId != null
-      ) {
-        stopPolling()
-        await handleCreateVideoVariant(
-          data.getMyMuxVideo.id,
-          data.getMyMuxVideo.playbackId,
-          data.getMyMuxVideo.duration
-        )
-      }
-    },
-    onError: (error) => {
-      stopPolling()
+    notifyOnNetworkStatusChange: true
+  })
+
+  useEffect(() => {
+    const data = muxQuery.data
+    if (
+      data?.getMyMuxVideo.playbackId != null &&
+      data.getMyMuxVideo.assetId != null &&
+      data.getMyMuxVideo.readyToStream &&
+      state.muxVideoId != null
+    ) {
+      muxQuery.stopPolling?.()
+      void handleCreateVideoVariant(
+        data.getMyMuxVideo.id,
+        data.getMyMuxVideo.playbackId,
+        data.getMyMuxVideo.duration
+      )
+    }
+  }, [muxQuery.data, state.muxVideoId])
+
+  useEffect(() => {
+    const error = muxQuery.error
+    if (error != null) {
+      muxQuery.stopPolling?.()
       const errorMessage = error.message || 'Failed to get Mux video status'
       dispatch({ type: 'SET_ERROR', error: errorMessage })
       enqueueSnackbar(errorMessage, { variant: 'error' })
     }
-  })
+  }, [muxQuery.error])
 
   const handleCreateVideoVariant = async (
     muxId: string,

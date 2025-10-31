@@ -47,14 +47,14 @@ export function Route(): ReactElement {
     teamId: activeTeam?.id as string
   })
 
-  const selectedIntegration = data?.integrations.find(
-    (integration) => selectedBlock?.integrationId === integration.id
+  const selectedIntegration = (data?.integrations ?? []).find(
+    (integration) => selectedBlock?.integrationId === integration?.id
   )
 
   const options =
-    selectedIntegration?.routes.map(({ id, name }) => ({
-      value: id,
-      label: name
+    selectedIntegration?.routes?.map((r) => ({
+      value: r?.id ?? '',
+      label: r?.name ?? ''
     })) ?? []
 
   function handleChange(routeId: string | null): void {

@@ -21,6 +21,14 @@ import { JourneyCard } from '../../JourneyList/JourneyCard'
 import type { JourneyListProps } from '../../JourneyList/JourneyList'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../../JourneyList/LoadingJourneyList'
+import {
+  ArchiveActiveJourneys,
+  ArchiveActiveJourneysVariables
+} from '../../../../__generated__/ArchiveActiveJourneys'
+import {
+  TrashActiveJourneys,
+  TrashActiveJourneysVariables
+} from '../../../../__generated__/TrashActiveJourneys'
 
 const Dialog = dynamic(
   async () =>
@@ -41,7 +49,10 @@ export function ActiveTemplateList({
     status: [JourneyStatus.draft, JourneyStatus.published],
     template: true
   })
-  const [archive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
+  const [archive] = useMutation<
+    ArchiveActiveJourneys,
+    ArchiveActiveJourneysVariables
+  >(ARCHIVE_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysArchive != null) {
         enqueueSnackbar(t('Journeys Archived'), {
@@ -51,7 +62,10 @@ export function ActiveTemplateList({
       }
     }
   })
-  const [trash] = useMutation(TRASH_ACTIVE_JOURNEYS, {
+  const [trash] = useMutation<
+    TrashActiveJourneys,
+    TrashActiveJourneysVariables
+  >(TRASH_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysTrash != null) {
         enqueueSnackbar(t('Journeys Trashed'), {
@@ -70,7 +84,7 @@ export function ActiveTemplateList({
     try {
       await archive({
         variables: {
-          ids: data?.journeys?.map((journey) => journey.id)
+          ids: data?.journeys?.map((journey) => journey.id) ?? []
         }
       })
     } catch (error) {
@@ -88,7 +102,7 @@ export function ActiveTemplateList({
     try {
       await trash({
         variables: {
-          ids: data?.journeys?.map((journey) => journey.id)
+          ids: data?.journeys?.map((journey) => journey.id) ?? []
         }
       })
     } catch (error) {

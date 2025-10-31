@@ -24,7 +24,7 @@ export const GET_CUSTOM_DOMAINS = gql`
 `
 
 export function useCustomDomainsQuery(
-  options?: useQuery.Options<GetCustomDomains, GetCustomDomainsVariables>
+  options: useQuery.Options<GetCustomDomains, GetCustomDomainsVariables>
 ): useQuery.Result<GetCustomDomains, GetCustomDomainsVariables> & {
   hostname?: string
 } {

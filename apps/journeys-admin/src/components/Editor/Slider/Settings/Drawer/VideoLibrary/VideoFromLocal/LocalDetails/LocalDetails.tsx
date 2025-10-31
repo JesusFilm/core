@@ -89,9 +89,7 @@ export function LocalDetails({
     ? (videoBlock?.videoVariantLanguageId ?? DEFAULT_LANGUAGE_ID)
     : DEFAULT_LANGUAGE_ID
 
-  const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO, {
-    variables: { id, languageId }
-  })
+  const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO)
 
   const handleChange = (selectedLanguage: LanguageOption): void => {
     setSelectedLanguage(selectedLanguage)
@@ -164,7 +162,7 @@ export function LocalDetails({
 
   useEffect(() => {
     if (open) {
-      void loadVideo()
+      void loadVideo({ variables: { id, languageId } })
     }
   }, [open, loadVideo])
   const { t } = useTranslation('apps-journeys-admin')

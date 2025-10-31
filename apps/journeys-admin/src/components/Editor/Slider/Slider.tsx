@@ -71,15 +71,16 @@ export function Slider(): ReactElement {
         }
       }
     )
-  useQuery<getJourneyFlowBackButtonClicked>(
-    GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED,
-    {
-      onCompleted: (data) =>
-        setShowBackButtonHelp(
-          data?.getJourneyProfile?.journeyFlowBackButtonClicked !== true
-        )
-    }
+  const { data: journeyProfileData } = useQuery<getJourneyFlowBackButtonClicked>(
+    GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED
   )
+
+  useEffect(() => {
+    setShowBackButtonHelp(
+      journeyProfileData?.getJourneyProfile?.journeyFlowBackButtonClicked !==
+        true
+    )
+  }, [journeyProfileData])
 
   const swiperBreakpoints: SwiperOptions['breakpoints'] = {
     [breakpoints.values.xs]: {

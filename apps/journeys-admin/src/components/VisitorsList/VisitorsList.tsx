@@ -7,7 +7,7 @@ import { styled } from '@mui/material/styles'
 import { DataGrid } from '@mui/x-data-grid'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import {
   GetVisitors,
@@ -68,16 +68,19 @@ export function VisitorsList(): ReactElement {
   const [endCursor, setEndCursor] = useState<string | null>()
   const columns = getColDefs(t)
 
-  const { fetchMore, loading } = useQuery<GetVisitors>(GET_VISITORS, {
+  const { data, fetchMore, loading } = useQuery<GetVisitors>(GET_VISITORS, {
     variables: {
       first: 100
-    },
-    onCompleted: (data) => {
+    }
+  })
+
+  useEffect(() => {
+    if (data?.visitors != null) {
       setVisitors(data.visitors.edges)
       setHasNextPage(data.visitors.pageInfo.hasNextPage)
       setEndCursor(data.visitors.pageInfo.endCursor)
     }
-  })
+  }, [data])
 
   async function handleFetchNext(): Promise<void> {
     if (hasNextPage) {
@@ -87,8 +90,8 @@ export function VisitorsList(): ReactElement {
           after: endCursor
         }
       })
-      if (response.data.visitors.edges != null) {
-        setVisitors([...visitors, ...response.data.visitors.edges])
+      if (response.data?.visitors?.edges != null) {
+        setVisitors([...(visitors ?? []), ...response.data.visitors.edges])
         setHasNextPage(response.data.visitors.pageInfo.hasNextPage)
         setEndCursor(response.data.visitors.pageInfo.endCursor)
       }

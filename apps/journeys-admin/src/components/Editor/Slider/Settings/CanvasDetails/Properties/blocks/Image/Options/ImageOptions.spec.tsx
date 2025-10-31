@@ -116,12 +116,11 @@ describe('ImageOptions', () => {
             request: {
               ...imageBlockUpdateMock.request,
               variables: {
-                ...imageBlockUpdateMock.request.variables,
-                input: {
-                  ...imageBlockUpdateMock.request.variables?.input,
-                  src: 'https://example.com/old.jpg',
-                  alt: 'prior-alt'
-                }
+                ...(
+                  imageBlockUpdateMock.request.variables as ImageBlockUpdateVariables
+                ).input,
+                src: 'https://example.com/old.jpg',
+                alt: 'prior-alt'
               }
             },
             result: undoResult
@@ -194,12 +193,11 @@ describe('ImageOptions', () => {
             request: {
               ...imageBlockUpdateMock.request,
               variables: {
-                ...imageBlockUpdateMock.request.variables,
-                input: {
-                  ...imageBlockUpdateMock.request.variables?.input,
-                  src: null,
-                  alt: ''
-                }
+                ...(
+                  imageBlockUpdateMock.request.variables as ImageBlockUpdateVariables
+                ).input,
+                src: null,
+                alt: ''
               }
             },
             result: deleteResult
@@ -213,12 +211,11 @@ describe('ImageOptions', () => {
             request: {
               ...imageBlockUpdateMock.request,
               variables: {
-                ...imageBlockUpdateMock.request.variables,
-                input: {
-                  ...imageBlockUpdateMock.request.variables?.input,
-                  src: null,
-                  alt: ''
-                }
+                ...(
+                  imageBlockUpdateMock.request.variables as ImageBlockUpdateVariables
+                ).input,
+                src: null,
+                alt: ''
               }
             },
             result: redoResult
@@ -286,11 +283,10 @@ describe('ImageOptions', () => {
             request: {
               ...zoomUpdateMock.request,
               variables: {
-                ...zoomUpdateMock.request.variables,
-                input: {
-                  ...zoomUpdateMock.request.variables?.input,
-                  scale: null
-                }
+                ...(
+                  zoomUpdateMock.request.variables as ImageBlockUpdateVariables
+                ).input,
+                scale: null
               }
             },
             result: undoResult

@@ -550,7 +550,10 @@ describe('BackgroundMediaVideo', () => {
                 variables: {
                   ...coverVideoBlockUpdateMock.request.variables,
                   input: {
-                    ...coverVideoBlockUpdateMock.request.variables?.input,
+                    ...(
+                      coverVideoBlockUpdateMock.request
+                        .variables as CoverVideoBlockUpdateVariables
+                    ).input,
                     videoId: '2_0-FallingPlates',
                     videoVariantLanguageId: '529',
                     duration: 144,

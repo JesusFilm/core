@@ -84,24 +84,10 @@ export function TeamUpdateDialog({
         }
       )
     } catch (error) {
-      if (error instanceof ApolloError) {
-        if (error.networkError != null) {
-          enqueueSnackbar(
-            t('Failed to update the team. Reload the page or try again.'),
-            {
-              variant: 'error',
-              preventDuplicate: true
-            }
-          )
-          return
-        }
-      }
-      if (error instanceof Error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      }
+      enqueueSnackbar(t('Update failed. Reload the page or try again.'), {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
   }
 

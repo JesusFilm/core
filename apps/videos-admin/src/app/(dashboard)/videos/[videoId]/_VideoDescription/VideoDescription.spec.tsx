@@ -97,6 +97,7 @@ describe('VideoDescription', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
       refetch: jest.fn()
     })
   })
@@ -151,6 +152,7 @@ describe('VideoDescription', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
       refetch: jest.fn()
     })
 

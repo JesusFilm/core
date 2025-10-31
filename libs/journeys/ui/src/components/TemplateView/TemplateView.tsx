@@ -48,7 +48,9 @@ export function TemplateView({
     }
   })
 
-  const relatedJourneys = data?.journeys?.filter(({ id }) => id !== journey?.id)
+  const relatedJourneys = (data?.journeys as any[] | undefined)?.filter(
+    ({ id }) => id !== journey?.id
+  )
 
   const { data: userData } = useUserRoleQuery()
   const isPublisher = userData?.getUserRole?.roles?.includes(Role.publisher)
@@ -140,8 +142,10 @@ export function TemplateView({
           {relatedJourneys != null && relatedJourneys.length >= 1 && (
             <ContentCarousel
               heading={t('Related Templates')}
-              items={relatedJourneys}
-              renderItem={(itemProps) => <TemplateGalleryCard {...itemProps} />}
+              items={relatedJourneys as any}
+              renderItem={(itemProps) => (
+                <TemplateGalleryCard {...(itemProps as any)} />
+              )}
               breakpoints={swiperBreakpoints}
               cardSpacing={{
                 xs: 1,

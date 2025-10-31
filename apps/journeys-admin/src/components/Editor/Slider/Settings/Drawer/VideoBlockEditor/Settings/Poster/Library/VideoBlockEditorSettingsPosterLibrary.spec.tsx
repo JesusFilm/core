@@ -439,7 +439,10 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
                 variables: {
                   ...posterImageBlockUpdateMock.request.variables,
                   input: {
-                    ...posterImageBlockUpdateMock.request.variables?.input,
+                    ...(
+                      posterImageBlockUpdateMock.request
+                        .variables as PosterImageBlockUpdateVariables
+                    ).input,
                     src: 'https://example.com/old.jpg',
                     alt: 'prior-alt'
                   }

@@ -130,7 +130,7 @@ export const getStaticProps: GetStaticProps<VideosPageProps> = async ({
     props: {
       flags: await getFlags(),
       serverState,
-      initialApolloState: apolloClient.cache.extract(),
+      initialApolloState: apolloClient.cache.extract() as NormalizedCacheObject,
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-watch'],

@@ -24,6 +24,7 @@ import {
   GetStepBlocksWithPositionVariables
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
 import { StepFields as StepBlock } from '../../../../../__generated__/StepFields'
+import { StepBlockPositionUpdate } from '../../../../../__generated__/StepBlockPositionUpdate'
 import { mockReactFlow } from '../../../../../test/mockReactFlow'
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
@@ -161,7 +162,7 @@ describe('JourneyFlow', () => {
     mockUseStepBlockPositionUpdateMutation.mockReturnValue([
       mockUpdate,
       mockResult
-    ])
+    ] as unknown as ReturnType<typeof useStepBlockPositionUpdateMutation>)
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
@@ -224,7 +225,7 @@ describe('JourneyFlow', () => {
     mockUseStepBlockPositionUpdateMutation.mockReturnValue([
       mockUpdate,
       mockResult
-    ])
+    ] as unknown as ReturnType<typeof useStepBlockPositionUpdateMutation>)
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
@@ -320,7 +321,7 @@ describe('JourneyFlow', () => {
     mockUseJourneyUpdateMutation.mockReturnValue([
       mockJourneyUpdate,
       mockJourneyResult
-    ])
+    ] as unknown as ReturnType<typeof useJourneyUpdateMutation>)
 
     const initialSocialNodeX = 100
     const initialSocialNodeY = 200

@@ -57,7 +57,7 @@ export default async function middleware(
       }).query({
         query: GET_AUTH
       })
-      if (data.me?.mediaUserRoles.length === 0) {
+      if ((data?.me?.mediaUserRoles?.length ?? 0) === 0) {
         req.nextUrl.pathname = unAuthorizedPage
         return NextResponse.redirect(req.nextUrl)
       }

@@ -61,7 +61,7 @@ export const MENU_BLOCK_CREATE = gql`
 `
 
 function updateCache(
-  cache: ApolloCache<unknown>,
+  cache: ApolloCache,
   data?: MenuBlockCreate | null,
   journeyId?: string | null
 ): void {

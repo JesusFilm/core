@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client'
 import { useMutation } from '@apollo/client/react'
-import { ApolloError } from '@apollo/client/v4-migration'
+import type { ErrorLike } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Tab from '@mui/material/Tab'
@@ -150,27 +150,10 @@ export function TemplateSettingsDialog({
       })
       onClose()
     } catch (error) {
-      if (error instanceof ApolloError) {
-        if (error.networkError != null) {
-          enqueueSnackbar(
-            t('Field update failed. Reload the page or try again.'),
-            {
-              variant: 'error',
-              preventDuplicate: true
-            }
-          )
-          return
-        }
-      }
-      if (error instanceof Error) {
-        enqueueSnackbar(
-          'Something went wrong, please reload the page and try again',
-          {
-            variant: 'error',
-            preventDuplicate: true
-          }
-        )
-      }
+      enqueueSnackbar('Something went wrong, please reload the page and try again', {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
   }
 

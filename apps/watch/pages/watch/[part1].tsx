@@ -119,7 +119,7 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
       serverState,
       languageEnglishName: language.englishName?.value ?? '',
       languageId: language.id,
-      initialApolloState: apolloClient.cache.extract(),
+      initialApolloState: apolloClient.cache.extract() as NormalizedCacheObject,
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-watch'],

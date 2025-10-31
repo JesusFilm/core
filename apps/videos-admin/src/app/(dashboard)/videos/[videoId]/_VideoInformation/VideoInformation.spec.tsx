@@ -87,6 +87,7 @@ describe('VideoInformation', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
       refetch: jest.fn().mockResolvedValue({ data: mockVideoData })
     })
   })
@@ -133,6 +134,7 @@ describe('VideoInformation', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
       refetch: jest.fn().mockResolvedValue({ data: incompleteVideoData })
     })
 
@@ -199,6 +201,7 @@ describe('VideoInformation', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
       refetch: jest.fn().mockResolvedValue({ data: collectionVideoData })
     })
 
@@ -272,6 +275,7 @@ describe('VideoInformation', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
       refetch: mockRefetch
     })
 
@@ -376,7 +380,8 @@ describe('VideoInformation', () => {
         subscribeToMore: jest.fn(),
         client: {} as any,
         error: undefined,
-        networkStatus: NetworkStatus.ready,
+      networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
         refetch: jest.fn()
       })
 
@@ -410,7 +415,8 @@ describe('VideoInformation', () => {
         subscribeToMore: jest.fn(),
         client: {} as any,
         error: undefined,
-        networkStatus: NetworkStatus.ready,
+      networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
         refetch: jest.fn()
       })
 
@@ -444,7 +450,8 @@ describe('VideoInformation', () => {
         subscribeToMore: jest.fn(),
         client: {} as any,
         error: undefined,
-        networkStatus: NetworkStatus.ready,
+      networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
         refetch: jest.fn()
       })
 

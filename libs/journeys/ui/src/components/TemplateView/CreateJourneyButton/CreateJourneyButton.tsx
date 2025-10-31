@@ -63,7 +63,7 @@ export function CreateJourneyButton({
 
   // Set up the subscription for translation
   const { data: translationData } = useJourneyAiTranslateSubscription({
-    variables: translationVariables,
+    variables: translationVariables as any,
     skip: !translationVariables,
     onComplete: () => {
       enqueueSnackbar(t('Journey Translated'), {

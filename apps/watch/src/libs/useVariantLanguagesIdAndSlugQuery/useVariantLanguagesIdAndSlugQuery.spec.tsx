@@ -72,9 +72,9 @@ describe('useVariantLanguagesIdAndSlugQuery', () => {
       async () => await waitFor(() => expect(mockResult).toHaveBeenCalled())
     )
 
-    expect(result.current.data?.video).toEqual(mockVideo)
-    expect(result.current.data?.video.variantLanguages).toHaveLength(2)
-    expect(result.current.data?.video.subtitles).toHaveLength(2)
+    expect(result.current.data?.video!).toEqual(mockVideo)
+    expect(result.current.data?.video!.variantLanguages).toHaveLength(2)
+    expect(result.current.data?.video!.subtitles).toHaveLength(2)
   })
 
   it('should handle empty variant languages and subtitles', async () => {
@@ -118,8 +118,8 @@ describe('useVariantLanguagesIdAndSlugQuery', () => {
       async () => await waitFor(() => expect(mockResult).toHaveBeenCalled())
     )
 
-    expect(result.current.data?.video.variantLanguages).toHaveLength(0)
-    expect(result.current.data?.video.subtitles).toHaveLength(0)
+    expect(result.current.data?.video!.variantLanguages).toHaveLength(0)
+    expect(result.current.data?.video!.subtitles).toHaveLength(0)
   })
 
   it('should handle loading state', () => {

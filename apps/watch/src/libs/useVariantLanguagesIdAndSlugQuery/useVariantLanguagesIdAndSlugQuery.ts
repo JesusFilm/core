@@ -21,7 +21,7 @@ export const GET_VARIANT_LANGUAGES_ID_AND_SLUG = gql`
 `
 
 export function useVariantLanguagesIdAndSlugQuery(
-  options?: useQuery.Options<
+  options: useQuery.Options<
     GetVariantLanguagesIdAndSlug,
     GetVariantLanguagesIdAndSlugVariables
   >

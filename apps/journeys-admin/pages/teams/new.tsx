@@ -10,6 +10,7 @@ import { ReactElement } from 'react'
 
 import { GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS } from '@core/journeys/ui/TeamProvider'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
+import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
 
 import { OnboardingPageWrapper } from '../../src/components/OnboardingPageWrapper'
 import { TeamOnboarding } from '../../src/components/Team/TeamOnboarding'
@@ -55,18 +56,19 @@ export const getServerSideProps = withUserTokenSSR({
   await apolloClient.query({ query: GET_CURRENT_USER })
 
   // check if user has been invited to a team but has no active team:
-  const { data } = await apolloClient.query({
+  const { data } = await apolloClient.query<GetLastActiveTeamIdAndTeams>({
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
     errorPolicy: 'none'
   })
 
   // set active team to invited team and redirect:
-  if (data.teams.length > 0 && data.teams[0].id != null) {
+  const teams = data?.teams ?? []
+  if (teams.length > 0 && teams[0]?.id != null) {
     await apolloClient.mutate({
       mutation: UPDATE_LAST_ACTIVE_TEAM_ID,
       variables: {
         input: {
-          lastActiveTeamId: data.teams[0].id
+          lastActiveTeamId: teams[0].id as string
         }
       }
     })

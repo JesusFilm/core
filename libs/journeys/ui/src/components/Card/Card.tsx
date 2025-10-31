@@ -266,10 +266,11 @@ export function Card({
         resetForm()
       })
       .catch((e) => {
-        if (e instanceof ApolloError)
+        if (e instanceof Error) {
           enqueueSnackbar(e.message, {
             variant: 'error'
           })
+        }
       })
   }
 

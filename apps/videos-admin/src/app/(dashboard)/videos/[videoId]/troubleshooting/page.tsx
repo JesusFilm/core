@@ -1,6 +1,6 @@
 'use client'
 
-import { useLazyQuery, useMutation } from '@apollo/client'
+import { useLazyQuery, useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -32,10 +32,7 @@ const FIX_VIDEO_LANGUAGES = graphql(`
 export default function TroubleshootingPage(): ReactElement {
   const { videoId } = useParams<{ videoId: string }>()
   const [getLanguages, { data, loading, error }] = useLazyQuery(
-    GET_VIDEO_LANGUAGES,
-    {
-      variables: { videoId }
-    }
+    GET_VIDEO_LANGUAGES
   )
 
   const [
@@ -52,7 +49,7 @@ export default function TroubleshootingPage(): ReactElement {
   })
 
   const handleFetchLanguages = (): void => {
-    void getLanguages()
+    void getLanguages({ variables: { videoId } })
   }
 
   const handleFixLanguages = (): void => {

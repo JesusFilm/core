@@ -610,12 +610,12 @@ describe('RadioOptionImage', () => {
               request: {
                 ...radioOptionImageUpdateMock.request,
                 variables: {
-                  ...radioOptionImageUpdateMock.request.variables,
-                  input: {
-                    ...radioOptionImageUpdateMock.request.variables?.input,
-                    src: 'https://example.com/old.jpg',
-                    alt: 'prior-alt'
-                  }
+                  ...(
+                    radioOptionImageUpdateMock.request
+                      .variables as RadioOptionImageUpdateVariables
+                  ).input,
+                  src: 'https://example.com/old.jpg',
+                  alt: 'prior-alt'
                 }
               },
               result: undoResult
@@ -716,12 +716,12 @@ describe('RadioOptionImage', () => {
               request: {
                 ...radioOptionImageUpdateMock.request,
                 variables: {
-                  ...radioOptionImageUpdateMock.request.variables,
-                  input: {
-                    ...radioOptionImageUpdateMock.request.variables?.input,
-                    src: 'https://example.com/old.jpg',
-                    alt: 'prior-alt'
-                  }
+                  ...(
+                    radioOptionImageUpdateMock.request
+                      .variables as RadioOptionImageUpdateVariables
+                  ).input,
+                  src: 'https://example.com/old.jpg',
+                  alt: 'prior-alt'
                 }
               },
               result: undoResult

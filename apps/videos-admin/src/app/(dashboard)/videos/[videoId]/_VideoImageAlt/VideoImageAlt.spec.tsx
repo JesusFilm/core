@@ -111,6 +111,7 @@ describe('VideoImageAlt', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
       refetch: jest.fn()
     })
   })
@@ -167,6 +168,7 @@ describe('VideoImageAlt', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
       refetch: jest.fn()
     })
 

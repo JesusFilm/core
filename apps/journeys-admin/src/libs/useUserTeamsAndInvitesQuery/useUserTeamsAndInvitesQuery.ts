@@ -37,7 +37,7 @@ export function useUserTeamsAndInvitesQuery(
     GetUserTeamsAndInvites,
     GetUserTeamsAndInvitesVariables
   >(GET_USER_TEAMS_AND_INVITES, {
-    variables
+    variables: variables!
   })
 
   const emails = useMemo(() => {

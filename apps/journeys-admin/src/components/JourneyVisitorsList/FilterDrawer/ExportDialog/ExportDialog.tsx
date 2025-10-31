@@ -52,7 +52,10 @@ export function ExportDialog({
     useJourneyEventsExport()
   const { exportJourneyContacts, downloading: contactsDownloading } =
     useJourneyContactsExport()
-  const { data: journeyData } = useQuery(GET_JOURNEY_CREATED_AT, {
+  const { data: journeyData } = useQuery<
+    { journey: { id: string; createdAt: string | null } },
+    { id: string }
+  >(GET_JOURNEY_CREATED_AT, {
     variables: { id: journeyId }
   })
 
@@ -101,7 +104,8 @@ export function ExportDialog({
       }
       onClose()
     } catch (error) {
-      enqueueSnackbar(error.message, {
+      const message = error instanceof Error ? error.message : t('Something went wrong')
+      enqueueSnackbar(message, {
         variant: 'error'
       })
     }

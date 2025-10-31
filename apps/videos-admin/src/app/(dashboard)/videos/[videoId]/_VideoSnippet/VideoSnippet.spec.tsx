@@ -99,6 +99,7 @@ describe('VideoSnippet', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
       refetch: jest.fn()
     })
   })
@@ -154,6 +155,7 @@ describe('VideoSnippet', () => {
       client: {} as any,
       error: undefined,
       networkStatus: NetworkStatus.ready,
+      dataState: 'complete',
       refetch: jest.fn()
     })
 

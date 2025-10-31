@@ -41,8 +41,7 @@ export function Report({ reportType, journeyId }: ReportProps): ReactElement {
   const [error, setError] = useState(false)
 
   const { data } = useQuery<GetAdminJourneysReport>(GET_ADMIN_JOURNEYS_REPORT, {
-    variables: { reportType },
-    onError
+    variables: { reportType }
   })
 
   function onLoad(): void {

@@ -32,10 +32,9 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
     useMutation<UpdateLastActiveTeamId>(UPDATE_LAST_ACTIVE_TEAM_ID)
 
   function handleChange(event: SelectChangeEvent): void {
-    const team = query?.data?.teams.find(
-      (team) => team.id === event.target.value
-    )
-    setActiveTeam(team ?? null)
+    const teams = query?.data?.teams ?? []
+    const team = teams.find((team) => team?.id === event.target.value) as any
+    setActiveTeam((team as any) ?? null)
     void updateLastActiveTeamId({
       variables: {
         input: {
@@ -100,7 +99,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
             {(query?.data?.teams != null
               ? sortBy(query.data?.teams, 'title')
               : []
-            ).map((team) => (
+            ).map((team: any) => (
               <MenuItem
                 key={team.id}
                 value={team.id}
@@ -114,7 +113,7 @@ export function TeamSelect({ onboarding }: TeamSelectProps): ReactElement {
                 }}
               >
                 {team.title}
-                <TeamAvatars userTeams={team.userTeams} />
+                <TeamAvatars userTeams={team.userTeams as any} />
               </MenuItem>
             ))}
             <Divider />

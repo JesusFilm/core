@@ -45,19 +45,17 @@ export function TemplateSections({
   const { collection, contents } = useMemo(() => {
     const contents: Contents = {}
     let collection: Journey[] = []
-    if (data != null) {
+    const journeys = ((data as any)?.journeys as any[]) ?? []
+    if (journeys.length > 0) {
       const featuredAndNew = [
-        ...data.journeys.filter(({ featuredAt }) => featuredAt != null),
-        ...take(
-          data.journeys.filter(({ featuredAt }) => featuredAt == null),
-          10
-        )
+        ...journeys.filter(({ featuredAt }) => featuredAt != null),
+        ...take(journeys.filter(({ featuredAt }) => featuredAt == null), 10)
       ]
-      const mostRelevant = data.journeys.filter(({ tags }) =>
+      const mostRelevant = journeys.filter(({ tags }) =>
         tagIds?.every((tagId) => tags.find((tag) => tag.id === tagId))
       )
       collection = tagIds == null ? featuredAndNew : mostRelevant
-      data.journeys.forEach((journey) => {
+      journeys.forEach((journey) => {
         journey.tags.forEach((tag) => {
           if (contents[tag.id] == null)
             contents[tag.id] = {

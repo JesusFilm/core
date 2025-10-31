@@ -6,6 +6,7 @@ import {
   ReactNode,
   createContext,
   useContext,
+  useEffect,
   useState
 } from 'react'
 
@@ -81,13 +82,12 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   }
 
   const query = useQuery<GetLastActiveTeamIdAndTeams>(
-    GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-    {
-      onCompleted: (data) => {
-        updateActiveTeam(data)
-      }
-    }
+    GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   )
+
+  useEffect(() => {
+    if (query.data != null) updateActiveTeam(query.data)
+  }, [query.data])
 
   function setActiveTeam(team: Team | null): void {
     if (team == null) {
@@ -106,7 +106,7 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
   // https://github.com/apollographql/apollo-client/issues/11151
   async function refetch(): Promise<void> {
     const { data } = await query.refetch()
-    updateActiveTeam(data)
+    if (data != null) updateActiveTeam(data)
   }
 
   return (

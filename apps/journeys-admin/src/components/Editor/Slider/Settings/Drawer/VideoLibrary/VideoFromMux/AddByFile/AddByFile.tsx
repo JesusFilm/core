@@ -64,24 +64,8 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     useMutation<CreateMuxVideoUploadByFileMutation>(
       CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION
     )
-  const [getMyMuxVideo, { stopPolling }] = useLazyQuery<GetMyMuxVideoQuery>(
-    GET_MY_MUX_VIDEO_QUERY,
-    {
-      pollInterval: 1000,
-      notifyOnNetworkStatusChange: true,
-      onCompleted: (data) => {
-        if (
-          data.getMyMuxVideo.playbackId != null &&
-          data.getMyMuxVideo.assetId != null &&
-          data.getMyMuxVideo.readyToStream
-        ) {
-          stopPolling()
-          onChange(data.getMyMuxVideo.id)
-          resetUploadStatus()
-        }
-      }
-    }
-  )
+  const [getMyMuxVideo, { stopPolling, data: muxData }] =
+    useLazyQuery<GetMyMuxVideoQuery>(GET_MY_MUX_VIDEO_QUERY)
 
   useEffect(() => {
     if (processing && data?.createMuxVideoUploadByFile?.id != null) {
@@ -90,6 +74,19 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
       })
     }
   }, [processing, getMyMuxVideo, data?.createMuxVideoUploadByFile?.id])
+
+  useEffect(() => {
+    const video = muxData?.getMyMuxVideo
+    if (
+      video?.playbackId != null &&
+      video?.assetId != null &&
+      video?.readyToStream
+    ) {
+      stopPolling?.()
+      onChange(video.id)
+      resetUploadStatus()
+    }
+  }, [muxData, stopPolling, onChange])
 
   const onDrop = async (): Promise<void> => {
     setfileTooLarge(false)

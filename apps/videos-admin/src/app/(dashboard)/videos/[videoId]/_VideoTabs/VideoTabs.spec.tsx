@@ -103,15 +103,15 @@ const setupMock = (data: any) => {
     networkStatus: NetworkStatus.ready,
     client: {} as any,
     previousData: null,
-    called: true,
     startPolling: jest.fn(),
     stopPolling: jest.fn(),
     subscribeToMore: jest.fn(),
     updateQuery: jest.fn(),
     observable: {} as any,
     reobserve: jest.fn(),
-    variables: {}
-  } as useQuery.Result<any, OperationVariables>)
+    variables: {},
+    dataState: 'complete'
+  } as any)
 }
 
 describe('VideoTabView', () => {

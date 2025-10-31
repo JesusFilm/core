@@ -38,8 +38,8 @@ export const DELETE_HOST = gql`
 interface HostFormTabProps {
   handleSelection: (value: 'selection' | 'list') => void
   getAllTeamHostsQuery: (
-    options?: useLazyQuery.Options | undefined
-  ) => Promise<useQuery.Result<GetAllTeamHosts, GetAllTeamHostsVariables>>
+    options?: { variables?: GetAllTeamHostsVariables }
+  ) => Promise<unknown>
 }
 
 export function HostForm({

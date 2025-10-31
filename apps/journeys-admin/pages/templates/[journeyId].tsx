@@ -24,6 +24,7 @@ import { IdType } from '../../__generated__/globalTypes'
 import { HelpScoutBeacon } from '../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+import { JourneyFields } from '../../__generated__/JourneyFields'
 
 function TemplateDetailsPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -51,7 +52,7 @@ function TemplateDetailsPage(): ReactElement {
       />
       <JourneyProvider
         value={{
-          journey: data?.journey,
+          journey: data?.journey as unknown as JourneyFields,
           variant: 'customize'
         }}
       >
@@ -148,7 +149,7 @@ export const getServerSideProps: GetStaticProps = withUserTokenSSR()(async ({
         idType: IdType.databaseId
       }
     })
-    const tagIds = data.journey.tags.map((tag) => tag.id)
+    const tagIds = data?.journey?.tags?.map((tag) => tag.id) ?? []
     // src/components/TemplateView/TemplateView.tsx useJourneysQuery
     await apolloClient.query<GetJourneys, GetJourneysVariables>({
       query: GET_JOURNEYS,

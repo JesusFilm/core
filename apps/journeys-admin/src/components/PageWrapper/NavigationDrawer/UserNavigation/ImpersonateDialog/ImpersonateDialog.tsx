@@ -58,24 +58,10 @@ export function ImpersonateDialog({
       }
       handleClose(formikHelpers.resetForm)()
     } catch (error) {
-      if (error instanceof ApolloError) {
-        if (error.networkError != null) {
-          enqueueSnackbar(
-            t('Impersonation failed. Reload the page or try again.'),
-            {
-              variant: 'error',
-              preventDuplicate: true
-            }
-          )
-          return
-        }
-      }
-      if (error instanceof Error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      }
+      enqueueSnackbar(t('Impersonation failed. Please try again later.'), {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
   }
 

@@ -29,8 +29,7 @@ export const STEP_AND_CARD_BLOCK_CREATE = gql`
 `
 
 export function stepBlockCreateUpdate(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  cache: ApolloCache<any>,
+  cache: ApolloCache,
   data: StepAndCardBlockCreate | null | undefined,
   journeyId: string | null | undefined
 ): void {

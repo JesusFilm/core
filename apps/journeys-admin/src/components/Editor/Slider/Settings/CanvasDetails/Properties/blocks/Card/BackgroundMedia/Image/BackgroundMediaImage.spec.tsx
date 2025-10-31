@@ -404,7 +404,10 @@ describe('BackgroundMediaImage', () => {
                 variables: {
                   ...coverImageBlockUpdateMock.request.variables,
                   input: {
-                    ...coverImageBlockUpdateMock.request.variables?.input,
+                    ...(
+                      coverImageBlockUpdateMock.request
+                        .variables as CoverImageBlockUpdateVariables
+                    ).input,
                     src: 'https://example.com/old.jpg',
                     alt: 'prior-alt'
                   }

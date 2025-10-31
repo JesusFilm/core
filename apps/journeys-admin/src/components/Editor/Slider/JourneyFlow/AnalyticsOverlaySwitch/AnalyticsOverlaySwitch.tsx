@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography'
 import { formatISO } from 'date-fns'
 import { useTranslation } from 'next-i18next'
 import { enqueueSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -22,26 +22,29 @@ export function AnalyticsOverlaySwitch(): ReactElement {
   } = useEditor()
   const currentDate = formatISO(new Date(), { representation: 'date' })
 
-  useJourneyAnalyticsQuery({
+  const { data: analyticsData, error: analyticsError } = useJourneyAnalyticsQuery({
     variables: {
       id: journey?.id ?? '',
       period: 'custom',
       date: `${earliestStatsCollected},${currentDate}`
     },
-    skip: journey?.id == null || showAnalytics !== true,
-    onCompleted: (analytics) => {
-      dispatch({
-        type: 'SetAnalyticsAction',
-        analytics
-      })
-    },
-    onError: (_) => {
+    skip: journey?.id == null || showAnalytics !== true
+  })
+
+  useEffect(() => {
+    if (analyticsData != null) {
+      dispatch({ type: 'SetAnalyticsAction', analytics: analyticsData })
+    }
+  }, [analyticsData, dispatch])
+
+  useEffect(() => {
+    if (analyticsError != null) {
       enqueueSnackbar(t('Error fetching analytics'), {
         variant: 'error',
         preventDuplicate: true
       })
     }
-  })
+  }, [analyticsError, t])
 
   function handleSwitchAnalytics(): void {
     dispatch({

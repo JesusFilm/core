@@ -1,4 +1,5 @@
-import type { MutationFunction } from '@apollo/client/react'
+import type { FetchResult } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import {
   CreateCloudflareR2Asset,
@@ -25,10 +26,12 @@ export async function handleVttFile({
   videoId: string
   editionId: string
   languageId: string
-  createR2Asset: MutationFunction<
-    CreateCloudflareR2Asset,
-    CreateCloudflareR2AssetVariables
-  >
+  createR2Asset: (
+    options?: useMutation.MutationFunctionOptions<
+      CreateCloudflareR2Asset,
+      CreateCloudflareR2AssetVariables
+    >
+  ) => Promise<FetchResult<CreateCloudflareR2Asset>>
   uploadAssetFile: (file: File, uploadUrl: string) => Promise<void>
   abortController: React.MutableRefObject<AbortController | null>
   errorMessage: string

@@ -43,7 +43,6 @@ describe('NewSpacerButton', () => {
     request: {
       query: SPACER_BLOCK_CREATE
     },
-    variableMatcher: (variables) => true,
     result: jest.fn(() => ({
       data: {
         spacerBlockCreate: {

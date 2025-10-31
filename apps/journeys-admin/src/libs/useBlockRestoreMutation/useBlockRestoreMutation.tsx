@@ -31,8 +31,7 @@ export function blockRestoreUpdate(
   response:
     | Array<{ id: string; __typename: BlockFields['__typename'] }>
     | undefined,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  cache: ApolloCache<any>,
+  cache: ApolloCache,
   journeyId: string | undefined
 ): void {
   if (response != null) {

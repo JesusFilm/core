@@ -22,7 +22,7 @@ export const blockDeleteUpdate = (
   selectedBlock: BlockIdentifier,
   response: Array<BlockIdentifier & { parentOrder: number | null }> | undefined,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  cache: ApolloCache<any>,
+  cache: ApolloCache,
   journeyId: string
 ): void => {
   if (response != null) {
@@ -40,21 +40,21 @@ export const blockDeleteUpdate = (
       })
     })
     const blockRefs = getNestedChildRefs(selectedBlock)
-    cache.modify({
-      id: cache.identify({ __typename: 'Journey', id: journeyId }),
-      fields: {
-        blocks(existingBlockRefs: Reference[]) {
-          return reject(existingBlockRefs, (block) => {
-            return blockRefs.includes(block.__ref)
-          })
+      cache.modify({
+        id: cache.identify({ __typename: 'Journey', id: journeyId }),
+        fields: {
+          blocks(existingBlockRefs) {
+            const refs = (existingBlockRefs ?? []) as { __ref: string }[]
+            return reject(refs, (block) => blockRefs.includes(block.__ref))
+          }
         }
-      }
-    })
+      })
     if (selectedBlock.__typename === 'StepBlock') {
       cache.modify({
         fields: {
           blocks(existingBlockRefs = []) {
-            return existingBlockRefs.filter(
+            const refs = existingBlockRefs as { __ref: string }[]
+            return refs.filter(
               (blockRef) => blockRef.__ref !== `StepBlock:${selectedBlock.id}`
             )
           }

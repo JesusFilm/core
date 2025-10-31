@@ -109,7 +109,7 @@ export function CopyToTeamDialog({
   })
 
   const updateTeamState = (teamId: string): void => {
-    setActiveTeam(teams.find((team) => team.id === teamId) ?? null)
+    setActiveTeam((teams.find((team) => team?.id === teamId) as any) ?? null)
     void updateLastActiveTeamId({
       variables: {
         input: {
@@ -169,7 +169,7 @@ export function CopyToTeamDialog({
   return (
     <Formik<FormValues>
       initialValues={{
-        teamSelect: teams.length === 1 ? teams[0].id : '',
+        teamSelect: teams.length === 1 ? (teams[0]?.id ?? '') : '',
         languageSelect: undefined,
         showTranslation: false
       }}
@@ -252,21 +252,24 @@ export function CopyToTeamDialog({
                     }
                   }}
                 >
-                  {(query?.data?.teams != null
-                    ? sortBy(query.data?.teams, 'title')
-                    : []
-                  ).map((team) => (
+                  {(
+                    query?.data?.teams != null
+                      ? (sortBy(query.data?.teams, 'title') as any[])
+                      : []
+                  )
+                    .filter((team) => team?.id != null && team?.title != null)
+                    .map((team) => (
                     <MenuItem
-                      key={team.id}
-                      value={team.id}
-                      aria-label={team.title}
+                      key={team.id as string}
+                      value={team.id as string}
+                      aria-label={team.title as string}
                       sx={{
                         display: 'block',
                         whiteSpace: 'normal',
                         wordWrap: 'break-word'
                       }}
                     >
-                      {team.title}
+                      {team.title as string}
                     </MenuItem>
                   ))}
                 </TextField>
@@ -298,7 +301,7 @@ export function CopyToTeamDialog({
               )}
               {values.showTranslation && (
                 <LanguageAutocomplete
-                  languages={languagesData?.languages}
+                  languages={(languagesData?.languages as any) ?? []}
                   loading={languagesLoading}
                   helperText={
                     touched.languageSelect && errors.languageSelect

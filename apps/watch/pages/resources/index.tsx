@@ -89,7 +89,7 @@ export const getStaticProps: GetStaticProps<ResourcesPageProps> = async ({
     props: {
       flags,
       serverState,
-      intitialApolloState: apolloClient.cache.extract(),
+      intitialApolloState: apolloClient.cache.extract() as NormalizedCacheObject,
       ...(await serverSideTranslations(
         locale ?? 'en',
         ['apps-watch'],

@@ -31,8 +31,11 @@ export const GET_INTEGRATION = gql`
 export function useIntegrationQuery(
   variables?: GetIntegrationVariables
 ): useQuery.Result<GetIntegration, GetIntegrationVariables> {
+  const hasTeamId = variables?.teamId != null
   return useQuery<GetIntegration, GetIntegrationVariables>(GET_INTEGRATION, {
-    variables,
-    skip: variables?.teamId == null
+    variables: hasTeamId
+      ? (variables as GetIntegrationVariables)
+      : ({} as GetIntegrationVariables),
+    skip: !hasTeamId
   })
 }

@@ -442,7 +442,7 @@ export function VideoList(): ReactElement {
               }
             })
 
-            const videos = result.data.adminVideos || []
+            const videos = result.data?.adminVideos || []
 
             // Process the data to match the grid's format
             const processedRows = videos.map((video) => {
@@ -531,7 +531,7 @@ export function VideoList(): ReactElement {
               }
             })
 
-            const videos = result.data.adminVideos || []
+            const videos = result.data?.adminVideos || []
 
             // Process the data to match the grid's format
             const processedRows = videos.map((video) => {

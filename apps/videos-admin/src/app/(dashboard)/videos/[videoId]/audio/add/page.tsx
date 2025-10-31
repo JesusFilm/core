@@ -70,12 +70,15 @@ export default function AddAudioLanguageDialog(): ReactElement {
     variables: { id: videoId }
   })
 
-  const availableLanguages = data?.languages?.filter(
-    (language) =>
-      !variantsData.adminVideo.variants.some(
-        (variant) => variant.language.id === language.id
+  const availableLanguages = (data?.languages ?? [])
+    .filter((language) => language?.id != null)
+    .filter((language) =>
+      !(
+        variantsData?.adminVideo.variants?.some(
+          (variant) => variant.language.id === (language as any).id
+        ) ?? false
       )
-  )
+    )
 
   const returnUrl = `/videos/${videoId}/audio`
   const handleSubmit = async (values: FormikValues): Promise<void> => {
@@ -172,7 +175,7 @@ export default function AddAudioLanguageDialog(): ReactElement {
                     onChange={async (value) => {
                       await setFieldValue('language', value)
                     }}
-                    languages={availableLanguages}
+                    languages={availableLanguages as any}
                     loading={languagesLoading}
                     disabled={isUploadInProgress}
                     value={values.language ?? undefined}

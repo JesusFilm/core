@@ -203,7 +203,9 @@ export function HeaderAndLanguageFilter({
   })
 
   const languageOptions = convertLanguagesToOptions(
-    data?.languages.filter(({ id }) => selectedLanguageIds?.includes(id))
+    ((data?.languages as any[]) ?? []).filter(({ id }) =>
+      selectedLanguageIds?.includes(id)
+    )
   )
 
   const languageNames = languageOptions.map(
@@ -240,7 +242,7 @@ export function HeaderAndLanguageFilter({
 
   const options = useMemo(() => {
     return (
-      data?.languages?.map(({ id, name }) => {
+      ((data?.languages as any[]) ?? []).map(({ id, name }) => {
         const localLanguageName = name.find(({ primary }) => !primary)?.value
         const nativeLanguageName = name.find(({ primary }) => primary)?.value
 

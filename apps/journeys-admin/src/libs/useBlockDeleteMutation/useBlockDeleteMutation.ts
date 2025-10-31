@@ -52,7 +52,7 @@ export function useBlockDeleteMutation(
 
     return await blockDeleteMutation({
       variables: {
-        id: block.id
+        id: block.id as string
       },
       update(cache, { data }) {
         blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)

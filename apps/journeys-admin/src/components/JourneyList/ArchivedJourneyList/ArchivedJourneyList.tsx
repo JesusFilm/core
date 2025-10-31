@@ -45,6 +45,14 @@ export const TRASH_ARCHIVED_JOURNEYS = gql`
     }
   }
 `
+import {
+  RestoreArchivedJourneys,
+  RestoreArchivedJourneysVariables
+} from '../../../../__generated__/RestoreArchivedJourneys'
+import {
+  TrashArchivedJourneys,
+  TrashArchivedJourneysVariables
+} from '../../../../__generated__/TrashArchivedJourneys'
 
 export function ArchivedJourneyList({
   user,
@@ -58,7 +66,10 @@ export function ArchivedJourneyList({
     useLastActiveTeamId: true
   })
 
-  const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
+  const [restore] = useMutation<
+    RestoreArchivedJourneys,
+    RestoreArchivedJourneysVariables
+  >(RESTORE_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
         enqueueSnackbar(t('Journeys Restored'), {
@@ -68,7 +79,10 @@ export function ArchivedJourneyList({
       }
     }
   })
-  const [trash] = useMutation(TRASH_ARCHIVED_JOURNEYS, {
+  const [trash] = useMutation<
+    TrashArchivedJourneys,
+    TrashArchivedJourneysVariables
+  >(TRASH_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysTrash != null) {
         enqueueSnackbar(t('Journeys Trashed'), {
@@ -85,14 +99,15 @@ export function ArchivedJourneyList({
 
   async function handleRestoreSubmit(): Promise<void> {
     try {
-      const journeyIds = data?.journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (user?.id ?? '')
-            )?.role === 'owner'
+      const journeyIds = (data?.journeys ?? [])
+        .filter((j) => j != null)
+        .filter((journey) =>
+          (journey?.userJourneys ?? []).some(
+            (userJourney) => userJourney?.user?.id === (user?.id ?? '')
+          )
         )
-        .map((journey) => journey.id)
+        .map((journey) => journey?.id)
+        .filter((id): id is string => typeof id === 'string')
       await restore({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {
@@ -107,14 +122,15 @@ export function ArchivedJourneyList({
 
   async function handleTrashSubmit(): Promise<void> {
     try {
-      const journeyIds = data?.journeys
-        ?.filter(
-          (journey) =>
-            journey.userJourneys?.find(
-              (userJourney) => userJourney.user?.id === (user?.id ?? '')
-            )?.role === 'owner'
+      const journeyIds = (data?.journeys ?? [])
+        .filter((j) => j != null)
+        .filter((journey) =>
+          (journey?.userJourneys ?? []).some(
+            (userJourney) => userJourney?.user?.id === (user?.id ?? '')
+          )
         )
-        .map((journey) => journey.id)
+        .map((journey) => journey?.id)
+        .filter((id): id is string => typeof id === 'string')
       await trash({ variables: { ids: journeyIds } })
     } catch (error) {
       if (error instanceof Error) {
@@ -175,7 +191,7 @@ export function ArchivedJourneyList({
                   <JourneyCard
                     key={journey.id}
                     journey={journey}
-                    refetch={refetch}
+                    refetch={refetch as unknown as (() => Promise<unknown>)}
                   />
                 </JourneyProvider>
               </Grid>

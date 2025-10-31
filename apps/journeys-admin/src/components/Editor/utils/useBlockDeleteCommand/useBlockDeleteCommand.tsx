@@ -88,7 +88,7 @@ export function useBlockDeleteCommand(): {
       (block) => block.__typename === 'CardBlock'
     ) as TreeBlock<CardBlock> | undefined
     const cachedStepWithXandY =
-      client.cache.extract()[`StepBlock:${selectedStep.id}`]
+      (client.cache.extract()[`StepBlock:${selectedStep.id}`] as any)
     const stepSiblingsBeforeDelete = steps.filter(
       (block) => block.id !== currentBlock.id
     )

@@ -1,4 +1,4 @@
-import { ApolloError } from '@apollo/client/v4-migration'
+import type { ErrorLike } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
@@ -99,25 +99,14 @@ export function JourneyDetailsDialog({
           updatedAt: null
         }
       },
-      onError(error) {
-        if (error instanceof ApolloError) {
-          if (error.networkError != null) {
-            enqueueSnackbar(
-              t('Journey details update failed. Reload the page or try again.'),
-              {
-                variant: 'error',
-                preventDuplicate: true
-              }
-            )
-            return
-          }
-        }
-        if (error instanceof Error) {
-          enqueueSnackbar(error.message, {
+      onError() {
+        enqueueSnackbar(
+          t('Journey details update failed. Reload the page or try again.'),
+          {
             variant: 'error',
             preventDuplicate: true
-          })
-        }
+          }
+        )
       }
     })
     onClose()
@@ -202,7 +191,7 @@ export function JourneyDetailsDialog({
                       await setFieldValue('language', value)
                     }
                     value={values.language}
-                    languages={data?.languages}
+                    languages={(data?.languages as any) as unknown[]}
                     loading={loading}
                     renderInput={(params) => (
                       <TextField

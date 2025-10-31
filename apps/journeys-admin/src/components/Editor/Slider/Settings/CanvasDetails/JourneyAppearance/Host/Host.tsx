@@ -18,6 +18,7 @@ import { useUserTeamsAndInvitesQuery } from '../../../../../../../libs/useUserTe
 import { Accordion } from '../../Properties/Accordion'
 
 import { HostSelection } from './HostSelection'
+import type { GetUserTeamsAndInvites } from '../../../../../../../../__generated__/GetUserTeamsAndInvites'
 
 export const GET_ALL_TEAM_HOSTS = gql`
   query GetAllTeamHosts($teamId: ID!) {
@@ -73,11 +74,11 @@ export function Host(): ReactElement {
         }
       : undefined
   )
+  const teams = data?.userTeams ?? []
   const userInTeam =
-    data == null || data.userTeams.length === 0 || journey?.team == null
-      ? false
-      : data.userTeams.find((userTeam) => userTeam.user.email === user.email) !=
-        null
+    journey?.team != null && teams.length > 0
+      ? teams.find((userTeam) => userTeam?.user?.email === user.email) != null
+      : false
 
   // Fetch all hosts made for a team
   const [getAllTeamHosts, { data: teamHosts }] = useLazyQuery<
@@ -131,7 +132,7 @@ export function Host(): ReactElement {
       <Box data-testid="Host">
         {openHostSelection && (
           <HostSelection
-            data={data}
+            data={data as unknown as GetUserTeamsAndInvites | undefined}
             userInTeam={userInTeam}
             handleSelection={handleSelection}
           />

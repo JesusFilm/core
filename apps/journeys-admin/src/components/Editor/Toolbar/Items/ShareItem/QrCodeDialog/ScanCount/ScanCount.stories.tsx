@@ -30,7 +30,6 @@ const getPlausibleJourneyQrCodeScansMock: MockLink.MockedResponse<
   request: {
     query: GET_PLAUSIBLE_JOURNEY_QR_CODE_SCANS
   },
-  variableMatcher: (variables) => true,
   result: {
     data: {
       journeysPlausibleStatsAggregate: {

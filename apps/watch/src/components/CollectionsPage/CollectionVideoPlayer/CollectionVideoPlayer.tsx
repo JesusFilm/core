@@ -22,6 +22,21 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { GET_VIDEO_CONTENT } from '../../../../pages/watch/[part1]/[part2]'
 
+type VideoContentData = {
+  content: {
+    id: string
+    title: { value: string }[]
+    images?: Array<{ mobileCinematicHigh?: string }>
+    variant?: {
+      hls?: string
+      language?: {
+        id: string
+        name: { value: string; primary: boolean }[]
+      }
+    }
+  }
+}
+
 import { useIsInViewport } from './utils/useIsInViewport'
 
 interface VideoPlayerProps {
@@ -80,7 +95,7 @@ export function CollectionVideoPlayer({
     data: videoData,
     loading: videoLoading,
     error: videoError
-  } = useQuery(GET_VIDEO_CONTENT, {
+  } = useQuery<VideoContentData>(GET_VIDEO_CONTENT, {
     variables: {
       id: contentId
     }
@@ -116,7 +131,7 @@ export function CollectionVideoPlayer({
       eventToDataLayer(
         'video_seek',
         videoData?.content.id,
-        videoData?.content.variant?.language.id,
+        videoData?.content.variant?.language?.id,
         videoData?.content.title[0].value,
         videoData?.content.variant?.language?.name.find(
           ({ primary }) => !primary
@@ -181,7 +196,7 @@ export function CollectionVideoPlayer({
         eventToDataLayer(
           'video_enter_full_screen',
           videoData?.content.id,
-          videoData?.content.variant?.language.id,
+          videoData?.content.variant?.language?.id,
           videoData?.content.title[0].value,
           videoData?.content.variant?.language?.name.find(
             ({ primary }) => !primary
@@ -213,7 +228,7 @@ export function CollectionVideoPlayer({
         eventToDataLayer(
           'video_exit_full_screen',
           videoData?.content.id,
-          videoData?.content.variant?.language.id,
+          videoData?.content.variant?.language?.id,
           videoData?.content.title[0].value,
           videoData?.content.variant?.language?.name.find(
             ({ primary }) => !primary
@@ -239,7 +254,7 @@ export function CollectionVideoPlayer({
       eventToDataLayer(
         `video_mute_toggle_${newMutedState ? 'unmute' : 'mute'}`,
         videoData?.content.id,
-        videoData?.content.variant?.language.id,
+        videoData?.content.variant?.language?.id,
         videoData?.content.title[0].value,
         videoData?.content.variant?.language?.name.find(
           ({ primary }) => !primary
@@ -269,7 +284,7 @@ export function CollectionVideoPlayer({
       eventToDataLayer(
         `video_play_pause_${isPlaying ? 'pause' : 'play'}`,
         videoData?.content.id,
-        videoData?.content.variant?.language.id,
+        videoData?.content.variant?.language?.id,
         videoData?.content.title[0].value,
         videoData?.content.variant?.language?.name.find(
           ({ primary }) => !primary
@@ -298,7 +313,7 @@ export function CollectionVideoPlayer({
         eventToDataLayer(
           `video_autoplay_starts`,
           videoData?.content.id,
-          videoData?.content.variant?.language.id,
+          videoData?.content.variant?.language?.id,
           videoData?.content.title[0].value,
           videoData?.content.variant?.language?.name.find(
             ({ primary }) => !primary
@@ -339,7 +354,7 @@ export function CollectionVideoPlayer({
           eventToDataLayer(
             'video_ended',
             videoData?.content.id,
-            videoData?.content.variant?.language.id,
+            videoData?.content.variant?.language?.id,
             videoData?.content.title[0].value,
             videoData?.content.variant?.language?.name.find(
               ({ primary }) => !primary

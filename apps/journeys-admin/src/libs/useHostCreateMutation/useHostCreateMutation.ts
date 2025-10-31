@@ -16,8 +16,7 @@ export const CREATE_HOST = gql`
 `
 
 export function hostCreateUpdate(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  cache: ApolloCache<any>,
+  cache: ApolloCache,
   data: CreateHost | null | undefined
 ): void {
   if (data?.hostCreate != null) {

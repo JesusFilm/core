@@ -15,7 +15,7 @@ import { getApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { createClient } from 'graphql-sse'
 import { useMemo } from 'react'
-import { Observable } from 'zen-observable-ts'
+import { Observable } from '@apollo/client'
 
 import { cache } from './cache'
 
@@ -31,29 +31,24 @@ let apolloClient: ApolloClient
 const DEFAULT_DEBOUNCE_TIMEOUT = 500
 
 // Custom Apollo Link for Server-Sent Events using graphql-sse
-class SSELink extends ApolloLink {
-  private url: string
-  private options: any
 
-  constructor(url: string, options?: any) {
-    super()
-    this.url = url
-    this.options = options || {}
-  }
+export function createApolloClient(token?: string): ApolloClient {
+  const gatewayUrl =
+    process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:4000'
 
-  public request(
-    operation: ApolloLink.Operation,
-    forward?: ApolloLink.ForwardFunction
-  ): Observable<ApolloLink.Result> | null {
+  // Create HTTP link for queries and mutations
+  const httpLink = new HttpLink({
+    uri: gatewayUrl
+  })
+
+  // Create SSE link for subscriptions using graphql-sse
+  const sseLink = new ApolloLink((operation) => {
     return new Observable<ApolloLink.Result>((observer) => {
-      // Get headers from operation context
       const context = operation.getContext()
       const headers = context.headers || {}
 
-      // Create a new client instance with current headers
       const client = createClient({
-        url: this.url,
-        ...this.options,
+        url: gatewayUrl,
         headers: {
           ...headers,
           'Content-Type': 'application/json',
@@ -68,39 +63,18 @@ class SSELink extends ApolloLink {
           operationName: operation.operationName
         },
         {
-          next: (data) => {
-            observer.next(data as ApolloLink.Result)
-          },
-          error: (error) => {
-            observer.error(
-              error instanceof Error ? error : new Error(String(error))
-            )
-          },
-          complete: () => {
-            observer.complete()
-          }
+          next: (data) => observer.next(data as ApolloLink.Result),
+          error: (error) =>
+            observer.error(error instanceof Error ? error : new Error(String(error))),
+          complete: () => observer.complete()
         }
       )
 
-      // Return cleanup function
       return () => {
         unsubscribe()
       }
     })
-  }
-}
-
-export function createApolloClient(token?: string): ApolloClient {
-  const gatewayUrl =
-    process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost:4000'
-
-  // Create HTTP link for queries and mutations
-  const httpLink = new HttpLink({
-    uri: gatewayUrl
   })
-
-  // Create SSE link for subscriptions using graphql-sse
-  const sseLink = new SSELink(gatewayUrl)
 
   const authLink = setContext(async (_, { headers }) => {
     const firebaseToken = ssrMode
@@ -137,7 +111,7 @@ export function createApolloClient(token?: string): ApolloClient {
 
   const link = ApolloLink.from([
     debounceLink,
-    mutationQueueLink,
+    (mutationQueueLink as unknown as ApolloLink),
     authLink,
     splitLink
   ])

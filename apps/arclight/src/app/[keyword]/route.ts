@@ -80,7 +80,7 @@ app.openapi(keywordRoute, async (c) => {
     const hostname =
       process.env.SERVICE_ENV === 'stage' ? 'stg.arc.gt' : 'arc.gt'
 
-    const { data, error, errors } = await getApolloClient().query<
+    const { data, error } = await getApolloClient().query<
       ResultOf<typeof GET_SHORT_LINK_QUERY>
     >({
       query: GET_SHORT_LINK_QUERY,
@@ -90,7 +90,7 @@ app.openapi(keywordRoute, async (c) => {
       }
     })
 
-    if (error != null || errors != null) {
+    if (error != null) {
       throw new HTTPException(500, {
         message: 'Failed to query short link data'
       })

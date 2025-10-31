@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -28,6 +29,9 @@ import {
 import type { MultiselectBlockCreate } from '../../../../../../../../__generated__/MultiselectBlockCreate'
 // Note: multiselect option creation is part of the same mutation operation type
 import { blockCreateUpdate } from '../../../../../utils/blockCreateUpdate'
+import type { MultiselectWithButtonCreate } from '../../../../../../../../__generated__/MultiselectWithButtonCreate'
+import type { MultiselectWithButtonDelete } from '../../../../../../../../__generated__/MultiselectWithButtonDelete'
+import type { MultiselectWithButtonRestore } from '../../../../../../../../__generated__/MultiselectWithButtonRestore'
 import { useBlockCreateCommand } from '../../../../../utils/useBlockCreateCommand'
 import { Button } from '../Button'
 
@@ -209,7 +213,7 @@ export function NewMultiselectButton(): ReactElement {
   const [multiselectBlockCreate, { loading }] =
     useMutation<MultiselectBlockCreate>(MULTISELECT_BLOCK_CREATE)
   const [multiselectWithButtonCreate, { loading: withButtonLoading }] =
-    useMutation(MULTISELECT_WITH_BUTTON_CREATE)
+    useMutation<MultiselectWithButtonCreate>(MULTISELECT_WITH_BUTTON_CREATE)
   const [multiselectWithButtonDelete] = useMutation(
     MULTISELECT_WITH_BUTTON_DELETE
   )
@@ -373,12 +377,18 @@ export function NewMultiselectButton(): ReactElement {
               buttonUpdate: buttonBlock
             },
             update(cache, { data }) {
-              blockCreateUpdate(cache, journey.id, data?.multiselectBlockCreate)
-              blockCreateUpdate(cache, journey.id, data?.multiselectOption1)
-              blockCreateUpdate(cache, journey.id, data?.multiselectOption2)
-              blockCreateUpdate(cache, journey.id, data?.button)
-              blockCreateUpdate(cache, journey.id, data?.startIcon)
-              blockCreateUpdate(cache, journey.id, data?.endIcon)
+              if (data != null) {
+                blockCreateUpdate(
+                  cache,
+                  journey.id,
+                  data.multiselectBlockCreate
+                )
+                blockCreateUpdate(cache, journey.id, data.multiselectOption1)
+                blockCreateUpdate(cache, journey.id, data.multiselectOption2)
+                blockCreateUpdate(cache, journey.id, data.button)
+                blockCreateUpdate(cache, journey.id, data.startIcon)
+                blockCreateUpdate(cache, journey.id, data.endIcon)
+              }
             }
           })
         },
@@ -503,9 +513,15 @@ export function NewMultiselectButton(): ReactElement {
               multiselectOption2: option2
             },
             update(cache, { data }) {
-              blockCreateUpdate(cache, journey.id, data?.multiselectBlockCreate)
-              blockCreateUpdate(cache, journey.id, data?.multiselectOption1)
-              blockCreateUpdate(cache, journey.id, data?.multiselectOption2)
+              if (data != null) {
+                blockCreateUpdate(
+                  cache,
+                  journey.id,
+                  data.multiselectBlockCreate
+                )
+                blockCreateUpdate(cache, journey.id, data.multiselectOption1)
+                blockCreateUpdate(cache, journey.id, data.multiselectOption2)
+              }
             }
           })
         }

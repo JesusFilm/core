@@ -22,10 +22,7 @@ export function useUserInvitesLazyQuery(
   variables?: GetUserInvitesVariables
 ): useLazyQuery.ResultTuple<GetUserInvites, GetUserInvitesVariables> {
   const query = useLazyQuery<GetUserInvites, GetUserInvitesVariables>(
-    GET_USER_INVITES,
-    {
-      variables
-    }
+    GET_USER_INVITES
   )
 
   return query

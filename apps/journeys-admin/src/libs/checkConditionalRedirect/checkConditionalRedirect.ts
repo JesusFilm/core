@@ -52,7 +52,7 @@ export async function checkConditionalRedirect({
     variables: { input: { redirect } }
   })
 
-  if (!(me.me?.emailVerified ?? false)) {
+  if (!(me?.me?.emailVerified ?? false)) {
     if (resolvedUrl.startsWith('/users/verify')) return
     return {
       destination: `/users/verify${redirect}`,
@@ -67,7 +67,7 @@ export async function checkConditionalRedirect({
     query: GET_JOURNEY_PROFILE_AND_TEAMS
   })
 
-  if (data.getJourneyProfile?.acceptedTermsAt == null) {
+  if (data?.getJourneyProfile?.acceptedTermsAt == null) {
     if (resolvedUrl.startsWith('/users/terms-and-conditions')) return
     return {
       destination: `/users/terms-and-conditions${redirect}`,
@@ -75,7 +75,7 @@ export async function checkConditionalRedirect({
     }
   }
 
-  if (data.teams.length === 0) {
+  if ((data?.teams?.length ?? 0) === 0) {
     if (currentRedirect?.match(/^\/templates\/[\w-]+\/quick/) != null) {
       await apolloClient.mutate<TeamCreate, TeamCreateVariables>({
         mutation: TEAM_CREATE,

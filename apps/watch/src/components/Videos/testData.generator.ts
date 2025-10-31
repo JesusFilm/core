@@ -60,7 +60,8 @@ async function testDataGenerator(): Promise<void> {
   })
   const videos: Videos[] = []
 
-  data.videos.forEach((video) => {
+  const list: Videos[] = (data?.videos as Videos[] | undefined) ?? []
+  list.forEach((video) => {
     videos[ids.indexOf(video.id)] = video
   })
 

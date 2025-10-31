@@ -26,7 +26,7 @@ export function CountryLanguageSelector({
   const { data } = useCountryQuery({ countryId: countryCode ?? '' })
 
   const spokenLanguages = getTopSpokenLanguages({
-    country: data?.country,
+    country: (data?.country as any) ?? null,
     availableLanguages: items
   })
 

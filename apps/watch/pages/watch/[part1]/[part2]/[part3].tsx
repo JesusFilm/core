@@ -155,7 +155,12 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
         }
       })
     ])
-    if (containerData.container == null || contentData.content == null) {
+    if (
+      containerData == null ||
+      contentData == null ||
+      containerData.container == null ||
+      contentData.content == null
+    ) {
       return {
         revalidate: 1,
         notFound: true
@@ -197,8 +202,9 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
   } catch (error) {
     if (
       error instanceof ApolloError &&
-      error.graphQLErrors.some(
-        ({ extensions, message }) =>
+      Array.isArray((error as any).graphQLErrors) &&
+      (error as any).graphQLErrors.some(
+        ({ extensions, message }: any) =>
           extensions?.code === 'NOT_FOUND' ||
           message?.startsWith('Video not found')
       )

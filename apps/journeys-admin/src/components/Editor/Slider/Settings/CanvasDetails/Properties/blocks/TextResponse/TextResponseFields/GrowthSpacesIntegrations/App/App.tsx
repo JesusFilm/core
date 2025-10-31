@@ -53,11 +53,11 @@ export function App(): ReactElement {
     teamId: activeTeam?.id as string
   })
 
-  const options =
-    data?.integrations
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      .filter(({ __typename }) => __typename === 'IntegrationGrowthSpaces')
-      .map(({ id, accessId }) => ({ value: id, label: accessId })) ?? []
+  const integrations = data?.integrations ?? []
+  const options = integrations
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    .filter((i) => i?.__typename === 'IntegrationGrowthSpaces')
+    .map((i) => ({ value: i?.id ?? '', label: (i as any)?.accessId ?? '' }))
 
   function handleChange(integrationId: string | null): void {
     if (selectedBlock == null) return
