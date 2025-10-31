@@ -66,14 +66,6 @@ jest.mock('./Screens', () => ({
 }))
 
 describe('MultiStepForm', () => {
-  beforeEach(() => {
-    // Reset URL mock to default state
-    Object.defineProperty(window, 'location', {
-      value: { search: '' },
-      writable: true
-    })
-  })
-
   afterEach(() => {
     jest.clearAllMocks()
   })

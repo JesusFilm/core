@@ -28,6 +28,7 @@ const video: TreeBlock<VideoFields> = {
   duration: 144,
   image: null,
   objectFit: null,
+  subtitleLanguage: null,
   mediaVideo: {
     __typename: 'Video',
     id: '5_0-NUA0201-0-0',
