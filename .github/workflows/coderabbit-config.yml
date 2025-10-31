@@ -60,14 +60,7 @@ jobs:
           done
           
           # Append the rest of the config (finishing_touches at same level as path_filters)
-          cat >> .coderabbit.yml << 'HEREDOC'
-  finishing_touches:
-    docstrings:
-      enabled: false
-
-# Language setting (ISO code string)
-language: "en-US"
-HEREDOC
+          printf '  finishing_touches:\n    docstrings:\n      enabled: false\n\n# Language setting (ISO code string)\nlanguage: "en-US"\n' >> .coderabbit.yml
 
       - name: Commit updated config
         if: steps.changed-files.outputs.any_changed == 'true'
