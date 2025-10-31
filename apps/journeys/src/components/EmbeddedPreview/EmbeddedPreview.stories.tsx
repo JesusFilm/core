@@ -1,8 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
-import { expect, screen, userEvent, waitFor } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
+import { expect, screen, userEvent, waitFor } from 'storybook/test'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
@@ -97,9 +97,12 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null,
-  journeyTheme: null
+  socialNodeY: null
 }
 
 const Template: StoryObj<typeof EmbeddedPreview> = {

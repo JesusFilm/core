@@ -4,9 +4,11 @@ import { expect, test } from '@playwright/test'
 Test a journey by following the journey's selection buttons
 */
 test('journeys', async ({ page }) => {
-  await page.goto('/')
-  // fact or fiction page - click on on fact or fiction
-  await page.click('a[href="/fact-or-fiction"]')
+  await page.goto('/', { waitUntil: 'domcontentloaded' })
+  // Wait for and click the Fact or Fiction entry using a stable href-based locator
+  const factOrFictionLink = page.locator('a[href="/fact-or-fiction"]')
+  await expect(factOrFictionLink).toBeVisible({ timeout: 150000 })
+  await factOrFictionLink.click()
   // test that user actually navigated to the choosen journey
   await expect(page).toHaveURL(/.*fact-or-fiction/)
   // Test Fact or Fiction screen

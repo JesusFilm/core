@@ -25,6 +25,7 @@ import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 
@@ -113,6 +114,9 @@ export function Button({
 
   const plausible = usePlausible<JourneyPlausibleEvents>()
   const { variant, journey } = useJourney()
+
+  const resolvedLabel = useGetValueFromJourneyCustomizationString(label)
+
   const { treeBlocks, blockHistory } = useBlocks()
   const { t } = useTranslation('libs-journeys-ui')
   const formik = useFormikContext()
@@ -163,8 +167,11 @@ export function Button({
         blockId,
         stepId: activeBlock?.id,
         label: heading,
-        value: label,
-        action: action?.__typename as ButtonAction | undefined,
+        value: resolvedLabel,
+        action:
+          action?.__typename != null
+            ? (action.__typename as ButtonAction)
+            : undefined,
         actionValue
       }
       void buttonClickEventCreate({
@@ -242,7 +249,7 @@ export function Button({
       sendGTMEvent({
         ...eventProperties,
         event: 'outbound_action_click',
-        buttonLabel: label,
+        buttonLabel: resolvedLabel,
         outboundActionType: getLinkActionGoal(action.url),
         outboundActionValue: action.url
       })
@@ -262,19 +269,27 @@ export function Button({
     e.stopPropagation()
 
     if (submitEnabled && formik != null) {
+      // Control submission flow to ensure events are recorded before navigation
+      e.preventDefault()
       const errors = await formik.validateForm(formik.values)
 
-      if (isEmptyForm()) {
-        e.preventDefault()
+      if (!isEmptyForm()) {
+        if (Object.keys(errors).length > 0) return
+        await formik.submitForm()
       }
-
-      if (!isEmptyForm() && Object.keys(errors).length > 0) return
     }
 
-    if (messagePlatform == null) {
-      void createClickEvent()
-    } else {
+    const hasMessagePlatform = messagePlatform != null
+    const isChatAction = action?.__typename === 'ChatAction'
+    const isPhoneAction = action?.__typename === 'PhoneAction'
+    const isLinkChatAction =
+      action?.__typename === 'LinkAction' && hasMessagePlatform
+    const isChatEvent = isLinkChatAction || isChatAction || isPhoneAction
+
+    if (isChatEvent) {
       void createChatEvent()
+    } else {
+      void createClickEvent()
     }
 
     const nextStepSlug = getNextStepSlug(journey, action)
@@ -343,8 +358,8 @@ export function Button({
         >
           {editableLabel != null
             ? editableLabel
-            : label !== ''
-              ? label
+            : resolvedLabel !== ''
+              ? resolvedLabel
               : fallbackLabel}
         </Typography>
       </MuiButton>

@@ -13,5 +13,15 @@ export const ACTION_FIELDS = gql`
     ... on EmailAction {
       email
     }
+    ... on ChatAction {
+      chatUrl
+      customizable
+      parentStepId
+    }
+    ... on PhoneAction {
+      phone
+      countryCode
+      contactAction
+    }
   }
 `

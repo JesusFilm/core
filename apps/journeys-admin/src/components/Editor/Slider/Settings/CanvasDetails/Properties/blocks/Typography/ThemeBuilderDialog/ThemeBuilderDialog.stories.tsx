@@ -1,4 +1,4 @@
-import { Meta } from '@storybook/react'
+import { Meta } from '@storybook/nextjs'
 import { ReactElement, useState } from 'react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'

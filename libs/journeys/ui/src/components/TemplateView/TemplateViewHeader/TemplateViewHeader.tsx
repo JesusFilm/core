@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -7,10 +8,10 @@ import { User } from 'next-firebase-auth'
 import { ReactElement } from 'react'
 
 import { useJourney } from '../../../libs/JourneyProvider'
-import { CreateJourneyButton } from '../CreateJourneyButton'
 
 import { PreviewTemplateButton } from './PreviewTemplateButton'
 import { SocialImage } from './SocialImage'
+import { TemplateActionButton } from './TemplateActionButton'
 import { TemplateCreatorDetails } from './TemplateCreatorDetails/TemplateCreatorDetails'
 import { TemplateEditButton } from './TemplateEditButton/TemplateEditButton'
 
@@ -149,7 +150,10 @@ export function TemplateViewHeader({
               marginTop: 'auto'
             }}
           >
-            <CreateJourneyButton signedIn={authUser?.id != null} />
+            <TemplateActionButton
+              signedIn={authUser?.id != null}
+              openTeamDialogOnSignIn
+            />
             <PreviewTemplateButton slug={journey?.slug} />
             {journey != null && isPublisher === true && (
               <TemplateEditButton journeyId={journey.id} />
@@ -158,7 +162,7 @@ export function TemplateViewHeader({
         </Stack>
       </Stack>
       <Box sx={{ display: { xs: 'flex', sm: 'none' }, pt: 6 }} gap={2}>
-        <CreateJourneyButton signedIn={authUser?.id != null} />
+        <TemplateActionButton signedIn={authUser?.id != null} />
         <PreviewTemplateButton slug={journey?.slug} />
         {journey != null && isPublisher === true && (
           <TemplateEditButton journeyId={journey.id} />

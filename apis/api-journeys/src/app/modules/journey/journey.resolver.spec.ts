@@ -1126,11 +1126,13 @@ describe('JourneyResolver', () => {
         email: null,
         phone: null,
         countryCode: null,
+        contactAction: null,
         updatedAt: new Date(),
         parentBlockId: 'stepId',
         blockId: 'nextStepId',
         customizable: null,
-        parentStepId: null
+        parentStepId: null,
+        chatUrl: null
       }
     }
     const duplicatedButton = {
@@ -1309,7 +1311,11 @@ describe('JourneyResolver', () => {
         .mockResolvedValueOnce({
           ...journeyWithTags,
           template: true
-        } as unknown as Prisma.Prisma__JourneyClient<Journey>)
+        } as unknown as Prisma.JourneyGetPayload<{
+          include: {
+            journeyTags: true
+          }
+        }>)
         // lookup duplicate journey once created and authorize
         .mockResolvedValueOnce(journeyWithTags)
       prismaService.journey.findMany

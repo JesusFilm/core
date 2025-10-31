@@ -1,5 +1,6 @@
 import { NextRouter } from 'next/dist/client/router'
 
+import { ContactActionType } from '../../../__generated__/globalTypes'
 import { nextActiveBlock } from '../block'
 
 import { handleAction } from '.'
@@ -50,6 +51,31 @@ describe('action', () => {
         'mailto:edmondshen@gmail.com',
         '_blank'
       )
+    })
+
+    xit('should handle PhoneAction call', () => {
+      handleAction(router, {
+        __typename: 'PhoneAction',
+        parentBlockId: 'parent-id',
+        gtmEventName: null,
+        phone: '+1234567890',
+        countryCode: 'US',
+        contactAction: ContactActionType.call
+      })
+      expect(window.location.href).toBe('tel:+1234567890')
+    })
+
+    // TODO: Fix this test
+    xit('should handle PhoneAction text', () => {
+      handleAction(router, {
+        __typename: 'PhoneAction',
+        parentBlockId: 'parent-id',
+        gtmEventName: null,
+        phone: '+1234567890',
+        countryCode: 'US',
+        contactAction: ContactActionType.text
+      })
+      expect(window.location.href).toBe('sms:+1234567890')
     })
 
     it('should handle external LinkAction', () => {

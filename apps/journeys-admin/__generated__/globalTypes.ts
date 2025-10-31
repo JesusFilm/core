@@ -8,6 +8,7 @@
 //==============================================================
 
 export enum ButtonAction {
+  ChatAction = "ChatAction",
   EmailAction = "EmailAction",
   LinkAction = "LinkAction",
   NavigateToBlockAction = "NavigateToBlockAction",
@@ -40,10 +41,16 @@ export enum ButtonVariant {
   text = "text",
 }
 
+export enum ContactActionType {
+  call = "call",
+  text = "text",
+}
+
 export enum EventType {
   ButtonClickEvent = "ButtonClickEvent",
   ChatOpenEvent = "ChatOpenEvent",
   JourneyViewEvent = "JourneyViewEvent",
+  MultiselectSubmissionEvent = "MultiselectSubmissionEvent",
   RadioQuestionSubmissionEvent = "RadioQuestionSubmissionEvent",
   SignUpSubmissionEvent = "SignUpSubmissionEvent",
   StepNextEvent = "StepNextEvent",
@@ -296,6 +303,7 @@ export interface BlockUpdateActionInput {
   phone?: string | null;
   countryCode?: string | null;
   target?: string | null;
+  chatUrl?: string | null;
   blockId?: string | null;
 }
 
@@ -357,6 +365,14 @@ export interface CardBlockUpdateInput {
   fullscreen?: boolean | null;
   themeMode?: ThemeMode | null;
   themeName?: ThemeName | null;
+}
+
+export interface ChatActionInput {
+  gtmEventName?: string | null;
+  chatUrl: string;
+  target?: string | null;
+  customizable?: boolean | null;
+  parentStepId?: string | null;
 }
 
 export interface ChatButtonCreateInput {
@@ -473,6 +489,12 @@ export interface JourneyCollectionUpdateInput {
   journeyIds?: string[] | null;
 }
 
+export interface JourneyCustomizationFieldInput {
+  id: string;
+  key: string;
+  value?: string | null;
+}
+
 export interface JourneyEventsExportLogInput {
   journeyId: string;
   eventsFilter: EventType[];
@@ -552,6 +574,7 @@ export interface JourneyVisitorFilter {
   journeyId: string;
   hasChatStarted?: boolean | null;
   hasPollAnswers?: boolean | null;
+  hasMultiselectSubmission?: boolean | null;
   hasTextResponse?: boolean | null;
   hasIcon?: boolean | null;
   hideInactive?: boolean | null;
@@ -597,6 +620,45 @@ export interface LinkActionInput {
 
 export interface MeInput {
   redirect?: string | null;
+}
+
+export interface MultiselectBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+}
+
+export interface MultiselectBlockUpdateInput {
+  parentBlockId?: string | null;
+  min?: number | null;
+  max?: number | null;
+}
+
+export interface MultiselectOptionBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  label: string;
+}
+
+export interface MultiselectOptionBlockUpdateInput {
+  parentBlockId?: string | null;
+  label?: string | null;
+}
+
+export interface MultiselectSubmissionEventCreateInput {
+  id?: string | null;
+  blockId: string;
+  stepId?: string | null;
+  label?: string | null;
+  values: string[];
+}
+
+export interface PhoneActionInput {
+  gtmEventName?: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction?: ContactActionType | null;
 }
 
 export interface QrCodeCreateInput {
@@ -806,6 +868,7 @@ export interface VideoBlockCreateInput {
   autoplay?: boolean | null;
   fullsize?: boolean | null;
   posterBlockId?: string | null;
+  subtitleLanguageId?: string | null;
 }
 
 export interface VideoBlockUpdateInput {
@@ -823,6 +886,7 @@ export interface VideoBlockUpdateInput {
   muted?: boolean | null;
   autoplay?: boolean | null;
   fullsize?: boolean | null;
+  subtitleLanguageId?: string | null;
   source?: VideoBlockSource | null;
 }
 
