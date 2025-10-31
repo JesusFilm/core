@@ -15,6 +15,7 @@ import { ReactElement, useEffect, useRef } from 'react'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import {
   type YouTubeLanguage,
   useYouTubeClosedCaptions
@@ -41,7 +42,6 @@ import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSetting
 import { YouTubeSubtitleSelector } from './SubtitleSelector'
 
 export type { YouTubeLanguage }
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 interface Values extends FormikValues {
   autoplay: boolean
