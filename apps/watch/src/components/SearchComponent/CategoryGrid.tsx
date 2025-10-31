@@ -76,7 +76,7 @@ export function CategoryGrid({
             <div key={index}>
               <button
                 onClick={() => onCategorySelect(category.searchTerm)}
-                className="w-full aspect-video p-6 rounded-lg relative overflow-hidden text-white text-shadow-sm hover:scale-105 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="w-full aspect-video p-6 rounded-lg relative overflow-hidden text-white text-shadow-sm hover:scale-105 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer"
                 style={{
                   background: category.gradient,
                   textShadow: '0 1px 2px rgba(0,0,0,0.3)'
