@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
 
@@ -63,6 +63,46 @@ export function SectionVideoGrid({
 
   const videos = useMemo(() => slides.map((slide) => slide.video), [slides])
 
+  const [hoverBackground, setHoverBackground] = useState<string | null>(null)
+  const [isBackgroundVisible, setIsBackgroundVisible] = useState(false)
+  const showTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  const clearTimers = useCallback(() => {
+    if (showTimeoutRef.current != null) {
+      clearTimeout(showTimeoutRef.current)
+      showTimeoutRef.current = null
+    }
+    if (hideTimeoutRef.current != null) {
+      clearTimeout(hideTimeoutRef.current)
+      hideTimeoutRef.current = null
+    }
+  }, [])
+
+  const handleCardHoverChange = useCallback(
+    (imageUrl?: string | null) => {
+      clearTimers()
+
+      if (imageUrl == null || imageUrl === '') {
+        setIsBackgroundVisible(false)
+        hideTimeoutRef.current = setTimeout(() => {
+          setHoverBackground(null)
+        }, 200)
+        return
+      }
+
+      setIsBackgroundVisible(false)
+
+      showTimeoutRef.current = setTimeout(() => {
+        setHoverBackground(imageUrl)
+        setIsBackgroundVisible(true)
+      }, 40)
+    },
+    [clearTimers]
+  )
+
+  useEffect(() => () => clearTimers(), [clearTimers])
+
   if (!loading && slides.length === 0) return null
 
   return (
@@ -74,6 +114,14 @@ export function SectionVideoGrid({
       )}
       data-testid="SectionVideoGrid"
     >
+      <div
+        className={cn(
+          'absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-opacity duration-500 ease-in-out',
+          isBackgroundVisible ? 'opacity-80' : 'opacity-0'
+        )}
+        style={hoverBackground != null ? { backgroundImage: `url(${hoverBackground})` } : undefined}
+        aria-hidden="true"
+      />
       <div className="absolute inset-0 bg-[url(/watch/assets/overlay.svg)] bg-repeat mix-blend-multiply" />
       <div className="padded relative z-2 pb-6">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
@@ -122,6 +170,7 @@ export function SectionVideoGrid({
           orientation={orientation}
           analyticsTag={analyticsTag}
           showSequenceNumbers={showSequenceNumbers}
+          onCardHoverChange={handleCardHoverChange}
           data-testid="SectionVideoGridContainer"
         />
       </div>
