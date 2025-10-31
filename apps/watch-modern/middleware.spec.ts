@@ -2,8 +2,28 @@ import { NextRequest } from 'next/server'
 
 import { config, middleware } from './middleware'
 
+const globalWithOptionalAtob = globalThis as typeof globalThis & {
+  atob?: (value: string) => string
+}
+
 describe('middleware', () => {
   const originalEnv = process.env
+  const originalAtob = globalWithOptionalAtob.atob
+
+  beforeAll(() => {
+    if (!globalWithOptionalAtob.atob) {
+      globalWithOptionalAtob.atob = (value: string) =>
+        Buffer.from(value, 'base64').toString('utf-8')
+    }
+  })
+
+  afterAll(() => {
+    if (originalAtob) {
+      globalWithOptionalAtob.atob = originalAtob
+    } else {
+      Reflect.deleteProperty(globalWithOptionalAtob, 'atob')
+    }
+  })
 
   beforeEach(() => {
     process.env = { ...originalEnv }

@@ -6,12 +6,12 @@ const UNAUTHORIZED_RESPONSE = {
 } as const
 
 const decodeCredentials = (encoded: string): string | undefined => {
-  try {
-    if (typeof globalThis.atob === 'function') {
-      return globalThis.atob(encoded)
-    }
+  if (typeof globalThis.atob !== 'function') {
+    return undefined
+  }
 
-    return Buffer.from(encoded, 'base64').toString('utf-8')
+  try {
+    return globalThis.atob(encoded)
   } catch {
     return undefined
   }
