@@ -57,9 +57,7 @@ export const Default = {
   args: {
     open: true,
     onClose: () => null,
-    journeyId: 'journey-id',
-    syncsDialogOpen: false,
-    onSyncsDialogClose: () => null
+    journeyId: 'journey-id'
   },
   parameters: {
     apolloClient: {

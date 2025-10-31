@@ -26,8 +26,6 @@ export function ExportEventsButton({
         open={showExportDialog}
         onClose={() => setShowExportDialog(false)}
         journeyId={journeyId}
-        syncsDialogOpen={false}
-        onSyncsDialogClose={() => undefined}
       />
     </Box>
   )

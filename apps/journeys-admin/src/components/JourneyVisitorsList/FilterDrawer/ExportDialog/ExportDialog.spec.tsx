@@ -25,7 +25,6 @@ import { FILTERED_EVENTS } from '../../../../libs/useJourneyEventsExport/utils/c
 import { ExportDialog, GET_JOURNEY_CREATED_AT } from './ExportDialog'
 
 const mockOnClose = jest.fn()
-const mockOnSyncsDialogClose = jest.fn()
 
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
 const mockJourneyCreatedAt: MockedResponse<
@@ -69,9 +68,7 @@ jest.mock('../../../../libs/useJourneyContactsExport', () => ({
 const defaultProps = {
   open: true,
   onClose: mockOnClose,
-  journeyId: 'journey1',
-  syncsDialogOpen: false,
-  onSyncsDialogClose: mockOnSyncsDialogClose
+  journeyId: 'journey1'
 }
 
 describe('ExportDialog', () => {
@@ -86,7 +83,6 @@ describe('ExportDialog', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    mockOnSyncsDialogClose.mockClear()
   })
 
   describe('Visitor Actions', () => {
@@ -223,7 +219,7 @@ describe('ExportDialog', () => {
 
       expect(screen.getByLabelText('All')).toBeChecked()
       expect(screen.getByLabelText('Journey Start')).toBeChecked()
-      expect(screen.getByRole('button', { name: 'Export (CSV)' })).toBeEnabled()
+      expect(screen.getByRole('button', { name: 'Download (CSV)' })).toBeEnabled()
     })
 
     it('should call export function with default filters on button click', async () => {
@@ -258,7 +254,7 @@ describe('ExportDialog', () => {
       fireEvent.mouseDown(selectElement)
       fireEvent.click(screen.getByText('Visitor Actions'))
 
-      const exportButton = screen.getByRole('button', { name: 'Export (CSV)' })
+      const exportButton = screen.getByRole('button', { name: 'Download (CSV)' })
       await act(async () => {
         fireEvent.click(exportButton)
       })
@@ -284,7 +280,7 @@ describe('ExportDialog', () => {
       fireEvent.click(screen.getByText('Visitor Actions'))
 
       const allCheckbox = screen.getByLabelText('All')
-      const exportButton = screen.getByRole('button', { name: 'Export (CSV)' })
+      const exportButton = screen.getByRole('button', { name: 'Download (CSV)' })
 
       expect(exportButton).toBeEnabled()
       fireEvent.click(allCheckbox)
@@ -328,7 +324,7 @@ describe('ExportDialog', () => {
       fireEvent.mouseDown(selectElement)
       fireEvent.click(screen.getByText('Visitor Actions'))
 
-      const exportButton = screen.getByRole('button', { name: 'Export (CSV)' })
+      const exportButton = screen.getByRole('button', { name: 'Download (CSV)' })
 
       await act(async () => {
         fireEvent.click(exportButton)
@@ -366,7 +362,7 @@ describe('ExportDialog', () => {
       expect(screen.getByLabelText('Subscription')).toBeChecked()
       expect(screen.getByLabelText('Text Submission')).toBeChecked()
 
-      fireEvent.click(screen.getByRole('button', { name: 'Export (CSV)' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Download (CSV)' }))
       expect(mockExportJourneyContacts).toHaveBeenCalledWith({
         journeyId: 'journey1',
         filter: expect.objectContaining({
@@ -407,9 +403,9 @@ describe('ExportDialog', () => {
       fireEvent.click(screen.getByLabelText('All'))
       fireEvent.click(screen.getByLabelText('Name'))
 
-      expect(screen.getByRole('button', { name: 'Export (CSV)' })).toBeEnabled()
+      expect(screen.getByRole('button', { name: 'Download (CSV)' })).toBeEnabled()
 
-      fireEvent.click(screen.getByRole('button', { name: 'Export (CSV)' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Download (CSV)' }))
       expect(mockExportJourneyContacts).toHaveBeenCalledWith({
         journeyId: 'journey1',
         filter: {

@@ -18,6 +18,7 @@ import X2Icon from '@core/shared/ui/icons/X2'
 
 import { ClearAllButton } from './ClearAllButton'
 import { ExportDialog } from './ExportDialog'
+import { GoogleSheetsSyncDialog } from './GoogleSheetsSyncDialog'
 
 interface FilterDrawerProps {
   handleClose?: () => void
@@ -186,8 +187,11 @@ export function FilterDrawer({
             open={showExportDialog}
             onClose={() => setShowExportDialog(false)}
             journeyId={journeyId}
-            syncsDialogOpen={showSyncsDialog}
-            onSyncsDialogClose={() => setShowSyncsDialog(false)}
+          />
+          <GoogleSheetsSyncDialog
+            open={showSyncsDialog}
+            onClose={() => setShowSyncsDialog(false)}
+            journeyId={journeyId}
           />
         </>
       )}
