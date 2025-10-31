@@ -435,8 +435,8 @@ importers:
         specifier: ^1.7.0-canary.2
         version: 1.9.1(next@15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@playwright/test@1.54.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.85.1))
       next-i18n-router:
-        specifier: ^5.5.2
-        version: 5.5.3
+        specifier: ^5.5.5
+        version: 5.5.5(next@15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@playwright/test@1.54.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.85.1))
       next-i18next:
         specifier: 15.4.2
         version: 15.4.2(i18next@23.16.8)(next@15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@playwright/test@1.54.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.85.1))(react-i18next@15.4.1(i18next@23.16.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
@@ -4521,6 +4521,9 @@ packages:
 
   '@formatjs/intl-localematcher@0.6.1':
     resolution: {integrity: sha512-ePEgLgVCqi2BBFnTMWPfIghu6FkbZnnBVhO2sSxvLfrdFw7wCHAHiDoM2h4NRgjbaY7+B7HgOLZGkK187pZTZg==}
+
+  '@formatjs/intl-localematcher@0.6.2':
+    resolution: {integrity: sha512-XOMO2Hupl0wdd172Y06h6kLpBz6Dv+J4okPLl4LPtzbr8f66WbIoy4ev98EBuZ6ZK4h5ydTN6XneT4QVpD7cdA==}
 
   '@gitbeaker/core@38.12.1':
     resolution: {integrity: sha512-8XMVcBIdVAAoxn7JtqmZ2Ee8f+AZLcCPmqEmPFOXY2jPS84y/DERISg/+sbhhb18iRy+ZsZhpWgQ/r3CkYNJOQ==}
@@ -16786,8 +16789,10 @@ packages:
       react-dom:
         optional: true
 
-  next-i18n-router@5.5.3:
-    resolution: {integrity: sha512-btKVR/Mup05scxJp3EdPNALlufnZ/BO/zkIZc8a5ESdu+CNnmLW1AOkziTfRawXiZcznACCQtyfKNobC/WBTEA==}
+  next-i18n-router@5.5.5:
+    resolution: {integrity: sha512-soJD/JdC1Wew3LZqzFC3+9rdo4QT4cX6Xej4dSU/ObBFXhLHonMMBoa2nXsMHXPIcfdnSUDBTc6B2hrby4nzsg==}
+    peerDependencies:
+      next: ^13 || ^14 || ^15 || ^16
 
   next-i18next@15.4.2:
     resolution: {integrity: sha512-zgRxWf7kdXtM686ecGIBQL+Bq0+DqAhRlasRZ3vVF0TmrNTWkVhs52n//oU3Fj5O7r/xOKkECDUwfOuXVwTK/g==}
@@ -26792,6 +26797,10 @@ snapshots:
       tslib: 2.8.1
 
   '@formatjs/intl-localematcher@0.6.1':
+    dependencies:
+      tslib: 2.8.1
+
+  '@formatjs/intl-localematcher@0.6.2':
     dependencies:
       tslib: 2.8.1
 
@@ -42692,10 +42701,11 @@ snapshots:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
 
-  next-i18n-router@5.5.3:
+  next-i18n-router@5.5.5(next@15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@playwright/test@1.54.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.85.1)):
     dependencies:
-      '@formatjs/intl-localematcher': 0.5.10
-      negotiator: 0.6.3
+      '@formatjs/intl-localematcher': 0.6.2
+      negotiator: 1.0.0
+      next: 15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@playwright/test@1.54.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.85.1)
 
   next-i18next@15.4.2(i18next@23.16.8)(next@15.4.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@playwright/test@1.54.2)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.2)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sass@1.85.1))(react-i18next@15.4.1(i18next@23.16.8)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0):
     dependencies:
