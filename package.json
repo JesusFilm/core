@@ -243,7 +243,11 @@
     "xliff": "^6.2.1",
     "yup": "^1.0.0",
     "zen-observable-ts": "1.2.5",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76",
+    "polotno": "^2.9.0",
+    "@blueprintjs/core": "^5.10.3",
+    "@blueprintjs/icons": "^5.10.3",
+    "rc-dock": "^3.2.12"
   },
   "devDependencies": {
     "@babel/core": "^7.22.15",
