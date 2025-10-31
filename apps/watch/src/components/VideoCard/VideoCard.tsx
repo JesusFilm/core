@@ -1,7 +1,6 @@
 import last from 'lodash/last'
-import { Play, Plus } from 'lucide-react'
+import { Play } from 'lucide-react'
 import Image from 'next/image'
-import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import type { MouseEvent, ReactElement } from 'react'
 
@@ -69,7 +68,9 @@ export function VideoCard({
   return (
     <a
       href={href}
-      className={`block no-underline text-inherit ${video != null ? 'pointer-events-auto' : 'pointer-events-none'}`}
+      className={`block no-underline text-inherit ${
+        video != null ? 'pointer-events-auto cursor-pointer' : 'pointer-events-none'
+      }`}
       aria-label="VideoCard"
       data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}
       data-analytics-tag={analyticsTag}
@@ -78,7 +79,11 @@ export function VideoCard({
       <div className="flex flex-col gap-6">
         <button
           disabled={video == null}
-          className={`relative overflow-hidden rounded-lg ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} hover:scale-102 focus-visible:scale-102 transition-transform duration-300 beveled ${imageClassName || ''}`}
+          className={`relative overflow-hidden rounded-lg ${
+            orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'
+          } hover:scale-102 focus-visible:scale-102 transition-transform duration-300 beveled ${
+            imageClassName || ''
+          } cursor-pointer disabled:cursor-default`}
         >
           {sequenceLabel != null && (
             <span

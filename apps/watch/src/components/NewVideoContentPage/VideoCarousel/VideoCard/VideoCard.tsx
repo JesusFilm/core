@@ -6,13 +6,10 @@ import { ReactElement, useState } from 'react'
 
 import Play3 from '@core/shared/ui/icons/Play3'
 
-import { VideoChildFields } from '../../../../../__generated__/VideoChildFields'
 import { usePlayer } from '../../../../libs/playerContext'
 import { getLabelDetails } from '../../../../libs/utils/getLabelDetails/getLabelDetails'
 import { getWatchUrl } from '../../../../libs/utils/getWatchUrl'
 import { UnifiedCardData } from '../../../../types/inserts'
-
-import { LazyImage } from './LazyImage'
 
 interface VideoCardProps {
   data: UnifiedCardData
@@ -178,7 +175,9 @@ export function VideoCard({
   )
 
   const commonProps = {
-    className: `block beveled no-underline text-inherit ${transparent ? 'opacity-70' : ''}`,
+    className: `block beveled no-underline text-inherit ${
+      transparent ? 'opacity-70' : ''
+    } cursor-pointer`,
     'aria-label': (typeof data.title === 'string' ? data.title : last(data.title)?.value) ?? `Video ${data.slug}`,
     'data-testid': `VideoCard-${data.id}`
   }
@@ -188,7 +187,7 @@ export function VideoCard({
     return (
       <div
         {...commonProps}
-        className={`${commonProps.className} cursor-pointer`}
+        className={commonProps.className}
         role="button"
         tabIndex={0}
         onClick={handleVideoSelect}

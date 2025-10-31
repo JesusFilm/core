@@ -108,6 +108,25 @@
   html {
     font-family: var(--font-sans);
   }
+
+  a[href],
+  button,
+  [role='button'],
+  input[type='button'],
+  input[type='submit'],
+  input[type='reset'],
+  label[for],
+  summary {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled='true'],
+  [role='button'][aria-disabled='true'],
+  [data-disabled='true'],
+  summary[aria-disabled='true'] {
+    cursor: not-allowed;
+  }
 }
 
 /* 2. Components layer - medium specificity */
