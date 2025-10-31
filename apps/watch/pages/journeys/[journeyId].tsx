@@ -51,7 +51,7 @@ export default function JourneyDetailsPage(): ReactElement {
             <SnackbarProvider>
               <JourneyProvider
                 value={{
-                  journey: data?.journey,
+                  journey: (data?.journey as unknown as any) ?? undefined,
                   variant: 'admin'
                 }}
               >

@@ -29,7 +29,7 @@ export default async function Handler(
       languageId: (languageId as string).replace(/\.html?/, '')
     }
   })
-  if (data.video?.variant?.slug != null) {
+  if (data?.video?.variant?.slug != null) {
     const [videoId, languageId] = data.video.variant.slug.split('/')
     const encodedVideoId = encodeURIComponent(videoId)
     res.redirect(`/watch/${encodedVideoId}.html/${languageId}.html`)

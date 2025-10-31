@@ -1,10 +1,6 @@
-import {
-  NetworkStatus,
-  OperationVariables,
-  QueryResult,
-  useQuery
-} from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { NetworkStatus, OperationVariables } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
@@ -91,7 +87,7 @@ describe('ClientLayout', () => {
     const mockedUseQuery = useQuery as jest.MockedFunction<typeof useQuery>
 
     // Create a complete mock for the QueryResult
-    const mockQueryResult: QueryResult<any, OperationVariables> = {
+    const mockQueryResult: any = {
       data: {
         adminVideo: {
           id: 'video123',
@@ -106,18 +102,12 @@ describe('ClientLayout', () => {
       refetch: mockRefetch,
       networkStatus: NetworkStatus.ready,
       client: {} as any,
-      called: true,
-      startPolling: jest.fn(),
-      stopPolling: jest.fn(),
-      subscribeToMore: jest.fn(),
-      updateQuery: jest.fn(),
-      observable: {} as any,
+      dataState: 'complete',
       variables: { id: 'video123' },
-      reobserve: jest.fn(),
       previousData: undefined
     }
 
-    mockedUseQuery.mockReturnValue(mockQueryResult)
+    mockedUseQuery.mockReturnValue(mockQueryResult as any)
 
     // Mock document.getElementById to return a fake element with getBoundingClientRect
     document.getElementById = jest.fn().mockImplementation(() => ({

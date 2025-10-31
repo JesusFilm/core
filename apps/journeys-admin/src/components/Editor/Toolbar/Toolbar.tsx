@@ -1,4 +1,5 @@
-import { gql, useApolloClient, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useApolloClient, useMutation } from '@apollo/client/react'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
@@ -122,7 +123,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
       } else {
         setAnchorEl(menuRef.current)
       }
-      if (data.getJourneyProfile?.plausibleJourneyFlowViewed === true) {
+      if (data?.getJourneyProfile?.plausibleJourneyFlowViewed === true) {
         setAnchorEl(null)
       }
     }
@@ -369,8 +370,15 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           currentRef={anchorEl}
           pointerPosition={smUp ? '92%' : '94%'}
           handleClose={() => {
-            void updatePlausibleJourneyFlowViewed()
-            setAnchorEl(null)
+            void updatePlausibleJourneyFlowViewed({
+              variables: {
+                input: {
+                  plausibleJourneyFlowViewed: true
+                }
+              }
+            })
+            setBeaconRoute('/ask/')
+            setDialogOpen(false)
           }}
           popoverAction={{
             label: t('Feedback'),

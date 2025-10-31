@@ -1,4 +1,5 @@
-import { ApolloError, gql, useQuery } from '@apollo/client'
+import { type ErrorLike, gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 
 import {
   YouTubeClosedCaptionLanguages,
@@ -33,7 +34,7 @@ interface UseYouTubeClosedCaptionsOptions {
 interface UseYouTubeClosedCaptionsReturn {
   languages: YouTubeLanguage[]
   loading: boolean
-  error: ApolloError | undefined
+  error: ErrorLike | undefined
 }
 
 export function useYouTubeClosedCaptions({

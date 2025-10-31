@@ -1,4 +1,5 @@
-import { gql, useLazyQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client/react'
 import Grid from '@mui/material/GridLegacy'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
@@ -25,6 +26,7 @@ import { UserTeamList } from '../Team/TeamManageDialog/UserTeamList'
 
 import { AddUserSection } from './AddUserSection'
 import { UserList } from './UserList'
+import type { GetUserInvites_userInvites } from '../../../__generated__/GetUserInvites'
 
 export const GET_JOURNEY_WITH_PERMISSIONS = gql`
   query GetJourneyWithPermissions($id: ID!) {
@@ -79,10 +81,8 @@ export function AccessDialog({
   onClose
 }: AccessDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [, { loading, data, refetch }] =
-    useLazyQuery<GetJourneyWithPermissions>(GET_JOURNEY_WITH_PERMISSIONS, {
-      variables: { id: journeyId }
-    })
+  const [loadJourney, { loading, data, refetch }] =
+    useLazyQuery<GetJourneyWithPermissions>(GET_JOURNEY_WITH_PERMISSIONS)
 
   const [, { data: userInviteData, refetch: refetchInvites }] =
     useUserInvitesLazyQuery({ journeyId })
@@ -104,9 +104,8 @@ export function AccessDialog({
   }, [data?.journey?.team?.userTeams, user])
 
   const userTeamsMap = useMemo(() => {
-    return new Map(
-      data?.journey.team?.userTeams.map((obj) => [obj.user.id, obj])
-    )
+    const userTeams = data?.journey?.team?.userTeams ?? []
+    return new Map(userTeams.map((obj) => [obj.user.id, obj]))
   }, [data?.journey?.team?.userTeams])
 
   const { users, requests, invites, emails } = useMemo(() => {
@@ -125,10 +124,14 @@ export function AccessDialog({
       if (userJourney.user != null) emails.push(userJourney.user.email)
     })
 
-    const invites =
-      userInviteData?.userInvites != null ? userInviteData.userInvites : []
+    const invites = (userInviteData?.userInvites ?? []).filter(Boolean) as GetUserInvites_userInvites[]
     invites.forEach((invite) => {
-      if (invite.removedAt == null && invite.acceptedAt == null) {
+      if (
+        invite != null &&
+        invite.removedAt == null &&
+        invite.acceptedAt == null &&
+        typeof invite.email === 'string'
+      ) {
         emails.push(invite.email)
       }
     })
@@ -138,11 +141,12 @@ export function AccessDialog({
 
   useEffect(() => {
     if (open === true) {
+      void loadJourney({ variables: { id: journeyId } })
       void refetch()
       void refetchInvites()
       void loadUser()
     }
-  }, [open, refetch, refetchInvites, loadUser])
+  }, [open, journeyId, loadJourney, refetch, refetchInvites, loadUser])
 
   return (
     <Dialog

@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -196,7 +197,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
     process.env = originalEnv
   })
 
-  const posterImageBlockCreateMock: MockedResponse<
+  const posterImageBlockCreateMock: MockLink.MockedResponse<
     PosterImageBlockCreate,
     PosterImageBlockCreateVariables
   > = {
@@ -245,7 +246,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
     }
   }
 
-  const posterImageBlockDeleteMock: MockedResponse<
+  const posterImageBlockDeleteMock: MockLink.MockedResponse<
     PosterImageBlockDelete,
     PosterImageBlockDeleteVariables
   > = {
@@ -274,7 +275,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
     }
   }
 
-  const posterImageBlockRestoreMock: MockedResponse<
+  const posterImageBlockRestoreMock: MockLink.MockedResponse<
     PosterImageBlockRestore,
     PosterImageBlockRestoreVariables
   > = {
@@ -395,7 +396,7 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           focalTop: 50
         }
       }
-      const posterImageBlockUpdateMock: MockedResponse<
+      const posterImageBlockUpdateMock: MockLink.MockedResponse<
         PosterImageBlockUpdate,
         PosterImageBlockUpdateVariables
       > = {
@@ -438,7 +439,10 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
                 variables: {
                   ...posterImageBlockUpdateMock.request.variables,
                   input: {
-                    ...posterImageBlockUpdateMock.request.variables?.input,
+                    ...(
+                      posterImageBlockUpdateMock.request
+                        .variables as PosterImageBlockUpdateVariables
+                    ).input,
                     src: 'https://example.com/old.jpg',
                     alt: 'prior-alt'
                   }

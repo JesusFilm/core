@@ -1,4 +1,5 @@
-import { ApolloError, gql } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { ApolloError } from '@apollo/client/v4-migration'
 import type { GetStaticPaths, GetStaticProps } from 'next'
 import dynamic from 'next/dynamic'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
@@ -146,7 +147,7 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
         languageId: languageIdFromLocale
       }
     })
-    if (contentData.content == null) {
+    if (contentData == null || contentData.content == null) {
       return {
         revalidate: 1,
         notFound: true
@@ -187,8 +188,9 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
   } catch (error) {
     if (
       error instanceof ApolloError &&
-      error.graphQLErrors.some(
-        ({ extensions, message }) =>
+      Array.isArray((error as any).graphQLErrors) &&
+      (error as any).graphQLErrors.some(
+        ({ extensions, message }: any) =>
           extensions?.code === 'NOT_FOUND' ||
           message?.startsWith('Video not found')
       )

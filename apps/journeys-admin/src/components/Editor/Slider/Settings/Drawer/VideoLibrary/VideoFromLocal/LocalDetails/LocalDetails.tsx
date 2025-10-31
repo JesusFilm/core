@@ -1,10 +1,11 @@
-import { gql, useLazyQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import Box from '@mui/system/Box'
+import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
@@ -88,9 +89,7 @@ export function LocalDetails({
     ? (videoBlock?.videoVariantLanguageId ?? DEFAULT_LANGUAGE_ID)
     : DEFAULT_LANGUAGE_ID
 
-  const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO, {
-    variables: { id, languageId }
-  })
+  const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO)
 
   const handleChange = (selectedLanguage: LanguageOption): void => {
     setSelectedLanguage(selectedLanguage)
@@ -163,7 +162,7 @@ export function LocalDetails({
 
   useEffect(() => {
     if (open) {
-      void loadVideo()
+      void loadVideo({ variables: { id, languageId } })
     }
   }, [open, loadVideo])
   const { t } = useTranslation('apps-journeys-admin')

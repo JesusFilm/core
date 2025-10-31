@@ -1,4 +1,5 @@
-import { ApolloError, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
+import { ApolloError } from '@apollo/client/v4-migration'
 import { Formik, FormikConfig, FormikHelpers } from 'formik'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
@@ -74,24 +75,10 @@ export function TeamCreateForm({
       )
       await onSubmit?.(input, helpers, data)
     } catch (error) {
-      if (error instanceof ApolloError) {
-        if (error.networkError != null) {
-          enqueueSnackbar(
-            t('Failed to create the team. Reload the page or try again.'),
-            {
-              variant: 'error',
-              preventDuplicate: true
-            }
-          )
-          return
-        }
-      }
-      if (error instanceof Error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      }
+      enqueueSnackbar(t('Team creation failed. Reload and try again.'), {
+        variant: 'error',
+        preventDuplicate: true
+      })
     }
   }
 

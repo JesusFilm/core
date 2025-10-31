@@ -1,6 +1,5 @@
 'use client'
-
-import { useLazyQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -36,11 +35,7 @@ export function ExistingVideoByIdSelector({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const [fetchVideo, { loading, data }] = useLazyQuery(GET_VIDEO_BY_ID, {
-    onError: () => {
-      setError('Video not found. Please check the ID and try again.')
-    }
-  })
+  const [fetchVideo, { loading, data }] = useLazyQuery(GET_VIDEO_BY_ID)
 
   const handleSubmit = async (): Promise<void> => {
     if (!videoId.trim()) {
@@ -58,7 +53,7 @@ export function ExistingVideoByIdSelector({
         void onSelect(videoId.trim())
       }
     } catch (err) {
-      // Error is handled in the onError callback of the query
+      setError('Video not found. Please check the ID and try again.')
     } finally {
       setIsSubmitting(false)
     }

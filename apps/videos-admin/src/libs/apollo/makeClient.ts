@@ -1,17 +1,15 @@
-import {
-  ApolloClient,
-  HttpOptions,
-  InMemoryCache,
-  NormalizedCacheObject,
-  createHttpLink
-} from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 
 import { cache } from './cache'
 
-export function makeClient(
-  options?: HttpOptions
-): ApolloClient<NormalizedCacheObject> {
-  const httpLink = createHttpLink({
+/*
+Start: Inserted by Apollo Client 3->4 migration codemod.
+Copy the contents of this block into a `.d.ts` file in your project to enable correct response types in your custom links.
+If you do not use the `@defer` directive in your application, you can safely remove this block.
+*/
+
+export function makeClient(options?: HttpLink.Options): ApolloClient {
+  const httpLink = new HttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
     ...options,
     headers: {
@@ -25,6 +23,8 @@ export function makeClient(
   return new ApolloClient({
     link: httpLink,
     cache: new InMemoryCache(cache),
-    connectToDevTools: true
+    devtools: {
+      enabled: true
+    }
   })
 }

@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { Meta, StoryObj } from '@storybook/nextjs'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps, ReactElement } from 'react'
@@ -66,7 +67,7 @@ const textResponseProps: ComponentProps<typeof TextResponse> = {
   hideLabel: false
 }
 
-const submitEventMock: MockedResponse = {
+const submitEventMock: MockLink.MockedResponse = {
   request: {
     query: TEXT_RESPONSE_SUBMISSION_EVENT_CREATE,
     variables: {

@@ -1,4 +1,5 @@
-import { Reference, gql, useMutation } from '@apollo/client'
+import { Reference, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -141,12 +142,12 @@ export function GrowthSpacesIntegrationDetails(): ReactElement {
   }
 
   useEffect(() => {
-    const selectedIntegration = data?.integrations.find(
-      (integration) => integration.id === integrationId
-    )
+    const selectedIntegration = (data?.integrations ?? []).find(
+      (integration) => integration?.id === integrationId
+    ) as any
     if (selectedIntegration != null) {
-      setAccessId(selectedIntegration.accessId)
-      setAccessSecret(selectedIntegration.accessSecretPart)
+      setAccessId(selectedIntegration?.accessId)
+      setAccessSecret(selectedIntegration?.accessSecretPart)
     }
   }, [data?.integrations, integrationId])
 

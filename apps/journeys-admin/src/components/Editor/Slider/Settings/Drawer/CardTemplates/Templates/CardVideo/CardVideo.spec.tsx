@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -69,7 +70,7 @@ describe('CardVideo', () => {
     slug: null,
     children: [card]
   }
-  const cardVideoDeleteMock: MockedResponse<
+  const cardVideoDeleteMock: MockLink.MockedResponse<
     CardVideoDelete,
     CardVideoDeleteVariables
   > = {
@@ -110,7 +111,7 @@ describe('CardVideo', () => {
     }
   }
 
-  const cardVideoCreateMock: MockedResponse<
+  const cardVideoCreateMock: MockLink.MockedResponse<
     CardVideoCreate,
     CardVideoCreateVariables
   > = {
@@ -160,7 +161,7 @@ describe('CardVideo', () => {
     }
   }
 
-  const cardVideoRestoreMock: MockedResponse<
+  const cardVideoRestoreMock: MockLink.MockedResponse<
     CardVideoRestore,
     CardVideoRestoreVariables
   > = {

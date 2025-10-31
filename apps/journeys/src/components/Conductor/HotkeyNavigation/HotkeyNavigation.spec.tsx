@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { act, render, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
@@ -103,37 +104,39 @@ describe('HotkeyNavigation', () => {
     }
   }))
 
-  const stepNextEventCreateMock: MockedResponse<StepNextEventCreate> = {
-    request: {
-      query: STEP_NEXT_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId: 'step1.id',
-          nextStepId: 'step3.id',
-          label: 'Step {{number}}',
-          value: 'Step {{number}}'
+  const stepNextEventCreateMock: MockLink.MockedResponse<StepNextEventCreate> =
+    {
+      request: {
+        query: STEP_NEXT_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'uuid',
+            blockId: 'step1.id',
+            nextStepId: 'step3.id',
+            label: 'Step {{number}}',
+            value: 'Step {{number}}'
+          }
         }
-      }
-    },
-    result: stepNextResult
-  }
+      },
+      result: stepNextResult
+    }
 
-  const stepPreviousEventCreateMock: MockedResponse<StepPreviousEventCreate> = {
-    request: {
-      query: STEP_PREVIOUS_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId: 'step2.id',
-          previousStepId: 'step1.id',
-          label: 'Step {{number}}',
-          value: 'Step {{number}}'
+  const stepPreviousEventCreateMock: MockLink.MockedResponse<StepPreviousEventCreate> =
+    {
+      request: {
+        query: STEP_PREVIOUS_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'uuid',
+            blockId: 'step2.id',
+            previousStepId: 'step1.id',
+            label: 'Step {{number}}',
+            value: 'Step {{number}}'
+          }
         }
-      }
-    },
-    result: stepPreviousResult
-  }
+      },
+      result: stepPreviousResult
+    }
 
   it('should create next event', async () => {
     treeBlocksVar([step1, step2, step3])

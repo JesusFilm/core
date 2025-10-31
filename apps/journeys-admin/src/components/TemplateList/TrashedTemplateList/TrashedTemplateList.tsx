@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
@@ -17,6 +17,14 @@ import { JourneyCard } from '../../JourneyList/JourneyCard'
 import { JourneyListProps } from '../../JourneyList/JourneyList'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../../JourneyList/LoadingJourneyList'
+import {
+  RestoreTrashedJourneys,
+  RestoreTrashedJourneysVariables
+} from '../../../../__generated__/RestoreTrashedJourneys'
+import {
+  DeleteTrashedJourneys,
+  DeleteTrashedJourneysVariables
+} from '../../../../__generated__/DeleteTrashedJourneys'
 import {
   DELETE_TRASHED_JOURNEYS,
   RESTORE_TRASHED_JOURNEYS
@@ -41,7 +49,10 @@ export function TrashedTemplateList({
     status: [JourneyStatus.trashed],
     template: true
   })
-  const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
+  const [restoreTrashed] = useMutation<
+    RestoreTrashedJourneys,
+    RestoreTrashedJourneysVariables
+  >(RESTORE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysRestore != null) {
         enqueueSnackbar(t('Journeys Restored'), {
@@ -51,7 +62,10 @@ export function TrashedTemplateList({
       }
     }
   })
-  const [deleteTrashed] = useMutation(DELETE_TRASHED_JOURNEYS, {
+  const [deleteTrashed] = useMutation<
+    DeleteTrashedJourneys,
+    DeleteTrashedJourneysVariables
+  >(DELETE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysDelete != null) {
         enqueueSnackbar(t('Journeys Deleted'), {
@@ -72,7 +86,7 @@ export function TrashedTemplateList({
     try {
       await restoreTrashed({
         variables: {
-          ids: data?.journeys?.map((journey) => journey.id)
+          ids: data?.journeys?.map((journey) => journey.id) ?? []
         }
       })
     } catch (error) {
@@ -90,7 +104,7 @@ export function TrashedTemplateList({
     try {
       await deleteTrashed({
         variables: {
-          ids: data?.journeys?.map((journey) => journey.id)
+          ids: data?.journeys?.map((journey) => journey.id) ?? []
         }
       })
     } catch (error) {

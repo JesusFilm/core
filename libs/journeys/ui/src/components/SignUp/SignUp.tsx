@@ -1,4 +1,5 @@
-import { ApolloError, gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import { SxProps } from '@mui/system/styleFunctionSx'
@@ -139,7 +140,7 @@ export const SignUp = ({
           stepName: heading
         })
       } catch (e) {
-        if (e instanceof ApolloError) {
+        if (e instanceof Error) {
           enqueueSnackbar(e.message, {
             variant: 'error',
             preventDuplicate: true

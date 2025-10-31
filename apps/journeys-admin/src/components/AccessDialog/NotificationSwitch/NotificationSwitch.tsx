@@ -1,4 +1,4 @@
-import { ApolloError } from '@apollo/client'
+import { isErrorLike } from '@apollo/client/errors'
 import Box from '@mui/material/Box'
 import Switch from '@mui/material/Switch'
 import Tooltip from '@mui/material/Tooltip'
@@ -39,17 +39,15 @@ export function NotificationSwitch({
         }
       })
     } catch (error) {
-      if (error instanceof ApolloError) {
-        if (error.networkError != null) {
-          enqueueSnackbar(
-            t('Notification update failed. Reload the page or try again.'),
-            {
-              variant: 'error',
-              preventDuplicate: true
-            }
-          )
-          return
-        }
+      if (isErrorLike(error)) {
+        enqueueSnackbar(
+          t('Notification update failed. Reload the page or try again.'),
+          {
+            variant: 'error',
+            preventDuplicate: true
+          }
+        )
+        return
       }
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {

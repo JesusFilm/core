@@ -34,12 +34,13 @@ export const {
   return new ApolloClient({
     link: httpLink,
     cache: new InMemoryCache(cache),
-    connectToDevTools: process.env.NODE_ENV === 'development',
-    // Prevent shared cache between RSC and client components to avoid conflicts
     defaultOptions: {
       query: {
         fetchPolicy: 'network-only'
       }
+    },
+    devtools: {
+      enabled: process.env.NODE_ENV === 'development'
     }
   })
 })

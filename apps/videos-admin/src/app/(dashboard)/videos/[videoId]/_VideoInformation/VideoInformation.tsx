@@ -1,6 +1,5 @@
 'use client'
-
-import { useMutation, useSuspenseQuery } from '@apollo/client'
+import { useMutation, useSuspenseQuery } from '@apollo/client/react'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import WarningIcon from '@mui/icons-material/Warning'
 import Alert from '@mui/material/Alert'
@@ -169,8 +168,9 @@ export function VideoInformation({
   ): Promise<string[]> => {
     // Re-query to get the most up-to-date data
     const { data: freshData } = await refetch()
+    const currentData = freshData ?? data
     const missingFields: string[] = []
-    const video = freshData.adminVideo
+    const video = currentData.adminVideo
 
     // Check if video has a title - use current form value if provided, otherwise use saved value
     const titleToCheck = currentTitle?.trim() || video.title?.[0]?.value?.trim()

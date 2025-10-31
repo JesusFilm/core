@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import useScrollTrigger from '@mui/material/useScrollTrigger'
 import { fireEvent, render, screen } from '@testing-library/react'
 

@@ -82,7 +82,7 @@ export default async function handler(
         query: GET_ALL_LANGUAGES
       })
 
-      const languages: LanguageTuple[] = data.languages
+      const languages: LanguageTuple[] = (data?.languages ?? [])
         .map((language) => {
           const nativeName = language.nativeName[0]?.value
           const name = language.name
