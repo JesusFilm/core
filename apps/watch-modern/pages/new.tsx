@@ -14,6 +14,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { ContextSelector } from '../src/components/newPage/ContextSelector'
@@ -49,7 +50,7 @@ import {
   contextDetailOptions,
   steps
 } from '../src/config/new-page'
-import { useAiStream } from '../src/hooks/useAiStream'
+import { useAiStream, type AiError } from '../src/hooks/useAiStream'
 import { useImageAnalysis } from '../src/hooks/useImageAnalysis'
 import { useNewPageSession } from '../src/hooks/useNewPageSession'
 import { useUnsplashMedia } from '../src/hooks/useUnsplashMedia'
@@ -1082,6 +1083,7 @@ const createPolotnoDesignFromContent = ({
 
 export default function NewPage() {
   const router = useRouter()
+  const { t } = useTranslation('apps-watch-modern')
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedContext, setSelectedContext] = useState<string>('')
   const [selectedContextDetail, setSelectedContextDetail] =
@@ -1103,10 +1105,7 @@ export default function NewPage() {
   const [unsplashApiKey, setUnsplashApiKey] = useState('')
   const [textContent, setTextContent] = useState('')
   const [aiResponse, setAiResponse] = useState('')
-  const [aiError, setAiError] = useState<{
-    message: string
-    isNetworkError: boolean
-  } | null>(null)
+  const [aiError, setAiError] = useState<AiError | null>(null)
   const [editableSteps, setEditableSteps] = useState<GeneratedStepContent[]>([])
   const [conversationMap, setConversationMap] = useState<ConversationMap | null>(null)
   const [copiedStepIndex, setCopiedStepIndex] = useState<number | null>(null)
@@ -1714,15 +1713,22 @@ export default function NewPage() {
       _error: unknown,
       errorMeta?: { isNetworkError: boolean }
     ) => {
+      // If we have a structured error from the streaming hook, use it directly
+      if (streamingError) {
+        setAiError(streamingError)
+        return
+      }
+
+      // Fallback for legacy error handling
       const isNetworkError = errorMeta?.isNetworkError ?? false
       setAiError({
-        isNetworkError,
+        isRetryable: isNetworkError,
         message: isNetworkError
           ? 'We had trouble reaching the Studio AI service. Check your connection and try again.'
           : 'Something went wrong while generating content. Please try again.'
       })
     },
-    [setAiError]
+    [setAiError, streamingError]
   )
 
   const {
@@ -2924,25 +2930,50 @@ export default function NewPage() {
                     />
                     {aiError && (
                       <div
-                        className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary bg-primary/10 px-4 py-3 text-sm font-medium text-primary shadow-sm dark:border-primary dark:bg-primary/20 dark:text-primary-foreground"
+                        className="mt-4 flex flex-col gap-2 rounded-xl border border-primary bg-primary/10 px-4 py-3 text-sm shadow-sm dark:border-primary dark:bg-primary/20"
                         role="status"
                         aria-live="polite"
                       >
-                        <span>{aiError.message}</span>
-                        {aiError.isNetworkError && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="border-primary text-primary hover:bg-primary/20 dark:border-primary dark:text-primary dark:hover:bg-primary/30"
-                            onClick={() => {
-                              setAiError(null)
-                              void handleSubmit()
-                            }}
-                            disabled={isProcessing}
-                          >
-                            Retry
-                          </Button>
-                        )}
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div className="flex flex-col gap-1">
+                            <span className="font-medium text-primary dark:text-primary-foreground">
+                              {aiError.message}
+                            </span>
+                            {aiError.hint && (
+                              <span className="text-xs text-muted-foreground">
+                                {aiError.hint}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex gap-2">
+                            {aiError.actionUrl && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="border-primary text-primary hover:bg-primary/20 dark:border-primary dark:text-primary dark:hover:bg-primary/30"
+                                onClick={() => {
+                                  window.open(aiError.actionUrl, '_blank', 'noopener,noreferrer')
+                                }}
+                              >
+                                {t('errors.openBilling')}
+                              </Button>
+                            )}
+                            {(aiError.isRetryable || aiError.isNetworkError) && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="border-primary text-primary hover:bg-primary/20 dark:border-primary dark:text-primary dark:hover:bg-primary/30"
+                                onClick={() => {
+                                  setAiError(null)
+                                  void handleSubmit()
+                                }}
+                                disabled={isProcessing}
+                              >
+                                {t('errors.retry')}
+                              </Button>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     )}
                     {/* Hidden file input */}

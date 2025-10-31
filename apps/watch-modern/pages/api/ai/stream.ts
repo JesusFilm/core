@@ -25,6 +25,59 @@ const isBoolean = (value: unknown): value is boolean => typeof value === 'boolea
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   value != null && typeof value === 'object'
 
+interface StructuredError {
+  message: string
+  code?: string
+  provider?: string
+  isRetryable?: boolean
+  actionUrl?: string
+  hint?: string
+}
+
+export const toStructuredError = (error: unknown, provider: 'openrouter' | 'apologist' = 'openrouter'): StructuredError => {
+  // Default error structure
+  const structured: StructuredError = {
+    message: 'AI streaming failed',
+    provider,
+    isRetryable: false
+  }
+
+  if (!error || typeof error !== 'object') {
+    return structured
+  }
+
+  const err = error as any
+
+  // Extract message if available
+  if (err.message && typeof err.message === 'string') {
+    structured.message = err.message
+  }
+
+  // Map specific error codes and messages
+  if (err.statusCode === 402 || err.message?.includes('Insufficient credits')) {
+    structured.code = 'INSUFFICIENT_CREDITS'
+    structured.actionUrl = 'https://openrouter.ai/settings/credits'
+    structured.isRetryable = false
+  } else if (err.statusCode === 429 || err.message?.includes('rate') || err.message?.includes('Rate limit')) {
+    structured.code = 'RATE_LIMIT'
+    structured.isRetryable = true
+  } else if (err.statusCode === 404 || err.message?.includes('model not found') || err.message?.includes('model not available') || err.message?.includes('Model not found')) {
+    structured.code = 'MODEL_UNAVAILABLE'
+    structured.isRetryable = true
+  } else if (err.message?.includes('timeout') || err.message?.includes('Timeout') || err.name === 'AbortError') {
+    structured.code = 'NETWORK_TIMEOUT'
+    structured.isRetryable = true
+  } else if (err.message?.includes('network') || err.message?.includes('Network') || err.message?.includes('ECONNREFUSED') || err.message?.includes('ENOTFOUND')) {
+    structured.code = 'NETWORK'
+    structured.isRetryable = true
+  } else if (err.message?.includes('API key') || err.message?.includes('authentication') || err.message?.includes('unauthorized')) {
+    structured.code = 'AUTHENTICATION'
+    structured.isRetryable = false
+  }
+
+  return structured
+}
+
 // In-memory session storage (consider Redis for multi-instance deployments)
 interface StreamSession {
   id: string
@@ -442,9 +495,8 @@ const handleGet = async (req: NextApiRequest, res: NextApiResponse) => {
   } catch (error) {
     console.error(`[AI Stream] Error in ${session.provider} stream:`, error)
     if (!isStreamEnded) {
-      sendSSEEvent(res, 'error', {
-        message: error instanceof Error ? error.message : 'Unknown streaming error'
-      })
+      const structuredError = toStructuredError(error, session.provider)
+      sendSSEEvent(res, 'error', structuredError)
       endStream()
     }
   }
@@ -479,7 +531,18 @@ const handleOpenRouterStream = async (
   let accumulatedText = ''
   let usageSent = false
 
-  for await (const part of result.fullStream) {
+  // Set a timeout for the streaming operation
+  const streamTimeout = setTimeout(() => {
+    console.error(`[AI Stream] Stream timeout - no response after 30 seconds`)
+    const timeoutError = toStructuredError({ message: 'Request timed out', name: 'AbortError' }, 'openrouter')
+    sendSSEEvent(res, 'error', timeoutError)
+    endStream()
+  }, 30000)
+
+  let partCount = 0
+  try {
+    for await (const part of result.fullStream) {
+    partCount++
     if (part.type === 'text-delta') {
       if (part.textDelta) {
         accumulatedText += part.textDelta
@@ -495,13 +558,34 @@ const handleOpenRouterStream = async (
         sendSSEEvent(res, 'steps', { steps: stepsPayload })
       }
     } else if (part.type === 'error') {
-      // Error parts propagate through the outer handler
+      console.log(`[AI Stream] Error part:`, part.error)
+
+      // Convert to structured error
+      const structuredError = toStructuredError(part.error, 'openrouter')
+        sendSSEEvent(res, 'error', structuredError)
+      // Continue processing to let the stream end gracefully
     } else if (part.type === 'finish') {
       if (part.usage && !usageSent) {
         sendSSEEvent(res, 'usage', mapUsage(part.usage))
         usageSent = true
       }
     }
+    clearTimeout(streamTimeout)
+  } catch (streamError) {
+    clearTimeout(streamTimeout)
+    console.error(`[AI Stream] Error during streaming:`, streamError)
+    const structuredError = toStructuredError(streamError, 'openrouter')
+    sendSSEEvent(res, 'error', structuredError)
+    endStream()
+    return
+  }
+
+  if (partCount === 0) {
+    console.error(`[AI Stream] ERROR: No parts received from stream! This indicates the AI model is not responding.`)
+    const noPartsError = toStructuredError({ message: 'AI streaming failed: No content received from AI model' }, 'openrouter')
+    sendSSEEvent(res, 'error', noPartsError)
+    endStream()
+    return
   }
 
   const usage = await result.usage
@@ -573,7 +657,18 @@ const handleOpenRouterConversationStream = async (
 
   let usageSent = false
 
-  for await (const part of result.fullStream) {
+  // Set a timeout for the streaming operation
+  const streamTimeout = setTimeout(() => {
+    console.error(`[AI Stream] CONVERSATION MODE: Stream timeout - no response after 30 seconds`)
+    const timeoutError = toStructuredError({ message: 'Request timed out', name: 'AbortError' }, 'openrouter')
+    sendSSEEvent(res, 'error', timeoutError)
+    endStream()
+  }, 30000)
+
+  let partCount = 0
+  try {
+    for await (const part of result.fullStream) {
+    partCount++
     if (part.type === 'text-delta') {
       if (part.textDelta) {
         accumulatedText += part.textDelta
@@ -586,7 +681,12 @@ const handleOpenRouterConversationStream = async (
         sendSSEEvent(res, 'conversation', conversationPayload)
       }
     } else if (part.type === 'error') {
-      // Error parts propagate through the outer handler
+      console.log(`[AI Stream] CONVERSATION MODE: Error part:`, part.error)
+
+      // Convert to structured error
+      const structuredError = toStructuredError(part.error, 'openrouter')
+      sendSSEEvent(res, 'error', structuredError)
+      // Continue processing to let the stream end gracefully
     } else if (part.type === 'finish') {
       // Usage is handled after the loop
       if (part.usage && !usageSent) {
@@ -594,6 +694,22 @@ const handleOpenRouterConversationStream = async (
         usageSent = true
       }
     }
+    clearTimeout(streamTimeout)
+  } catch (streamError) {
+    clearTimeout(streamTimeout)
+    console.error(`[AI Stream] CONVERSATION MODE: Error during streaming:`, streamError)
+    const structuredError = toStructuredError(streamError, 'openrouter')
+    sendSSEEvent(res, 'error', structuredError)
+    endStream()
+    return
+  }
+
+  if (partCount === 0) {
+    console.error(`[AI Stream] CONVERSATION MODE: ERROR: No parts received from stream! This indicates the AI model is not responding.`)
+    const noPartsError = toStructuredError({ message: 'AI streaming failed: No content received from AI model' }, 'openrouter')
+    sendSSEEvent(res, 'error', noPartsError)
+    endStream()
+    return
   }
 
   const usage = await result.usage

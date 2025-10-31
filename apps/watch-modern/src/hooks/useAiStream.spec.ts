@@ -341,4 +341,158 @@ describe('useAiStream', () => {
     expect(result.current.message).toBeNull()
     expect(result.current.error).toBeNull()
   })
+
+  describe('error payload parsing', () => {
+    it('should handle structured error payloads with localization', async () => {
+      const { result } = renderHook(() => useAiStream())
+
+      // Start streaming to create EventSource
+      ;(global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ id: 'test-session' })
+      })
+
+      await act(async () => {
+        await result.current.startStream({
+          messages: [{ role: 'user', content: 'Hello' }]
+        })
+      })
+
+      // Wait for EventSource to be created
+      await waitFor(() => {
+        const latestInstance = (global.EventSource as jest.Mock).mock.results[0]?.value ?? null
+        expect(latestInstance).not.toBeNull()
+        mockEventSourceInstance = latestInstance
+      })
+
+      const structuredError = {
+        code: 'INSUFFICIENT_CREDITS',
+        message: 'OpenRouter credits exhausted. Please add credits to your OpenRouter account.',
+        provider: 'openrouter',
+        isRetryable: false,
+        actionUrl: 'https://openrouter.ai/settings/credits',
+        hint: 'Add credits or switch to a different API key/organization.'
+      }
+
+      act(() => {
+        const instance = getMockEventSourceInstance()
+        instance._triggerEvent('error', new MessageEvent('error', {
+          data: JSON.stringify(structuredError)
+        }))
+      })
+
+      // The error should be processed (exact structure depends on localization)
+      expect(result.current.error).toBeDefined()
+      expect(result.current.error?.code).toBe('INSUFFICIENT_CREDITS')
+      expect(result.current.error?.provider).toBe('openrouter')
+      expect(result.current.error?.isRetryable).toBe(false)
+      expect(result.current.error?.actionUrl).toBe('https://openrouter.ai/settings/credits')
+      expect(result.current.error?.hint).toBe('Add credits or switch to a different API key/organization.')
+    })
+
+    it('should handle legacy string error payloads', async () => {
+      const { result } = renderHook(() => useAiStream())
+
+      // Start streaming to create EventSource
+      ;(global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ id: 'test-session' })
+      })
+
+      await act(async () => {
+        await result.current.startStream({
+          messages: [{ role: 'user', content: 'Hello' }]
+        })
+      })
+
+      // Wait for EventSource to be created
+      await waitFor(() => {
+        const latestInstance = (global.EventSource as jest.Mock).mock.results[0]?.value ?? null
+        expect(latestInstance).not.toBeNull()
+        mockEventSourceInstance = latestInstance
+      })
+
+      const legacyErrorMessage = 'Legacy error message'
+
+      act(() => {
+        const instance = getMockEventSourceInstance()
+        instance._triggerEvent('error', new MessageEvent('error', {
+          data: legacyErrorMessage
+        }))
+      })
+
+      expect(result.current.error).toEqual({ message: legacyErrorMessage })
+    })
+
+    it('should handle partial structured error payloads', async () => {
+      const { result } = renderHook(() => useAiStream())
+
+      // Start streaming to create EventSource
+      ;(global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ id: 'test-session' })
+      })
+
+      await act(async () => {
+        await result.current.startStream({
+          messages: [{ role: 'user', content: 'Hello' }]
+        })
+      })
+
+      // Wait for EventSource to be created
+      await waitFor(() => {
+        const latestInstance = (global.EventSource as jest.Mock).mock.results[0]?.value ?? null
+        expect(latestInstance).not.toBeNull()
+        mockEventSourceInstance = latestInstance
+      })
+
+      const partialError = {
+        message: 'Rate limit exceeded',
+        isRetryable: true
+      }
+
+      act(() => {
+        const instance = getMockEventSourceInstance()
+        instance._triggerEvent('error', new MessageEvent('error', {
+          data: JSON.stringify(partialError)
+        }))
+      })
+
+      expect(result.current.error).toBeDefined()
+      expect(result.current.error?.message).toBe('Rate limit exceeded')
+      expect(result.current.error?.isRetryable).toBe(true)
+    })
+
+    it('should handle invalid error payload gracefully', async () => {
+      const { result } = renderHook(() => useAiStream())
+
+      // Start streaming to create EventSource
+      ;(global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ id: 'test-session' })
+      })
+
+      await act(async () => {
+        await result.current.startStream({
+          messages: [{ role: 'user', content: 'Hello' }]
+        })
+      })
+
+      // Wait for EventSource to be created
+      await waitFor(() => {
+        const latestInstance = (global.EventSource as jest.Mock).mock.results[0]?.value ?? null
+        expect(latestInstance).not.toBeNull()
+        mockEventSourceInstance = latestInstance
+      })
+
+      act(() => {
+        const instance = getMockEventSourceInstance()
+        instance._triggerEvent('error', new MessageEvent('error', {
+          data: null
+        }))
+      })
+
+      expect(result.current.error).toEqual({ message: 'An unknown error occurred' })
+    })
+  })
 })

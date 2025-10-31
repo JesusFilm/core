@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
+import { useTranslation } from 'next-i18next'
 import type { CoreMessage } from 'ai'
 import { useEventSource, type SSEEvent } from './useEventSource'
 
@@ -54,6 +55,15 @@ export interface AiMessage {
   }>
 }
 
+export interface AiError {
+  message: string
+  code?: string
+  provider?: string
+  isRetryable?: boolean
+  actionUrl?: string
+  hint?: string
+}
+
 export interface UseAiStreamReturn {
   /** Whether streaming is active */
   isStreaming: boolean
@@ -70,7 +80,7 @@ export interface UseAiStreamReturn {
   /** Latest structured steps payload when provided */
   steps: unknown
   /** Current error if any */
-  error: string | null
+  error: AiError | null
   /** Start a new streaming request */
   startStream: (options: AiStreamOptions) => Promise<void>
   /** Cancel the current stream */
@@ -84,6 +94,7 @@ export interface UseAiStreamReturn {
  * Manages session creation and SSE connection lifecycle
  */
 export function useAiStream(): UseAiStreamReturn {
+  const { t } = useTranslation('apps-watch-modern')
   const [isStreaming, setIsStreaming] = useState(false)
   const [text, setText] = useState('')
   const [chunks, setChunks] = useState<AiStreamChunk[]>([])
@@ -91,10 +102,36 @@ export function useAiStream(): UseAiStreamReturn {
   const [message, setMessage] = useState<AiMessage | null>(null)
   const [conversationMap, setConversationMap] = useState<unknown>(null)
   const [steps, setSteps] = useState<unknown>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<AiError | null>(null)
 
   const [eventSourceUrl, setEventSourceUrl] = useState<string | null>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
+
+  // Helper to localize error messages
+  const localizeError = useCallback((errorData: any): AiError => {
+    if (typeof errorData === 'string') {
+      return { message: errorData }
+    }
+
+    if (typeof errorData === 'object' && errorData.message) {
+      const aiError: AiError = { ...errorData }
+
+      // Localize message based on error code
+      if (errorData.code) {
+        const errorKey = `errors.${errorData.code.toLowerCase()}`
+        const localizedMessage = t(errorKey)
+
+        // Use localized message if it exists and is different from the key
+        if (localizedMessage && localizedMessage !== errorKey) {
+          aiError.message = localizedMessage
+        }
+      }
+
+      return aiError
+    }
+
+    return { message: 'An unknown error occurred' }
+  }, [t])
 
   // Event handlers for SSE events
   const handleEvent = useCallback((event: SSEEvent) => {
@@ -148,11 +185,12 @@ export function useAiStream(): UseAiStreamReturn {
         break
 
       case 'error': {
-        const errorMessage = event.data?.message
-        if (errorMessage) {
-          setError(errorMessage)
+        if (event.data) {
+          const localizedError = localizeError(event.data)
+          setError(localizedError)
         } else {
-          debugLog('[useAiStream] Ignoring error event without message payload')
+          debugLog('[useAiStream] Ignoring error event without data payload')
+          setError({ message: 'An unknown error occurred' })
         }
         setIsStreaming(false)
         break
