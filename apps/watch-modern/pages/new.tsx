@@ -156,7 +156,7 @@ const MAX_CONVERSATION_STEPS = 5
 const CONVERSATION_RESPONSE_GUIDELINES = `Guidelines:
 - Map an ideal path of up to ${MAX_CONVERSATION_STEPS} guide-led conversation moves that gently progress toward gospel hope.
 - Summarize the overall movement first with a 'flow' that lists each step's short theme in order and a brief rationale for why this journey helps the responder.
-- Every step must include a guide message, a purpose note (or null), and at least five scriptureOptions. Each scripture option needs the verse text/reference, a note on why it fits/how to migrate the conversation toward it, and multiple tone-tagged conversation examples.
+- Every step must include a guide message, a purpose note (or null), and at least three scriptureOptions. Each scripture option needs the verse text/reference, a note on why it fits/how to migrate the conversation toward it, and multiple tone-tagged conversation examples.
  - Maintain warm, pastoral tone across the guide messages, verse explanations, and conversation examples. Keep each message concise enough to fit in a chat bubble.
 - Do not include design instructions, media prompts, or image keywords in any field.
 - Output valid JSON only.`
