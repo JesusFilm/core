@@ -414,36 +414,23 @@ export function ExportDialog({
           }
 
     try {
-      if (exportBy === 'Visitor Actions') {
-        await exportToSheets({
-          variables: {
-            journeyId,
-            filter: filterArg,
-            destination,
-            integrationId
-          }
-        })
-      } else if (exportBy === 'Contact Data') {
-        await exportToSheets({
-          variables: {
-            journeyId,
-            filter: {
-              typenames: contactData.filter(
-                (d) => d !== 'name' && d !== 'email' && d !== 'phone'
-              ),
-              ...(startDate && { periodRangeStart: startDate.toISOString() }),
-              ...(endDate && { periodRangeEnd: endDate.toISOString() })
-            },
-            select: {
-              name: contactData.includes('name'),
-              email: contactData.includes('email'),
-              phone: contactData.includes('phone')
-            },
-            destination,
-            integrationId
-          }
-        })
-      }
+      await exportToSheets({
+        variables: {
+          journeyId,
+          filter: {
+            typenames: contactData.filter(
+              (d) => d !== 'name' && d !== 'email' && d !== 'phone'
+            )
+          },
+          select: {
+            name: contactData.includes('name'),
+            email: contactData.includes('email'),
+            phone: contactData.includes('phone')
+          },
+          destination,
+          integrationId
+        }
+      })
       setGoogleDialogOpen(false)
       onClose()
       enqueueSnackbar(t('Exported to Google Sheets'), { variant: 'success' })
