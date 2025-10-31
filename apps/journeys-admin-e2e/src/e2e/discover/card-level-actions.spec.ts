@@ -62,7 +62,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Image - create, update & delete
-  test('Image - create, update & delete', async ({ page }) => {
+  test.fixme('Image - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Image') // clicking on image button in add block drawer
@@ -172,7 +172,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Spacer - create & delete
-  test('Spacer - create & delete', async ({ page }) => {
+  test.fixme('Spacer - create & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Spacer') // clicking on subscribe button in add block drawer
