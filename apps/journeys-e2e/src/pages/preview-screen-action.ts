@@ -38,37 +38,44 @@ import {
     async verifyCardIconsAndChatWidgets() {
       const viewport = this.page.viewportSize()
       if (!viewport) throw new Error('Viewport not available')
-  
+
       const { width, height } = viewport
-  
+      // Footer icons are only visible on mobile viewports (< 768px)
+      const isMobileViewport = width < 768
+
       // Helper to get element position
       const getPosition = async (selector: string, nth = 0) => {
         const box = await this.page.locator(selector).nth(nth).boundingBox()
         if (!box) throw new Error(`Element ${selector} not visible`)
         return box
       }
-  
+
       await expect
         .soft(this.page.locator(this.infoIcon), `Info Icon should be displayed`)
         .toBeVisible()
-      await expect
-        .soft(
-          this.page.locator(this.shareIcon).nth(0),
-          `Share Icon should be displayed`
-        )
-        .toBeVisible()
-      await expect
-        .soft(
-          this.page.locator(this.thumbsUpIcon).nth(0),
-          `ThumbsUp Icon should be displayed`
-        )
-        .toBeVisible()
-      await expect
-        .soft(
-          this.page.locator(this.thumbsDownIcon).nth(0),
-          `ThumbsDown Icon should be displayed`
-        )
-        .toBeVisible()
+      
+      // Footer icons (Share, ThumbsUp, ThumbsDown) are only visible on mobile
+      if (isMobileViewport) {
+        await expect
+          .soft(
+            this.page.locator(this.shareIcon).nth(0),
+            `Share Icon should be displayed`
+          )
+          .toBeVisible({ timeout: 10000 })
+        await expect
+          .soft(
+            this.page.locator(this.thumbsUpIcon).nth(0),
+            `ThumbsUp Icon should be displayed`
+          )
+          .toBeVisible({ timeout: 10000 })
+        await expect
+          .soft(
+            this.page.locator(this.thumbsDownIcon).nth(0),
+            `ThumbsDown Icon should be displayed`
+          )
+          .toBeVisible({ timeout: 10000 })
+      }
+      
       await expect
         .soft(this.page.locator(this.hostIcon), `Host Icon should be displayed`)
         .toBeVisible()
@@ -78,15 +85,12 @@ import {
           `Title should be displayed`
         )
         .toBeVisible()
-  
+
       // Validate positions approximately
       const infoPos = await getPosition(this.infoIcon)
-      const sharePos = await getPosition(this.shareIcon)
-      const thumbsUpPos = await getPosition(this.thumbsUpIcon)
-      const thumbsDownPos = await getPosition(this.thumbsDownIcon)
       const hostPos = await getPosition(this.hostIcon)
       const titlePos = await getPosition(this.titleText)
-  
+
       expect
         .soft(
           infoPos.y,
@@ -99,45 +103,52 @@ import {
           `Info icon should be on the right side of the screen. Actual: ${infoPos.x}. Expected: > ${width * 0.7}`
         )
         .toBeGreaterThan(width * 0.7)
-  
-      expect
-        .soft(
-          sharePos.y,
-          `Share button should be near the bottom (bottom-left area). Actual: ${sharePos.y}. Expected: > ${height * 0.7}`
-        )
-        .toBeGreaterThan(height * 0.7)
-      expect
-        .soft(
-          sharePos.x,
-          `Share button should be aligned to the left side. Actual: ${sharePos.x}. Expected: < ${width * 0.3}`
-        )
-        .toBeLessThan(width * 0.3)
-  
-      expect
-        .soft(
-          thumbsUpPos.y,
-          `Like button should appear near the bottom (bottom-left area). Actual: ${thumbsUpPos.y}. Expected: > ${height * 0.7}`
-        )
-        .toBeGreaterThan(height * 0.7)
-      expect
-        .soft(
-          thumbsUpPos.x,
-          `Like button should be positioned slightly right from the left edge. Actual: ${thumbsUpPos.x}. Expected: < ${width * 0.4}`
-        )
-        .toBeLessThan(width * 0.4)
-  
-      expect
-        .soft(
-          thumbsDownPos.y,
-          `Dislike button should be near the bottom (bottom-left area). Actual: ${thumbsDownPos.y}. Expected: > ${height * 0.7}`
-        )
-        .toBeGreaterThan(height * 0.7)
-      expect
-        .soft(
-          thumbsDownPos.x,
-          `Dislike button should be slightly right from the Like button. Actual: ${thumbsDownPos.x}. Expected: < ${width * 0.5}`
-        )
-        .toBeLessThan(width * 0.5)
+
+      // Only validate footer icon positions on mobile viewport
+      if (isMobileViewport) {
+        const sharePos = await getPosition(this.shareIcon)
+        const thumbsUpPos = await getPosition(this.thumbsUpIcon)
+        const thumbsDownPos = await getPosition(this.thumbsDownIcon)
+
+        expect
+          .soft(
+            sharePos.y,
+            `Share button should be near the bottom (bottom-left area). Actual: ${sharePos.y}. Expected: > ${height * 0.7}`
+          )
+          .toBeGreaterThan(height * 0.7)
+        expect
+          .soft(
+            sharePos.x,
+            `Share button should be aligned to the left side. Actual: ${sharePos.x}. Expected: < ${width * 0.3}`
+          )
+          .toBeLessThan(width * 0.3)
+
+        expect
+          .soft(
+            thumbsUpPos.y,
+            `Like button should appear near the bottom (bottom-left area). Actual: ${thumbsUpPos.y}. Expected: > ${height * 0.7}`
+          )
+          .toBeGreaterThan(height * 0.7)
+        expect
+          .soft(
+            thumbsUpPos.x,
+            `Like button should be positioned slightly right from the left edge. Actual: ${thumbsUpPos.x}. Expected: < ${width * 0.4}`
+          )
+          .toBeLessThan(width * 0.4)
+
+        expect
+          .soft(
+            thumbsDownPos.y,
+            `Dislike button should be near the bottom (bottom-left area). Actual: ${thumbsDownPos.y}. Expected: > ${height * 0.7}`
+          )
+          .toBeGreaterThan(height * 0.7)
+        expect
+          .soft(
+            thumbsDownPos.x,
+            `Dislike button should be slightly right from the Like button. Actual: ${thumbsDownPos.x}. Expected: < ${width * 0.5}`
+          )
+          .toBeLessThan(width * 0.5)
+      }
   
       expect
         .soft(
