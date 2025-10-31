@@ -10,7 +10,7 @@ import {
   export class PreviewScreenPage extends BasePage {
     context: BrowserContext
   
-    constructor(page: Page, context: BrowserContext, test: TestType<Record<string, unknown>, Record<string, unknown>>) {
+    constructor(page: Page, context: BrowserContext, test: TestType<any, any>) {
       super(page, test)
       this.context = context
     }
