@@ -71,8 +71,6 @@ export function Video({
   const [player, setPlayer] = useState<VideoJsPlayer>()
   const [showPoster, setShowPoster] = useState(true)
   const [activeStep, setActiveStep] = useState(false)
-  const [active, setActive] = useState(true)
-  const [visible, setVisible] = useState(false)
 
   const { blockHistory } = useBlocks()
   const { variant } = useJourney()
