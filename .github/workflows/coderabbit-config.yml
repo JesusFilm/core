@@ -1,0 +1,86 @@
+name: Update CodeRabbit Config
+
+# This workflow attempts to update .coderabbit.yml with changed files,
+# but note: CodeRabbit runs when PRs are opened, so this will only affect
+# subsequent runs (e.g., when new commits are pushed).
+#
+# Alternative: Disable docstring checks in CodeRabbit and use a custom script
+# that only checks changed files.
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-coderabbit-config:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        with:
+          files: |
+            **/*.ts
+            **/*.tsx
+            **/*.js
+            **/*.jsx
+
+      - name: Generate CodeRabbit config with changed files
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          # Create the updated .coderabbit.yml with path filters for changed files
+          cat > .coderabbit.yml << EOF
+          # CodeRabbit Configuration
+          # Auto-generated for PR #${{ github.event.pull_request.number }}
+          # This updates path_filters to limit reviews to changed files
+          # Note: This only affects subsequent CodeRabbit runs after the PR is opened
+
+          reviews:
+            path_filters:
+          EOF
+          
+          # Add each changed file to path_filters
+          echo "${{ steps.changed-files.outputs.all_changed_files }}" | while IFS= read -r file; do
+            if [ -n "$file" ] && ([[ "$file" == *.ts ]] || [[ "$file" == *.tsx ]] || [[ "$file" == *.js ]] || [[ "$file" == *.jsx ]]); then
+              echo "      - \"$file\"" >> .coderabbit.yml
+            fi
+          done
+          
+          # Append the rest of the config
+          cat >> .coderabbit.yml << EOF
+
+          # Docstring checks are disabled because CodeRabbit checks entire repo
+          # Use a custom script that checks only changed files instead
+          features:
+            docstring:
+              enabled: false
+
+          language:
+            typescript:
+              docstring:
+                enabled: false
+          EOF
+
+      - name: Commit updated config
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .coderabbit.yml
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: update CodeRabbit config for changed files [skip ci]"
+            git push
+          fi

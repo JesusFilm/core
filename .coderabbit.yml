@@ -1,0 +1,36 @@
+# CodeRabbit Configuration
+# 
+# Note: CodeRabbit currently checks docstring coverage for the entire repository,
+# not just changed files. To limit docstring checks to changed files, we have two options:
+#
+# Option 1: Disable docstring checks in CodeRabbit (recommended)
+# Use a different tool like ESLint or a custom script that only checks changed files.
+#
+# Option 2: Use path filters to limit CodeRabbit's review scope
+# This requires manually updating path_filters for each PR or using the workflow below.
+
+# Configuration for reviews
+reviews:
+  # Path filters can be used to limit review scope to specific paths
+  # Update this manually for each PR or use the workflow to auto-generate
+  path_filters: []
+  # Example:
+  # path_filters:
+  #   - "apps/journeys-admin-e2e/**/*.ts"
+  #   - "apis/**/*.ts"
+
+# Disable docstring checks globally since they check entire repository
+# This prevents CodeRabbit from flagging unchanged files for missing docstrings
+features:
+  docstring:
+    enabled: false  # Disabled because it checks entire repo, not just changed files
+    # If you enable this, it will check the entire repository
+    # mode: require
+    # threshold: 80
+
+# Language-specific settings
+language:
+  typescript:
+    docstring:
+      enabled: false
+
