@@ -1,15 +1,23 @@
 import { gql, useQuery } from '@apollo/client'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import FormControl from '@mui/material/FormControl'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 
 import { useJourneyContactsExport } from '../../../../libs/useJourneyContactsExport'
 import { useJourneyEventsExport } from '../../../../libs/useJourneyEventsExport'
 
-import { ExportSettings } from './ExportSettings'
+import { ContactDataForm } from './ContactDataForm'
+import { DateRangePicker } from './DateRangePicker'
+import { FilterForm } from './FilterForm'
 
 export const GET_JOURNEY_CREATED_AT = gql`
   query GetJourneyCreatedAt($id: ID!) {
@@ -26,6 +34,12 @@ interface ExportDialogProps {
   journeyId: string
 }
 
+/**
+ * Dialog component for exporting journey analytics events
+ * @param open - Whether the dialog is visible
+ * @param onClose - Callback fired when the dialog is closed
+ * @param journeyId - ID of the journey to export events from
+ */
 export function ExportDialog({
   open,
   onClose,
@@ -57,12 +71,6 @@ export function ExportDialog({
     }
   }, [journeyData])
 
-  const filterArg = {
-    typenames: selectedEvents,
-    ...(startDate && { periodRangeStart: startDate.toISOString() }),
-    ...(endDate && { periodRangeEnd: endDate.toISOString() })
-  }
-
   const handleExport = async (): Promise<void> => {
     try {
       if (exportBy === 'Visitor Actions') {
@@ -92,7 +100,7 @@ export function ExportDialog({
       }
       onClose()
     } catch (error) {
-      enqueueSnackbar((error as Error).message, {
+      enqueueSnackbar(error.message, {
         variant: 'error'
       })
     }
@@ -123,21 +131,73 @@ export function ExportDialog({
             mr: { xs: 0, sm: 3 }
           }}
         >
-          {t('Download (CSV)')}
+          {t('Export (CSV)')}
         </Button>
       }
     >
-      <ExportSettings
+      <DateRangePicker
         startDate={startDate}
         endDate={endDate}
         onStartDateChange={setStartDate}
         onEndDateChange={setEndDate}
-        exportBy={exportBy}
-        onExportByChange={setExportBy}
-        setSelectedEvents={setSelectedEvents}
-        contactData={contactData}
-        setContactData={setContactData}
       />
+      <Box
+        sx={{
+          pt: 4,
+          pr: 2,
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          alignItems: { xs: 'stretch', sm: 'center' },
+          gap: 2
+        }}
+      >
+        <Typography
+          variant="subtitle2"
+          sx={{ whiteSpace: 'nowrap', minWidth: 'fit-content' }}
+        >
+          {t('Export By:')}
+        </Typography>
+        <FormControl fullWidth>
+          <Select
+            value={exportBy}
+            onChange={(e) => setExportBy(e.target.value)}
+            displayEmpty
+            inputProps={{ 'aria-label': t('Export By:') }}
+            IconComponent={ChevronDown}
+            renderValue={(selected) => {
+              if (!selected) {
+                return t('Select Data')
+              }
+              return selected
+            }}
+          >
+            <MenuItem value="" disabled hidden>
+              {t('Select Data')}
+            </MenuItem>
+            <MenuItem value="Visitor Actions">{t('Visitor Actions')}</MenuItem>
+            <MenuItem value="Contact Data">{t('Contact Data')}</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
+      {exportBy === 'Visitor Actions' && (
+        <Box sx={{ pt: 4 }}>
+          <Typography variant="subtitle2" gutterBottom>
+            {t('Select visitor actions:')}
+          </Typography>
+          <FilterForm setSelectedEvents={setSelectedEvents} />
+        </Box>
+      )}
+      {exportBy === 'Contact Data' && (
+        <Box sx={{ pt: 4 }}>
+          <Typography variant="subtitle2" gutterBottom>
+            {t('Select contact data:')}
+          </Typography>
+          <ContactDataForm
+            setSelectedFields={setContactData}
+            selectedFields={contactData}
+          />
+        </Box>
+      )}
     </Dialog>
   )
 }

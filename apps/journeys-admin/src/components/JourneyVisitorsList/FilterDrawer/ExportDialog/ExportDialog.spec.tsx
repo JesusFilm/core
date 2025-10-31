@@ -219,7 +219,7 @@ describe('ExportDialog', () => {
 
       expect(screen.getByLabelText('All')).toBeChecked()
       expect(screen.getByLabelText('Journey Start')).toBeChecked()
-      expect(screen.getByRole('button', { name: 'Download (CSV)' })).toBeEnabled()
+      expect(screen.getByRole('button', { name: 'Export (CSV)' })).toBeEnabled()
     })
 
     it('should call export function with default filters on button click', async () => {
@@ -254,7 +254,7 @@ describe('ExportDialog', () => {
       fireEvent.mouseDown(selectElement)
       fireEvent.click(screen.getByText('Visitor Actions'))
 
-      const exportButton = screen.getByRole('button', { name: 'Download (CSV)' })
+      const exportButton = screen.getByRole('button', { name: 'Export (CSV)' })
       await act(async () => {
         fireEvent.click(exportButton)
       })
@@ -280,7 +280,7 @@ describe('ExportDialog', () => {
       fireEvent.click(screen.getByText('Visitor Actions'))
 
       const allCheckbox = screen.getByLabelText('All')
-      const exportButton = screen.getByRole('button', { name: 'Download (CSV)' })
+      const exportButton = screen.getByRole('button', { name: 'Export (CSV)' })
 
       expect(exportButton).toBeEnabled()
       fireEvent.click(allCheckbox)
@@ -324,7 +324,7 @@ describe('ExportDialog', () => {
       fireEvent.mouseDown(selectElement)
       fireEvent.click(screen.getByText('Visitor Actions'))
 
-      const exportButton = screen.getByRole('button', { name: 'Download (CSV)' })
+      const exportButton = screen.getByRole('button', { name: 'Export (CSV)' })
 
       await act(async () => {
         fireEvent.click(exportButton)
@@ -362,7 +362,7 @@ describe('ExportDialog', () => {
       expect(screen.getByLabelText('Subscription')).toBeChecked()
       expect(screen.getByLabelText('Text Submission')).toBeChecked()
 
-      fireEvent.click(screen.getByRole('button', { name: 'Download (CSV)' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Export (CSV)' }))
       expect(mockExportJourneyContacts).toHaveBeenCalledWith({
         journeyId: 'journey1',
         filter: expect.objectContaining({
@@ -403,9 +403,9 @@ describe('ExportDialog', () => {
       fireEvent.click(screen.getByLabelText('All'))
       fireEvent.click(screen.getByLabelText('Name'))
 
-      expect(screen.getByRole('button', { name: 'Download (CSV)' })).toBeEnabled()
+      expect(screen.getByRole('button', { name: 'Export (CSV)' })).toBeEnabled()
 
-      fireEvent.click(screen.getByRole('button', { name: 'Download (CSV)' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Export (CSV)' }))
       expect(mockExportJourneyContacts).toHaveBeenCalledWith({
         journeyId: 'journey1',
         filter: {
