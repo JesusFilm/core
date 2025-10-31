@@ -186,61 +186,63 @@ test.describe('verify card level actions', () => {
   })
 
   // Footer properties (Journey) - Reactions, Display Title, Hosted By & Chat Widget
-  test.fixme('Footer properties (Journey) - create, update & delete', async ({
-    page
-  }) => {
-    const footerTitle = 'Footer Playwright'
-    const cardLevelActionPage = new CardLevelActionPage(page)
-    await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Footer section
-    await cardLevelActionPage.expandJourneyAppearance('Reactions') // clicking on the 'Reactions' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.selectAllTheReactionOptions() // Select all the reaction checkboxes 'Share', 'Like', 'DisLike'
-    await cardLevelActionPage.expandJourneyAppearance('Display Title') // clicking on the 'Display Title' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.enterDisplayTitleForFooter(footerTitle) // Enter Display title for the Footer Section
-    await cardLevelActionPage.expandJourneyAppearance('Hosted By') // clicking on the 'Hosted By' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.clicSelectHostBtn() // clicking the 'select a host' button below the 'Hosted by' tab in the footer properties drawer
-    await cardLevelActionPage.clickCreateNewBtn() // clicking the 'create new' button below the 'Hosted by' tab in the footer properties drawer
-    await cardLevelActionPage.enterHostName() // entering host name in the host field in the footer properties drawer
-    await cardLevelActionPage.enterLocation() // entering location in the location field in the footer properties drawer
-    await cardLevelActionPage.clickOnJourneyCard() // clickng on the journey card
-    await cardLevelActionPage.verifyHostNameAddedInCard() // verifying the added host name and location are updated in the footer section at bottom of the card
-    await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Footer section
-    await cardLevelActionPage.expandJourneyAppearance('Chat Widget') // clicking on the 'Chat Widget' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.clickMessangerDropDown('WhatsApp') // clicking the whatsapp dropdown check box
-    await cardLevelActionPage.enterWhatsAppLink() // entering link value on the URL field
-    await cardLevelActionPage.verifyChatWidgetAddedToCard() // verifying the selected messager icon is updated in the footer section at bottom of the card
-    await cardLevelActionPage.validateFooterTitleAndReactionButtonsInCard(
-      footerTitle
-    ) //Verifying the Footer Title and Reactions in the card
-  })
+  test.fixme(
+    'Footer properties (Journey) - create, update & delete',
+    async ({ page }) => {
+      const footerTitle = 'Footer Playwright'
+      const cardLevelActionPage = new CardLevelActionPage(page)
+      await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Footer section
+      await cardLevelActionPage.expandJourneyAppearance('Reactions') // clicking on the 'Reactions' tab from the tab list of footer properties drawer
+      await cardLevelActionPage.selectAllTheReactionOptions() // Select all the reaction checkboxes 'Share', 'Like', 'DisLike'
+      await cardLevelActionPage.expandJourneyAppearance('Display Title') // clicking on the 'Display Title' tab from the tab list of footer properties drawer
+      await cardLevelActionPage.enterDisplayTitleForFooter(footerTitle) // Enter Display title for the Footer Section
+      await cardLevelActionPage.expandJourneyAppearance('Hosted By') // clicking on the 'Hosted By' tab from the tab list of footer properties drawer
+      await cardLevelActionPage.clicSelectHostBtn() // clicking the 'select a host' button below the 'Hosted by' tab in the footer properties drawer
+      await cardLevelActionPage.clickCreateNewBtn() // clicking the 'create new' button below the 'Hosted by' tab in the footer properties drawer
+      await cardLevelActionPage.enterHostName() // entering host name in the host field in the footer properties drawer
+      await cardLevelActionPage.enterLocation() // entering location in the location field in the footer properties drawer
+      await cardLevelActionPage.clickOnJourneyCard() // clickng on the journey card
+      await cardLevelActionPage.verifyHostNameAddedInCard() // verifying the added host name and location are updated in the footer section at bottom of the card
+      await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Footer section
+      await cardLevelActionPage.expandJourneyAppearance('Chat Widget') // clicking on the 'Chat Widget' tab from the tab list of footer properties drawer
+      await cardLevelActionPage.clickMessangerDropDown('WhatsApp') // clicking the whatsapp dropdown check box
+      await cardLevelActionPage.enterWhatsAppLink() // entering link value on the URL field
+      await cardLevelActionPage.verifyChatWidgetAddedToCard() // verifying the selected messager icon is updated in the footer section at bottom of the card
+      await cardLevelActionPage.validateFooterTitleAndReactionButtonsInCard(
+        footerTitle
+      ) //Verifying the Footer Title and Reactions in the card
+    }
+  )
 
   // Footer properties (WebSite) - Logo, Display Title, Menu & Chat Widget
-  test.fixme('Footer properties (WebSite) - create, update & delete', async ({
-    page
-  }) => {
-    const footerTitle = 'Footer Playwright'
-    const cardLevelActionPage = new CardLevelActionPage(page)
-    await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Footer section
-    await cardLevelActionPage.clickJourneyOrWebSiteOptionForFooter('Website') //Select WebSite option in the top of the footer property
-    await cardLevelActionPage.expandJourneyAppearance('Logo') // clicking on the 'Logo' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.clickSelectImageBtn() // Select Plus icon to add the Image
-    await cardLevelActionPage.selectFirstImageFromGalleryForFooter() //Select first image from the gallery for the Footer section
-    await cardLevelActionPage.valdiateSelectedImageWithDeleteIcon() //Verifying the Selected Image with Delete icon is display
-    await cardLevelActionPage.closeToolDrawerForFooterImage() // Close the tool drawer after selected the Image
-    await cardLevelActionPage.validateSelectedImageWithEditIcon() //Verifying the Selected image is showing under Logo section with edit button
-    await cardLevelActionPage.expandJourneyAppearance('Display Title') // clicking on the 'Display Title' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.enterDisplayTitleForFooter(footerTitle) // Enter Display title for the Footer Section
-    await cardLevelActionPage.expandJourneyAppearance('Menu') // clicking on the 'Menu' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.clickSelectIconDropdownForFooterMenu() //Click Select icon dropdown for Menu
-    await cardLevelActionPage.selectChevronDownIconForFooter() // Select ChevronDownIcon for Menu icon
-    await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Fotter section
-    await cardLevelActionPage.expandJourneyAppearance('Chat Widget') // clicking on the 'Chat Widget' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.clickMessangerDropDown('WhatsApp') // clicking the whatsapp dropdown check box
-    await cardLevelActionPage.enterWhatsAppLink() // entering link value on the URL field
-    await cardLevelActionPage.verifyChatWidgetAddedToCard() // verifying the selected messager icon is updated in the footer section at bottom of the card
-    await cardLevelActionPage.validateWebsiteFooterSectionInCard(footerTitle) //Verifying the Selected Image, Display Title and menu icon are showing at the top of the card
-    await cardLevelActionPage.expandJourneyAppearance('Menu') // clicking on the 'Menu' tab from the tab list of footer properties drawer
-    await cardLevelActionPage.clickCreateMenuCardButtonInMenuFooter() //Click create menu card button to create menu card
-    await cardLevelActionPage.clickleftSideArrowIcon() //Click Left Chevron button to navigate to react flow panel
-    await cardLevelActionPage.validateMenuCardInReactFlow() //Verifying the Menu card in react flow panel
-  })
+  test.fixme(
+    'Footer properties (WebSite) - create, update & delete',
+    async ({ page }) => {
+      const footerTitle = 'Footer Playwright'
+      const cardLevelActionPage = new CardLevelActionPage(page)
+      await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Footer section
+      await cardLevelActionPage.clickJourneyOrWebSiteOptionForFooter('Website') //Select WebSite option in the top of the footer property
+      await cardLevelActionPage.expandJourneyAppearance('Logo') // clicking on the 'Logo' tab from the tab list of footer properties drawer
+      await cardLevelActionPage.clickSelectImageBtn() // Select Plus icon to add the Image
+      await cardLevelActionPage.selectFirstImageFromGalleryForFooter() //Select first image from the gallery for the Footer section
+      await cardLevelActionPage.valdiateSelectedImageWithDeleteIcon() //Verifying the Selected Image with Delete icon is display
+      await cardLevelActionPage.closeToolDrawerForFooterImage() // Close the tool drawer after selected the Image
+      await cardLevelActionPage.validateSelectedImageWithEditIcon() //Verifying the Selected image is showing under Logo section with edit button
+      await cardLevelActionPage.expandJourneyAppearance('Display Title') // clicking on the 'Display Title' tab from the tab list of footer properties drawer
+      await cardLevelActionPage.enterDisplayTitleForFooter(footerTitle) // Enter Display title for the Footer Section
+      await cardLevelActionPage.expandJourneyAppearance('Menu') // clicking on the 'Menu' tab from the tab list of footer properties drawer
+      await cardLevelActionPage.clickSelectIconDropdownForFooterMenu() //Click Select icon dropdown for Menu
+      await cardLevelActionPage.selectChevronDownIconForFooter() // Select ChevronDownIcon for Menu icon
+      await cardLevelActionPage.selectWholeFooterSectionInCard() // selecting the whole Fotter section
+      await cardLevelActionPage.expandJourneyAppearance('Chat Widget') // clicking on the 'Chat Widget' tab from the tab list of footer properties drawer
+      await cardLevelActionPage.clickMessangerDropDown('WhatsApp') // clicking the whatsapp dropdown check box
+      await cardLevelActionPage.enterWhatsAppLink() // entering link value on the URL field
+      await cardLevelActionPage.verifyChatWidgetAddedToCard() // verifying the selected messager icon is updated in the footer section at bottom of the card
+      await cardLevelActionPage.validateWebsiteFooterSectionInCard(footerTitle) //Verifying the Selected Image, Display Title and menu icon are showing at the top of the card
+      await cardLevelActionPage.expandJourneyAppearance('Menu') // clicking on the 'Menu' tab from the tab list of footer properties drawer
+      await cardLevelActionPage.clickCreateMenuCardButtonInMenuFooter() //Click create menu card button to create menu card
+      await cardLevelActionPage.clickleftSideArrowIcon() //Click Left Chevron button to navigate to react flow panel
+      await cardLevelActionPage.validateMenuCardInReactFlow() //Verifying the Menu card in react flow panel
+    }
+  )
 })

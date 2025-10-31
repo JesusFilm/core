@@ -324,27 +324,27 @@ test.describe('Journey level actions', () => {
   })
 
   // Discover page -> Select an existing journey -> Share -> QR Code (download png & Copy Short Link)
-  test.fixme('Verify QR Code option from Share option dialog in the selected journey page', async ({
-    page,
-    context
-  }) => {
-    const journeyLevelActions = new JourneyLevelActions(page)
-    const journeyPage = new JourneyPage(page)
+  test.fixme(
+    'Verify QR Code option from Share option dialog in the selected journey page',
+    async ({ page, context }) => {
+      const journeyLevelActions = new JourneyLevelActions(page)
+      const journeyPage = new JourneyPage(page)
 
-    await journeyLevelActions.setBrowserContext(context) // setting the context
-    await journeyPage.setBrowserContext(context) // setting the context
-    await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
-    await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
-    const journeyName = await journeyPage.getJourneyName() // getting the journey name
-    await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on the created journey in the journey list
-    await journeyPage.clickShareButtonInJourneyPage() // clicking on the Share button at top of the custom journey page
-    await journeyPage.clickButtonInShareDialog('QR Code') // CLick QR Code button in the Share option dialog
-    await journeyPage.clickButtonInShareDialog('Generate Code') //Click Generate Code button to generate qr code
-    await journeyPage.downloadQRCodeAsPng() // download QR code as png file in the project folder
-    await journeyPage.validateDownloadedQrPngFile() //validate that the png is downloaded in the expected project folder with file extension as .png
-    await journeyPage.clickDownloadDropDownAndSelectCopyShortLink() //Clicking downlaod dropdown and click copy short link option to copy the url
-    await journeyLevelActions.verifySnackBarMsg('Link copied') // verifying the toast message
-    await journeyPage.clickCloseIconForQrCodeDialog() //Click close icon to close the QR code dialog popup
-    await journeyLevelActions.verifyLinkIsCopied() // verifying the copied link by opening a new tab and load the copied link
-  })
+      await journeyLevelActions.setBrowserContext(context) // setting the context
+      await journeyPage.setBrowserContext(context) // setting the context
+      await journeyPage.clickCreateCustomJourney() // clicking on the create custom journey button
+      await journeyPage.createAndVerifyCustomJourney() // creating the custom journey and verifing the created journey is updated in the active tab list
+      const journeyName = await journeyPage.getJourneyName() // getting the journey name
+      await journeyLevelActions.selectCreatedJourney(journeyName) // clicking on the created journey in the journey list
+      await journeyPage.clickShareButtonInJourneyPage() // clicking on the Share button at top of the custom journey page
+      await journeyPage.clickButtonInShareDialog('QR Code') // CLick QR Code button in the Share option dialog
+      await journeyPage.clickButtonInShareDialog('Generate Code') //Click Generate Code button to generate qr code
+      await journeyPage.downloadQRCodeAsPng() // download QR code as png file in the project folder
+      await journeyPage.validateDownloadedQrPngFile() //validate that the png is downloaded in the expected project folder with file extension as .png
+      await journeyPage.clickDownloadDropDownAndSelectCopyShortLink() //Clicking downlaod dropdown and click copy short link option to copy the url
+      await journeyLevelActions.verifySnackBarMsg('Link copied') // verifying the toast message
+      await journeyPage.clickCloseIconForQrCodeDialog() //Click close icon to close the QR code dialog popup
+      await journeyLevelActions.verifyLinkIsCopied() // verifying the copied link by opening a new tab and load the copied link
+    }
+  )
 })
