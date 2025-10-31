@@ -1,10 +1,11 @@
 import {
-    Page,
-    expect,
     BrowserContext,
+    Locator,
+    Page,
     TestType,
-    Locator
+    expect
   } from '@playwright/test'
+
   import { BasePage } from './preview-screen-page'
   
   export class PreviewScreenPage extends BasePage {
@@ -202,10 +203,10 @@ import {
         expect
           .soft(
             chatDomain,
-            `URL from application : ${chatUrl} should be one of ${chatLinks}`
+            `URL from application : ${chatUrl} should be one of ${chatLinks.join(', ')}`
           )
           .toBeTruthy()
-        newPage.close()
+        await newPage.close()
       }
     }
   
@@ -291,7 +292,7 @@ import {
         termAndConditionDomain,
         `URL from application : ${termAndConditionUrl} → matched: ${domainForMsg}; allowed: ${termsAndConditionLink.join(', ')}`
       ).toBeTruthy()
-      newPage.close()
+      await newPage.close()
     }
   
     async verifyNextButtonCard(): Promise<void> {

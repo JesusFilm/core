@@ -2,7 +2,7 @@
 /* eslint-disable playwright/prefer-web-first-assertions */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { expect, Page, TestType } from '@playwright/test'
+import { Page, TestType, expect } from '@playwright/test'
 
 export class BasePage {
   page: Page
@@ -370,10 +370,10 @@ export class BasePage {
   }
 
   async verifyPollContent() {
-    let pollImagesCount = await this.page.locator(this.pollImages).count()
+    const pollImagesCount = await this.page.locator(this.pollImages).count()
     expect(pollImagesCount).toBeGreaterThan(1)
 
-    let pollButtonCount = await this.page.locator(this.pollButton).count()
+    const pollButtonCount = await this.page.locator(this.pollButton).count()
     expect(pollButtonCount).toBeGreaterThan(1)
   }
 

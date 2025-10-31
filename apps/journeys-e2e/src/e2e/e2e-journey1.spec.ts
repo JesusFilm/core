@@ -1,4 +1,5 @@
-import { test, devices } from '@playwright/test'
+import { devices, test } from '@playwright/test'
+
 import { PreviewScreenPage } from '../pages/preview-screen-action'
 
 test.use({
@@ -6,10 +7,12 @@ test.use({
   channel: 'chrome',
   actionTimeout: 10000
 })
+
 test.describe('Preview Screen Slides', () => {
   test('Journey Slides E2E', async ({ page, context }) => {
     // Increase timeout to reduce flakiness on desktop where pagination animations take longer
     test.setTimeout(120000)
+
     const previewScreenPage = new PreviewScreenPage(page, context, test)
 
     await test.step(`1. Verify the Landing Page
