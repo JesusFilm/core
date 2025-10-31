@@ -46,6 +46,7 @@ export function ContactDataForm({
       checked
         ? [
             'RadioQuestionSubmissionEvent',
+            'MultiselectSubmissionEvent',
             'SignUpSubmissionEvent',
             'TextResponseSubmissionEvent',
             'MultiselectSubmissionEvent'
@@ -74,6 +75,7 @@ export function ContactDataForm({
   useEffect(() => {
     setSelectedFields([
       'RadioQuestionSubmissionEvent',
+      'MultiselectSubmissionEvent',
       'SignUpSubmissionEvent',
       'TextResponseSubmissionEvent',
       'MultiselectSubmissionEvent'

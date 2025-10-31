@@ -1,5 +1,5 @@
 import { MockedResponse } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { SnackbarProvider } from 'notistack'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'

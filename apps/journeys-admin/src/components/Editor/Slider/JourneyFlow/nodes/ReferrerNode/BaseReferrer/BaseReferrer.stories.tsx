@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import type { ComponentPropsWithoutRef } from 'react'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'

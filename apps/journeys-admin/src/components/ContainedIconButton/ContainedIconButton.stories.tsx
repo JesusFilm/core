@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import noop from 'lodash/noop'
 
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
