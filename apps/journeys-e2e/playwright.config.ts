@@ -45,23 +45,23 @@ export default defineConfig({
     //   name: 'Microsoft Edge',
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
     // },
-    {
-      name: 'chrome-desktop',
-      use: {
-        ...devices['Desktop Chrome'],
-        channel:
-          process.platform === 'linux' && process.arch === 'arm64'
-            ? 'chromium'
-            : 'chrome'
-      }
-    },
+    // {
+    //   name: 'chrome-desktop',
+    //   use: {
+    //     ...devices['Desktop Chrome'],
+    //     channel:
+    //       process.platform === 'linux' && process.arch === 'arm64'
+    //         ? 'chromium'
+    //         : 'chrome'
+    //   }
+    // },
 
     // /* Test against mobile viewports. */
     // // By default it's using chromium channel, changed it to chrome so it can play the video
     {
       name: 'chrome-mobile',
       use: {
-        ...devices['Pixel 5'],
+        ...devices['Pixel 9'],
         channel:
           process.platform === 'linux' && process.arch === 'arm64'
             ? 'chromium'
