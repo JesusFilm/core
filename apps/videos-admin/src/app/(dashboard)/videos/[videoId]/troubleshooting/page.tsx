@@ -31,9 +31,8 @@ const FIX_VIDEO_LANGUAGES = graphql(`
 
 export default function TroubleshootingPage(): ReactElement {
   const { videoId } = useParams<{ videoId: string }>()
-  const [getLanguages, { data, loading, error }] = useLazyQuery(
-    GET_VIDEO_LANGUAGES
-  )
+  const [getLanguages, { data, loading, error }] =
+    useLazyQuery(GET_VIDEO_LANGUAGES)
 
   const [
     fixLanguages,
