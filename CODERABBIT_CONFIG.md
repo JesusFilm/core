@@ -15,7 +15,7 @@ We have configured CodeRabbit to **disable docstring checks** because:
 
 ### `.coderabbit.yml`
 This is the main CodeRabbit configuration file. Currently:
-- Docstring checks are **disabled** (`features.docstring.enabled: false`)
+- Docstring checks are **disabled** (`reviews.finishing_touches.docstrings.enabled: false`)
 - Path filters are available but empty by default
 - Can be manually updated per PR if needed
 
@@ -71,11 +71,14 @@ The workflow will update `.coderabbit.yml` with changed files, but only affects 
 If you want to enable docstring checks (understanding they will check the entire repo), update `.coderabbit.yml`:
 
 ```yaml
-features:
-  docstring:
-    enabled: true
-    mode: require  # or 'suggest'
-    threshold: 80
+reviews:
+  finishing_touches:
+    docstrings:
+      enabled: true
+  pre_merge_checks:
+    docstrings:
+      mode: error  # Options: off, warning, error
+      threshold: 80
 ```
 
 ## References

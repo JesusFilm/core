@@ -59,20 +59,15 @@ jobs:
             fi
           done
           
-          # Append the rest of the config
-          cat >> .coderabbit.yml << EOF
+          # Append the rest of the config (finishing_touches at same level as path_filters)
+          cat >> .coderabbit.yml << 'HEREDOC'
+  finishing_touches:
+    docstrings:
+      enabled: false
 
-          # Docstring checks are disabled because CodeRabbit checks entire repo
-          # Use a custom script that checks only changed files instead
-          features:
-            docstring:
-              enabled: false
-
-          language:
-            typescript:
-              docstring:
-                enabled: false
-          EOF
+# Language setting (ISO code string)
+language: "en-US"
+HEREDOC
 
       - name: Commit updated config
         if: steps.changed-files.outputs.any_changed == 'true'

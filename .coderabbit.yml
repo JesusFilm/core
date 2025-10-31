@@ -19,18 +19,17 @@ reviews:
   #   - "apps/journeys-admin-e2e/**/*.ts"
   #   - "apis/**/*.ts"
 
-# Disable docstring checks globally since they check entire repository
-# This prevents CodeRabbit from flagging unchanged files for missing docstrings
-features:
-  docstring:
-    enabled: false  # Disabled because it checks entire repo, not just changed files
-    # If you enable this, it will check the entire repository
-    # mode: require
-    # threshold: 80
+  # Disable docstring checks globally since they check entire repository
+  # This prevents CodeRabbit from flagging unchanged files for missing docstrings
+  finishing_touches:
+    docstrings:
+      enabled: false  # Disabled because it checks entire repo, not just changed files
+  # Pre-merge checks can be enabled if you want to enforce docstrings
+  # pre_merge_checks:
+  #   docstrings:
+  #     mode: error  # Options: off, warning, error
+  #     threshold: 80  # Minimum coverage percentage
 
-# Language-specific settings
-language:
-  typescript:
-    docstring:
-      enabled: false
+# Language setting (ISO code string, not object)
+language: "en-US"
 
