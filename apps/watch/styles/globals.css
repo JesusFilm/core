@@ -65,6 +65,10 @@
   --radius-lg: 1rem;
   --radius: var(--radius-md);
 
+  --watch-transition-duration: 600ms;
+  --watch-transition-exit-duration: 360ms;
+  --watch-transition-timing: cubic-bezier(0.22, 1, 0.36, 1);
+
   @keyframes mesh-gradient {
     0% {
       background-position: 0% 50%;
@@ -142,6 +146,102 @@
   .blured-bg {
     backdrop-filter: blur(10px);
     background: none;
+  }
+
+  .watch-page-transition {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    isolation: isolate;
+    z-index: 0;
+  }
+
+  .watch-page-transition::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        circle at top right,
+        rgba(203, 51, 59, 0.18),
+        transparent 55%
+      ),
+      radial-gradient(
+        circle at bottom left,
+        rgba(114, 131, 190, 0.16),
+        transparent 60%
+      );
+    opacity: 0;
+    transform: scale(1.05);
+    transition:
+      opacity var(--watch-transition-duration)
+        var(--watch-transition-timing),
+      transform calc(var(--watch-transition-duration) + 120ms)
+        var(--watch-transition-timing);
+    z-index: 0;
+    filter: saturate(120%);
+  }
+
+  .watch-page-transition > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .watch-page-enter {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0) scale(0.985);
+  }
+
+  .watch-page-enter::before {
+    opacity: 0.35;
+    transform: scale(1.12);
+  }
+
+  .watch-page-enter-active {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    transition:
+      opacity var(--watch-transition-duration)
+        var(--watch-transition-timing),
+      transform calc(var(--watch-transition-duration) - 120ms)
+        var(--watch-transition-timing);
+  }
+
+  .watch-page-enter-active::before {
+    opacity: 0;
+    transform: scale(1);
+  }
+
+  .watch-page-exit {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  .watch-page-exit::before {
+    opacity: 0;
+    transform: scale(1);
+  }
+
+  .watch-page-exit-active {
+    opacity: 0;
+    transform: translate3d(0, -20px, 0) scale(0.99);
+    transition:
+      opacity var(--watch-transition-exit-duration)
+        var(--watch-transition-timing),
+      transform var(--watch-transition-exit-duration)
+        var(--watch-transition-timing);
+  }
+
+  .watch-page-exit-active::before {
+    opacity: 0.25;
+    transform: scale(1.08);
+    transition:
+      opacity var(--watch-transition-exit-duration)
+        var(--watch-transition-timing),
+      transform var(--watch-transition-exit-duration)
+        var(--watch-transition-timing);
   }
 }
 
