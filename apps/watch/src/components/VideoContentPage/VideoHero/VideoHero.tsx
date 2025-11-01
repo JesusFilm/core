@@ -60,7 +60,7 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
   /** State tracking whether the video is in fullscreen mode. */
   const [isFullscreen, setIsFullscreen] = useState(false)
   /** State tracking whether the video controls are visible. */
-  const [controlsVisible, setControlsVisible] = useState(true)
+  const [, setControlsVisible] = useState(true)
 
   /**
    * Effect to handle fullscreen changes.
@@ -98,12 +98,7 @@ export function VideoHero({ onPlay, hasPlayed }: VideoHeroProps): ReactElement {
 
   return (
     <>
-      <Header
-        hideTopAppBar={isFullscreen}
-        hideBottomAppBar={!controlsVisible}
-        hideSpacer
-        themeMode={ThemeMode.dark}
-      />
+      {!isFullscreen && <Header themeMode={ThemeMode.dark} />}
       <Box
         css={{
           height: '100svh',
