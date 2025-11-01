@@ -10,6 +10,7 @@ import maplibregl, {
   type MapMouseEvent,
   type MapboxGeoJSONFeature
 } from 'maplibre-gl'
+import { useTranslation } from 'next-i18next'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import type { LanguageMapPoint } from '../../../libs/useLanguageMap'
@@ -90,6 +91,7 @@ interface CountryAggregation {
   bounds: LngLatBoundsLike
   feature: GeoJSONCountryFeature
   iso2Code?: string
+  totalSpeakers: number
 }
 
 interface CountryFeatureProperties {
@@ -101,11 +103,22 @@ interface CountryFeatureProperties {
   fillColor: string
   iso2Code?: string
   iso3Code?: string
+  totalSpeakers: number
 }
 
 type GeoJSONCountryFeature = Feature<CountryFeatureGeometry, CountryFeatureProperties>
 
 type CountryFeatureCollection = FeatureCollection<CountryFeatureGeometry, CountryFeatureProperties>
+
+interface HoverInfo {
+  countryId: string
+  countryName: string
+  totalSpeakers: number
+  position: {
+    x: number
+    y: number
+  }
+}
 
 function normalizeCountryKey(value: string): string {
   return value
@@ -307,6 +320,7 @@ function aggregateCountries(
     )
 
     const languageCount = languages.length
+    const totalSpeakers = languages.reduce((sum, language) => sum + language.speakers, 0)
 
     const geometry = country.shape?.geometry
 
@@ -359,7 +373,8 @@ function aggregateCountries(
         labelText: String(languageCount),
         fillColor: COUNTRY_COLORS[index % COUNTRY_COLORS.length],
         iso2Code: country.shape?.iso2,
-        iso3Code: country.shape?.iso3
+        iso3Code: country.shape?.iso3,
+        totalSpeakers
       }
     }
 
@@ -369,7 +384,8 @@ function aggregateCountries(
       languages,
       bounds,
       feature,
-      iso2Code: country.shape?.iso2
+      iso2Code: country.shape?.iso2,
+      totalSpeakers
     }
   })
 }
@@ -387,11 +403,13 @@ function isCountryFeature(
   return (
     (feature?.geometry?.type === 'Polygon' || feature?.geometry?.type === 'MultiPolygon') &&
     feature.properties != null &&
-    typeof feature.properties.countryId === 'string'
+    typeof feature.properties.countryId === 'string' &&
+    typeof feature.properties.totalSpeakers === 'number'
   )
 }
 
 export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): JSX.Element {
+  const { t } = useTranslation('apps-watch')
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<MapInstance | null>(null)
   const featureCollectionRef = useRef<CountryFeatureCollection | null>(null)
@@ -407,6 +425,7 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
   const [isUnsupported, setIsUnsupported] = useState(false)
   const [activeCountryId, setActiveCountryId] = useState<string | null>(null)
   const [selectedCountryId, setSelectedCountryId] = useState<string | null>(null)
+  const [hoverInfo, setHoverInfo] = useState<HoverInfo | null>(null)
 
   const shapeIndex = useMemo(
     () => (countryShapes != null ? createCountryShapeIndex(countryShapes) : null),
@@ -578,6 +597,10 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
       }
 
       hoveredCountryIdRef.current = nextId
+
+      if (nextId == null) {
+        setHoverInfo(null)
+      }
     }
 
     const handleCountryClick = (event: MapMouseEvent | MapLayerMouseEvent): void => {
@@ -604,13 +627,43 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
 
     map.on('mousemove', COUNTRY_FILL_LAYER_ID, (event) => {
       const feature = event.features?.[0]
-      if (!isCountryFeature(feature)) return
+      if (!isCountryFeature(feature)) {
+        setHoverState(null)
+        setHoverInfo(null)
+        map.getCanvas().style.cursor = ''
+        return
+      }
+
       setHoverState(feature.properties.countryId)
+      setHoverInfo((previous) => {
+        const next: HoverInfo = {
+          countryId: feature.properties.countryId,
+          countryName: feature.properties.countryName,
+          totalSpeakers: feature.properties.totalSpeakers,
+          position: {
+            x: event.point.x,
+            y: event.point.y
+          }
+        }
+
+        if (
+          previous != null &&
+          previous.countryId === next.countryId &&
+          previous.position.x === next.position.x &&
+          previous.position.y === next.position.y &&
+          previous.totalSpeakers === next.totalSpeakers
+        ) {
+          return previous
+        }
+
+        return next
+      })
       map.getCanvas().style.cursor = 'pointer'
     })
 
     map.on('mouseleave', COUNTRY_FILL_LAYER_ID, () => {
       setHoverState(null)
+      setHoverInfo(null)
       map.getCanvas().style.cursor = ''
     })
 
@@ -634,6 +687,7 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
       previousSelectedRef.current = null
       previousActiveRef.current = null
       clickTrackerRef.current = { countryId: null, count: 0 }
+      setHoverInfo(null)
     }
   }, [])
 
@@ -747,6 +801,14 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
     }
   }, [countries, selectedCountryId])
 
+  useEffect(() => {
+    if (hoverInfo == null) return
+    const stillExists = countries.some((country) => country.countryId === hoverInfo.countryId)
+    if (!stillExists) {
+      setHoverInfo(null)
+    }
+  }, [countries, hoverInfo])
+
   const handleCloseDetails = (): void => {
     setActiveCountryId(null)
     clickTrackerRef.current = { countryId: null, count: 0 }
@@ -770,6 +832,22 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
   return (
     <div className="relative h-full w-full">
       <div ref={containerRef} className="h-full w-full" role="presentation" aria-hidden />
+
+      {hoverInfo != null ? (
+        <div
+          className="pointer-events-none absolute z-20 max-w-[240px] rounded-xl border border-stone-700/60 bg-stone-950/80 px-4 py-3 text-xs text-stone-100 shadow-xl backdrop-blur"
+          style={{
+            left: hoverInfo.position.x,
+            top: hoverInfo.position.y,
+            transform: 'translate(16px, -18px)'
+          }}
+        >
+          <p className="text-sm font-semibold leading-tight text-white">{hoverInfo.countryName}</p>
+          <p className="mt-1 text-xs text-stone-300/80">
+            {t('Population')}: {hoverInfo.totalSpeakers.toLocaleString()}
+          </p>
+        </div>
+      ) : null}
 
       {activeCountry != null ? (
         <aside className="pointer-events-auto absolute right-16 top-1/2 h-[90%] w-[400px] max-w-full -translate-y-1/2 overflow-hidden rounded-3xl border border-stone-700/40 bg-stone-950/60 p-5 text-stone-100 shadow-2xl backdrop-blur-lg">
