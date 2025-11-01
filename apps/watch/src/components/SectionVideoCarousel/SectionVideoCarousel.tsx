@@ -113,8 +113,8 @@ export function SectionVideoCarousel({
     >
       <div
         className={cn(
-          'absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-opacity duration-500 ease-in-out',
-          isBackgroundVisible ? 'opacity-80' : 'opacity-0'
+          'absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-opacity duration-500 ease-in-out filter saturate-50 sepia',
+          isBackgroundVisible ? 'opacity-60' : 'opacity-0'
         )}
         style={hoverBackground != null ? { backgroundImage: `url(${hoverBackground})` } : undefined}
         aria-hidden="true"
