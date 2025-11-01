@@ -92,9 +92,9 @@ export function VideoCarousel({
         <SwiperSlide
           key={`skeleton-${i}`}
           virtualIndex={i}
-          className="max-w-[200px]"
+          className="max-w-[200px] w-[min(80vw,200px)]"
         >
-          <Skeleton width={200} height={240} />
+          <Skeleton width="100%" height={240} />
         </SwiperSlide>
       )),
     []
@@ -211,7 +211,7 @@ export function VideoCarousel({
                       : `video-${slide.id}`
                   }
                   virtualIndex={index}
-                  className={`max-w-[200px] ${index === 0 ? 'padded-l' : ''}`}
+                  className={`max-w-[200px] w-[min(80vw,200px)] ${index === 0 ? 'padded-l' : ''}`}
                   data-testid={`CarouselSlide-${slide.id}`}
                 >
                   <VideoCard

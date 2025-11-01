@@ -1,8 +1,8 @@
 import { ReactElement } from 'react'
 
 interface SkeletonProps {
-  height?: number
-  width?: number
+  height?: number | string
+  width?: number | string
   className?: string
 }
 
@@ -14,7 +14,10 @@ export function Skeleton({
   return (
     <div
       className={`rounded-lg animate-pulse bg-text-secondary ${className}`}
-      style={{ width: `${width}px`, height: `${height}px` }}
+      style={{
+        width: typeof width === 'number' ? `${width}px` : width,
+        height: typeof height === 'number' ? `${height}px` : height
+      }}
     />
   )
 }
