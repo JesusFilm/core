@@ -9,6 +9,10 @@ jest.mock('@mui/material/useScrollTrigger', () => ({
   default: jest.fn()
 }))
 
+jest.mock('../SearchComponent/LanguageSelector', () => ({
+  LanguageSelector: () => <div data-testid="LanguageSelector" />
+}))
+
 const useScrollTriggerMock = useScrollTrigger as jest.Mock
 
 describe('Header', () => {
@@ -71,5 +75,14 @@ describe('Header', () => {
       </MockedProvider>
     )
     expect(screen.queryByTestId('TopAppBar')).not.toBeInTheDocument()
+  })
+
+  it('should render language selector when enabled', () => {
+    render(
+      <MockedProvider>
+        <Header showLanguageSwitcher />
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('LanguageSelector')).toBeInTheDocument()
   })
 })
