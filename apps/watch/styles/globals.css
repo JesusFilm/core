@@ -174,14 +174,11 @@
     0% {
       transform: scale(1);
     }
-    10% {
-      transform: scale(1);
+    50% {
+      transform: scale(1.1);
     }
-    60% {
-      transform: scale(1.08);
-    }
-    75% {
-      transform: scale(1.08);
+    55% {
+      transform: scale(1.1);
     }
     100% {
       transform: scale(1);
@@ -194,7 +191,7 @@
   }
 
   .group:hover .poster-hover-zoom {
-    animation: poster-hover-zoom-cycle 8s ease-in-out infinite both;
+    animation: poster-hover-zoom-cycle 12s ease-in-out infinite both;
     will-change: transform;
   }
 
@@ -314,15 +311,25 @@
 
   /* VideoCard specific utilities */
   .text-shadow-strong {
-    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25), 0px 2px 3px rgba(0, 0, 0, 0.45);
+    text-shadow:
+      0px 4px 4px rgba(0, 0, 0, 0.25),
+      0px 2px 3px rgba(0, 0, 0, 0.45);
   }
 
   .gradient-contained {
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.8) 100%);
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) 40%,
+      rgba(0, 0, 0, 0.8) 100%
+    );
   }
 
   .gradient-expanded {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.6) 100%);
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0) 40%,
+      rgba(255, 255, 255, 0.6) 100%
+    );
   }
 
   .btn-outlined {
