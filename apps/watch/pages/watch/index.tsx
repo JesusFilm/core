@@ -25,7 +25,7 @@ import { getFlags } from '../../src/libs/getFlags'
 import { getLanguageIdFromLocale } from '../../src/libs/getLanguageIdFromLocale'
 import { WatchProvider, WatchState } from '../../src/libs/watchContext'
 
-interface HomePageProps {
+export interface HomePageProps {
   initialApolloState?: NormalizedCacheObject
   serverState?: InstantSearchServerState
   localLanguageId?: string
