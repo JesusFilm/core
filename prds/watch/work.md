@@ -94,6 +94,42 @@
 - Consider moving category metadata to CMS-driven config if design requires frequent updates.
 - Evaluate migrating remaining MUI layout primitives to Tailwind equivalents in a future iteration.
 
+# Page Transition Experience
+
+## Goals
+
+- [x] Introduce a reusable transition shell that wraps all Watch pages.
+- [x] Deliver a smooth, modern blend of depth, blur, and motion between route changes.
+- [x] Exercise the transition timing logic with automated coverage.
+
+## Implementation Strategy
+
+- [x] Scaffold a `PageTransition` component that tracks the currently rendered route and transition phase.
+- [x] Layer bespoke Tailwind utilities and keyframes into `globals.css` for enter/exit animations and light burst accents.
+- [x] Wrap `_app` page rendering with the transition shell keyed by `router.asPath`.
+- [x] Author Jest specs to ensure route updates trigger exit/enter phases in the expected order.
+
+## Obstacles
+
+- Balancing animation flair with performance required carefully tuning blur/transform values to avoid jank on slower GPUs.
+
+## Resolutions
+
+- Limited the effect to a single container with hardware-accelerated transforms and bounded blur while isolating it via `will-change`.
+
+## Test Coverage
+
+- `pnpm dlx nx test watch --testFile=apps/watch/src/components/PageTransition/PageTransition.spec.tsx`
+
+## User Flows
+
+- Navigate between Watch routes → existing page glides downward with soft blur → new page lifts into place with subtle highlight.
+
+## Follow-up Ideas
+
+- Expose transition timing tokens through theme variables so editorial teams can dial animations seasonally.
+- Explore complementing the motion with route-level skeletons for data-heavy transitions.
+
 # Featured Hero Skip Control
 
 ## Goals

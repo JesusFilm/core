@@ -8,6 +8,7 @@ import localFont from 'next/font/local'
 import Head from 'next/head'
 import Script from 'next/script'
 import { appWithTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import { DefaultSeo } from 'next-seo'
 import { type ReactElement, useEffect } from 'react'
 
@@ -19,6 +20,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import i18nConfig from '../next-i18next.config'
 import { useApolloClient } from '../src/libs/apolloClient'
+import { PageTransition } from '../src/components/PageTransition/PageTransition'
 
 import 'swiper/css'
 import 'swiper/css/a11y'
@@ -55,6 +57,7 @@ function WatchApp({
   pageProps,
   emotionCache = createEmotionCache({})
 }: WatchAppProps): ReactElement {
+  const router = useRouter()
   useEffect(() => {
     // Remove the server-side injected CSS.
     const jssStyles = document.querySelector('#jss-server-side')
@@ -145,7 +148,9 @@ function WatchApp({
                 <GoogleTagManager
                   gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''}
                 />
-                <Component {...pageProps} />
+                <PageTransition routeKey={router.asPath}>
+                  <Component {...pageProps} />
+                </PageTransition>
               </InstantSearchProvider>
             </ThemeProvider>
           </AppCacheProvider>

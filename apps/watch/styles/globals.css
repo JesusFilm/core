@@ -143,6 +143,87 @@
     backdrop-filter: blur(10px);
     background: none;
   }
+
+  .watch-page-transition {
+    position: relative;
+    width: 100%;
+    min-height: 100%;
+    isolation: isolate;
+    overflow: hidden;
+    --watch-page-transition-duration: 360ms;
+    perspective: 1200px;
+    will-change: opacity, transform, filter;
+  }
+
+  .watch-page-transition::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      circle at 20% 20%,
+      hsl(0 0% 100% / 0.08),
+      transparent 55%
+    );
+    mix-blend-mode: screen;
+    opacity: 0;
+    transition: opacity var(--watch-page-transition-duration) ease;
+  }
+
+  .watch-page-transition--enter::before {
+    opacity: 0.45;
+  }
+
+  .watch-page-transition--enter {
+    animation: watch-page-transition-enter
+      var(--watch-page-transition-duration)
+      cubic-bezier(0.22, 0.61, 0.36, 1)
+      both;
+  }
+
+  .watch-page-transition--exit {
+    animation: watch-page-transition-exit
+      var(--watch-page-transition-duration)
+      cubic-bezier(0.4, 0, 0.2, 1)
+      both;
+  }
+
+  @keyframes watch-page-transition-enter {
+    0% {
+      opacity: 0;
+      transform: translate3d(0, 28px, 0) scale3d(0.98, 0.98, 1)
+        rotateX(8deg);
+      filter: blur(12px);
+    }
+
+    55% {
+      opacity: 1;
+      transform: translate3d(0, -6px, 0) scale3d(1.01, 1.01, 1)
+        rotateX(0deg);
+      filter: blur(0px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+      filter: blur(0px);
+    }
+  }
+
+  @keyframes watch-page-transition-exit {
+    0% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale3d(1, 1, 1);
+      filter: blur(0px);
+    }
+
+    100% {
+      opacity: 0;
+      transform: translate3d(0, 28px, 0) scale3d(0.96, 0.96, 1)
+        rotateX(6deg);
+      filter: blur(14px);
+    }
+  }
 }
 
 /* 3. Utilities layer - highest specificity */
