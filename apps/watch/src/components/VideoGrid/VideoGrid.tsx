@@ -17,6 +17,7 @@ export interface VideoGridProps {
   onCardClick?: (videoId?: string) => (event: MouseEvent) => void
   analyticsTag?: string
   showSequenceNumbers?: boolean
+  onCardHoverChange?: (imageUrl?: string | null) => void
 }
 
 export function VideoGrid({
@@ -30,7 +31,8 @@ export function VideoGrid({
   hasNoResults = false,
   onCardClick,
   analyticsTag,
-  showSequenceNumbers = false
+  showSequenceNumbers = false,
+  onCardHoverChange
 }: VideoGridProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
@@ -50,22 +52,39 @@ export function VideoGrid({
               onClick={onCardClick}
               analyticsTag={analyticsTag}
               showSequenceNumber={showSequenceNumbers}
+              onHoverImageChange={onCardHoverChange}
             />
           </div>
         ))}
       {loading && videos?.length === 0 && (
         <>
           <div className="w-full">
-            <VideoCard orientation={orientation} analyticsTag={analyticsTag} />
+            <VideoCard
+              orientation={orientation}
+              analyticsTag={analyticsTag}
+              onHoverImageChange={onCardHoverChange}
+            />
           </div>
           <div className="w-full">
-            <VideoCard orientation={orientation} analyticsTag={analyticsTag} />
+            <VideoCard
+              orientation={orientation}
+              analyticsTag={analyticsTag}
+              onHoverImageChange={onCardHoverChange}
+            />
           </div>
           <div className="w-full hidden md:block">
-            <VideoCard orientation={orientation} analyticsTag={analyticsTag} />
+            <VideoCard
+              orientation={orientation}
+              analyticsTag={analyticsTag}
+              onHoverImageChange={onCardHoverChange}
+            />
           </div>
           <div className="w-full hidden xl:block">
-            <VideoCard orientation={orientation} analyticsTag={analyticsTag} />
+            <VideoCard
+              orientation={orientation}
+              analyticsTag={analyticsTag}
+              onHoverImageChange={onCardHoverChange}
+            />
           </div>
         </>
       )}

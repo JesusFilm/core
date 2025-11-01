@@ -21,6 +21,7 @@ interface VideoCardProps {
   onClick?: (videoId?: string) => (event: MouseEvent) => void
   analyticsTag?: string
   showSequenceNumber?: boolean
+  onHoverImageChange?: (imageUrl?: string | null) => void
 }
 
 export function getSlug(
@@ -49,7 +50,8 @@ export function VideoCard({
   imageClassName,
   onClick: handleClick,
   analyticsTag,
-  showSequenceNumber = false
+  showSequenceNumber = false,
+  onHoverImageChange
 }: VideoCardProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
@@ -78,12 +80,21 @@ export function VideoCard({
     >
       <div className="flex flex-col gap-6">
         <button
+          type="button"
           disabled={video == null}
           className={`relative overflow-hidden rounded-lg ${
             orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'
           } hover:scale-102 focus-visible:scale-102 transition-transform duration-300 beveled ${
             imageClassName || ''
           } cursor-pointer disabled:cursor-default`}
+          onMouseEnter={() => {
+            if (imageSrc != null) onHoverImageChange?.(imageSrc)
+          }}
+          onMouseLeave={() => onHoverImageChange?.(null)}
+          onFocus={() => {
+            if (imageSrc != null) onHoverImageChange?.(imageSrc)
+          }}
+          onBlur={() => onHoverImageChange?.(null)}
         >
           {sequenceLabel != null && (
             <span
