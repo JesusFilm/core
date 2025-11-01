@@ -113,13 +113,13 @@ export function SectionVideoCarousel({
     >
       <div
         className={cn(
-          'absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-opacity duration-500 ease-in-out filter saturate-50 sepia',
-          isBackgroundVisible ? 'opacity-60' : 'opacity-0'
+          'absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-opacity duration-500 ease-in-out filter sepia-off blur-lg mix-blend-overlay',
+          isBackgroundVisible ? 'opacity-30' : 'opacity-0'
         )}
         style={hoverBackground != null ? { backgroundImage: `url(${hoverBackground})` } : undefined}
         aria-hidden="true"
       />
-      <div className="absolute inset-0 bg-[url(/watch/assets/overlay.svg)] bg-repeat mix-blend-multiply" />
+      <div className="absolute inset-0 z-1 bg-[url(/watch/assets/overlay.svg)] bg-repeat mix-blend-multiply" />
       <div className="padded relative z-2 pb-6">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-1">
