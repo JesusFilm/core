@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
@@ -121,7 +121,56 @@ describe('VideoGrid', () => {
 
     render(<VideoGrid videos={[]} hasNoResults />)
 
-    expect(screen.getByText('Sorry, no results')).toBeInTheDocument()
+    expect(screen.getByText('No videos found')).toBeInTheDocument()
+    expect(
+      screen.getByText('No catch here—try the other side of the boat.')
+    ).toBeInTheDocument()
+  })
+
+  it('should trigger search reset when try another search is clicked', () => {
+    mockedUseAlgoliaVideos.mockReturnValue({
+      loading: false,
+      noResults: true,
+      items: [],
+      showMore: jest.fn(),
+      isLastPage: false,
+      sendEvent: jest.fn()
+    })
+
+    const handleClearSearch = jest.fn()
+
+    render(
+      <VideoGrid videos={[]} hasNoResults onClearSearch={handleClearSearch} />
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Try another search' }))
+    expect(handleClearSearch).toHaveBeenCalled()
+  })
+
+  it('should render fallback videos when provided', () => {
+    mockedUseAlgoliaVideos.mockReturnValue({
+      loading: false,
+      noResults: true,
+      items: [],
+      showMore: jest.fn(),
+      isLastPage: false,
+      sendEvent: jest.fn()
+    })
+
+    render(
+      <VideoGrid
+        videos={[]}
+        hasNoResults
+        fallbackVideos={videos.slice(0, 1)}
+      />
+    )
+
+    expect(
+      screen.getByText('Latest videos')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { level: 3, name: 'JESUS' })
+    ).toBeInTheDocument()
   })
 
   it('should render sequence numbers when enabled', () => {

@@ -48,6 +48,7 @@ describe('SearchOverlay', () => {
         trendingSearches={['Hope', 'Faith']}
         isTrendingLoading={false}
         isTrendingFallback
+        onClearSearch={jest.fn()}
       />
     )
 

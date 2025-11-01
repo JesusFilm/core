@@ -28,6 +28,7 @@ export interface UseFloatingSearchOverlayResult {
   handleOverlayBlur: (event: FocusEvent<HTMLDivElement>) => void
   handleQuickSelect: (value: string) => void
   handleCloseSearch: () => void
+  handleClearSearch: () => void
   trendingSearches: string[]
   isTrendingLoading: boolean
   isTrendingFallback: boolean
@@ -121,6 +122,16 @@ export function useFloatingSearchOverlay(): UseFloatingSearchOverlayResult {
     refine('')
     dispatchPlayer({ type: 'SetPlay', play: true })
   }, [refine, dispatchPlayer])
+
+  const handleClearSearch = useCallback(() => {
+    setSearchValue('')
+    setSearchQuery('')
+    refine('')
+    setIsSearching(false)
+    requestAnimationFrame(() => {
+      searchInputRef.current?.focus()
+    })
+  }, [refine])
 
   useEffect(() => {
     if (!isSearchActive) return
@@ -242,6 +253,7 @@ export function useFloatingSearchOverlay(): UseFloatingSearchOverlayResult {
     handleOverlayBlur,
     handleQuickSelect,
     handleCloseSearch,
+    handleClearSearch,
     trendingSearches: trendingSearchList,
     isTrendingLoading,
     isTrendingFallback: Boolean(trendingError)

@@ -27,6 +27,7 @@ export function SearchComponent({
     handleOverlayBlur,
     handleQuickSelect,
     handleCloseSearch,
+    handleClearSearch,
     trendingSearches,
     isTrendingLoading,
     isTrendingFallback
@@ -58,6 +59,7 @@ export function SearchComponent({
         trendingSearches={trendingSearches}
         isTrendingLoading={isTrendingLoading}
         isTrendingFallback={isTrendingFallback}
+        onClearSearch={handleClearSearch}
       />
     </SearchBarProvider>
   )

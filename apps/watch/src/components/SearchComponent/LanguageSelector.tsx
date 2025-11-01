@@ -12,7 +12,6 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRefinementList } from 'react-instantsearch'
 
 import { languageRefinementProps } from '@core/journeys/ui/algolia/SearchBarProvider'
-
 import { cn } from '../../libs/cn'
 import { useLanguages } from '../../libs/useLanguages'
 import { Button } from '../ui/button'
@@ -33,6 +32,10 @@ export function LanguageSelector(): JSX.Element {
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
+
+  // Track selected languages to persist them even when there are no results
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([])
+  const lastSelectedRef = useRef<string[]>([])
 
   // Combine Algolia refinement data with full language information
   const languageOptions = useMemo(() => {
@@ -58,20 +61,36 @@ export function LanguageSelector(): JSX.Element {
     return options.sort((a, b) => a.englishName.localeCompare(b.englishName))
   }, [items, languages, languagesLoading])
 
-  const selectedLanguages = useMemo(
+  // Update selected languages when refinements change, but persist when no results
+  useEffect(() => {
+    const refinedItems = items.filter((item) => item.isRefined)
+    const currentSelected = refinedItems.map((item) => item.label)
+
+    // Always update the ref with current selections
+    if (currentSelected.length > 0) {
+      lastSelectedRef.current = currentSelected
+    }
+
+    // Update state with current selections, or keep previous if none selected
+    // This ensures we show selected languages even when there are no results
+    setSelectedLanguages(currentSelected.length > 0 ? currentSelected : lastSelectedRef.current)
+  }, [items])
+
+  const selectedLanguageOptions = useMemo(
     () => languageOptions.filter((item) => item.isRefined),
     [languageOptions]
   )
 
   const handleLanguageSelect = (currentValue: string) => {
     // Clear all existing selections first (single-select behavior)
-    selectedLanguages.forEach((lang) => {
-      if (lang.value !== currentValue) {
-        refine(lang.value)
+    items.forEach((item) => {
+      if (item.isRefined && item.value !== currentValue) {
+        refine(item.value)
       }
     })
     // Then select the new language if it's not already selected
-    if (!selectedLanguages.some(lang => lang.value === currentValue)) {
+    const currentItem = items.find(item => item.value === currentValue)
+    if (currentItem && !currentItem.isRefined) {
       refine(currentValue)
     }
     setOpen(false)
@@ -105,7 +124,7 @@ export function LanguageSelector(): JSX.Element {
     if (selectedLanguages.length === 0) {
       return t('Search languages...')
     }
-    return selectedLanguages[0].englishName
+    return selectedLanguages[0]
   }
 
   if (languagesLoading) {
