@@ -20,6 +20,7 @@ export interface VideoGridProps {
   fallbackVideos?: VideoChildFields[]
   fallbackLoading?: boolean
   onClearSearch?: () => void
+  selectedLanguages?: string[]
 }
 
 export function VideoGrid({
@@ -36,9 +37,24 @@ export function VideoGrid({
   showSequenceNumbers = false,
   fallbackVideos = [],
   fallbackLoading = false,
-  onClearSearch
+  onClearSearch,
+  selectedLanguages = []
 }: VideoGridProps): ReactElement {
   const { t } = useTranslation('apps-watch')
+
+  const getFallbackTitle = () => {
+    if (selectedLanguages.length === 0) {
+      return t('Latest videos')
+    }
+
+    if (selectedLanguages.length === 1) {
+      return t('Latest videos in {{language}}', { language: selectedLanguages[0] })
+    }
+
+    return t('Latest videos in {{languages}}', {
+      languages: selectedLanguages.slice(0, -1).join(', ') + ' and ' + selectedLanguages[selectedLanguages.length - 1]
+    })
+  }
 
   const fallbackGridColumns =
     orientation === 'vertical'
@@ -89,7 +105,7 @@ export function VideoGrid({
             <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
               <div className="flex justify-center md:justify-start">
                 <FishOff
-                  className="h-48 w-48 md:h-56 md:w-56 text-stone-200/80"
+                  className="h-30 w-30 md:h-20 md:w-20 text-stone-200"
                   aria-hidden="true"
                 />
               </div>
@@ -97,10 +113,10 @@ export function VideoGrid({
                 <span
                   className="uppercase tracking-widest text-[#FF9E00] font-sans font-bold mb-0 animate-fade-in-up animation-delay-100 text-md"
                 >
-                  {t('No Results')}
+                  {t('No videos found')}
                 </span>
                 <p
-                  className="font-bold text-stone-50 text-shadow-xs mb-0 font-sans animate-fade-in-up animation-delay-200 text-3xl md:text-4xl lg:text-5xl xl:text-6xl"
+                  className="font-bold text-stone-50 text-shadow-xs mb-0 font-sans animate-fade-in-up animation-delay-200 text-2xl md:text-2xl lg:text-3xl xl:text-4xl"
                 >
                   {t('No catch here—try the other side of the boat.')}
                 </p>
@@ -122,7 +138,7 @@ export function VideoGrid({
               <div className="mt-10 flex flex-col gap-4">
                 <div className="text-left">
                   <h6 className="text-lg font-semibold text-stone-100">
-                    {t('Latest videos in this language')}
+                    {getFallbackTitle()}
                   </h6>
                 </div>
                 <div className={`grid gap-4 ${fallbackGridColumns}`}>

@@ -121,7 +121,7 @@ describe('VideoGrid', () => {
 
     render(<VideoGrid videos={[]} hasNoResults />)
 
-    expect(screen.getByText('No Results')).toBeInTheDocument()
+    expect(screen.getByText('No videos found')).toBeInTheDocument()
     expect(
       screen.getByText('No catch here—try the other side of the boat.')
     ).toBeInTheDocument()
@@ -166,7 +166,7 @@ describe('VideoGrid', () => {
     )
 
     expect(
-      screen.getByText('Latest videos in this language')
+      screen.getByText('Latest videos')
     ).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { level: 3, name: 'JESUS' })
