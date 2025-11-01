@@ -7,6 +7,7 @@ export interface LanguageMapPoint {
   nativeName?: string
   countryId: string
   countryName?: string
+  countryPopulation?: number
   latitude: number
   longitude: number
   isPrimaryCountryLanguage: boolean

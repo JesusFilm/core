@@ -27,6 +27,7 @@ const GET_LANGUAGE_MAP = graphql(`
           name(primary: true) {
             value
           }
+          population
         }
       }
     }
@@ -62,7 +63,8 @@ function buildLanguagePoint({
   latitude,
   longitude,
   isPrimaryCountryLanguage,
-  speakers
+  speakers,
+  population
 }: {
   languageId: string
   slug: string | null
@@ -74,6 +76,7 @@ function buildLanguagePoint({
   longitude?: number | null
   isPrimaryCountryLanguage: boolean
   speakers: number
+  population?: number | null
 }): LanguageMapPoint | null {
   if (latitude == null || longitude == null) return null
 
@@ -93,7 +96,8 @@ function buildLanguagePoint({
     latitude,
     longitude,
     isPrimaryCountryLanguage,
-    speakers
+    speakers,
+    countryPopulation: population ?? undefined
   }
 }
 
@@ -144,7 +148,8 @@ export default async function handler(
               latitude: country.latitude,
               longitude: country.longitude,
               isPrimaryCountryLanguage: primary,
-              speakers
+              speakers,
+              population: country.population
             })
           )
           .filter((point): point is LanguageMapPoint => point != null)
