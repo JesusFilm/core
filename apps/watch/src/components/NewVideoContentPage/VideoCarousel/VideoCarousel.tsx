@@ -52,6 +52,11 @@ export function VideoCarousel({
       })) ?? []
     )
   }, [slides, videos])
+  const effectiveActiveVideoId =
+    activeVideoId ??
+    (mode === 'inlinePlayback' && computedSlides.length > 0
+      ? computedSlides[computedSlides.length - 1].id
+      : undefined)
   const nextRef = useRef<HTMLDivElement>(null)
   const prevRef = useRef<HTMLDivElement>(null)
   const swiperRef = useRef<SwiperType | null>(null)
@@ -59,28 +64,40 @@ export function VideoCarousel({
   const swiperBreakpoints: SwiperOptions['breakpoints'] = useMemo(
     () => ({
       [breakpoints.values.xs]: {
-        slidesPerGroup: 2,
-        slidesPerView: 2.4
+        slidesPerGroup: 1,
+        slidesPerView: 1.2,
+        spaceBetween: 12,
+        slidesOffsetAfter: 24
       },
       [breakpoints.values.sm]: {
-        slidesPerGroup: 3,
-        slidesPerView: 3.4
+        slidesPerGroup: 2,
+        slidesPerView: 2.4,
+        spaceBetween: 16,
+        slidesOffsetAfter: 32
       },
       [breakpoints.values.md]: {
-        slidesPerGroup: 4,
-        slidesPerView: 4.4
+        slidesPerGroup: 3,
+        slidesPerView: 3.4,
+        spaceBetween: 18,
+        slidesOffsetAfter: 36
       },
       [breakpoints.values.lg]: {
-        slidesPerGroup: 5,
-        slidesPerView: 5.4
+        slidesPerGroup: 4,
+        slidesPerView: 4.4,
+        spaceBetween: 20,
+        slidesOffsetAfter: 40
       },
       [breakpoints.values.xl]: {
-        slidesPerGroup: 6,
-        slidesPerView: 6.4
+        slidesPerGroup: 5,
+        slidesPerView: 5.4,
+        spaceBetween: 20,
+        slidesOffsetAfter: 44
       },
       [breakpoints.values.xxl]: {
-        slidesPerGroup: 7,
-        slidesPerView: 7.4
+        slidesPerGroup: 6,
+        slidesPerView: 6.4,
+        spaceBetween: 24,
+        slidesOffsetAfter: 48
       }
     }),
     [breakpoints.values]
@@ -92,9 +109,11 @@ export function VideoCarousel({
         <SwiperSlide
           key={`skeleton-${i}`}
           virtualIndex={i}
-          className="max-w-[200px]"
+          className={`w-[80vw] max-w-[320px] sm:w-[200px] ${i === 0 ? 'padded-l' : ''}`}
         >
-          <Skeleton width={200} height={240} />
+          <div className="aspect-[2/3] w-full">
+            <Skeleton width="100%" height="100%" />
+          </div>
         </SwiperSlide>
       )),
     []
@@ -127,11 +146,15 @@ export function VideoCarousel({
       if (swiperRef.current && computedSlides.length > 0) {
         // Find the current video index
         const currentVideoIndex = computedSlides.findIndex((s) =>
-          isVideoSlide(s) ? s.video.id === activeVideoId : false
+          isVideoSlide(s) ? s.video.id === effectiveActiveVideoId : false
         )
 
         // Only scroll to end if current playing card is not one of the first 5 cards
-        if (currentVideoIndex >= 5) {
+        const minimumIndexForAutoScroll = Math.min(
+          5,
+          computedSlides.length - 1
+        )
+        if (currentVideoIndex >= minimumIndexForAutoScroll) {
           const lastSlideIndex = computedSlides.length - 1
           swiperRef.current.slideTo(lastSlideIndex, 1800)
         }
@@ -182,8 +205,8 @@ export function VideoCarousel({
         mousewheel={{ forceToAxis: true }}
         grabCursor
         slidesPerView="auto"
-        spaceBetween={20}
-        slidesOffsetAfter={40}
+        spaceBetween={16}
+        slidesOffsetAfter={32}
         navigation={{
           nextEl: nextRef.current,
           prevEl: prevRef.current
@@ -211,13 +234,13 @@ export function VideoCarousel({
                       : `video-${slide.id}`
                   }
                   virtualIndex={index}
-                  className={`max-w-[200px] ${index === 0 ? 'padded-l' : ''}`}
+                  className={`w-[80vw] max-w-[320px] sm:w-[200px] ${index === 0 ? 'padded-l' : ''}`}
                   data-testid={`CarouselSlide-${slide.id}`}
                 >
                   <VideoCard
                     containerSlug={containerSlug}
                     data={isMuxSlide(slide) ? transformMuxSlide(slide) : transformVideoChild(slide.video as VideoChildFields)}
-                    active={activeVideoId === slide.id}
+                    active={effectiveActiveVideoId === slide.id}
                     transparent={isAfterCurrentVideo}
                     onVideoSelect={handleVideoSelect}
                   />

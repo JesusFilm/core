@@ -130,3 +130,37 @@
 
 - Consider showing a brief tooltip on first visit explaining the Skip control for accessibility.
 - Evaluate whether skip interactions should emit analytics distinct from autoplay completions.
+
+# Watch Home Mobile Polish
+
+## Goals
+
+- [x] Expand the Watch search bar to span the mobile viewport while preserving the centered layout on large screens.
+- [x] Widen hero and collection carousel cards on small devices so a single featured card reads clearly.
+- [x] Smooth out carousel spacing to remove cramped gutters on touch devices.
+
+## Obstacles
+
+- Local `/watch` builds rely on Algolia credentials, so the page crashes before rendering without valid environment data.
+
+## Resolutions
+
+- Audited the SearchComponent container and added breakpoint-specific classes so the wrapper takes the full viewport width on mobile while retaining the centered fixed positioning for desktop.
+- Updated the shared Swiper configurations to use smaller mobile slide groups, responsive spacing, and viewport-based slide widths.
+- Reused the responsive sizing in SectionVideoCarousel so collection cards inherit the same touch-friendly layout as the hero.
+
+## Test Coverage
+
+- `pnpm dlx nx test watch --testFile=apps/watch/src/components/NewVideoContentPage/VideoCarousel/VideoCarousel.spec.tsx`
+- `pnpm dlx nx test watch --testFile=apps/watch/src/components/SectionVideoCarousel/SectionVideoCarousel.spec.tsx`
+
+## User Flows
+
+- Open `/watch` on a phone-sized viewport → search bar stretches edge-to-edge with comfortable padding.
+- Swipe the hero carousel → a single large card is centered with gentle margins, advancing one slide at a time.
+- Scroll to the “Discover the full story” carousel → cards match the hero sizing and spacing, eliminating edge clipping on touch screens.
+
+## Follow-up Ideas
+
+- Consider adding breakpoint-aware `slidesOffsetBefore` values so the leading card aligns perfectly with other content paddings.
+- Explore lazy-loading smaller poster variants to trim mobile payload sizes now that cards occupy more screen real estate.

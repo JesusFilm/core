@@ -166,8 +166,8 @@ export function SectionVideoCarousel({
           mousewheel={{ forceToAxis: true }}
           observeParents
           slidesPerView="auto"
-          spaceBetween={20}
-          slidesOffsetAfter={40}
+          spaceBetween={16}
+          slidesOffsetAfter={32}
           pagination={{ clickable: true }}
           className="w-full"
           data-testid="SectionVideoCarouselSwiper"
@@ -176,15 +176,15 @@ export function SectionVideoCarousel({
             ? Array.from({ length: 4 }).map((_, index) => (
                 <SwiperSlide
                   key={`skeleton-${index}`}
-                  className={`max-w-[200px] ${index === 0 ? 'padded-l' : ''}`}
+                  className={`w-[80vw] max-w-[320px] sm:w-[200px] ${index === 0 ? 'padded-l' : ''}`}
                 >
-                  <div className="h-[330px] w-[220px] rounded-lg bg-white/10 animate-pulse" />
+                  <div className="aspect-[2/3] w-full rounded-lg bg-white/10 animate-pulse" />
                 </SwiperSlide>
               ))
             : slides.map((slide, index) => (
                 <SwiperSlide
                   key={slide.id}
-                  className={`max-w-[200px] py-1 ${index === 0 ? 'padded-l' : ''}`}
+                  className={`w-[80vw] max-w-[320px] py-1 sm:w-[200px] ${index === 0 ? 'padded-l' : ''}`}
                   data-testid={`SectionVideoCarouselSlide-${slide.id}`}
                 >
                   <VideoCard
