@@ -82,19 +82,7 @@ export function VideoCard({
         <button
           type="button"
           disabled={video == null}
-          className={`relative overflow-hidden rounded-lg ${
-            orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'
-          } hover:scale-102 focus-visible:scale-102 transition-transform duration-300 beveled ${
-            imageClassName || ''
-          } cursor-pointer disabled:cursor-default`}
-          onMouseEnter={() => {
-            if (imageSrc != null) onHoverImageChange?.(imageSrc)
-          }}
-          onMouseLeave={() => onHoverImageChange?.(null)}
-          onFocus={() => {
-            if (imageSrc != null) onHoverImageChange?.(imageSrc)
-          }}
-          onBlur={() => onHoverImageChange?.(null)}
+          className={`relative overflow-hidden group rounded-lg ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} hover:scale-102 focus-visible:scale-102 transition-transform duration-300 beveled ${imageClassName || ''} cursor-pointer disabled:cursor-default`}
         >
           {sequenceLabel != null && (
             <span
@@ -112,6 +100,7 @@ export function VideoCard({
                 alt={imageAlt}
                 fill
                 sizes="100vw"
+                className="poster-hover-zoom"
                 style={{
                   objectFit: 'cover',
                   objectPosition: 'left top'

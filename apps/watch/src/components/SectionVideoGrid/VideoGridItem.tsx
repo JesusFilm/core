@@ -17,7 +17,7 @@ export function VideoGridItem({
   return (
     <a
       href={slide.href}
-      className="block relative group shadow-xl shadow-stone-950/70 beveled"
+      className="block relative group shadow-xl shadow-stone-950/70 beveled overflow-hidden rounded-lg"
       aria-label={t('Watch {{title}}', { title: slide.title })}
       data-analytics-tag={analyticsTag}
       data-testid={`SectionVideoGridSlide-${slide.id}`}
@@ -25,7 +25,7 @@ export function VideoGridItem({
       <img
         src={slide.imageUrl}
         alt={slide.alt}
-        className="w-full aspect-[2/3] object-cover rounded-lg"
+        className="w-full aspect-[2/3] object-cover rounded-lg poster-hover-zoom"
       />
       <div className="absolute top-0 left-0 w-full h-full outline-4 outline-transparent hover:outline-white rounded-lg">
         <div className="absolute z-1 bottom-4 flex items-center justify-center w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
