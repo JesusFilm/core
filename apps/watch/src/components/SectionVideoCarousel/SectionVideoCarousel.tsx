@@ -176,15 +176,15 @@ export function SectionVideoCarousel({
             ? Array.from({ length: 4 }).map((_, index) => (
                 <SwiperSlide
                   key={`skeleton-${index}`}
-                  className={`max-w-[200px] ${index === 0 ? 'padded-l' : ''}`}
+                  className={`max-w-[200px] w-[min(80vw,200px)] ${index === 0 ? 'padded-l' : ''}`}
                 >
-                  <div className="h-[330px] w-[220px] rounded-lg bg-white/10 animate-pulse" />
+                  <div className="h-[330px] w-full rounded-lg bg-white/10 animate-pulse" />
                 </SwiperSlide>
               ))
             : slides.map((slide, index) => (
                 <SwiperSlide
                   key={slide.id}
-                  className={`max-w-[200px] py-1 ${index === 0 ? 'padded-l' : ''}`}
+                  className={`max-w-[200px] w-[min(80vw,200px)] py-1 ${index === 0 ? 'padded-l' : ''}`}
                   data-testid={`SectionVideoCarouselSlide-${slide.id}`}
                 >
                   <VideoCard
