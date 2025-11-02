@@ -76,7 +76,7 @@ export function SubtitleButton({
 
   // Determine button state based on available tracks and active track
   const hasAvailableTracks = youtubeCaptionTracks.length > 0
-  const isTrackSelected = youtubeCaptionTracks != null
+  const isTrackSelected = activeYoutubeTrack != null
   const isDisabled = !hasAvailableTracks
 
   return (
