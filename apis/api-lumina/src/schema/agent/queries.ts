@@ -3,21 +3,21 @@ import { prisma } from '@core/prisma/lumina/client'
 import { builder } from '../builder'
 import { NotFoundError } from '../error/NotFoundError'
 
-builder.queryField('luminaTeams', (t) =>
+builder.queryField('luminaAgents', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
-    type: ['Team'],
+    type: ['Agent'],
     resolve: async (query, _parent, _args, { currentUser }) => {
-      return await prisma.team.findMany({
+      return await prisma.agent.findMany({
         ...query,
-        where: { members: { some: { userId: currentUser.id } } }
+        where: { team: { members: { some: { userId: currentUser.id } } } }
       })
     }
   })
 )
 
-builder.queryField('luminaTeam', (t) =>
+builder.queryField('luminaAgent', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
-    type: 'Team',
+    type: 'Agent',
     errors: {
       types: [NotFoundError]
     },
@@ -25,15 +25,15 @@ builder.queryField('luminaTeam', (t) =>
       id: t.arg.id({ required: true })
     },
     resolve: async (query, _parent, { id }, { currentUser }) => {
-      const team = await prisma.team.findUnique({
+      const agent = await prisma.agent.findUnique({
         ...query,
-        where: { id, members: { some: { userId: currentUser.id } } }
+        where: { id, team: { members: { some: { userId: currentUser.id } } } }
       })
-      if (!team)
-        throw new NotFoundError('Team not found', [
-          { path: ['luminaTeam', 'id'], value: id }
+      if (!agent)
+        throw new NotFoundError('Agent not found', [
+          { path: ['luminaAgent', 'id'], value: id }
         ])
-      return team
+      return agent
     }
   })
 )

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, Team, TeamMember, TeamInvitation, BillingSubscription, Agent, AgentTool, Widget, Website, ApiKey, Usage } from ".prisma/api-lumina-client/index.js";
+import type { Prisma, Team, TeamMember, TeamInvitation, TeamPlan, Agent, AgentTool, Widget, Website, ApiKey, Usage } from ".prisma/api-lumina-client/index.js";
 export default interface PrismaTypes {
     Team: {
         Name: "Team";
@@ -11,7 +11,7 @@ export default interface PrismaTypes {
         Where: Prisma.TeamWhereInput;
         Create: {};
         Update: {};
-        RelationName: "members" | "agents" | "billingSubscription" | "usage" | "invitations";
+        RelationName: "members" | "agents" | "plan" | "usage" | "invitations";
         ListRelations: "members" | "agents" | "usage" | "invitations";
         Relations: {
             members: {
@@ -24,9 +24,9 @@ export default interface PrismaTypes {
                 Name: "Agent";
                 Nullable: false;
             };
-            billingSubscription: {
-                Shape: BillingSubscription | null;
-                Name: "BillingSubscription";
+            plan: {
+                Shape: TeamPlan | null;
+                Name: "TeamPlan";
                 Nullable: true;
             };
             usage: {
@@ -81,14 +81,14 @@ export default interface PrismaTypes {
             };
         };
     };
-    BillingSubscription: {
-        Name: "BillingSubscription";
-        Shape: BillingSubscription;
-        Include: Prisma.BillingSubscriptionInclude;
-        Select: Prisma.BillingSubscriptionSelect;
-        OrderBy: Prisma.BillingSubscriptionOrderByWithRelationInput;
-        WhereUnique: Prisma.BillingSubscriptionWhereUniqueInput;
-        Where: Prisma.BillingSubscriptionWhereInput;
+    TeamPlan: {
+        Name: "TeamPlan";
+        Shape: TeamPlan;
+        Include: Prisma.TeamPlanInclude;
+        Select: Prisma.TeamPlanSelect;
+        OrderBy: Prisma.TeamPlanOrderByWithRelationInput;
+        WhereUnique: Prisma.TeamPlanWhereUniqueInput;
+        Where: Prisma.TeamPlanWhereInput;
         Create: {};
         Update: {};
         RelationName: "team";

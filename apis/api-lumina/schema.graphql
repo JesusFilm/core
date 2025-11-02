@@ -197,19 +197,6 @@ type LuminaAgentWidget {
   usage: [LuminaUsage!]
 }
 
-type LuminaBillingSubscription {
-  id: ID
-  teamId: String
-  stripeCustomerId: String
-  stripeSubscriptionId: String
-  status: String
-  currentPeriodEnd: DateTime
-  cancelAtPeriodEnd: Boolean
-  createdAt: DateTime
-  updatedAt: DateTime
-  team: LuminaTeam
-}
-
 type LuminaTeam {
   id: ID
   name: String
@@ -217,7 +204,7 @@ type LuminaTeam {
   updatedAt: DateTime
   members: [LuminaTeamMember!]
   agents: [LuminaAgent!]
-  billingSubscription: LuminaBillingSubscription
+  plan: LuminaTeamPlan
   usage: [LuminaUsage!]
 }
 
@@ -260,6 +247,33 @@ input LuminaTeamMemberUpdateInput {
   role: LuminaTeamMemberRole!
 }
 
+type LuminaTeamPlan {
+  id: ID
+  teamId: String
+  stripeCustomerId: String
+  stripeSubscriptionId: String
+  billingEmail: String
+  billingName: String
+  enabled: Boolean
+  currentPeriodEnd: DateTime
+  cancelAtPeriodEnd: Boolean
+  createdAt: DateTime
+  updatedAt: DateTime
+  team: LuminaTeam
+}
+
+input LuminaTeamPlanCreateInput {
+  teamId: ID!
+  billingEmail: String!
+  billingName: String!
+}
+
+input LuminaTeamPlanUpdateInput {
+  teamId: ID!
+  billingEmail: String
+  billingName: String
+}
+
 input LuminaTeamUpdateInput {
   name: String!
 }
@@ -296,8 +310,6 @@ type Mutation {
   luminaAgentCreate(input: LuminaAgentCreateInput!): MutationLuminaAgentCreateResult
   luminaAgentUpdate(id: ID!, input: LuminaAgentUpdateInput!): MutationLuminaAgentUpdateResult
   luminaAgentDelete(id: ID!): MutationLuminaAgentDeleteResult
-  luminaTeamCreate(input: LuminaTeamCreateInput!): MutationLuminaTeamCreateResult
-  luminaTeamUpdate(id: ID!, input: LuminaTeamUpdateInput!): MutationLuminaTeamUpdateResult
   luminaTeamMemberUpdate(id: ID!, input: LuminaTeamMemberUpdateInput!): MutationLuminaTeamMemberUpdateResult
   luminaTeamMemberPromoteOwner(id: ID!): MutationLuminaTeamMemberPromoteOwnerResult
   luminaTeamMemberDelete(id: ID!): MutationLuminaTeamMemberDeleteResult
@@ -305,6 +317,10 @@ type Mutation {
   luminaTeamInvitationAccept(token: String!): MutationLuminaTeamInvitationAcceptResult
   luminaTeamInvitationResend(id: ID!): MutationLuminaTeamInvitationResendResult
   luminaTeamInvitationDelete(id: ID!): MutationLuminaTeamInvitationDeleteResult
+  luminaTeamCreate(input: LuminaTeamCreateInput!): MutationLuminaTeamCreateResult
+  luminaTeamUpdate(id: ID!, input: LuminaTeamUpdateInput!): MutationLuminaTeamUpdateResult
+  luminaTeamPlanCreate(input: LuminaTeamPlanCreateInput!): MutationLuminaTeamPlanCreateResult
+  luminaTeamPlanUpdate(input: LuminaTeamPlanUpdateInput!): MutationLuminaTeamPlanUpdateResult
 }
 
 union MutationLuminaAgentApiKeyCreateResult = ForbiddenError | NotFoundError | ZodError | MutationLuminaAgentApiKeyCreateSuccess
@@ -409,6 +425,18 @@ type MutationLuminaTeamMemberUpdateSuccess {
   data: LuminaTeamMember!
 }
 
+union MutationLuminaTeamPlanCreateResult = ZodError | MutationLuminaTeamPlanCreateSuccess
+
+type MutationLuminaTeamPlanCreateSuccess {
+  data: LuminaTeamPlan!
+}
+
+union MutationLuminaTeamPlanUpdateResult = ZodError | MutationLuminaTeamPlanUpdateSuccess
+
+type MutationLuminaTeamPlanUpdateSuccess {
+  data: LuminaTeamPlan!
+}
+
 union MutationLuminaTeamUpdateResult = ForbiddenError | NotFoundError | ZodError | MutationLuminaTeamUpdateSuccess
 
 type MutationLuminaTeamUpdateSuccess {
@@ -450,9 +478,77 @@ type NotUniqueErrorLocation {
 }
 
 type Query {
-  luminaTeams: [LuminaTeam!]
-  luminaTeam(id: ID!): LuminaTeam
+  luminaAgentTools(agentId: ID!): [LuminaAgentTool!]
+  luminaAgentTool(id: ID!): QueryLuminaAgentToolResult
+  luminaAgentWidgets(agentId: ID!): [LuminaAgentWidget!]
+  luminaAgentWidget(id: ID!): QueryLuminaAgentWidgetResult
+  luminaAgentWebsites(agentId: ID!): [LuminaAgentWebsite!]
+  luminaAgentWebsite(id: ID!): QueryLuminaAgentWebsiteResult
+  luminaAgentApiKeys(agentId: ID!): [LuminaAgentApiKey!]
+  luminaAgentApiKey(id: ID!): QueryLuminaAgentApiKeyResult
+  luminaAgents: [LuminaAgent!]
+  luminaAgent(id: ID!): QueryLuminaAgentResult
   luminaTeamMembers(teamId: ID!): [LuminaTeamMember!]
+  luminaTeamMember(id: ID!): QueryLuminaTeamMemberResult
+  luminaTeamInvitations(teamId: ID!): [LuminaTeamInvitation!]
+  luminaTeamInvitation(id: ID!): QueryLuminaTeamInvitationResult
+  luminaTeams: [LuminaTeam!]
+  luminaTeam(id: ID!): QueryLuminaTeamResult
+  luminaTeamPlan(teamId: ID!): QueryLuminaTeamPlanResult
+}
+
+union QueryLuminaAgentApiKeyResult = NotFoundError | QueryLuminaAgentApiKeySuccess
+
+type QueryLuminaAgentApiKeySuccess {
+  data: LuminaAgentApiKey!
+}
+
+union QueryLuminaAgentResult = NotFoundError | QueryLuminaAgentSuccess
+
+type QueryLuminaAgentSuccess {
+  data: LuminaAgent!
+}
+
+union QueryLuminaAgentToolResult = NotFoundError | QueryLuminaAgentToolSuccess
+
+type QueryLuminaAgentToolSuccess {
+  data: LuminaAgentTool!
+}
+
+union QueryLuminaAgentWebsiteResult = NotFoundError | QueryLuminaAgentWebsiteSuccess
+
+type QueryLuminaAgentWebsiteSuccess {
+  data: LuminaAgentWebsite!
+}
+
+union QueryLuminaAgentWidgetResult = NotFoundError | QueryLuminaAgentWidgetSuccess
+
+type QueryLuminaAgentWidgetSuccess {
+  data: LuminaAgentWidget!
+}
+
+union QueryLuminaTeamInvitationResult = NotFoundError | QueryLuminaTeamInvitationSuccess
+
+type QueryLuminaTeamInvitationSuccess {
+  data: LuminaTeamInvitation!
+}
+
+union QueryLuminaTeamMemberResult = NotFoundError | QueryLuminaTeamMemberSuccess
+
+type QueryLuminaTeamMemberSuccess {
+  data: LuminaTeamMember!
+}
+
+union QueryLuminaTeamPlanResult = NotFoundError | QueryLuminaTeamPlanSuccess
+
+type QueryLuminaTeamPlanSuccess {
+  data: LuminaTeamPlan!
+}
+
+union QueryLuminaTeamResult = NotFoundError | QueryLuminaTeamSuccess
+
+type QueryLuminaTeamSuccess {
+  data: LuminaTeam!
 }
 
 """Team member role"""

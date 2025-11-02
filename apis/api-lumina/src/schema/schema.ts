@@ -2,7 +2,6 @@
 // and object type in the schema
 
 import './agent'
-import './billingSubscription'
 import './team'
 import './usage'
 import './user'

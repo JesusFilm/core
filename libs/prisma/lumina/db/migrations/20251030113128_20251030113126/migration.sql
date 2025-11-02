@@ -37,18 +37,26 @@ CREATE TABLE "TeamInvitation" (
 );
 
 -- CreateTable
-CREATE TABLE "BillingSubscription" (
+CREATE TABLE "TeamPlan" (
     "id" TEXT NOT NULL,
     "teamId" TEXT NOT NULL,
     "stripeCustomerId" TEXT NOT NULL,
     "stripeSubscriptionId" TEXT,
-    "status" TEXT NOT NULL DEFAULT 'active',
+    "enabled" BOOLEAN NOT NULL DEFAULT true,
+    "billingEmail" TEXT NOT NULL,
+    "billingName" TEXT NOT NULL,
+    "billingAddressCity" TEXT,
+    "billingAddressCountry" TEXT,
+    "billingAddressLine1" TEXT,
+    "billingAddressLine2" TEXT,
+    "billingAddressPostalCode" TEXT,
+    "billingAddressState" TEXT,
     "currentPeriodEnd" TIMESTAMP(3),
     "cancelAtPeriodEnd" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "BillingSubscription_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "TeamPlan_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -171,13 +179,13 @@ CREATE INDEX "TeamInvitation_email_idx" ON "TeamInvitation"("email");
 CREATE UNIQUE INDEX "TeamInvitation_teamId_email_key" ON "TeamInvitation"("teamId", "email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "BillingSubscription_teamId_key" ON "BillingSubscription"("teamId");
+CREATE UNIQUE INDEX "TeamPlan_teamId_key" ON "TeamPlan"("teamId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "BillingSubscription_stripeCustomerId_key" ON "BillingSubscription"("stripeCustomerId");
+CREATE UNIQUE INDEX "TeamPlan_stripeCustomerId_key" ON "TeamPlan"("stripeCustomerId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "BillingSubscription_stripeSubscriptionId_key" ON "BillingSubscription"("stripeSubscriptionId");
+CREATE UNIQUE INDEX "TeamPlan_stripeSubscriptionId_key" ON "TeamPlan"("stripeSubscriptionId");
 
 -- CreateIndex
 CREATE INDEX "Agent_teamId_idx" ON "Agent"("teamId");
@@ -231,7 +239,7 @@ ALTER TABLE "TeamMember" ADD CONSTRAINT "TeamMember_teamId_fkey" FOREIGN KEY ("t
 ALTER TABLE "TeamInvitation" ADD CONSTRAINT "TeamInvitation_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "BillingSubscription" ADD CONSTRAINT "BillingSubscription_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "TeamPlan" ADD CONSTRAINT "TeamPlan_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Agent" ADD CONSTRAINT "Agent_teamId_fkey" FOREIGN KEY ("teamId") REFERENCES "Team"("id") ON DELETE CASCADE ON UPDATE CASCADE;
