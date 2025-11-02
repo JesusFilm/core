@@ -1,3 +1,4 @@
+import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Divider from '@mui/material/Divider'
 import InputAdornment from '@mui/material/InputAdornment'
@@ -38,7 +39,8 @@ import {
 } from '../../../../../../../../__generated__/globalTypes'
 
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
-import { YouTubeSubtitleSelector } from './SubtitleSelector'
+import { MuxSubtitleManager, YouTubeSubtitleSelector } from './SubtitleSelector'
+import { GET_MUX_VIDEO_WITH_SUBTITLES } from './SubtitleSelector/muxSubtitleQueries'
 
 export type { YouTubeLanguage }
 
@@ -72,6 +74,27 @@ export function VideoBlockEditorSettings({
       selectedBlock?.source !== VideoBlockSource.youTube ||
       selectedBlock?.videoId == null
   })
+
+  // Get Mux video with subtitles for Mux videos
+  const muxVideo =
+    selectedBlock?.mediaVideo?.__typename === 'MuxVideo'
+      ? selectedBlock.mediaVideo
+      : null
+
+  const { data: muxVideoData } = useQuery(GET_MUX_VIDEO_WITH_SUBTITLES, {
+    variables: {
+      id: muxVideo?.id ?? ''
+      // userGenerated is determined by backend based on user role
+    },
+    skip:
+      selectedBlock?.source !== VideoBlockSource.mux ||
+      muxVideo?.id == null ||
+      selectedBlock?.videoId == null
+  })
+
+  const muxVideoId = muxVideo?.id
+  const muxAssetId = muxVideo?.assetId
+  const existingSubtitles = muxVideoData?.getMyMuxVideo?.subtitles ?? []
 
   const initialValues: Values = {
     autoplay: selectedBlock?.autoplay ?? true,
@@ -134,6 +157,30 @@ export function VideoBlockEditorSettings({
     onSubmit: noop
   })
 
+  const renderYouTubeSubtitles = (): ReactElement => {
+    return (
+      <Stack direction="column" spacing={4}>
+        <Typography
+          variant="subtitle2"
+          sx={{
+            color: selectedBlock == null ? 'action.disabled' : undefined
+          }}
+        >
+          {t('Subtitles')}
+        </Typography>
+        <YouTubeSubtitleSelector
+          selectedSubtitleId={values.subtitleLanguageId}
+          availableLanguages={availableSubtitles}
+          onChange={async (subtitleLanguageId) => {
+            await setFieldValue('subtitleLanguageId', subtitleLanguageId)
+          }}
+          disabled={selectedBlock == null}
+        />
+        <Divider />
+      </Stack>
+    )
+  }
+
   return (
     <Box
       sx={{ px: 4, pt: 2, width: '100%' }}
@@ -141,28 +188,27 @@ export function VideoBlockEditorSettings({
     >
       <Stack direction="column" spacing={6}>
         {/* Subtitles */}
-        {/* Only show subtitles for YouTube source, MUX and Internal not yet supported*/}
-        {selectedBlock?.source === VideoBlockSource.youTube && (
-          <Stack direction="column" spacing={4}>
-            <Typography
-              variant="subtitle2"
-              sx={{
-                color: selectedBlock == null ? 'action.disabled' : undefined
-              }}
-            >
-              {t('Subtitles')}
-            </Typography>
-            <YouTubeSubtitleSelector
-              selectedSubtitleId={values.subtitleLanguageId}
-              availableLanguages={availableSubtitles}
-              onChange={async (subtitleLanguageId) => {
-                await setFieldValue('subtitleLanguageId', subtitleLanguageId)
-              }}
-              disabled={selectedBlock == null}
-            />
-            <Divider />
-          </Stack>
-        )}
+        {(() => {
+          switch (selectedBlock?.source) {
+            case VideoBlockSource.youTube:
+              return renderYouTubeSubtitles()
+
+            case VideoBlockSource.mux:
+              return (
+                <MuxSubtitleManager
+                  disabled={selectedBlock == null}
+                  muxVideoId={muxVideoId}
+                  muxAssetId={muxAssetId}
+                  existingSubtitles={existingSubtitles}
+                />
+              )
+
+            case VideoBlockSource.internal:
+            default:
+              // No subtitles for Internal or other video sources
+              return null
+          }
+        })()}
 
         {/* Timing */}
         <Stack direction="column" spacing={2}>

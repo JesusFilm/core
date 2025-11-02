@@ -33,6 +33,7 @@ import {
 } from '../../__generated__/UserJourneyOpen'
 import { AccessDenied } from '../../src/components/AccessDenied'
 import { Editor } from '../../src/components/Editor'
+import { MuxSubtitlePollingProvider } from '../../src/components/MuxSubtitlePollingProvider'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
 import { GET_CUSTOM_DOMAINS } from '../../src/libs/useCustomDomainsQuery/useCustomDomainsQuery'
 
@@ -106,14 +107,16 @@ function JourneyEditPage({ status }): ReactElement {
       {status === 'noAccess' ? (
         <AccessDenied />
       ) : (
-        <Editor
-          journey={data?.journey ?? undefined}
-          selectedStepId={router.query.stepId as string | undefined}
-          initialState={{
-            activeContent: router.query.view as ActiveContent | undefined
-          }}
-          user={user}
-        />
+        <MuxSubtitlePollingProvider>
+          <Editor
+            journey={data?.journey ?? undefined}
+            selectedStepId={router.query.stepId as string | undefined}
+            initialState={{
+              activeContent: router.query.view as ActiveContent | undefined
+            }}
+            user={user}
+          />
+        </MuxSubtitlePollingProvider>
       )}
     </InstantSearch>
   )
