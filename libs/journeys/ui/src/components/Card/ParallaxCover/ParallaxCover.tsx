@@ -35,28 +35,44 @@ export function ParallaxCover({
   imageBlock,
   hasFullscreenVideo = false
 }: ParallaxCoverProps): ReactElement {
+  const baseBackgroundColor = stripAlphaFromHex(backgroundColor)
+  const overlayGradient = (direction: string): string =>
+    `linear-gradient(to ${direction},
+    transparent 0%,
+    ${addAlphaToHex(baseBackgroundColor, 8)} 10%,
+    ${addAlphaToHex(baseBackgroundColor, 20)} 17%,
+    ${addAlphaToHex(baseBackgroundColor, 38)} 25%,
+    ${addAlphaToHex(baseBackgroundColor, 69)} 40%,
+    ${addAlphaToHex(baseBackgroundColor, 90)} 60%,
+    ${addAlphaToHex(baseBackgroundColor, 100)} 98%)`
+
+  const overlayImageMask = `linear-gradient(to top,
+    transparent 0%,
+    ${addAlphaToHex(baseBackgroundColor, 8)} 5%,   
+    ${addAlphaToHex(baseBackgroundColor, 20)} 10%,  
+    ${addAlphaToHex(baseBackgroundColor, 38)} 15%,  
+    ${addAlphaToHex(baseBackgroundColor, 69)} 20%,  
+    ${addAlphaToHex(baseBackgroundColor, 90)} 25%,  
+    ${addAlphaToHex(baseBackgroundColor, 100)} 30%)`
+
   return (
     <Box
       data-testid="parallax-cover"
       sx={{
         position: 'relative',
         height: '100vh',
-        overflowY: 'auto',
-        overflowX: 'hidden',
-        perspective: '1px',
-        perspectiveOrigin: 'top center'
+        overflow: 'hidden'
       }}
     >
-      {/* Background Layer - Static background, no parallax */}
+      {/* Fixed background - stays in place while content scrolls */}
       <Box
+        data-testid="parallax-background-layer"
         sx={{
           position: 'absolute',
           top: 0,
           left: 0,
           right: 0,
           bottom: 0,
-          height: '100%',
-          width: '100%',
           zIndex: 0
         }}
       >
@@ -90,25 +106,34 @@ export function ParallaxCover({
         data-testid="parallax-cover-wrapper"
         sx={{
           position: 'relative',
-          transformStyle: 'preserve-3d'
+          height: '100vh',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          perspective: '1px',
+          perspectiveOrigin: 'top center',
+          transformStyle: 'preserve-3d',
+          zIndex: 1,
+          border: '3px solid green'
         }}
       >
+        {/* Parallax cover image - appears above background, below content */}
         <Box
-          data-testid="parallax-cover-image"
+          data-testid="parallax-cover-layer"
           sx={{
             position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
             height: '40vh',
-            transform: 'translateZ(-1px) scale(2)',
+            transform: 'translateZ(-0.5px) scale(1.5)',
             transformOrigin: 'center top',
-            zIndex: -1
+            zIndex: 1,
+            border: '3px solid red'
           }}
         >
           {imageBlock != null && backgroundBlur != null && (
             <NextImage
-              data-testid="content-background-image"
+              data-testid="parallax-cover-image"
               src={imageBlock.src ?? backgroundBlur}
               alt={imageBlock.alt}
               placeholder="blur"
@@ -126,9 +151,25 @@ export function ParallaxCover({
             minHeight: '100vh',
             paddingTop: '30vh',
             transform: 'translateZ(0)',
-            zIndex: 1
+            zIndex: 2,
+            border: '3px solid blue'
           }}
         >
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '30vh',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: -1,
+              border: '3px solid yellow',
+              pointerEvents: 'none'
+              // backgroundColor: 'black'
+              // WebkitMask: overlayGradient('bottom'),
+              // mask: overlayGradient('bottom')
+            }}
+          />
           <OverlayContent hasFullscreenVideo={hasFullscreenVideo} sx={{}}>
             {children}
           </OverlayContent>
