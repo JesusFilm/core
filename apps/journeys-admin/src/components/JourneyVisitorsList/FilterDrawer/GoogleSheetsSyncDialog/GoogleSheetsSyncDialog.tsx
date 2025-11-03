@@ -354,14 +354,24 @@ export function GoogleSheetsSyncDialog({
           }
 
     try {
-      await exportToSheets({
+      const { data } = await exportToSheets({
         variables: {
           journeyId,
           destination,
           integrationId
         }
       })
+
+      const syncResult = data?.journeyVisitorExportToGoogleSheet
+      const spreadsheetUrl =
+        syncResult?.spreadsheetUrl ??
+        (syncResult?.spreadsheetId != null && syncResult.spreadsheetId !== ''
+          ? `https://docs.google.com/spreadsheets/d/${syncResult.spreadsheetId}`
+          : null)
       setGoogleDialogOpen(false)
+      if (typeof window !== 'undefined' && spreadsheetUrl != null) {
+        window.open(spreadsheetUrl, '_blank', 'noopener,noreferrer')
+      }
       enqueueSnackbar(t('Sync created'), { variant: 'success' })
       await loadSyncs({
         variables: { journeyId },
