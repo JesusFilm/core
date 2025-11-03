@@ -2,11 +2,11 @@ import { VideoFields_subtitleLanguage as SubtitleLanguage } from '../../__genera
 import { getYouTubePlayer } from '../getYouTubePlayer'
 import { removeAllRemoteTextTracks } from '../removeAllRemoteTextTracks'
 import { setYouTubeCaptionTrack } from '../setYouTubeCaptionTrack'
+import { unloadYouTubeCaptions } from '../unloadYouTubeCaptions'
 import VideoJsPlayer from '../videoJsTypes'
 import { YoutubeCaptionLanguages } from '../videoJsTypes/YoutubeTech'
 
 import { extractYouTubeCaptionsAndAddTextTracks } from './extractYouTubeCaptionsAndAddTextTracks'
-import { unloadYouTubeCaptions } from '../unloadYouTubeCaptions'
 
 jest.mock('../getYouTubePlayer')
 jest.mock('../removeAllRemoteTextTracks')
