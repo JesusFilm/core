@@ -8,40 +8,42 @@ import { enableDownload } from './service'
 
 // Mock the processVideoDownloads queue
 
-jest.mock('./service', () => ({
-  createVideoByDirectUpload: jest.fn().mockResolvedValue({
-    id: 'uploadId',
-    uploadUrl: 'https://example.com/video.mp4'
-  }),
-  createVideoFromUrl: jest.fn().mockResolvedValue({
-    id: 'assetId'
-  }),
-  getVideo: jest.fn().mockResolvedValue({
-    id: 'assetId',
-    status: 'ready',
-    playback_ids: [{ id: 'playbackId' }],
-    duration: 10
-  }),
-  deleteVideo: jest.fn().mockResolvedValue({
-    id: 'assetId'
-  }),
-  enableDownload: jest.fn().mockResolvedValue(undefined),
-  getUpload: jest.fn().mockResolvedValue({
-    asset_id: 'assetId'
-  }),
-  getMaxResolutionValue: jest
-    .fn()
-    .mockImplementation((maxResolution: string | null | undefined) => {
-      if (!maxResolution) return undefined
-      if (maxResolution === 'fhd') return '1080p'
-      if (maxResolution === 'qhd') return '1440p'
-      if (maxResolution === 'uhd') return '2160p'
-      return '1080p' // fallback
+jest.mock('./service', () => {
+  return {
+    createVideoByDirectUpload: jest.fn().mockResolvedValue({
+      id: 'uploadId',
+      uploadUrl: 'https://example.com/video.mp4'
     }),
-  isValidMaxResolutionTier: jest.fn().mockImplementation((value: string) => {
-    return ['fhd', 'qhd', 'uhd'].includes(value)
-  })
-}))
+    createVideoFromUrl: jest.fn().mockResolvedValue({
+      id: 'assetId'
+    }),
+    getVideo: jest.fn().mockResolvedValue({
+      id: 'assetId',
+      status: 'ready',
+      playback_ids: [{ id: 'playbackId' }],
+      duration: 10
+    }),
+    deleteVideo: jest.fn().mockResolvedValue({
+      id: 'assetId'
+    }),
+    enableDownload: jest.fn().mockResolvedValue(undefined),
+    getUpload: jest.fn().mockResolvedValue({
+      asset_id: 'assetId'
+    }),
+    getMaxResolutionValue: jest
+      .fn()
+      .mockImplementation((maxResolution: string | null | undefined) => {
+        if (!maxResolution) return undefined
+        if (maxResolution === 'fhd') return '1080p'
+        if (maxResolution === 'qhd') return '1440p'
+        if (maxResolution === 'uhd') return '2160p'
+        return '1080p' // fallback
+      }),
+    isValidMaxResolutionTier: jest.fn().mockImplementation((value: string) => {
+      return ['fhd', 'qhd', 'uhd'].includes(value)
+    })
+  }
+})
 
 jest.mock('../../../workers/processVideoDownloads/queue', () => ({
   queue: {
@@ -609,7 +611,12 @@ describe('mux/video', () => {
           roles: ['publisher']
         })
 
-        const result = await authClient({
+        const { createVideoByDirectUpload } = jest.requireMock('./service')
+        ;(createVideoByDirectUpload as jest.Mock).mockRejectedValue(
+          new Error('Invalid language code: invalid')
+        )
+
+        const result = (await authClient({
           document: CREATE_MUX_VIDEO_UPLOAD_BY_FILE,
           variables: {
             name: 'videoName',
@@ -619,14 +626,14 @@ describe('mux/video', () => {
               languageCode: 'invalid'
             }
           }
-        })
+        })) as {
+          data: any
+          errors?: { message: string }[]
+        }
 
-        expect(result).toHaveProperty(
-          'data.createMuxVideoUploadByFile',
-          expect.objectContaining({
-            __typename: 'Error',
-            message: expect.stringContaining('Invalid language code: invalid')
-          })
+        expect(result).toHaveProperty('data', null)
+        expect(result.errors?.[0]?.message).toContain(
+          'Invalid language code: invalid'
         )
       })
     })

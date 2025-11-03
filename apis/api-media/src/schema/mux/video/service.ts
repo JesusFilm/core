@@ -49,7 +49,7 @@ const VALID_MUX_GENERATED_SUBTITLE_LANGUAGE_CODES: MuxGeneratedSubtitleLanguageC
 export function isValidMuxGeneratedSubtitleLanguageCode(
   value: string | null | undefined
 ): value is MuxGeneratedSubtitleLanguageCode {
-  // we want top return true to handle if the user does not want to generate subtitles
+  // we want to return true to account for the case where the user does not want to generate subtitles
   if (value == null) return true
   return VALID_MUX_GENERATED_SUBTITLE_LANGUAGE_CODES.includes(
     value as MuxGeneratedSubtitleLanguageCode
@@ -117,6 +117,7 @@ export async function createVideoByDirectUpload(
   const generateSubtitles = languageCode != null && userGenerated ? true : false
 
   if (!isValidMuxGeneratedSubtitleLanguageCode(languageCode)) {
+    console.error(`Invalid language code: ${languageCode}`)
     throw new Error(`Invalid language code: ${languageCode}`)
   }
 

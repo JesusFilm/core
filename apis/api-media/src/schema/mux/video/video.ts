@@ -366,23 +366,29 @@ builder.mutationFields((t) => ({
           : (userGenerated ?? true)
         const maxResolutionValue = getMaxResolutionValue(maxResolution)
 
-        const { id, uploadUrl } = await createVideoByDirectUpload(
-          isUserGenerated,
-          maxResolutionValue,
-          downloadable ?? false,
-          generateSubtitlesInput?.languageCode
-        )
+        try {
+          const { id, uploadUrl } = await createVideoByDirectUpload(
+            isUserGenerated,
+            maxResolutionValue,
+            downloadable ?? false,
+            generateSubtitlesInput?.languageCode
+          )
 
-        return await prisma.muxVideo.create({
-          ...query,
-          data: {
-            uploadId: id,
-            uploadUrl,
-            userId: user.id,
-            name,
-            downloadable: downloadable ?? false
-          }
-        })
+          return await prisma.muxVideo.create({
+            ...query,
+            data: {
+              uploadId: id,
+              uploadUrl,
+              userId: user.id,
+              name,
+              downloadable: downloadable ?? false
+            }
+          })
+        } catch (error) {
+          throw new GraphQLError((error as Error).message, {
+            extensions: { code: 'BAD_REQUEST' }
+          })
+        }
       }
     }),
   createMuxVideoUploadByUrl: t.withAuth({ isAuthenticated: true }).prismaField({
