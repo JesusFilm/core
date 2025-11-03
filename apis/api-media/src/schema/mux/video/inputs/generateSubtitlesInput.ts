@@ -4,7 +4,7 @@ export const GenerateSubtitlesInput = builder.inputType(
   'GenerateSubtitlesInput',
   {
     fields: (t) => ({
-      languageCode: t.string({ required: true })
+      languageCode: t.string({ required: false })
     })
   }
 )

@@ -12,6 +12,50 @@ type MuxGeneratedSubtitleLanguageCode = NonNullable<
   >[number]['language_code']
 >
 
+// Define valid language codes as a Record keyed by the union type
+// satisfies will error at compile time if any value from MuxLanguageCodeUnion is missing, ergo needs to be a Record and not a Union as unions do not support this.
+const VALID_MUX_LANGUAGE_CODES = {
+  en: true,
+  es: true,
+  it: true,
+  pt: true,
+  de: true,
+  fr: true,
+  pl: true,
+  ru: true,
+  nl: true,
+  ca: true,
+  tr: true,
+  sv: true,
+  uk: true,
+  no: true,
+  fi: true,
+  sk: true,
+  el: true,
+  cs: true,
+  hr: true,
+  da: true,
+  ro: true,
+  bg: true
+} as const satisfies Record<MuxGeneratedSubtitleLanguageCode, true>
+
+// Extract the keys at runtime - these are guaranteed to match the union type
+const VALID_MUX_GENERATED_SUBTITLE_LANGUAGE_CODES: MuxGeneratedSubtitleLanguageCode[] =
+  Object.keys(
+    VALID_MUX_LANGUAGE_CODES
+  ) as Array<MuxGeneratedSubtitleLanguageCode>
+
+// This validates that the language code is a member of the union type at runtime
+export function isValidMuxGeneratedSubtitleLanguageCode(
+  value: string | null | undefined
+): value is MuxGeneratedSubtitleLanguageCode {
+  // we want top return true to handle if the user does not want to generate subtitles
+  if (value == null) return true
+  return VALID_MUX_GENERATED_SUBTITLE_LANGUAGE_CODES.includes(
+    value as MuxGeneratedSubtitleLanguageCode
+  )
+}
+
 // Type guard to safely check if a value is a valid MaxResolutionTierEnum key
 export function isValidMaxResolutionTier(
   value: string
@@ -66,12 +110,15 @@ export async function createVideoByDirectUpload(
   userGenerated: boolean,
   maxResolution?: Mux.Video.Asset['max_resolution_tier'],
   downloadable = false,
-  generateSubtitlesInput?: { languageCode: string } | null
+  languageCode?: string | null
 ): Promise<{ id: string; uploadUrl: string }> {
   if (process.env.CORS_ORIGIN == null) throw new Error('Missing CORS_ORIGIN')
 
-  const generateSubtitles =
-    generateSubtitlesInput != null && userGenerated ? true : false
+  const generateSubtitles = languageCode != null && userGenerated ? true : false
+
+  if (!isValidMuxGeneratedSubtitleLanguageCode(languageCode)) {
+    throw new Error(`Invalid language code: ${languageCode}`)
+  }
 
   const response = await getClient(userGenerated).video.uploads.create({
     cors_origin: process.env.CORS_ORIGIN,
@@ -95,9 +142,8 @@ export async function createVideoByDirectUpload(
             {
               generated_subtitles: [
                 {
-                  language_code: generateSubtitlesInput!
-                    .languageCode as MuxGeneratedSubtitleLanguageCode,
-                  name: generateSubtitlesInput!.languageCode + ' auto-generated'
+                  language_code: languageCode,
+                  name: languageCode + ' auto-generated'
                 }
               ]
             }
@@ -122,32 +168,15 @@ export async function createVideoFromUrl(
   url: string,
   userGenerated: boolean,
   maxResolution?: Mux.Video.Asset['max_resolution_tier'],
-  downloadable = false,
-  generateSubtitlesInput?: { languageCode: string } | null
+  downloadable = false
 ): Promise<Mux.Video.Asset> {
-  const generateSubtitles =
-    generateSubtitlesInput != null && userGenerated ? true : false
-
   return await getClient(userGenerated).video.assets.create({
-    inputs: generateSubtitles
-      ? [
-          {
-            url,
-            generated_subtitles: [
-              {
-                language_code: generateSubtitlesInput!
-                  .languageCode as MuxGeneratedSubtitleLanguageCode,
-                name: generateSubtitlesInput!.languageCode + ' auto-generated'
-              }
-            ]
-          }
-        ]
-      : [
-          {
-            url
-          }
-        ],
-    encoding_tier: generateSubtitles ? 'premium' : 'smart',
+    inputs: [
+      {
+        url
+      }
+    ],
+    encoding_tier: 'smart',
     playback_policy: ['public'],
     max_resolution_tier: userGenerated ? '1080p' : maxResolution,
     static_renditions: downloadable

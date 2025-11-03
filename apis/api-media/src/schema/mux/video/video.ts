@@ -370,7 +370,7 @@ builder.mutationFields((t) => ({
           isUserGenerated,
           maxResolutionValue,
           downloadable ?? false,
-          generateSubtitlesInput
+          generateSubtitlesInput?.languageCode
         )
 
         return await prisma.muxVideo.create({
@@ -400,22 +400,12 @@ builder.mutationFields((t) => ({
         type: MaxResolutionTier,
         required: false,
         defaultValue: 'fhd'
-      }),
-      generateSubtitlesInput: t.arg({
-        type: GenerateSubtitlesInput,
-        required: false
       })
     },
     resolve: async (
       query,
       _root,
-      {
-        url,
-        userGenerated,
-        downloadable,
-        maxResolution,
-        generateSubtitlesInput
-      },
+      { url, userGenerated, downloadable, maxResolution },
       { user, currentRoles }
     ) => {
       if (user == null)
@@ -432,8 +422,7 @@ builder.mutationFields((t) => ({
         url,
         isUserGenerated,
         maxResolutionValue,
-        downloadable ?? false,
-        generateSubtitlesInput
+        downloadable ?? false
       )
 
       return await prisma.muxVideo.create({
