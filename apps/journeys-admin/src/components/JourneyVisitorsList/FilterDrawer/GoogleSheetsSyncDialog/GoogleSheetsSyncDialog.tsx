@@ -18,7 +18,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useState } from 'react'
+import { KeyboardEvent, ReactElement, useEffect, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
@@ -179,6 +179,40 @@ export function GoogleSheetsSyncDialog({
   }, [open, deletingSyncId])
 
   const googleSheetsSyncs = syncsData?.googleSheetsSyncs ?? []
+
+  function getSpreadsheetUrl(sync: GoogleSheetsSyncItem): string | null {
+    if (sync.spreadsheetId == null || sync.spreadsheetId === '') return null
+    return `https://docs.google.com/spreadsheets/d/${sync.spreadsheetId}`
+  }
+
+  function handleOpenSyncRow(sync: GoogleSheetsSyncItem): void {
+    const spreadsheetUrl = getSpreadsheetUrl(sync)
+    if (spreadsheetUrl == null) {
+      enqueueSnackbar(t('Something went wrong, please try again!'), {
+        variant: 'error'
+      })
+      return
+    }
+
+    if (typeof window === 'undefined') return
+
+    window.open(spreadsheetUrl, '_blank', 'noopener,noreferrer')
+  }
+
+  function handleSyncRowKeyDown(
+    event: KeyboardEvent<HTMLTableRowElement>,
+    sync: GoogleSheetsSyncItem
+  ): void {
+    if (event.key === 'Enter') {
+      handleOpenSyncRow(sync)
+      return
+    }
+
+    if (event.key === ' ') {
+      event.preventDefault()
+      handleOpenSyncRow(sync)
+    }
+  }
 
   async function handleOpenDrivePicker(
     mode: 'folder' | 'sheet'
@@ -444,7 +478,25 @@ export function GoogleSheetsSyncDialog({
                     const isDeleting = deletingSyncId === sync.id
 
                     return (
-                      <TableRow key={sync.id} hover>
+                      <TableRow
+                        key={sync.id}
+                        hover
+                        role="button"
+                        tabIndex={0}
+                        aria-label={`${t('Open link in new tab')}: ${
+                          sync.sheetName ?? sync.spreadsheetId ?? t('Not found')
+                        }`}
+                        onClick={() => handleOpenSyncRow(sync)}
+                        onKeyDown={(event) => handleSyncRowKeyDown(event, sync)}
+                        sx={{
+                          cursor: 'pointer',
+                          '&:focus-visible': {
+                            outline: (theme) =>
+                              `2px solid ${theme.palette.primary.main}`,
+                            outlineOffset: 2
+                          }
+                        }}
+                      >
                         <TableCell width="40%">
                           <Tooltip
                             title={sync.spreadsheetId ?? ''}
@@ -500,7 +552,10 @@ export function GoogleSheetsSyncDialog({
                             color="error"
                             size="small"
                             disabled={isDeleting}
-                            onClick={() => handleRequestDeleteSync(sync.id)}
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              handleRequestDeleteSync(sync.id)
+                            }}
                           >
                             {isDeleting ? (
                               <CircularProgress
