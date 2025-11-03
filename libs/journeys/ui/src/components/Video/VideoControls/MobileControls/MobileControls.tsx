@@ -27,6 +27,7 @@ interface MobileControlsProps {
   handleToggleStats: (event: React.MouseEvent) => void
   player: VideoJsPlayer
   source: VideoBlockSource
+  visible: boolean
 }
 
 export function MobileControls({
@@ -43,7 +44,8 @@ export function MobileControls({
   handleFullscreen,
   handleToggleStats,
   player,
-  source
+  source,
+  visible
 }: MobileControlsProps): JSX.Element {
   return (
     <Container
@@ -74,7 +76,7 @@ export function MobileControls({
           </Typography>
         )}
         <Stack direction="row" alignItems="center">
-          <SubtitleButton player={player} source={source} />
+          <SubtitleButton player={player} source={source} visible={visible} />
           <VideoSettings player={player} onToggleStats={handleToggleStats} />
           {showFullscreenButton && (
             <IconButton

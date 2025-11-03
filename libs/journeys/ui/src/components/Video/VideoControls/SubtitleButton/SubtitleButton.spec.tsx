@@ -84,47 +84,61 @@ describe('SubtitleButton', () => {
     } as TextTrack
   })
 
-  describe('Button States', () => {
-    it('should render disabled state when no tracks are available', () => {
-      getCaptionsAndSubtitleTracks.mockReturnValue([])
+  it('should render disabled state when no tracks are available', () => {
+    getCaptionsAndSubtitleTracks.mockReturnValue([])
 
-      render(
-        <SubtitleButton player={player} source={VideoBlockSource.internal} />
-      )
+    render(
+      <SubtitleButton
+        player={player}
+        source={VideoBlockSource.internal}
+        visible={true}
+      />
+    )
 
-      const button = screen.getByRole('button', { name: 'subtitles' })
-      expect(button).toBeDisabled()
-    })
-
-    it('should render enabled state when tracks are available but none selected', () => {
-      getCaptionsAndSubtitleTracks.mockReturnValue([mockTrack1, mockTrack2])
-
-      render(
-        <SubtitleButton player={player} source={VideoBlockSource.internal} />
-      )
-
-      const button = screen.getByRole('button', { name: 'subtitles' })
-      expect(button).not.toBeDisabled()
-    })
-
-    it('should render selected state when track is active', () => {
-      const activeTrack = { ...mockTrack1, mode: 'showing' as TextTrackMode }
-      getCaptionsAndSubtitleTracks.mockReturnValue([activeTrack, mockTrack2])
-
-      render(
-        <SubtitleButton player={player} source={VideoBlockSource.internal} />
-      )
-
-      const button = screen.getByRole('button', { name: 'subtitles' })
-      expect(button).not.toBeDisabled()
-    })
+    const button = screen.getByRole('button', { name: 'subtitles' })
+    expect(button).toBeDisabled()
   })
 
-  it('should open menu when button is clicked', async () => {
+  it('should render enabled state when tracks are available but none selected', () => {
     getCaptionsAndSubtitleTracks.mockReturnValue([mockTrack1, mockTrack2])
 
     render(
-      <SubtitleButton player={player} source={VideoBlockSource.internal} />
+      <SubtitleButton
+        player={player}
+        source={VideoBlockSource.internal}
+        visible={true}
+      />
+    )
+
+    const button = screen.getByRole('button', { name: 'subtitles' })
+    expect(button).not.toBeDisabled()
+  })
+
+  it('should render selected state when track is active', () => {
+    const activeTrack = { ...mockTrack1, mode: 'showing' as TextTrackMode }
+    getCaptionsAndSubtitleTracks.mockReturnValue([activeTrack, mockTrack2])
+
+    render(
+      <SubtitleButton
+        player={player}
+        source={VideoBlockSource.internal}
+        visible={true}
+      />
+    )
+
+    const button = screen.getByRole('button', { name: 'subtitles' })
+    expect(button).not.toBeDisabled()
+  })
+
+  it('should open menu when button is clicked and visible is true', async () => {
+    getCaptionsAndSubtitleTracks.mockReturnValue([mockTrack1, mockTrack2])
+
+    render(
+      <SubtitleButton
+        player={player}
+        source={VideoBlockSource.internal}
+        visible={true}
+      />
     )
 
     const button = screen.getByRole('button', { name: 'subtitles' })
@@ -135,137 +149,173 @@ describe('SubtitleButton', () => {
     })
   })
 
-  describe('Subtitle Toggle Functionality', () => {
-    it('should handle HTML5 video subtitle toggle', async () => {
-      getCaptionsAndSubtitleTracks.mockReturnValue([mockTrack1, mockTrack2])
+  it('should not open menu when visible is false', async () => {
+    getCaptionsAndSubtitleTracks.mockReturnValue([mockTrack1, mockTrack2])
 
-      render(
-        <SubtitleButton player={player} source={VideoBlockSource.internal} />
-      )
+    render(
+      <SubtitleButton
+        player={player}
+        source={VideoBlockSource.internal}
+        visible={false}
+      />
+    )
 
-      const button = screen.getByRole('button', { name: 'subtitles' })
-      fireEvent.click(button)
+    const button = screen.getByRole('button', { name: 'subtitles' })
+    fireEvent.click(button)
 
-      await waitFor(() => {
-        expect(screen.getByRole('menu')).toBeInTheDocument()
-      })
-
-      // Click on a subtitle track
-      const trackMenuItem = screen.getByText('English')
-      fireEvent.click(trackMenuItem)
-
-      expect(hideAllSubtitles).toHaveBeenCalledWith(player)
-    })
-
-    it('should handle YouTube video subtitle toggle', async () => {
-      const mockYtPlayer = {
-        setOption: jest.fn(),
-        loadModule: jest.fn()
-      }
-      getYouTubePlayer.mockReturnValue(mockYtPlayer)
-      getCaptionsAndSubtitleTracks.mockReturnValue([mockTrack1, mockTrack2])
-
-      render(
-        <SubtitleButton player={player} source={VideoBlockSource.youTube} />
-      )
-
-      const button = screen.getByRole('button', { name: 'subtitles' })
-      fireEvent.click(button)
-
-      await waitFor(() => {
-        expect(screen.getByRole('menu')).toBeInTheDocument()
-      })
-
-      // Click on a subtitle track
-      const trackMenuItem = screen.getByText('English')
-      fireEvent.click(trackMenuItem)
-
-      expect(hideAllSubtitles).toHaveBeenCalledWith(player)
-      expect(getYouTubePlayer).toHaveBeenCalledWith(player)
-      expect(setYouTubeCaptionTrack).toHaveBeenCalledWith(mockYtPlayer, 'en')
-    })
-
-    it('should handle turning off subtitles', async () => {
-      const activeTrack = { ...mockTrack1, mode: 'showing' as TextTrackMode }
-      getCaptionsAndSubtitleTracks.mockReturnValue([activeTrack, mockTrack2])
-
-      render(
-        <SubtitleButton player={player} source={VideoBlockSource.internal} />
-      )
-
-      const button = screen.getByRole('button', { name: 'subtitles' })
-      fireEvent.click(button)
-
-      await waitFor(() => {
-        expect(screen.getByRole('menu')).toBeInTheDocument()
-      })
-
-      // Click on "Off" option
-      const offMenuItem = screen.getByText('Off')
-      fireEvent.click(offMenuItem)
-
-      expect(hideAllSubtitles).toHaveBeenCalledWith(player)
-    })
-
-    it('should handle turning off YouTube subtitles', async () => {
-      const mockYtPlayer = {
-        setOption: jest.fn(),
-        loadModule: jest.fn()
-      }
-      getYouTubePlayer.mockReturnValue(mockYtPlayer)
-      const activeTrack = { ...mockTrack1, mode: 'showing' as TextTrackMode }
-      getCaptionsAndSubtitleTracks.mockReturnValue([activeTrack, mockTrack2])
-
-      render(
-        <SubtitleButton player={player} source={VideoBlockSource.youTube} />
-      )
-
-      const button = screen.getByRole('button', { name: 'subtitles' })
-      fireEvent.click(button)
-
-      await waitFor(() => {
-        expect(screen.getByRole('menu')).toBeInTheDocument()
-      })
-
-      // Click on "Off" option
-      const offMenuItem = screen.getByText('Off')
-      fireEvent.click(offMenuItem)
-
-      expect(hideAllSubtitles).toHaveBeenCalledWith(player)
-      expect(getYouTubePlayer).toHaveBeenCalledWith(player)
-      expect(unloadYouTubeCaptions).toHaveBeenCalledWith(mockYtPlayer)
+    await waitFor(() => {
+      expect(screen.queryByRole('menu')).not.toBeInTheDocument()
     })
   })
 
-  describe('Edge Cases', () => {
-    it('should handle player with no textTracks method', () => {
-      const playerWithoutTextTracks = {
-        ...player,
-        textTracks: undefined
-      } as unknown as VideoJsPlayer
+  it('should handle HTML5 video subtitle toggle', async () => {
+    getCaptionsAndSubtitleTracks.mockReturnValue([mockTrack1, mockTrack2])
 
-      getCaptionsAndSubtitleTracks.mockReturnValue([])
+    render(
+      <SubtitleButton
+        player={player}
+        source={VideoBlockSource.internal}
+        visible={true}
+      />
+    )
 
-      render(
-        <SubtitleButton
-          player={playerWithoutTextTracks}
-          source={VideoBlockSource.internal}
-        />
-      )
+    const button = screen.getByRole('button', { name: 'subtitles' })
+    fireEvent.click(button)
 
-      const button = screen.getByRole('button', { name: 'subtitles' })
-      expect(button).toBeDisabled()
+    await waitFor(() => {
+      expect(screen.getByRole('menu')).toBeInTheDocument()
     })
 
-    it('should handle empty track list gracefully', () => {
-      getCaptionsAndSubtitleTracks.mockReturnValue([])
+    // Click on a subtitle track
+    const trackMenuItem = screen.getByText('English')
+    fireEvent.click(trackMenuItem)
 
-      render(
-        <SubtitleButton player={player} source={VideoBlockSource.internal} />
-      )
+    expect(hideAllSubtitles).toHaveBeenCalledWith(player)
+  })
 
-      const button = screen.getByRole('button', { name: 'subtitles' })
-      expect(button).toBeDisabled()
+  it('should handle YouTube video subtitle toggle', async () => {
+    const mockYtPlayer = {
+      setOption: jest.fn(),
+      loadModule: jest.fn()
+    }
+    getYouTubePlayer.mockReturnValue(mockYtPlayer)
+    getCaptionsAndSubtitleTracks.mockReturnValue([mockTrack1, mockTrack2])
+
+    render(
+      <SubtitleButton
+        player={player}
+        source={VideoBlockSource.youTube}
+        visible={true}
+      />
+    )
+
+    const button = screen.getByRole('button', { name: 'subtitles' })
+    fireEvent.click(button)
+
+    await waitFor(() => {
+      expect(screen.getByRole('menu')).toBeInTheDocument()
     })
+
+    // Click on a subtitle track
+    const trackMenuItem = screen.getByText('English')
+    fireEvent.click(trackMenuItem)
+
+    expect(hideAllSubtitles).toHaveBeenCalledWith(player)
+    expect(getYouTubePlayer).toHaveBeenCalledWith(player)
+    expect(setYouTubeCaptionTrack).toHaveBeenCalledWith(mockYtPlayer, 'en')
+  })
+
+  it('should handle turning off subtitles', async () => {
+    const activeTrack = { ...mockTrack1, mode: 'showing' as TextTrackMode }
+    getCaptionsAndSubtitleTracks.mockReturnValue([activeTrack, mockTrack2])
+
+    render(
+      <SubtitleButton
+        player={player}
+        source={VideoBlockSource.internal}
+        visible={true}
+      />
+    )
+
+    const button = screen.getByRole('button', { name: 'subtitles' })
+    fireEvent.click(button)
+
+    await waitFor(() => {
+      expect(screen.getByRole('menu')).toBeInTheDocument()
+    })
+
+    // Click on "Off" option
+    const offMenuItem = screen.getByText('Off')
+    fireEvent.click(offMenuItem)
+
+    expect(hideAllSubtitles).toHaveBeenCalledWith(player)
+  })
+
+  it('should handle turning off YouTube subtitles', async () => {
+    const mockYtPlayer = {
+      setOption: jest.fn(),
+      loadModule: jest.fn()
+    }
+    getYouTubePlayer.mockReturnValue(mockYtPlayer)
+    const activeTrack = { ...mockTrack1, mode: 'showing' as TextTrackMode }
+    getCaptionsAndSubtitleTracks.mockReturnValue([activeTrack, mockTrack2])
+
+    render(
+      <SubtitleButton
+        player={player}
+        source={VideoBlockSource.youTube}
+        visible={true}
+      />
+    )
+
+    const button = screen.getByRole('button', { name: 'subtitles' })
+    fireEvent.click(button)
+
+    await waitFor(() => {
+      expect(screen.getByRole('menu')).toBeInTheDocument()
+    })
+
+    // Click on "Off" option
+    const offMenuItem = screen.getByText('Off')
+    fireEvent.click(offMenuItem)
+
+    expect(hideAllSubtitles).toHaveBeenCalledWith(player)
+    expect(getYouTubePlayer).toHaveBeenCalledWith(player)
+    expect(unloadYouTubeCaptions).toHaveBeenCalledWith(mockYtPlayer)
+  })
+
+  it('should handle player with no textTracks method', () => {
+    const playerWithoutTextTracks = {
+      ...player,
+      textTracks: undefined
+    } as unknown as VideoJsPlayer
+
+    getCaptionsAndSubtitleTracks.mockReturnValue([])
+
+    render(
+      <SubtitleButton
+        player={playerWithoutTextTracks}
+        source={VideoBlockSource.internal}
+        visible={true}
+      />
+    )
+
+    const button = screen.getByRole('button', { name: 'subtitles' })
+    expect(button).toBeDisabled()
+  })
+
+  it('should handle empty track list gracefully', () => {
+    getCaptionsAndSubtitleTracks.mockReturnValue([])
+
+    render(
+      <SubtitleButton
+        player={player}
+        source={VideoBlockSource.internal}
+        visible={true}
+      />
+    )
+
+    const button = screen.getByRole('button', { name: 'subtitles' })
+    expect(button).toBeDisabled()
   })
 })

@@ -6,10 +6,12 @@ import VideoJsPlayer from '../videoJsTypes'
 import { YoutubeCaptionLanguages } from '../videoJsTypes/YoutubeTech'
 
 import { extractYouTubeCaptionsAndAddTextTracks } from './extractYouTubeCaptionsAndAddTextTracks'
+import { unloadYouTubeCaptions } from '../unloadYouTubeCaptions'
 
 jest.mock('../getYouTubePlayer')
 jest.mock('../removeAllRemoteTextTracks')
 jest.mock('../setYouTubeCaptionTrack')
+jest.mock('../unloadYouTubeCaptions')
 
 const mockGetYouTubePlayer = getYouTubePlayer as jest.MockedFunction<
   typeof getYouTubePlayer
@@ -20,6 +22,9 @@ const mockRemoveAllRemoteTextTracks =
   >
 const mockSetYouTubeCaptionTrack =
   setYouTubeCaptionTrack as jest.MockedFunction<typeof setYouTubeCaptionTrack>
+const mockUnloadYouTubeCaptions = unloadYouTubeCaptions as jest.MockedFunction<
+  typeof unloadYouTubeCaptions
+>
 
 describe('extractYouTubeCaptionsAndAddTextTracks', () => {
   let mockPlayer: VideoJsPlayer
@@ -54,6 +59,7 @@ describe('extractYouTubeCaptionsAndAddTextTracks', () => {
     })
 
     expect(mockRemoveAllRemoteTextTracks).not.toHaveBeenCalled()
+    expect(mockUnloadYouTubeCaptions).not.toHaveBeenCalled()
     expect(mockAddRemoteTextTrack).not.toHaveBeenCalled()
     expect(mockSetYouTubeCaptionTrack).not.toHaveBeenCalled()
   })
@@ -68,6 +74,7 @@ describe('extractYouTubeCaptionsAndAddTextTracks', () => {
     })
 
     expect(mockRemoveAllRemoteTextTracks).toHaveBeenCalledWith(mockPlayer)
+    expect(mockUnloadYouTubeCaptions).toHaveBeenCalledWith(mockYtPlayer)
   })
 
   it('should handle empty languages array', () => {
@@ -79,6 +86,7 @@ describe('extractYouTubeCaptionsAndAddTextTracks', () => {
       subtitleLanguage: null
     })
 
+    expect(mockUnloadYouTubeCaptions).toHaveBeenCalledWith(mockYtPlayer)
     expect(mockAddRemoteTextTrack).not.toHaveBeenCalled()
     expect(mockSetYouTubeCaptionTrack).not.toHaveBeenCalled()
   })
@@ -91,6 +99,7 @@ describe('extractYouTubeCaptionsAndAddTextTracks', () => {
       subtitleLanguage: null
     })
 
+    expect(mockUnloadYouTubeCaptions).toHaveBeenCalledWith(mockYtPlayer)
     expect(mockAddRemoteTextTrack).not.toHaveBeenCalled()
     expect(mockSetYouTubeCaptionTrack).not.toHaveBeenCalled()
   })
@@ -129,6 +138,7 @@ describe('extractYouTubeCaptionsAndAddTextTracks', () => {
       subtitleLanguage: null
     })
 
+    expect(mockUnloadYouTubeCaptions).toHaveBeenCalledWith(mockYtPlayer)
     expect(mockAddRemoteTextTrack).toHaveBeenCalledTimes(2)
     expect(mockAddRemoteTextTrack).toHaveBeenCalledWith(
       {
@@ -174,6 +184,7 @@ describe('extractYouTubeCaptionsAndAddTextTracks', () => {
       subtitleLanguage: null
     })
 
+    expect(mockUnloadYouTubeCaptions).toHaveBeenCalledWith(mockYtPlayer)
     expect(mockAddRemoteTextTrack).not.toHaveBeenCalled()
   })
 
@@ -199,6 +210,7 @@ describe('extractYouTubeCaptionsAndAddTextTracks', () => {
       subtitleLanguage: null
     })
 
+    expect(mockUnloadYouTubeCaptions).toHaveBeenCalledWith(mockYtPlayer)
     expect(mockAddRemoteTextTrack).not.toHaveBeenCalled()
   })
 
@@ -242,6 +254,7 @@ describe('extractYouTubeCaptionsAndAddTextTracks', () => {
       subtitleLanguage
     })
 
+    expect(mockUnloadYouTubeCaptions).toHaveBeenCalledWith(mockYtPlayer)
     expect(mockAddRemoteTextTrack).toHaveBeenCalledTimes(2)
     expect(mockAddRemoteTextTrack).toHaveBeenCalledWith(
       {
@@ -293,6 +306,7 @@ describe('extractYouTubeCaptionsAndAddTextTracks', () => {
       subtitleLanguage
     })
 
+    expect(mockUnloadYouTubeCaptions).toHaveBeenCalledWith(mockYtPlayer)
     expect(mockSetYouTubeCaptionTrack).toHaveBeenCalledWith(mockYtPlayer, 'en')
   })
 
@@ -324,6 +338,7 @@ describe('extractYouTubeCaptionsAndAddTextTracks', () => {
       subtitleLanguage
     })
 
+    expect(mockUnloadYouTubeCaptions).toHaveBeenCalledWith(mockYtPlayer)
     expect(mockSetYouTubeCaptionTrack).not.toHaveBeenCalled()
   })
 
@@ -355,6 +370,7 @@ describe('extractYouTubeCaptionsAndAddTextTracks', () => {
       subtitleLanguage: subtitleLanguageWithNullBcp47
     })
 
+    expect(mockUnloadYouTubeCaptions).toHaveBeenCalledWith(mockYtPlayer)
     expect(mockAddRemoteTextTrack).toHaveBeenCalledWith(
       {
         id: 'en',
@@ -390,6 +406,7 @@ describe('extractYouTubeCaptionsAndAddTextTracks', () => {
       subtitleLanguage: null
     })
 
+    expect(mockUnloadYouTubeCaptions).toHaveBeenCalledWith(mockYtPlayer)
     expect(mockAddRemoteTextTrack).toHaveBeenCalledWith(
       {
         id: 'en',

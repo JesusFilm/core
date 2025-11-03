@@ -15,11 +15,13 @@ import { SubtitleMenu } from './SubtitleMenu/SubtitleMenu'
 interface SubtitleButtonProps {
   player: VideoJsPlayer
   source: VideoBlockSource
+  visible: boolean
 }
 
 export function SubtitleButton({
   player,
-  source
+  source,
+  visible
 }: SubtitleButtonProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
@@ -112,7 +114,7 @@ export function SubtitleButton({
       </IconButton>
       <SubtitleMenu
         anchorEl={anchorEl}
-        open={open}
+        open={open && visible}
         onClose={handleClose}
         youtubeCaptionTracks={youtubeCaptionTracks}
         activeYoutubeTrack={activeYoutubeTrack}

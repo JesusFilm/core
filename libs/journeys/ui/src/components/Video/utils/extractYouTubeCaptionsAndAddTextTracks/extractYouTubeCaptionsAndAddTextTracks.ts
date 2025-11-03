@@ -2,6 +2,7 @@ import { VideoFields_subtitleLanguage as SubtitleLanguage } from '../../__genera
 import { getYouTubePlayer } from '../getYouTubePlayer'
 import { removeAllRemoteTextTracks } from '../removeAllRemoteTextTracks'
 import { setYouTubeCaptionTrack } from '../setYouTubeCaptionTrack'
+import { unloadYouTubeCaptions } from '../unloadYouTubeCaptions'
 import VideoJsPlayer from '../videoJsTypes'
 import { YoutubeCaptionLanguages } from '../videoJsTypes/YoutubeTech'
 
@@ -20,6 +21,8 @@ export function extractYouTubeCaptionsAndAddTextTracks({
   const languages = ytPlayer.getOption?.('captions', 'tracklist') ?? []
   // Remove all existing remote text tracks to prevent duplicates on re-render
   removeAllRemoteTextTracks(player)
+  // Unload YouTube captions to prevent duplicates
+  unloadYouTubeCaptions(ytPlayer)
 
   languages.forEach((language: YoutubeCaptionLanguages) => {
     if (language.languageCode != null && language.languageName != null) {

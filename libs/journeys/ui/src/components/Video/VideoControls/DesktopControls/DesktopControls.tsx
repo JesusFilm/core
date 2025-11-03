@@ -38,6 +38,7 @@ interface DesktopControlsProps {
   handleToggleStats: (event: React.MouseEvent) => void
   player: VideoJsPlayer
   source: VideoBlockSource
+  visible: boolean
 }
 
 export function DesktopControls({
@@ -60,7 +61,8 @@ export function DesktopControls({
   handleFullscreen,
   handleToggleStats,
   player,
-  source
+  source,
+  visible
 }: DesktopControlsProps): JSX.Element {
   return (
     <Stack
@@ -177,7 +179,7 @@ export function DesktopControls({
           )}
         </IconButton>
       </Stack>
-      <SubtitleButton player={player} source={source} />
+      <SubtitleButton player={player} source={source} visible={visible} />
       <VideoSettings player={player} onToggleStats={handleToggleStats} />
       {showFullscreenButton && (
         <IconButton

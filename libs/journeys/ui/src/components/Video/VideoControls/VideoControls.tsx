@@ -459,6 +459,7 @@ export function VideoControls({
                 handleToggleStats={handleToggleStats}
                 player={player}
                 source={source}
+                visible={visible}
               />
               <DesktopControls
                 playing={state.playing}
@@ -481,6 +482,7 @@ export function VideoControls({
                 handleToggleStats={handleToggleStats}
                 player={player}
                 source={source}
+                visible={visible}
               />
             </Container>
           </Fade>
