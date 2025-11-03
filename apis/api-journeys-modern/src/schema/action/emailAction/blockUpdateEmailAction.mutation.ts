@@ -12,7 +12,7 @@ import { EmailActionRef } from './emailAction'
 import { EmailActionInput } from './inputs'
 
 const emailSchema = z.object({
-  email: z.string().email()
+  email: z.email()
 })
 
 builder.mutationField('blockUpdateEmailAction', (t) =>

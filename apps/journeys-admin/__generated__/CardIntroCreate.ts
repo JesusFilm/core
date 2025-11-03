@@ -230,6 +230,7 @@ export interface CardIntroCreate_buttonBlockUpdate {
 export interface CardIntroCreate_video_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardIntroCreate_video_mediaVideo_Video_title {
