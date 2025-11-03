@@ -24,7 +24,12 @@ export function SubtitlesSelect({
 }: SubtitlesSelectProps): ReactElement {
   const { t } = useTranslation()
   const { updateSubtitleLanguage, updateSubtitlesOn } = useLanguageActions()
-  const { languages, isLoading } = useLanguages()
+  const { languages: allLanguages, isLoading } = useLanguages()
+  const languages = useMemo(() => {
+    return allLanguages.filter((language) =>
+      SUBTITLE_LANGUAGE_IDS.includes(language.id)
+    )
+  }, [allLanguages])
 
   const selectedOption = useMemo(
     () =>
@@ -36,11 +41,6 @@ export function SubtitlesSelect({
     return [
       ...languages.filter((language) =>
         videoSubtitleLanguageIds.includes(language.id)
-      ),
-      ...languages.filter(
-        (language) =>
-          !videoSubtitleLanguageIds.includes(language.id) &&
-          SUBTITLE_LANGUAGE_IDS.includes(language.id)
       )
     ]
   }, [languages, videoSubtitleLanguageIds])
@@ -108,14 +108,6 @@ export function SubtitlesSelect({
             // this is a workaround to keep the autocomplete controlled
             value={selectedOption as unknown as Language | undefined}
             options={options}
-            groupBy={
-              videoSubtitleLanguageIds == null
-                ? undefined
-                : (option) =>
-                    videoSubtitleLanguageIds.includes(option.id)
-                      ? t('Available Languages')
-                      : t('Other Languages')
-            }
             filterOptions={filterOptions}
             onChange={handleSubtitleLanguageChange}
             loading={isLoading}
@@ -135,11 +127,12 @@ export function SubtitlesSelect({
                   }}
                 >
                   <Typography variant="body1">{option.displayName}</Typography>
-                  {option.nativeName && (
-                    <Typography variant="body2" color="text.secondary">
-                      {option.nativeName.value}
-                    </Typography>
-                  )}
+                  {option.nativeName &&
+                    option.nativeName.value !== option.displayName && (
+                      <Typography variant="body2" color="text.secondary">
+                        {option.nativeName.value}
+                      </Typography>
+                    )}
                 </Box>
               )
             }}
