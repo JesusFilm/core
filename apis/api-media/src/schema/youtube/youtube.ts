@@ -124,7 +124,7 @@ builder.queryFields((t) => ({
 
       ytClosedCaptionResponse.items.forEach((item) => {
         if (item.snippet.trackKind === 'standard') {
-          bcp47.push(item.snippet.language)
+          bcp47.push(item.snippet.language.toLowerCase())
         }
       })
 
