@@ -128,8 +128,6 @@ builder.queryFields((t) => ({
         }
       })
 
-      console.log('bcp47', bcp47)
-
       if (bcp47.length === 0) return []
 
       const apollo = createApolloClient('api-media')
