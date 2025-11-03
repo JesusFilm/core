@@ -36,24 +36,6 @@ export function ParallaxCover({
   hasFullscreenVideo = false
 }: ParallaxCoverProps): ReactElement {
   const baseBackgroundColor = stripAlphaFromHex(backgroundColor)
-  const overlayGradient = (direction: string): string =>
-    `linear-gradient(to ${direction},
-    transparent 0%,
-    ${addAlphaToHex(baseBackgroundColor, 8)} 10%,
-    ${addAlphaToHex(baseBackgroundColor, 20)} 17%,
-    ${addAlphaToHex(baseBackgroundColor, 38)} 25%,
-    ${addAlphaToHex(baseBackgroundColor, 69)} 40%,
-    ${addAlphaToHex(baseBackgroundColor, 90)} 60%,
-    ${addAlphaToHex(baseBackgroundColor, 100)} 98%)`
-
-  const overlayImageMask = `linear-gradient(to top,
-    transparent 0%,
-    ${addAlphaToHex(baseBackgroundColor, 8)} 5%,   
-    ${addAlphaToHex(baseBackgroundColor, 20)} 10%,  
-    ${addAlphaToHex(baseBackgroundColor, 38)} 15%,  
-    ${addAlphaToHex(baseBackgroundColor, 69)} 20%,  
-    ${addAlphaToHex(baseBackgroundColor, 90)} 25%,  
-    ${addAlphaToHex(baseBackgroundColor, 100)} 30%)`
 
   return (
     <Box
@@ -112,8 +94,7 @@ export function ParallaxCover({
           perspective: '1px',
           perspectiveOrigin: 'top center',
           transformStyle: 'preserve-3d',
-          zIndex: 1,
-          border: '3px solid green'
+          zIndex: 1
         }}
       >
         {/* Parallax cover image - appears above background, below content */}
@@ -128,7 +109,9 @@ export function ParallaxCover({
             transform: 'translateZ(-0.5px) scale(1.5)',
             transformOrigin: 'center top',
             zIndex: 1,
-            border: '3px solid red'
+            webkitMask:
+              'linear-gradient(to top, transparent 0%, rgba(0,0,0,0.3) 3%, rgba(0,0,0,0.6) 6%, black 12%)',
+            mask: 'linear-gradient(to top, transparent 0%, rgba(0,0,0,0.3) 3%, rgba(0,0,0,0.6) 6%, black 12%)'
           }}
         >
           {imageBlock != null && backgroundBlur != null && (
@@ -151,8 +134,7 @@ export function ParallaxCover({
             minHeight: '100vh',
             paddingTop: '30vh',
             transform: 'translateZ(0)',
-            zIndex: 2,
-            border: '3px solid blue'
+            zIndex: 2
           }}
         >
           <Box
@@ -163,11 +145,11 @@ export function ParallaxCover({
               right: 0,
               bottom: 0,
               zIndex: -1,
-              border: '3px solid yellow',
-              pointerEvents: 'none'
-              // backgroundColor: 'black'
-              // WebkitMask: overlayGradient('bottom'),
-              // mask: overlayGradient('bottom')
+              pointerEvents: 'none',
+              backgroundColor: `${baseBackgroundColor}CC`,
+              WebkitMask:
+                'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 5%, black 15%)',
+              mask: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 5%, black 15%)'
             }}
           />
           <OverlayContent hasFullscreenVideo={hasFullscreenVideo} sx={{}}>
