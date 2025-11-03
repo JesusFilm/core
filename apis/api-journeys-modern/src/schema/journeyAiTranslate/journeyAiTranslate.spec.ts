@@ -2,7 +2,7 @@ import { generateObject, streamObject } from 'ai'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
-import { Action, ability, subject } from '../../lib/auth/ability'
+import { Action, ability } from '../../lib/auth/ability'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
@@ -66,16 +66,6 @@ describe('journeyAiTranslateCreate mutation', () => {
   // Sample data
   const mockJourneyId = 'journey123'
   const mockLanguageId = 'lang456'
-  const mockUser = {
-    id: 'testUserId',
-    email: 'test@example.com',
-    firstName: 'Test',
-    lastName: 'User',
-    emailVerified: true,
-    imageUrl: null,
-    roles: []
-  }
-
   const mockInput = {
     journeyId: mockJourneyId,
     name: 'Original Journey Name',
@@ -173,7 +163,15 @@ describe('journeyAiTranslateCreate mutation', () => {
       authorization: 'token'
     },
     context: {
-      currentUser: mockUser
+      currentUser: {
+        id: 'testUserId',
+        email: 'test@example.com',
+        firstName: 'Test',
+        lastName: 'User',
+        emailVerified: true,
+        imageUrl: null,
+        roles: []
+      }
     }
   })
 
@@ -207,8 +205,8 @@ describe('journeyAiTranslateCreate mutation', () => {
       object: mockAnalysisAndTranslation,
       usage: {
         totalTokens: 1000,
-        promptTokens: 600,
-        completionTokens: 400
+        inputTokens: 600,
+        outputTokens: 400
       },
       finishReason: 'stop',
       warnings: [],
@@ -250,16 +248,36 @@ describe('journeyAiTranslateCreate mutation', () => {
     expect(mockAbility).toHaveBeenCalledWith(
       Action.Update,
       { subject: 'Journey', object: mockJourney },
-      mockUser
+      {
+        id: 'testUserId',
+        email: 'test@example.com',
+        firstName: 'Test',
+        lastName: 'User',
+        emailVerified: true,
+        imageUrl: null,
+        roles: []
+      }
     )
 
     // Verify AI analysis was requested
     expect(mockGenerateObject).toHaveBeenCalledWith(
       expect.objectContaining({
         model: 'mocked-google-model',
+        schema: expect.any(Object),
         messages: expect.arrayContaining([
-          { role: 'system', content: expect.any(String) },
-          { role: 'user', content: expect.any(String) }
+          expect.objectContaining({
+            role: 'system',
+            content: expect.any(String)
+          }),
+          expect.objectContaining({
+            role: 'user',
+            content: expect.arrayContaining([
+              expect.objectContaining({
+                type: 'text',
+                text: expect.any(String)
+              })
+            ])
+          })
         ])
       })
     )
@@ -359,8 +377,8 @@ describe('journeyAiTranslateCreate mutation', () => {
       },
       usage: {
         totalTokens: 1000,
-        promptTokens: 600,
-        completionTokens: 400
+        inputTokens: 600,
+        outputTokens: 400
       },
       finishReason: 'stop',
       warnings: [],
@@ -407,8 +425,8 @@ describe('journeyAiTranslateCreate mutation', () => {
       },
       usage: {
         totalTokens: 1000,
-        promptTokens: 600,
-        completionTokens: 400
+        inputTokens: 600,
+        outputTokens: 400
       },
       finishReason: 'stop',
       warnings: [],
@@ -537,7 +555,6 @@ describe('journeyAiTranslateCreate mutation', () => {
 
 describe('journeyAiTranslateCreateSubscription', () => {
   const mockAbility = ability as jest.MockedFunction<typeof ability>
-  const mockSubject = subject as jest.MockedFunction<typeof subject>
   const mockGenerateObject = generateObject as jest.MockedFunction<
     typeof generateObject
   >
@@ -551,16 +568,6 @@ describe('journeyAiTranslateCreateSubscription', () => {
   // Sample data
   const mockJourneyId = 'journey123'
   const mockLanguageId = 'lang456'
-  const mockUser = {
-    id: 'testUserId',
-    email: 'test@example.com',
-    firstName: 'Test',
-    lastName: 'User',
-    emailVerified: true,
-    imageUrl: null,
-    roles: []
-  }
-
   const mockInput = {
     journeyId: mockJourneyId,
     name: 'Original Journey Name',
@@ -631,33 +638,6 @@ describe('journeyAiTranslateCreateSubscription', () => {
     seoDescription: 'Descripción SEO Traducida'
   }
 
-  const authClient = getClient({
-    headers: {
-      authorization: 'token'
-    },
-    context: {
-      currentUser: mockUser
-    }
-  })
-
-  const JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION = graphql(`
-    subscription JourneyAiTranslateCreateSubscription(
-      $input: JourneyAiTranslateInput!
-    ) {
-      journeyAiTranslateCreateSubscription(input: $input) {
-        progress
-        message
-        journey {
-          id
-          title
-          description
-          seoTitle
-          seoDescription
-        }
-      }
-    }
-  `)
-
   beforeEach(() => {
     jest.clearAllMocks()
 
@@ -685,8 +665,8 @@ describe('journeyAiTranslateCreateSubscription', () => {
       object: mockAnalysisAndTranslation,
       usage: {
         totalTokens: 1000,
-        promptTokens: 600,
-        completionTokens: 400
+        inputTokens: 600,
+        outputTokens: 400
       },
       finishReason: 'stop',
       warnings: [],
