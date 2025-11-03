@@ -8,40 +8,42 @@ import { enableDownload } from './service'
 
 // Mock the processVideoDownloads queue
 
-jest.mock('./service', () => ({
-  createVideoByDirectUpload: jest.fn().mockResolvedValue({
-    id: 'uploadId',
-    uploadUrl: 'https://example.com/video.mp4'
-  }),
-  createVideoFromUrl: jest.fn().mockResolvedValue({
-    id: 'assetId'
-  }),
-  getVideo: jest.fn().mockResolvedValue({
-    id: 'assetId',
-    status: 'ready',
-    playback_ids: [{ id: 'playbackId' }],
-    duration: 10
-  }),
-  deleteVideo: jest.fn().mockResolvedValue({
-    id: 'assetId'
-  }),
-  enableDownload: jest.fn().mockResolvedValue(undefined),
-  getUpload: jest.fn().mockResolvedValue({
-    asset_id: 'assetId'
-  }),
-  getMaxResolutionValue: jest
-    .fn()
-    .mockImplementation((maxResolution: string | null | undefined) => {
-      if (!maxResolution) return undefined
-      if (maxResolution === 'fhd') return '1080p'
-      if (maxResolution === 'qhd') return '1440p'
-      if (maxResolution === 'uhd') return '2160p'
-      return '1080p' // fallback
+jest.mock('./service', () => {
+  return {
+    createVideoByDirectUpload: jest.fn().mockResolvedValue({
+      id: 'uploadId',
+      uploadUrl: 'https://example.com/video.mp4'
     }),
-  isValidMaxResolutionTier: jest.fn().mockImplementation((value: string) => {
-    return ['fhd', 'qhd', 'uhd'].includes(value)
-  })
-}))
+    createVideoFromUrl: jest.fn().mockResolvedValue({
+      id: 'assetId'
+    }),
+    getVideo: jest.fn().mockResolvedValue({
+      id: 'assetId',
+      status: 'ready',
+      playback_ids: [{ id: 'playbackId' }],
+      duration: 10
+    }),
+    deleteVideo: jest.fn().mockResolvedValue({
+      id: 'assetId'
+    }),
+    enableDownload: jest.fn().mockResolvedValue(undefined),
+    getUpload: jest.fn().mockResolvedValue({
+      asset_id: 'assetId'
+    }),
+    getMaxResolutionValue: jest
+      .fn()
+      .mockImplementation((maxResolution: string | null | undefined) => {
+        if (!maxResolution) return undefined
+        if (maxResolution === 'fhd') return '1080p'
+        if (maxResolution === 'qhd') return '1440p'
+        if (maxResolution === 'uhd') return '2160p'
+        return '1080p' // fallback
+      }),
+    isValidMaxResolutionTier: jest.fn().mockImplementation((value: string) => {
+      return ['fhd', 'qhd', 'uhd'].includes(value)
+    })
+  }
+})
 
 jest.mock('../../../workers/processVideoDownloads/queue', () => ({
   queue: {
@@ -591,7 +593,7 @@ describe('mux/video', () => {
           true,
           '1080p',
           false,
-          { languageCode: 'en' }
+          'en'
         )
         expect(result).toHaveProperty('data.createMuxVideoUploadByFile', {
           id: 'videoId',
@@ -601,6 +603,39 @@ describe('mux/video', () => {
           readyToStream: true
         })
       })
+
+      it('should throw error when invalid language code is provided', async () => {
+        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+
+        const { createVideoByDirectUpload } = jest.requireMock('./service')
+        ;(createVideoByDirectUpload as jest.Mock).mockRejectedValue(
+          new Error('Invalid language code: invalid')
+        )
+
+        const result = (await authClient({
+          document: CREATE_MUX_VIDEO_UPLOAD_BY_FILE,
+          variables: {
+            name: 'videoName',
+            userGenerated: true,
+            maxResolution: 'fhd',
+            generateSubtitlesInput: {
+              languageCode: 'invalid'
+            }
+          }
+        })) as {
+          data: any
+          errors?: { message: string }[]
+        }
+
+        expect(result).toHaveProperty('data', null)
+        expect(result.errors?.[0]?.message).toContain(
+          'Invalid language code: invalid'
+        )
+      })
     })
 
     describe('createMuxVideoUploadByUrl', () => {
@@ -609,13 +644,11 @@ describe('mux/video', () => {
           $url: String!
           $userGenerated: Boolean
           $maxResolution: MaxResolutionTier
-          $generateSubtitlesInput: GenerateSubtitlesInput
         ) {
           createMuxVideoUploadByUrl(
             url: $url
             userGenerated: $userGenerated
             maxResolution: $maxResolution
-            generateSubtitlesInput: $generateSubtitlesInput
           ) {
             id
             playbackId
@@ -680,55 +713,6 @@ describe('mux/video', () => {
           }
         })
         expect(result).toHaveProperty('data', null)
-      })
-
-      it('should create video with generated subtitles when generateSubtitlesInput is provided', async () => {
-        const { createVideoFromUrl } = jest.requireMock('./service')
-
-        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
-          id: 'userId',
-          userId: 'userId',
-          roles: ['publisher']
-        })
-        ;(prismaMock.muxVideo.create as jest.Mock).mockResolvedValue({
-          id: 'videoId',
-          playbackId: 'playbackId',
-          uploadId: 'uploadId',
-          assetId: 'assetId',
-          duration: 10,
-          name: 'videoName',
-          uploadUrl: null,
-          userId: 'testUserId',
-          createdAt: new Date(),
-          readyToStream: true,
-          downloadable: false,
-          updatedAt: new Date()
-        })
-        const result = await authClient({
-          document: CREATE_MUX_VIDEO_UPLOAD_BY_URL,
-          variables: {
-            url: 'https://example.com/video.mp4',
-            userGenerated: true,
-            maxResolution: 'uhd',
-            generateSubtitlesInput: {
-              languageCode: 'en'
-            }
-          }
-        })
-        expect(createVideoFromUrl).toHaveBeenCalledWith(
-          'https://example.com/video.mp4',
-          true,
-          '2160p',
-          false,
-          { languageCode: 'en' }
-        )
-        expect(result).toHaveProperty('data.createMuxVideoUploadByUrl', {
-          id: 'videoId',
-          playbackId: 'playbackId',
-          uploadUrl: null,
-          userId: 'testUserId',
-          readyToStream: true
-        })
       })
     })
 

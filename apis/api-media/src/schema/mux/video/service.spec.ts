@@ -11,7 +11,8 @@ import {
   getStaticRenditions,
   getUpload,
   getVideo,
-  isValidMaxResolutionTier
+  isValidMaxResolutionTier,
+  isValidMuxGeneratedSubtitleLanguageCode
 } from './service'
 
 const mockMux = mockDeep<Mux>()
@@ -175,9 +176,12 @@ describe('MuxVideoService', () => {
         url: 'https://upload.mux.com/ugc-video'
       } as any)
 
-      const result = await createVideoByDirectUpload(true, undefined, false, {
-        languageCode: 'en'
-      })
+      const result = await createVideoByDirectUpload(
+        true,
+        undefined,
+        false,
+        'en'
+      )
 
       expect(mockMux.video.uploads.create).toHaveBeenCalledWith({
         cors_origin: 'https://example.com',
@@ -210,9 +214,7 @@ describe('MuxVideoService', () => {
         url: 'https://upload.mux.com/video'
       } as any)
 
-      await createVideoByDirectUpload(false, undefined, false, {
-        languageCode: 'en'
-      })
+      await createVideoByDirectUpload(false, undefined, false, 'en')
 
       expect(mockMux.video.uploads.create).toHaveBeenCalledWith({
         cors_origin: 'https://example.com',
@@ -220,6 +222,32 @@ describe('MuxVideoService', () => {
           encoding_tier: 'smart',
           playback_policy: ['public'],
           max_resolution_tier: undefined,
+          static_renditions: [],
+          inputs: []
+        }
+      })
+    })
+
+    it('should throw error when invalid language code is provided', async () => {
+      await expect(
+        createVideoByDirectUpload(true, undefined, false, 'invalid')
+      ).rejects.toThrow('Invalid language code: invalid')
+    })
+
+    it('should accept null language code without error', async () => {
+      ;(mockMux.video.uploads.create as jest.Mock).mockResolvedValueOnce({
+        id: 'upload-id',
+        url: 'https://upload.mux.com/video'
+      } as any)
+
+      await createVideoByDirectUpload(true, undefined, false, null)
+
+      expect(mockMux.video.uploads.create).toHaveBeenCalledWith({
+        cors_origin: 'https://example.com',
+        new_asset_settings: {
+          encoding_tier: 'smart',
+          playback_policy: ['public'],
+          max_resolution_tier: '1080p',
           static_renditions: [],
           inputs: []
         }
@@ -284,62 +312,6 @@ describe('MuxVideoService', () => {
           { resolution: '1440p' },
           { resolution: '2160p' }
         ]
-      })
-    })
-
-    it('should create video asset with generated subtitles when userGenerated is true', async () => {
-      const mockAsset = { id: 'ugc-asset-id', status: 'ready' } as any
-      ;(mockMux.video.assets.create as jest.Mock).mockResolvedValueOnce(
-        mockAsset
-      )
-
-      await createVideoFromUrl(
-        'https://example.com/video.mp4',
-        true,
-        undefined,
-        false,
-        { languageCode: 'en' }
-      )
-
-      expect(mockMux.video.assets.create).toHaveBeenCalledWith({
-        inputs: [
-          {
-            url: 'https://example.com/video.mp4',
-            generated_subtitles: [
-              {
-                language_code: 'en',
-                name: 'en auto-generated'
-              }
-            ]
-          }
-        ],
-        encoding_tier: 'premium',
-        playback_policy: ['public'],
-        max_resolution_tier: '1080p',
-        static_renditions: []
-      })
-    })
-
-    it('should not generate subtitles when generateSubtitlesInput is provided but userGenerated is false', async () => {
-      const mockAsset = { id: 'asset-id', status: 'ready' } as any
-      ;(mockMux.video.assets.create as jest.Mock).mockResolvedValueOnce(
-        mockAsset
-      )
-
-      await createVideoFromUrl(
-        'https://example.com/video.mp4',
-        false,
-        undefined,
-        false,
-        { languageCode: 'en' }
-      )
-
-      expect(mockMux.video.assets.create).toHaveBeenCalledWith({
-        inputs: [{ url: 'https://example.com/video.mp4' }],
-        encoding_tier: 'smart',
-        playback_policy: ['public'],
-        max_resolution_tier: undefined,
-        static_renditions: []
       })
     })
   })
@@ -623,6 +595,47 @@ describe('MuxVideoService', () => {
       expect(isValidMaxResolutionTier('1080p')).toBe(false)
       expect(isValidMaxResolutionTier('')).toBe(false)
       expect(isValidMaxResolutionTier('HD')).toBe(false)
+    })
+  })
+
+  describe('isValidMuxGeneratedSubtitleLanguageCode', () => {
+    it('should return true for valid language codes', () => {
+      expect(isValidMuxGeneratedSubtitleLanguageCode('en')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('es')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('it')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('pt')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('de')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('fr')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('pl')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('ru')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('nl')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('ca')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('tr')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('sv')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('uk')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('no')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('fi')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('sk')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('el')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('cs')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('hr')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('da')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('ro')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('bg')).toBe(true)
+    })
+
+    it('should return true for null or undefined values to account for not wanting to generate subtitles', () => {
+      expect(isValidMuxGeneratedSubtitleLanguageCode(null)).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode(undefined)).toBe(true)
+    })
+
+    it('should return false for invalid language codes', () => {
+      expect(isValidMuxGeneratedSubtitleLanguageCode('invalid')).toBe(false)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('xyz')).toBe(false)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('EN')).toBe(false) // case sensitive
+      expect(isValidMuxGeneratedSubtitleLanguageCode('en-US')).toBe(false) // only accepts base codes
+      expect(isValidMuxGeneratedSubtitleLanguageCode('')).toBe(false)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('ja')).toBe(false) // not in the union
     })
   })
 

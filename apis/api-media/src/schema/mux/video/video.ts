@@ -366,23 +366,29 @@ builder.mutationFields((t) => ({
           : (userGenerated ?? true)
         const maxResolutionValue = getMaxResolutionValue(maxResolution)
 
-        const { id, uploadUrl } = await createVideoByDirectUpload(
-          isUserGenerated,
-          maxResolutionValue,
-          downloadable ?? false,
-          generateSubtitlesInput
-        )
+        try {
+          const { id, uploadUrl } = await createVideoByDirectUpload(
+            isUserGenerated,
+            maxResolutionValue,
+            downloadable ?? false,
+            generateSubtitlesInput?.languageCode
+          )
 
-        return await prisma.muxVideo.create({
-          ...query,
-          data: {
-            uploadId: id,
-            uploadUrl,
-            userId: user.id,
-            name,
-            downloadable: downloadable ?? false
-          }
-        })
+          return await prisma.muxVideo.create({
+            ...query,
+            data: {
+              uploadId: id,
+              uploadUrl,
+              userId: user.id,
+              name,
+              downloadable: downloadable ?? false
+            }
+          })
+        } catch (error) {
+          throw new GraphQLError((error as Error).message, {
+            extensions: { code: 'BAD_REQUEST' }
+          })
+        }
       }
     }),
   createMuxVideoUploadByUrl: t.withAuth({ isAuthenticated: true }).prismaField({
@@ -400,22 +406,12 @@ builder.mutationFields((t) => ({
         type: MaxResolutionTier,
         required: false,
         defaultValue: 'fhd'
-      }),
-      generateSubtitlesInput: t.arg({
-        type: GenerateSubtitlesInput,
-        required: false
       })
     },
     resolve: async (
       query,
       _root,
-      {
-        url,
-        userGenerated,
-        downloadable,
-        maxResolution,
-        generateSubtitlesInput
-      },
+      { url, userGenerated, downloadable, maxResolution },
       { user, currentRoles }
     ) => {
       if (user == null)
@@ -432,8 +428,7 @@ builder.mutationFields((t) => ({
         url,
         isUserGenerated,
         maxResolutionValue,
-        downloadable ?? false,
-        generateSubtitlesInput
+        downloadable ?? false
       )
 
       return await prisma.muxVideo.create({

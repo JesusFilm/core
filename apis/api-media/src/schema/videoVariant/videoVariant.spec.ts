@@ -1552,6 +1552,7 @@ describe('videoVariant', () => {
           downloadable: false,
           createdAt: new Date(),
           readyToStream: true,
+          showGeneratedSubtitles: null,
           updatedAt: new Date()
         })
 
@@ -1842,6 +1843,7 @@ describe('videoVariant', () => {
           downloadable: false,
           createdAt: new Date(),
           readyToStream: false,
+          showGeneratedSubtitles: null,
           updatedAt: new Date()
         })
 
