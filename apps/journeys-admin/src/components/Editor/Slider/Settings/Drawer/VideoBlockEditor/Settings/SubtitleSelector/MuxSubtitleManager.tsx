@@ -16,6 +16,8 @@ import { useSnackbar } from 'notistack'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+import ErrorIcon from '@mui/icons-material/Error'
 
 import { useMuxSubtitlePolling } from '../../../../../../../MuxSubtitlePollingProvider'
 import { useMuxSupportedLanguages } from '../../../../../../../../libs/useMuxSupportedLanguages'
@@ -102,7 +104,7 @@ const getSelector = (
       }}
       getOptionLabel={(option) => getLanguageDisplayName(option.name)}
       sx={{ width: '100%' }}
-      renderInput={(params) => <TextField {...params} label="Language" />}
+      renderInput={(params) => <TextField {...params} label="Video/Audio" />}
       renderOption={(props, option) => {
         const primaryText = getPrimaryText(option.name)
         const secondaryText = getSecondaryText(option.name)
@@ -170,6 +172,7 @@ export function MuxSubtitleManager({
     useState<MuxLanguageWithStatus | null>(null)
   const [initialLanguage, setInitialLanguage] =
     useState<MuxLanguageWithStatus | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const [createSubtitles, { loading: creating }] = useMutation(
     CREATE_MUX_GENERATED_SUBTITLES
@@ -189,6 +192,11 @@ export function MuxSubtitleManager({
       }
     }
   }, [existingSubtitles, languages])
+
+  // Clear error message when language changes
+  useEffect(() => {
+    setErrorMessage(null)
+  }, [selectedLanguage])
 
   // Check polling status
   const pollingStatus = muxVideoId != null ? getPollingStatus(muxVideoId) : null
@@ -242,6 +250,9 @@ export function MuxSubtitleManager({
       return
     }
 
+    // Clear any previous error
+    setErrorMessage(null)
+
     try {
       const result = await createSubtitles({
         variables: {
@@ -268,6 +279,7 @@ export function MuxSubtitleManager({
           'Error'
             ? result.data.createMuxGeneratedSubtitlesByAssetId.message
             : 'Failed to create subtitles'
+        setErrorMessage('Error while generating file. Please try again.')
         enqueueSnackbar(error, {
           variant: 'error',
           persist: true,
@@ -286,9 +298,10 @@ export function MuxSubtitleManager({
         })
       }
     } catch (error) {
-      const errorMessage =
+      const errorMsg =
         error instanceof Error ? error.message : 'Failed to generate subtitles'
-      enqueueSnackbar(errorMessage, {
+      setErrorMessage('Error while generating file. Please try again.')
+      enqueueSnackbar(errorMsg, {
         variant: 'error',
         persist: true,
         action: (key) => (
@@ -324,6 +337,41 @@ export function MuxSubtitleManager({
       return 'Changing the language will replace the current subtitle.'
     }
     return 'Subtitles are AI generated. Accuracy will vary by language.'
+  }
+
+  // Determine status label to show
+  const getStatusLabel = (): ReactElement | null => {
+    // Show error if there's an error from mutation or polling
+    if (errorMessage != null || pollingStatus?.status === 'error') {
+      return (
+        <Stack direction="row" spacing={1} alignItems="center">
+          <ErrorIcon sx={{ color: 'error.main', fontSize: 16 }} />
+          <Typography variant="caption" sx={{ color: 'error.main' }}>
+            Error while generating file. Please try again.
+          </Typography>
+        </Stack>
+      )
+    }
+
+    // Show success if we have existing subtitles, language matches, and not generating
+    if (
+      hasExistingSubtitle &&
+      !languageChanged &&
+      !isGenerating &&
+      selectedLanguage != null
+    ) {
+      const languageName = getLanguageDisplayName(selectedLanguage.name)
+      return (
+        <Stack direction="row" spacing={1} alignItems="center">
+          <CheckCircleIcon sx={{ color: 'success.main', fontSize: 16 }} />
+          <Typography variant="caption">
+            Subtitle have been generated in {languageName}
+          </Typography>
+        </Stack>
+      )
+    }
+
+    return null
   }
 
   return (
@@ -385,6 +433,7 @@ export function MuxSubtitleManager({
           </Button>
         </span>
       </Tooltip>
+      {getStatusLabel()}
       <Divider />
     </Stack>
   )

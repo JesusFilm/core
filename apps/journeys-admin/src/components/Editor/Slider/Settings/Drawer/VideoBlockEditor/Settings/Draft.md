@@ -5,13 +5,18 @@
 - [x] Merge draft backend branch: `nisalcottingham/nes-951-mux-video-generation-backend`
   - [x] Prepare db/backend
   - [x] Generate types
-- [ ] Implement UI Flow (focus on test data flow first, then polish UI)
-  - [x] Select from mux languages
-  - [ ] Generate subs for video and poll status (generate button text states)
-  - [ ] Change language (replace existing)
-  - [ ] Show completion label
-  - [ ] Show error label
-- [ ] Implement snack bar scenarios (not linked to video properties)
+- [x] Implement UI Flow (focus on test data flow first, then polish UI)
+- [ ] Load prexisting language into @MuxSubtitleManager component
+- [x] Select from mux languages
+- [x] Generate subs for video and poll status (generate button text states)
+- [ ] Change language (replace existing) (currently adds additional languages and then select first)
+- [x] Show completion label
+- [ ] Show error label (not showing for audio track scenario)
+- [x] Implement snack bar scenarios (not linked to video properties)
+  - [x] Red snackbar for error states
+  - [x] Green snackbar for in progress and completed states
+  - [x] Dismiss (X) button on all snackbars
+  - [ ] Don't show error details on error snackbars (generic error message)
 
 ## Backend
 
@@ -64,11 +69,17 @@ Subtitle generation is now fully functional end-to-end. Verified with successful
 - **Solution**: Made `userGenerated` consistent throughout - backend now determines automatically from user role
 - **Files**: `MuxSubtitleManager.tsx`, `MuxSubtitlePollingProvider.tsx`, `VideoBlockEditorSettings.tsx`
 
-#### 2. **Rapid Polling Interval (500ms instead of 3s)** NOT-FIXED
+#### 2. **Rapid Polling Interval (500ms instead of 3s)** ✅ FIXED
 
-- **Problem**: Unstable `useEffect` dependencies (`getSubtitleTrack`, `stopQuery`) causing infinite re-renders
+- **Problem**: `setPollingTasks()` called inside `useEffect` causing infinite state updates and re-renders
 - **Impact**: Polling occurred every ~500ms instead of configured 3 seconds, causing "Maximum update depth exceeded" error
-- **Solution**: Added `useRef` flag (`hasStartedPolling`) to prevent re-execution, simplified dependencies to only `[task.status]`
+- **Root Cause**: State update inside useEffect created loop: state update → re-render → new task object → effect re-execution
+- **Solution**:
+  - Replaced state-based `stopPolling` function with ref-based approach using `useRef<Map<string, () => void>>`
+  - Removed `setPollingTasks()` call from inside `useEffect`
+  - Store `stopQuery` function in ref map instead of state: `stopQueryRefs.current.set(muxVideoId, stopQuery)`
+  - Updated `stopPolling` function in task creation to reference ref map
+  - Made `userGenerated` parameter optional in `startPolling` function signature
 - **Files**: `MuxSubtitlePollingProvider.tsx`
 
 #### 3. **Poor Error Handling** ✅ FIXED
@@ -117,12 +128,31 @@ Subtitle generation is now fully functional end-to-end. Verified with successful
 #### Frontend
 
 - `apps/journeys-admin/src/components/MuxSubtitlePollingProvider/MuxSubtitlePollingProvider.tsx`
-  - Fixed infinite polling loop with `useRef` guard
-  - Made `userGenerated` optional
+  - ✅ Fixed infinite polling loop by removing state updates from `useEffect`
+  - ✅ Added `stopQueryRefs` ref map to store `stopQuery` functions outside state system
+  - ✅ Made `userGenerated` parameter optional in `startPolling` function signature
+  - ✅ Updated task creation to use ref-based `stopPolling` function
+  - ✅ Added cleanup to remove refs when polling stops or component unmounts
+  - ✅ Polling now runs at correct 3-second interval (previously ~500ms)
+  - ✅ Eliminated "Maximum update depth exceeded" error
   - Added refetch on completion/error
+  - ✅ Added dismiss buttons to all snackbars (error, in progress, completed)
+  - ✅ Changed "in progress" snackbar from info (blue) to success (green)
+  - ✅ Made all snackbars persistent with dismiss functionality
 - `apps/journeys-admin/src/components/Editor/Slider/Settings/Drawer/VideoBlockEditor/Settings/SubtitleSelector/MuxSubtitleManager.tsx`
   - Removed hardcoded `userGenerated: true`
   - Fixed `startPolling` call to omit userGenerated
+  - ✅ Added dismiss buttons to error snackbars
+  - ✅ Made error snackbars persistent
+  - ✅ **Added inline status labels** below Generate button:
+    - Success label: Green checkmark + "Subtitle have been generated in [language]"
+    - Error label: Red exclamation + "Error while generating file. Please try again."
+    - Shows success when existing subtitle matches selected language
+    - Shows error when mutation fails or polling returns error status
+    - Hides when language is changed (intermediate state)
+    - Clear error state on language change
+    - Error message state management with automatic cleanup
+    - Typography variant: caption (small size), icon size: 16px
 - `apps/journeys-admin/src/components/Editor/Slider/Settings/Drawer/VideoBlockEditor/Settings/VideoBlockEditorSettings.tsx`
   - Removed hardcoded `userGenerated: false` from query
 
@@ -166,8 +196,15 @@ Subtitle generation is now fully functional end-to-end. Verified with successful
 **Success Criteria Met**:
 
 - ✅ Subtitle generation completes successfully
-- Polling occurs every 3 seconds (not 500ms)
+- ✅ Polling occurs every 3 seconds (not 500ms)
 - ✅ Subtitle appears in video's subtitles array
 - ✅ `readyToStream: true` status updates correctly
 - ✅ Error handling works properly
 - ✅ UI refreshes after completion/error
+- ✅ No "Maximum update depth exceeded" error
+- ✅ No infinite re-render loops
+- ✅ Inline status labels display correctly:
+  - ✅ Success label shows when subtitle exists and matches selected language
+  - ✅ Error label shows on generation failure with proper error message
+  - ✅ Labels hide when language is changed (intermediate state)
+  - ✅ Error state clears automatically on language change
