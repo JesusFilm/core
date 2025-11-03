@@ -32,7 +32,7 @@ export async function getLaunchDarklyClient(user?: LDUser): Promise<LDClient> {
       )
     ])
 
-    if (user != null) launchDarklyClient.identify(user)
+    if (user != null) await launchDarklyClient.identify(user)
 
     return launchDarklyClient
   } catch (error) {
