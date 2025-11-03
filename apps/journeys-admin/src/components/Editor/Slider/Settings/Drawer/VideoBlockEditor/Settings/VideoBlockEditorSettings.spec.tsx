@@ -3,6 +3,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { useYouTubeClosedCaptions } from '@core/journeys/ui/useYouTubeClosedCaptions'
 
 import {
@@ -12,8 +14,6 @@ import {
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { VideoBlockEditorSettings } from '.'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 jest.mock('@core/journeys/ui/useYouTubeClosedCaptions', () => ({
   useYouTubeClosedCaptions: jest.fn()
