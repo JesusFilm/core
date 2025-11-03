@@ -13,7 +13,7 @@ import { canBlockHaveAction } from './canBlockHaveAction'
 import { BlockUpdateActionInput } from './inputs'
 
 const emailSchema = z.object({
-  email: z.string().email()
+  email: z.email()
 })
 
 const linkActionInputSchema = z.object({
@@ -24,7 +24,7 @@ const linkActionInputSchema = z.object({
 
 const emailActionInputSchema = z.object({
   gtmEventName: z.string().nullish(),
-  email: z.string().email()
+  email: z.email()
 })
 
 const navigateToBlockActionInputSchema = z.object({
