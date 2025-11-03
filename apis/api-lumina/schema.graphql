@@ -35,7 +35,9 @@ type ForbiddenError implements BaseError
   location: [ForbiddenErrorLocation!]
 }
 
-type ForbiddenErrorLocation {
+type ForbiddenErrorLocation
+  @shareable
+{
   """An array describing the path in the arguments that caused this error"""
   path: [String!]
 
@@ -52,7 +54,9 @@ type ForeignKeyConstraintError implements BaseError
   location: [ForeignKeyConstraintErrorLocation!]
 }
 
-type ForeignKeyConstraintErrorLocation {
+type ForeignKeyConstraintErrorLocation
+  @shareable
+{
   """An array describing the path in the arguments that caused this error"""
   path: [String!]
 
@@ -266,12 +270,24 @@ input LuminaTeamPlanCreateInput {
   teamId: ID!
   billingEmail: String!
   billingName: String!
+  billingAddressCity: String
+  billingAddressCountry: String
+  billingAddressLine1: String
+  billingAddressLine2: String
+  billingAddressPostalCode: String
+  billingAddressState: String
 }
 
 input LuminaTeamPlanUpdateInput {
   teamId: ID!
   billingEmail: String
   billingName: String
+  billingAddressCity: String
+  billingAddressCountry: String
+  billingAddressLine1: String
+  billingAddressLine2: String
+  billingAddressPostalCode: String
+  billingAddressState: String
 }
 
 input LuminaTeamUpdateInput {
@@ -452,7 +468,9 @@ type NotFoundError implements BaseError
   location: [NotFoundErrorLocation!]
 }
 
-type NotFoundErrorLocation {
+type NotFoundErrorLocation
+  @shareable
+{
   """An array describing the path in the arguments that caused this error"""
   path: [String!]
 
@@ -469,7 +487,9 @@ type NotUniqueError implements BaseError
   location: [NotUniqueErrorLocation!]
 }
 
-type NotUniqueErrorLocation {
+type NotUniqueErrorLocation
+  @shareable
+{
   """An array describing the path in the arguments that caused this error"""
   path: [String!]
 
@@ -551,13 +571,6 @@ type QueryLuminaTeamSuccess {
   data: LuminaTeam!
 }
 
-"""Team member role"""
-enum Role {
-  OWNER
-  MANAGER
-  MEMBER
-}
-
 type User
   @key(fields: "id")
   @extends
@@ -572,7 +585,9 @@ type ZodError implements BaseError
   fieldErrors: [ZodFieldError!]!
 }
 
-type ZodFieldError {
+type ZodFieldError
+  @shareable
+{
   message: String!
   path: [String!]!
 }

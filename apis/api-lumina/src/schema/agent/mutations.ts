@@ -18,12 +18,7 @@ builder.mutationField('luminaAgentCreate', (t) =>
     args: {
       input: t.arg({ type: AgentCreateInput, required: true })
     },
-    resolve: async (
-      query,
-      _parent,
-      { input },
-      { currentUser: { id: userId } }
-    ) => {
+    resolve: async (query, _parent, { input }, { user: { id: userId } }) => {
       const member = await prisma.teamMember.findUnique({
         where: { teamId_userId: { teamId: input.teamId, userId } }
       })
@@ -58,7 +53,7 @@ builder.mutationField('luminaAgentUpdate', (t) =>
       query,
       _parent,
       { id, input },
-      { currentUser: { id: userId } }
+      { user: { id: userId } }
     ) => {
       const agent = await prisma.agent.findUnique({
         where: { id },
@@ -77,11 +72,9 @@ builder.mutationField('luminaAgentUpdate', (t) =>
         ])
       }
 
-      const currentUserMember = agent.team.members.find(
-        (m) => m.userId === userId
-      )
+      const userMember = agent.team.members.find((m) => m.userId === userId)
 
-      if (!currentUserMember)
+      if (!userMember)
         throw new ForbiddenError('Access denied', [
           { path: ['luminaUpdateAgent', 'id'], value: id }
         ])
@@ -93,7 +86,7 @@ builder.mutationField('luminaAgentUpdate', (t) =>
           ...input,
           name: input.name ?? undefined,
           model: input.model ?? undefined,
-          temperature: input.temperature ?? undefined,
+          temperature: input.temperature ?? undefined
         }
       })
     }
@@ -109,12 +102,7 @@ builder.mutationField('luminaAgentDelete', (t) =>
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (
-      query,
-      _parent,
-      { id },
-      { currentUser: { id: userId } }
-    ) => {
+    resolve: async (query, _parent, { id }, { user: { id: userId } }) => {
       const agent = await prisma.agent.findUnique({
         where: { id },
         include: {
@@ -132,11 +120,9 @@ builder.mutationField('luminaAgentDelete', (t) =>
         ])
       }
 
-      const currentUserMember = agent.team.members.find(
-        (m) => m.userId === userId
-      )
+      const userMember = agent.team.members.find((m) => m.userId === userId)
 
-      if (!currentUserMember)
+      if (!userMember)
         throw new ForbiddenError('Access denied', [
           { path: ['luminaAgentDelete', 'id'], value: id }
         ])

@@ -28,6 +28,7 @@ const ForeignKeyConstraintErrorLocationRef = builder
     'ForeignKeyConstraintErrorLocation'
   )
   .implement({
+    shareable: true,
     fields: (t) => ({
       path: t.exposeStringList('path', {
         description:

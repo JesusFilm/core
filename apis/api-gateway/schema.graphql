@@ -79,6 +79,7 @@ enum join__Graph {
   API_JOURNEYS @join__graph(name: "api-journeys", url: "http://127.0.0.1:4001/graphql") 
   API_JOURNEYS_MODERN @join__graph(name: "api-journeys-modern", url: "http://127.0.0.1:4004/graphql") 
   API_LANGUAGES @join__graph(name: "api-languages", url: "http://127.0.0.1:4003/graphql") 
+  API_LUMINA @join__graph(name: "api-lumina", url: "http://127.0.0.1:4006/graphql") 
   API_MEDIA @join__graph(name: "api-media", url: "http://127.0.0.1:4005/graphql") 
   API_USERS @join__graph(name: "api-users", url: "http://127.0.0.1:4002/graphql") 
 }
@@ -86,33 +87,33 @@ enum join__Graph {
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
-scalar DateTime @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA) 
+scalar DateTime @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LUMINA)  @join__type(graph: API_MEDIA) 
 
 """
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
-scalar Json @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN) 
+scalar Json @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LUMINA) 
 
 """
 A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
-scalar Date @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_MEDIA) 
+scalar Date @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LUMINA)  @join__type(graph: API_MEDIA) 
 
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
 """
-scalar DateTimeISO @join__type(graph: API_JOURNEYS_MODERN) 
+scalar DateTimeISO @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LUMINA) 
 
 """
 The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt @join__type(graph: API_MEDIA) 
 
-type Error implements BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  @join__implements(graph: API_ANALYTICS, interface: "BaseError")  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
+type Error implements BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_LUMINA)  @join__type(graph: API_MEDIA)  @join__implements(graph: API_ANALYTICS, interface: "BaseError")  @join__implements(graph: API_LUMINA, interface: "BaseError")  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
   message: String
 }
 
-type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
+type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_LUMINA)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
   siteCreate(input: SiteCreateInput!) : MutationSiteCreateResult! @join__field(graph: API_ANALYTICS) 
   """
   blockDelete returns the updated sibling blocks on successful delete
@@ -409,6 +410,26 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewDelete(languageId: ID!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
+  luminaAgentWebsiteCreate(input: LuminaAgentWebsiteCreateInput!) : MutationLuminaAgentWebsiteCreateResult @join__field(graph: API_LUMINA) 
+  luminaAgentWebsiteUpdate(id: ID!, input: LuminaAgentWebsiteUpdateInput!) : MutationLuminaAgentWebsiteUpdateResult @join__field(graph: API_LUMINA) 
+  luminaAgentWebsiteDelete(id: ID!) : MutationLuminaAgentWebsiteDeleteResult @join__field(graph: API_LUMINA) 
+  luminaAgentApiKeyCreate(input: LuminaAgentApiKeyCreateInput!) : MutationLuminaAgentApiKeyCreateResult @join__field(graph: API_LUMINA) 
+  luminaAgentApiKeyUpdate(id: ID!, input: LuminaAgentApiKeyUpdateInput!) : MutationLuminaAgentApiKeyUpdateResult @join__field(graph: API_LUMINA) 
+  luminaAgentApiKeyDelete(id: ID!) : MutationLuminaAgentApiKeyDeleteResult @join__field(graph: API_LUMINA) 
+  luminaAgentCreate(input: LuminaAgentCreateInput!) : MutationLuminaAgentCreateResult @join__field(graph: API_LUMINA) 
+  luminaAgentUpdate(id: ID!, input: LuminaAgentUpdateInput!) : MutationLuminaAgentUpdateResult @join__field(graph: API_LUMINA) 
+  luminaAgentDelete(id: ID!) : MutationLuminaAgentDeleteResult @join__field(graph: API_LUMINA) 
+  luminaTeamMemberUpdate(id: ID!, input: LuminaTeamMemberUpdateInput!) : MutationLuminaTeamMemberUpdateResult @join__field(graph: API_LUMINA) 
+  luminaTeamMemberPromoteOwner(id: ID!) : MutationLuminaTeamMemberPromoteOwnerResult @join__field(graph: API_LUMINA) 
+  luminaTeamMemberDelete(id: ID!) : MutationLuminaTeamMemberDeleteResult @join__field(graph: API_LUMINA) 
+  luminaTeamInvitationCreate(input: LuminaTeamInvitationCreateInput!) : MutationLuminaTeamInvitationCreateResult @join__field(graph: API_LUMINA) 
+  luminaTeamInvitationAccept(token: String!) : MutationLuminaTeamInvitationAcceptResult @join__field(graph: API_LUMINA) 
+  luminaTeamInvitationResend(id: ID!) : MutationLuminaTeamInvitationResendResult @join__field(graph: API_LUMINA) 
+  luminaTeamInvitationDelete(id: ID!) : MutationLuminaTeamInvitationDeleteResult @join__field(graph: API_LUMINA) 
+  luminaTeamCreate(input: LuminaTeamCreateInput!) : MutationLuminaTeamCreateResult @join__field(graph: API_LUMINA) 
+  luminaTeamUpdate(id: ID!, input: LuminaTeamUpdateInput!) : MutationLuminaTeamUpdateResult @join__field(graph: API_LUMINA) 
+  luminaTeamPlanCreate(input: LuminaTeamPlanCreateInput!) : MutationLuminaTeamPlanCreateResult @join__field(graph: API_LUMINA) 
+  luminaTeamPlanUpdate(input: LuminaTeamPlanUpdateInput!) : MutationLuminaTeamPlanUpdateResult @join__field(graph: API_LUMINA) 
   createCloudflareUploadByFile(input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareUploadByUrl(url: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput) : CloudflareImage! @join__field(graph: API_MEDIA) 
@@ -662,7 +683,7 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   userJourneys: [UserJourney!]
 }
 
-type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
+type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_LUMINA)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
   blocks(where: BlocksFilter) : [Block!]! @join__field(graph: API_JOURNEYS) 
   block(id: ID!) : Block! @join__field(graph: API_JOURNEYS) 
   customDomain(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS) 
@@ -793,6 +814,23 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
   country(id: ID!) : Country @join__field(graph: API_LANGUAGES) 
   countries(term: String, ids: [ID!]) : [Country!]! @join__field(graph: API_LANGUAGES) 
+  luminaAgentTools(agentId: ID!) : [LuminaAgentTool!] @join__field(graph: API_LUMINA) 
+  luminaAgentTool(id: ID!) : QueryLuminaAgentToolResult @join__field(graph: API_LUMINA) 
+  luminaAgentWidgets(agentId: ID!) : [LuminaAgentWidget!] @join__field(graph: API_LUMINA) 
+  luminaAgentWidget(id: ID!) : QueryLuminaAgentWidgetResult @join__field(graph: API_LUMINA) 
+  luminaAgentWebsites(agentId: ID!) : [LuminaAgentWebsite!] @join__field(graph: API_LUMINA) 
+  luminaAgentWebsite(id: ID!) : QueryLuminaAgentWebsiteResult @join__field(graph: API_LUMINA) 
+  luminaAgentApiKeys(agentId: ID!) : [LuminaAgentApiKey!] @join__field(graph: API_LUMINA) 
+  luminaAgentApiKey(id: ID!) : QueryLuminaAgentApiKeyResult @join__field(graph: API_LUMINA) 
+  luminaAgents: [LuminaAgent!] @join__field(graph: API_LUMINA) 
+  luminaAgent(id: ID!) : QueryLuminaAgentResult @join__field(graph: API_LUMINA) 
+  luminaTeamMembers(teamId: ID!) : [LuminaTeamMember!] @join__field(graph: API_LUMINA) 
+  luminaTeamMember(id: ID!) : QueryLuminaTeamMemberResult @join__field(graph: API_LUMINA) 
+  luminaTeamInvitations(teamId: ID!) : [LuminaTeamInvitation!] @join__field(graph: API_LUMINA) 
+  luminaTeamInvitation(id: ID!) : QueryLuminaTeamInvitationResult @join__field(graph: API_LUMINA) 
+  luminaTeams: [LuminaTeam!] @join__field(graph: API_LUMINA) 
+  luminaTeam(id: ID!) : QueryLuminaTeamResult @join__field(graph: API_LUMINA) 
+  luminaTeamPlan(teamId: ID!) : QueryLuminaTeamPlanResult @join__field(graph: API_LUMINA) 
   getMyCloudflareImages(offset: Int, limit: Int) : [CloudflareImage!]! @join__field(graph: API_MEDIA) 
   getMyCloudflareImage(id: ID!) : CloudflareImage! @join__field(graph: API_MEDIA) 
   listUnsplashCollectionPhotos(
@@ -2195,7 +2233,7 @@ type UserInvite @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: 
   removedAt: DateTime
 }
 
-type User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
+type User @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_LANGUAGES, key: "id", extension: true)  @join__type(graph: API_LUMINA, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id", extension: true)  @join__type(graph: API_USERS, key: "id")  {
   id: ID!
   languageUserRoles: [LanguageRole!]! @join__field(graph: API_LANGUAGES) 
   mediaUserRoles: [MediaRole!]! @join__field(graph: API_MEDIA) 
@@ -2512,6 +2550,353 @@ type LanguageName @join__type(graph: API_LANGUAGES)  {
   language: Language!
 }
 
+type ForbiddenError implements BaseError @join__type(graph: API_LUMINA)  @join__implements(graph: API_LUMINA, interface: "BaseError")  {
+  message: String
+  """
+  The arguments that caused the forbidden error
+  """
+  location: [ForbiddenErrorLocation!]
+}
+
+type ForbiddenErrorLocation @join__type(graph: API_LUMINA)  {
+  """
+  An array describing the path in the arguments that caused this error
+  """
+  path: [String!]
+  """
+  The value that was provided at the path
+  """
+  value: String
+}
+
+type ForeignKeyConstraintError implements BaseError @join__type(graph: API_LUMINA)  @join__type(graph: API_MEDIA)  @join__implements(graph: API_LUMINA, interface: "BaseError")  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
+  message: String
+  """
+  The arguments that caused the foriegn key constraint violation
+  """
+  location: [ForeignKeyConstraintErrorLocation!]
+}
+
+type ForeignKeyConstraintErrorLocation @join__type(graph: API_LUMINA)  @join__type(graph: API_MEDIA)  {
+  """
+  An array describing the path in the arguments that caused this error
+  """
+  path: [String!]
+  """
+  The value that was provided at the path
+  """
+  value: String
+}
+
+type LuminaAgent @join__type(graph: API_LUMINA)  {
+  id: ID
+  teamId: String
+  name: String
+  description: String
+  model: String
+  systemPrompt: String
+  temperature: Float
+  maxTokens: Int
+  topP: Float
+  frequencyPenalty: Float
+  presencePenalty: Float
+  createdAt: DateTime
+  updatedAt: DateTime
+  team: LuminaTeam
+  tools: [LuminaAgentTool!]
+  widgets: [LuminaAgentWidget!]
+  websites: [LuminaAgentWebsite!]
+  apiKeys: [LuminaAgentApiKey!]
+  usage: [LuminaUsage!]
+}
+
+type LuminaAgentApiKey @join__type(graph: API_LUMINA)  {
+  id: ID
+  agentId: String
+  name: String
+  key: String
+  enabled: Boolean
+  createdAt: DateTime
+  updatedAt: DateTime
+  lastUsedAt: DateTime
+  agent: LuminaAgent
+}
+
+type LuminaAgentTool @join__type(graph: API_LUMINA)  {
+  id: ID
+  agentId: String
+  type: String
+  name: String
+  description: String
+  parameters: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  agent: LuminaAgent
+}
+
+type LuminaAgentWebsite @join__type(graph: API_LUMINA)  {
+  id: ID
+  agentId: String
+  name: String
+  enabled: Boolean
+  subdomain: String
+  customDomain: String
+  metaTitle: String
+  metaDescription: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  agent: LuminaAgent
+  usage: [LuminaUsage!]
+}
+
+type LuminaAgentWidget @join__type(graph: API_LUMINA)  {
+  id: ID
+  agentId: String
+  name: String
+  enabled: Boolean
+  position: String
+  theme: String
+  buttonText: String
+  buttonIcon: String
+  primaryColor: String
+  allowedDomains: [String!]
+  createdAt: DateTime
+  updatedAt: DateTime
+  agent: LuminaAgent
+  usage: [LuminaUsage!]
+}
+
+type LuminaTeam @join__type(graph: API_LUMINA)  {
+  id: ID
+  name: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  members: [LuminaTeamMember!]
+  agents: [LuminaAgent!]
+  plan: LuminaTeamPlan
+  usage: [LuminaUsage!]
+}
+
+type LuminaTeamInvitation @join__type(graph: API_LUMINA)  {
+  id: ID
+  email: String
+  role: LuminaTeamMemberRole
+  createdAt: DateTime
+  updatedAt: DateTime
+  team: LuminaTeam
+}
+
+type LuminaTeamMember @join__type(graph: API_LUMINA)  {
+  id: ID
+  userId: String
+  role: LuminaTeamMemberRole
+  createdAt: DateTime
+  updatedAt: DateTime
+  team: LuminaTeam
+  user: User
+}
+
+type LuminaTeamPlan @join__type(graph: API_LUMINA)  {
+  id: ID
+  teamId: String
+  stripeCustomerId: String
+  stripeSubscriptionId: String
+  billingEmail: String
+  billingName: String
+  enabled: Boolean
+  currentPeriodEnd: DateTime
+  cancelAtPeriodEnd: Boolean
+  createdAt: DateTime
+  updatedAt: DateTime
+  team: LuminaTeam
+}
+
+type LuminaUsage @join__type(graph: API_LUMINA)  {
+  id: ID
+  teamId: String
+  agentId: String
+  widgetId: String
+  websiteId: String
+  apiKeyId: String
+  tokens: Int
+  costUsd: Float
+  model: String
+  provider: String
+  requestId: String
+  durationMs: Int
+  statusCode: Int
+  createdAt: DateTime
+  team: LuminaTeam
+  agent: LuminaAgent
+  widget: LuminaAgentWidget
+  website: LuminaAgentWebsite
+  apiKey: LuminaAgentApiKey
+}
+
+type MutationLuminaAgentApiKeyCreateSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaAgentApiKey!
+}
+
+type MutationLuminaAgentApiKeyDeleteSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaAgentApiKey!
+}
+
+type MutationLuminaAgentApiKeyUpdateSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaAgentApiKey!
+}
+
+type MutationLuminaAgentCreateSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaAgent!
+}
+
+type MutationLuminaAgentDeleteSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaAgent!
+}
+
+type MutationLuminaAgentUpdateSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaAgent!
+}
+
+type MutationLuminaAgentWebsiteCreateSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaAgentWebsite!
+}
+
+type MutationLuminaAgentWebsiteDeleteSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaAgentWebsite!
+}
+
+type MutationLuminaAgentWebsiteUpdateSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaAgentWebsite!
+}
+
+type MutationLuminaTeamCreateSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaTeam!
+}
+
+type MutationLuminaTeamInvitationAcceptSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaTeamMember!
+}
+
+type MutationLuminaTeamInvitationCreateSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaTeamInvitation!
+}
+
+type MutationLuminaTeamInvitationDeleteSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaTeamInvitation!
+}
+
+type MutationLuminaTeamInvitationResendSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaTeamInvitation!
+}
+
+type MutationLuminaTeamMemberDeleteSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaTeamMember!
+}
+
+type MutationLuminaTeamMemberPromoteOwnerSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaTeamMember!
+}
+
+type MutationLuminaTeamMemberUpdateSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaTeamMember!
+}
+
+type MutationLuminaTeamPlanCreateSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaTeamPlan!
+}
+
+type MutationLuminaTeamPlanUpdateSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaTeamPlan!
+}
+
+type MutationLuminaTeamUpdateSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaTeam!
+}
+
+type NotFoundError implements BaseError @join__type(graph: API_LUMINA)  @join__type(graph: API_MEDIA)  @join__implements(graph: API_LUMINA, interface: "BaseError")  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
+  message: String
+  """
+  The arguments that caused the not found error
+  """
+  location: [NotFoundErrorLocation!]
+}
+
+type NotFoundErrorLocation @join__type(graph: API_LUMINA)  @join__type(graph: API_MEDIA)  {
+  """
+  An array describing the path in the arguments that caused this error
+  """
+  path: [String!]
+  """
+  The value that was provided at the path
+  """
+  value: String
+}
+
+type NotUniqueError implements BaseError @join__type(graph: API_LUMINA)  @join__type(graph: API_MEDIA)  @join__implements(graph: API_LUMINA, interface: "BaseError")  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
+  message: String
+  """
+  The arguments that caused the uniqueness violation
+  """
+  location: [NotUniqueErrorLocation!]
+}
+
+type NotUniqueErrorLocation @join__type(graph: API_LUMINA)  @join__type(graph: API_MEDIA)  {
+  """
+  An array describing the path in the arguments that caused this error
+  """
+  path: [String!]
+  """
+  The value that was provided at the path
+  """
+  value: String
+}
+
+type QueryLuminaAgentApiKeySuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaAgentApiKey!
+}
+
+type QueryLuminaAgentSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaAgent!
+}
+
+type QueryLuminaAgentToolSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaAgentTool!
+}
+
+type QueryLuminaAgentWebsiteSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaAgentWebsite!
+}
+
+type QueryLuminaAgentWidgetSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaAgentWidget!
+}
+
+type QueryLuminaTeamInvitationSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaTeamInvitation!
+}
+
+type QueryLuminaTeamMemberSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaTeamMember!
+}
+
+type QueryLuminaTeamPlanSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaTeamPlan!
+}
+
+type QueryLuminaTeamSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaTeam!
+}
+
+type ZodError implements BaseError @join__type(graph: API_LUMINA)  @join__type(graph: API_MEDIA)  @join__implements(graph: API_LUMINA, interface: "BaseError")  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
+  message: String
+  fieldErrors: [ZodFieldError!]!
+}
+
+type ZodFieldError @join__type(graph: API_LUMINA)  @join__type(graph: API_MEDIA)  {
+  message: String!
+  path: [String!]!
+}
+
 type ArclightApiKey @join__type(graph: API_MEDIA, key: "key")  {
   key: String!
   desc: String
@@ -2571,25 +2956,6 @@ type CloudflareR2 @join__type(graph: API_MEDIA)  {
   publicUrl: String
   createdAt: Date!
   updatedAt: Date!
-}
-
-type ForeignKeyConstraintError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
-  message: String
-  """
-  The arguments that caused the foriegn key constraint violation
-  """
-  location: [ForeignKeyConstraintErrorLocation!]
-}
-
-type ForeignKeyConstraintErrorLocation @join__type(graph: API_MEDIA)  {
-  """
-  An array describing the path in the arguments that caused this error
-  """
-  path: [String!]
-  """
-  The value that was provided at the path
-  """
-  value: String
 }
 
 type Keyword @join__type(graph: API_MEDIA)  {
@@ -2659,44 +3025,6 @@ type MutationShortLinkDomainUpdateSuccess @join__type(graph: API_MEDIA)  {
 
 type MutationShortLinkUpdateSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLink!
-}
-
-type NotFoundError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
-  message: String
-  """
-  The arguments that caused the not found error
-  """
-  location: [NotFoundErrorLocation!]
-}
-
-type NotFoundErrorLocation @join__type(graph: API_MEDIA)  {
-  """
-  An array describing the path in the arguments that caused this error
-  """
-  path: [String!]
-  """
-  The value that was provided at the path
-  """
-  value: String
-}
-
-type NotUniqueError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
-  message: String
-  """
-  The arguments that caused the uniqueness violation
-  """
-  location: [NotUniqueErrorLocation!]
-}
-
-type NotUniqueErrorLocation @join__type(graph: API_MEDIA)  {
-  """
-  An array describing the path in the arguments that caused this error
-  """
-  path: [String!]
-  """
-  The value that was provided at the path
-  """
-  value: String
 }
 
 type Playlist @join__type(graph: API_MEDIA)  {
@@ -3048,17 +3376,7 @@ type Youtube @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
   source: VideoBlockSource
 }
 
-type ZodError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
-  message: String
-  fieldErrors: [ZodFieldError!]!
-}
-
-type ZodFieldError @join__type(graph: API_MEDIA)  {
-  message: String!
-  path: [String!]!
-}
-
-interface BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_MEDIA)  {
+interface BaseError @join__type(graph: API_ANALYTICS)  @join__type(graph: API_LUMINA)  @join__type(graph: API_MEDIA)  {
   message: String
 }
 
@@ -3096,6 +3414,64 @@ interface Node @join__type(graph: API_JOURNEYS_MODERN)  {
 union MutationSiteCreateResult @join__type(graph: API_ANALYTICS)  @join__unionMember(graph: API_ANALYTICS, member: "Error")  @join__unionMember(graph: API_ANALYTICS, member: "MutationSiteCreateSuccess")  = Error | MutationSiteCreateSuccess
 
 union MediaVideo @join__type(graph: API_JOURNEYS_MODERN)  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "MuxVideo")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "Video")  @join__unionMember(graph: API_JOURNEYS_MODERN, member: "YouTube")  = MuxVideo | Video | YouTube
+
+union MutationLuminaAgentApiKeyCreateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentApiKeyCreateSuccess")  = ForbiddenError | NotFoundError | ZodError | MutationLuminaAgentApiKeyCreateSuccess
+
+union MutationLuminaAgentApiKeyDeleteResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentApiKeyDeleteSuccess")  = ForbiddenError | NotFoundError | MutationLuminaAgentApiKeyDeleteSuccess
+
+union MutationLuminaAgentApiKeyUpdateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentApiKeyUpdateSuccess")  = ForbiddenError | NotFoundError | ZodError | MutationLuminaAgentApiKeyUpdateSuccess
+
+union MutationLuminaAgentCreateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentCreateSuccess")  = ForbiddenError | MutationLuminaAgentCreateSuccess
+
+union MutationLuminaAgentDeleteResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentDeleteSuccess")  = ForbiddenError | NotFoundError | MutationLuminaAgentDeleteSuccess
+
+union MutationLuminaAgentUpdateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentUpdateSuccess")  = ForbiddenError | NotFoundError | ZodError | MutationLuminaAgentUpdateSuccess
+
+union MutationLuminaAgentWebsiteCreateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentWebsiteCreateSuccess")  = ForbiddenError | NotFoundError | ZodError | MutationLuminaAgentWebsiteCreateSuccess
+
+union MutationLuminaAgentWebsiteDeleteResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentWebsiteDeleteSuccess")  = ForbiddenError | NotFoundError | MutationLuminaAgentWebsiteDeleteSuccess
+
+union MutationLuminaAgentWebsiteUpdateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentWebsiteUpdateSuccess")  = ForbiddenError | NotFoundError | ZodError | MutationLuminaAgentWebsiteUpdateSuccess
+
+union MutationLuminaTeamCreateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamCreateSuccess")  = ZodError | MutationLuminaTeamCreateSuccess
+
+union MutationLuminaTeamInvitationAcceptResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamInvitationAcceptSuccess")  = ForbiddenError | NotFoundError | ZodError | MutationLuminaTeamInvitationAcceptSuccess
+
+union MutationLuminaTeamInvitationCreateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamInvitationCreateSuccess")  = ForbiddenError | NotFoundError | ZodError | MutationLuminaTeamInvitationCreateSuccess
+
+union MutationLuminaTeamInvitationDeleteResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamInvitationDeleteSuccess")  = ForbiddenError | NotFoundError | MutationLuminaTeamInvitationDeleteSuccess
+
+union MutationLuminaTeamInvitationResendResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamInvitationResendSuccess")  = ForbiddenError | NotFoundError | MutationLuminaTeamInvitationResendSuccess
+
+union MutationLuminaTeamMemberDeleteResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamMemberDeleteSuccess")  = ForbiddenError | NotFoundError | MutationLuminaTeamMemberDeleteSuccess
+
+union MutationLuminaTeamMemberPromoteOwnerResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamMemberPromoteOwnerSuccess")  = ForbiddenError | NotFoundError | MutationLuminaTeamMemberPromoteOwnerSuccess
+
+union MutationLuminaTeamMemberUpdateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamMemberUpdateSuccess")  = ForbiddenError | NotFoundError | MutationLuminaTeamMemberUpdateSuccess
+
+union MutationLuminaTeamPlanCreateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamPlanCreateSuccess")  = ZodError | MutationLuminaTeamPlanCreateSuccess
+
+union MutationLuminaTeamPlanUpdateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamPlanUpdateSuccess")  = ZodError | MutationLuminaTeamPlanUpdateSuccess
+
+union MutationLuminaTeamUpdateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamUpdateSuccess")  = ForbiddenError | NotFoundError | ZodError | MutationLuminaTeamUpdateSuccess
+
+union QueryLuminaAgentApiKeyResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "QueryLuminaAgentApiKeySuccess")  = NotFoundError | QueryLuminaAgentApiKeySuccess
+
+union QueryLuminaAgentResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "QueryLuminaAgentSuccess")  = NotFoundError | QueryLuminaAgentSuccess
+
+union QueryLuminaAgentToolResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "QueryLuminaAgentToolSuccess")  = NotFoundError | QueryLuminaAgentToolSuccess
+
+union QueryLuminaAgentWebsiteResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "QueryLuminaAgentWebsiteSuccess")  = NotFoundError | QueryLuminaAgentWebsiteSuccess
+
+union QueryLuminaAgentWidgetResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "QueryLuminaAgentWidgetSuccess")  = NotFoundError | QueryLuminaAgentWidgetSuccess
+
+union QueryLuminaTeamInvitationResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "QueryLuminaTeamInvitationSuccess")  = NotFoundError | QueryLuminaTeamInvitationSuccess
+
+union QueryLuminaTeamMemberResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "QueryLuminaTeamMemberSuccess")  = NotFoundError | QueryLuminaTeamMemberSuccess
+
+union QueryLuminaTeamPlanResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "QueryLuminaTeamPlanSuccess")  = NotFoundError | QueryLuminaTeamPlanSuccess
+
+union QueryLuminaTeamResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "QueryLuminaTeamSuccess")  = NotFoundError | QueryLuminaTeamSuccess
 
 union MutationPlaylistCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistCreateSuccess")  = ZodError | MutationPlaylistCreateSuccess
 
@@ -3463,6 +3839,12 @@ enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
 
 enum LanguageRole @join__type(graph: API_LANGUAGES)  {
   publisher @join__enumValue(graph: API_LANGUAGES) 
+}
+
+enum LuminaTeamMemberRole @join__type(graph: API_LUMINA)  {
+  OWNER @join__enumValue(graph: API_LUMINA) 
+  MANAGER @join__enumValue(graph: API_LUMINA) 
+  MEMBER @join__enumValue(graph: API_LUMINA) 
 }
 
 enum DefaultPlatform @join__type(graph: API_MEDIA)  {
@@ -4752,6 +5134,102 @@ input MutationAudioPreviewUpdateInput @join__type(graph: API_LANGUAGES)  {
   size: Int
   bitrate: Int
   codec: String
+}
+
+input LuminaAgentApiKeyCreateInput @join__type(graph: API_LUMINA)  {
+  agentId: ID!
+  name: String!
+}
+
+input LuminaAgentApiKeyUpdateInput @join__type(graph: API_LUMINA)  {
+  name: String
+  enabled: Boolean
+}
+
+input LuminaAgentCreateInput @join__type(graph: API_LUMINA)  {
+  teamId: ID!
+  name: String!
+  description: String
+  model: String!
+  systemPrompt: String
+  temperature: Float!
+  maxTokens: Int
+  topP: Float
+  frequencyPenalty: Float
+  presencePenalty: Float
+}
+
+input LuminaAgentUpdateInput @join__type(graph: API_LUMINA)  {
+  name: String
+  description: String
+  model: String
+  systemPrompt: String
+  temperature: Float
+  maxTokens: Int
+  topP: Float
+  frequencyPenalty: Float
+  presencePenalty: Float
+}
+
+input LuminaAgentWebsiteCreateInput @join__type(graph: API_LUMINA)  {
+  agentId: String!
+  name: String!
+  enabled: Boolean!
+  subdomain: String
+  customDomain: String
+  metaTitle: String
+  metaDescription: String
+}
+
+input LuminaAgentWebsiteUpdateInput @join__type(graph: API_LUMINA)  {
+  name: String
+  enabled: Boolean
+  subdomain: String
+  customDomain: String
+  metaTitle: String
+  metaDescription: String
+}
+
+input LuminaTeamCreateInput @join__type(graph: API_LUMINA)  {
+  name: String!
+}
+
+input LuminaTeamInvitationCreateInput @join__type(graph: API_LUMINA)  {
+  teamId: ID!
+  email: String!
+  role: LuminaTeamMemberRole!
+}
+
+input LuminaTeamMemberUpdateInput @join__type(graph: API_LUMINA)  {
+  role: LuminaTeamMemberRole!
+}
+
+input LuminaTeamPlanCreateInput @join__type(graph: API_LUMINA)  {
+  teamId: ID!
+  billingEmail: String!
+  billingName: String!
+  billingAddressCity: String
+  billingAddressCountry: String
+  billingAddressLine1: String
+  billingAddressLine2: String
+  billingAddressPostalCode: String
+  billingAddressState: String
+}
+
+input LuminaTeamPlanUpdateInput @join__type(graph: API_LUMINA)  {
+  teamId: ID!
+  billingEmail: String
+  billingName: String
+  billingAddressCity: String
+  billingAddressCountry: String
+  billingAddressLine1: String
+  billingAddressLine2: String
+  billingAddressPostalCode: String
+  billingAddressState: String
+}
+
+input LuminaTeamUpdateInput @join__type(graph: API_LUMINA)  {
+  name: String!
 }
 
 input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {

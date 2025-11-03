@@ -19,12 +19,7 @@ builder.mutationField('luminaAgentApiKeyCreate', (t) =>
     args: {
       input: t.arg({ type: AgentApiKeyCreateInput, required: true })
     },
-    resolve: async (
-      query,
-      _parent,
-      { input },
-      { currentUser: { id: userId } }
-    ) => {
+    resolve: async (query, _parent, { input }, { user: { id: userId } }) => {
       const agent = await prisma.agent.findUnique({
         where: { id: input.agentId },
         include: {
@@ -79,7 +74,7 @@ builder.mutationField('luminaAgentApiKeyUpdate', (t) =>
       query,
       _parent,
       { id, input },
-      { currentUser: { id: userId } }
+      { user: { id: userId } }
     ) => {
       const apiKey = await prisma.apiKey.findUnique({
         where: { id },
@@ -129,12 +124,7 @@ builder.mutationField('luminaAgentApiKeyDelete', (t) =>
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (
-      query,
-      _parent,
-      { id },
-      { currentUser: { id: userId } }
-    ) => {
+    resolve: async (query, _parent, { id }, { user: { id: userId } }) => {
       const apiKey = await prisma.apiKey.findUnique({
         where: { id },
         include: {

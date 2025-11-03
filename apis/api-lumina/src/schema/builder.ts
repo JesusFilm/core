@@ -34,7 +34,7 @@ interface PublicContext extends BaseContext {
 
 interface AuthenticatedContext extends BaseContext {
   type: 'authenticated'
-  currentUser: User
+  user: User
 }
 
 interface LocalInteropContext extends BaseContext, InteropContext {
@@ -110,12 +110,6 @@ export const builder = new SchemaBuilder<{
       }
     }
   }
-})
-
-// Add Role enum
-builder.enumType('Role', {
-  values: ['OWNER', 'MANAGER', 'MEMBER'] as const,
-  description: 'Team member role'
 })
 
 builder.queryType({})

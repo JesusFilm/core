@@ -9,11 +9,11 @@ builder.queryField('luminaTeamInvitations', (t) =>
     args: {
       teamId: t.arg.id({ required: true })
     },
-    resolve: async (query, _parent, { teamId }, { currentUser }) => {
+    resolve: async (query, _parent, { teamId }, { user }) => {
       return await prisma.teamInvitation.findMany({
         ...query,
         where: {
-          team: { id: teamId, members: { some: { userId: currentUser.id } } }
+          team: { id: teamId, members: { some: { userId: user.id } } }
         }
       })
     }
@@ -29,10 +29,10 @@ builder.queryField('luminaTeamInvitation', (t) =>
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (query, _parent, { id }, { currentUser }) => {
+    resolve: async (query, _parent, { id }, { user }) => {
       const invitation = await prisma.teamInvitation.findUnique({
         ...query,
-        where: { id, team: { members: { some: { userId: currentUser.id } } } }
+        where: { id, team: { members: { some: { userId: user.id } } } }
       })
       if (!invitation)
         throw new NotFoundError('Team invitation not found', [

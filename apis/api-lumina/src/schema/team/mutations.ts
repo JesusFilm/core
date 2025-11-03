@@ -18,12 +18,12 @@ builder.mutationField('luminaTeamCreate', (t) =>
     args: {
       input: t.arg({ required: true, type: TeamCreateInput })
     },
-    resolve: async (query, _parent, { input }, { currentUser }) => {
+    resolve: async (query, _parent, { input }, { user }) => {
       return await prisma.team.create({
         ...query,
         data: {
           ...input,
-          members: { create: { userId: currentUser.id, role: 'OWNER' } }
+          members: { create: { userId: user.id, role: 'OWNER' } }
         }
       })
     }
@@ -44,7 +44,7 @@ builder.mutationField('luminaTeamUpdate', (t) =>
       query,
       _parent,
       { id, input },
-      { currentUser: { id: userId } }
+      { user: { id: userId } }
     ) => {
       const member = await prisma.teamMember.findUnique({
         where: {

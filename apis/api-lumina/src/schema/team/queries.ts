@@ -6,10 +6,10 @@ import { NotFoundError } from '../error/NotFoundError'
 builder.queryField('luminaTeams', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     type: ['Team'],
-    resolve: async (query, _parent, _args, { currentUser }) => {
+    resolve: async (query, _parent, _args, { user }) => {
       return await prisma.team.findMany({
         ...query,
-        where: { members: { some: { userId: currentUser.id } } }
+        where: { members: { some: { userId: user.id } } }
       })
     }
   })
@@ -24,10 +24,10 @@ builder.queryField('luminaTeam', (t) =>
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (query, _parent, { id }, { currentUser }) => {
+    resolve: async (query, _parent, { id }, { user }) => {
       const team = await prisma.team.findUnique({
         ...query,
-        where: { id, members: { some: { userId: currentUser.id } } }
+        where: { id, members: { some: { userId: user.id } } }
       })
       if (!team)
         throw new NotFoundError('Team not found', [

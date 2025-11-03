@@ -10,7 +10,7 @@ builder.queryField('luminaTeamPlan', (t) =>
     args: {
       teamId: t.arg.id({ required: true })
     },
-    resolve: async (query, _parent, { teamId }, { currentUser }) => {
+    resolve: async (query, _parent, { teamId }, { user }) => {
       const plan = await prisma.teamPlan.findUnique({
         ...query,
         where: {
@@ -18,7 +18,7 @@ builder.queryField('luminaTeamPlan', (t) =>
           team: {
             members: {
               some: {
-                userId: currentUser.id,
+                userId: user.id,
                 role: { in: ['OWNER', 'MANAGER'] }
               }
             }

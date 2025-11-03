@@ -35,6 +35,7 @@ const ZodFieldError = builder
     path: string[]
   }>('ZodFieldError')
   .implement({
+    shareable: true,
     fields: (t) => ({
       message: t.exposeString('message', { nullable: false }),
       path: t.exposeStringList('path', { nullable: false })

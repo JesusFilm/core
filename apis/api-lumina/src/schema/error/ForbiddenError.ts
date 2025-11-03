@@ -33,6 +33,7 @@ export class ForbiddenError extends GraphQLError {
 const ForbiddenErrorLocationRef = builder
   .objectRef<ForbiddenErrorLocation>('ForbiddenErrorLocation')
   .implement({
+    shareable: true,
     fields: (t) => ({
       path: t.exposeStringList('path', {
         description:

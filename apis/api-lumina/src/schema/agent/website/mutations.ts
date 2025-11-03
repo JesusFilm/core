@@ -18,12 +18,7 @@ builder.mutationField('luminaAgentWebsiteCreate', (t) =>
     args: {
       input: t.arg({ type: AgentWebsiteCreateInput, required: true })
     },
-    resolve: async (
-      query,
-      _parent,
-      { input },
-      { currentUser: { id: userId } }
-    ) => {
+    resolve: async (query, _parent, { input }, { user: { id: userId } }) => {
       const agent = await prisma.agent.findUnique({
         where: { id: input.agentId },
         include: {
@@ -75,7 +70,7 @@ builder.mutationField('luminaAgentWebsiteUpdate', (t) =>
       query,
       _parent,
       { id, input },
-      { currentUser: { id: userId } }
+      { user: { id: userId } }
     ) => {
       // Get website to verify access
       const website = await prisma.website.findUnique({
@@ -129,12 +124,7 @@ builder.mutationField('luminaAgentWebsiteDelete', (t) =>
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (
-      query,
-      _parent,
-      { id },
-      { currentUser: { id: userId } }
-    ) => {
+    resolve: async (query, _parent, { id }, { user: { id: userId } }) => {
       // Get website to verify access
       const website = await prisma.website.findUnique({
         where: { id },

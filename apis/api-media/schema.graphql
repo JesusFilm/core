@@ -123,7 +123,9 @@ type ForeignKeyConstraintError implements BaseError
   location: [ForeignKeyConstraintErrorLocation!]
 }
 
-type ForeignKeyConstraintErrorLocation {
+type ForeignKeyConstraintErrorLocation
+  @shareable
+{
   """An array describing the path in the arguments that caused this error"""
   path: [String!]
 
@@ -476,7 +478,9 @@ type NotFoundError implements BaseError
   location: [NotFoundErrorLocation!]
 }
 
-type NotFoundErrorLocation {
+type NotFoundErrorLocation
+  @shareable
+{
   """An array describing the path in the arguments that caused this error"""
   path: [String!]
 
@@ -493,7 +497,9 @@ type NotUniqueError implements BaseError
   location: [NotUniqueErrorLocation!]
 }
 
-type NotUniqueErrorLocation {
+type NotUniqueErrorLocation
+  @shareable
+{
   """An array describing the path in the arguments that caused this error"""
   path: [String!]
 
@@ -1319,7 +1325,9 @@ type ZodError implements BaseError
   fieldErrors: [ZodFieldError!]!
 }
 
-type ZodFieldError {
+type ZodFieldError
+  @shareable
+{
   message: String!
   path: [String!]!
 }

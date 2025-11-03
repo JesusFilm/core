@@ -9,12 +9,12 @@ builder.queryField('luminaAgentWidgets', (t) =>
     args: {
       agentId: t.arg.id({ required: true })
     },
-    resolve: async (query, _parent, { agentId }, { currentUser }) => {
+    resolve: async (query, _parent, { agentId }, { user }) => {
       return await prisma.widget.findMany({
         ...query,
         where: {
           agentId,
-          agent: { team: { members: { some: { userId: currentUser.id } } } }
+          agent: { team: { members: { some: { userId: user.id } } } }
         }
       })
     }
@@ -30,12 +30,12 @@ builder.queryField('luminaAgentWidget', (t) =>
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (query, _parent, { id }, { currentUser }) => {
+    resolve: async (query, _parent, { id }, { user }) => {
       const widget = await prisma.widget.findUnique({
         ...query,
         where: {
           id,
-          agent: { team: { members: { some: { userId: currentUser.id } } } }
+          agent: { team: { members: { some: { userId: user.id } } } }
         }
       })
       if (!widget)

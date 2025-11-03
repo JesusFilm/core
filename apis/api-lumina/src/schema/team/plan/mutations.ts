@@ -17,7 +17,7 @@ builder.mutationField('luminaTeamPlanCreate', (t) =>
     type: 'TeamPlan',
     errors: { types: [ZodError] },
     args: { input: t.arg({ required: true, type: TeamPlanCreateInput }) },
-    resolve: async (query, _parent, { input }, { currentUser }) => {
+    resolve: async (query, _parent, { input }, { user }) => {
       const { teamId } = input
       const team = await prisma.team.findUnique({
         where: { id: teamId },
@@ -30,7 +30,7 @@ builder.mutationField('luminaTeamPlanCreate', (t) =>
       if (
         !team.members.some(
           (member) =>
-            member.userId === currentUser.id &&
+            member.userId === user.id &&
             (member.role === 'OWNER' || member.role === 'MANAGER')
         )
       )
@@ -40,22 +40,25 @@ builder.mutationField('luminaTeamPlanCreate', (t) =>
         )
 
       const id = randomUUID()
-      const stripeCustomer = await stripe.customers.create({
-        email: input.billingEmail,
-        name: input.billingName,
-        address: {
-          city: input.billingAddressCity,
-          country: input.billingAddressCountry,
-          line1: input.billingAddressLine1,
-          line2: input.billingAddressLine2,
-          postal_code: input.billingAddressPostalCode,
-          state: input.billingAddressState
+      const stripeCustomer = await stripe.customers.create(
+        {
+          email: input.billingEmail,
+          name: input.billingName,
+          address: {
+            city: input.billingAddressCity ?? undefined,
+            country: input.billingAddressCountry ?? undefined,
+            line1: input.billingAddressLine1 ?? undefined,
+            line2: input.billingAddressLine2 ?? undefined,
+            postal_code: input.billingAddressPostalCode ?? undefined,
+            state: input.billingAddressState ?? undefined
+          },
+          metadata: {
+            user_id: id,
+            env: process.env.NODE_ENV ?? 'development'
+          }
         },
-        metadata: {
-          user_id: id,
-          env: process.env.NODE_ENV ?? 'development'
-        }
-      })
+        undefined
+      )
 
       return await prisma.teamPlan.create({
         ...query,
@@ -74,7 +77,7 @@ builder.mutationField('luminaTeamPlanUpdate', (t) =>
     type: 'TeamPlan',
     errors: { types: [ZodError] },
     args: { input: t.arg({ required: true, type: TeamPlanUpdateInput }) },
-    resolve: async (query, _parent, { input }, { currentUser }) => {
+    resolve: async (query, _parent, { input }, { user }) => {
       const { teamId, billingEmail, billingName } = input
       const teamPlan = await prisma.teamPlan.findUnique({
         where: { teamId },
@@ -87,7 +90,7 @@ builder.mutationField('luminaTeamPlanUpdate', (t) =>
       if (
         !teamPlan.team.members.some(
           (member) =>
-            member.userId === currentUser.id &&
+            member.userId === user.id &&
             (member.role === 'OWNER' || member.role === 'MANAGER')
         )
       )
@@ -108,12 +111,22 @@ builder.mutationField('luminaTeamPlanUpdate', (t) =>
               input.billingAddressCountry ??
               teamPlan.billingAddressCountry ??
               undefined,
-            line1: input.billingAddressLine1 ?? teamPlan.billingAddressLine1,
-            line2: input.billingAddressLine2 ?? teamPlan.billingAddressLine2,
+            line1:
+              input.billingAddressLine1 ??
+              teamPlan.billingAddressLine1 ??
+              undefined,
+            line2:
+              input.billingAddressLine2 ??
+              teamPlan.billingAddressLine2 ??
+              undefined,
             postal_code:
               input.billingAddressPostalCode ??
-              teamPlan.billingAddressPostalCode,
-            state: input.billingAddressState ?? teamPlan.billingAddressState
+              teamPlan.billingAddressPostalCode ??
+              undefined,
+            state:
+              input.billingAddressState ??
+              teamPlan.billingAddressState ??
+              undefined
           }
         })
       }

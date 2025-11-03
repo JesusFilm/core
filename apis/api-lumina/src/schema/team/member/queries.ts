@@ -9,11 +9,11 @@ builder.queryField('luminaTeamMembers', (t) =>
     args: {
       teamId: t.arg.id({ required: true })
     },
-    resolve: async (query, _parent, { teamId }, { currentUser }) => {
+    resolve: async (query, _parent, { teamId }, { user }) => {
       return await prisma.teamMember.findMany({
         ...query,
         where: {
-          team: { id: teamId, members: { some: { userId: currentUser.id } } }
+          team: { id: teamId, members: { some: { userId: user.id } } }
         }
       })
     }
@@ -29,10 +29,10 @@ builder.queryField('luminaTeamMember', (t) =>
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (query, _parent, { id }, { currentUser }) => {
+    resolve: async (query, _parent, { id }, { user }) => {
       const member = await prisma.teamMember.findUnique({
         ...query,
-        where: { id, team: { members: { some: { userId: currentUser.id } } } }
+        where: { id, team: { members: { some: { userId: user.id } } } }
       })
       if (!member)
         throw new NotFoundError('Team member not found', [

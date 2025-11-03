@@ -33,6 +33,7 @@ export class NotUniqueError extends GraphQLError {
 const NotUniqueErrorLocationRef = builder
   .objectRef<NotUniqueErrorLocation>('NotUniqueErrorLocation')
   .implement({
+    shareable: true,
     fields: (t) => ({
       path: t.exposeStringList('path', {
         description:

@@ -20,7 +20,7 @@ builder.mutationField('luminaTeamMemberUpdate', (t) =>
       query,
       _parent,
       { id, input },
-      { currentUser: { id: userId } }
+      { user: { id: userId } }
     ) => {
       const member = await prisma.teamMember.findUnique({
         where: {
@@ -41,14 +41,9 @@ builder.mutationField('luminaTeamMemberUpdate', (t) =>
         ])
       }
 
-      const currentUserMember = member.team.members.find(
-        (m) => m.userId === userId
-      )
+      const userMember = member.team.members.find((m) => m.userId === userId)
 
-      if (
-        !currentUserMember ||
-        ['OWNER', 'MANAGER'].includes(currentUserMember.role)
-      )
+      if (!userMember || ['OWNER', 'MANAGER'].includes(userMember.role))
         throw new ForbiddenError(
           'Only team owner or manager can update member roles',
           [{ path: ['luminaTeamMemberUpdate', 'input', 'id'], value: id }]
@@ -78,12 +73,7 @@ builder.mutationField('luminaTeamMemberPromoteOwner', (t) =>
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (
-      query,
-      _parent,
-      { id },
-      { currentUser: { id: userId } }
-    ) => {
+    resolve: async (query, _parent, { id }, { user: { id: userId } }) => {
       const member = await prisma.teamMember.findUnique({
         where: {
           id
@@ -102,18 +92,16 @@ builder.mutationField('luminaTeamMemberPromoteOwner', (t) =>
         ])
       }
 
-      const currentUserMember = member.team.members.find(
-        (m) => m.userId === userId
-      )
+      const userMember = member.team.members.find((m) => m.userId === userId)
 
-      if (!currentUserMember || ['OWNER'].includes(currentUserMember.role))
+      if (!userMember || ['OWNER'].includes(userMember.role))
         throw new ForbiddenError('Only team owner can promote owner', [
           { path: ['luminaTeamMemberPromoteOwner', 'id'], value: id }
         ])
 
       return await prisma.$transaction(async (tx) => {
         await tx.teamMember.update({
-          where: { id: currentUserMember.id },
+          where: { id: userMember.id },
           data: { role: 'MANAGER' }
         })
         return await tx.teamMember.update({
@@ -135,12 +123,7 @@ builder.mutationField('luminaTeamMemberDelete', (t) =>
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (
-      query,
-      _parent,
-      { id },
-      { currentUser: { id: userId } }
-    ) => {
+    resolve: async (query, _parent, { id }, { user: { id: userId } }) => {
       const member = await prisma.teamMember.findUnique({
         where: { id },
         include: {

@@ -19,22 +19,14 @@ builder.mutationField('luminaTeamInvitationCreate', (t) =>
     args: {
       input: t.arg({ required: true, type: TeamInvitationCreateInput })
     },
-    resolve: async (
-      query,
-      _parent,
-      { input },
-      { currentUser: { id: userId } }
-    ) => {
-      const currentUserMember = await prisma.teamMember.findUnique({
+    resolve: async (query, _parent, { input }, { user: { id: userId } }) => {
+      const userMember = await prisma.teamMember.findUnique({
         where: {
           teamId_userId: { teamId: input.teamId, userId }
         }
       })
 
-      if (
-        !currentUserMember ||
-        !['OWNER', 'MANAGER'].includes(currentUserMember.role)
-      )
+      if (!userMember || !['OWNER', 'MANAGER'].includes(userMember.role))
         throw new ForbiddenError(
           'Only team owner or manager can create invitations',
           [{ path: ['input', 'teamId'], value: input.teamId }]
@@ -63,12 +55,7 @@ builder.mutationField('luminaTeamInvitationAccept', (t) =>
     args: {
       token: t.arg.string({ required: true })
     },
-    resolve: async (
-      query,
-      _parent,
-      { token },
-      { currentUser: { id: userId } }
-    ) => {
+    resolve: async (query, _parent, { token }, { user: { id: userId } }) => {
       const tokenHash = generateTokenHash(token)
       const invitation = await prisma.teamInvitation.findUnique({
         where: { tokenHash }
@@ -103,12 +90,7 @@ builder.mutationField('luminaTeamInvitationResend', (t) =>
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (
-      query,
-      _parent,
-      { id },
-      { currentUser: { id: userId } }
-    ) => {
+    resolve: async (query, _parent, { id }, { user: { id: userId } }) => {
       const invitation = await prisma.teamInvitation.findUnique({
         where: { id },
         include: {
@@ -123,13 +105,10 @@ builder.mutationField('luminaTeamInvitationResend', (t) =>
         throw new NotFoundError('Team invitation not found', [
           { path: ['luminaTeamInvitationResend', 'id'], value: id }
         ])
-      const currentUserMember = invitation.team.members.find(
+      const userMember = invitation.team.members.find(
         (m) => m.userId === userId
       )
-      if (
-        !currentUserMember ||
-        !['OWNER', 'MANAGER'].includes(currentUserMember.role)
-      )
+      if (!userMember || !['OWNER', 'MANAGER'].includes(userMember.role))
         throw new ForbiddenError(
           'Only team owner or manager can resend invitations',
           [{ path: ['luminaTeamInvitationResend', 'id'], value: id }]
@@ -155,12 +134,7 @@ builder.mutationField('luminaTeamInvitationDelete', (t) =>
     args: {
       id: t.arg.id({ required: true })
     },
-    resolve: async (
-      query,
-      _parent,
-      { id },
-      { currentUser: { id: userId } }
-    ) => {
+    resolve: async (query, _parent, { id }, { user: { id: userId } }) => {
       const invitation = await prisma.teamInvitation.findUnique({
         where: { id },
         include: {
@@ -176,14 +150,11 @@ builder.mutationField('luminaTeamInvitationDelete', (t) =>
           { path: ['luminaTeamInvitationDelete', 'id'], value: id }
         ])
 
-      const currentUserMember = invitation.team.members.find(
+      const userMember = invitation.team.members.find(
         (m) => m.userId === userId
       )
 
-      if (
-        !currentUserMember ||
-        !['OWNER', 'MANAGER'].includes(currentUserMember.role)
-      )
+      if (!userMember || !['OWNER', 'MANAGER'].includes(userMember.role))
         throw new ForbiddenError(
           'Only team owner or manager can delete invitations',
           [{ path: ['luminaTeamInvitationDelete', 'id'], value: id }]

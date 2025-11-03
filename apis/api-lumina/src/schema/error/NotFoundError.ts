@@ -26,6 +26,7 @@ export class NotFoundError extends Error {
 const NotFoundErrorLocationRef = builder
   .objectRef<NotFoundErrorLocation>('NotFoundErrorLocation')
   .implement({
+    shareable: true,
     fields: (t) => ({
       path: t.exposeStringList('path', {
         description:
