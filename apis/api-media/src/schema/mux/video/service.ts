@@ -116,9 +116,11 @@ export async function createVideoByDirectUpload(
 
   const generateSubtitles = languageCode != null && userGenerated ? true : false
 
-  if (!isValidMuxGeneratedSubtitleLanguageCode(languageCode)) {
-    console.error(`Invalid language code: ${languageCode}`)
-    throw new Error(`Invalid language code: ${languageCode}`)
+  // if generating subs, validate the language code
+  if (generateSubtitles) {
+    if (!isValidMuxGeneratedSubtitleLanguageCode(languageCode)) {
+      throw new Error(`Invalid language code: ${languageCode}`)
+    }
   }
 
   const response = await getClient(userGenerated).video.uploads.create({
@@ -143,7 +145,8 @@ export async function createVideoByDirectUpload(
             {
               generated_subtitles: [
                 {
-                  language_code: languageCode,
+                  language_code:
+                    languageCode as MuxGeneratedSubtitleLanguageCode,
                   name: languageCode + ' auto-generated'
                 }
               ]
