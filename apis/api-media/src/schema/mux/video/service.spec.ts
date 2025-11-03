@@ -21,6 +21,23 @@ jest.mock('@mux/mux-node', () => ({
   default: jest.fn(() => mockMux)
 }))
 
+// Type assertions for mocked methods
+const mockUploadsCreate = mockMux.video.uploads.create as jest.MockedFunction<
+  typeof mockMux.video.uploads.create
+>
+const mockAssetsCreate = mockMux.video.assets.create as jest.MockedFunction<
+  typeof mockMux.video.assets.create
+>
+const mockAssetsRetrieve = mockMux.video.assets.retrieve as jest.MockedFunction<
+  typeof mockMux.video.assets.retrieve
+>
+const mockUploadsRetrieve = mockMux.video.uploads
+  .retrieve as jest.MockedFunction<typeof mockMux.video.uploads.retrieve>
+const mockAssetsDelete = mockMux.video.assets.delete as jest.MockedFunction<
+  typeof mockMux.video.assets.delete
+>
+const mockPost = mockMux.post as jest.MockedFunction<typeof mockMux.post>
+
 describe('MuxVideoService', () => {
   const originalEnv = clone(process.env)
   const MockedMux = Mux as jest.MockedClass<typeof Mux>
@@ -41,7 +58,7 @@ describe('MuxVideoService', () => {
 
   describe('createVideoByDirectUpload', () => {
     it('should create direct upload for publisher (non-user generated)', async () => {
-      mockMux.video.uploads.create.mockResolvedValueOnce({
+      mockUploadsCreate.mockResolvedValueOnce({
         id: 'upload-id',
         url: 'https://upload.mux.com/video'
       } as any)
@@ -52,13 +69,14 @@ describe('MuxVideoService', () => {
         tokenId: 'mux_access_token',
         tokenSecret: 'mux_secret_key'
       })
-      expect(mockMux.video.uploads.create).toHaveBeenCalledWith({
+      expect(mockUploadsCreate).toHaveBeenCalledWith({
         cors_origin: 'https://example.com',
         new_asset_settings: {
           encoding_tier: 'smart',
           playback_policy: ['public'],
           max_resolution_tier: undefined,
-          static_renditions: []
+          static_renditions: [],
+          inputs: []
         }
       })
       expect(result).toEqual({
@@ -68,7 +86,7 @@ describe('MuxVideoService', () => {
     })
 
     it('should create direct upload for user generated content', async () => {
-      mockMux.video.uploads.create.mockResolvedValueOnce({
+      mockUploadsCreate.mockResolvedValueOnce({
         id: 'ugc-upload-id',
         url: 'https://upload.mux.com/ugc-video'
       } as any)
@@ -86,14 +104,14 @@ describe('MuxVideoService', () => {
     })
 
     it('should create downloadable video when downloadable=true', async () => {
-      mockMux.video.uploads.create.mockResolvedValueOnce({
+      mockUploadsCreate.mockResolvedValueOnce({
         id: 'upload-id',
         url: 'https://upload.mux.com/video'
       } as any)
 
       await createVideoByDirectUpload(false, '1440p', true)
 
-      expect(mockMux.video.uploads.create).toHaveBeenCalledWith({
+      expect(mockUploadsCreate).toHaveBeenCalledWith({
         cors_origin: 'https://example.com',
         new_asset_settings: {
           encoding_tier: 'smart',
@@ -107,7 +125,8 @@ describe('MuxVideoService', () => {
             { resolution: '1080p' },
             { resolution: '1440p' },
             { resolution: '2160p' }
-          ]
+          ],
+          inputs: []
         }
       })
     })
@@ -148,7 +167,7 @@ describe('MuxVideoService', () => {
     })
 
     it('should throw error when Mux response is missing id', async () => {
-      mockMux.video.uploads.create.mockResolvedValueOnce({
+      mockUploadsCreate.mockResolvedValueOnce({
         url: 'https://upload.mux.com/video'
       } as any)
 
@@ -158,7 +177,7 @@ describe('MuxVideoService', () => {
     })
 
     it('should throw error when Mux response is missing url', async () => {
-      mockMux.video.uploads.create.mockResolvedValueOnce({
+      mockUploadsCreate.mockResolvedValueOnce({
         id: 'upload-id'
       } as any)
 
@@ -166,12 +185,69 @@ describe('MuxVideoService', () => {
         "Couldn't get upload information from cloudflare"
       )
     })
+
+    it('should create direct upload with generated subtitles when userGenerated is true', async () => {
+      mockUploadsCreate.mockResolvedValueOnce({
+        id: 'ugc-upload-id',
+        url: 'https://upload.mux.com/ugc-video'
+      } as any)
+
+      const result = await createVideoByDirectUpload(true, undefined, false, {
+        languageCode: 'en'
+      })
+
+      expect(mockUploadsCreate).toHaveBeenCalledWith({
+        cors_origin: 'https://example.com',
+        new_asset_settings: {
+          encoding_tier: 'premium',
+          playback_policy: ['public'],
+          max_resolution_tier: '1080p',
+          static_renditions: [],
+          inputs: [
+            {
+              generated_subtitles: [
+                {
+                  language_code: 'en',
+                  name: 'en auto-generated'
+                }
+              ]
+            }
+          ]
+        }
+      })
+      expect(result).toEqual({
+        id: 'ugc-upload-id',
+        uploadUrl: 'https://upload.mux.com/ugc-video'
+      })
+    })
+
+    it('should not generate subtitles when generateSubtitlesInput is provided but userGenerated is false', async () => {
+      mockUploadsCreate.mockResolvedValueOnce({
+        id: 'upload-id',
+        url: 'https://upload.mux.com/video'
+      } as any)
+
+      await createVideoByDirectUpload(false, undefined, false, {
+        languageCode: 'en'
+      })
+
+      expect(mockUploadsCreate).toHaveBeenCalledWith({
+        cors_origin: 'https://example.com',
+        new_asset_settings: {
+          encoding_tier: 'smart',
+          playback_policy: ['public'],
+          max_resolution_tier: undefined,
+          static_renditions: [],
+          inputs: []
+        }
+      })
+    })
   })
 
   describe('createVideoFromUrl', () => {
     it('should create video asset from URL for publisher', async () => {
       const mockAsset = { id: 'asset-id', status: 'ready' } as any
-      mockMux.video.assets.create.mockResolvedValueOnce(mockAsset)
+      mockAssetsCreate.mockResolvedValueOnce(mockAsset)
 
       const result = await createVideoFromUrl(
         'https://example.com/video.mp4',
@@ -182,7 +258,7 @@ describe('MuxVideoService', () => {
         tokenId: 'mux_access_token',
         tokenSecret: 'mux_secret_key'
       })
-      expect(mockMux.video.assets.create).toHaveBeenCalledWith({
+      expect(mockAssetsCreate).toHaveBeenCalledWith({
         inputs: [{ url: 'https://example.com/video.mp4' }],
         encoding_tier: 'smart',
         playback_policy: ['public'],
@@ -194,7 +270,7 @@ describe('MuxVideoService', () => {
 
     it('should create video asset from URL for UGC', async () => {
       const mockAsset = { id: 'ugc-asset-id', status: 'ready' } as any
-      mockMux.video.assets.create.mockResolvedValueOnce(mockAsset)
+      mockAssetsCreate.mockResolvedValueOnce(mockAsset)
 
       await createVideoFromUrl(
         'https://example.com/video.mp4',
@@ -207,7 +283,7 @@ describe('MuxVideoService', () => {
         tokenId: 'mux_ugc_access_token',
         tokenSecret: 'mux_ugc_secret_key'
       })
-      expect(mockMux.video.assets.create).toHaveBeenCalledWith({
+      expect(mockAssetsCreate).toHaveBeenCalledWith({
         inputs: [{ url: 'https://example.com/video.mp4' }],
         encoding_tier: 'smart',
         playback_policy: ['public'],
@@ -223,12 +299,64 @@ describe('MuxVideoService', () => {
         ]
       })
     })
+
+    it('should create video asset with generated subtitles when userGenerated is true', async () => {
+      const mockAsset = { id: 'ugc-asset-id', status: 'ready' } as any
+      mockAssetsCreate.mockResolvedValueOnce(mockAsset)
+
+      await createVideoFromUrl(
+        'https://example.com/video.mp4',
+        true,
+        undefined,
+        false,
+        { languageCode: 'en' }
+      )
+
+      expect(mockAssetsCreate).toHaveBeenCalledWith({
+        inputs: [
+          {
+            url: 'https://example.com/video.mp4',
+            generated_subtitles: [
+              {
+                language_code: 'en',
+                name: 'en auto-generated'
+              }
+            ]
+          }
+        ],
+        encoding_tier: 'premium',
+        playback_policy: ['public'],
+        max_resolution_tier: '1080p',
+        static_renditions: []
+      })
+    })
+
+    it('should not generate subtitles when generateSubtitlesInput is provided but userGenerated is false', async () => {
+      const mockAsset = { id: 'asset-id', status: 'ready' } as any
+      mockAssetsCreate.mockResolvedValueOnce(mockAsset)
+
+      await createVideoFromUrl(
+        'https://example.com/video.mp4',
+        false,
+        undefined,
+        false,
+        { languageCode: 'en' }
+      )
+
+      expect(mockAssetsCreate).toHaveBeenCalledWith({
+        inputs: [{ url: 'https://example.com/video.mp4' }],
+        encoding_tier: 'smart',
+        playback_policy: ['public'],
+        max_resolution_tier: undefined,
+        static_renditions: []
+      })
+    })
   })
 
   describe('getVideo', () => {
     it('should retrieve video asset for publisher', async () => {
       const mockAsset = { id: 'asset-id', status: 'ready' } as any
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
+      mockAssetsRetrieve.mockResolvedValueOnce(mockAsset)
 
       const result = await getVideo('asset-id', false)
 
@@ -236,13 +364,13 @@ describe('MuxVideoService', () => {
         tokenId: 'mux_access_token',
         tokenSecret: 'mux_secret_key'
       })
-      expect(mockMux.video.assets.retrieve).toHaveBeenCalledWith('asset-id')
+      expect(mockAssetsRetrieve).toHaveBeenCalledWith('asset-id')
       expect(result).toBe(mockAsset)
     })
 
     it('should retrieve video asset for UGC', async () => {
       const mockAsset = { id: 'ugc-asset-id', status: 'ready' } as any
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
+      mockAssetsRetrieve.mockResolvedValueOnce(mockAsset)
 
       const result = await getVideo('ugc-asset-id', true)
 
@@ -257,11 +385,11 @@ describe('MuxVideoService', () => {
   describe('getUpload', () => {
     it('should retrieve upload for publisher', async () => {
       const mockUpload = { id: 'upload-id', asset_id: 'asset-id' } as any
-      mockMux.video.uploads.retrieve.mockResolvedValueOnce(mockUpload)
+      mockUploadsRetrieve.mockResolvedValueOnce(mockUpload)
 
       const result = await getUpload('upload-id', false)
 
-      expect(mockMux.video.uploads.retrieve).toHaveBeenCalledWith('upload-id')
+      expect(mockUploadsRetrieve).toHaveBeenCalledWith('upload-id')
       expect(result).toBe(mockUpload)
     })
 
@@ -270,7 +398,7 @@ describe('MuxVideoService', () => {
         id: 'ugc-upload-id',
         asset_id: 'ugc-asset-id'
       } as any
-      mockMux.video.uploads.retrieve.mockResolvedValueOnce(mockUpload)
+      mockUploadsRetrieve.mockResolvedValueOnce(mockUpload)
 
       const result = await getUpload('ugc-upload-id', true)
 
@@ -280,15 +408,15 @@ describe('MuxVideoService', () => {
 
   describe('deleteVideo', () => {
     it('should delete video asset for publisher', async () => {
-      mockMux.video.assets.delete.mockResolvedValueOnce(undefined as any)
+      mockAssetsDelete.mockResolvedValueOnce(undefined as any)
 
       await deleteVideo('asset-id', false)
 
-      expect(mockMux.video.assets.delete).toHaveBeenCalledWith('asset-id')
+      expect(mockAssetsDelete).toHaveBeenCalledWith('asset-id')
     })
 
     it('should delete video asset for UGC', async () => {
-      mockMux.video.assets.delete.mockResolvedValueOnce(undefined as any)
+      mockAssetsDelete.mockResolvedValueOnce(undefined as any)
 
       await deleteVideo('ugc-asset-id', true)
 
@@ -296,7 +424,7 @@ describe('MuxVideoService', () => {
         tokenId: 'mux_ugc_access_token',
         tokenSecret: 'mux_ugc_secret_key'
       })
-      expect(mockMux.video.assets.delete).toHaveBeenCalledWith('ugc-asset-id')
+      expect(mockAssetsDelete).toHaveBeenCalledWith('ugc-asset-id')
     })
   })
 
@@ -309,13 +437,13 @@ describe('MuxVideoService', () => {
         }
       } as any
 
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
-      mockMux.post.mockResolvedValueOnce({} as any)
+      mockAssetsRetrieve.mockResolvedValueOnce(mockAsset)
+      mockPost.mockResolvedValueOnce({} as any)
 
       await enableDownload('asset-id', false, '1080p')
 
-      expect(mockMux.video.assets.retrieve).toHaveBeenCalledWith('asset-id')
-      expect(mockMux.post).toHaveBeenCalledWith(
+      expect(mockAssetsRetrieve).toHaveBeenCalledWith('asset-id')
+      expect(mockPost).toHaveBeenCalledWith(
         '/video/v1/assets/asset-id/static-renditions',
         {
           body: { resolution: '1080p' }
@@ -331,12 +459,12 @@ describe('MuxVideoService', () => {
         }
       } as any
 
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
+      mockAssetsRetrieve.mockResolvedValueOnce(mockAsset)
 
       await enableDownload('asset-id', false, '1080p')
 
-      expect(mockMux.video.assets.retrieve).toHaveBeenCalledWith('asset-id')
-      expect(mockMux.post).not.toHaveBeenCalled()
+      expect(mockAssetsRetrieve).toHaveBeenCalledWith('asset-id')
+      expect(mockPost).not.toHaveBeenCalled()
     })
 
     it('should handle asset with no static renditions', async () => {
@@ -345,12 +473,12 @@ describe('MuxVideoService', () => {
         static_renditions: null
       } as any
 
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
-      mockMux.post.mockResolvedValueOnce({} as any)
+      mockAssetsRetrieve.mockResolvedValueOnce(mockAsset)
+      mockPost.mockResolvedValueOnce({} as any)
 
       await enableDownload('asset-id', false, '1080p')
 
-      expect(mockMux.post).toHaveBeenCalledWith(
+      expect(mockPost).toHaveBeenCalledWith(
         '/video/v1/assets/asset-id/static-renditions',
         {
           body: { resolution: '1080p' }
@@ -366,12 +494,12 @@ describe('MuxVideoService', () => {
         }
       } as any
 
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
-      mockMux.post.mockResolvedValueOnce({} as any)
+      mockAssetsRetrieve.mockResolvedValueOnce(mockAsset)
+      mockPost.mockResolvedValueOnce({} as any)
 
       await enableDownload('asset-id', false, '1080p')
 
-      expect(mockMux.post).toHaveBeenCalledWith(
+      expect(mockPost).toHaveBeenCalledWith(
         '/video/v1/assets/asset-id/static-renditions',
         {
           body: { resolution: '1080p' }
@@ -401,11 +529,11 @@ describe('MuxVideoService', () => {
         static_renditions: mockStaticRenditions
       } as any
 
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
+      mockAssetsRetrieve.mockResolvedValueOnce(mockAsset)
 
       const result = await getStaticRenditions('asset-id', false)
 
-      expect(mockMux.video.assets.retrieve).toHaveBeenCalledWith('asset-id')
+      expect(mockAssetsRetrieve).toHaveBeenCalledWith('asset-id')
       expect(result).toBe(mockStaticRenditions)
     })
 
@@ -427,7 +555,7 @@ describe('MuxVideoService', () => {
         static_renditions: mockStaticRenditions
       } as any
 
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
+      mockAssetsRetrieve.mockResolvedValueOnce(mockAsset)
 
       const result = await getStaticRenditions('ugc-asset-id', true)
 
@@ -444,7 +572,7 @@ describe('MuxVideoService', () => {
         static_renditions: null
       } as any
 
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
+      mockAssetsRetrieve.mockResolvedValueOnce(mockAsset)
 
       const result = await getStaticRenditions('asset-id', false)
 
@@ -456,7 +584,7 @@ describe('MuxVideoService', () => {
         id: 'asset-id'
       } as any
 
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
+      mockAssetsRetrieve.mockResolvedValueOnce(mockAsset)
 
       const result = await getStaticRenditions('asset-id', false)
 

@@ -2,6 +2,16 @@ import Mux from '@mux/mux-node'
 
 import { MaxResolutionTierEnum } from './enums/maxResolutionTierEnum'
 
+type MuxGeneratedSubtitleLanguageCode = NonNullable<
+  NonNullable<
+    NonNullable<
+      NonNullable<
+        Parameters<Mux['video']['uploads']['create']>[0]['new_asset_settings']
+      >['inputs']
+    >[number]['generated_subtitles']
+  >[number]['language_code']
+>
+
 // Type guard to safely check if a value is a valid MaxResolutionTierEnum key
 export function isValidMaxResolutionTier(
   value: string
@@ -55,14 +65,18 @@ function getClient(userGenerated: boolean): Mux {
 export async function createVideoByDirectUpload(
   userGenerated: boolean,
   maxResolution?: Mux.Video.Asset['max_resolution_tier'],
-  downloadable = false
+  downloadable = false,
+  generateSubtitlesInput?: { languageCode: string } | null
 ): Promise<{ id: string; uploadUrl: string }> {
   if (process.env.CORS_ORIGIN == null) throw new Error('Missing CORS_ORIGIN')
+
+  const generateSubtitles =
+    generateSubtitlesInput != null && userGenerated ? true : false
 
   const response = await getClient(userGenerated).video.uploads.create({
     cors_origin: process.env.CORS_ORIGIN,
     new_asset_settings: {
-      encoding_tier: 'smart',
+      encoding_tier: generateSubtitles ? 'premium' : 'smart',
       playback_policy: ['public'],
       max_resolution_tier: userGenerated ? '1080p' : maxResolution,
       static_renditions: downloadable
@@ -74,6 +88,19 @@ export async function createVideoByDirectUpload(
             { resolution: '1080p' },
             { resolution: '1440p' },
             { resolution: '2160p' }
+          ]
+        : [],
+      inputs: generateSubtitles
+        ? [
+            {
+              generated_subtitles: [
+                {
+                  language_code: generateSubtitlesInput!
+                    .languageCode as MuxGeneratedSubtitleLanguageCode,
+                  name: generateSubtitlesInput!.languageCode + ' auto-generated'
+                }
+              ]
+            }
           ]
         : []
     }
@@ -95,15 +122,32 @@ export async function createVideoFromUrl(
   url: string,
   userGenerated: boolean,
   maxResolution?: Mux.Video.Asset['max_resolution_tier'],
-  downloadable = false
+  downloadable = false,
+  generateSubtitlesInput?: { languageCode: string } | null
 ): Promise<Mux.Video.Asset> {
+  const generateSubtitles =
+    generateSubtitlesInput != null && userGenerated ? true : false
+
   return await getClient(userGenerated).video.assets.create({
-    inputs: [
-      {
-        url
-      }
-    ],
-    encoding_tier: 'smart',
+    inputs: generateSubtitles
+      ? [
+          {
+            url,
+            generated_subtitles: [
+              {
+                language_code: generateSubtitlesInput!
+                  .languageCode as MuxGeneratedSubtitleLanguageCode,
+                name: generateSubtitlesInput!.languageCode + ' auto-generated'
+              }
+            ]
+          }
+        ]
+      : [
+          {
+            url
+          }
+        ],
+    encoding_tier: generateSubtitles ? 'premium' : 'smart',
     playback_policy: ['public'],
     max_resolution_tier: userGenerated ? '1080p' : maxResolution,
     static_renditions: downloadable

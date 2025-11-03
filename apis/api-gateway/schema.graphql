@@ -444,12 +444,14 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     userGenerated: Boolean
     downloadable: Boolean = false
     maxResolution: MaxResolutionTier = fhd
+    generateSubtitlesInput: GenerateSubtitlesInput
   ): MuxVideo! @join__field(graph: API_MEDIA) 
   createMuxVideoUploadByUrl(
     url: String!
     userGenerated: Boolean
     downloadable: Boolean = false
     maxResolution: MaxResolutionTier = fhd
+    generateSubtitlesInput: GenerateSubtitlesInput
   ): MuxVideo! @join__field(graph: API_MEDIA) 
   enableMuxDownload(id: ID!, resolution: String) : MuxVideo @join__field(graph: API_MEDIA) 
   deleteMuxVideo(id: ID!, userGenerated: Boolean) : Boolean! @join__field(graph: API_MEDIA) 
@@ -4776,6 +4778,10 @@ input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   the id of the Video object this file relates to in the database
   """
   videoId: String!
+}
+
+input GenerateSubtitlesInput @join__type(graph: API_MEDIA)  {
+  languageCode: String!
 }
 
 input ImageInput @join__type(graph: API_MEDIA)  {
