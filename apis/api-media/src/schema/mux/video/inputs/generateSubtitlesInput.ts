@@ -8,4 +8,3 @@ export const GenerateSubtitlesInput = builder.inputType(
     })
   }
 )
-
