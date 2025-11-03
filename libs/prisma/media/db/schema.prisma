@@ -45,19 +45,20 @@ model CloudflareImage {
 }
 
 model MuxVideo {
-  id            String         @id @default(uuid())
-  playbackId    String?        @unique
-  uploadUrl     String?
-  uploadId      String?        @unique
-  assetId       String?        @unique
-  userId        String
-  name          String?
-  duration      Int            @default(0)
-  downloadable  Boolean        @default(false)
-  createdAt     DateTime       @default(now())
-  readyToStream Boolean        @default(false)
-  updatedAt     DateTime       @default(now()) @updatedAt
-  videoVariants VideoVariant[]
+  id                     String         @id @default(uuid())
+  playbackId             String?        @unique
+  uploadUrl              String?
+  uploadId               String?        @unique
+  assetId                String?        @unique
+  userId                 String
+  name                   String?
+  duration               Int            @default(0)
+  downloadable           Boolean        @default(false)
+  createdAt              DateTime       @default(now())
+  readyToStream          Boolean        @default(false)
+  showGeneratedSubtitles Boolean?
+  updatedAt              DateTime       @default(now()) @updatedAt
+  videoVariants          VideoVariant[]
 
   @@index(userId(type: Hash))
   @@index(assetId(type: Hash))
