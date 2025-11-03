@@ -322,9 +322,6 @@ export function MuxVideoPollingProvider({
             video?.assetId != null &&
             video?.playbackId != null
           ) {
-            // TODO: When backend adds subtitle tracking, check subtitle status here
-            // If languageCode was provided, poll for subtitle completion before calling handlePollingComplete
-            // For now, assume completion when video is ready
             handlePollingComplete(videoId, task.languageCode)
           }
 
