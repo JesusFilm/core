@@ -2,13 +2,18 @@ import type { ReadStream } from 'fs'
 
 import { CreateMuxVideoUploadByFileMutationVariables } from '../../../../../../../../../../__generated__/CreateMuxVideoUploadByFileMutation'
 
-export function fileToMuxUpload(file: File): {
+export function fileToMuxUpload(
+  file: File,
+  languageCode?: string
+): {
   variables: CreateMuxVideoUploadByFileMutationVariables
 } {
   const fileName = file.name.split('.')[0]
   return {
     variables: {
-      name: fileName
+      name: fileName,
+      generateSubtitlesInput:
+        languageCode != null ? { languageCode } : undefined
     }
   }
 }

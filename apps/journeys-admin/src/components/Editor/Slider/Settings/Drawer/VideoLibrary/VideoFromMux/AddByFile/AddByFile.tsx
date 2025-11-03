@@ -1,4 +1,4 @@
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import LinearProgress from '@mui/material/LinearProgress'
@@ -6,33 +6,28 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { UpChunk } from '@mux/upchunk'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import { FileRejection, useDropzone } from 'react-dropzone'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
 import { CreateMuxVideoUploadByFileMutation } from '../../../../../../../../../__generated__/CreateMuxVideoUploadByFileMutation'
-import { GetMyMuxVideoQuery } from '../../../../../../../../../__generated__/GetMyMuxVideoQuery'
+import { useMuxVideoPolling } from '../../../../../../../MuxVideoPollingProvider'
 
 import { fileToMuxUpload } from './utils/addByFileUtils'
-
 export const CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
-  mutation CreateMuxVideoUploadByFileMutation($name: String!) {
-    createMuxVideoUploadByFile(name: $name) {
+  mutation CreateMuxVideoUploadByFileMutation(
+    $name: String!
+    $generateSubtitlesInput: GenerateSubtitlesInput
+  ) {
+    createMuxVideoUploadByFile(
+      name: $name
+      generateSubtitlesInput: $generateSubtitlesInput
+    ) {
       uploadUrl
       id
-    }
-  }
-`
-
-export const GET_MY_MUX_VIDEO_QUERY = gql`
-  query GetMyMuxVideoQuery($id: ID!) {
-    getMyMuxVideo(id: $id) {
-      id
-      assetId
-      playbackId
-      readyToStream
     }
   }
 `
@@ -43,6 +38,9 @@ interface AddByFileProps {
 
 export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
+  const languageCode = journey?.language.bcp47
+  const { startPolling, stopPolling, getPollingStatus } = useMuxVideoPolling()
 
   const [uploading, setUploading] = useState(false)
   const [processing, setProcessing] = useState(false)
@@ -52,43 +50,40 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const [fileInvalidType, setfileInvalidType] = useState(false)
   const [error, setError] = useState<Error>()
   const [progress, setProgress] = useState(0)
+  const currentVideoIdRef = useRef<string | null>(null)
 
   function resetUploadStatus(): void {
     setUploading(false)
     setProcessing(false)
     setProgress(0)
+    currentVideoIdRef.current = null
   }
 
-  const [createMuxVideoUploadByFile, { data }] =
+  const [createMuxVideoUploadByFile] =
     useMutation<CreateMuxVideoUploadByFileMutation>(
       CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION
     )
-  const [getMyMuxVideo, { stopPolling }] = useLazyQuery<GetMyMuxVideoQuery>(
-    GET_MY_MUX_VIDEO_QUERY,
-    {
-      pollInterval: 1000,
-      notifyOnNetworkStatusChange: true,
-      onCompleted: (data) => {
-        if (
-          data.getMyMuxVideo.playbackId != null &&
-          data.getMyMuxVideo.assetId != null &&
-          data.getMyMuxVideo.readyToStream
-        ) {
-          stopPolling()
-          onChange(data.getMyMuxVideo.id)
-          resetUploadStatus()
-        }
-      }
-    }
-  )
 
+  // Monitor polling status for completion
   useEffect(() => {
-    if (processing && data?.createMuxVideoUploadByFile?.id != null) {
-      void getMyMuxVideo({
-        variables: { id: data.createMuxVideoUploadByFile.id }
-      })
+    if (!processing || currentVideoIdRef.current == null) return
+
+    const checkInterval = setInterval(() => {
+      const status = getPollingStatus(currentVideoIdRef.current ?? '')
+
+      if (status?.status === 'completed') {
+        onChange(currentVideoIdRef.current ?? '')
+        resetUploadStatus()
+      } else if (status?.status === 'error') {
+        setError(new Error('Video processing failed'))
+        resetUploadStatus()
+      }
+    }, 500) // Check every 500ms
+
+    return () => {
+      clearInterval(checkInterval)
     }
-  }, [processing, getMyMuxVideo, data?.createMuxVideoUploadByFile?.id])
+  }, [processing, getPollingStatus, onChange])
 
   const onDrop = async (): Promise<void> => {
     setfileTooLarge(false)
@@ -100,9 +95,11 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
 
   function uploadVideo(
     file: File,
-    data: CreateMuxVideoUploadByFileMutation
+    data: CreateMuxVideoUploadByFileMutation,
+    videoId: string
   ): void {
     setUploading(true)
+    currentVideoIdRef.current = videoId
     const upload = UpChunk.createUpload({
       file,
       endpoint: data.createMuxVideoUploadByFile.uploadUrl ?? '',
@@ -111,9 +108,14 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     upload.on('success', (): void => {
       setUploading(false)
       setProcessing(true)
+      // Start polling in the provider
+      startPolling(videoId, languageCode)
     })
     upload.on('error', (err): void => {
       setError(err.detail)
+      if (currentVideoIdRef.current != null) {
+        stopPolling(currentVideoIdRef.current)
+      }
       resetUploadStatus()
     })
     upload.on('progress', (progress): void => {
@@ -124,14 +126,14 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const onDropAccepted = async (files: File[]): Promise<void> => {
     if (files.length > 0) {
       const { data } = await createMuxVideoUploadByFile(
-        fileToMuxUpload(files[0])
+        fileToMuxUpload(files[0], languageCode)
       )
 
       if (
         data?.createMuxVideoUploadByFile?.uploadUrl != null &&
         data?.createMuxVideoUploadByFile?.id != null
       ) {
-        uploadVideo(files[0], data)
+        uploadVideo(files[0], data, data.createMuxVideoUploadByFile.id)
       }
     }
   }

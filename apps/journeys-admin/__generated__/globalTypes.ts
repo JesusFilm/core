@@ -416,6 +416,10 @@ export interface EmailActionInput {
   parentStepId?: string | null;
 }
 
+export interface GenerateSubtitlesInput {
+  languageCode: string;
+}
+
 export interface HostCreateInput {
   title: string;
   location?: string | null;
