@@ -1,11 +1,14 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Form } from '@formium/types'
 import { render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
 
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../libs/block'
+import {
+  BlockFields_MultiselectBlock as MultiselectBlock,
+  BlockFields_MultiselectOptionBlock as MultiselectOptionBlock
+} from '../../libs/block/__generated__/BlockFields'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../RadioQuestion/__generated__/RadioQuestionFields'
 import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
@@ -62,8 +65,10 @@ describe('BlockRenderer', () => {
       size: null,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null,
-      children: []
+      children: [],
+      settings: null
     }
     const { getByText } = render(
       <MockedProvider>
@@ -87,8 +92,10 @@ describe('BlockRenderer', () => {
       size: null,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null,
-      children: []
+      children: [],
+      settings: null
     }
     const { getByTestId, getByText } = render(
       <MockedProvider>
@@ -124,6 +131,7 @@ describe('BlockRenderer', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           id: 'typographyBlockId1',
@@ -134,7 +142,11 @@ describe('BlockRenderer', () => {
           color: null,
           content: 'How did we get here?',
           variant: null,
-          children: []
+          children: [],
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         }
       ]
     }
@@ -159,6 +171,7 @@ describe('BlockRenderer', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           id: 'typographyBlockId1',
@@ -169,7 +182,11 @@ describe('BlockRenderer', () => {
           color: null,
           content: 'How did we get here?',
           variant: null,
-          children: []
+          children: [],
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         }
       ]
     }
@@ -200,67 +217,6 @@ describe('BlockRenderer', () => {
     )
   })
 
-  it('should render Form', async () => {
-    const form = {
-      name: 'single-page-test'
-    } as unknown as Form
-    const block: TreeBlock = {
-      __typename: 'FormBlock',
-      id: 'form.id',
-      parentBlockId: null,
-      parentOrder: 0,
-      form,
-      action: null,
-      children: []
-    }
-
-    const { getByTestId } = render(
-      <MockedProvider>
-        <BlockRenderer block={block} />
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(getByTestId('FormBlock-form.id')).toBeInTheDocument()
-    )
-  })
-
-  it('should render Form with general wrapper and specific wrapper', () => {
-    const form = {
-      name: 'single-page-test'
-    } as unknown as Form
-    const block: TreeBlock = {
-      __typename: 'FormBlock',
-      id: 'form.id',
-      parentBlockId: null,
-      parentOrder: 0,
-      form,
-      action: null,
-      children: []
-    }
-
-    const { getByTestId } = render(
-      <MockedProvider>
-        <BlockRenderer
-          block={block}
-          wrappers={{
-            Wrapper: ({ children }) => (
-              <div data-testid="general-wrapper">{children}</div>
-            ),
-            FormWrapper: ({ children }) => (
-              <div data-testid="form-wrapper">{children}</div>
-            )
-          }}
-        />
-      </MockedProvider>
-    )
-    expect(
-      getByTestId('general-wrapper').children[0].getAttribute('data-testid')
-    ).toBe('form-wrapper')
-    expect(getByTestId('form-wrapper')).toContainElement(
-      getByTestId('FormBlock-form.id')
-    )
-  })
-
   it('should render Image', async () => {
     const block: TreeBlock = {
       __typename: 'ImageBlock',
@@ -272,6 +228,9 @@ describe('BlockRenderer', () => {
       parentBlockId: null,
       parentOrder: 0,
       blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+      scale: null,
+      focalLeft: 50,
+      focalTop: 50,
       children: []
     }
     const { getByRole } = render(<BlockRenderer block={block} />)
@@ -294,6 +253,9 @@ describe('BlockRenderer', () => {
       parentBlockId: null,
       parentOrder: 0,
       blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+      scale: null,
+      focalLeft: 50,
+      focalTop: 50,
       children: []
     }
     const { getByTestId, getByRole } = render(
@@ -325,6 +287,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       label: 'radio option',
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     }
     const { getByText } = render(
@@ -335,7 +298,7 @@ describe('BlockRenderer', () => {
     await waitFor(() => expect(getByText('radio option')).toBeInTheDocument())
   })
 
-  it('should render RadioOption with general wrapper and specific wrapper', () => {
+  it('should render RadioOption with general wrapper and specific wrapper', async () => {
     const block: TreeBlock = {
       __typename: 'RadioOptionBlock',
       id: 'main',
@@ -343,6 +306,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       label: 'radio option',
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     }
     const { getByTestId, getByText } = render(
@@ -363,6 +327,42 @@ describe('BlockRenderer', () => {
     expect(
       getByTestId('general-wrapper').children[0].getAttribute('data-testid')
     ).toBe('radio-option-wrapper')
+    await waitFor(() => expect(getByText('radio option')).toBeInTheDocument())
+    expect(getByTestId('radio-option-wrapper')).toContainElement(
+      getByText('radio option')
+    )
+  })
+
+  it('should render RadioOption with gridView', async () => {
+    const block: TreeBlock = {
+      __typename: 'RadioOptionBlock',
+      id: 'main',
+      parentBlockId: null,
+      parentOrder: 0,
+      label: 'radio option',
+      action: null,
+      pollOptionImageBlockId: null,
+      children: []
+    }
+    const { getByTestId, getByText } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <BlockRenderer
+          block={{ ...block, gridView: true }}
+          wrappers={{
+            Wrapper: ({ children }) => (
+              <div data-testid="general-wrapper">{children}</div>
+            ),
+            RadioOptionWrapper: ({ children }) => (
+              <div data-testid="radio-option-wrapper">{children}</div>
+            )
+          }}
+        />
+      </MockedProvider>
+    )
+    expect(
+      getByTestId('general-wrapper').children[0].getAttribute('data-testid')
+    ).toBe('radio-option-wrapper')
+    await waitFor(() => expect(getByText('radio option')).toBeInTheDocument())
     expect(getByTestId('radio-option-wrapper')).toContainElement(
       getByText('radio option')
     )
@@ -376,6 +376,7 @@ describe('BlockRenderer', () => {
       parentOrder: 0,
       label: 'radio option 1',
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     }
 
@@ -384,6 +385,7 @@ describe('BlockRenderer', () => {
       id: 'main',
       parentBlockId: null,
       parentOrder: 0,
+      gridView: false,
       children: [option, { ...option, label: 'radio option 2' }]
     }
     const { getByText } = render(
@@ -401,6 +403,7 @@ describe('BlockRenderer', () => {
       id: 'main',
       parentBlockId: null,
       parentOrder: 0,
+      gridView: false,
       children: []
     }
     const { getByTestId, getByRole } = render(
@@ -427,6 +430,123 @@ describe('BlockRenderer', () => {
       'MuiButtonGroup-contained MuiButtonGroup-vertical'
     )
     expect(getByTestId('radio-question-wrapper')).toContainElement(buttonGroup)
+  })
+
+  it('should render MultiselectOption', async () => {
+    const block: TreeBlock = {
+      __typename: 'MultiselectOptionBlock',
+      id: 'multiOption',
+      parentBlockId: null,
+      parentOrder: 0,
+      label: 'multi option',
+      children: []
+    }
+    const { getByText } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <BlockRenderer block={block} />
+      </MockedProvider>
+    )
+    await waitFor(() => expect(getByText('multi option')).toBeInTheDocument())
+  })
+
+  it('should render MultiselectOption with general wrapper and specific wrapper', async () => {
+    const block: TreeBlock = {
+      __typename: 'MultiselectOptionBlock',
+      id: 'multiOption',
+      parentBlockId: null,
+      parentOrder: 0,
+      label: 'multi option',
+      children: []
+    }
+    const { getByTestId, getByText } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <BlockRenderer
+          block={block}
+          wrappers={{
+            Wrapper: ({ children }) => (
+              <div data-testid="general-wrapper">{children}</div>
+            ),
+            MultiselectOptionWrapper: ({ children }) => (
+              <div data-testid="multiselect-option-wrapper">{children}</div>
+            )
+          }}
+        />
+      </MockedProvider>
+    )
+    expect(
+      getByTestId('general-wrapper').children[0].getAttribute('data-testid')
+    ).toBe('multiselect-option-wrapper')
+    await waitFor(() => expect(getByText('multi option')).toBeInTheDocument())
+    expect(getByTestId('multiselect-option-wrapper')).toContainElement(
+      getByText('multi option')
+    )
+  })
+
+  it('should render MultiselectQuestion', async () => {
+    const option: TreeBlock<MultiselectOptionBlock> = {
+      __typename: 'MultiselectOptionBlock',
+      id: 'option1',
+      parentBlockId: 'multi',
+      parentOrder: 0,
+      label: 'multi option 1',
+      children: []
+    }
+    const block: TreeBlock<MultiselectBlock> = {
+      __typename: 'MultiselectBlock',
+      id: 'multi',
+      parentBlockId: null,
+      parentOrder: 0,
+      min: 0,
+      max: 2,
+      children: [option, { ...option, id: 'option2', label: 'multi option 2' }]
+    }
+    const { getByText } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <SnackbarProvider>
+          <BlockRenderer block={block} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() => expect(getByText('multi option 1')).toBeInTheDocument())
+    expect(getByText('multi option 2')).toBeInTheDocument()
+  })
+
+  it('should render MultiselectQuestion with general wrapper and specific wrapper', () => {
+    const block: TreeBlock = {
+      __typename: 'MultiselectBlock',
+      id: 'multi',
+      parentBlockId: null,
+      parentOrder: 0,
+      min: 0,
+      max: 2,
+      children: []
+    }
+    const { getByTestId, getByRole } = render(
+      <MockedProvider mocks={[]} addTypename={false}>
+        <BlockRenderer
+          block={{ ...block }}
+          wrappers={{
+            Wrapper: ({ children }) => (
+              <div data-testid="general-wrapper">{children}</div>
+            ),
+            MultiselectQuestionWrapper: ({ children }) => (
+              <div data-testid="multiselect-question-wrapper">{children}</div>
+            )
+          }}
+        />
+      </MockedProvider>
+    )
+    expect(
+      getByTestId('general-wrapper').children[0].getAttribute('data-testid')
+    ).toBe('multiselect-question-wrapper')
+
+    const buttonGroup = getByRole('group')
+    expect(buttonGroup).toHaveClass(
+      'MuiButtonGroup-contained MuiButtonGroup-vertical'
+    )
+    expect(getByTestId('multiselect-question-wrapper')).toContainElement(
+      buttonGroup
+    )
   })
 
   it('should render SignUp', async () => {
@@ -512,8 +632,10 @@ describe('BlockRenderer', () => {
           size: null,
           startIconId: null,
           endIconId: null,
+          submitEnabled: null,
           action: null,
-          children: []
+          children: [],
+          settings: null
         }
       ]
     }
@@ -550,8 +672,10 @@ describe('BlockRenderer', () => {
           size: null,
           startIconId: null,
           endIconId: null,
+          submitEnabled: null,
           action: null,
-          children: []
+          children: [],
+          settings: null
         }
       ]
     }
@@ -595,7 +719,11 @@ describe('BlockRenderer', () => {
       color: null,
       content: 'How did we get here?',
       variant: null,
-      children: []
+      children: [],
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     }
     const { getByText } = render(<BlockRenderer block={block} />)
     expect(getByText('How did we get here?')).toBeInTheDocument()
@@ -611,7 +739,11 @@ describe('BlockRenderer', () => {
       color: null,
       content: 'How did we get here?',
       variant: null,
-      children: []
+      children: [],
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     }
     const { getByTestId } = render(
       <BlockRenderer
@@ -646,7 +778,8 @@ describe('BlockRenderer', () => {
       duration: null,
       image: null,
       objectFit: null,
-      video: {
+      subtitleLanguage: null,
+      mediaVideo: {
         __typename: 'Video',
         id: '2_0-FallingPlates',
         title: [
@@ -655,8 +788,13 @@ describe('BlockRenderer', () => {
             value: 'FallingPlates'
           }
         ],
-        image:
-          'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+        images: [
+          {
+            __typename: 'CloudflareImage',
+            mobileCinematicHigh:
+              'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+          }
+        ],
         variant: {
           __typename: 'VideoVariant',
           id: '2_0-FallingPlates-529',
@@ -697,7 +835,8 @@ describe('BlockRenderer', () => {
       duration: null,
       image: null,
       objectFit: null,
-      video: {
+      subtitleLanguage: null,
+      mediaVideo: {
         __typename: 'Video',
         id: '2_0-FallingPlates',
         title: [
@@ -706,8 +845,13 @@ describe('BlockRenderer', () => {
             value: 'FallingPlates'
           }
         ],
-        image:
-          'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+        images: [
+          {
+            __typename: 'CloudflareImage',
+            mobileCinematicHigh:
+              'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+          }
+        ],
         variant: {
           __typename: 'VideoVariant',
           id: '2_0-FallingPlates-529',

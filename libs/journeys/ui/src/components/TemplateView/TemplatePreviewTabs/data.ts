@@ -11,7 +11,8 @@ export const journeyVideoBlocks: Blocks[] = [
     coverBlockId: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     __typename: 'VideoBlock',
@@ -32,7 +33,8 @@ export const journeyVideoBlocks: Blocks[] = [
     image: null,
     duration: 118,
     objectFit: null,
-    video: {
+    subtitleLanguage: null,
+    mediaVideo: {
       __typename: 'Video',
       id: '1_0-TrainV_1Install',
       title: [
@@ -41,8 +43,13 @@ export const journeyVideoBlocks: Blocks[] = [
           value: 'Installing the Jesus Film Media App'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/lrg_cine_install.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/lrg_cine_install.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-0-TrainV_1Install',
@@ -71,7 +78,8 @@ export const journeyVideoBlocks: Blocks[] = [
     image: null,
     duration: null,
     objectFit: null,
-    video: {
+    subtitleLanguage: null,
+    mediaVideo: {
       __typename: 'Video',
       id: '1_0-TrainV_5Ministry',
       title: [
@@ -80,8 +88,13 @@ export const journeyVideoBlocks: Blocks[] = [
           value: 'Use this App in Ministry'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/lrg_cine_ministry.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/lrg_cine_ministry.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-0-TrainV_5Ministry',
@@ -110,7 +123,8 @@ export const journeyVideoBlocks: Blocks[] = [
     image: null,
     duration: null,
     objectFit: null,
-    video: {
+    subtitleLanguage: null,
+    mediaVideo: {
       __typename: 'Video',
       id: '1_cl1302-0-0',
       title: [
@@ -119,8 +133,13 @@ export const journeyVideoBlocks: Blocks[] = [
           value: 'StoryClubs: Childhood of Jesus'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl1302-0-0.mobileCinematicHigh.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1302-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-cl1302-0-0',
@@ -150,7 +169,8 @@ export const journeyVideoBlocks: Blocks[] = [
     image: 'https://i.ytimg.com/vi/TDBSCCrem-Q/hqdefault.jpg',
     duration: 120,
     objectFit: null,
-    video: null,
+    subtitleLanguage: null,
+    mediaVideo: null,
     action: null
   },
   {
@@ -162,7 +182,8 @@ export const journeyVideoBlocks: Blocks[] = [
     coverBlockId: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     __typename: 'StepBlock',
@@ -193,7 +214,8 @@ export const journeyVideoBlocks: Blocks[] = [
     image: null,
     duration: 147,
     objectFit: null,
-    video: {
+    subtitleLanguage: null,
+    mediaVideo: {
       __typename: 'Video',
       id: '1_cl1305-0-0',
       title: [
@@ -202,8 +224,13 @@ export const journeyVideoBlocks: Blocks[] = [
           value: 'StoryClubs: Sinful Woman Forgiven'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl1305-0-0.mobileCinematicHigh.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1305-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-cl1305-0-0',
@@ -221,7 +248,8 @@ export const journeyVideoBlocks: Blocks[] = [
     coverBlockId: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     __typename: 'CardBlock',
@@ -232,7 +260,8 @@ export const journeyVideoBlocks: Blocks[] = [
     coverBlockId: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     __typename: 'CardBlock',
@@ -243,7 +272,8 @@ export const journeyVideoBlocks: Blocks[] = [
     coverBlockId: null,
     themeMode: null,
     themeName: null,
-    fullscreen: false
+    fullscreen: false,
+    backdropBlur: null
   },
   {
     __typename: 'StepBlock',
@@ -304,7 +334,11 @@ export const videoBlocksFiltered = [
     image: 'https://i.ytimg.com/vi/ghTiJv0oVck/hqdefault.jpg',
     duration: 218,
     objectFit: null,
-    video: null,
+    subtitleLanguage: null,
+    mediaVideo: {
+      __typename: 'YouTube',
+      id: 'ghTiJv0oVck'
+    },
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: '27c87b6a-8be5-4fb3-b2e0-a99d96df9c54',
@@ -330,7 +364,7 @@ export const videoBlocksFiltered = [
     image: null,
     duration: null,
     objectFit: 'fill',
-    video: {
+    mediaVideo: {
       __typename: 'Video',
       id: '1_cl1301-0-0',
       title: [
@@ -339,8 +373,13 @@ export const videoBlocksFiltered = [
           value: 'StoryClubs: Birth of Jesus'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl1301-0-0.mobileCinematicHigh.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1301-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-cl1301-0-0',
@@ -373,7 +412,11 @@ export const videoBlocksFiltered = [
     image: 'https://i.ytimg.com/vi/90XbaaQerz8/hqdefault.jpg',
     duration: 188,
     objectFit: null,
-    video: null,
+    subtitleLanguage: null,
+    mediaVideo: {
+      __typename: 'YouTube',
+      id: '90XbaaQerz8'
+    },
     action: {
       __typename: 'NavigateToBlockAction',
       parentBlockId: '5b095694-6048-412e-96d4-729678fb7857',
@@ -399,7 +442,8 @@ export const videoBlocksFiltered = [
     image: null,
     duration: null,
     objectFit: null,
-    video: {
+    subtitleLanguage: null,
+    mediaVideo: {
       __typename: 'Video',
       id: '1_jf-0-0',
       title: [
@@ -408,8 +452,13 @@ export const videoBlocksFiltered = [
           value: 'JESUS'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg?version=2',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg?version=2/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-jf-0-0',
@@ -441,7 +490,8 @@ export const videoBlocksFiltered = [
     image: null,
     duration: 112,
     objectFit: null,
-    video: {
+    subtitleLanguage: null,
+    mediaVideo: {
       __typename: 'Video',
       id: '1_cl1303-0-0',
       title: [
@@ -450,8 +500,13 @@ export const videoBlocksFiltered = [
           value: 'StoryClubs: Miraculous Catch of Fish'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_cl1303-0-0.mobileCinematicHigh.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_cl1303-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-cl1303-0-0',
@@ -483,7 +538,8 @@ export const videoBlocksFiltered = [
     image: null,
     duration: 0,
     objectFit: null,
-    video: {
+    subtitleLanguage: null,
+    mediaVideo: {
       __typename: 'Video',
       id: '1_jf6125-0-0',
       title: [
@@ -492,8 +548,13 @@ export const videoBlocksFiltered = [
           value: "The Lord's Prayer"
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf6125-0-0.mobileCinematicHigh.jpg?version=2',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf6125-0-0.mobileCinematicHigh.jpg?version=2/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '1_529-jf6125-0-0',

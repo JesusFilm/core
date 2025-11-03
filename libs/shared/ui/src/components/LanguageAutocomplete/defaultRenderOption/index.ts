@@ -1,0 +1,1 @@
+export { defaultRenderOption } from './defaultRenderOption'

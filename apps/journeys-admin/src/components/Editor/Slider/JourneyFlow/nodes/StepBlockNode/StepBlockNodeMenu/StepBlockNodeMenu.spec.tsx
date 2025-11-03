@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -7,6 +7,12 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
+
+jest.mock('@core/shared/ui/deviceUtils', () => {
+  return {
+    isIOSTouchScreen: jest.fn()
+  }
+})
 
 describe('StepBlockNodeMenu', () => {
   const step: TreeBlock<StepBlock> = {
@@ -19,6 +25,8 @@ describe('StepBlockNodeMenu', () => {
     slug: null,
     children: []
   }
+
+  beforeEach(() => jest.clearAllMocks())
 
   it('should open menu on click', async () => {
     const { getByTestId, getByRole, queryByTestId } = render(
@@ -42,5 +50,40 @@ describe('StepBlockNodeMenu', () => {
       getByRole('menuitem', { name: 'Duplicate Card' })
     ).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Delete Card' })).toBeInTheDocument()
+
+    // fab should disappear when menu is opened
+    expect(getByTestId('EditStepFab')).not.toBeVisible()
+  })
+
+  it('should have edit-step id on fab', async () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <StepBlockNodeMenu step={step} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('EditStepFab')).toBeInTheDocument()
+    })
+    const fab = screen.getByTestId('EditStepFab')
+    expect(fab).toHaveAttribute('id', 'edit-step')
+  })
+
+  it('should have StepBlockNodeMenuIcon id on fab icon', async () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <StepBlockNodeMenu step={step} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('EditStepFabIcon')).toBeInTheDocument()
+    })
+    const fabIcon = screen.getByTestId('EditStepFabIcon')
+    expect(fabIcon).toHaveAttribute('id', 'StepBlockNodeMenuIcon')
   })
 })

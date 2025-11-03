@@ -11,7 +11,7 @@ import {
 } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography, { TypographyProps } from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { ThemeMode, ThemeName, getTheme } from '..'
@@ -337,14 +337,14 @@ const ViewportComponent = (args: ThemeStoryProps): ReactElement => {
               {breakpoints.xxl
                 ? 'Desktop'
                 : breakpoints.xl
-                ? 'Laptop'
-                : breakpoints.lg
-                ? 'Tablet (L)'
-                : breakpoints.md
-                ? 'Tablet (P)'
-                : breakpoints.sm
-                ? 'Mobile (L)'
-                : 'Mobile (P)'}
+                  ? 'Laptop'
+                  : breakpoints.lg
+                    ? 'Tablet (L)'
+                    : breakpoints.md
+                      ? 'Tablet (P)'
+                      : breakpoints.sm
+                        ? 'Mobile (L)'
+                        : 'Mobile (P)'}
             </Typography>
             <Typography
               variant="body2"

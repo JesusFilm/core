@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton'
 import Link from '@mui/material/Link'
 import Menu from '@mui/material/Menu'
 import MuiMenuItem from '@mui/material/MenuItem'
-import { useTheme } from '@mui/material/styles'
+import { SxProps, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
@@ -14,7 +14,13 @@ import { MouseEvent, ReactElement, useState } from 'react'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 
-export function InformationButton(): ReactElement {
+interface InformationButtonProps {
+  sx?: SxProps
+}
+
+export function InformationButton({
+  sx
+}: InformationButtonProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const { journey, variant } = useJourney()
 
@@ -39,7 +45,7 @@ export function InformationButton(): ReactElement {
           aria-controls="more-info"
           aria-haspopup="true"
           aria-expanded={open ? 'true' : 'false'}
-          sx={{ mx: 2, mt: 1 }}
+          sx={sx}
           onClick={handleClick}
         >
           <InfoOutlinedIcon
@@ -68,42 +74,37 @@ export function InformationButton(): ReactElement {
             {journey?.team?.publicTitle !== '' &&
             journey?.team?.publicTitle !== null
               ? journey?.team?.publicTitle
-              : journey?.team?.title ?? ''}
+              : (journey?.team?.title ?? '')}
           </Typography>
         </MuiMenuItem>
         <Divider />
-        <NextLink
+        <MuiMenuItem
+          component={NextLink}
           href={`mailto:support@nextstep.is?subject=Report%20Journey:%20${
             journey?.title ?? journey?.seoTitle ?? ''
           }&body=I want to report journey (your.nextstep.is/${
             journey?.slug ?? ''
           }) because ...`}
-          passHref
-          legacyBehavior
+          onClick={handleClose}
         >
-          <MuiMenuItem onClick={handleClose}>
-            <Typography color="text.primary" variant="body2">
-              {t('Report this content')}
-            </Typography>
-          </MuiMenuItem>
-        </NextLink>
+          <Typography color="text.primary" variant="body2">
+            {t('Report this content')}
+          </Typography>
+        </MuiMenuItem>
         <Divider />
-        <NextLink
-          href="https://www.cru.org/us/en/about/terms-of-use.html"
-          passHref
-          legacyBehavior
-        >
+        <MuiMenuItem onClick={handleClose}>
           <Link
+            component={NextLink}
+            href="https://www.cru.org/us/en/about/terms-of-use.html"
             variant="body2"
             underline="none"
             rel="noopener"
             target="_blank"
-            sx={{ px: 0 }}
-            onClick={handleClose}
+            sx={{ px: 0, display: 'block', width: '100%' }}
           >
-            <MuiMenuItem>{t('Terms & Conditions')}</MuiMenuItem>
+            {t('Terms & Conditions')}
           </Link>
-        </NextLink>
+        </MuiMenuItem>
         <Box sx={{ px: 4, py: 1, maxWidth: '204px' }}>
           <Typography
             color={theme.palette.action.disabled}
@@ -117,7 +118,7 @@ export function InformationButton(): ReactElement {
                   journey?.team?.publicTitle !== '' &&
                   journey?.team?.publicTitle !== null
                     ? journey?.team?.publicTitle
-                    : journey?.team?.title ?? ''
+                    : (journey?.team?.title ?? '')
               }
             )}
           </Typography>

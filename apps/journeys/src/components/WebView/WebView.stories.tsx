@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps } from 'react'
 
@@ -52,6 +52,7 @@ export const Default = {
   ...Template,
   args: {
     journey,
+    blocks: basic,
     stepBlock: basic[0]
   }
 }

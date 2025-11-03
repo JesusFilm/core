@@ -13,7 +13,7 @@ jest.mock('@mui/material/useMediaQuery', () => ({
 
 describe('TextResponseFields', () => {
   it('should show text response properties', () => {
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText, getByTestId } = render(
       <MockedProvider>
         <JourneyProvider value={{ variant: 'admin' }}>
           <EditorProvider>
@@ -22,8 +22,12 @@ describe('TextResponseFields', () => {
         </JourneyProvider>
       </MockedProvider>
     )
+
+    expect(getByTestId('Required')).toBeInTheDocument()
     expect(getByRole('textbox', { name: 'Label' })).toBeInTheDocument()
+    expect(getByRole('textbox', { name: 'Placeholder' })).toBeInTheDocument()
     expect(getByRole('textbox', { name: 'Hint' })).toBeInTheDocument()
+    expect(getByText('Type')).toBeInTheDocument()
     expect(getByText('Minimum Size')).toBeInTheDocument()
   })
 })

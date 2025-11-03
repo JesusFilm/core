@@ -1,82 +1,35 @@
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { render } from '@testing-library/react'
 
 import {
   defaultJourney,
-  oldJourney,
+  fakeDate,
   publishedJourney
 } from '../../journeyListData'
-import { JourneyCardVariant } from '../journeyCardVariant'
 
 import { JourneyCardText } from '.'
 
 describe('JourneyCardText', () => {
+  beforeAll(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(new Date(fakeDate))
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
+
   it('should show title', () => {
-    const { getByText } = render(
-      <JourneyCardText
-        journey={publishedJourney}
-        variant={JourneyCardVariant.default}
-      />
-    )
+    const { getByText } = render(<JourneyCardText journey={publishedJourney} />)
     expect(getByText('Published Journey Heading')).toBeInTheDocument()
   })
 
-  it('should show description with a dash', () => {
-    const { getByText } = render(
-      <JourneyCardText
-        journey={publishedJourney}
-        variant={JourneyCardVariant.default}
-      />
-    )
-    expect(
-      getByText('January 1, 2021 - a published journey')
-    ).toBeInTheDocument()
+  it('should show the langauge name', () => {
+    const { getByText } = render(<JourneyCardText journey={publishedJourney} />)
+    expect(getByText('English')).toBeInTheDocument()
   })
 
   it('should show formatted date', () => {
-    const { getByText } = render(
-      <JourneyCardText
-        journey={defaultJourney}
-        variant={JourneyCardVariant.default}
-      />
-    )
-    expect(getByText('January 1, 2021')).toBeInTheDocument()
-  })
-
-  it('should show date with year if journey is created before the current year', () => {
-    const { getByText } = render(
-      <JourneyCardText
-        journey={oldJourney}
-        variant={JourneyCardVariant.default}
-      />
-    )
-    expect(
-      getByText(
-        'November 19, 2020 - Journey created before the current year should also show the year in the date'
-      )
-    ).toBeInTheDocument()
-  })
-
-  it('should show badge for new journey card variant', () => {
-    const { getByTestId } = render(
-      <JourneyCardText
-        journey={defaultJourney}
-        variant={JourneyCardVariant.new}
-      />
-    )
-    expect(getByTestId('new-journey-badge')).toBeInTheDocument()
-  })
-
-  it('should have tool tip for new journey badge', async () => {
-    const { getByTestId, getByRole } = render(
-      <JourneyCardText
-        journey={defaultJourney}
-        variant={JourneyCardVariant.new}
-      />
-    )
-
-    fireEvent.mouseOver(getByTestId('CircleRoundedIcon'))
-    await waitFor(async () =>
-      expect(getByRole('tooltip', { name: 'New' })).toBeInTheDocument()
-    )
+    const { getByText } = render(<JourneyCardText journey={defaultJourney} />)
+    expect(getByText('11 months ago')).toBeInTheDocument()
   })
 })

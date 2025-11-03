@@ -58,6 +58,7 @@ describe('CardPoll', () => {
     themeMode: null,
     themeName: null,
     fullscreen: false,
+    backdropBlur: null,
     children: []
   }
   const step: TreeBlock = {
@@ -86,7 +87,10 @@ describe('CardPoll', () => {
           height: 3456,
           src: 'https://images.unsplash.com/photo-1488048924544-c818a467dacd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHwyMHx8aXNyYWVsfGVufDB8fHx8MTY5NTE3MDI2NHww&ixlib=rb-4.0.3&q=80&w=1080',
           width: 5184,
-          isCover: true
+          isCover: true,
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         },
         subtitleInput: {
           id: 'subtitleId',
@@ -95,7 +99,10 @@ describe('CardPoll', () => {
           content: 'Got an Opinion?',
           align: null,
           color: null,
-          variant: TypographyVariant.h6
+          variant: TypographyVariant.h6,
+          settings: {
+            color: null
+          }
         },
         titleInput: {
           id: 'titleId',
@@ -104,7 +111,10 @@ describe('CardPoll', () => {
           align: null,
           color: null,
           content: "Which of Jesus' teachings challenges you the most?",
-          variant: TypographyVariant.h2
+          variant: TypographyVariant.h2,
+          settings: {
+            color: null
+          }
         },
         radioQuestionInput: {
           id: 'radioQuestionId',
@@ -142,7 +152,10 @@ describe('CardPoll', () => {
           content: '↑ Select an answer to continue',
           align: null,
           variant: TypographyVariant.caption,
-          color: TypographyColor.secondary
+          color: TypographyColor.secondary,
+          settings: {
+            color: null
+          }
         },
         journeyId: 'journeyId',
         cardId: 'cardId',
@@ -162,7 +175,10 @@ describe('CardPoll', () => {
           width: 5184,
           height: 3456,
           blurhash: 'LuHo2rtSIUfl.TtRRiogXot6aekC',
-          __typename: 'ImageBlock'
+          __typename: 'ImageBlock',
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         },
         subtitle: {
           id: 'subtitleId',
@@ -170,8 +186,12 @@ describe('CardPoll', () => {
           parentOrder: 0,
           align: null,
           color: null,
-          content: 'Got an Opinion`?',
+          content: 'Got an Opinion?',
           variant: TypographyVariant.h6,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         title: {
@@ -182,13 +202,18 @@ describe('CardPoll', () => {
           color: null,
           content: "Which of Jesus' teachings challenges you the most?",
           variant: TypographyVariant.h2,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         radioQuestion: {
           id: 'radioQuestionId',
           parentBlockId: 'cardId',
           parentOrder: 2,
-          __typename: 'RadioQuestionBlock'
+          __typename: 'RadioQuestionBlock',
+          gridView: false
         },
         radioOption1: {
           id: 'radioOption1Id',
@@ -196,7 +221,8 @@ describe('CardPoll', () => {
           parentOrder: 0,
           label: 'Turning the other cheek',
           action: null,
-          __typename: 'RadioOptionBlock'
+          __typename: 'RadioOptionBlock',
+          pollOptionImageBlockId: null
         },
         radioOption2: {
           id: 'radioOption2Id',
@@ -204,7 +230,8 @@ describe('CardPoll', () => {
           parentOrder: 1,
           label: 'Loving your enemies',
           action: null,
-          __typename: 'RadioOptionBlock'
+          __typename: 'RadioOptionBlock',
+          pollOptionImageBlockId: null
         },
         radioOption3: {
           id: 'radioOption3Id',
@@ -212,7 +239,8 @@ describe('CardPoll', () => {
           parentOrder: 2,
           label: 'Not worrying about tomorrow',
           action: null,
-          __typename: 'RadioOptionBlock'
+          __typename: 'RadioOptionBlock',
+          pollOptionImageBlockId: null
         },
         radioOption4: {
           id: 'radioOption4Id',
@@ -220,7 +248,8 @@ describe('CardPoll', () => {
           parentOrder: 3,
           label: 'Seeking first the kingdom of God',
           action: null,
-          __typename: 'RadioOptionBlock'
+          __typename: 'RadioOptionBlock',
+          pollOptionImageBlockId: null
         },
         body: {
           id: 'bodyId',
@@ -230,6 +259,10 @@ describe('CardPoll', () => {
           color: TypographyColor.secondary,
           content: '↑ Select an answer to continue',
           variant: TypographyVariant.caption,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         cardBlockUpdate: {
@@ -241,6 +274,7 @@ describe('CardPoll', () => {
           themeMode: null,
           themeName: null,
           fullscreen: true,
+          backdropBlur: null,
           __typename: 'CardBlock'
         }
       }

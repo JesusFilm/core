@@ -1,5 +1,5 @@
 import Stack from '@mui/material/Stack'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
 
 import {
@@ -44,6 +44,7 @@ const journey: Journey = {
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [],
   primaryImageBlock: null,
@@ -69,7 +70,16 @@ const journey: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  logoImageBlock: null,
+  menuButtonIcon: null,
+  menuStepBlock: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const Template: StoryObj<ComponentProps<typeof HostAvatars>> = {

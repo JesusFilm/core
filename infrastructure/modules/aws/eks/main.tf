@@ -46,7 +46,7 @@ resource "aws_security_group" "eks-cluster" {
 resource "aws_eks_cluster" "this" {
   name     = "${var.name}-${var.env}"
   role_arn = aws_iam_role.eks-cluster.arn
-  version  = "1.30"
+  version  = "1.31"
 
   vpc_config {
     security_group_ids = concat([aws_security_group.eks-cluster.id], var.security_group_ids)
@@ -212,22 +212,25 @@ data "aws_ami" "eks-worker" {
 #   }
 # }
 
-resource "aws_eks_node_group" "this" {
+resource "aws_eks_node_group" "az_2a_ondemand" {
   cluster_name    = aws_eks_cluster.this.name
-  node_group_name = "jfp-eks-node-group-${var.env}"
+  node_group_name = "jfp-eks-node-group-2a-${var.env}"
   node_role_arn   = aws_iam_role.eks-node.arn
-  subnet_ids      = var.subnet_ids
+  subnet_ids      = var.subnet_ids_2a
 
   scaling_config {
-    desired_size = 3
+    desired_size = 2
     max_size     = 4
-    min_size     = 3
+    min_size     = 2
   }
 
   update_config {
     max_unavailable = 2
   }
-  capacity_type = "SPOT"
+  node_repair_config {
+    enabled = true
+  }
+  capacity_type = "ON_DEMAND"
 
   instance_types = ["t3.large"]
 

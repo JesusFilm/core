@@ -1,7 +1,15 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
+import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { SnackbarProvider } from 'notistack'
+import {
+  InstantSearchApi,
+  useInfiniteHits,
+  useInstantSearch,
+  useSearchBox
+} from 'react-instantsearch'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -34,22 +42,15 @@ import {
   GetVideo,
   GetVideoVariables
 } from '../../../../../../../../../../../__generated__/GetVideo'
-import {
-  GetVideos,
-  GetVideosVariables
-} from '../../../../../../../../../../../__generated__/GetVideos'
-import {
-  VideoBlockSource,
-  VideoLabel
-} from '../../../../../../../../../../../__generated__/globalTypes'
+import { VideoBlockSource } from '../../../../../../../../../../../__generated__/globalTypes'
 import { COVER_BLOCK_DELETE } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
 import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
 import { ThemeProvider } from '../../../../../../../../../ThemeProvider'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
-import { videos } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/data'
+import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../../Drawer/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
+import { videoItems } from '../../../../../../Drawer/VideoLibrary/data'
 import { GET_VIDEO } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
-import { GET_VIDEOS } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/VideoFromLocal'
 
 import {
   COVER_VIDEO_BLOCK_CREATE,
@@ -65,6 +66,44 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
+jest.mock('react-instantsearch')
+
+// Silence video.js in JSDOM and avoid player init errors
+jest.mock('video.js', () => {
+  const mockPlayer = {
+    src: jest.fn(),
+    dispose: jest.fn(),
+    on: jest.fn(),
+    ready: jest.fn((cb?: () => void) => (cb?.(), undefined)),
+    controls: jest.fn(),
+    paused: jest.fn(),
+    play: jest.fn(),
+    pause: jest.fn(),
+    error: jest.fn(),
+    currentTime: jest.fn(),
+    aspectRatio: jest.fn(),
+    autoresize: jest.fn(),
+    preload: jest.fn(),
+    muted: jest.fn(),
+    volume: jest.fn(),
+    poster: jest.fn()
+  }
+  const videojs = jest.fn(() => mockPlayer)
+  ;(videojs as any).getPlayers = () => ({})
+  ;(videojs as any).log = { warn: jest.fn(), error: jest.fn() }
+  return videojs
+})
+
+const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+  typeof useSearchBox
+>
+const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+  typeof useInstantSearch
+>
+const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
+  typeof useInfiniteHits
+>
+
 const journey = { id: 'journeyId' } as unknown as Journey
 
 const card: TreeBlock<CardBlock> = {
@@ -77,6 +116,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: []
 }
 
@@ -99,7 +139,8 @@ const video: TreeBlock<VideoBlock> = {
   duration: 144,
   objectFit: null,
   image: null,
-  video: {
+  subtitleLanguage: null,
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -108,7 +149,7 @@ const video: TreeBlock<VideoBlock> = {
         value: '#FallingPlates'
       }
     ],
-    image: null,
+    images: [],
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -120,36 +161,11 @@ const video: TreeBlock<VideoBlock> = {
   children: []
 }
 
-const getVideosMock: MockedResponse<GetVideos, GetVideosVariables> = {
-  request: {
-    query: GET_VIDEOS,
-    variables: {
-      offset: 0,
-      limit: 5,
-      where: {
-        availableVariantLanguageIds: ['529'],
-        title: null,
-        labels: [
-          VideoLabel.episode,
-          VideoLabel.featureFilm,
-          VideoLabel.segment,
-          VideoLabel.shortFilm
-        ]
-      }
-    }
-  },
-  result: {
-    data: {
-      videos
-    }
-  }
-}
-
 const getVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
   request: {
     query: GET_VIDEO,
     variables: {
-      id: '2_0-Brand_Video',
+      id: 'videoId',
       languageId: '529'
     }
   },
@@ -157,8 +173,8 @@ const getVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
     data: {
       video: {
         __typename: 'Video',
-        id: '2_0-Brand_Video',
-        image: null,
+        id: 'videoId',
+        images: [],
         primaryLanguageId: '529',
         title: [
           {
@@ -184,6 +200,7 @@ const getVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
         variantLanguages: [
           {
             __typename: 'Language',
+            slug: 'english',
             id: '529',
             name: [
               {
@@ -191,6 +208,85 @@ const getVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
                 primary: true,
                 __typename: 'LanguageName'
               }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
+
+const getExistingCoverVideoMock: MockedResponse<GetVideo, GetVideoVariables> = {
+  request: {
+    query: GET_VIDEO,
+    variables: {
+      id: '2_0-FallingPlates',
+      languageId: '529'
+    }
+  },
+  result: {
+    data: {
+      video: {
+        __typename: 'Video',
+        id: '2_0-FallingPlates',
+        images: [],
+        primaryLanguageId: '529',
+        title: [
+          {
+            primary: true,
+            value: '#FallingPlates',
+            __typename: 'VideoTitle'
+          }
+        ],
+        description: [
+          {
+            primary: true,
+            value: 'Falling Plates description',
+            __typename: 'VideoDescription'
+          }
+        ],
+        variant: {
+          id: '2_0-FallingPlates-529',
+          duration: 144,
+          hls: 'https://arc.gt/zbrvj',
+          __typename: 'VideoVariant'
+        },
+        variantLanguages: [
+          {
+            __typename: 'Language',
+            slug: 'english',
+            id: '529',
+            name: [
+              {
+                value: 'English',
+                primary: true,
+                __typename: 'LanguageName'
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
+
+const getVariantLanguagesMock: MockedResponse<any> = {
+  request: {
+    query: GET_VIDEO_VARIANT_LANGUAGES,
+    variables: { id: '2_0-FallingPlates' }
+  },
+  result: {
+    data: {
+      video: {
+        __typename: 'Video',
+        id: '2_0-FallingPlates',
+        variant: { __typename: 'VideoVariant', id: '2_0-FallingPlates-529' },
+        variantLanguages: [
+          {
+            __typename: 'Language',
+            id: '529',
+            name: [
+              { __typename: 'LanguageName', value: 'English', primary: true }
             ]
           }
         ]
@@ -212,7 +308,7 @@ const coverVideoBlockCreateMock: MockedResponse<
         journeyId: journey.id,
         id: video.id,
         parentBlockId: card.id,
-        videoId: '2_0-Brand_Video',
+        videoId: 'videoId',
         videoVariantLanguageId: '529',
         source: VideoBlockSource.internal,
         startAt: 0,
@@ -289,6 +385,31 @@ const coverBlockRestoreMock: MockedResponse<
 }
 
 describe('BackgroundMediaVideo', () => {
+  const searchBox = {
+    refine: jest.fn()
+  } as unknown as SearchBoxRenderState
+
+  const infiniteHits = {
+    items: videoItems,
+    showMore: jest.fn(),
+    isLastPage: false
+  } as unknown as InfiniteHitsRenderState
+
+  const instantSearch = {
+    status: 'idle',
+    results: {
+      __isArtificial: false,
+      nbHits: videoItems.length
+    }
+  } as unknown as InstantSearchApi
+
+  beforeEach(() => {
+    mockUseSearchBox.mockReturnValue(searchBox)
+    mockUseInfiniteHits.mockReturnValue(infiniteHits)
+    mockUseInstantSearch.mockReturnValue(instantSearch)
+    jest.clearAllMocks()
+  })
+
   it('creates a new video cover block', async () => {
     mockUuidv4.mockReturnValueOnce(video.id)
     const cache = new InMemoryCache()
@@ -305,8 +426,9 @@ describe('BackgroundMediaVideo', () => {
       <MockedProvider
         cache={cache}
         mocks={[
-          getVideosMock,
           { ...getVideoMock, result: getVideoResult },
+          getVariantLanguagesMock,
+          getVariantLanguagesMock,
           coverVideoBlockCreateMock,
           coverBlockDeleteMock,
           coverBlockRestoreMock
@@ -330,10 +452,7 @@ describe('BackgroundMediaVideo', () => {
     await waitFor(() =>
       fireEvent.click(screen.getByRole('button', { name: 'Select Video' }))
     )
-    await waitFor(() =>
-      expect(screen.getByText('Brand Video')).toBeInTheDocument()
-    )
-    fireEvent.click(screen.getByText('Brand Video'))
+    await waitFor(() => fireEvent.click(screen.getByText('title1')))
     await waitFor(() => expect(getVideoResult).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     await waitFor(() =>
@@ -372,6 +491,7 @@ describe('BackgroundMediaVideo', () => {
     }
 
     it('updates video cover block', async () => {
+      const getVideoResult = jest.fn().mockReturnValue(getVideoMock.result)
       const response: CoverVideoBlockUpdate = {
         videoBlockUpdate: {
           ...video
@@ -386,12 +506,12 @@ describe('BackgroundMediaVideo', () => {
           variables: {
             id: video.id,
             input: {
-              videoId: '2_0-Brand_Video',
+              videoId: 'videoId',
               videoVariantLanguageId: '529',
-              duration: 0,
+              duration: 144,
               source: VideoBlockSource.internal,
               startAt: 0,
-              endAt: 0
+              endAt: 144
             }
           }
         },
@@ -411,8 +531,10 @@ describe('BackgroundMediaVideo', () => {
       render(
         <MockedProvider
           mocks={[
-            getVideosMock,
-            getVideoMock,
+            { ...getExistingCoverVideoMock },
+            { ...getVideoMock, result: getVideoResult },
+            getVariantLanguagesMock,
+            getVariantLanguagesMock,
             {
               ...coverVideoBlockUpdateMock,
               result: updateResult
@@ -465,10 +587,11 @@ describe('BackgroundMediaVideo', () => {
         )
       )
       await waitFor(() =>
-        expect(screen.getByText('Brand_Video')).toBeInTheDocument()
+        expect(screen.getByText('title1')).toBeInTheDocument()
       )
       fireEvent.click(screen.getByRole('button', { name: 'Change Video' }))
-      fireEvent.click(screen.getByText('Brand Video'))
+      fireEvent.click(screen.getByText('title1'))
+      await waitFor(() => expect(getVideoResult).toHaveBeenCalled())
       fireEvent.click(screen.getAllByRole('button', { name: 'Select' })[0])
       await waitFor(() => expect(updateResult).toHaveBeenCalled())
       fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -493,6 +616,9 @@ describe('BackgroundMediaVideo', () => {
         <MockedProvider
           cache={cache}
           mocks={[
+            getExistingCoverVideoMock,
+            getVariantLanguagesMock,
+            getVariantLanguagesMock,
             coverBlockDeleteMock,
             coverBlockRestoreMock,
             coverBlockDeleteMock

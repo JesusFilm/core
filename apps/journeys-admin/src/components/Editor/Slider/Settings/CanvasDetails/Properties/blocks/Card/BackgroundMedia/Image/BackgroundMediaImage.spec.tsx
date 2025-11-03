@@ -86,6 +86,7 @@ const journey: Journey = {
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
@@ -103,7 +104,16 @@ const journey: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  logoImageBlock: null,
+  menuButtonIcon: null,
+  menuStepBlock: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const card: TreeBlock<CardBlock> = {
@@ -116,6 +126,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: []
 }
 
@@ -129,7 +140,10 @@ const image: TreeBlock<ImageBlock> = {
   width: 1920,
   height: 1080,
   blurhash: '',
-  children: []
+  children: [],
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 describe('BackgroundMediaImage', () => {
@@ -178,7 +192,10 @@ describe('BackgroundMediaImage', () => {
           width: image.width,
           height: image.height,
           parentOrder: image.parentOrder,
-          blurhash: image.blurhash
+          blurhash: image.blurhash,
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         },
         cardBlockUpdate: {
           id: card.id,
@@ -337,7 +354,10 @@ describe('BackgroundMediaImage', () => {
           width: image.width,
           height: image.height,
           parentOrder: image.parentOrder,
-          blurhash: image.blurhash
+          blurhash: image.blurhash,
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         }
       }
       const coverImageBlockUpdateMock: MockedResponse<

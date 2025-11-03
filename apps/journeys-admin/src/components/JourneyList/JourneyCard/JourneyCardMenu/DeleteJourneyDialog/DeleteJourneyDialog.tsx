@@ -2,7 +2,7 @@ import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -32,8 +32,9 @@ export function DeleteJourneyDialog({
   handleClose,
   refetch
 }: DeleteJourneyDialogProps): ReactElement {
-  const { enqueueSnackbar } = useSnackbar()
   const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
+  const [loading, setLoading] = useState(false)
 
   const [deleteJourney] = useMutation<JourneyDelete>(JOURNEY_DELETE, {
     variables: {
@@ -51,14 +52,15 @@ export function DeleteJourneyDialog({
   })
 
   async function handleDelete(): Promise<void> {
+    setLoading(true)
     try {
       await deleteJourney()
-      handleClose()
+      await refetch?.()
       enqueueSnackbar(t('Journey Deleted'), {
         variant: 'success',
         preventDuplicate: true
       })
-      await refetch?.()
+      handleClose()
     } catch (error) {
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
@@ -66,6 +68,8 @@ export function DeleteJourneyDialog({
           preventDuplicate: true
         })
       }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -74,6 +78,7 @@ export function DeleteJourneyDialog({
       open={open}
       onClose={handleClose}
       dialogTitle={{ title: t('Delete Forever?'), closeButton: true }}
+      loading={loading}
       dialogAction={{
         onSubmit: handleDelete,
         submitLabel: t('Delete'),

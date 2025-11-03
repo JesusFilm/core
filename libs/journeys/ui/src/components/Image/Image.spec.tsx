@@ -30,6 +30,9 @@ describe('Image', () => {
     parentBlockId: 'Image1',
     parentOrder: 0,
     blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+    scale: null,
+    focalLeft: 50,
+    focalTop: 50,
     children: []
   }
 

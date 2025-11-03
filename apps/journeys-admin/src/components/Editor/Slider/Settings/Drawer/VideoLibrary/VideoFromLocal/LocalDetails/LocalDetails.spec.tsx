@@ -28,8 +28,13 @@ describe('LocalDetails', () => {
         video: {
           id: '2_Acts7302-0-0',
           primaryLanguageId: '529',
-          image:
-            'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+          images: [
+            {
+              __typename: 'CloudflareImage',
+              mobileCinematicHigh:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+            }
+          ],
           title: [
             {
               primary: true,
@@ -85,7 +90,7 @@ describe('LocalDetails', () => {
     expect(sourceTag?.getAttribute('type')).toBe('application/x-mpegURL')
     const imageTag = videoPlayer.querySelector('.vjs-poster > picture > img')
     expect(imageTag?.getAttribute('src')).toBe(
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg'
+      'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
     )
   })
 
@@ -105,8 +110,13 @@ describe('LocalDetails', () => {
         video: {
           id: '2_Acts7302-0-0',
           primaryLanguageId: '529',
-          image:
-            'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+          images: [
+            {
+              __typename: 'CloudflareImage',
+              mobileCinematicHigh:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+            }
+          ],
           title: [
             {
               primary: true,
@@ -165,7 +175,11 @@ describe('LocalDetails', () => {
               duration: 144,
               startAt: 0,
               endAt: 0,
-              videoVariantLanguageId: '525'
+              videoVariantLanguageId: '525',
+              mediaVideo: {
+                __typename: 'Video',
+                id: '2_Acts7302-0-0'
+              }
             } as unknown as TreeBlock<VideoBlock>
           }}
         >
@@ -199,6 +213,19 @@ describe('LocalDetails', () => {
     })
   })
 
+  it('should disable select button if loading', async () => {
+    const onSelect = jest.fn()
+    const result = jest.fn().mockReturnValue(getVideoMock.result)
+    const { getByRole } = render(
+      <MockedProvider mocks={[{ ...getVideoMock, result }]}>
+        <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+      </MockedProvider>
+    )
+    expect(getByRole('button', { name: 'Select' })).toBeDisabled()
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(getByRole('button', { name: 'Select' })).not.toBeDisabled()
+  })
+
   it('should keep startAt and endAt values if already exist on select click', async () => {
     const onSelect = jest.fn()
     const { getByRole } = render(
@@ -212,7 +239,11 @@ describe('LocalDetails', () => {
               duration: 0,
               startAt: 5,
               endAt: 41,
-              videoVariantLanguageId: '529'
+              videoVariantLanguageId: '529',
+              mediaVideo: {
+                __typename: 'Video',
+                id: '2_Acts7302-0-0'
+              }
             } as unknown as TreeBlock<VideoBlock>
           }}
         >

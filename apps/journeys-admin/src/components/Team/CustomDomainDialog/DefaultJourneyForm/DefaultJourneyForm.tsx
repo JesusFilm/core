@@ -24,7 +24,10 @@ import {
   GetCustomDomains_customDomains as CustomDomain,
   GetCustomDomains_customDomains_journeyCollection_journeys as Journey
 } from '../../../../../__generated__/GetCustomDomains'
-import { JourneyStatus } from '../../../../../__generated__/globalTypes'
+import {
+  JourneyStatus,
+  UserTeamRole
+} from '../../../../../__generated__/globalTypes'
 import {
   UpdateJourneyCollection,
   UpdateJourneyCollectionVariables
@@ -34,6 +37,7 @@ import { CustomDomainDialogTitle } from '../CustomDomainDialogTitle'
 
 interface DefaultJourneyFormProps {
   customDomain: CustomDomain
+  currentUserTeamRole: UserTeamRole
 }
 export const DELETE_JOURNEY_COLLECTION = gql`
   mutation DeleteJourneyCollection($id: ID!) {
@@ -90,7 +94,8 @@ export const CREATE_JOURNEY_COLLECTION = gql`
 `
 
 export function DefaultJourneyForm({
-  customDomain
+  customDomain,
+  currentUserTeamRole
 }: DefaultJourneyFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
@@ -190,6 +195,7 @@ export function DefaultJourneyForm({
       <Stack direction="row" justifyContent="space-between">
         <FormControl variant="filled" fullWidth hiddenLabel>
           <Autocomplete
+            disabled={currentUserTeamRole !== UserTeamRole.manager}
             getOptionLabel={(options) => options.title}
             id="defaultJourney"
             defaultValue={customDomain.journeyCollection?.journeys?.[0]}
@@ -201,9 +207,14 @@ export function DefaultJourneyForm({
             blurOnSelect
           />
           <FormHelperText sx={{ wordBreak: 'break-all' }}>
-            {t('The default Journey will be available at {{ customDomain }}', {
-              customDomain: customDomain.name
-            })}
+            {currentUserTeamRole !== UserTeamRole.manager
+              ? t('Only team managers can change the default journey')
+              : t(
+                  'The default Journey will be available at {{ customDomain }}',
+                  {
+                    customDomain: customDomain.name
+                  }
+                )}
           </FormHelperText>
         </FormControl>
       </Stack>

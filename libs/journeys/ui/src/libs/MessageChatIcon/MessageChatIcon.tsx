@@ -11,6 +11,7 @@ import HelpSquareContained from '@core/shared/ui/icons/HelpSquareContained'
 import Home3 from '@core/shared/ui/icons/Home3'
 import Home4 from '@core/shared/ui/icons/Home4'
 import Instagram from '@core/shared/ui/icons/Instagram'
+import KakaoTalk from '@core/shared/ui/icons/KakaoTalk'
 import Line from '@core/shared/ui/icons/Line'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import Mail1 from '@core/shared/ui/icons/Mail1'
@@ -48,6 +49,7 @@ export function MessageChatIcon({ platform, sx }: ChatIconProps): ReactElement {
     telegram: Telegram,
     whatsApp: WhatsApp,
     instagram: Instagram,
+    kakaoTalk: KakaoTalk,
     viber: Viber,
     vk: Vk,
     snapchat: Snapchat,

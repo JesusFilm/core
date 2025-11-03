@@ -39,6 +39,7 @@ describe('CardTemplates', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     const step: TreeBlock = {
@@ -92,7 +93,7 @@ describe('CardTemplates', () => {
     )
     fireEvent.click(getByRole('button', { name: 'Card Video Template' }))
     await waitFor(() =>
-      expect(getByText('selectedBlock: stepId')).toBeInTheDocument()
+      expect(getByText('selectedBlockId: videoId')).toBeInTheDocument()
     )
     expect(getByText('selectedAttributeId:')).toBeInTheDocument()
   })

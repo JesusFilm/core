@@ -5,6 +5,7 @@ import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useGetValueFromJourneyCustomizationString } from '@core/journeys/ui/useGetValueFromJourneyCustomizationString'
 import TextInput1Icon from '@core/shared/ui/icons/TextInput1'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../__generated__/BlockFields'
@@ -32,8 +33,8 @@ export function TextResponse({
       <Accordion
         id={`${id}-text-field-options`}
         icon={<TextInput1Icon />}
-        name={t('Text Input')}
-        value={label}
+        name={t('Response Field')}
+        value={useGetValueFromJourneyCustomizationString(label)}
       >
         <TextResponseFields />
       </Accordion>

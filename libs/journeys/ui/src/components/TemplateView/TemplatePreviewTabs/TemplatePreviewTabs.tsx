@@ -4,14 +4,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import {
-  Dispatch,
-  ReactElement,
-  SetStateAction,
-  SyntheticEvent,
-  useMemo,
-  useState
-} from 'react'
+import { ReactElement, SyntheticEvent, useMemo, useState } from 'react'
 
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
@@ -29,14 +22,10 @@ import { TemplateVideoPreview } from './TemplateVideoPreview'
 
 interface TemplatePreviewTabsProps {
   authUser?: User
-  openTeamDialog: boolean
-  setOpenTeamDialog: Dispatch<SetStateAction<boolean>>
 }
 
 export function TemplatePreviewTabs({
-  authUser,
-  openTeamDialog,
-  setOpenTeamDialog
+  authUser
 }: TemplatePreviewTabsProps): ReactElement {
   const [tabValue, setTabValue] = useState(0)
   const { t } = useTranslation('libs-journeys-ui')
@@ -107,12 +96,7 @@ export function TemplatePreviewTabs({
         />
       </Tabs>
       <TabPanel name="cards-preview-tab" value={tabValue} index={0}>
-        <TemplateCardPreview
-          steps={steps}
-          authUser={authUser}
-          openTeamDialog={openTeamDialog}
-          setOpenTeamDialog={setOpenTeamDialog}
-        />
+        <TemplateCardPreview steps={steps} authUser={authUser} />
       </TabPanel>
       <TabPanel name="videos-preview-tab" value={tabValue} index={1}>
         <TemplateVideoPreview videoBlocks={videos} />

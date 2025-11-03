@@ -3,11 +3,19 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, VideoBlockCreateInput, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { TypographyBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, VideoBlockCreateInput, TypographyAlign, TypographyColor, TypographyVariant, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardIntroCreate
 // ====================================================
+
+export interface CardIntroCreate_subtitle_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
+}
 
 export interface CardIntroCreate_subtitle {
   __typename: "TypographyBlock";
@@ -18,6 +26,15 @@ export interface CardIntroCreate_subtitle {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardIntroCreate_subtitle_settings | null;
+}
+
+export interface CardIntroCreate_title_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface CardIntroCreate_title {
@@ -29,6 +46,15 @@ export interface CardIntroCreate_title {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardIntroCreate_title_settings | null;
+}
+
+export interface CardIntroCreate_body_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface CardIntroCreate_body {
@@ -40,6 +66,7 @@ export interface CardIntroCreate_body {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardIntroCreate_body_settings | null;
 }
 
 export interface CardIntroCreate_button_action_NavigateToBlockAction {
@@ -54,6 +81,8 @@ export interface CardIntroCreate_button_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardIntroCreate_button_action_EmailAction {
@@ -61,9 +90,37 @@ export interface CardIntroCreate_button_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type CardIntroCreate_button_action = CardIntroCreate_button_action_NavigateToBlockAction | CardIntroCreate_button_action_LinkAction | CardIntroCreate_button_action_EmailAction;
+export interface CardIntroCreate_button_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface CardIntroCreate_button_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type CardIntroCreate_button_action = CardIntroCreate_button_action_NavigateToBlockAction | CardIntroCreate_button_action_LinkAction | CardIntroCreate_button_action_EmailAction | CardIntroCreate_button_action_ChatAction | CardIntroCreate_button_action_PhoneAction;
+
+export interface CardIntroCreate_button_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
 
 export interface CardIntroCreate_button {
   __typename: "ButtonBlock";
@@ -76,7 +133,9 @@ export interface CardIntroCreate_button {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardIntroCreate_button_action | null;
+  settings: CardIntroCreate_button_settings | null;
 }
 
 export interface CardIntroCreate_startIcon {
@@ -111,6 +170,8 @@ export interface CardIntroCreate_buttonBlockUpdate_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardIntroCreate_buttonBlockUpdate_action_EmailAction {
@@ -118,9 +179,37 @@ export interface CardIntroCreate_buttonBlockUpdate_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type CardIntroCreate_buttonBlockUpdate_action = CardIntroCreate_buttonBlockUpdate_action_NavigateToBlockAction | CardIntroCreate_buttonBlockUpdate_action_LinkAction | CardIntroCreate_buttonBlockUpdate_action_EmailAction;
+export interface CardIntroCreate_buttonBlockUpdate_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface CardIntroCreate_buttonBlockUpdate_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type CardIntroCreate_buttonBlockUpdate_action = CardIntroCreate_buttonBlockUpdate_action_NavigateToBlockAction | CardIntroCreate_buttonBlockUpdate_action_LinkAction | CardIntroCreate_buttonBlockUpdate_action_EmailAction | CardIntroCreate_buttonBlockUpdate_action_ChatAction | CardIntroCreate_buttonBlockUpdate_action_PhoneAction;
+
+export interface CardIntroCreate_buttonBlockUpdate_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
 
 export interface CardIntroCreate_buttonBlockUpdate {
   __typename: "ButtonBlock";
@@ -133,40 +222,66 @@ export interface CardIntroCreate_buttonBlockUpdate {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: CardIntroCreate_buttonBlockUpdate_action | null;
+  settings: CardIntroCreate_buttonBlockUpdate_settings | null;
 }
 
-export interface CardIntroCreate_video_video_title {
+export interface CardIntroCreate_video_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CardIntroCreate_video_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface CardIntroCreate_video_video_variant {
+export interface CardIntroCreate_video_mediaVideo_Video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface CardIntroCreate_video_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface CardIntroCreate_video_video_variantLanguages_name {
+export interface CardIntroCreate_video_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface CardIntroCreate_video_video_variantLanguages {
+export interface CardIntroCreate_video_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: CardIntroCreate_video_video_variantLanguages_name[];
+  name: CardIntroCreate_video_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface CardIntroCreate_video_video {
+export interface CardIntroCreate_video_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: CardIntroCreate_video_video_title[];
-  image: string | null;
-  variant: CardIntroCreate_video_video_variant | null;
-  variantLanguages: CardIntroCreate_video_video_variantLanguages[];
+  title: CardIntroCreate_video_mediaVideo_Video_title[];
+  images: CardIntroCreate_video_mediaVideo_Video_images[];
+  variant: CardIntroCreate_video_mediaVideo_Video_variant | null;
+  variantLanguages: CardIntroCreate_video_mediaVideo_Video_variantLanguages[];
 }
+
+export interface CardIntroCreate_video_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  assetId: string | null;
+  playbackId: string | null;
+}
+
+export interface CardIntroCreate_video_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type CardIntroCreate_video_mediaVideo = CardIntroCreate_video_mediaVideo_Video | CardIntroCreate_video_mediaVideo_MuxVideo | CardIntroCreate_video_mediaVideo_YouTube;
 
 export interface CardIntroCreate_video_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -180,6 +295,8 @@ export interface CardIntroCreate_video_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardIntroCreate_video_action_EmailAction {
@@ -187,9 +304,29 @@ export interface CardIntroCreate_video_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type CardIntroCreate_video_action = CardIntroCreate_video_action_NavigateToBlockAction | CardIntroCreate_video_action_LinkAction | CardIntroCreate_video_action_EmailAction;
+export interface CardIntroCreate_video_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface CardIntroCreate_video_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type CardIntroCreate_video_action = CardIntroCreate_video_action_NavigateToBlockAction | CardIntroCreate_video_action_LinkAction | CardIntroCreate_video_action_EmailAction | CardIntroCreate_video_action_ChatAction | CardIntroCreate_video_action_PhoneAction;
 
 export interface CardIntroCreate_video {
   __typename: "VideoBlock";
@@ -259,11 +396,8 @@ export interface CardIntroCreate_video {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: CardIntroCreate_video_video | null;
+  subtitleLanguage: CardIntroCreate_video_subtitleLanguage | null;
+  mediaVideo: CardIntroCreate_video_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */

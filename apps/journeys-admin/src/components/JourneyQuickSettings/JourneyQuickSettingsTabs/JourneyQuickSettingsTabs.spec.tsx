@@ -11,7 +11,7 @@ describe('JourneyQuickSettingsTabs', () => {
     expect(getByRole('tab', { selected: true })).toHaveTextContent('Chat')
   })
 
-  it('should select login tab when clicked', () => {
+  it('should select goals tab when clicked', () => {
     const setTabValue = jest.fn()
     const { getByRole } = render(
       <JourneyQuickSettingsTabs tabValue={0} setTabValue={setTabValue} />

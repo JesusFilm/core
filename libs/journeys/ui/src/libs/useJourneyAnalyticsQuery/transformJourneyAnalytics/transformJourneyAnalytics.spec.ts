@@ -67,6 +67,12 @@ describe('transformJourneyAnalytics', () => {
           property:
             '{"stepId":"step1.id","event":"chatButtonClick","blockId":"step1.id","target":"link:https://m.me/test"}',
           visitors: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"buttonClick","blockId":"button2.id","target":"chat:https://chat.example.com"}',
+          visitors: 3
         }
       ],
       journeyReferrer: [
@@ -84,6 +90,23 @@ describe('transformJourneyAnalytics', () => {
           __typename: 'PlausibleStatsResponse',
           property: 'tiktok',
           visitors: 3
+        }
+      ],
+      journeyUtmCampaign: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: 'shortLink1',
+          visitors: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: 'shortLink2',
+          visitors: 3
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: 'shortLink3',
+          visitors: 2
         }
       ],
       journeyVisitorsPageExits: [
@@ -145,6 +168,12 @@ describe('transformJourneyAnalytics', () => {
           property:
             '{"stepId":"step1.id","event":"chatButtonClick","blockId":"step1.id","target":""}',
           visitors: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"buttonClick","blockId":"button2.id","target":""}',
+          visitors: 3
         }
       ],
       journeyAggregateVisitors: {
@@ -158,7 +187,7 @@ describe('transformJourneyAnalytics', () => {
 
     const result = {
       totalVisitors: 10,
-      chatsStarted: 5,
+      chatsStarted: 8,
       linksVisited: 10,
       referrers: {
         edges: [
@@ -256,12 +285,12 @@ describe('transformJourneyAnalytics', () => {
             eventMap: new Map([
               ['pageview', 5],
               ['navigateNextStep', 5],
-              ['buttonClick', 5],
+              ['buttonClick', 8],
               ['radioQuestionSubmit', 5],
               ['signupSubmit', 5],
               ['chatButtonClick', 5]
             ]),
-            total: 25
+            total: 28
           }
         ],
         [
@@ -275,6 +304,7 @@ describe('transformJourneyAnalytics', () => {
       blockMap: new Map([
         ['step1.id', 10],
         ['button1.id', 5],
+        ['button2.id', 3],
         ['radioOption1.id', 5],
         ['signUp1.id', 5]
       ]),
@@ -283,10 +313,336 @@ describe('transformJourneyAnalytics', () => {
         ['button1.id->step2.id', 5],
         ['radioOption1.id->link:https://google.com', 5],
         ['signUp1.id->link:https://bible.com', 5],
-        ['step1.id->link:https://m.me/test', 5]
+        ['step1.id->link:https://m.me/test', 5],
+        ['button2.id->chat:https://chat.example.com', 3]
       ])
     }
 
     expect(transformJourneyAnalytics('journeyId', data)).toEqual(result)
+  })
+
+  it('should count ChatAction targets as chats started', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [],
+      journeyStepsActions: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"buttonClick","blockId":"button1.id","target":"chat:https://chat.example.com"}',
+          visitors: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"buttonClick","blockId":"button2.id","target":"link:https://example.com"}',
+          visitors: 3
+        }
+      ],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 8
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    expect(result?.chatsStarted).toBe(5)
+    expect(result?.linksVisited).toBe(3)
+  })
+
+  it('should filter out videoComplete events to avoid doubling up with videoTrigger', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [],
+      journeyStepsActions: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoTrigger","blockId":"video1.id","target":""}',
+          visitors: 10
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoComplete","blockId":"video1.id","target":""}',
+          visitors: 10
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step2.id","event":"videoTrigger","blockId":"video2.id","target":""}',
+          visitors: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step2.id","event":"videoComplete","blockId":"video2.id","target":""}',
+          visitors: 5
+        }
+      ],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoTrigger","blockId":"video1.id","target":""}',
+          visitors: 10
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoComplete","blockId":"video1.id","target":""}',
+          visitors: 10
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step2.id","event":"videoTrigger","blockId":"video2.id","target":""}',
+          visitors: 5
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step2.id","event":"videoComplete","blockId":"video2.id","target":""}',
+          visitors: 5
+        }
+      ],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 15
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    // videoTrigger events should be included in stepMap and blockMap
+    expect(result?.stepMap.get('step1.id')?.eventMap.get('videoTrigger')).toBe(
+      10
+    )
+    expect(result?.stepMap.get('step2.id')?.eventMap.get('videoTrigger')).toBe(
+      5
+    )
+
+    // videoComplete events should NOT be included in stepMap
+    expect(
+      result?.stepMap.get('step1.id')?.eventMap.get('videoComplete')
+    ).toBeUndefined()
+    expect(
+      result?.stepMap.get('step2.id')?.eventMap.get('videoComplete')
+    ).toBeUndefined()
+
+    // videoTrigger events should be included in blockMap (since videoTrigger is in ACTION_EVENTS)
+    expect(result?.blockMap.get('video1.id')).toBe(10)
+    expect(result?.blockMap.get('video2.id')).toBe(5)
+
+    // Total should only count videoTrigger events, not videoComplete
+    expect(result?.stepMap.get('step1.id')?.total).toBe(10)
+    expect(result?.stepMap.get('step2.id')?.total).toBe(5)
+  })
+
+  it('should count phone action button clicks as chats started', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 10,
+          timeOnPage: 10
+        }
+      ],
+      journeyStepsActions: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"chatButtonClick","blockId":"button1.id","target":"phone:+1234567890"}',
+          visitors: 3
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"chatButtonClick","blockId":"button2.id","target":"link:https://m.me/test"}',
+          visitors: 2
+        }
+      ],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"chatButtonClick","blockId":"button1.id","target":""}',
+          visitors: 3
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"chatButtonClick","blockId":"button2.id","target":""}',
+          visitors: 2
+        }
+      ],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 10
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    // Should count both phone action and chat link clicks as chats started
+    expect(result?.chatsStarted).toBe(5) // 3 phone actions + 2 chat links
+    expect(result?.linksVisited).toBe(0)
+  })
+
+  it('should count video complete events with phone actions as chats started', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 10,
+          timeOnPage: 10
+        }
+      ],
+      journeyStepsActions: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoTrigger","blockId":"video1.id","target":"phone:+1234567890"}',
+          visitors: 4
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoComplete","blockId":"video2.id","target":"step2.id"}',
+          visitors: 2
+        }
+      ],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoTrigger","blockId":"video1.id","target":""}',
+          visitors: 4
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoComplete","blockId":"video2.id","target":""}',
+          visitors: 2
+        }
+      ],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 10
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    // Should count video complete with phone action as chats started
+    expect(result?.chatsStarted).toBe(4) // Only the phone action video
+    expect(result?.linksVisited).toBe(0)
+  })
+
+  it('should count mixed phone action events as chats started', () => {
+    const data: GetJourneyAnalytics = {
+      journeySteps: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property: '/journeyId/step1.id',
+          visitors: 10,
+          timeOnPage: 10
+        }
+      ],
+      journeyStepsActions: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"chatButtonClick","blockId":"button1.id","target":"phone:+1234567890"}',
+          visitors: 2
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoTrigger","blockId":"video1.id","target":"phone:+9876543210"}',
+          visitors: 3
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"footerChatButtonClick","blockId":"footer1.id","target":"link:https://m.me/test"}',
+          visitors: 1
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"buttonClick","blockId":"button2.id","target":"link:https://google.com"}',
+          visitors: 2
+        }
+      ],
+      journeyReferrer: [],
+      journeyUtmCampaign: [],
+      journeyVisitorsPageExits: [],
+      journeyActionsSums: [
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"chatButtonClick","blockId":"button1.id","target":""}',
+          visitors: 2
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"videoTrigger","blockId":"video1.id","target":""}',
+          visitors: 3
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"footerChatButtonClick","blockId":"footer1.id","target":""}',
+          visitors: 1
+        },
+        {
+          __typename: 'PlausibleStatsResponse',
+          property:
+            '{"stepId":"step1.id","event":"buttonClick","blockId":"button2.id","target":""}',
+          visitors: 2
+        }
+      ],
+      journeyAggregateVisitors: {
+        __typename: 'PlausibleStatsAggregateResponse',
+        visitors: {
+          __typename: 'PlausibleStatsAggregateValue',
+          value: 10
+        }
+      }
+    }
+
+    const result = transformJourneyAnalytics('journeyId', data)
+
+    // Should count all phone actions and chat buttons as chats started
+    expect(result?.chatsStarted).toBe(6) // 2 phone button + 3 phone video + 1 footer chat
+    expect(result?.linksVisited).toBe(2) // Only the regular link
   })
 })

@@ -24,10 +24,14 @@ export const selectedBlock: TreeBlock<TypographyBlock> = {
   __typename: 'TypographyBlock',
   parentBlockId: 'card1.id',
   parentOrder: 0,
-  content: 'Title',
+  content: 'How did you discover our website today?',
   variant: TypographyVariant.h1,
   color: TypographyColor.primary,
   align: TypographyAlign.center,
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  },
   children: []
 }
 export const block1: TreeBlock<TypographyBlock> = {
@@ -51,6 +55,7 @@ export const selectedStepCardBlock: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: [selectedBlock, block1, block2]
 }
 

@@ -1,0 +1,14 @@
+import { builder } from '../../builder'
+import { VideoBlockSource } from '../../enums'
+import { EventInterface } from '../event'
+
+export const VideoStartEventRef = builder.prismaObject('Event', {
+  shareable: true,
+  interfaces: [EventInterface],
+  variant: 'VideoStartEvent',
+  isTypeOf: (obj: any) => obj.typename === 'VideoStartEvent',
+  fields: (t) => ({
+    position: t.exposeFloat('position', { nullable: true }),
+    source: t.expose('source', { type: VideoBlockSource, nullable: true })
+  })
+})

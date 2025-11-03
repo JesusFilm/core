@@ -3,48 +3,72 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CoverBlockRestore
 // ====================================================
 
-export interface CoverBlockRestore_blockRestore_ButtonBlock {
-  __typename: "ButtonBlock" | "CardBlock" | "FormBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "StepBlock" | "TextResponseBlock" | "TypographyBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+export interface CoverBlockRestore_blockRestore_StepBlock {
+  __typename: "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
   id: string;
 }
 
-export interface CoverBlockRestore_blockRestore_VideoBlock_video_title {
+export interface CoverBlockRestore_blockRestore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface CoverBlockRestore_blockRestore_VideoBlock_video_variant {
+export interface CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_Video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface CoverBlockRestore_blockRestore_VideoBlock_video_variantLanguages_name {
+export interface CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface CoverBlockRestore_blockRestore_VideoBlock_video_variantLanguages {
+export interface CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: CoverBlockRestore_blockRestore_VideoBlock_video_variantLanguages_name[];
+  name: CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface CoverBlockRestore_blockRestore_VideoBlock_video {
+export interface CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: CoverBlockRestore_blockRestore_VideoBlock_video_title[];
-  image: string | null;
-  variant: CoverBlockRestore_blockRestore_VideoBlock_video_variant | null;
-  variantLanguages: CoverBlockRestore_blockRestore_VideoBlock_video_variantLanguages[];
+  title: CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_Video_title[];
+  images: CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_Video_images[];
+  variant: CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
+
+export interface CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  assetId: string | null;
+  playbackId: string | null;
+}
+
+export interface CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type CoverBlockRestore_blockRestore_VideoBlock_mediaVideo = CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_Video | CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_MuxVideo | CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_YouTube;
 
 export interface CoverBlockRestore_blockRestore_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -58,6 +82,8 @@ export interface CoverBlockRestore_blockRestore_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CoverBlockRestore_blockRestore_VideoBlock_action_EmailAction {
@@ -65,9 +91,29 @@ export interface CoverBlockRestore_blockRestore_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type CoverBlockRestore_blockRestore_VideoBlock_action = CoverBlockRestore_blockRestore_VideoBlock_action_NavigateToBlockAction | CoverBlockRestore_blockRestore_VideoBlock_action_LinkAction | CoverBlockRestore_blockRestore_VideoBlock_action_EmailAction;
+export interface CoverBlockRestore_blockRestore_VideoBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface CoverBlockRestore_blockRestore_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type CoverBlockRestore_blockRestore_VideoBlock_action = CoverBlockRestore_blockRestore_VideoBlock_action_NavigateToBlockAction | CoverBlockRestore_blockRestore_VideoBlock_action_LinkAction | CoverBlockRestore_blockRestore_VideoBlock_action_EmailAction | CoverBlockRestore_blockRestore_VideoBlock_action_ChatAction | CoverBlockRestore_blockRestore_VideoBlock_action_PhoneAction;
 
 export interface CoverBlockRestore_blockRestore_VideoBlock {
   __typename: "VideoBlock";
@@ -137,11 +183,8 @@ export interface CoverBlockRestore_blockRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: CoverBlockRestore_blockRestore_VideoBlock_video | null;
+  subtitleLanguage: CoverBlockRestore_blockRestore_VideoBlock_subtitleLanguage | null;
+  mediaVideo: CoverBlockRestore_blockRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
@@ -162,9 +205,12 @@ export interface CoverBlockRestore_blockRestore_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
-export type CoverBlockRestore_blockRestore = CoverBlockRestore_blockRestore_ButtonBlock | CoverBlockRestore_blockRestore_VideoBlock | CoverBlockRestore_blockRestore_ImageBlock;
+export type CoverBlockRestore_blockRestore = CoverBlockRestore_blockRestore_StepBlock | CoverBlockRestore_blockRestore_VideoBlock | CoverBlockRestore_blockRestore_ImageBlock;
 
 export interface CoverBlockRestore_cardBlockUpdate {
   __typename: "CardBlock";

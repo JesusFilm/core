@@ -1,8 +1,8 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps, ReactElement } from 'react'
+import { screen, userEvent } from 'storybook/test'
 
 import { IconName, TypographyVariant } from '../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
@@ -39,7 +39,11 @@ const typographyProps: ComponentProps<typeof Typography> = {
   color: null,
   variant: TypographyVariant.h3,
   content: 'Some block above',
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const signUpProps: ComponentProps<typeof SignUp> = {

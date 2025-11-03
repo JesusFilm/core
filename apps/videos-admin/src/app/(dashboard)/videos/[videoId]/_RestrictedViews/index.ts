@@ -1,0 +1,1 @@
+export { RestrictedViews } from './RestrictedViews'

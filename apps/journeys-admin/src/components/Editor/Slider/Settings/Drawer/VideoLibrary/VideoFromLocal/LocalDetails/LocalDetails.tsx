@@ -29,7 +29,9 @@ export const GET_VIDEO = gql`
   query GetVideo($id: ID!, $languageId: ID!) {
     video(id: $id) {
       id
-      image
+      images(aspectRatio: banner) {
+        mobileCinematicHigh
+      }
       primaryLanguageId
       title {
         primary
@@ -46,6 +48,7 @@ export const GET_VIDEO = gql`
       }
       variantLanguages {
         id
+        slug
         name {
           value
           primary
@@ -69,7 +72,7 @@ export function LocalDetails({
   onSelect
 }: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<Player>()
+  const playerRef = useRef<Player | null>(null)
   const [playing, setPlaying] = useState(false)
   const [openLanguage, setOpenLanguage] = useState(false)
   const [selectedLanguage, setSelectedLanguage] =
@@ -80,10 +83,10 @@ export function LocalDetails({
   } = useEditor()
 
   const videoBlock = selectedBlock as VideoBlock
-  const languageId =
-    videoBlock?.videoId === id
-      ? videoBlock?.videoVariantLanguageId ?? DEFAULT_LANGUAGE_ID
-      : DEFAULT_LANGUAGE_ID
+  const isPreselected = videoBlock?.videoId === id
+  const languageId = isPreselected
+    ? (videoBlock?.videoVariantLanguageId ?? DEFAULT_LANGUAGE_ID)
+    : DEFAULT_LANGUAGE_ID
 
   const [loadVideo, { data, loading }] = useLazyQuery<GetVideo>(GET_VIDEO, {
     variables: { id, languageId }
@@ -130,7 +133,7 @@ export function LocalDetails({
     const newSelectedLanguage =
       videoBlock?.videoId === id &&
       videoBlock?.videoVariantLanguageId !== selectedLanguage?.id
-        ? getVideoVariantLanguage() ?? DEFAULT_LANGUAGE
+        ? (getVideoVariantLanguage() ?? DEFAULT_LANGUAGE)
         : DEFAULT_LANGUAGE
 
     setSelectedLanguage(newSelectedLanguage)
@@ -148,7 +151,9 @@ export function LocalDetails({
         setPlaying(true)
       })
 
-      playerRef.current.poster(data?.video?.image ?? undefined)
+      playerRef.current.poster(
+        data?.video?.images[0]?.mobileCinematicHigh ?? undefined
+      )
       playerRef.current.src({
         type: 'application/x-mpegURL',
         src: data?.video?.variant?.hls ?? ''
@@ -249,6 +254,7 @@ export function LocalDetails({
           onClick={handleSelect}
           size="small"
           sx={{ backgroundColor: 'secondary.dark' }}
+          disabled={loading && !isPreselected}
         >
           {t('Select')}
         </Button>

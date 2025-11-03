@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
@@ -36,6 +36,7 @@ const step = {
       themeMode: 'dark',
       themeName: 'base',
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
   ]

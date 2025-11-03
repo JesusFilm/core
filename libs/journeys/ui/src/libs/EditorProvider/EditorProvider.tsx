@@ -28,7 +28,7 @@ export enum ActiveSlide {
 }
 export enum ActiveCanvasDetailsDrawer {
   Properties = 0,
-  Footer = 1,
+  JourneyAppearance = 1,
   AddBlock = 2
 }
 export interface EditorState {
@@ -84,6 +84,10 @@ export interface EditorState {
    * the JourneyFlow.
    */
   selectedStep?: TreeBlock<StepBlock>
+  /**
+   * hoveredStep indicates which step is currently hovered over by the JourneyFlow.
+   */
+  hoveredStep?: TreeBlock<StepBlock>
   /**
    * selectedStepId indicates which step is currently displayed by the Canvas
    * and the JourneyFlow. However, this can be used to selected the step before
@@ -146,6 +150,10 @@ interface SetAnalyticsAction {
   type: 'SetAnalyticsAction'
   analytics?: JourneyAnalytics
 }
+interface SetHoveredStepAction {
+  type: 'SetHoveredStepAction'
+  hoveredStep?: TreeBlock<StepBlock>
+}
 
 /**
  * SetEditorFocusAction is a special action that allows setting multiple state
@@ -178,6 +186,7 @@ export type EditorAction =
   | SetStepsAction
   | SetShowAnalyticsAction
   | SetAnalyticsAction
+  | SetHoveredStepAction
   | SetEditorFocusAction
   | SetSelectedStepByIdAction
 
@@ -263,19 +272,26 @@ export const reducer = (
         activeContent: ActiveContent.Canvas
       }
     }
-    case 'SetStepsAction':
+    case 'SetStepsAction': {
+      const selectedStep =
+        state.selectedStepId != null
+          ? (action.steps.find(({ id }) => id === state.selectedStepId) ??
+            action.steps[0])
+          : action.steps[0]
+      const selectedBlock =
+        state.selectedBlockId != null
+          ? (searchBlocks(action.steps, state.selectedBlockId) ??
+            action.steps[0])
+          : action.steps[0]
       return {
         ...state,
         steps: action.steps,
-        selectedStep:
-          state.selectedStepId != null
-            ? action.steps.find(({ id }) => id === state.selectedStepId)
-            : action.steps[0],
-        selectedBlock:
-          state.selectedBlockId != null
-            ? searchBlocks(action.steps, state.selectedBlockId)
-            : action.steps[0]
+        selectedStep,
+        selectedStepId: selectedStep?.id,
+        selectedBlock,
+        selectedBlockId: selectedBlock?.id
       }
+    }
     case 'SetShowAnalyticsAction':
       return {
         ...state,
@@ -285,6 +301,11 @@ export const reducer = (
       return {
         ...state,
         analytics: action.analytics
+      }
+    case 'SetHoveredStepAction':
+      return {
+        ...state,
+        hoveredStep: action.hoveredStep
       }
     case 'SetEditorFocusAction': {
       let stateCopy = { ...state }

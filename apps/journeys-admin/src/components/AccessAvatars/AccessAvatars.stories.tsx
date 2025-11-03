@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
@@ -179,7 +179,6 @@ const Template: StoryObj<typeof AccessAvatars> = {
           journeyId="journeyId"
           userJourneys={defaultUserJourneys}
           size={args.size}
-          showManageButton
         />
 
         <Typography>Overflow</Typography>
@@ -194,7 +193,6 @@ const Template: StoryObj<typeof AccessAvatars> = {
           journeyId="journeyId"
           userJourneys={overflowUserJourneys}
           size={args.size}
-          showManageButton
         />
 
         <Typography>Notification</Typography>

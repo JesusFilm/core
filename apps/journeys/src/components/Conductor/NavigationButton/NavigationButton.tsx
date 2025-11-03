@@ -3,11 +3,11 @@ import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import IconButton from '@mui/material/IconButton'
 import { styled } from '@mui/material/styles'
+import { sendGTMEvent } from '@next/third-parties/google'
 import capitalize from 'lodash/capitalize'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
 import { ReactElement, useEffect } from 'react'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -90,9 +90,9 @@ export function NavigationButton({
   // Handle fade navigation after 3 seconds inactive
   useEffect(() => {
     const isVideoOnlyBlock =
-      activeBlock?.children.length > 0 &&
-      activeBlock?.children[0].children.length === 1 &&
-      activeBlock?.children[0].children[0].__typename === 'VideoBlock'
+      (activeBlock?.children?.length ?? 0) > 0 &&
+      activeBlock?.children?.[0]?.children?.length === 1 &&
+      activeBlock?.children?.[0]?.children?.[0]?.__typename === 'VideoBlock'
 
     if (showNavigation && !isVideoOnlyBlock) {
       setTimeout(() => {
@@ -104,7 +104,6 @@ export function NavigationButton({
   // should always be called with nextActiveBlock()
   // should match with other handleNextNavigationEventCreate functions
   // places used:
-  // libs/journeys/ui/src/components/Card/Card.tsx
   // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
   // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
   // journeys/src/components/Conductor/HotkeyNavigation/HotkeyNavigation.tsx
@@ -154,15 +153,13 @@ export function NavigationButton({
           })
         }
       })
-    TagManager.dataLayer({
-      dataLayer: {
-        event: 'step_next',
-        eventId: id,
-        blockId: activeBlock.id,
-        stepName,
-        targetStepId: targetBlock.id,
-        targetStepName
-      }
+    sendGTMEvent({
+      event: 'step_next',
+      eventId: id,
+      blockId: activeBlock.id,
+      stepName,
+      targetStepId: targetBlock.id,
+      targetStepName
     })
   }
   // should always be called with previousActiveBlock()
@@ -220,15 +217,13 @@ export function NavigationButton({
           })
         }
       })
-    TagManager.dataLayer({
-      dataLayer: {
-        event: 'step_prev',
-        eventId: id,
-        blockId: activeBlock.id,
-        stepName,
-        targetStepId: targetBlock.id,
-        targetStepName
-      }
+    sendGTMEvent({
+      event: 'step_prev',
+      eventId: id,
+      blockId: activeBlock.id,
+      stepName,
+      targetStepId: targetBlock.id,
+      targetStepName
     })
   }
   function handleNavigation(direction: 'next' | 'previous'): void {
@@ -274,7 +269,7 @@ export function NavigationButton({
         zIndex: 2,
         display: 'flex',
         width: { xs: 82, lg: 114 },
-        height: '100svh',
+        height: '100dvh',
         alignItems: 'center',
         pointerEvents: 'none'
       }}

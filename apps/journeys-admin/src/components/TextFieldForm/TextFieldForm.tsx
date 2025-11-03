@@ -1,6 +1,14 @@
+import InputAdornment from '@mui/material/InputAdornment'
 import TextField, { TextFieldProps } from '@mui/material/TextField'
 import { Form, Formik } from 'formik'
-import { ClipboardEvent, ComponentProps, ReactElement, ReactNode } from 'react'
+import {
+  ClipboardEvent,
+  ComponentProps,
+  ReactElement,
+  ReactNode,
+  useImperativeHandle,
+  useRef
+} from 'react'
 
 type FieldProps = Pick<
   TextFieldProps,
@@ -24,6 +32,12 @@ interface TextFieldFormProps extends FieldProps {
   onPaste?: (e: ClipboardEvent) => void
   startIcon?: ReactNode
   endIcon?: ReactNode
+  ref?: React.RefObject<TextFieldFormRef | null>
+}
+
+export interface TextFieldFormRef {
+  focus: () => void
+  validate: () => void
 }
 
 interface ValidationSchema {
@@ -32,7 +46,6 @@ interface ValidationSchema {
 
 export function TextFieldForm({
   id,
-  label = 'Label',
   initialValue,
   validationSchema,
   onSubmit,
@@ -40,8 +53,21 @@ export function TextFieldForm({
   startIcon,
   endIcon,
   helperText,
+  ref,
   ...muiFieldProps
 }: TextFieldFormProps): ReactElement {
+  const textFieldRef = useRef<HTMLInputElement>(null)
+  const formikRef = useRef<any>(null)
+
+  useImperativeHandle(ref, () => ({
+    focus: () => textFieldRef.current?.focus(),
+    validate: () => {
+      if (formikRef.current) {
+        formikRef.current.handleSubmit()
+      }
+    }
+  }))
+
   const isRequired =
     validationSchema != null
       ? Boolean(
@@ -64,38 +90,60 @@ export function TextFieldForm({
       }}
       enableReinitialize
     >
-      {({ values, errors, handleChange, handleBlur, setFieldValue }) => (
-        <Form>
-          <TextField
-            {...muiFieldProps}
-            id={id}
-            name={id}
-            variant="filled"
-            fullWidth
-            label={label}
-            value={values[id]}
-            error={Boolean(errors[id])}
-            helperText={errors[id] != null ? errors[id] : helperText}
-            InputProps={{
-              startAdornment: startIcon,
-              endAdornment: endIcon
-            }}
-            onPaste={onPaste}
-            onBlur={async (e) => {
-              handleBlur(e)
-              if (errors[id] == null) {
-                onSubmit(e.target.value)
-              } else if (isRequired) {
-                await setFieldValue(id, initialValue)
-              }
-            }}
-            onChange={(e) => {
-              handleChange(e)
-            }}
-            data-testid="JourneysAdminTextFieldForm"
-          />
-        </Form>
-      )}
+      {({
+        values,
+        errors,
+        handleChange,
+        handleBlur,
+        setFieldValue,
+        handleSubmit,
+        ...formikProps
+      }) => {
+        // Store formik instance in ref for external access
+        formikRef.current = { handleSubmit, ...formikProps }
+
+        return (
+          <Form>
+            <TextField
+              {...muiFieldProps}
+              id={id}
+              name={id}
+              inputRef={textFieldRef}
+              variant="filled"
+              fullWidth
+              value={values[id]}
+              error={Boolean(errors[id])}
+              helperText={errors[id] != null ? errors[id] : helperText}
+              InputProps={{
+                startAdornment: startIcon ? (
+                  <InputAdornment data-testid="startAdornment" position="start">
+                    {startIcon}
+                  </InputAdornment>
+                ) : undefined,
+                endAdornment: endIcon ? (
+                  <InputAdornment data-testid="endAdornment" position="end">
+                    {endIcon}
+                  </InputAdornment>
+                ) : undefined
+              }}
+              onPaste={onPaste}
+              onBlur={async (e) => {
+                handleBlur(e)
+                if (errors[id] == null) {
+                  handleSubmit()
+                } else if (values[id] === '' && initialValue) {
+                  // Revert to initial value if field is empty and has an initial value
+                  void setFieldValue(id, initialValue)
+                }
+              }}
+              onChange={(e) => {
+                handleChange(e)
+              }}
+              data-testid="JourneysAdminTextFieldForm"
+            />
+          </Form>
+        )
+      }}
     </Formik>
   )
 }

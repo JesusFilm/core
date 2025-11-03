@@ -1,1 +1,0 @@
-export { FooterWrapper } from './FooterWrapper'

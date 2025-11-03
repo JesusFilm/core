@@ -6,7 +6,7 @@ import { Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { Dialog } from '@core/shared/ui/Dialog/Dialog'
@@ -16,6 +16,8 @@ import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCir
 import Lightning2Icon from '@core/shared/ui/icons/Lightning2'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
+import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../libs/useCustomDomainsQuery'
 
 import { CustomDomainDialogTitle } from './CustomDomainDialogTitle'
@@ -40,13 +42,18 @@ export function CustomDomainDialog({
     skip: activeTeam?.id == null,
     notifyOnNetworkStatusChange: true
   })
-
+  const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
   useEffect(() => {
     // rerun query if user changes active team
     void refetch()
-  }, [activeTeam, refetch])
-
+    void loadUser()
+  }, [activeTeam, refetch, loadUser])
   const customDomain = data?.customDomains[0]
+  const currentUserTeamRole: UserTeamRole | undefined = useMemo(() => {
+    return activeTeam?.userTeams?.find(({ user: { email } }) => {
+      return email === currentUser?.email
+    })?.role
+  }, [activeTeam, currentUser])
 
   return (
     <Dialog
@@ -87,19 +94,33 @@ export function CustomDomainDialog({
           <Box>
             <Globe2Icon sx={{ color: 'secondary.light', mt: 4 }} />
           </Box>
-          <DomainNameForm customDomain={customDomain} loading={loading} />
+          {currentUserTeamRole != null && (
+            <DomainNameForm
+              customDomain={customDomain}
+              loading={loading}
+              currentUserTeamRole={currentUserTeamRole}
+            />
+          )}
         </Stack>
-        {customDomain != null && (
+        {customDomain != null && currentUserTeamRole != null && (
           <>
             <Stack spacing={4} direction="row">
               <ComputerIcon sx={{ color: 'secondary.light' }} />
-              <DefaultJourneyForm customDomain={customDomain} />
+              <DefaultJourneyForm
+                customDomain={customDomain}
+                currentUserTeamRole={currentUserTeamRole}
+              />
             </Stack>
-            <Divider />
-            <Stack spacing={4} direction="row">
-              <Lightning2Icon sx={{ color: 'secondary.light' }} />
-              <DNSConfigSection customDomain={customDomain} />
-            </Stack>
+            {currentUserTeamRole === UserTeamRole.manager &&
+              currentUserTeamRole != null && (
+                <>
+                  <Divider />
+                  <Stack spacing={4} direction="row">
+                    <Lightning2Icon sx={{ color: 'secondary.light' }} />
+                    <DNSConfigSection customDomain={customDomain} />
+                  </Stack>
+                </>
+              )}
           </>
         )}
       </Stack>

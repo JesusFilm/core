@@ -1,11 +1,12 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
@@ -14,6 +15,10 @@ import {
   JourneyViewEventCreateVariables
 } from '../../../__generated__/JourneyViewEventCreate'
 import { StepFields } from '../../../__generated__/StepFields'
+import {
+  StepViewEventCreate,
+  StepViewEventCreateVariables
+} from '../../../__generated__/StepViewEventCreate'
 import {
   VisitorUpdateForCurrentUser,
   VisitorUpdateForCurrentUserVariables
@@ -38,15 +43,12 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
-jest.mock('react-gtm-module', () => ({
-  __esModule: true,
-  default: {
-    dataLayer: jest.fn()
-  }
+jest.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: jest.fn()
 }))
 
-const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
-  typeof TagManager.dataLayer
+const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+  typeof sendGTMEvent
 >
 
 global.fetch = jest.fn(
@@ -135,12 +137,46 @@ describe('WebView', () => {
 
   it('should create analytics event', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
+    mockUuidv4.mockReturnValueOnce('stepId')
+
+    const mockStepViewEventCreate: MockedResponse<
+      StepViewEventCreate,
+      StepViewEventCreateVariables
+    > = {
+      request: {
+        query: STEP_VIEW_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'stepId',
+            blockId: 'step1.id',
+            value: 'Step 1'
+          }
+        }
+      },
+      result: {
+        data: {
+          stepViewEventCreate: {
+            id: 'stepId',
+            __typename: 'StepViewEvent'
+          }
+        }
+      }
+    }
 
     render(
-      <MockedProvider mocks={[visitorUpdateMock, journeyViewEventMock]}>
+      <MockedProvider
+        mocks={[
+          visitorUpdateMock,
+          journeyViewEventMock,
+          mockStepViewEventCreate
+        ]}
+      >
         <JourneyProvider value={{ journey, variant: 'default' }}>
           <SnackbarProvider>
-            <WebView stepBlock={basic[0] as TreeBlock<StepFields>} />
+            <WebView
+              blocks={basic}
+              stepBlock={basic[0] as TreeBlock<StepFields>}
+            />
           </SnackbarProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -148,13 +184,11 @@ describe('WebView', () => {
 
     await waitFor(() => expect(journeyViewEventMock.result).toHaveBeenCalled())
     expect(visitorUpdateMock.result).toHaveBeenCalled()
-    expect(mockedDataLayer).toHaveBeenCalledWith({
-      dataLayer: {
-        event: 'journey_view',
-        journeyId: 'journeyId',
-        eventId: 'uuid',
-        journeyTitle: 'my journey'
-      }
+    expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+      event: 'journey_view',
+      journeyId: 'journeyId',
+      eventId: 'uuid',
+      journeyTitle: 'my journey'
     })
   })
 
@@ -163,7 +197,10 @@ describe('WebView', () => {
       <MockedProvider mocks={[]}>
         <JourneyProvider value={{ journey }}>
           <SnackbarProvider>
-            <WebView stepBlock={basic[0] as TreeBlock<StepFields>} />
+            <WebView
+              blocks={basic}
+              stepBlock={basic[0] as TreeBlock<StepFields>}
+            />
           </SnackbarProvider>
         </JourneyProvider>
       </MockedProvider>

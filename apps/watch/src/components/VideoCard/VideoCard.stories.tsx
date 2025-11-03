@@ -1,5 +1,5 @@
-import Grid from '@mui/material/Grid'
-import { Meta, StoryObj } from '@storybook/react'
+import Grid from '@mui/material/GridLegacy'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 

@@ -64,10 +64,11 @@ export const VideoDescription = ({
       <Typography
         variant="caption"
         sx={{
-          position: 'relative'
+          position: 'relative',
+          whiteSpace: 'pre-line'
         }}
       >
-        {videoDescription}
+        {videoDescription.replace(/&#13;/g, '\n')}
         {videoDescription.length > videoDescriptionMaxLength && displayMore && (
           <ShowMoreButton
             displayMore={displayMore}

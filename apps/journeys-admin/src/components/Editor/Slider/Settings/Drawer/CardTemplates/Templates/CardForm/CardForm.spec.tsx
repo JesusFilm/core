@@ -20,6 +20,9 @@ import {
   CardFormRestoreVariables
 } from '../../../../../../../../../__generated__/CardFormRestore'
 import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
   TypographyColor,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
@@ -60,6 +63,7 @@ describe('CardForm', () => {
     themeMode: null,
     themeName: null,
     fullscreen: false,
+    backdropBlur: null,
     children: []
   }
   const step: TreeBlock = {
@@ -88,7 +92,10 @@ describe('CardForm', () => {
           height: 3456,
           src: 'https://images.unsplash.com/photo-1488048924544-c818a467dacd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHwyMHx8aXNyYWVsfGVufDB8fHx8MTY5NTE3MDI2NHww&ixlib=rb-4.0.3&q=80&w=1080',
           width: 5184,
-          isCover: true
+          isCover: true,
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         },
         subtitleInput: {
           id: 'subtitleId',
@@ -97,7 +104,10 @@ describe('CardForm', () => {
           journeyId: 'journeyId',
           parentBlockId: 'cardId',
           content: 'Prayer Request',
-          variant: TypographyVariant.h6
+          variant: TypographyVariant.h6,
+          settings: {
+            color: null
+          }
         },
         titleInput: {
           id: 'titleId',
@@ -106,13 +116,43 @@ describe('CardForm', () => {
           journeyId: 'journeyId',
           parentBlockId: 'cardId',
           content: 'How can we pray for you?',
-          variant: TypographyVariant.h1
+          variant: TypographyVariant.h1,
+          settings: {
+            color: null
+          }
         },
         textResponseInput: {
           id: 'textResponseId',
           journeyId: 'journeyId',
           parentBlockId: 'cardId',
-          label: 'Your answer here'
+          label: 'My Prayer:'
+        },
+        buttonInput: {
+          id: 'buttonId',
+          journeyId: 'journeyId',
+          parentBlockId: 'cardId',
+          label: '',
+          variant: ButtonVariant.contained,
+          color: ButtonColor.primary,
+          size: ButtonSize.medium,
+          submitEnabled: true
+        },
+        buttonId: 'buttonId',
+        buttonUpdateInput: {
+          startIconId: 'startIconId',
+          endIconId: 'endIconId'
+        },
+        startIconInput: {
+          id: 'startIconId',
+          journeyId: 'journeyId',
+          parentBlockId: 'buttonId',
+          name: null
+        },
+        endIconInput: {
+          id: 'endIconId',
+          journeyId: 'journeyId',
+          parentBlockId: 'buttonId',
+          name: null
         },
         bodyInput: {
           id: 'bodyId',
@@ -122,7 +162,10 @@ describe('CardForm', () => {
           content:
             "Each day, we pray for those in our city. We'd be grateful to include your personal needs.",
           variant: TypographyVariant.caption,
-          color: TypographyColor.secondary
+          color: TypographyColor.secondary,
+          settings: {
+            color: null
+          }
         },
         journeyId: 'journeyId',
         cardId: 'cardId',
@@ -142,7 +185,10 @@ describe('CardForm', () => {
           width: 5184,
           height: 3456,
           blurhash: 'LuHo2rtSIUfl.TtRRiogXot6aekC',
-          __typename: 'ImageBlock'
+          __typename: 'ImageBlock',
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         },
         subtitle: {
           id: 'subtitleId',
@@ -152,6 +198,10 @@ describe('CardForm', () => {
           color: null,
           content: 'Prayer Request',
           variant: TypographyVariant.h6,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         title: {
@@ -162,29 +212,88 @@ describe('CardForm', () => {
           color: null,
           content: 'How can we pray for you?',
           variant: TypographyVariant.h1,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         textResponse: {
           id: 'textResponseId',
           parentBlockId: 'cardId',
           parentOrder: 2,
-          label: 'Your answer here',
+          label: 'My Prayer:',
+          placeholder: null,
           hint: null,
           minRows: null,
           integrationId: null,
           type: null,
           routeId: null,
-          __typename: 'TextResponseBlock'
+          required: null,
+          __typename: 'TextResponseBlock',
+          hideLabel: false
+        },
+        button: {
+          id: 'buttonId',
+          parentBlockId: 'cardId',
+          parentOrder: 3,
+          label: '',
+          buttonVariant: ButtonVariant.contained,
+          buttonColor: ButtonColor.primary,
+          size: ButtonSize.medium,
+          startIconId: 'startIconId',
+          endIconId: 'endIconId',
+          action: null,
+          submitEnabled: true,
+          settings: null,
+          __typename: 'ButtonBlock'
+        },
+        startIcon: {
+          id: 'startIconId',
+          parentBlockId: 'buttonId',
+          parentOrder: null,
+          iconName: null,
+          iconSize: null,
+          iconColor: null,
+          __typename: 'IconBlock'
+        },
+        endIcon: {
+          id: 'endIconId',
+          parentBlockId: 'buttonId',
+          parentOrder: null,
+          iconName: null,
+          iconSize: null,
+          iconColor: null,
+          __typename: 'IconBlock'
+        },
+        buttonUpdate: {
+          id: 'buttonId',
+          parentBlockId: 'cardId',
+          parentOrder: 3,
+          label: '',
+          buttonVariant: ButtonVariant.contained,
+          buttonColor: ButtonColor.primary,
+          size: ButtonSize.medium,
+          startIconId: 'startIconId',
+          endIconId: 'endIconId',
+          action: null,
+          submitEnabled: true,
+          settings: null,
+          __typename: 'ButtonBlock'
         },
         body: {
           id: 'bodyId',
           parentBlockId: 'cardId',
-          parentOrder: 3,
+          parentOrder: 4,
           align: null,
           color: TypographyColor.secondary,
           content:
             "Each day, we pray for those in our city. We'd be grateful to include your personal needs.",
           variant: TypographyVariant.caption,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         cardBlockUpdate: {
@@ -196,6 +305,7 @@ describe('CardForm', () => {
           themeMode: null,
           themeName: null,
           fullscreen: true,
+          backdropBlur: null,
           __typename: 'CardBlock'
         }
       }
@@ -214,6 +324,9 @@ describe('CardForm', () => {
         textResponseId: 'textResponseId',
         titleId: 'titleId',
         subtitleId: 'subtitleId',
+        buttonId: 'buttonId',
+        startIconId: 'startIconId',
+        endIconId: 'endIconId',
         journeyId: 'journeyId',
         cardId: 'cardId',
         cardInput: { fullscreen: false }
@@ -226,6 +339,9 @@ describe('CardForm', () => {
         textResponse: [],
         title: [],
         subtitle: [],
+        button: [],
+        startIcon: [],
+        endIcon: [],
         cardBlockUpdate: card
       }
     }
@@ -243,6 +359,9 @@ describe('CardForm', () => {
         textResponseId: 'textResponseId',
         titleId: 'titleId',
         subtitleId: 'subtitleId',
+        buttonId: 'buttonId',
+        startIconId: 'startIconId',
+        endIconId: 'endIconId',
         journeyId: 'journeyId',
         cardId: 'cardId',
         cardInput: { fullscreen: true }
@@ -255,6 +374,9 @@ describe('CardForm', () => {
         textResponse: [],
         title: [],
         subtitle: [],
+        button: [],
+        startIcon: [],
+        endIcon: [],
         cardBlockUpdate: card
       }
     }
@@ -265,6 +387,9 @@ describe('CardForm', () => {
     mockUuidv4.mockReturnValueOnce('subtitleId')
     mockUuidv4.mockReturnValueOnce('titleId')
     mockUuidv4.mockReturnValueOnce('textResponseId')
+    mockUuidv4.mockReturnValueOnce('buttonId')
+    mockUuidv4.mockReturnValueOnce('startIconId')
+    mockUuidv4.mockReturnValueOnce('endIconId')
     mockUuidv4.mockReturnValueOnce('bodyId')
 
     const cache = new InMemoryCache()
@@ -296,6 +421,9 @@ describe('CardForm', () => {
         { __ref: 'TypographyBlock:subtitleId' },
         { __ref: 'TypographyBlock:titleId' },
         { __ref: 'TextResponseBlock:textResponseId' },
+        { __ref: 'ButtonBlock:buttonId' },
+        { __ref: 'IconBlock:startIconId' },
+        { __ref: 'IconBlock:endIconId' },
         { __ref: 'TypographyBlock:bodyId' }
       ])
     })
@@ -306,6 +434,9 @@ describe('CardForm', () => {
     mockUuidv4.mockReturnValueOnce('subtitleId')
     mockUuidv4.mockReturnValueOnce('titleId')
     mockUuidv4.mockReturnValueOnce('textResponseId')
+    mockUuidv4.mockReturnValueOnce('buttonId')
+    mockUuidv4.mockReturnValueOnce('startIconId')
+    mockUuidv4.mockReturnValueOnce('endIconId')
     mockUuidv4.mockReturnValueOnce('bodyId')
 
     const result = jest.fn().mockResolvedValue(cardFormCreateMock.result)
@@ -343,6 +474,9 @@ describe('CardForm', () => {
     mockUuidv4.mockReturnValueOnce('subtitleId')
     mockUuidv4.mockReturnValueOnce('titleId')
     mockUuidv4.mockReturnValueOnce('textResponseId')
+    mockUuidv4.mockReturnValueOnce('buttonId')
+    mockUuidv4.mockReturnValueOnce('startIconId')
+    mockUuidv4.mockReturnValueOnce('endIconId')
     mockUuidv4.mockReturnValueOnce('bodyId')
 
     const result = jest.fn().mockResolvedValue(cardFormCreateMock.result)

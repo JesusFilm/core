@@ -1,6 +1,8 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { act, renderHook, waitFor } from '@testing-library/react'
 
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+
 import { JourneySettingsUpdate } from '../../../__generated__/JourneySettingsUpdate'
 
 import {
@@ -27,13 +29,26 @@ describe('useJourneyUpdateMutation', () => {
     result: jest.fn(() => ({
       data: {
         journeyUpdate: {
+          ...defaultJourney,
           __typename: 'Journey',
           id: 'journeyId',
           title: 'New Title',
           description: 'New Description',
           strategySlug: 'www.example.com/embed',
           tags: [{ __typename: 'Tag', id: 'tagId' }],
-          language: { id: '529', __typename: 'Language' },
+          language: {
+            id: '529',
+            __typename: 'Language',
+            bcp47: null,
+            iso3: null,
+            name: [
+              {
+                __typename: 'LanguageName',
+                value: 'English',
+                primary: true
+              }
+            ]
+          },
           website: true,
           showShareButton: true,
           showLikeButton: true,

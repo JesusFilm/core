@@ -1,13 +1,16 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { useFormikContext } from 'formik'
 import { usePlausible } from 'next-plausible'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  ButtonAlignment,
   ButtonColor,
   ButtonSize,
   ButtonVariant,
+  ContactActionType,
   IconColor,
   IconName,
   IconSize,
@@ -37,15 +40,12 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
-jest.mock('react-gtm-module', () => ({
-  __esModule: true,
-  default: {
-    dataLayer: jest.fn()
-  }
+jest.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: jest.fn()
 }))
 
-const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
-  typeof TagManager.dataLayer
+const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+  typeof sendGTMEvent
 >
 
 jest.mock('../../libs/action', () => {
@@ -74,6 +74,20 @@ const mockUsePlausible = usePlausible as jest.MockedFunction<
   typeof usePlausible
 >
 
+jest.mock('next-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => {
+    return {
+      t: (str: string) => str
+    }
+  }
+}))
+
+jest.mock('formik', () => ({
+  __esModule: true,
+  useFormikContext: jest.fn()
+}))
+
 const block: TreeBlock<ButtonFields> = {
   __typename: 'ButtonBlock',
   id: 'button',
@@ -86,6 +100,11 @@ const block: TreeBlock<ButtonFields> = {
   startIconId: null,
   endIconId: null,
   action: null,
+  submitEnabled: false,
+  settings: {
+    __typename: 'ButtonBlockSettings',
+    alignment: ButtonAlignment.justify
+  },
   children: []
 }
 
@@ -108,6 +127,7 @@ const activeBlock: TreeBlock<StepBlock> = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           __typename: 'TypographyBlock',
@@ -118,7 +138,11 @@ const activeBlock: TreeBlock<StepBlock> = {
           color: null,
           variant: null,
           parentOrder: 0,
-          children: []
+          children: [],
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         }
       ]
     }
@@ -130,19 +154,151 @@ const journey = {
 } as unknown as Journey
 
 describe('Button', () => {
-  const originalLocation = window.location
-  const mockOrigin = 'https://example.com'
-
-  beforeAll(() => {
-    Object.defineProperty(window, 'location', {
-      value: {
-        origin: mockOrigin
-      }
+  describe('form validation handling', () => {
+    beforeEach(() => {
+      jest.clearAllMocks()
     })
-  })
 
-  afterAll(() => {
-    Object.defineProperty(window, 'location', originalLocation)
+    const submitButtonMock = {
+      ...block,
+      label: 'Submit Form',
+      submitEnabled: true
+    }
+
+    const mockButtonClickEvent = {
+      request: {
+        query: BUTTON_CLICK_EVENT_CREATE,
+        variables: {
+          input: {
+            id: 'uuid',
+            blockId: 'button',
+            stepId: 'step.id',
+            label: 'stepName',
+            value: 'Submit Form',
+            action: undefined,
+            actionValue: undefined
+          }
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          buttonClickEventCreate: {
+            id: 'uuid',
+            __typename: 'ButtonClickEvent',
+            action: undefined,
+            actionValue: undefined
+          }
+        }
+      }))
+    }
+
+    it('should not submit form on empty form', async () => {
+      mockUuidv4.mockReturnValueOnce('uuid')
+      const validateFormMock = jest.fn().mockResolvedValue({})
+      const handleSubmitMock = jest.fn()
+
+      blockHistoryVar([activeBlock])
+      treeBlocksVar([activeBlock])
+
+      const formikContextMock = {
+        values: { field1: '', field2: '' },
+        validateForm: validateFormMock,
+        handleSubmit: handleSubmitMock
+      }
+
+      const useFormikContextMock = useFormikContext as jest.Mock
+      useFormikContextMock.mockReturnValue(formikContextMock)
+
+      render(
+        <MockedProvider mocks={[mockButtonClickEvent]}>
+          <Button {...submitButtonMock} />
+        </MockedProvider>
+      )
+
+      const submitButton = screen.getByRole('button', { name: 'Submit Form' })
+
+      fireEvent.click(submitButton)
+
+      await waitFor(() => {
+        expect(validateFormMock).toHaveBeenCalled()
+        expect(mockButtonClickEvent.result).toHaveBeenCalled()
+        expect(handleSubmitMock).not.toHaveBeenCalled()
+      })
+    })
+
+    it('should prevent handleAction when validaton fails', async () => {
+      mockUuidv4.mockReturnValueOnce('uuid')
+      const validateFormMock = jest.fn().mockResolvedValue({
+        field1: 'Error'
+      })
+      const handleSubmitMock = jest.fn()
+
+      blockHistoryVar([activeBlock])
+      treeBlocksVar([activeBlock])
+
+      const formikContextMock = {
+        values: { field1: 'asd', field2: '' },
+        validateForm: validateFormMock,
+        handleSubmit: handleSubmitMock
+      }
+
+      const useFormikContextMock = useFormikContext as jest.Mock
+      useFormikContextMock.mockReturnValue(formikContextMock)
+
+      render(
+        <MockedProvider mocks={[mockButtonClickEvent]}>
+          <Button {...submitButtonMock} />
+        </MockedProvider>
+      )
+
+      const submitButton = screen.getByRole('button', { name: 'Submit Form' })
+
+      fireEvent.click(submitButton)
+
+      await waitFor(() => {
+        expect(validateFormMock).toHaveBeenCalled()
+        expect(mockButtonClickEvent.result).not.toHaveBeenCalled()
+        expect(handleAction).not.toHaveBeenCalled()
+      })
+    })
+
+    it('should create button click event if form is valid and not empty', async () => {
+      mockUuidv4.mockReturnValueOnce('uuid')
+      const validateFormMock = jest.fn().mockResolvedValue({})
+      const handleSubmitMock = jest.fn()
+      const submitFormMock = jest.fn().mockResolvedValue(undefined)
+
+      blockHistoryVar([activeBlock])
+      treeBlocksVar([activeBlock])
+
+      const formikContextMock = {
+        values: { field1: 'asd', field2: '' },
+        validateForm: validateFormMock,
+        submitForm: submitFormMock,
+        handleSubmit: handleSubmitMock
+      }
+
+      const useFormikContextMock = useFormikContext as jest.Mock
+      useFormikContextMock.mockReturnValue(formikContextMock)
+
+      render(
+        <MockedProvider mocks={[mockButtonClickEvent]}>
+          <JourneyProvider>
+            <Button {...submitButtonMock} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      const submitButton = screen.getByRole('button', { name: 'Submit Form' })
+      fireEvent.click(submitButton)
+
+      await waitFor(() => {
+        expect(validateFormMock).toHaveBeenCalled()
+        expect(submitFormMock).toHaveBeenCalled()
+        expect(mockButtonClickEvent.result).toHaveBeenCalled()
+        expect(handleAction).toHaveBeenCalled()
+      })
+    })
   })
 
   it('should create a buttonClickEvent onClick', async () => {
@@ -156,7 +312,9 @@ describe('Button', () => {
       __typename: 'LinkAction',
       parentBlockId: 'button',
       gtmEventName: null,
-      url: 'https://test.com/some-site'
+      url: 'https://test.com/some-site',
+      customizable: null,
+      parentStepId: null
     }
 
     const buttonWithAction = {
@@ -170,7 +328,7 @@ describe('Button', () => {
           __typename: 'ButtonClickEvent',
           id: 'uuid',
           action: action.__typename,
-          actionValue: action.url
+          actionValue: action.__typename === 'LinkAction' ? action.url : ''
         }
       }
     }))
@@ -189,7 +347,8 @@ describe('Button', () => {
                   label: 'stepName',
                   value: buttonWithAction.label,
                   action: action.__typename,
-                  actionValue: action.url
+                  actionValue:
+                    action.__typename === 'LinkAction' ? action.url : ''
                 }
               }
             },
@@ -205,12 +364,96 @@ describe('Button', () => {
     fireEvent.click(screen.getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('buttonClick', {
-      u: `${mockOrigin}/journey.id/step.id`,
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: 'button',
         action: 'LinkAction',
         actionValue: 'https://test.com/some-site',
+        label: 'stepName',
+        stepId: 'step.id',
+        value: 'This is a button',
+        key: keyify({
+          stepId: 'step.id',
+          event: 'buttonClick',
+          blockId: 'button',
+          target: action
+        }),
+        simpleKey: keyify({
+          stepId: 'step.id',
+          event: 'buttonClick',
+          blockId: 'button'
+        })
+      }
+    })
+  })
+
+  it('should create a buttonClickEvent for NavigateToBlockAction (not chat event)', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+
+    const action: ButtonFields_action = {
+      __typename: 'NavigateToBlockAction',
+      parentBlockId: 'button',
+      gtmEventName: 'click',
+      blockId: 'next-step-id'
+    }
+
+    const buttonWithAction = {
+      ...block,
+      action
+    }
+
+    const result = jest.fn(() => ({
+      data: {
+        buttonClickEventCreate: {
+          __typename: 'ButtonClickEvent',
+          id: 'uuid',
+          action: action.__typename,
+          actionValue: ''
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: BUTTON_CLICK_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  label: 'stepName',
+                  value: buttonWithAction.label,
+                  action: action.__typename,
+                  actionValue: 'Unknown Step'
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <Button {...buttonWithAction} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('buttonClick', {
+      u: expect.stringContaining(`/journey.id/step.id`),
+      props: {
+        id: 'uuid',
+        blockId: 'button',
+        action: 'NavigateToBlockAction',
+        actionValue: 'Unknown Step',
         label: 'stepName',
         stepId: 'step.id',
         value: 'This is a button',
@@ -250,6 +493,7 @@ describe('Button', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: []
         }
       ]
@@ -295,13 +539,11 @@ describe('Button', () => {
     )
     fireEvent.click(screen.getByRole('button'))
     await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'button_click',
-          eventId: 'uuid',
-          blockId: 'button',
-          stepName: 'Step {{number}}'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'button_click',
+        eventId: 'uuid',
+        blockId: 'button',
+        stepName: 'Step {{number}}'
       })
     )
   })
@@ -313,7 +555,9 @@ describe('Button', () => {
       __typename: 'LinkAction',
       parentBlockId: 'button',
       gtmEventName: 'click',
-      url: 'https://bible.com'
+      url: 'https://bible.com',
+      customizable: null,
+      parentStepId: null
     }
 
     const buttonBlock = {
@@ -338,7 +582,8 @@ describe('Button', () => {
                   label: 'stepName',
                   value: buttonBlock.label,
                   action: action.__typename,
-                  actionValue: action.url
+                  actionValue:
+                    action.__typename === 'LinkAction' ? action.url : ''
                 }
               }
             },
@@ -348,7 +593,8 @@ describe('Button', () => {
                   __typename: 'ButtonClickEvent',
                   id: 'uuid',
                   action: action.__typename,
-                  actionValue: action.url
+                  actionValue:
+                    action.__typename === 'LinkAction' ? action.url : ''
                 }
               }
             }
@@ -363,21 +609,19 @@ describe('Button', () => {
 
     fireEvent.click(screen.getByRole('button'))
     await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'outbound_action_click',
-          eventId: 'uuid',
-          blockId: 'button',
-          stepName: 'stepName',
-          buttonLabel: 'This is a button',
-          outboundActionType: GoalType.Bible,
-          outboundActionValue: 'https://bible.com'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'outbound_action_click',
+        eventId: 'uuid',
+        blockId: 'button',
+        stepName: 'stepName',
+        buttonLabel: 'This is a button',
+        outboundActionType: GoalType.Bible,
+        outboundActionValue: 'https://bible.com'
       })
     )
   })
 
-  it('should create a chatOpenEvent onClick', async () => {
+  it('should create a chatOpenEvent onClick for link action', async () => {
     mockUuidv4.mockReturnValueOnce('uuid')
     const mockPlausible = jest.fn()
     mockUsePlausible.mockReturnValue(mockPlausible)
@@ -385,7 +629,9 @@ describe('Button', () => {
       __typename: 'LinkAction',
       parentBlockId: 'button',
       gtmEventName: 'click',
-      url: 'https://m.me/some-user'
+      url: 'https://m.me/some-user',
+      customizable: null,
+      parentStepId: null
     }
 
     const buttonBlock = {
@@ -432,12 +678,168 @@ describe('Button', () => {
     fireEvent.click(screen.getByRole('button'))
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(mockPlausible).toHaveBeenCalledWith('chatButtonClick', {
-      u: `${mockOrigin}/journey.id/step.id`,
+      u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
         blockId: 'button',
         stepId: 'step.id',
         value: 'facebook',
+        key: keyify({
+          stepId: 'step.id',
+          event: 'chatButtonClick',
+          blockId: 'button',
+          target: action
+        }),
+        simpleKey: keyify({
+          stepId: 'step.id',
+          event: 'chatButtonClick',
+          blockId: 'button'
+        })
+      }
+    })
+  })
+
+  it('should create a chatOpenEvent for ChatAction', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+    const action: ButtonFields_action = {
+      __typename: 'ChatAction',
+      parentBlockId: 'button',
+      gtmEventName: 'click',
+      chatUrl: 'https://chat.example.com',
+      customizable: false,
+      parentStepId: 'step.id'
+    }
+
+    const buttonBlock = {
+      ...block,
+      action
+    }
+
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+
+    const result = jest.fn(() => ({
+      data: {
+        chatOpenEventCreate: {
+          __typename: 'ChatOpenEvent',
+          id: 'uuid'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CHAT_OPEN_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  value: undefined
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <Button {...buttonBlock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('chatButtonClick', {
+      u: expect.stringContaining(`/journey.id/step.id`),
+      props: {
+        id: 'uuid',
+        blockId: 'button',
+        stepId: 'step.id',
+        value: undefined,
+        key: keyify({
+          stepId: 'step.id',
+          event: 'chatButtonClick',
+          blockId: 'button',
+          target: action
+        }),
+        simpleKey: keyify({
+          stepId: 'step.id',
+          event: 'chatButtonClick',
+          blockId: 'button'
+        })
+      }
+    })
+  })
+
+  it('should create a chatOpenEvent onClick for phone action', async () => {
+    mockUuidv4.mockReturnValueOnce('uuid')
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+    const action: ButtonFields_action = {
+      __typename: 'PhoneAction',
+      parentBlockId: 'button',
+      gtmEventName: 'click',
+      phone: '+1234567890',
+      countryCode: 'US',
+      contactAction: ContactActionType.call
+    }
+
+    const buttonBlock = {
+      ...block,
+      action
+    }
+
+    blockHistoryVar([activeBlock])
+    treeBlocksVar([activeBlock])
+
+    const result = jest.fn(() => ({
+      data: {
+        chatOpenEventCreate: {
+          __typename: 'ChatOpenEvent',
+          id: 'uuid'
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: CHAT_OPEN_EVENT_CREATE,
+              variables: {
+                input: {
+                  id: 'uuid',
+                  blockId: 'button',
+                  stepId: 'step.id',
+                  value: undefined
+                }
+              }
+            },
+            result
+          }
+        ]}
+      >
+        <JourneyProvider value={{ journey }}>
+          <Button {...buttonBlock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('button'))
+    await waitFor(() => expect(result).toHaveBeenCalled())
+    expect(mockPlausible).toHaveBeenCalledWith('chatButtonClick', {
+      u: expect.stringContaining(`/journey.id/step.id`),
+      props: {
+        id: 'uuid',
+        blockId: 'button',
+        stepId: 'step.id',
+        value: undefined,
         key: keyify({
           stepId: 'step.id',
           event: 'chatButtonClick',
@@ -559,15 +961,17 @@ describe('Button', () => {
   it('should call actionHandler on click', () => {
     render(
       <MockedProvider>
-        <Button
-          {...block}
-          action={{
-            __typename: 'NavigateToBlockAction',
-            parentBlockId: block.id,
-            gtmEventName: 'gtmEventName',
-            blockId: 'def'
-          }}
-        />
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <Button
+            {...block}
+            action={{
+              __typename: 'NavigateToBlockAction',
+              parentBlockId: block.id,
+              gtmEventName: 'gtmEventName',
+              blockId: 'def'
+            }}
+          />
+        </JourneyProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getByRole('button'))
@@ -580,22 +984,399 @@ describe('Button', () => {
         parentBlockId: block.id,
         gtmEventName: 'gtmEventName',
         blockId: 'def'
-      }
+      },
+      undefined
     )
   })
 
-  it('should show default button text if button label is empty', () => {
+  it('should show red outline when editableLabel is provided', () => {
+    const EditableLabelComponent = () => (
+      <span data-testid="editable-label">Edit Me</span>
+    )
+
+    const buttonWithEditableLabel = {
+      ...block,
+      editableLabel: <EditableLabelComponent />
+    }
+
+    render(
+      <MockedProvider>
+        <Button {...buttonWithEditableLabel} />
+      </MockedProvider>
+    )
+
+    const button = screen.getByRole('button')
+    expect(button).toHaveStyle({
+      outline: '2px solid',
+      outlineColor: '#C52D3A',
+      outlineOffset: '5px',
+      zIndex: '1'
+    })
+  })
+
+  xit('should not show red outline when editableLabel is not provided', () => {
+    // disabled due to Jest v30 compatibility issues
+    render(
+      <MockedProvider>
+        <Button {...block} />
+      </MockedProvider>
+    )
+
+    const button = screen.getByRole('button')
+    expect(button).toHaveStyle({
+      outline: '2px solid',
+      outlineColor: 'transparent',
+      outlineOffset: '5px',
+      zIndex: '0'
+    })
+  })
+
+  it('should apply left alignment styles correctly', () => {
+    const leftAlignedButton = {
+      ...block,
+      settings: {
+        __typename: 'ButtonBlockSettings' as const,
+        alignment: ButtonAlignment.left
+      }
+    }
+
+    render(
+      <MockedProvider>
+        <Button {...leftAlignedButton} />
+      </MockedProvider>
+    )
+
+    const buttonContainer = screen.getByTestId(`JourneysButton-${block.id}`)
+    expect(buttonContainer).toHaveStyle({
+      display: 'flex',
+      justifyContent: 'flex-start'
+    })
+
+    const button = screen.getByRole('button')
+    expect(button).toHaveStyle({
+      width: 'fit-content',
+      maxWidth: '75%'
+    })
+  })
+
+  it('should default to justify alignment when no alignment is specified', () => {
+    const buttonWithoutAlignment = {
+      ...block,
+      settings: null
+    }
+
+    render(
+      <MockedProvider>
+        <Button {...buttonWithoutAlignment} />
+      </MockedProvider>
+    )
+
+    const buttonContainer = screen.getByTestId(`JourneysButton-${block.id}`)
+    expect(buttonContainer).toHaveStyle({
+      display: 'flex',
+      justifyContent: 'space-evenly'
+    })
+
+    const button = screen.getByRole('button')
+    expect(button).toHaveStyle({
+      width: '100%',
+      maxWidth: '100%'
+    })
+  })
+
+  describe('button label rendering', () => {
+    it('should display custom label when provided', () => {
+      render(
+        <MockedProvider>
+          <Button {...block} label="Custom Label" />
+        </MockedProvider>
+      )
+      expect(screen.getByRole('button')).toHaveTextContent('Custom Label')
+    })
+
+    it('should display "Submit" when submitEnabled is true and no label is provided', () => {
+      const submitButton = {
+        ...block,
+        label: '',
+        submitEnabled: true
+      }
+      render(
+        <MockedProvider>
+          <Button {...submitButton} />
+        </MockedProvider>
+      )
+      expect(screen.getByRole('button')).toHaveTextContent('Submit')
+    })
+
+    it('should display "Button" when submitEnabled is false and no label is provided', () => {
+      const regularButton = {
+        ...block,
+        label: '',
+        submitEnabled: false
+      }
+      render(
+        <MockedProvider>
+          <Button {...regularButton} />
+        </MockedProvider>
+      )
+      expect(screen.getByRole('button')).toHaveTextContent('Button')
+    })
+
+    it('should prioritize custom label over submitEnabled status', () => {
+      const buttonWithLabelAndSubmitEnabled = {
+        ...block,
+        label: 'Custom Label',
+        submitEnabled: true
+      }
+      render(
+        <MockedProvider>
+          <Button {...buttonWithLabelAndSubmitEnabled} />
+        </MockedProvider>
+      )
+      expect(screen.getByRole('button')).toHaveTextContent('Custom Label')
+    })
+
+    it('should display editable label component when provided', () => {
+      const EditableLabelComponent = () => (
+        <span data-testid="editable-label">Editable Label</span>
+      )
+
+      const buttonWithEditableLabel = {
+        ...block,
+        label: 'Regular Label',
+        editableLabel: <EditableLabelComponent />
+      }
+
+      render(
+        <MockedProvider>
+          <Button {...buttonWithEditableLabel} />
+        </MockedProvider>
+      )
+
+      expect(screen.getByTestId('editable-label')).toBeInTheDocument()
+      expect(screen.getByTestId('editable-label')).toHaveTextContent(
+        'Editable Label'
+      )
+      expect(screen.queryByText('Regular Label')).not.toBeInTheDocument()
+    })
+  })
+
+  it('should submit form when submitEnabled is true', () => {
     const emptyButtonLabelMock = {
       ...block,
-      label: ''
+      label: '',
+      submitEnabled: true
     }
     render(
       <MockedProvider>
         <Button {...emptyButtonLabelMock} />
       </MockedProvider>
     )
-    expect(screen.getByRole('button', { name: 'Submit' })).toHaveTextContent(
-      'Submit'
+    const submitButton = screen.getByRole('button', { name: 'Submit' })
+    expect(submitButton).toHaveTextContent('Submit')
+    expect(submitButton).toHaveAttribute('type', 'submit')
+  })
+
+  it('should have type="submit" when submitEnabled is true and variant is not admin', () => {
+    const buttonMock = {
+      ...block,
+      submitEnabled: true
+    }
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'default' }}>
+          <Button {...buttonMock} />
+        </JourneyProvider>
+      </MockedProvider>
     )
+    const button = screen.getByRole('button')
+    expect(button).toHaveAttribute('type', 'submit')
+  })
+
+  it('should have type="button" when submitEnabled is false and variant is not admin', () => {
+    const buttonMock = {
+      ...block,
+      submitEnabled: false
+    }
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'default' }}>
+          <Button {...buttonMock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const button = screen.getByRole('button')
+    expect(button).toHaveAttribute('type', 'button')
+  })
+
+  it('should have type="button" when submitEnabled is true and variant is admin', () => {
+    const buttonMock = {
+      ...block,
+      submitEnabled: true,
+      variant: 'admin'
+    }
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <Button {...buttonMock} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const button = screen.getByRole('button')
+    expect(button).toHaveAttribute('type', 'button')
+  })
+
+  it('should trigger form submission when clicked in a form context', async () => {
+    const handleSubmit = jest.fn((e) => e?.preventDefault?.())
+    const submitButtonMock = {
+      ...block,
+      label: 'Submit Form',
+      submitEnabled: true
+    }
+
+    // Provide a minimal Formik context; we won't rely on Apollo mutations in this test
+    const useFormikContextMock = useFormikContext as jest.Mock
+    const submitFormMock = jest.fn().mockResolvedValue(undefined)
+    const validateFormMock = jest.fn().mockResolvedValue({})
+    useFormikContextMock.mockReturnValue({
+      values: { field1: 'x' },
+      validateForm: validateFormMock,
+      submitForm: submitFormMock,
+      handleSubmit
+    })
+
+    render(
+      <MockedProvider mocks={[]}>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <form onSubmit={handleSubmit} data-testid="test-form">
+            <Button {...submitButtonMock} />
+          </form>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const submitButton = screen.getByRole('button', { name: 'Submit Form' })
+    fireEvent.click(submitButton)
+    await waitFor(() => expect(validateFormMock).toHaveBeenCalled())
+    await waitFor(() => expect(submitFormMock).toHaveBeenCalled())
+  })
+
+  describe('customization string resolution', () => {
+    it('resolves label using journey customization fields on default variant', () => {
+      const journeyWithFields = {
+        journeyCustomizationFields: [
+          {
+            __typename: 'JourneyCustomizationField',
+            id: '1',
+            journeyId: 'journeyId',
+            key: 'name',
+            value: 'Alice',
+            defaultValue: 'Anonymous'
+          }
+        ]
+      } as unknown as Journey
+
+      const btn = { ...block, label: '{{ name }}' }
+
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithFields, variant: 'default' }}
+          >
+            <Button {...btn} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByRole('button')).toHaveTextContent('Alice')
+    })
+
+    it('does not resolve label on admin variant for template journeys', () => {
+      const journeyWithFields = {
+        template: true,
+        journeyCustomizationFields: [
+          {
+            __typename: 'JourneyCustomizationField',
+            id: '1',
+            journeyId: 'journeyId',
+            key: 'name',
+            value: 'Alice',
+            defaultValue: 'Anonymous'
+          }
+        ]
+      } as unknown as Journey
+
+      const btn = { ...block, label: '{{ name }}' }
+
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithFields, variant: 'admin' }}
+          >
+            <Button {...btn} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByRole('button')).toHaveTextContent('{{ name }}')
+    })
+
+    it('replaces custom fields within mixed strings and leaves other text intact', () => {
+      const journeyWithFields = {
+        journeyCustomizationFields: [
+          {
+            __typename: 'JourneyCustomizationField',
+            id: '1',
+            journeyId: 'journeyId',
+            key: 'name',
+            value: 'Alice',
+            defaultValue: 'Anonymous'
+          }
+        ]
+      } as unknown as Journey
+
+      const btn = { ...block, label: 'Hello {{ name }}!' }
+
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithFields, variant: 'default' }}
+          >
+            <Button {...btn} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByRole('button')).toHaveTextContent('Hello Alice!')
+    })
+
+    it('uses defaultValue when value is null', () => {
+      const journeyWithFields = {
+        journeyCustomizationFields: [
+          {
+            __typename: 'JourneyCustomizationField',
+            id: '2',
+            journeyId: 'journeyId',
+            key: 'title',
+            value: null,
+            defaultValue: 'Child of God'
+          }
+        ]
+      } as unknown as Journey
+
+      const btn = { ...block, label: '{{ title }}' }
+
+      render(
+        <MockedProvider>
+          <JourneyProvider
+            value={{ journey: journeyWithFields, variant: 'default' }}
+          >
+            <Button {...btn} />
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      expect(screen.getByRole('button')).toHaveTextContent('Child of God')
+    })
   })
 })

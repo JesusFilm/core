@@ -1,6 +1,7 @@
 import { gql } from '@apollo/client'
 
 import { IMAGE_FIELDS } from '../../components/Image/imageFields'
+import { STEP_FIELDS } from '../../components/Step/stepFields'
 import { BLOCK_FIELDS } from '../block/blockFields'
 
 /**
@@ -10,6 +11,7 @@ import { BLOCK_FIELDS } from '../block/blockFields'
  */
 export const JOURNEY_FIELDS = gql`
   ${BLOCK_FIELDS}
+  ${STEP_FIELDS}
   ${IMAGE_FIELDS}
   fragment JourneyFields on Journey {
     id
@@ -27,6 +29,7 @@ export const JOURNEY_FIELDS = gql`
       }
     }
     createdAt
+    updatedAt
     featuredAt
     publishedAt
     themeName
@@ -90,5 +93,29 @@ export const JOURNEY_FIELDS = gql`
     showLikeButton
     showDislikeButton
     displayTitle
+    logoImageBlock {
+      ...ImageFields
+    }
+    menuButtonIcon
+    menuStepBlock {
+      ...StepFields
+    }
+    socialNodeX
+    socialNodeY
+    journeyTheme {
+      id
+      headerFont
+      bodyFont
+      labelFont
+    }
+    journeyCustomizationDescription
+    journeyCustomizationFields {
+      id
+      journeyId
+      key
+      value
+      defaultValue
+    }
+    fromTemplateId
   }
 `

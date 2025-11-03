@@ -1,14 +1,14 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { screen, userEvent, waitFor } from 'storybook/test'
 
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import {
   blocks,
   blocksWithStepBlockPosition
 } from '@core/journeys/ui/TemplateView/data'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
 import {
   JourneyStatus,
@@ -60,6 +60,7 @@ const journey: Journey = {
   },
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   primaryImageBlock: null,
   creatorDescription: null,
@@ -79,7 +80,16 @@ const journey: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  logoImageBlock: null,
+  menuButtonIcon: null,
+  menuStepBlock: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const mockGetStepBlocksWithPosition: MockedResponse<GetStepBlocksWithPosition> =
@@ -124,7 +134,7 @@ export const SocialPreview = {
     await userEvent.click(socialPreviewNode)
 
     await waitFor(async () => {
-      await screen.getByText('Social App View')
+      await screen.getByText('Social Post View')
     })
   }
 }

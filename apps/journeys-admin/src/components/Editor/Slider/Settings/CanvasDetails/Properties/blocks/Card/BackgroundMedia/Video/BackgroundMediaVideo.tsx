@@ -93,6 +93,18 @@ export function BackgroundMediaVideo({
   function createVideoBlock(input: VideoBlockUpdateInput): void {
     if (journey == null || cardBlock == null) return
 
+    let typename
+    switch (input.source) {
+      case VideoBlockSource.youTube:
+        typename = 'YouTube'
+        break
+      case VideoBlockSource.mux:
+        typename = 'Mux'
+        break
+      default:
+        typename = 'Internal'
+        break
+    }
     const block: VideoBlock = {
       id: uuidv4(),
       __typename: 'VideoBlock',
@@ -101,7 +113,13 @@ export function BackgroundMediaVideo({
       title: null,
       description: null,
       image: null,
-      video: null,
+      mediaVideo:
+        input.videoId != null
+          ? {
+              id: input.videoId ?? null,
+              __typename: typename
+            }
+          : null,
       action: null,
       startAt: input.startAt ?? null,
       endAt: input.endAt ?? null,
@@ -113,7 +131,11 @@ export function BackgroundMediaVideo({
       source: input.source ?? VideoBlockSource.internal,
       posterBlockId: input.posterBlockId ?? null,
       fullsize: input.fullsize ?? null,
-      objectFit: input.objectFit ?? null
+      objectFit: input.objectFit ?? null,
+      subtitleLanguage:
+        input.subtitleLanguageId != null
+          ? { __typename: 'Language', id: input.subtitleLanguageId }
+          : null
     }
 
     add({

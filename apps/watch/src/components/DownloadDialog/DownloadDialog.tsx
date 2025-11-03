@@ -1,8 +1,8 @@
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import LanguageIcon from '@mui/icons-material/Language'
 import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import CircularProgress from '@mui/material/CircularProgress'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -14,14 +14,17 @@ import { useTheme } from '@mui/material/styles'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik } from 'formik'
+import last from 'lodash/last'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ComponentProps, ReactElement, useEffect, useState } from 'react'
 import useDownloader from 'react-use-downloader'
+import { object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
+import { VideoVariantDownloadQuality } from '../../../__generated__/globalTypes'
 import { useVideo } from '../../libs/videoContext'
 
 import { TermsOfUseDialog } from './TermsOfUseDialog'
@@ -48,7 +51,7 @@ export function DownloadDialog({
   onClose
 }: DownloadDialogProps): ReactElement {
   const theme = useTheme()
-  const { title, image, imageAlt, variant } = useVideo()
+  const { title, images, imageAlt, variant } = useVideo()
   const { percentage, download, cancel, isInProgress } = useDownloader()
   const [openTerms, setOpenTerms] = useState<boolean>(false)
   const { t } = useTranslation('apps-watch')
@@ -66,8 +69,51 @@ export function DownloadDialog({
     }
   }, [percentage, onClose])
 
+  const validationSchema = object().shape({
+    file: string().test('no-downloads', t('No Downloads Available'), (file) => {
+      if (file == null || file === '') {
+        // fail validation
+        return false
+      } else {
+        // pass validation
+        return true
+      }
+    })
+  })
+
+  const qualityEnumToOrder = {
+    [VideoVariantDownloadQuality.highest]: 0,
+    [VideoVariantDownloadQuality.high]: 1,
+    [VideoVariantDownloadQuality.low]: 2
+  }
+
+  function getQualityLabel(quality: keyof typeof qualityEnumToOrder): string {
+    switch (quality) {
+      case VideoVariantDownloadQuality.highest:
+        return t('Highest')
+      case VideoVariantDownloadQuality.high:
+        return t('High')
+      case VideoVariantDownloadQuality.low:
+        return t('Low')
+    }
+  }
+
+  function getDownloadUrl(file: string): string {
+    const url = new URL(file)
+    url.searchParams.set('download', `${title[0].value}.mp4`)
+    return url.toString()
+  }
+
+  type Download = (typeof downloads)[number] & {
+    quality: keyof typeof qualityEnumToOrder
+  }
+
+  const filteredDownloads = downloads.filter(({ quality }) =>
+    Object.keys(qualityEnumToOrder).includes(quality)
+  ) as Download[]
+
   const initialValues = {
-    file: downloads[0].url,
+    file: filteredDownloads[0]?.url ?? '',
     terms: false
   }
 
@@ -79,7 +125,7 @@ export function DownloadDialog({
         onClose?.()
       }}
       dialogTitle={{
-        title: 'Download Video',
+        title: t('Download Video'),
         closeButton: true
       }}
       testId="DownloadDialog"
@@ -91,7 +137,7 @@ export function DownloadDialog({
           alignItems="flex-start"
           sx={{ mt: { xs: 0, sm: 1 }, mb: { xs: 0, sm: 5 } }}
         >
-          {image != null && (
+          {images[0]?.mobileCinematicHigh != null && (
             <>
               <Box
                 sx={{
@@ -101,7 +147,7 @@ export function DownloadDialog({
                 }}
               >
                 <Image
-                  src={image}
+                  src={images[0].mobileCinematicHigh}
                   alt={imageAlt[0].value}
                   width={240}
                   height={115}
@@ -134,7 +180,7 @@ export function DownloadDialog({
           )}
           <Stack>
             <Typography variant="h6" sx={{ mb: 1 }}>
-              {title[0].value}
+              {last(title)?.value}
             </Typography>
             <Stack direction="row" alignItems="center">
               <LanguageIcon fontSize="small" sx={{ mr: 1 }} />
@@ -147,26 +193,36 @@ export function DownloadDialog({
           onSubmit={(values) => {
             void download(values.file, `${title[0].value}.mp4`)
           }}
+          validationSchema={validationSchema}
+          validateOnMount
         >
           {({ values, errors, handleChange, handleBlur, setFieldValue }) => (
             <Form>
               <TextField
                 name="file"
-                label="Select a file size"
+                label={t('Select a file size')}
                 fullWidth
                 value={values.file}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 helperText={errors.file}
                 error={errors.file != null}
+                disabled={values.file === ''}
                 select
               >
-                {downloads.map((download) => (
-                  <MenuItem key={download.quality} value={download.url}>
-                    {download.quality.charAt(0).toUpperCase()}
-                    {download.quality.slice(1)} ({formatBytes(download.size)})
-                  </MenuItem>
-                ))}
+                {filteredDownloads
+                  .sort((a, b) => {
+                    return (
+                      qualityEnumToOrder[a.quality] -
+                      qualityEnumToOrder[b.quality]
+                    )
+                  })
+                  .map((download) => (
+                    <MenuItem key={download.quality} value={download.url}>
+                      {getQualityLabel(download.quality)} (
+                      {formatBytes(download.size)})
+                    </MenuItem>
+                  ))}
               </TextField>
               <Stack
                 direction={{ xs: 'column', sm: 'row' }}
@@ -185,7 +241,7 @@ export function DownloadDialog({
                         onChange={handleChange}
                       />
                     }
-                    label="I agree to the"
+                    label={t('I agree to the')}
                   />
                   <Link
                     underline="none"
@@ -195,26 +251,41 @@ export function DownloadDialog({
                     {t('Terms of Use')}
                   </Link>
                 </FormGroup>
-                <LoadingButton
-                  type="submit"
-                  variant="contained"
-                  size="small"
-                  disabled={!values.terms}
-                  startIcon={<ArrowDownwardIcon />}
-                  loading={isInProgress}
-                  loadingPosition="start"
-                  loadingIndicator={
-                    <CircularProgress
-                      variant="determinate"
-                      value={Math.max(10, percentage)}
-                      sx={{ color: 'action.disabled', ml: 1 }}
-                      // Mui has style that overrides sx. Use style
-                      style={{ width: '20px', height: '20px' }}
-                    />
-                  }
-                >
-                  {t('Download')}
-                </LoadingButton>
+                {values.terms === true &&
+                values.file?.startsWith('https://stream.mux.com/') ? (
+                  <Button
+                    variant="contained"
+                    size="small"
+                    startIcon={<ArrowDownwardIcon />}
+                    onClick={() => {
+                      onClose?.()
+                    }}
+                    href={getDownloadUrl(values.file)}
+                  >
+                    {t('Download')}
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    size="small"
+                    disabled={!values.terms}
+                    startIcon={<ArrowDownwardIcon />}
+                    loading={isInProgress}
+                    loadingPosition="start"
+                    loadingIndicator={
+                      <CircularProgress
+                        variant="determinate"
+                        value={Math.max(10, percentage)}
+                        sx={{ color: 'action.disabled', ml: 1 }}
+                        // Mui has style that overrides sx. Use style
+                        style={{ width: '20px', height: '20px' }}
+                      />
+                    }
+                  >
+                    {t('Download')}
+                  </Button>
+                )}
               </Stack>
               <TermsOfUseDialog
                 open={openTerms}

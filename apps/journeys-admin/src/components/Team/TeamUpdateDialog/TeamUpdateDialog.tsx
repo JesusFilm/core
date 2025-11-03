@@ -5,14 +5,16 @@ import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 import { object, string } from 'yup'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
+import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
 
 export const TEAM_UPDATE = gql`
   mutation TeamUpdate($id: ID!, $input: TeamUpdateInput!) {
@@ -44,6 +46,18 @@ export function TeamUpdateDialog({
       .matches(/^(?!\s+$).*/g, t('This field cannot contain only blankspaces')),
     publicTitle: string().max(40, t('Max 40 Characters'))
   })
+
+  const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
+
+  useEffect(() => {
+    void loadUser()
+  }, [loadUser])
+
+  const currentUserTeamRole: UserTeamRole | undefined = useMemo(() => {
+    return activeTeam?.userTeams?.find(({ user: { email } }) => {
+      return email === currentUser?.email
+    })?.role
+  }, [activeTeam, currentUser])
 
   async function handleSubmit(
     values: FormikValues,
@@ -96,7 +110,6 @@ export function TeamUpdateDialog({
       setTimeout(() => resetForm({}))
     }
   }
-
   return (
     <Formik
       initialValues={{
@@ -129,10 +142,13 @@ export function TeamUpdateDialog({
                 variant="filled"
                 error={Boolean(errors.title)}
                 onChange={handleChange}
+                disabled={currentUserTeamRole !== UserTeamRole.manager}
                 helperText={
                   errors.title !== undefined
                     ? (errors.title as string)
-                    : t('Private: Visible only to your team')
+                    : currentUserTeamRole !== UserTeamRole.manager
+                      ? t('Only a team manager can rename a team')
+                      : t('Private: Visible only to your team')
                 }
                 label={t('Team Name')}
               />
@@ -144,10 +160,13 @@ export function TeamUpdateDialog({
                 variant="filled"
                 error={Boolean(errors.publicTitle)}
                 onChange={handleChange}
+                disabled={currentUserTeamRole !== UserTeamRole.manager}
                 helperText={
                   errors.publicTitle !== undefined
                     ? (errors.publicTitle as string)
-                    : t('Public: Anyone can view it')
+                    : currentUserTeamRole !== UserTeamRole.manager
+                      ? t('Only a team manager can rename a team')
+                      : t('Public: Anyone can view it')
                 }
                 label={t('Legal Name')}
                 placeholder={values.title}

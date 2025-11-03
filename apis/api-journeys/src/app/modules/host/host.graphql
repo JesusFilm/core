@@ -1,0 +1,35 @@
+type Host @shareable {
+  id: ID!
+  teamId: ID!
+  title: String!
+  location: String
+  src1: String
+  src2: String
+}
+
+input HostUpdateInput {
+  """
+  title can be undefined as to not update title, but it cannot be null as to clear the value of title
+  """
+  title: String
+  location: String
+  src1: String
+  src2: String
+}
+
+extend type Query {
+  hosts(teamId: ID!): [Host!]!
+}
+
+input HostCreateInput {
+  title: String!
+  location: String
+  src1: String
+  src2: String
+}
+
+extend type Mutation {
+  hostCreate(teamId: ID!, input: HostCreateInput!): Host!
+  hostUpdate(id: ID!, teamId: ID!, input: HostUpdateInput): Host!
+  hostDelete(id: ID!, teamId: ID!): Host!
+}

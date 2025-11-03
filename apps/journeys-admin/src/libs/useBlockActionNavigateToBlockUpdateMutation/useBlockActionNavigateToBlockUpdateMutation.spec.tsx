@@ -1,7 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { renderHook, waitFor } from '@testing-library/react'
-import { act } from 'react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 
 import { BlockFields_ButtonBlock as ButtonBlock } from '../../../__generated__/BlockFields'
 
@@ -21,7 +20,9 @@ describe('useBlockActionNavigateToBlockUpdateMutation', () => {
     size: null,
     startIconId: null,
     endIconId: null,
-    action: null
+    submitEnabled: null,
+    action: null,
+    settings: null
   }
 
   it('should update block action', async () => {

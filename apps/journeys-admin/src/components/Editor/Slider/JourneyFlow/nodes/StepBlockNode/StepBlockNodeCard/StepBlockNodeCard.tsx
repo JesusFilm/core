@@ -8,6 +8,7 @@ import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useGetValueFromJourneyCustomizationString } from '@core/journeys/ui/useGetValueFromJourneyCustomizationString'
 
 import {
   BlockFields_CardBlock as CardBlock,
@@ -27,11 +28,9 @@ export function StepBlockNodeCard({
   selected
 }: StepBlockNodeCardProps): ReactElement {
   const {
-    state: { selectedStep, showAnalytics },
-    dispatch
+    state: { showAnalytics }
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
-
   const card = step?.children[0] as TreeBlock<CardBlock> | undefined
   const {
     title,
@@ -43,20 +42,8 @@ export function StepBlockNodeCard({
     priorityImage
   } = getCardMetadata(card)
 
-  function handleClick(): void {
-    if (selectedStep?.id === step?.id && showAnalytics !== true) {
-      dispatch({
-        type: 'SetSelectedBlockAction',
-        selectedBlock: selectedStep
-      })
-      dispatch({
-        type: 'SetSelectedAttributeIdAction',
-        selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
-      })
-    } else {
-      dispatch({ type: 'SetSelectedStepAction', selectedStep: step })
-    }
-  }
+  const resolvedTitle = useGetValueFromJourneyCustomizationString(title)
+  const resolvedSubtitle = useGetValueFromJourneyCustomizationString(subtitle)
 
   const nodeBgImage = priorityImage ?? bgImage
 
@@ -78,7 +65,6 @@ export function StepBlockNodeCard({
       data-testid="StepBlockNodeCard"
       elevation={selected ? 6 : 1}
       title={showAnalytics === true ? '' : t('Click to edit or drag')}
-      onClick={handleClick}
       sx={{
         width: STEP_NODE_CARD_WIDTH,
         m: 1.5,
@@ -164,8 +150,8 @@ export function StepBlockNodeCard({
               wordBreak: 'break-word'
             }}
           >
-            {title != null && title !== '' ? (
-              title
+            {resolvedTitle != null && resolvedTitle !== '' ? (
+              resolvedTitle
             ) : (
               <Skeleton
                 data-testid="StepBlockNodeCardTitleSkeleton"
@@ -189,8 +175,9 @@ export function StepBlockNodeCard({
               overflow: 'hidden'
             }}
           >
-            {(subtitle != null && subtitle !== '') || title != null ? (
-              subtitle
+            {(resolvedSubtitle != null && resolvedSubtitle !== '') ||
+            resolvedTitle != null ? (
+              resolvedSubtitle
             ) : (
               <Skeleton
                 data-testid="StepBlockNodeCardSubtitleSkeleton"

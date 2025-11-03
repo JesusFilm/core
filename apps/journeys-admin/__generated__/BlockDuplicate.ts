@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { BlockDuplicateIdMap, ButtonVariant, ButtonColor, ButtonSize, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { BlockDuplicateIdMap, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: BlockDuplicate
@@ -28,6 +28,8 @@ export interface BlockDuplicate_blockDuplicate_ButtonBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_ButtonBlock_action_EmailAction {
@@ -35,9 +37,37 @@ export interface BlockDuplicate_blockDuplicate_ButtonBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type BlockDuplicate_blockDuplicate_ButtonBlock_action = BlockDuplicate_blockDuplicate_ButtonBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_ButtonBlock_action_LinkAction | BlockDuplicate_blockDuplicate_ButtonBlock_action_EmailAction;
+export interface BlockDuplicate_blockDuplicate_ButtonBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface BlockDuplicate_blockDuplicate_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type BlockDuplicate_blockDuplicate_ButtonBlock_action = BlockDuplicate_blockDuplicate_ButtonBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_ButtonBlock_action_LinkAction | BlockDuplicate_blockDuplicate_ButtonBlock_action_EmailAction | BlockDuplicate_blockDuplicate_ButtonBlock_action_ChatAction | BlockDuplicate_blockDuplicate_ButtonBlock_action_PhoneAction;
+
+export interface BlockDuplicate_blockDuplicate_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
 
 export interface BlockDuplicate_blockDuplicate_ButtonBlock {
   __typename: "ButtonBlock";
@@ -50,7 +80,9 @@ export interface BlockDuplicate_blockDuplicate_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: BlockDuplicate_blockDuplicate_ButtonBlock_action | null;
+  settings: BlockDuplicate_blockDuplicate_ButtonBlock_settings | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_CardBlock {
@@ -62,6 +94,10 @@ export interface BlockDuplicate_blockDuplicate_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -84,38 +120,6 @@ export interface BlockDuplicate_blockDuplicate_CardBlock {
    * background.
    */
   fullscreen: boolean;
-}
-
-export interface BlockDuplicate_blockDuplicate_FormBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface BlockDuplicate_blockDuplicate_FormBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface BlockDuplicate_blockDuplicate_FormBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type BlockDuplicate_blockDuplicate_FormBlock_action = BlockDuplicate_blockDuplicate_FormBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_FormBlock_action_LinkAction | BlockDuplicate_blockDuplicate_FormBlock_action_EmailAction;
-
-export interface BlockDuplicate_blockDuplicate_FormBlock {
-  __typename: "FormBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  form: any | null;
-  action: BlockDuplicate_blockDuplicate_FormBlock_action | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_IconBlock {
@@ -142,6 +146,26 @@ export interface BlockDuplicate_blockDuplicate_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
+}
+
+export interface BlockDuplicate_blockDuplicate_MultiselectOptionBlock {
+  __typename: "MultiselectOptionBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+}
+
+export interface BlockDuplicate_blockDuplicate_MultiselectBlock {
+  __typename: "MultiselectBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  min: number | null;
+  max: number | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_RadioOptionBlock_action_NavigateToBlockAction {
@@ -156,6 +180,8 @@ export interface BlockDuplicate_blockDuplicate_RadioOptionBlock_action_LinkActio
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_RadioOptionBlock_action_EmailAction {
@@ -163,9 +189,29 @@ export interface BlockDuplicate_blockDuplicate_RadioOptionBlock_action_EmailActi
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type BlockDuplicate_blockDuplicate_RadioOptionBlock_action = BlockDuplicate_blockDuplicate_RadioOptionBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_RadioOptionBlock_action_LinkAction | BlockDuplicate_blockDuplicate_RadioOptionBlock_action_EmailAction;
+export interface BlockDuplicate_blockDuplicate_RadioOptionBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface BlockDuplicate_blockDuplicate_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type BlockDuplicate_blockDuplicate_RadioOptionBlock_action = BlockDuplicate_blockDuplicate_RadioOptionBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_RadioOptionBlock_action_LinkAction | BlockDuplicate_blockDuplicate_RadioOptionBlock_action_EmailAction | BlockDuplicate_blockDuplicate_RadioOptionBlock_action_ChatAction | BlockDuplicate_blockDuplicate_RadioOptionBlock_action_PhoneAction;
 
 export interface BlockDuplicate_blockDuplicate_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -174,6 +220,12 @@ export interface BlockDuplicate_blockDuplicate_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: BlockDuplicate_blockDuplicate_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_RadioQuestionBlock {
@@ -181,6 +233,7 @@ export interface BlockDuplicate_blockDuplicate_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_SignUpBlock_action_NavigateToBlockAction {
@@ -195,6 +248,8 @@ export interface BlockDuplicate_blockDuplicate_SignUpBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_SignUpBlock_action_EmailAction {
@@ -202,9 +257,29 @@ export interface BlockDuplicate_blockDuplicate_SignUpBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type BlockDuplicate_blockDuplicate_SignUpBlock_action = BlockDuplicate_blockDuplicate_SignUpBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_SignUpBlock_action_LinkAction | BlockDuplicate_blockDuplicate_SignUpBlock_action_EmailAction;
+export interface BlockDuplicate_blockDuplicate_SignUpBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface BlockDuplicate_blockDuplicate_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type BlockDuplicate_blockDuplicate_SignUpBlock_action = BlockDuplicate_blockDuplicate_SignUpBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_SignUpBlock_action_LinkAction | BlockDuplicate_blockDuplicate_SignUpBlock_action_EmailAction | BlockDuplicate_blockDuplicate_SignUpBlock_action_ChatAction | BlockDuplicate_blockDuplicate_SignUpBlock_action_PhoneAction;
 
 export interface BlockDuplicate_blockDuplicate_SignUpBlock {
   __typename: "SignUpBlock";
@@ -214,6 +289,14 @@ export interface BlockDuplicate_blockDuplicate_SignUpBlock {
   submitLabel: string | null;
   submitIconId: string | null;
   action: BlockDuplicate_blockDuplicate_SignUpBlock_action | null;
+}
+
+export interface BlockDuplicate_blockDuplicate_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_StepBlock {
@@ -246,12 +329,23 @@ export interface BlockDuplicate_blockDuplicate_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
+}
+
+export interface BlockDuplicate_blockDuplicate_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_TypographyBlock {
@@ -263,39 +357,64 @@ export interface BlockDuplicate_blockDuplicate_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: BlockDuplicate_blockDuplicate_TypographyBlock_settings | null;
 }
 
-export interface BlockDuplicate_blockDuplicate_VideoBlock_video_title {
+export interface BlockDuplicate_blockDuplicate_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface BlockDuplicate_blockDuplicate_VideoBlock_video_variant {
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface BlockDuplicate_blockDuplicate_VideoBlock_video_variantLanguages_name {
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface BlockDuplicate_blockDuplicate_VideoBlock_video_variantLanguages {
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: BlockDuplicate_blockDuplicate_VideoBlock_video_variantLanguages_name[];
+  name: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface BlockDuplicate_blockDuplicate_VideoBlock_video {
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: BlockDuplicate_blockDuplicate_VideoBlock_video_title[];
-  image: string | null;
-  variant: BlockDuplicate_blockDuplicate_VideoBlock_video_variant | null;
-  variantLanguages: BlockDuplicate_blockDuplicate_VideoBlock_video_variantLanguages[];
+  title: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_title[];
+  images: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_images[];
+  variant: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
+
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  assetId: string | null;
+  playbackId: string | null;
+}
+
+export interface BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo = BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_Video | BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_MuxVideo | BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo_YouTube;
 
 export interface BlockDuplicate_blockDuplicate_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -309,6 +428,8 @@ export interface BlockDuplicate_blockDuplicate_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_VideoBlock_action_EmailAction {
@@ -316,9 +437,29 @@ export interface BlockDuplicate_blockDuplicate_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type BlockDuplicate_blockDuplicate_VideoBlock_action = BlockDuplicate_blockDuplicate_VideoBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_VideoBlock_action_LinkAction | BlockDuplicate_blockDuplicate_VideoBlock_action_EmailAction;
+export interface BlockDuplicate_blockDuplicate_VideoBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface BlockDuplicate_blockDuplicate_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type BlockDuplicate_blockDuplicate_VideoBlock_action = BlockDuplicate_blockDuplicate_VideoBlock_action_NavigateToBlockAction | BlockDuplicate_blockDuplicate_VideoBlock_action_LinkAction | BlockDuplicate_blockDuplicate_VideoBlock_action_EmailAction | BlockDuplicate_blockDuplicate_VideoBlock_action_ChatAction | BlockDuplicate_blockDuplicate_VideoBlock_action_PhoneAction;
 
 export interface BlockDuplicate_blockDuplicate_VideoBlock {
   __typename: "VideoBlock";
@@ -388,11 +529,8 @@ export interface BlockDuplicate_blockDuplicate_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: BlockDuplicate_blockDuplicate_VideoBlock_video | null;
+  subtitleLanguage: BlockDuplicate_blockDuplicate_VideoBlock_subtitleLanguage | null;
+  mediaVideo: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
@@ -411,6 +549,8 @@ export interface BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_L
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_EmailAction {
@@ -418,9 +558,29 @@ export interface BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_E
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction = BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_NavigateToBlockAction | BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_LinkAction | BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_EmailAction;
+export interface BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction = BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_NavigateToBlockAction | BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_LinkAction | BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_EmailAction | BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_ChatAction | BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction_PhoneAction;
 
 export interface BlockDuplicate_blockDuplicate_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -435,7 +595,7 @@ export interface BlockDuplicate_blockDuplicate_VideoTriggerBlock {
   triggerAction: BlockDuplicate_blockDuplicate_VideoTriggerBlock_triggerAction;
 }
 
-export type BlockDuplicate_blockDuplicate = BlockDuplicate_blockDuplicate_GridContainerBlock | BlockDuplicate_blockDuplicate_ButtonBlock | BlockDuplicate_blockDuplicate_CardBlock | BlockDuplicate_blockDuplicate_FormBlock | BlockDuplicate_blockDuplicate_IconBlock | BlockDuplicate_blockDuplicate_ImageBlock | BlockDuplicate_blockDuplicate_RadioOptionBlock | BlockDuplicate_blockDuplicate_RadioQuestionBlock | BlockDuplicate_blockDuplicate_SignUpBlock | BlockDuplicate_blockDuplicate_StepBlock | BlockDuplicate_blockDuplicate_TextResponseBlock | BlockDuplicate_blockDuplicate_TypographyBlock | BlockDuplicate_blockDuplicate_VideoBlock | BlockDuplicate_blockDuplicate_VideoTriggerBlock;
+export type BlockDuplicate_blockDuplicate = BlockDuplicate_blockDuplicate_GridContainerBlock | BlockDuplicate_blockDuplicate_ButtonBlock | BlockDuplicate_blockDuplicate_CardBlock | BlockDuplicate_blockDuplicate_IconBlock | BlockDuplicate_blockDuplicate_ImageBlock | BlockDuplicate_blockDuplicate_MultiselectOptionBlock | BlockDuplicate_blockDuplicate_MultiselectBlock | BlockDuplicate_blockDuplicate_RadioOptionBlock | BlockDuplicate_blockDuplicate_RadioQuestionBlock | BlockDuplicate_blockDuplicate_SignUpBlock | BlockDuplicate_blockDuplicate_SpacerBlock | BlockDuplicate_blockDuplicate_StepBlock | BlockDuplicate_blockDuplicate_TextResponseBlock | BlockDuplicate_blockDuplicate_TypographyBlock | BlockDuplicate_blockDuplicate_VideoBlock | BlockDuplicate_blockDuplicate_VideoTriggerBlock;
 
 export interface BlockDuplicate {
   /**

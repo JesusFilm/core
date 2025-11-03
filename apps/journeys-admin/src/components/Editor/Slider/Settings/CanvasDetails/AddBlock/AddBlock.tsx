@@ -1,4 +1,4 @@
-import Grid from '@mui/material/Grid'
+import Grid from '@mui/material/GridLegacy'
 import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 
@@ -7,23 +7,21 @@ import {
   ActiveCanvasDetailsDrawer,
   useEditor
 } from '@core/journeys/ui/EditorProvider'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import type { BlockFields_CardBlock as CardBlock } from '../../../../../../../__generated__/BlockFields'
 import { Drawer } from '../../Drawer'
 
 import { NewButtonButton } from './NewButtonButton'
-import { NewFormButton } from './NewFormButton'
 import { NewImageButton } from './NewImageButton'
+import { NewMultiselectButton } from './NewMultiselectButton'
 import { NewRadioQuestionButton } from './NewRadioQuestionButton'
-import { NewSignUpButton } from './NewSignUpButton'
+import { NewSpacerButton } from './NewSpacerButton'
 import { NewTextResponseButton } from './NewTextResponseButton'
 import { NewTypographyButton } from './NewTypographyButton'
 import { NewVideoButton } from './NewVideoButton'
 
 export function AddBlock(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { formiumForm } = useFlags()
   const {
     state: { selectedStep },
     dispatch
@@ -33,9 +31,8 @@ export function AddBlock(): ReactElement {
     (block) => block.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock>
 
-  const hasChildBlock = cardBlock?.children?.some(
-    (block) => block.id !== cardBlock.coverBlockId
-  )
+  const hasChildBlock =
+    cardBlock?.children != null && cardBlock?.children?.length > 0
 
   function onClose(): void {
     dispatch({
@@ -60,19 +57,17 @@ export function AddBlock(): ReactElement {
           <NewRadioQuestionButton />
         </Grid>
         <Grid item xs={6} md={12}>
-          <NewTextResponseButton />
+          <NewMultiselectButton />
         </Grid>
         <Grid item xs={6} md={12}>
-          <NewSignUpButton />
+          <NewTextResponseButton />
         </Grid>
         <Grid item xs={6} md={12}>
           <NewButtonButton />
         </Grid>
-        {formiumForm && (
-          <Grid item xs={6} md={12}>
-            <NewFormButton />
-          </Grid>
-        )}
+        <Grid item xs={6} md={12}>
+          <NewSpacerButton />
+        </Grid>
       </Grid>
     </Drawer>
   )

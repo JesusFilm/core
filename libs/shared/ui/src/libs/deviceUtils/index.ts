@@ -1,1 +1,7 @@
-export { hasTouchScreen, isIPhone, isMobile, isIOS } from './deviceUtils'
+export {
+  hasTouchScreen,
+  isIPhone,
+  isMobile,
+  isIOS,
+  isIOSTouchScreen
+} from './deviceUtils'

@@ -142,11 +142,16 @@ export function ActiveJourneyList({
   }, [event, refetch])
 
   return (
-    <>
+    <Box
+      sx={{
+        mt: { xs: 3, sm: 2 },
+        px: { xs: 5, sm: 0 }
+      }}
+    >
       {data?.journeys == null ? (
         <LoadingJourneyList hideHelperText />
       ) : (
-        <Box>
+        <>
           <ActivePriorityList
             journeys={data.journeys}
             sortOrder={sortOrder}
@@ -175,7 +180,7 @@ export function ActiveJourneyList({
               <AddJourneyButton />
             </Card>
           )}
-        </Box>
+        </>
       )}
       <Stack alignItems="center">
         <Typography
@@ -203,11 +208,10 @@ export function ActiveJourneyList({
             closeLabel: t('Cancel')
           }}
         >
-          <Typography>
-            {t(
-              'Are you sure you would like to archive all active journeys immediately?'
-            )}
+          <Typography sx={{ fontWeight: 'bold' }}>
+            {t('This will archive all active journeys you own.')}
           </Typography>
+          <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>
       )}
       {trashDialogOpen != null && (
@@ -224,13 +228,12 @@ export function ActiveJourneyList({
             closeLabel: t('Cancel')
           }}
         >
-          <Typography>
-            {t(
-              'Are you sure you would like to trash all active journeys immediately?'
-            )}
+          <Typography sx={{ fontWeight: 'bold' }}>
+            {t('This will trash all active journeys you own.')}
           </Typography>
+          <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>
       )}
-    </>
+    </Box>
   )
 }

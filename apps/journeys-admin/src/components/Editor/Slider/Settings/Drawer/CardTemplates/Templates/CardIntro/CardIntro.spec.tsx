@@ -60,6 +60,7 @@ describe('CardIntro', () => {
     themeMode: null,
     themeName: null,
     fullscreen: false,
+    backdropBlur: null,
     children: []
   }
   const step: TreeBlock = {
@@ -88,7 +89,10 @@ describe('CardIntro', () => {
           journeyId: 'journeyId',
           parentBlockId: 'cardId',
           content: 'Interactive Video',
-          variant: TypographyVariant.h6
+          variant: TypographyVariant.h6,
+          settings: {
+            color: null
+          }
         },
         titleInput: {
           id: 'titleId',
@@ -97,7 +101,10 @@ describe('CardIntro', () => {
           journeyId: 'journeyId',
           parentBlockId: 'cardId',
           content: "Jesus: History's Most Influential Figure?",
-          variant: TypographyVariant.h1
+          variant: TypographyVariant.h1,
+          settings: {
+            color: null
+          }
         },
         bodyInput: {
           id: 'bodyId',
@@ -107,7 +114,10 @@ describe('CardIntro', () => {
           parentBlockId: 'cardId',
           content:
             'Journey through time, from dusty roads to modern cities, to understand the lasting impact and relevance of Jesus.',
-          variant: TypographyVariant.body1
+          variant: TypographyVariant.body1,
+          settings: {
+            color: null
+          }
         },
         buttonInput: {
           id: 'buttonId',
@@ -155,6 +165,10 @@ describe('CardIntro', () => {
           color: null,
           content: 'Interactive Video',
           variant: TypographyVariant.h6,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         title: {
@@ -165,6 +179,10 @@ describe('CardIntro', () => {
           color: null,
           content: "Jesus: History's Most Influential Figure?",
           variant: TypographyVariant.h1,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         body: {
@@ -176,6 +194,10 @@ describe('CardIntro', () => {
           content:
             'Journey through time, from dusty roads to modern cities, to understand the lasting impact and relevance of Jesus.',
           variant: TypographyVariant.body1,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          },
           __typename: 'TypographyBlock'
         },
         button: {
@@ -188,7 +210,9 @@ describe('CardIntro', () => {
           size: null,
           startIconId: null,
           endIconId: null,
+          submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         startIcon: {
@@ -219,7 +243,9 @@ describe('CardIntro', () => {
           size: null,
           startIconId: 'startIconId',
           endIconId: 'endIconId',
+          submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         video: {
@@ -240,7 +266,8 @@ describe('CardIntro', () => {
           image: null,
           duration: null,
           objectFit: null,
-          video: {
+          subtitleLanguage: null,
+          mediaVideo: {
             id: '1_jf-0-0',
             title: [
               {
@@ -248,8 +275,13 @@ describe('CardIntro', () => {
                 __typename: 'VideoTitle'
               }
             ],
-            image:
-              'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg?version=2',
+            images: [
+              {
+                __typename: 'CloudflareImage',
+                mobileCinematicHigh:
+                  'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+              }
+            ],
             variant: {
               id: '1_529-jf-0-0',
               hls: 'https://arc.gt/j67rz',

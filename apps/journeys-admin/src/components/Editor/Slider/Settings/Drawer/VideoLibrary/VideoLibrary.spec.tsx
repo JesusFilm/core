@@ -1,14 +1,20 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
+import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { NextRouter, useRouter } from 'next/router'
-
 import {
-  VideoBlockSource,
-  VideoLabel
-} from '../../../../../../../__generated__/globalTypes'
+  InstantSearchApi,
+  useInfiniteHits,
+  useInstantSearch,
+  useSearchBox
+} from 'react-instantsearch'
 
-import { GET_VIDEOS } from './VideoFromLocal/VideoFromLocal'
+import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
+
+import { videoItems } from './data'
+import { GET_VIDEO } from './VideoFromLocal/LocalDetails/LocalDetails'
 
 import { VideoLibrary } from '.'
 
@@ -24,9 +30,43 @@ jest.mock('next/router', () => ({
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
+jest.mock('react-instantsearch')
+
+const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+  typeof useSearchBox
+>
+const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+  typeof useInstantSearch
+>
+const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
+  typeof useInfiniteHits
+>
+
 describe('VideoLibrary', () => {
   const push = jest.fn()
   const on = jest.fn()
+
+  beforeEach(() => {
+    mockUseSearchBox.mockReturnValue({
+      refine: jest.fn()
+    } as unknown as SearchBoxRenderState)
+
+    mockUseInfiniteHits.mockReturnValue({
+      items: videoItems,
+      showMore: jest.fn(),
+      isLastPage: false
+    } as unknown as InfiniteHitsRenderState)
+
+    mockUseInstantSearch.mockReturnValue({
+      status: 'idle',
+      results: {
+        __isArtificial: false,
+        nbHits: videoItems.length
+      }
+    } as unknown as InstantSearchApi)
+
+    jest.clearAllMocks()
+  })
 
   describe('smUp', () => {
     beforeEach(() =>
@@ -85,66 +125,16 @@ describe('VideoLibrary', () => {
 
     it('displays searched video', async () => {
       render(
-        <MockedProvider
-          mocks={[
-            {
-              request: {
-                query: GET_VIDEOS,
-                variables: {
-                  offset: 0,
-                  limit: 5,
-                  where: {
-                    availableVariantLanguageIds: ['529'],
-                    title: 'Andreas',
-                    labels: [
-                      VideoLabel.episode,
-                      VideoLabel.featureFilm,
-                      VideoLabel.segment,
-                      VideoLabel.shortFilm
-                    ]
-                  }
-                }
-              },
-              result: {
-                data: {
-                  videos: [
-                    {
-                      id: '2_0-AndreasStory',
-                      image:
-                        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg',
-                      snippet: [
-                        {
-                          primary: true,
-                          value:
-                            'After living a life full of fighter planes and porsches, Andreas realizes something is missing.'
-                        }
-                      ],
-                      title: [
-                        {
-                          primary: true,
-                          value: "Andreas' Story"
-                        }
-                      ],
-                      variant: {
-                        id: 'variantA',
-                        duration: 186
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          ]}
-        >
+        <MockedProvider>
           <VideoLibrary open />
         </MockedProvider>
       )
-      const textBox = screen.getByRole('textbox')
-      fireEvent.change(textBox, {
+      const searchBox = screen.getByRole('searchbox')
+      fireEvent.change(searchBox, {
         target: { value: 'Andreas' }
       })
       await waitFor(() =>
-        expect(screen.getByText("Andreas' Story")).toBeInTheDocument()
+        expect(screen.getByText('title1')).toBeInTheDocument()
       )
     })
   })
@@ -164,70 +154,61 @@ describe('VideoLibrary', () => {
   it('when video selected calls onSelect', async () => {
     const onSelect = jest.fn()
     const onClose = jest.fn()
-    render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: GET_VIDEOS,
-              variables: {
-                offset: 0,
-                limit: 5,
-                where: {
-                  availableVariantLanguageIds: ['529'],
-                  title: null,
-                  labels: [
-                    VideoLabel.episode,
-                    VideoLabel.featureFilm,
-                    VideoLabel.segment,
-                    VideoLabel.shortFilm
+    const mocks = [
+      {
+        request: {
+          query: GET_VIDEO,
+          variables: { id: 'videoId', languageId: '529' }
+        },
+        result: {
+          data: {
+            video: {
+              id: 'videoId',
+              primaryLanguageId: '529',
+              images: [],
+              title: [
+                { primary: true, value: 'title1', __typename: 'Language' }
+              ],
+              description: [
+                { primary: true, value: 'desc', __typename: 'Language' }
+              ],
+              variant: {
+                id: 'v1',
+                duration: 0,
+                hls: '',
+                __typename: 'VideoVariant'
+              },
+              variantLanguages: [
+                {
+                  __typename: 'Language',
+                  id: '529',
+                  name: [
+                    {
+                      value: 'English',
+                      primary: true,
+                      __typename: 'LanguageName'
+                    }
                   ]
                 }
-              }
-            },
-            result: {
-              data: {
-                videos: [
-                  {
-                    id: '2_0-AndreasStory',
-                    image:
-                      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_AndreasStory-0-0.mobileCinematicHigh.jpg',
-                    snippet: [
-                      {
-                        primary: true,
-                        value:
-                          'After living a life full of fighter planes and porsches, Andreas realizes something is missing.'
-                      }
-                    ],
-                    title: [
-                      {
-                        primary: true,
-                        value: "Andreas' Story"
-                      }
-                    ],
-                    variant: {
-                      id: 'variantA',
-                      duration: 186
-                    }
-                  }
-                ]
-              }
+              ],
+              __typename: 'Video'
             }
           }
-        ]}
-      >
+        }
+      }
+    ]
+    render(
+      <MockedProvider mocks={mocks}>
         <VideoLibrary open onSelect={onSelect} onClose={onClose} />
       </MockedProvider>
     )
+    await waitFor(() => expect(screen.getByText('title1')).toBeInTheDocument())
     await waitFor(() =>
-      expect(screen.getByText("Andreas' Story")).toBeInTheDocument()
+      fireEvent.click(screen.getByTestId('VideoListItem-videoId'))
     )
+    // wait for Select button to be enabled after data load
     await waitFor(() =>
-      fireEvent.click(
-        screen.getByRole('button', {
-          name: "Andreas' Story After living a life full of fighter planes and porsches, Andreas realizes something is missing. 03:06"
-        })
-      )
+      expect(screen.getByRole('button', { name: 'Select' })).toBeEnabled()
     )
     fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     expect(onSelect).toHaveBeenCalledWith({
@@ -235,7 +216,7 @@ describe('VideoLibrary', () => {
       endAt: 0,
       startAt: 0,
       source: VideoBlockSource.internal,
-      videoId: '2_0-AndreasStory',
+      videoId: 'videoId',
       videoVariantLanguageId: '529'
     })
     expect(onClose).toHaveBeenCalled()
@@ -268,8 +249,12 @@ describe('VideoLibrary', () => {
             parentOrder: 0,
             action: null,
             source: VideoBlockSource.youTube,
-            video: null,
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: 'videoId'
+            },
             objectFit: null,
+            subtitleLanguage: null,
             posterBlockId: 'poster1.id',
             children: []
           }}
@@ -331,35 +316,6 @@ describe('VideoLibrary', () => {
       expect(push).toHaveBeenCalledWith(
         {
           query: { param: 'video-library' }
-        },
-        undefined,
-        { shallow: true }
-      )
-    })
-  })
-
-  it('should render Cloudflare', async () => {
-    mockedUseRouter.mockReturnValue({
-      query: { param: null },
-      push,
-      events: {
-        on
-      }
-    } as unknown as NextRouter)
-
-    render(
-      <MockedProvider>
-        <VideoLibrary open />
-      </MockedProvider>
-    )
-    fireEvent.click(screen.getByRole('tab', { name: 'Upload' }))
-    await waitFor(() => {
-      expect(screen.getByText('Drop a video here')).toBeInTheDocument()
-    })
-    await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        {
-          query: { param: 'video-upload' }
         },
         undefined,
         { shallow: true }

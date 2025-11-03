@@ -7,6 +7,11 @@
 // GraphQL query operation: GetVideo
 // ====================================================
 
+export interface GetVideo_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface GetVideo_video_title {
   __typename: "VideoTitle";
   primary: boolean;
@@ -35,13 +40,14 @@ export interface GetVideo_video_variantLanguages_name {
 export interface GetVideo_video_variantLanguages {
   __typename: "Language";
   id: string;
+  slug: string | null;
   name: GetVideo_video_variantLanguages_name[];
 }
 
 export interface GetVideo_video {
   __typename: "Video";
   id: string;
-  image: string | null;
+  images: GetVideo_video_images[];
   primaryLanguageId: string;
   title: GetVideo_video_title[];
   description: GetVideo_video_description[];

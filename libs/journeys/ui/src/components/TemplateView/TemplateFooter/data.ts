@@ -33,6 +33,7 @@ export const journey: Journey = {
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [
     // step 1
@@ -45,7 +46,10 @@ export const journey: Journey = {
       alt: 'photo-1522911715181-6ce196f07c76',
       width: 2766,
       height: 3457,
-      blurhash: 'LXJGyfWCEgs:~VWVofoet,jZ$%oe'
+      blurhash: 'LXJGyfWCEgs:~VWVofoet,jZ$%oe',
+      scale: null,
+      focalLeft: 50,
+      focalTop: 50
     },
     {
       __typename: 'CardBlock',
@@ -56,7 +60,8 @@ export const journey: Journey = {
       coverBlockId: 'image1.id',
       themeMode: null,
       themeName: null,
-      fullscreen: false
+      fullscreen: false,
+      backdropBlur: null
     },
     {
       __typename: 'ButtonBlock',
@@ -69,12 +74,16 @@ export const journey: Journey = {
       size: ButtonSize.medium,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: {
         __typename: 'LinkAction',
         parentBlockId: 'button1.id',
         gtmEventName: null,
-        url: 'https://www.google.com/'
-      }
+        url: 'https://www.google.com/',
+        customizable: false,
+        parentStepId: null
+      },
+      settings: null
     },
     {
       __typename: 'StepBlock',
@@ -95,7 +104,10 @@ export const journey: Journey = {
       alt: 'photo-1522911715181-6ce196f07c76',
       width: 2766,
       height: 3457,
-      blurhash: 'LXJGyfWCEgs:~VWVofoet,jZ$%oe'
+      blurhash: 'LXJGyfWCEgs:~VWVofoet,jZ$%oe',
+      scale: null,
+      focalLeft: 50,
+      focalTop: 50
     },
     {
       __typename: 'CardBlock',
@@ -106,7 +118,8 @@ export const journey: Journey = {
       coverBlockId: 'image2.id',
       themeMode: null,
       themeName: null,
-      fullscreen: false
+      fullscreen: false,
+      backdropBlur: null
     },
     {
       id: 'signup.id',
@@ -118,7 +131,9 @@ export const journey: Journey = {
         __typename: 'LinkAction',
         parentBlockId: 'signup.id',
         gtmEventName: 'signup',
-        url: 'https://www.google.com/'
+        url: 'https://www.google.com/',
+        customizable: false,
+        parentStepId: null
       },
       submitIconId: 'icon'
     },
@@ -147,5 +162,14 @@ export const journey: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  logoImageBlock: null,
+  menuButtonIcon: null,
+  menuStepBlock: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }

@@ -304,7 +304,10 @@ export function CardCta(): ReactElement {
       width: 6000,
       height: 4000,
       blurhash: 'L~NTUYkWM{t7~qs:WBofEMjYt7WB',
-      __typename: 'ImageBlock'
+      __typename: 'ImageBlock',
+      scale: null,
+      focalLeft: 50,
+      focalTop: 50
     } satisfies ImageBlock
 
     const subtitle = {
@@ -315,7 +318,11 @@ export function CardCta(): ReactElement {
       color: null,
       content: t("Let's Connect"),
       variant: TypographyVariant.h6,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const title = {
@@ -326,7 +333,11 @@ export function CardCta(): ReactElement {
       color: null,
       content: t("From 'hello' to heartfelt conversations"),
       variant: TypographyVariant.h3,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const buttonBlock1 = {
@@ -339,7 +350,9 @@ export function CardCta(): ReactElement {
       size: ButtonSize.large,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null,
+      settings: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
@@ -373,7 +386,9 @@ export function CardCta(): ReactElement {
       size: ButtonSize.large,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null,
+      settings: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
@@ -407,7 +422,9 @@ export function CardCta(): ReactElement {
       size: ButtonSize.large,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null,
+      settings: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
@@ -440,6 +457,7 @@ export function CardCta(): ReactElement {
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: false,
+      backdropBlur: null,
       __typename: 'CardBlock'
     } satisfies CardBlock
 
@@ -470,16 +488,34 @@ export function CardCta(): ReactElement {
               isCover: true
             },
             subtitleInput: {
-              ...omit(subtitle, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...subtitle,
+                  settings: { color: subtitle.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             titleInput: {
-              ...omit(title, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...title,
+                  settings: { color: title.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             button1Id: buttonBlock1.id,
             button1Input: {
-              ...pick(buttonBlock1, ['id', 'parentBlockId', 'label', 'size']),
+              ...pick(buttonBlock1, [
+                'id',
+                'parentBlockId',
+                'label',
+                'size',
+                'submitEnabled'
+              ]),
               journeyId: journey.id,
               variant: buttonBlock1.buttonVariant
             },
@@ -498,7 +534,13 @@ export function CardCta(): ReactElement {
             },
             button2Id: buttonBlock2.id,
             button2Input: {
-              ...pick(buttonBlock2, ['id', 'parentBlockId', 'label', 'size']),
+              ...pick(buttonBlock2, [
+                'id',
+                'parentBlockId',
+                'label',
+                'size',
+                'submitEnabled'
+              ]),
               journeyId: journey.id,
               variant: buttonBlock2.buttonVariant
             },
@@ -517,7 +559,13 @@ export function CardCta(): ReactElement {
             },
             button3Id: buttonBlock3.id,
             button3Input: {
-              ...pick(buttonBlock3, ['id', 'parentBlockId', 'label', 'size']),
+              ...pick(buttonBlock3, [
+                'id',
+                'parentBlockId',
+                'label',
+                'size',
+                'submitEnabled'
+              ]),
               journeyId: journey.id,
               variant: buttonBlock3.buttonVariant,
               color: buttonBlock3.buttonColor

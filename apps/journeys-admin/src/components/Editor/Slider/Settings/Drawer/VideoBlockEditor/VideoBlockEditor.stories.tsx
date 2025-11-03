@@ -1,8 +1,9 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { screen, userEvent, waitFor } from 'storybook/test'
 
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
@@ -11,7 +12,6 @@ import {
   BlockFields_ImageBlock as ImageBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../__generated__/BlockFields'
-import { GetVideos } from '../../../../../../../__generated__/GetVideos'
 import {
   GetVideoVariantLanguages,
   GetVideoVariantLanguages_video
@@ -21,8 +21,6 @@ import {
   VideoBlockSource
 } from '../../../../../../../__generated__/globalTypes'
 import { Drawer } from '../Drawer'
-import { videos } from '../VideoLibrary/VideoFromLocal/data'
-import { GET_VIDEOS } from '../VideoLibrary/VideoFromLocal/VideoFromLocal'
 
 import { GET_VIDEO_VARIANT_LANGUAGES } from './Source/SourceFromLocal/SourceFromLocal'
 import { VideoBlockEditor } from './VideoBlockEditor'
@@ -47,6 +45,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: ThemeMode.light,
   themeName: null,
   fullscreen: true,
+  backdropBlur: null,
   children: []
 }
 
@@ -69,7 +68,8 @@ const videoInternal: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  subtitleLanguage: null,
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -78,8 +78,13 @@ const videoInternal: TreeBlock<VideoBlock> = {
         value: 'FallingPlates'
       }
     ],
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -101,7 +106,10 @@ const posterInternal: TreeBlock<ImageBlock> = {
   height: 200,
   blurhash: '',
   alt: 'poster',
-  children: []
+  children: [],
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const videoYouTube: TreeBlock<VideoBlock> = {
@@ -123,8 +131,12 @@ const videoYouTube: TreeBlock<VideoBlock> = {
   parentOrder: 0,
   action: null,
   source: VideoBlockSource.youTube,
-  video: null,
+  mediaVideo: {
+    __typename: 'YouTube',
+    id: 'videoId'
+  },
   objectFit: null,
+  subtitleLanguage: null,
   posterBlockId: 'poster1.id',
   children: []
 }
@@ -139,7 +151,10 @@ const posterYouTube: TreeBlock<ImageBlock> = {
   height: 200,
   blurhash: '',
   alt: 'poster',
-  children: []
+  children: [],
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const onChange = async (): Promise<void> => await Promise.resolve()
@@ -163,25 +178,6 @@ const videoLanguages: GetVideoVariantLanguages_video = {
   ]
 }
 
-const mockGetVideos: MockedResponse<GetVideos> = {
-  request: {
-    query: GET_VIDEOS,
-    variables: {
-      offset: 0,
-      limit: 5,
-      where: {
-        availableVariantLanguageIds: ['529'],
-        title: null
-      }
-    }
-  },
-  result: {
-    data: {
-      videos
-    }
-  }
-}
-
 const mockGetVideoVariantLanguages: MockedResponse<GetVideoVariantLanguages> = {
   request: {
     query: GET_VIDEO_VARIANT_LANGUAGES,
@@ -198,15 +194,17 @@ const mockGetVideoVariantLanguages: MockedResponse<GetVideoVariantLanguages> = {
 
 const Template: StoryObj<typeof VideoBlockEditor> = {
   render: (args) => (
-    <MockedProvider mocks={[mockGetVideos, mockGetVideoVariantLanguages]}>
-      <Drawer title="Video Properties">
-        <Box sx={{ pt: 4 }}>
-          <VideoBlockEditor
-            selectedBlock={args.selectedBlock}
-            onChange={onChange}
-          />
-        </Box>
-      </Drawer>
+    <MockedProvider mocks={[mockGetVideoVariantLanguages]}>
+      <InstantSearchTestWrapper>
+        <Drawer title="Video Properties">
+          <Box sx={{ pt: 4 }}>
+            <VideoBlockEditor
+              selectedBlock={args.selectedBlock}
+              onChange={onChange}
+            />
+          </Box>
+        </Drawer>
+      </InstantSearchTestWrapper>
     </MockedProvider>
   )
 }

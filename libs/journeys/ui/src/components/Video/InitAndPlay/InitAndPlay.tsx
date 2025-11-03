@@ -4,10 +4,11 @@ import {
   RefObject,
   SetStateAction,
   useEffect,
+  useMemo,
+  useRef,
   useState
 } from 'react'
 import videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
@@ -15,11 +16,16 @@ import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { TreeBlock, useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
+import { VideoFields_mediaVideo } from '../__generated__/VideoFields'
+import { getMuxMetadata } from '../utils/getMuxMetadata'
+import VideoJsPlayer from '../utils/videoJsTypes'
+
+import 'videojs-mux'
 
 interface InitAndPlayProps {
-  videoRef: RefObject<HTMLVideoElement>
-  player?: Player
-  setPlayer: Dispatch<SetStateAction<Player | undefined>>
+  videoRef: RefObject<HTMLVideoElement | null>
+  player?: VideoJsPlayer
+  setPlayer: Dispatch<SetStateAction<VideoJsPlayer | undefined>>
   triggerTimes: number[]
   videoEndTime: number
   selectedBlock?: TreeBlock
@@ -34,6 +40,9 @@ interface InitAndPlayProps {
   setShowPoster: Dispatch<SetStateAction<boolean>>
   setVideoEndTime: Dispatch<SetStateAction<number>>
   activeStep?: boolean
+  title: string | null
+  mediaVideo: VideoFields_mediaVideo | null
+  videoVariantLanguageId: string | null
 }
 
 export function InitAndPlay({
@@ -53,16 +62,35 @@ export function InitAndPlay({
   setLoading,
   setShowPoster,
   setVideoEndTime,
-  activeStep = false
+  activeStep = false,
+  title,
+  mediaVideo,
+  videoVariantLanguageId
 }: InitAndPlayProps): ReactElement {
-  const { variant } = useJourney()
+  const { journey, variant } = useJourney()
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
   const [error, setError] = useState(false)
+  const playerInitializedRef = useRef(false)
+
+  const muxMetadata = useMemo(() => {
+    return journey != null
+      ? getMuxMetadata({
+          journeyId: journey.id,
+          videoBlock: {
+            id: blockId,
+            title,
+            mediaVideo,
+            endAt,
+            videoVariantLanguageId
+          }
+        })
+      : {}
+  }, [journey, blockId, title, mediaVideo, endAt, videoVariantLanguageId])
 
   // Initiate video player
   useEffect(() => {
-    if (videoRef.current != null) {
+    if (videoRef.current != null && !playerInitializedRef.current) {
       setPlayer(
         videojs(videoRef.current, {
           ...defaultVideoJsOptions,
@@ -78,24 +106,19 @@ export function InitAndPlay({
           },
           responsive: true,
           muted: muted === true,
-          autoplay:
-            autoplay === true &&
-            activeStep &&
-            source === VideoBlockSource.youTube
-        })
+          autoplay: autoplay === true && source === VideoBlockSource.youTube,
+          plugins: {
+            mux: {
+              debug: false,
+              data: muxMetadata
+            }
+          }
+        }) as VideoJsPlayer
       )
+      playerInitializedRef.current = true
     }
-  }, [
-    startAt,
-    endAt,
-    muted,
-    posterBlock,
-    setPlayer,
-    videoRef,
-    autoplay,
-    activeStep,
-    source
-  ])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- should only run once unless videoRef.current is null
+  }, [videoRef.current])
 
   // Initiate video player listeners
   useEffect(() => {

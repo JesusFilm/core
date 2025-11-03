@@ -30,8 +30,6 @@ export function VisitorCard({
             ? `?journeyId=${router.query.journeyId as string}`
             : ''
         }`}
-        passHref
-        legacyBehavior
         prefetch={false}
       >
         {block}
@@ -57,7 +55,6 @@ export function VisitorCard({
           />
 
           <VisitorCardDetails
-            name={visitorNode?.visitor.name}
             events={visitorNode?.events ?? []}
             loading={loading}
           />

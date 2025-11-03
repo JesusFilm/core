@@ -1,7 +1,9 @@
+import { gql, useApolloClient, useMutation } from '@apollo/client'
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
+import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
 import Tooltip from '@mui/material/Tooltip'
@@ -13,7 +15,7 @@ import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 
 import {
   openBeacon,
@@ -26,9 +28,15 @@ import {
   useEditor
 } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useNavigationState } from '@core/journeys/ui/useNavigationState'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import ThumbsUpIcon from '@core/shared/ui/icons/ThumbsUp'
+import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
+import { GetPlausibleJourneyFlowViewed } from '../../../../__generated__/GetPlausibleJourneyFlowViewed'
+import {
+  UpdatePlausibleJourneyFlowViewed,
+  UpdatePlausibleJourneyFlowViewedVariables
+} from '../../../../__generated__/UpdatePlausibleJourneyFlowViewed'
 import logo from '../../../../public/taskbar-icon.svg'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { NotificationPopover } from '../../NotificationPopover'
@@ -37,19 +45,41 @@ import { EDIT_TOOLBAR_HEIGHT } from '../constants'
 import { Items } from './Items'
 import { CommandRedoItem } from './Items/CommandRedoItem'
 import { CommandUndoItem } from './Items/CommandUndoItem'
+import { PreviewItem } from './Items/PreviewItem'
+import { JourneyDetails } from './JourneyDetails'
 import { Menu } from './Menu'
 
-const TitleDescriptionDialog = dynamic(
+const JourneyDetailsDialog = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "Editor/Toolbar/TitleDescriptionDialog" */ './TitleDescriptionDialog/TitleDescriptionDialog'
-    ).then((mod) => mod.TitleDescriptionDialog),
+      /* webpackChunkName: "Editor/Toolbar/JourneyDetails/JourneyDetailsDialog" */ './JourneyDetails/JourneyDetailsDialog/JourneyDetailsDialog'
+    ).then((mod) => mod.JourneyDetailsDialog),
   { ssr: false }
 )
 
 interface ToolbarProps {
   user?: User
 }
+
+export const GET_PLAUSIBLE_JOURNEY_FLOW_VIEWED = gql`
+  query GetPlausibleJourneyFlowViewed {
+    getJourneyProfile {
+      id
+      plausibleJourneyFlowViewed
+    }
+  }
+`
+
+export const UPDATE_PLAUSIBLE_JOURNEY_FLOW_VIEWED = gql`
+  mutation UpdatePlausibleJourneyFlowViewed(
+    $input: JourneyProfileUpdateInput!
+  ) {
+    journeyProfileUpdate(input: $input) {
+      id
+      plausibleJourneyFlowViewed
+    }
+  }
+`
 
 export function Toolbar({ user }: ToolbarProps): ReactElement {
   const router = useRouter()
@@ -61,13 +91,30 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   } = useEditor()
   const { editorAnalytics } = useFlags()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
+  const isNavigating = useNavigationState()
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const [dialogOpen, setDialogOpen] = useState<boolean | null>(null)
 
   const helpScoutRef = useRef(null)
   const menuRef = useRef(null)
-  useEffect(() => {
+  const client = useApolloClient()
+
+  const [updatePlausibleJourneyFlowViewed] = useMutation<
+    UpdatePlausibleJourneyFlowViewed,
+    UpdatePlausibleJourneyFlowViewedVariables
+  >(UPDATE_PLAUSIBLE_JOURNEY_FLOW_VIEWED, {
+    variables: {
+      input: {
+        plausibleJourneyFlowViewed: true
+      }
+    }
+  })
+
+  const fetchPlausibleData = useCallback(async () => {
+    const { data } = await client.query<GetPlausibleJourneyFlowViewed>({
+      query: GET_PLAUSIBLE_JOURNEY_FLOW_VIEWED
+    })
     if (showAnalytics === true) {
       setBeaconRoute('/ask/')
       if (smUp) {
@@ -75,9 +122,17 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
       } else {
         setAnchorEl(menuRef.current)
       }
-      setAnchorEl(null)
+      if (data.getJourneyProfile?.plausibleJourneyFlowViewed === true) {
+        setAnchorEl(null)
+      }
     }
-  }, [showAnalytics, smUp, setAnchorEl])
+  }, [client, showAnalytics, smUp])
+
+  useEffect(() => {
+    if (showAnalytics === true) {
+      void fetchPlausibleData()
+    }
+  }, [showAnalytics, smUp, setAnchorEl, fetchPlausibleData])
 
   function setRoute(param: string): void {
     void router.push({ query: { ...router.query, param } }, undefined, {
@@ -100,7 +155,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
   }
 
   function handleDialogOpen(): void {
-    setRoute('title')
+    setRoute('journeyDetails')
     setDialogOpen(true)
   }
 
@@ -121,87 +176,107 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         flexShrink: 0
       }}
     >
-      <Image
-        src={logo}
-        alt="Next Steps"
-        height={32}
-        width={32}
-        style={{
-          maxWidth: '100%',
-          height: 'auto'
-        }}
-      />
-      <NextLink href="/" passHref legacyBehavior>
-        <Tooltip title="See all journeys" placement="bottom" arrow>
-          <IconButton data-testid="ToolbarBackButton">
-            <FormatListBulletedIcon />
-          </IconButton>
-        </Tooltip>
-      </NextLink>
-      {journey != null && (
-        <>
-          <CommandUndoItem variant="icon-button" />
-          <CommandRedoItem variant="icon-button" />
-
-          <Tooltip
-            title={t('Social Image')}
-            arrow
-            PopperProps={{
-              modifiers: [
-                {
-                  name: 'offset',
-                  options: {
-                    offset: [0, -11]
-                  }
+      <IconButton
+        component={NextLink}
+        href="/"
+        data-testid="NextStepsLogo"
+        disableRipple
+      >
+        <Image
+          src={logo}
+          alt="Next Steps"
+          height={32}
+          width={32}
+          style={{
+            maxWidth: '100%',
+            height: 'auto'
+          }}
+        />
+      </IconButton>
+      <Tooltip title={t('See all journeys')} placement="bottom" arrow>
+        <IconButton
+          component={NextLink}
+          href="/"
+          data-testid="ToolbarBackButton"
+          disabled={isNavigating}
+        >
+          <FormatListBulletedIcon />
+        </IconButton>
+      </Tooltip>
+      <Stack
+        gap={2}
+        direction="row"
+        data-testid="CommandUndoRedo"
+        sx={{ mr: 1 }}
+      >
+        <CommandUndoItem variant="icon-button" />
+        <CommandRedoItem variant="icon-button" />
+      </Stack>
+      <Stack
+        direction="row"
+        gap={2}
+        data-testid="JourneyDetails"
+        sx={{ minWidth: 0, display: { xs: 'none', md: 'inline-flex' } }}
+      >
+        <Tooltip
+          title={t('Social Image')}
+          arrow
+          PopperProps={{
+            modifiers: [
+              {
+                name: 'offset',
+                options: {
+                  offset: [0, -11]
                 }
-              ]
-            }}
+              }
+            ]
+          }}
+        >
+          <Button
+            onClick={handleSocialImageClick}
+            data-testid="ToolbarSocialImage"
+            style={{ backgroundColor: 'transparent', minWidth: 'auto' }}
+            disableRipple
+            sx={{ px: 0 }}
           >
-            <Button
-              onClick={handleSocialImageClick}
-              data-testid="ToolbarSocialImage"
-              style={{ backgroundColor: 'transparent' }}
-              disableRipple
+            <Box
+              bgcolor={(theme) => theme.palette.background.default}
+              borderRadius="4px"
+              width={50}
+              height={50}
+              justifyContent="center"
+              alignItems="center"
+              sx={{ display: { xs: 'none', sm: 'flex' }, overflow: 'hidden' }}
             >
-              <Box
-                bgcolor={(theme) => theme.palette.background.default}
-                borderRadius="4px"
-                width={50}
-                height={50}
-                justifyContent="center"
-                alignItems="center"
-                sx={{ display: { xs: 'none', sm: 'flex' } }}
-              >
-                {journey?.primaryImageBlock?.src == null ? (
-                  <ThumbsUpIcon color="error" />
-                ) : (
-                  <Image
-                    src={journey.primaryImageBlock.src}
-                    alt={journey.primaryImageBlock.alt}
-                    width={50}
-                    height={50}
-                    style={{
-                      borderRadius: '4px',
-                      objectFit: 'cover'
-                    }}
-                  />
-                )}
-              </Box>
-            </Button>
-          </Tooltip>
-
+              {journey?.primaryImageBlock?.src == null ? (
+                <GridEmptyIcon color="secondary" />
+              ) : (
+                <Image
+                  src={journey.primaryImageBlock.src}
+                  alt={journey.primaryImageBlock.alt}
+                  width={50}
+                  height={50}
+                  style={{
+                    borderRadius: '4px',
+                    objectFit: 'cover'
+                  }}
+                />
+              )}
+            </Box>
+          </Button>
+        </Tooltip>
+        {journey != null ? (
           <Stack flexGrow={1} flexShrink={1} sx={{ minWidth: 0 }}>
             <Box
               flexShrink={1}
               sx={{
-                display: 'inline-flex',
                 overflow: 'hidden',
                 whiteSpace: 'nowrap',
                 textOverflow: 'ellipsis'
               }}
             >
               <Tooltip
-                title="Click to edit"
+                title={t('Click to edit')}
                 placement="bottom"
                 arrow
                 PopperProps={{
@@ -230,58 +305,60 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
                     flexShrink: 1
                   }}
                 >
-                  <Typography
-                    variant="subtitle1"
-                    sx={{
-                      overflow: 'hidden',
-                      whiteSpace: 'nowrap',
-                      textOverflow: 'ellipsis',
-                      flexShrink: 1
-                    }}
-                  >
-                    {journey.title}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      maxWidth: 'auto',
-                      overflow: 'hidden',
-                      whiteSpace: 'nowrap',
-                      textOverflow: 'ellipsis',
-                      flexShrink: 1,
-                      fontWeight: 'normal'
-                    }}
-                  >
-                    {journey.description}
-                  </Typography>
+                  <JourneyDetails />
                 </Button>
               </Tooltip>
             </Box>
-
-            <TitleDescriptionDialog
-              open={dialogOpen}
-              onClose={handleDialogClose}
-            />
+            {dialogOpen != null && (
+              <JourneyDetailsDialog
+                open={dialogOpen}
+                onClose={handleDialogClose}
+              />
+            )}
           </Stack>
-          <Items />
-        </>
-      )}
-      <Box ref={menuRef}>
-        <Menu user={user} />
-      </Box>
-      <Box
-        ref={helpScoutRef}
-        sx={{
-          display: { xs: 'none', sm: 'block' }
-        }}
+        ) : (
+          <Stack flexGrow={1}>
+            <Typography
+              variant="subtitle1"
+              sx={{ display: { xs: 'none', md: 'block' } }}
+            >
+              <Skeleton width="40%" />
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{ display: { xs: 'none', md: 'block' } }}
+            >
+              <Skeleton width="80%" />
+            </Typography>
+          </Stack>
+        )}
+      </Stack>
+      <Stack
+        flexDirection="row"
+        gap={2}
+        flexGrow={1}
+        justifyContent="flex-end"
+        alignItems="center"
       >
-        <HelpScoutBeacon
-          userInfo={{
-            name: user?.displayName ?? '',
-            email: user?.email ?? ''
+        <Items />
+        <PreviewItem variant="icon-button" />
+        <Box ref={menuRef}>
+          <Menu user={user} />
+        </Box>
+        <Box
+          ref={helpScoutRef}
+          sx={{
+            display: { xs: 'none', md: 'block' }
           }}
-        />
-      </Box>
+        >
+          <HelpScoutBeacon
+            userInfo={{
+              name: user?.displayName ?? '',
+              email: user?.email ?? ''
+            }}
+          />
+        </Box>
+      </Stack>
       {editorAnalytics && (
         <NotificationPopover
           title={t('New Feature Feedback')}
@@ -291,7 +368,10 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           open={Boolean(anchorEl)}
           currentRef={anchorEl}
           pointerPosition={smUp ? '92%' : '94%'}
-          handleClose={() => setAnchorEl(null)}
+          handleClose={() => {
+            void updatePlausibleJourneyFlowViewed()
+            setAnchorEl(null)
+          }}
           popoverAction={{
             label: t('Feedback'),
             handleClick: () => {

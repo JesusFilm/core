@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -30,6 +30,7 @@ const option1: TreeBlock<RadioOptionFields> = {
   parentBlockId: 'RadioQuestion1',
   parentOrder: 0,
   action: null,
+  pollOptionImageBlockId: null,
   children: []
 }
 
@@ -38,6 +39,7 @@ const block: TreeBlock<RadioQuestionFields> = {
   id: 'RadioQuestion1',
   parentBlockId: 'RadioQuestion1',
   parentOrder: 0,
+  gridView: false,
   children: [
     option1,
     {
@@ -47,6 +49,7 @@ const block: TreeBlock<RadioQuestionFields> = {
       parentBlockId: 'RadioQuestion1',
       parentOrder: 1,
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     }
   ]
@@ -72,6 +75,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image0.id',
@@ -83,7 +87,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
             parentBlockId: 'card6.id',
             parentOrder: 0,
             children: [],
-            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
+            scale: null,
+            focalLeft: 50,
+            focalTop: 50
           },
           {
             id: 'typographyBlockId1',
@@ -94,7 +101,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'Question',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -105,7 +116,11 @@ const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'Description',
             variant: TypographyVariant.body2,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           block
         ]

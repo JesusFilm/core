@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { StoryObj } from '@storybook/react'
+import { StoryObj } from '@storybook/nextjs'
 import { SnackbarProvider } from 'notistack'
 import { Background, ReactFlow } from 'reactflow'
 
@@ -75,6 +75,7 @@ const stepAndCardBlockCreateMock: MockedResponse<
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         __typename: 'CardBlock'
       }
     }
@@ -90,7 +91,10 @@ const image: ImageBlock = {
   alt: 'image.jpg',
   width: 1920,
   height: 1080,
-  blurhash: ''
+  blurhash: '',
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const defaultJourney: Journey = {
@@ -118,6 +122,7 @@ const defaultJourney: Journey = {
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [],
   primaryImageBlock: image,
@@ -135,7 +140,16 @@ const defaultJourney: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  logoImageBlock: null,
+  menuButtonIcon: null,
+  menuStepBlock: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const blankSeoJourney: Journey = {
@@ -150,7 +164,7 @@ const Template: StoryObj<typeof SocialPreviewNode> = {
     <MockedProvider mocks={[stepAndCardBlockCreateMock]}>
       <SnackbarProvider>
         <JourneyProvider value={{ journey: args.journey }}>
-          <EditorProvider>
+          <EditorProvider initialState={args.editorState}>
             <Box sx={{ height: 400, width: 600 }}>
               <ReactFlow
                 onConnectStart={() => undefined}
@@ -185,14 +199,26 @@ const Template: StoryObj<typeof SocialPreviewNode> = {
 export const Default = {
   ...Template,
   args: {
-    journey: blankSeoJourney
+    journey: blankSeoJourney,
+    editorState: {}
   }
 }
 
 export const Filled = {
   ...Template,
   args: {
-    journey: defaultJourney
+    journey: defaultJourney,
+    editorState: {}
+  }
+}
+
+export const Analytics = {
+  ...Template,
+  args: {
+    journey: blankSeoJourney,
+    editorState: {
+      showAnalytics: true
+    }
   }
 }
 

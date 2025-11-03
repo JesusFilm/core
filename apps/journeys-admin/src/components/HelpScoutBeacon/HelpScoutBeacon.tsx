@@ -76,7 +76,8 @@ export function HelpScoutBeacon({
               color:
                 iconButtonColor === 'primary'
                   ? 'secondary.light'
-                  : 'background.paper'
+                  : 'background.paper',
+              ml: 0
             }}
           >
             {beaconOpen ? <XCircleContained /> : <HelpCircleContained />}
@@ -87,6 +88,7 @@ export function HelpScoutBeacon({
         <MenuItem
           data-testid="HelpScoutBeaconMenuItem"
           onClick={handleBeaconClick}
+          sx={{ gap: 2 }}
         >
           <ListItemIcon>
             <HelpCircleContained />

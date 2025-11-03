@@ -1,1 +1,0 @@
-export { DescriptionItem } from './DescriptionItem'

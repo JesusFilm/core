@@ -86,6 +86,7 @@ const journey: Journey = {
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
@@ -103,7 +104,16 @@ const journey: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  logoImageBlock: null,
+  menuButtonIcon: null,
+  menuStepBlock: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const video: TreeBlock<VideoBlock> = {
@@ -125,7 +135,8 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  subtitleLanguage: null,
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -134,8 +145,13 @@ const video: TreeBlock<VideoBlock> = {
         value: 'FallingPlates'
       }
     ],
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -156,7 +172,10 @@ const image: ImageBlock = {
   alt: 'public',
   width: 1920,
   height: 1080,
-  blurhash: ''
+  blurhash: '',
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const onClose = jest.fn()
@@ -194,7 +213,10 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           alt: 'public',
           width: 0,
           height: 0,
-          blurhash: ''
+          blurhash: '',
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         }
       }
     },
@@ -209,7 +231,10 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           width: image.width,
           height: image.height,
           parentOrder: image.parentOrder,
-          blurhash: image.blurhash
+          blurhash: image.blurhash,
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         },
         videoBlockUpdate: {
           id: video.id,
@@ -364,7 +389,10 @@ describe('VideoBlockEditorSettingsPosterLibrary', () => {
           width: image.width,
           height: image.height,
           parentOrder: image.parentOrder,
-          blurhash: image.blurhash
+          blurhash: image.blurhash,
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         }
       }
       const posterImageBlockUpdateMock: MockedResponse<

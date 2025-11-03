@@ -24,10 +24,15 @@ const i18nConfig = {
       'id', // Indonesian
       'th', // Thai
       'ja', // Japanese
+      'ko', // Korean
       'ru', // Russian
       'tr', // Turkish
       'zh', // Chinese
-      'zh-Hans-CN' // Chinese, Simplified
+      'zh-Hans-CN', // Chinese, Simplified
+      'de', // German
+      'ne', // Nepali
+      'ms', // Malay
+      'pt' // Portuguese
     ],
     localeDetection: false
   },
@@ -38,9 +43,14 @@ const i18nConfig = {
     id: ['id-ID'],
     th: ['th-TH'],
     ja: ['ja-JP'],
+    ko: ['ko-KR'],
     ru: ['ru-RU'],
     tr: ['tr-TR'],
-    zh: ['zh-Hans-CN']
+    zh: ['zh-Hans-CN'],
+    de: ['de-DE'],
+    ne: ['ne-NP'],
+    ms: ['ms-MY'],
+    pt: ['pt-BR']
   },
   localePath,
   react: { useSuspense: false }

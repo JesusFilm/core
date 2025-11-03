@@ -7,7 +7,6 @@ import {
   ActiveCanvasDetailsDrawer,
   EditorProvider
 } from '@core/journeys/ui/EditorProvider'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
 import {
@@ -40,6 +39,7 @@ describe('AddBlock', () => {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'typography0.id',
@@ -50,7 +50,11 @@ describe('AddBlock', () => {
             variant: TypographyVariant.h1,
             color: TypographyColor.primary,
             align: TypographyAlign.center,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           }
         ]
       }
@@ -61,9 +65,7 @@ describe('AddBlock', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <FlagsProvider flags={{ formiumForm: true }}>
-            <AddBlock />
-          </FlagsProvider>
+          <AddBlock />
         </ThemeProvider>
       </MockedProvider>
     )
@@ -80,27 +82,9 @@ describe('AddBlock', () => {
       getByTestId('JourneysAdminButtonNewRadioQuestionButton')
     ).toBeInTheDocument()
     expect(
-      getByTestId('JourneysAdminButtonNewSignUpButton')
+      getByTestId('JourneysAdminButtonNewMultiselectButton')
     ).toBeInTheDocument()
     expect(getByTestId('JourneysAdminButtonNewButton')).toBeInTheDocument()
-    expect(
-      getByTestId('JourneysAdminButtonNewFormiumFormIcon')
-    ).toBeInTheDocument()
-  })
-
-  it('does not render FormiumForm button when flag is false', () => {
-    const { queryByTestId } = render(
-      <MockedProvider>
-        <ThemeProvider>
-          <FlagsProvider flags={{ formiumForm: false }}>
-            <AddBlock />
-          </FlagsProvider>
-        </ThemeProvider>
-      </MockedProvider>
-    )
-    expect(
-      queryByTestId('JourneysAdminButtonNewFormiumFormIcon')
-    ).not.toBeInTheDocument()
   })
 
   it('should disable NewVideoButton when there are other blocks on the Card', () => {

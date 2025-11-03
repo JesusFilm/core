@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ReactElement, useState } from 'react'
+import { screen, userEvent } from 'storybook/test'
 
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
 
@@ -20,16 +20,8 @@ const LanguageAutocompleteStory: Meta<typeof LanguageAutocomplete> = {
 
 const languages: Language[] = [
   {
-    id: '529',
-    name: [
-      {
-        value: 'English',
-        primary: true
-      }
-    ]
-  },
-  {
     id: '496',
+    slug: 'french',
     name: [
       {
         value: 'Français',
@@ -42,7 +34,18 @@ const languages: Language[] = [
     ]
   },
   {
+    id: '529',
+    slug: 'english',
+    name: [
+      {
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
+  {
     id: '1106',
+    slug: 'german-standard',
     name: [
       {
         value: 'Deutsch',

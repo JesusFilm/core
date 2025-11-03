@@ -7,7 +7,9 @@ export const VIDEO_CHILD_FIELDS = gql`
     title(languageId: $languageId, primary: true) {
       value
     }
-    image
+    images(aspectRatio: banner) {
+      mobileCinematicHigh
+    }
     imageAlt(languageId: $languageId, primary: true) {
       value
     }

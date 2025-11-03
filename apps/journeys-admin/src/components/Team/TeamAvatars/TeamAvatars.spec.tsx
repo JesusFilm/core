@@ -2,6 +2,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { GetLastActiveTeamIdAndTeams_teams_userTeams as UserTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
 
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
+
 import { TeamAvatars } from './TeamAvatars'
 
 describe('TeamAvatars', () => {
@@ -14,8 +16,10 @@ describe('TeamAvatars', () => {
         id: 'userId',
         firstName: 'Joe',
         lastName: 'Bloggs',
-        imageUrl: 'image'
-      }
+        imageUrl: 'image',
+        email: 'email@example.com'
+      },
+      role: UserTeamRole.member
     },
     {
       __typename: 'UserTeam',
@@ -25,8 +29,10 @@ describe('TeamAvatars', () => {
         id: 'userId',
         firstName: 'Mike',
         lastName: 'The Guy',
-        imageUrl: 'image'
-      }
+        imageUrl: 'image',
+        email: 'email@example.com'
+      },
+      role: UserTeamRole.member
     },
     {
       __typename: 'UserTeam',
@@ -36,8 +42,10 @@ describe('TeamAvatars', () => {
         id: 'userId',
         firstName: 'Bob',
         lastName: 'The Builder',
-        imageUrl: 'image'
-      }
+        imageUrl: 'image',
+        email: 'email@example.com'
+      },
+      role: UserTeamRole.member
     }
   ]
 
@@ -50,8 +58,10 @@ describe('TeamAvatars', () => {
         id: 'userId',
         firstName: 'Joe',
         lastName: 'Bloggs',
-        imageUrl: 'image'
-      }
+        imageUrl: 'image',
+        email: 'email@example.com'
+      },
+      role: UserTeamRole.member
     },
     {
       __typename: 'UserTeam',
@@ -61,8 +71,10 @@ describe('TeamAvatars', () => {
         id: 'userId',
         firstName: 'Mike',
         lastName: 'The Guy',
-        imageUrl: 'image'
-      }
+        imageUrl: 'image',
+        email: 'email@example.com'
+      },
+      role: UserTeamRole.member
     },
     {
       __typename: 'UserTeam',
@@ -72,8 +84,10 @@ describe('TeamAvatars', () => {
         id: 'userId',
         firstName: 'Bob',
         lastName: 'The Builder',
-        imageUrl: 'image'
-      }
+        imageUrl: 'image',
+        email: 'email@example.com'
+      },
+      role: UserTeamRole.member
     },
     {
       __typename: 'UserTeam',
@@ -83,8 +97,10 @@ describe('TeamAvatars', () => {
         id: 'userId',
         firstName: 'Hello',
         lastName: 'Kitty',
-        imageUrl: 'image'
-      }
+        imageUrl: 'image',
+        email: 'email@example.com'
+      },
+      role: UserTeamRole.member
     },
     {
       __typename: 'UserTeam',
@@ -94,8 +110,10 @@ describe('TeamAvatars', () => {
         id: 'userId',
         firstName: 'Serena',
         lastName: 'Williams',
-        imageUrl: 'image'
-      }
+        imageUrl: 'image',
+        email: 'email@example.com'
+      },
+      role: UserTeamRole.member
     },
     {
       __typename: 'UserTeam',
@@ -105,8 +123,10 @@ describe('TeamAvatars', () => {
         id: 'userId',
         firstName: 'Jonathan',
         lastName: 'G',
-        imageUrl: 'image'
-      }
+        imageUrl: 'image',
+        email: 'email@example.com'
+      },
+      role: UserTeamRole.member
     },
     {
       __typename: 'UserTeam',
@@ -116,8 +136,10 @@ describe('TeamAvatars', () => {
         id: 'userId',
         firstName: 'Meme',
         lastName: 'Guy',
-        imageUrl: 'image'
-      }
+        imageUrl: 'image',
+        email: 'email@example.com'
+      },
+      role: UserTeamRole.member
     }
   ]
 

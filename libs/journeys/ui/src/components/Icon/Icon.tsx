@@ -37,12 +37,12 @@ export function Icon({
     iconSize === 'sm'
       ? '16px'
       : iconSize === 'md'
-      ? '20px'
-      : iconSize === 'lg'
-      ? '28px'
-      : iconSize === 'xl'
-      ? '48px'
-      : 'inherit'
+        ? '20px'
+        : iconSize === 'lg'
+          ? '28px'
+          : iconSize === 'xl'
+            ? '48px'
+            : 'inherit'
 
   const icons = {
     CheckCircleRounded,

@@ -2,13 +2,14 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import { TeamProvider } from '@core/journeys/ui/TeamProvider'
 import {
-  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-  TeamProvider
-} from '@core/journeys/ui/TeamProvider'
-import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+  getLastActiveTeamIdAndTeamsMock,
+  getLastActiveTeamIdAndTeamsMockTeamMember
+} from '@core/journeys/ui/TeamProvider/TeamProvider.mock'
 
 import { CheckCustomDomain } from '../../../../__generated__/CheckCustomDomain'
+import { mockUseCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery/useCurrentUserLazyQuery.mock'
 import { getCustomDomainMock } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 
 import { CustomDomainDialog } from './CustomDomainDialog'
@@ -41,32 +42,6 @@ const checkCustomDomainMockConfiguredAndVerified: MockedResponse<CheckCustomDoma
   }
 
 describe('CustomDomainDialog', () => {
-  const getLastActiveTeamIdAndTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> =
-    {
-      request: {
-        query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-      },
-      result: {
-        data: {
-          teams: [
-            {
-              id: 'teamId',
-              title: 'Team Title',
-              __typename: 'Team',
-              userTeams: [],
-              publicTitle: 'Team Title',
-              customDomains: []
-            }
-          ],
-          getJourneyProfile: {
-            id: 'someId',
-            __typename: 'JourneyProfile',
-            lastActiveTeamId: 'teamId'
-          }
-        }
-      }
-    }
-
   it('creates should show dns config if there is a custom domain', async () => {
     const result = jest
       .fn()
@@ -76,6 +51,7 @@ describe('CustomDomainDialog', () => {
         mocks={[
           getLastActiveTeamIdAndTeamsMock,
           getCustomDomainMock,
+          mockUseCurrentUserLazyQuery,
           { ...checkCustomDomainMockConfiguredAndVerified, result }
         ]}
       >
@@ -92,6 +68,33 @@ describe('CustomDomainDialog', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(getByText('Default Journey')).toBeInTheDocument()
     expect(getByText('DNS Config')).toBeInTheDocument()
+  })
+
+  it('creates should not show dns config if not a team manager', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(checkCustomDomainMockConfiguredAndVerified.result)
+
+    const { queryByText } = render(
+      <MockedProvider
+        mocks={[
+          getLastActiveTeamIdAndTeamsMockTeamMember,
+          getCustomDomainMock,
+          mockUseCurrentUserLazyQuery,
+          { ...checkCustomDomainMockConfiguredAndVerified, result }
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <CustomDomainDialog open />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).not.toHaveBeenCalled())
+    expect(queryByText('Default Journey')).not.toBeInTheDocument()
+    expect(queryByText('DNS Config')).not.toBeInTheDocument()
   })
 
   it('shohuld call on close', async () => {

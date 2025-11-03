@@ -14,8 +14,6 @@ import {
 } from 'react'
 import {
   Background,
-  ControlButton,
-  Controls,
   type Edge,
   type Node,
   type NodeDragHandler,
@@ -28,6 +26,7 @@ import {
   ReactFlow,
   type ReactFlowInstance,
   type ReactFlowProps,
+  SelectionDragHandler,
   updateEdge as reactFlowUpdateEdge,
   useEdgesState,
   useNodesState
@@ -36,18 +35,20 @@ import {
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { isActionBlock } from '@core/journeys/ui/isActionBlock'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { searchBlocks } from '@core/journeys/ui/searchBlocks'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
-import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
 import type {
   GetStepBlocksWithPosition,
   GetStepBlocksWithPositionVariables,
   GetStepBlocksWithPosition_blocks_StepBlock
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
+import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 
 import { AnalyticsOverlaySwitch } from './AnalyticsOverlaySwitch'
+import { Controls } from './Controls'
 import { CustomEdge } from './edges/CustomEdge'
 import { ReferrerEdge } from './edges/ReferrerEdge'
 import { StartEdge } from './edges/StartEdge'
@@ -62,13 +63,19 @@ import { useDeleteEdge } from './libs/useDeleteEdge'
 import { useDeleteOnKeyPress } from './libs/useDeleteOnKeyPress'
 import { useUpdateEdge } from './libs/useUpdateEdge'
 import { NewStepButton } from './NewStepButton'
+import { ChatNode } from './nodes/ChatNode'
 import { LinkNode } from './nodes/LinkNode'
+import { PhoneNode } from './nodes/PhoneNode'
 import { ReferrerNode } from './nodes/ReferrerNode'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
+import {
+  DEFAULT_SOCIAL_NODE_X,
+  DEFAULT_SOCIAL_NODE_Y
+} from './nodes/SocialPreviewNode/libs/positions'
 import { StepBlockNode } from './nodes/StepBlockNode'
 import { STEP_NODE_CARD_HEIGHT } from './nodes/StepBlockNode/libs/sizes'
-
 import 'reactflow/dist/style.css'
+import { useStepAndBlockSelection } from './utils/useStepAndBlockSelection'
 
 // some styles can only be updated through css after render
 const additionalEdgeStyles = {
@@ -101,6 +108,7 @@ export function JourneyFlow(): ReactElement {
     state: { steps, activeSlide, showAnalytics, analytics },
     dispatch
   } = useEditor()
+  const { journey } = useJourney()
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null)
   const connectingParams = useRef<OnConnectStartParams | null>(null)
@@ -109,6 +117,7 @@ export function JourneyFlow(): ReactElement {
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [referrerNodes, setReferrerNodes] = useNodesState([])
   const [referrerEdges, setReferrerEdges] = useEdgesState([])
+  const dragTimeStampRef = useRef(0)
 
   const createStepFromStep = useCreateStepFromStep()
   const createStepFromAction = useCreateStepFromAction()
@@ -118,6 +127,8 @@ export function JourneyFlow(): ReactElement {
   const { onSelectionChange } = useDeleteOnKeyPress()
   const [stepBlockPositionUpdate] = useStepBlockPositionUpdateMutation()
   const { add } = useCommand()
+  const handleStepSelection = useStepAndBlockSelection()
+  const [journeyUpdate] = useJourneyUpdateMutation()
 
   const { data, loading } = useQuery<
     GetStepBlocksWithPosition,
@@ -135,31 +146,65 @@ export function JourneyFlow(): ReactElement {
 
   const blockPositionUpdate = useCallback(
     (input: Array<{ id: string; x: number; y: number }>): void => {
-      void stepBlockPositionUpdate({
-        variables: {
-          input
-        },
-        optimisticResponse: {
-          stepBlockPositionUpdate: input.map((step) => ({
-            ...step,
-            __typename: 'StepBlock'
-          }))
-        }
-      })
+      // check if first element is social preview node
+      const socialPreview = input[0]?.id === 'SocialPreview' ? input[0] : null
+      // Filter the remaining blocks as step blocks
+      const stepBlocks = socialPreview ? input.slice(1) : input
+
+      if (socialPreview) {
+        if (journey == null) return
+        void journeyUpdate({
+          variables: {
+            id: journey.id,
+            input: {
+              socialNodeX: socialPreview.x,
+              socialNodeY: socialPreview.y
+            }
+          },
+          optimisticResponse: {
+            journeyUpdate: {
+              ...journey,
+              socialNodeX: socialPreview.x,
+              socialNodeY: socialPreview.y
+            }
+          }
+        })
+      }
+
+      if (stepBlocks.length > 0) {
+        void stepBlockPositionUpdate({
+          variables: {
+            input: stepBlocks
+          },
+          optimisticResponse: {
+            stepBlockPositionUpdate: stepBlocks.map((step) => ({
+              ...step,
+              __typename: 'StepBlock'
+            }))
+          }
+        })
+      }
     },
-    [stepBlockPositionUpdate]
+    [stepBlockPositionUpdate, journeyUpdate, journey]
   )
 
   const allBlockPositionUpdate = useCallback(
     async (onload = false): Promise<void> => {
       if (steps == null || data == null) return
 
-      const input = Object.entries(arrangeSteps(steps)).map(
+      if (journey?.socialNodeX == null || journey.socialNodeY == null) return
+      const socialPreviewNodeInput = {
+        id: 'SocialPreview',
+        x: DEFAULT_SOCIAL_NODE_X,
+        y: DEFAULT_SOCIAL_NODE_Y
+      }
+      const stepBlockInputs = Object.entries(arrangeSteps(steps)).map(
         ([id, position]) => ({
           id,
           ...position
         })
       )
+      const input = [socialPreviewNodeInput, ...stepBlockInputs]
 
       if (onload) {
         blockPositionUpdate(input)
@@ -170,13 +215,22 @@ export function JourneyFlow(): ReactElement {
               input
             },
             undo: {
-              input: (
-                data.blocks as GetStepBlocksWithPosition_blocks_StepBlock[]
-              ).map((step) => ({
-                id: step.id,
-                x: step.x,
-                y: step.y
-              }))
+              input: [
+                // social preview
+                {
+                  id: 'SocialPreview',
+                  x: journey.socialNodeX,
+                  y: journey.socialNodeY
+                },
+                // step blocks
+                ...(
+                  data.blocks as GetStepBlocksWithPosition_blocks_StepBlock[]
+                ).map((step) => ({
+                  id: step.id,
+                  x: step.x,
+                  y: step.y
+                }))
+              ]
             }
           },
           execute({ input }) {
@@ -189,7 +243,15 @@ export function JourneyFlow(): ReactElement {
         })
       }
     },
-    [data, dispatch, steps, add, blockPositionUpdate]
+    [
+      data,
+      dispatch,
+      steps,
+      add,
+      blockPositionUpdate,
+      journey?.socialNodeX,
+      journey?.socialNodeY
+    ]
   )
 
   useEffect(() => {
@@ -225,11 +287,31 @@ export function JourneyFlow(): ReactElement {
       return
     }
 
-    const { nodes, edges } = transformSteps(steps ?? [], positions)
+    let filteredSteps = steps
 
-    setEdges(edges)
+    if (journey?.menuStepBlock != null && journey.website !== true) {
+      filteredSteps = steps.filter(
+        (step) => step.id !== journey.menuStepBlock?.id
+      )
+    }
+
+    const { nodes, edges } = transformSteps(
+      filteredSteps ?? [],
+      positions,
+      journey
+    )
+
+    let filteredEdges = edges
+
+    if (journey?.website === true) {
+      filteredEdges = edges.filter(
+        (e) => e.source === 'SocialPreview' || e.sourceHandle != null
+      )
+    }
+
+    setEdges(filteredEdges)
     setNodes(nodes)
-  }, [steps, data, theme, setEdges, setNodes, allBlockPositionUpdate])
+  }, [steps, data, theme, setEdges, setNodes, allBlockPositionUpdate, journey])
 
   const onConnect = useCallback<OnConnect>(() => {
     // reset the start node on connections
@@ -322,13 +404,46 @@ export function JourneyFlow(): ReactElement {
       createStepFromAction
     ]
   )
-  const onNodeDragStop: NodeDragHandler = (_event, node): void => {
-    if (node.type !== 'StepBlock') return
 
-    const step = data?.blocks.find(
-      (step) => step.__typename === 'StepBlock' && step.id === node.id
-    )
-    if (step == null || step.__typename !== 'StepBlock') return
+  const isClickOrTouch = (endDragTimeStamp: number): boolean => {
+    return endDragTimeStamp - dragTimeStampRef.current < 150
+  }
+
+  const onNodeDragStop: NodeDragHandler = (event, node): void => {
+    if (node.type !== 'StepBlock' && node.type !== 'SocialPreview') return
+
+    // x and y position of node before onNodeDragStop was called
+    let prevX
+    let prevY
+
+    if (node.type === 'StepBlock') {
+      const step = data?.blocks.find(
+        (step) => step.__typename === 'StepBlock' && step.id === node.id
+      )
+      if (step == null || step.__typename !== 'StepBlock') return
+
+      prevX = step.x
+      prevY = step.y
+
+      // if click or tap, go through step selection logic
+      // else go through standard positioning logic below
+      if (isClickOrTouch(event.timeStamp)) {
+        const target = event.target as HTMLElement
+        // if the clicked/tapped element is the StepBlockNodeMenu, don't call handleStepSelection hook https://github.com/JesusFilm/core/pull/4736
+        const menuButtonClicked =
+          (target.parentNode as HTMLElement).id === 'StepBlockNodeMenuIcon' ||
+          target.id === 'StepBlockNodeMenuIcon' ||
+          target.id === 'edit-step'
+        if (menuButtonClicked) return
+
+        handleStepSelection(step.id)
+        return
+      }
+    } else if (node.type === 'SocialPreview') {
+      prevX = journey?.socialNodeX
+      prevY = journey?.socialNodeY
+      if (isClickOrTouch(event.timeStamp)) return
+    }
 
     const x = Math.trunc(node.position.x)
     const y = Math.trunc(node.position.y)
@@ -339,8 +454,8 @@ export function JourneyFlow(): ReactElement {
           y
         },
         undo: {
-          x: step.x,
-          y: step.y
+          x: prevX,
+          y: prevY
         },
         redo: {
           x,
@@ -356,6 +471,36 @@ export function JourneyFlow(): ReactElement {
       }
     })
   }
+
+  const onSelectionDragStop: SelectionDragHandler = (_event, nodes): void => {
+    if (steps == null || data == null) return
+    const stepNodes = nodes.filter((node) => node.type === 'StepBlock')
+
+    add({
+      parameters: {
+        execute: {
+          input: stepNodes.map((node) => ({
+            id: node.id,
+            x: Math.trunc(node.position.x),
+            y: Math.trunc(node.position.y)
+          }))
+        },
+        undo: {
+          input: (
+            data.blocks as GetStepBlocksWithPosition_blocks_StepBlock[]
+          ).map((step) => ({
+            id: step.id,
+            x: step.x,
+            y: step.y
+          }))
+        }
+      },
+      execute({ input }) {
+        blockPositionUpdate(input)
+      }
+    })
+  }
+
   const onEdgeUpdateStart = useCallback<
     NonNullable<ReactFlowProps['onEdgeUpdateStart']>
   >(() => {
@@ -391,6 +536,8 @@ export function JourneyFlow(): ReactElement {
       StepBlock: StepBlockNode,
       SocialPreview: SocialPreviewNode,
       Link: LinkNode,
+      Chat: ChatNode,
+      Phone: PhoneNode,
       Referrer: ReferrerNode
     }),
     []
@@ -444,14 +591,19 @@ export function JourneyFlow(): ReactElement {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
+        onNodeDragStart={(event) => {
+          dragTimeStampRef.current = event.timeStamp
+        }}
         onConnectStart={onConnectStart}
         onNodeDragStop={onNodeDragStop}
+        onSelectionDragStop={onSelectionDragStop}
         onEdgeUpdate={showAnalytics === true ? undefined : onEdgeUpdate}
         onEdgeUpdateStart={onEdgeUpdateStart}
         onEdgeUpdateEnd={onEdgeUpdateEnd}
         onSelectionChange={onSelectionChange}
         fitView
         fitViewOptions={{ nodes: [nodes[0]], minZoom: 1, maxZoom: 0.7 }}
+        minZoom={0.1}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         proOptions={{ hideAttribution: true }}
@@ -482,13 +634,7 @@ export function JourneyFlow(): ReactElement {
                 </>
               </Panel>
             )}
-            <Controls showInteractive={false}>
-              <ControlButton
-                onClick={async () => await allBlockPositionUpdate()}
-              >
-                <ArrowRefresh6Icon />
-              </ControlButton>
-            </Controls>
+            <Controls handleReset={allBlockPositionUpdate} />
           </>
         )}
         <Background

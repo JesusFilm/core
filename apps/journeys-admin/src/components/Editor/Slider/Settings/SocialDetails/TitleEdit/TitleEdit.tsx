@@ -50,12 +50,12 @@ export function TitleEdit(): ReactElement {
   const initialValues =
     journey != null
       ? {
-          seoTitle: journey.seoTitle ?? journey.title
+          seoTitle: journey.seoTitle ?? ''
         }
       : null
 
   const seoTitleSchema = object().shape({
-    seoTitle: string().max(50, t('Character limit reached'))
+    seoTitle: string().max(49, t('Character limit reached'))
   })
 
   return (
@@ -67,12 +67,12 @@ export function TitleEdit(): ReactElement {
           onSubmit={noop}
         >
           {({ values, touched, errors, handleChange, handleBlur }) => (
-            <Form>
+            <Form style={{ width: '100%' }}>
               <TextField
                 id="seoTitle"
                 name="seoTitle"
                 variant="filled"
-                label={t('Title')}
+                label={t('Headline')}
                 fullWidth
                 multiline
                 maxRows={2}
@@ -86,12 +86,12 @@ export function TitleEdit(): ReactElement {
                 onChange={handleChange}
                 onBlur={(e) => {
                   handleBlur(e)
-                  if (errors.seoTitle == null) void handleSubmit(e)
-                }}
-                sx={{
-                  pb: 4
+                  void handleSubmit(e)
                 }}
                 data-testid="TitleEdit"
+                slotProps={{
+                  htmlInput: { maxLength: 50 }
+                }}
               />
             </Form>
           )}
@@ -99,13 +99,10 @@ export function TitleEdit(): ReactElement {
       ) : (
         <TextField
           variant="filled"
-          label={t('Title')}
+          label={t('Headline')}
           fullWidth
           disabled
           helperText={t('Recommended length: 5 words')}
-          sx={{
-            pb: 4
-          }}
           data-testid="TitleEdit"
         />
       )}

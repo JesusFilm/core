@@ -1,0 +1,27 @@
+type JourneyNotification @shareable {
+  id: ID!
+  userId: ID!
+  journeyId: ID!
+  userTeamId: ID
+  userJourneyId: ID
+  visitorInteractionEmail: Boolean!
+}
+
+extend type UserJourney {
+  journeyNotification: JourneyNotification
+}
+
+extend type UserTeam {
+  journeyNotification(journeyId: ID!): JourneyNotification
+}
+
+input JourneyNotificationUpdateInput {
+  journeyId: ID!
+  visitorInteractionEmail: Boolean!
+}
+
+type Mutation {
+  journeyNotificationUpdate(
+    input: JourneyNotificationUpdateInput!
+  ): JourneyNotification!
+}

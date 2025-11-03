@@ -1,11 +1,12 @@
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
-import { ReactElement, useMemo } from 'react'
-import { NodeProps } from 'reactflow'
+import { ReactElement } from 'react'
+import { NodeProps, useUpdateNodeInternals } from 'reactflow'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BaseNode, HandleVariant } from '../BaseNode'
 
@@ -22,17 +23,42 @@ export function StepBlockNode({
   dragging
 }: NodeProps): ReactElement {
   const {
-    state: { steps, selectedStep, activeContent, showAnalytics }
+    state: { steps, selectedStep, activeContent, showAnalytics, hoveredStep },
+    dispatch
   } = useEditor()
-  const step = steps?.find((step) => step.id === id)
+  const { journey } = useJourney()
 
-  const actionBlocks = useMemo(
-    () => (step != null ? [step, ...filterActionBlocks(step)] : []),
-    [step]
-  )
+  const updateNodeInternals = useUpdateNodeInternals()
+
+  const step = steps?.find((step) => step.id === id)
+  const actionBlocks = filterActionBlocks(step)
+  updateNodeInternals(step?.id ?? '')
 
   const isSelected =
     activeContent === ActiveContent.Canvas && selectedStep?.id === step?.id
+
+  const isHovered = hoveredStep?.id === step?.id
+
+  const isMenuCard = journey?.menuStepBlock?.id === id
+
+  const targetHandleVariant = isMenuCard
+    ? HandleVariant.None
+    : showAnalytics === true
+      ? HandleVariant.Disabled
+      : HandleVariant.Shown
+
+  function handleMouseEnter() {
+    dispatch({
+      type: 'SetHoveredStepAction',
+      hoveredStep: step
+    })
+  }
+  function handleMouseLeave() {
+    dispatch({
+      type: 'SetHoveredStepAction',
+      hoveredStep: undefined
+    })
+  }
 
   return step != null ? (
     <Stack sx={{ position: 'relative' }}>
@@ -41,18 +67,11 @@ export function StepBlockNode({
           <StepBlockNodeAnalytics stepId={step.id} />
         </div>
       </Fade>
-      {showAnalytics !== true && (
-        <StepBlockNodeMenu
-          in={isSelected}
-          className="fab"
-          step={step}
-          xPos={xPos}
-          yPos={yPos}
-        />
-      )}
       <Stack
         data-testid={`StepBlockNode-${step.id}`}
         direction="column"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         sx={{
           background: (theme) =>
             isSelected
@@ -62,23 +81,32 @@ export function StepBlockNode({
             `2px solid ${alpha(theme.palette.secondary.dark, 0.1)}`,
           borderRadius: 3,
           maxWidth: STEP_NODE_WIDTH,
-          transition: (theme) => theme.transitions.create('background')
+          transition: (theme) => theme.transitions.create('background'),
+          position: 'relative'
         }}
       >
+        {showAnalytics !== true && (
+          <StepBlockNodeMenu
+            in={isSelected || isHovered}
+            className="fab"
+            step={step}
+            xPos={xPos}
+            yPos={yPos}
+          />
+        )}
         <BaseNode
           id={step.id}
-          targetHandle={
-            showAnalytics === true
-              ? HandleVariant.Disabled
-              : HandleVariant.Shown
-          }
+          targetHandle={targetHandleVariant}
           selected={isSelected}
           isSourceConnected={step.nextBlockId != null}
           dragging={dragging}
         >
           {() => <StepBlockNodeCard step={step} selected={isSelected} />}
         </BaseNode>
-        <Stack direction="column" sx={{}}>
+        <Stack direction="column">
+          {journey?.website !== true && (
+            <ActionButton stepId={step.id} block={step} selected={isSelected} />
+          )}
           {actionBlocks.map((block) => (
             <ActionButton
               key={block.id}

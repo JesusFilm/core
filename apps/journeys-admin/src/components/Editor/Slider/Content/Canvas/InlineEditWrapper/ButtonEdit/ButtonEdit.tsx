@@ -7,6 +7,8 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { resolveJourneyCustomizationString } from '@core/journeys/ui/resolveJourneyCustomizationString'
 
 import {
   ButtonBlockUpdateContent,
@@ -33,12 +35,20 @@ export function ButtonEdit({
   ...buttonProps
 }: ButtonEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
+
+  const resolvedLabel = !journey?.template
+    ? (resolveJourneyCustomizationString(
+        label,
+        journey?.journeyCustomizationFields ?? []
+      ) ?? label)
+    : label
 
   const [buttonBlockUpdate] = useMutation<
     ButtonBlockUpdateContent,
     ButtonBlockUpdateContentVariables
   >(BUTTON_BLOCK_UPDATE_CONTENT)
-  const [value, setValue] = useState(label)
+  const [value, setValue] = useState(resolvedLabel)
   const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
   const {
     add,
@@ -56,8 +66,9 @@ export function ButtonEdit({
   }, [undo?.id])
 
   useEffect(() => {
-    setValue(label)
-  }, [label])
+    if (value !== resolvedLabel) setValue(resolvedLabel)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resolvedLabel])
 
   function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })
@@ -124,9 +135,6 @@ export function ButtonEdit({
           fullWidth
           multiline
           autoFocus
-          inputRef={(ref) => {
-            if (ref != null) ref.focus()
-          }}
           onFocus={(e) =>
             e.currentTarget.setSelectionRange(
               e.currentTarget.value.length,

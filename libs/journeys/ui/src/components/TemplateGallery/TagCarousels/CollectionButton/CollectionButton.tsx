@@ -91,7 +91,7 @@ export function CollectionButton({
                 priority
                 className="backgroundImageHover"
                 src={image.src}
-                alt={`${tagLabel} tag` ?? 'CollectionImage'}
+                alt={tagLabel != null ? `${tagLabel} tag` : 'CollectionImage'}
                 width={64}
                 height={64}
               />

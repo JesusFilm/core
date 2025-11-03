@@ -1,9 +1,5 @@
-import { gql } from '@apollo/client'
-import algoliasearch from 'algoliasearch'
-import type { UiState } from 'instantsearch.js'
-import type { RouterProps } from 'instantsearch.js/es/middlewares'
+import { ApolloProvider, NormalizedCacheObject } from '@apollo/client'
 import type { GetStaticProps } from 'next'
-import singletonRouter from 'next/router'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import type { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
@@ -14,72 +10,61 @@ import {
   type InstantSearchServerState,
   getServerState
 } from 'react-instantsearch'
-import { createInstantSearchRouterNext } from 'react-instantsearch-router-nextjs'
+
+import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
 import i18nConfig from '../../next-i18next.config'
 import { WatchHomePage as VideoHomePage } from '../../src/components/WatchHomePage'
+import { createInstantSearchRouter } from '../../src/libs/algolia/instantSearchRouter/instantSearchRouter'
+import {
+  createApolloClient,
+  useApolloClient
+} from '../../src/libs/apolloClient'
+import { getCookie } from '../../src/libs/cookieHandler'
 import { getFlags } from '../../src/libs/getFlags'
-import { VIDEO_CHILD_FIELDS } from '../../src/libs/videoChildFields'
-
-export const GET_HOME_VIDEOS = gql`
-  ${VIDEO_CHILD_FIELDS}
-  query GetHomeVideos($ids: [ID!]!, $languageId: ID) {
-    videos(where: { ids: $ids }) {
-      ...VideoChildFields
-    }
-  }
-`
-
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID ?? '',
-  process.env.ALGOLIA_SERVER_API_KEY ??
-    process.env.NEXT_PUBLIC_ALGOLIA_API_KEY ??
-    ''
-)
+import { getLanguageIdFromLocale } from '../../src/libs/getLanguageIdFromLocale'
+import { WatchProvider, WatchState } from '../../src/libs/watchContext'
 
 interface HomePageProps {
+  initialApolloState?: NormalizedCacheObject
   serverState?: InstantSearchServerState
+  localLanguageId?: string
 }
 
-export const nextRouter: RouterProps = {
-  // Manages the URL paramers with instant search state
-  router: createInstantSearchRouterNext({
-    serverUrl: process.env.NEXT_PUBLIC_WATCH_URL,
-    singletonRouter,
-    routerOptions: {
-      cleanUrlOnDispose: false
-    }
-  }),
-  stateMapping: {
-    stateToRoute(uiState) {
-      return uiState[
-        process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-      ] as unknown as UiState
-    },
-    routeToState(routeState) {
-      return {
-        [process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? '']: routeState
-      }
-    }
-  }
-}
-
-function HomePage({ serverState }: HomePageProps): ReactElement {
+function HomePage({
+  initialApolloState,
+  serverState,
+  localLanguageId
+}: HomePageProps): ReactElement {
+  const client = useApolloClient({
+    initialState: initialApolloState
+  })
+  const searchClient = useInstantSearchClient()
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
+
+  const initialWatchState: WatchState = {
+    audioLanguageId: '529',
+    subtitleLanguageId: getCookie('SUBTITLE_LANGUAGE') ?? '529',
+    subtitleOn: getCookie('SUBTITLES_ON') === 'true'
+  }
 
   return (
     <InstantSearchSSRProvider {...serverState}>
-      <InstantSearch
-        insights
-        indexName={indexName}
-        searchClient={searchClient}
-        future={{ preserveSharedStateOnUnmount: true }}
-        stalledSearchDelay={500}
-        routing={nextRouter}
-      >
-        <Configure ruleContexts={['home_page']} />
-        <VideoHomePage />
-      </InstantSearch>
+      <ApolloProvider client={client}>
+        <WatchProvider initialState={initialWatchState}>
+          <InstantSearch
+            searchClient={searchClient}
+            indexName={indexName}
+            stalledSearchDelay={500}
+            future={{ preserveSharedStateOnUnmount: true }}
+            insights
+            routing={createInstantSearchRouter()}
+          >
+            <Configure ruleContexts={['home_page']} />
+            <VideoHomePage languageId={localLanguageId} />
+          </InstantSearch>
+        </WatchProvider>
+      </ApolloProvider>
     </InstantSearchSSRProvider>
   )
 }
@@ -91,13 +76,19 @@ export const getStaticProps: GetStaticProps<HomePageProps> = async ({
     renderToString
   })
 
+  const apolloClient = createApolloClient()
+  const currentLocale = locale ?? 'en'
+  const localLanguageId = getLanguageIdFromLocale(currentLocale)
+
   return {
     revalidate: 3600,
     props: {
       flags: await getFlags(),
       serverState,
+      localLanguageId,
+      initialApolloState: apolloClient.cache.extract(),
       ...(await serverSideTranslations(
-        locale ?? 'en',
+        currentLocale,
         ['apps-watch'],
         i18nConfig
       ))

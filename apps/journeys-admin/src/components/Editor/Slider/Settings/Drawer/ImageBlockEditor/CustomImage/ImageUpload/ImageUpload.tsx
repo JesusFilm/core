@@ -1,4 +1,3 @@
-import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -14,22 +13,13 @@ import CheckBrokenIcon from '@core/shared/ui/icons/CheckBroken'
 import Upload1IconIcon from '@core/shared/ui/icons/Upload1'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../__generated__/BlockFields'
-import { CreateCloudflareUploadByFile } from '../../../../../../../../../__generated__/CreateCloudflareUploadByFile'
 import { ImageBlockUpdateInput } from '../../../../../../../../../__generated__/globalTypes'
-
-export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = gql`
-  mutation CreateCloudflareUploadByFile {
-    createCloudflareUploadByFile {
-      uploadUrl
-      id
-    }
-  }
-`
+import { useCloudflareUploadByFileMutation } from '../../../../../../../../libs/useCloudflareUploadByFileMutation'
 
 interface ImageUploadProps {
   onChange: (input: ImageBlockUpdateInput) => void
   setUploading?: (uploading?: boolean) => void
-  selectedBlock: ImageBlock | null
+  selectedBlock?: ImageBlock | null
   loading?: boolean
   error?: boolean
 }
@@ -41,8 +31,7 @@ export function ImageUpload({
   loading,
   error
 }: ImageUploadProps): ReactElement {
-  const [createCloudflareUploadByFile] =
-    useMutation<CreateCloudflareUploadByFile>(CREATE_CLOUDFLARE_UPLOAD_BY_FILE)
+  const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
   const [success, setSuccess] = useState<boolean>()
 
   const onDrop = async (acceptedFiles: File[]): Promise<void> => {
@@ -70,7 +59,7 @@ export function ImageUpload({
         const src = `https://imagedelivery.net/${
           process.env.NEXT_PUBLIC_CLOUDFLARE_UPLOAD_KEY ?? ''
         }/${response.result.id as string}/public`
-        onChange({ src })
+        onChange({ src, scale: 100, focalLeft: 50, focalTop: 50 })
         setTimeout(() => setSuccess(undefined), 4000)
         setUploading?.(undefined)
       } catch {
@@ -116,8 +105,8 @@ export function ImageUpload({
             isDragAccept || loading === true
               ? 'rgba(239, 239, 239, 0.9)'
               : uploadError
-              ? 'rgba(197, 45, 58, 0.08)'
-              : 'rgba(239, 239, 239, 0.35)',
+                ? 'rgba(197, 45, 58, 0.08)'
+                : 'rgba(239, 239, 239, 0.35)',
           borderColor: 'divider',
           borderStyle: noBorder ? undefined : 'dashed',
           borderRadius: 2,
@@ -145,18 +134,18 @@ export function ImageUpload({
             uploadSuccess
               ? 'success.main'
               : uploadError
-              ? 'error.main'
-              : 'secondary.main'
+                ? 'error.main'
+                : 'secondary.main'
           }
           sx={{ pb: 4 }}
         >
           {loading === true
             ? t('Uploading...')
             : uploadSuccess
-            ? t('Upload successful!')
-            : uploadError
-            ? t('Upload Failed!')
-            : t('Drop an image here')}
+              ? t('Upload successful!')
+              : uploadError
+                ? t('Upload Failed!')
+                : t('Drop an image here')}
         </Typography>
       </Box>
       <Stack

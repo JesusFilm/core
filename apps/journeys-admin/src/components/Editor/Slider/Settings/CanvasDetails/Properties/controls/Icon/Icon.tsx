@@ -116,7 +116,7 @@ export const icons = [
   },
   {
     value: IconName.RadioButtonUncheckedRounded,
-    label: t('Radio Button Uncheked'),
+    label: t('Radio Button Unchecked'),
     display: <RadioButtonUncheckedRounded />
   },
   {
@@ -232,7 +232,7 @@ export function Icon({ id }: IconProps): ReactElement {
           IconComponent={KeyboardArrowDownRoundedIcon}
           inputProps={{ 'aria-label': 'icon-name' }}
         >
-          <MenuItem value="">{t('Select an icon...')}</MenuItem>
+          <MenuItem value="">{t('None')}</MenuItem>
           {icons.map(({ value, label, display }) => {
             return (
               <MenuItem key={`button-icon-name-${value}`} value={value}>

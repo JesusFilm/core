@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ImageBlockCreateInput, TypographyBlockCreateInput, TextResponseBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, TextResponseType, ThemeMode, ThemeName } from "./globalTypes";
+import { ImageBlockCreateInput, TypographyBlockCreateInput, TextResponseBlockCreateInput, ButtonBlockCreateInput, ButtonBlockUpdateInput, IconBlockCreateInput, CardBlockUpdateInput, TypographyAlign, TypographyColor, TypographyVariant, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor, ThemeMode, ThemeName } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardFormCreate
@@ -23,6 +23,17 @@ export interface CardFormCreate_image {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
+}
+
+export interface CardFormCreate_subtitle_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface CardFormCreate_subtitle {
@@ -34,6 +45,15 @@ export interface CardFormCreate_subtitle {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormCreate_subtitle_settings | null;
+}
+
+export interface CardFormCreate_title_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface CardFormCreate_title {
@@ -45,6 +65,7 @@ export interface CardFormCreate_title {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormCreate_title_settings | null;
 }
 
 export interface CardFormCreate_textResponse {
@@ -52,12 +73,181 @@ export interface CardFormCreate_textResponse {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
+}
+
+export interface CardFormCreate_button_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface CardFormCreate_button_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface CardFormCreate_button_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface CardFormCreate_button_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface CardFormCreate_button_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type CardFormCreate_button_action = CardFormCreate_button_action_NavigateToBlockAction | CardFormCreate_button_action_LinkAction | CardFormCreate_button_action_EmailAction | CardFormCreate_button_action_ChatAction | CardFormCreate_button_action_PhoneAction;
+
+export interface CardFormCreate_button_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
+export interface CardFormCreate_button {
+  __typename: "ButtonBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+  buttonVariant: ButtonVariant | null;
+  buttonColor: ButtonColor | null;
+  size: ButtonSize | null;
+  startIconId: string | null;
+  endIconId: string | null;
+  submitEnabled: boolean | null;
+  action: CardFormCreate_button_action | null;
+  settings: CardFormCreate_button_settings | null;
+}
+
+export interface CardFormCreate_startIcon {
+  __typename: "IconBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  iconName: IconName | null;
+  iconSize: IconSize | null;
+  iconColor: IconColor | null;
+}
+
+export interface CardFormCreate_endIcon {
+  __typename: "IconBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  iconName: IconName | null;
+  iconSize: IconSize | null;
+  iconColor: IconColor | null;
+}
+
+export interface CardFormCreate_buttonUpdate_action_NavigateToBlockAction {
+  __typename: "NavigateToBlockAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  blockId: string;
+}
+
+export interface CardFormCreate_buttonUpdate_action_LinkAction {
+  __typename: "LinkAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface CardFormCreate_buttonUpdate_action_EmailAction {
+  __typename: "EmailAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface CardFormCreate_buttonUpdate_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface CardFormCreate_buttonUpdate_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type CardFormCreate_buttonUpdate_action = CardFormCreate_buttonUpdate_action_NavigateToBlockAction | CardFormCreate_buttonUpdate_action_LinkAction | CardFormCreate_buttonUpdate_action_EmailAction | CardFormCreate_buttonUpdate_action_ChatAction | CardFormCreate_buttonUpdate_action_PhoneAction;
+
+export interface CardFormCreate_buttonUpdate_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
+
+export interface CardFormCreate_buttonUpdate {
+  __typename: "ButtonBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+  buttonVariant: ButtonVariant | null;
+  buttonColor: ButtonColor | null;
+  size: ButtonSize | null;
+  startIconId: string | null;
+  endIconId: string | null;
+  submitEnabled: boolean | null;
+  action: CardFormCreate_buttonUpdate_action | null;
+  settings: CardFormCreate_buttonUpdate_settings | null;
+}
+
+export interface CardFormCreate_body_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface CardFormCreate_body {
@@ -69,6 +259,7 @@ export interface CardFormCreate_body {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: CardFormCreate_body_settings | null;
 }
 
 export interface CardFormCreate_cardBlockUpdate {
@@ -80,6 +271,10 @@ export interface CardFormCreate_cardBlockUpdate {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -109,6 +304,10 @@ export interface CardFormCreate {
   subtitle: CardFormCreate_subtitle;
   title: CardFormCreate_title;
   textResponse: CardFormCreate_textResponse;
+  button: CardFormCreate_button;
+  startIcon: CardFormCreate_startIcon;
+  endIcon: CardFormCreate_endIcon;
+  buttonUpdate: CardFormCreate_buttonUpdate | null;
   body: CardFormCreate_body;
   cardBlockUpdate: CardFormCreate_cardBlockUpdate;
 }
@@ -118,6 +317,11 @@ export interface CardFormCreateVariables {
   subtitleInput: TypographyBlockCreateInput;
   titleInput: TypographyBlockCreateInput;
   textResponseInput: TextResponseBlockCreateInput;
+  buttonInput: ButtonBlockCreateInput;
+  buttonId: string;
+  buttonUpdateInput: ButtonBlockUpdateInput;
+  startIconInput: IconBlockCreateInput;
+  endIconInput: IconBlockCreateInput;
   bodyInput: TypographyBlockCreateInput;
   journeyId: string;
   cardId: string;

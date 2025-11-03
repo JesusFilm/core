@@ -70,6 +70,7 @@ export function NewRadioQuestionButton(): ReactElement {
       id: uuidv4(),
       parentBlockId: card.id,
       parentOrder: card.children.length ?? 0,
+      gridView: false,
       __typename: 'RadioQuestionBlock'
     }
     const radioOptionBlock1: RadioOptionBlock = {
@@ -78,6 +79,7 @@ export function NewRadioQuestionButton(): ReactElement {
       parentOrder: 0,
       label: t('Option 1'),
       action: null,
+      pollOptionImageBlockId: null,
       __typename: 'RadioOptionBlock'
     }
     const radioOptionBlock2: RadioOptionBlock = {
@@ -86,6 +88,7 @@ export function NewRadioQuestionButton(): ReactElement {
       parentOrder: 1,
       label: t('Option 2'),
       action: null,
+      pollOptionImageBlockId: null,
       __typename: 'RadioOptionBlock'
     }
 

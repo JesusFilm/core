@@ -5,6 +5,7 @@ import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
+  ContactActionType,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
 
@@ -28,6 +29,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image0.id',
@@ -39,7 +41,10 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             parentBlockId: 'card0.id',
             parentOrder: 0,
             children: [],
-            blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+            blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+            scale: null,
+            focalLeft: 50,
+            focalTop: 50
           },
           {
             id: 'typographyBlockId1',
@@ -50,7 +55,11 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: "What's our purpose, and how did we get here?",
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -62,7 +71,11 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             content:
               'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
             variant: null,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'ButtonBlock',
@@ -75,13 +88,15 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             size: ButtonSize.large,
             startIconId: null,
             endIconId: null,
+            submitEnabled: null,
             action: {
               parentBlockId: 'button.id',
               __typename: 'NavigateToBlockAction',
               gtmEventName: 'gtmEventName',
               blockId: 'step1.id'
             },
-            children: []
+            children: [],
+            settings: null
           }
         ]
       }
@@ -106,6 +121,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image1.id',
@@ -117,7 +133,10 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             parentBlockId: 'card1.id',
             parentOrder: 0,
             children: [],
-            blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG'
+            blurhash: 'LQEf1v^*XkEe*IyD$RnOyXTJRjjG',
+            scale: null,
+            focalLeft: 50,
+            focalTop: 50
           },
           {
             id: 'typographyBlockId1',
@@ -128,7 +147,11 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'a quick question...',
             variant: TypographyVariant.h6,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -139,7 +162,11 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'Can we trust the story of Jesus ?',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'ButtonBlock',
@@ -152,13 +179,17 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             size: ButtonSize.large,
             startIconId: null,
             endIconId: null,
+            submitEnabled: null,
             action: {
               parentBlockId: 'button1.id',
               __typename: 'LinkAction',
               gtmEventName: 'gtmEventName',
-              url: 'https://www.google.com'
+              url: 'https://www.google.com',
+              customizable: false,
+              parentStepId: null
             },
-            children: []
+            children: [],
+            settings: null
           },
           {
             __typename: 'ButtonBlock',
@@ -171,13 +202,40 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             size: ButtonSize.large,
             startIconId: null,
             endIconId: null,
+            submitEnabled: null,
             action: {
               parentBlockId: 'button2.id',
               __typename: 'EmailAction',
               gtmEventName: 'gtmEventName',
-              email: 'imissedmondshen@gmail.com'
+              email: 'imissedmondshen@gmail.com',
+              customizable: false,
+              parentStepId: null
             },
-            children: []
+            children: [],
+            settings: null
+          },
+          {
+            __typename: 'ButtonBlock',
+            id: 'button3.id',
+            parentBlockId: 'card1.id',
+            parentOrder: 5,
+            label: 'Call Us',
+            buttonVariant: ButtonVariant.contained,
+            buttonColor: ButtonColor.primary,
+            size: ButtonSize.large,
+            startIconId: null,
+            endIconId: null,
+            submitEnabled: null,
+            action: {
+              parentBlockId: 'button3.id',
+              __typename: 'PhoneAction',
+              gtmEventName: 'gtmEventName',
+              phone: '+1234567890',
+              countryCode: 'US',
+              contactAction: ContactActionType.call
+            },
+            children: [],
+            settings: null
           }
         ]
       }
@@ -202,6 +260,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image2.id',
@@ -213,7 +272,10 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             parentBlockId: 'card2.id',
             parentOrder: null,
             children: [],
-            blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@'
+            blurhash: 'L;KRQa-Rs-kA}ot4bZj@SMR,WWj@',
+            scale: null,
+            focalLeft: 50,
+            focalTop: 50
           },
           {
             id: 'typographyBlockId1',
@@ -224,7 +286,11 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'if it’s true...',
             variant: TypographyVariant.h6,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -235,13 +301,18 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'What is Christianity to you?',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion0.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card2.id',
             parentOrder: 2,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -249,6 +320,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 0,
                 label: 'One of many ways to God',
+                pollOptionImageBlockId: null,
                 action: {
                   parentBlockId: 'radioOption1.id',
                   __typename: 'NavigateToBlockAction',
@@ -263,6 +335,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 1,
                 label: 'One great lie...',
+                pollOptionImageBlockId: null,
                 action: {
                   parentBlockId: 'radioOption3.id',
                   __typename: 'NavigateToBlockAction',
@@ -277,6 +350,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 2,
                 label: 'One true way to God',
+                pollOptionImageBlockId: null,
                 action: {
                   parentBlockId: 'radioOption4.id',
                   __typename: 'NavigateToBlockAction',
@@ -310,6 +384,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image3.id',
@@ -321,7 +396,10 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             parentBlockId: 'card3.id',
             parentOrder: null,
             children: [],
-            blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA'
+            blurhash: 'L3CZt$_NyX4n=|?b00Ip8_IV00IA',
+            scale: null,
+            focalLeft: 50,
+            focalTop: 50
           },
           {
             id: 'typographyBlockId1',
@@ -332,7 +410,11 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'What do you think?',
             variant: TypographyVariant.h6,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'ButtonBlock',
@@ -345,13 +427,15 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             size: ButtonSize.large,
             startIconId: null,
             endIconId: null,
+            submitEnabled: null,
             action: {
               parentBlockId: 'button3.id',
               __typename: 'NavigateToBlockAction',
               gtmEventName: 'gtmEventName',
               blockId: 'step4.id'
             },
-            children: []
+            children: [],
+            settings: null
           },
           {
             id: 'typographyBlockId2',
@@ -362,13 +446,18 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'Do you need to change to be good enough for God?',
             variant: TypographyVariant.h3,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'radioQuestion1.id',
             __typename: 'RadioQuestionBlock',
             parentBlockId: 'card3.id',
             parentOrder: 3,
+            gridView: false,
             children: [
               {
                 id: 'radioOption1.id',
@@ -376,6 +465,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 0,
                 label: 'Yes, God likes good people',
+                pollOptionImageBlockId: null,
                 action: {
                   parentBlockId: 'radioOption1.id',
                   __typename: 'NavigateToBlockAction',
@@ -390,6 +480,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
                 parentBlockId: 'radioQuestion1.id',
                 parentOrder: 1,
                 label: 'No, He will accept me as I am',
+                pollOptionImageBlockId: null,
                 action: {
                   parentBlockId: 'radioOption3.id',
                   __typename: 'NavigateToBlockAction',
@@ -423,6 +514,7 @@ export const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image4.id',
@@ -434,7 +526,10 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             parentBlockId: 'card0.id',
             parentOrder: 0,
             children: [],
-            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
+            scale: null,
+            focalLeft: 50,
+            focalTop: 50
           },
           {
             id: 'typographyBlockId1',
@@ -445,7 +540,11 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: 'a quote',
             variant: TypographyVariant.overline,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId2',
@@ -457,7 +556,11 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             content:
               '“God sent his Son into the world not to judge the world, but to save the world through him.”',
             variant: TypographyVariant.subtitle1,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             id: 'typographyBlockId13',
@@ -468,7 +571,11 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             color: null,
             content: '–  The Bible, John 3:17',
             variant: TypographyVariant.caption,
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'ButtonBlock',
@@ -481,13 +588,15 @@ export const steps: Array<TreeBlock<StepBlock>> = [
             size: ButtonSize.large,
             startIconId: null,
             endIconId: null,
+            submitEnabled: null,
             action: {
               parentBlockId: 'button2.id',
               __typename: 'NavigateToBlockAction',
               gtmEventName: 'gtmEventName',
               blockId: 'step0.id'
             },
-            children: []
+            children: [],
+            settings: null
           }
         ]
       }

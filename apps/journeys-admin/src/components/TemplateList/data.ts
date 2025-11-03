@@ -19,7 +19,10 @@ const imageBlock: ImageFields = {
   alt: 'image.alt',
   width: 10,
   height: 10,
-  blurhash: ''
+  blurhash: '',
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 export const defaultTemplate: Journey = {
@@ -30,6 +33,7 @@ export const defaultTemplate: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   slug: 'default',
+  updatedAt: formatISO(startOfYear(new Date(fakeDate))),
   createdAt: formatISO(startOfYear(new Date(fakeDate))),
   publishedAt: null,
   status: JourneyStatus.draft,
@@ -49,7 +53,8 @@ export const defaultTemplate: Journey = {
     ]
   },
   primaryImageBlock: null,
-  trashedAt: null
+  trashedAt: null,
+  fromTemplateId: null
 }
 
 export const oldTemplate: Journey = {
@@ -59,6 +64,7 @@ export const oldTemplate: Journey = {
   description:
     'Template created before the current year should also show the year in the date',
   createdAt: '2020-11-19T12:34:56.647Z',
+  updatedAt: '2020-11-19T12:34:56.647Z',
   publishedAt: '2020-12-19T12:34:56.647Z',
   status: JourneyStatus.published,
   primaryImageBlock: {

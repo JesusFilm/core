@@ -1,0 +1,34 @@
+extend type User @key(fields: "id") {
+  id: ID! @external
+}
+
+enum UserTeamRole {
+  manager
+  member
+}
+
+type UserTeam @key(fields: "id") @shareable {
+  id: ID!
+  user: User!
+  role: UserTeamRole!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+extend type Query {
+  userTeams(teamId: ID!, where: UserTeamFilterInput): [UserTeam!]!
+  userTeam(id: ID!): UserTeam!
+}
+
+input UserTeamUpdateInput {
+  role: UserTeamRole!
+}
+
+input UserTeamFilterInput {
+  role: [UserTeamRole!]
+}
+
+extend type Mutation {
+  userTeamUpdate(id: ID!, input: UserTeamUpdateInput): UserTeam!
+  userTeamDelete(id: ID!): UserTeam!
+}

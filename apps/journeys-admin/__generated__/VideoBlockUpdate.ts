@@ -3,43 +3,67 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: VideoBlockUpdate
 // ====================================================
 
-export interface VideoBlockUpdate_videoBlockUpdate_video_title {
+export interface VideoBlockUpdate_videoBlockUpdate_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface VideoBlockUpdate_videoBlockUpdate_video_variant {
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface VideoBlockUpdate_videoBlockUpdate_video_variantLanguages_name {
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface VideoBlockUpdate_videoBlockUpdate_video_variantLanguages {
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: VideoBlockUpdate_videoBlockUpdate_video_variantLanguages_name[];
+  name: VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface VideoBlockUpdate_videoBlockUpdate_video {
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: VideoBlockUpdate_videoBlockUpdate_video_title[];
-  image: string | null;
-  variant: VideoBlockUpdate_videoBlockUpdate_video_variant | null;
-  variantLanguages: VideoBlockUpdate_videoBlockUpdate_video_variantLanguages[];
+  title: VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_title[];
+  images: VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_images[];
+  variant: VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variant | null;
+  variantLanguages: VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_variantLanguages[];
 }
+
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  assetId: string | null;
+  playbackId: string | null;
+}
+
+export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type VideoBlockUpdate_videoBlockUpdate_mediaVideo = VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video | VideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo | VideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube;
 
 export interface VideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -53,6 +77,8 @@ export interface VideoBlockUpdate_videoBlockUpdate_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface VideoBlockUpdate_videoBlockUpdate_action_EmailAction {
@@ -60,9 +86,29 @@ export interface VideoBlockUpdate_videoBlockUpdate_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type VideoBlockUpdate_videoBlockUpdate_action = VideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | VideoBlockUpdate_videoBlockUpdate_action_LinkAction | VideoBlockUpdate_videoBlockUpdate_action_EmailAction;
+export interface VideoBlockUpdate_videoBlockUpdate_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface VideoBlockUpdate_videoBlockUpdate_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type VideoBlockUpdate_videoBlockUpdate_action = VideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | VideoBlockUpdate_videoBlockUpdate_action_LinkAction | VideoBlockUpdate_videoBlockUpdate_action_EmailAction | VideoBlockUpdate_videoBlockUpdate_action_ChatAction | VideoBlockUpdate_videoBlockUpdate_action_PhoneAction;
 
 export interface VideoBlockUpdate_videoBlockUpdate {
   __typename: "VideoBlock";
@@ -132,11 +178,8 @@ export interface VideoBlockUpdate_videoBlockUpdate {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: VideoBlockUpdate_videoBlockUpdate_video | null;
+  subtitleLanguage: VideoBlockUpdate_videoBlockUpdate_subtitleLanguage | null;
+  mediaVideo: VideoBlockUpdate_videoBlockUpdate_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */

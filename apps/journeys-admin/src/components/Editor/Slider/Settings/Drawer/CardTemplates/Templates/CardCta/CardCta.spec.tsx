@@ -57,6 +57,7 @@ describe('CardCta', () => {
     themeMode: null,
     themeName: null,
     fullscreen: false,
+    backdropBlur: null,
     children: []
   }
   const step: TreeBlock = {
@@ -92,7 +93,10 @@ describe('CardCta', () => {
           height: 4000,
           src: 'https://images.unsplash.com/photo-1474314881477-04c4aac40a0e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHw3OHx8dGFsa2luZ3xlbnwwfHx8fDE2OTUxNzExNTl8MA&ixlib=rb-4.0.3&q=80&w=1080',
           width: 6000,
-          isCover: true
+          isCover: true,
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         },
         subtitleInput: {
           id: 'subtitleId',
@@ -101,7 +105,10 @@ describe('CardCta', () => {
           journeyId: 'journeyId',
           parentBlockId: 'cardId',
           content: "Let's Connect",
-          variant: TypographyVariant.h6
+          variant: TypographyVariant.h6,
+          settings: {
+            color: null
+          }
         },
         titleInput: {
           id: 'titleId',
@@ -110,7 +117,10 @@ describe('CardCta', () => {
           journeyId: 'journeyId',
           parentBlockId: 'cardId',
           content: "From 'hello' to heartfelt conversations",
-          variant: TypographyVariant.h3
+          variant: TypographyVariant.h3,
+          settings: {
+            color: null
+          }
         },
         button1Id: 'button1Id',
         button1Input: {
@@ -119,7 +129,8 @@ describe('CardCta', () => {
           parentBlockId: 'cardId',
           label: 'Chat with us',
           variant: ButtonVariant.contained,
-          size: ButtonSize.large
+          size: ButtonSize.large,
+          submitEnabled: null
         },
         startIcon1Input: {
           id: 'startIcon1Id',
@@ -143,7 +154,8 @@ describe('CardCta', () => {
           parentBlockId: 'cardId',
           label: 'Email us',
           variant: ButtonVariant.contained,
-          size: ButtonSize.large
+          size: ButtonSize.large,
+          submitEnabled: null
         },
         startIcon2Input: {
           id: 'startIcon2Id',
@@ -168,7 +180,8 @@ describe('CardCta', () => {
           label: 'More about us',
           variant: ButtonVariant.text,
           color: ButtonColor.secondary,
-          size: ButtonSize.large
+          size: ButtonSize.large,
+          submitEnabled: null
         },
         startIcon3Input: {
           id: 'startIcon3Id',
@@ -202,7 +215,10 @@ describe('CardCta', () => {
           width: 6000,
           height: 4000,
           blurhash: 'L~NTUYkWM{t7~qs:WBofEMjYt7WB',
-          __typename: 'ImageBlock'
+          __typename: 'ImageBlock',
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         },
         subtitle: {
           id: 'subtitleId',
@@ -212,7 +228,11 @@ describe('CardCta', () => {
           color: null,
           content: "Let's Connect",
           variant: TypographyVariant.h6,
-          __typename: 'TypographyBlock'
+          __typename: 'TypographyBlock',
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         },
         title: {
           id: 'titleId',
@@ -222,7 +242,11 @@ describe('CardCta', () => {
           color: null,
           content: "From 'hello' to heartfelt conversations",
           variant: TypographyVariant.h3,
-          __typename: 'TypographyBlock'
+          __typename: 'TypographyBlock',
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         },
         button1: {
           id: 'button1Id',
@@ -234,7 +258,9 @@ describe('CardCta', () => {
           size: ButtonSize.large,
           startIconId: null,
           endIconId: null,
+          submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         startIcon1: {
@@ -265,7 +291,9 @@ describe('CardCta', () => {
           size: ButtonSize.large,
           startIconId: 'startIcon1Id',
           endIconId: 'endIcon1Id',
+          submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         button2: {
@@ -278,7 +306,9 @@ describe('CardCta', () => {
           size: ButtonSize.large,
           startIconId: null,
           endIconId: null,
+          submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         startIcon2: {
@@ -309,7 +339,9 @@ describe('CardCta', () => {
           size: ButtonSize.large,
           startIconId: 'startIcon2Id',
           endIconId: 'endIcon2Id',
+          submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         button3: {
@@ -322,7 +354,9 @@ describe('CardCta', () => {
           size: ButtonSize.large,
           startIconId: null,
           endIconId: null,
+          submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         startIcon3: {
@@ -353,7 +387,9 @@ describe('CardCta', () => {
           size: ButtonSize.large,
           startIconId: 'startIcon3Id',
           endIconId: 'endIcon3Id',
+          submitEnabled: null,
           action: null,
+          settings: null,
           __typename: 'ButtonBlock'
         },
         cardBlockUpdate: {
@@ -365,6 +401,7 @@ describe('CardCta', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           __typename: 'CardBlock'
         }
       }

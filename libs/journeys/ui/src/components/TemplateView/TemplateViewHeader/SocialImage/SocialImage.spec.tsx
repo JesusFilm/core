@@ -21,7 +21,10 @@ describe('SocialImage', () => {
               alt: 'random image from unsplash',
               width: 1920,
               height: 1080,
-              blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+              blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+              scale: null,
+              focalLeft: 50,
+              focalTop: 50
             }
           },
           variant: 'admin'

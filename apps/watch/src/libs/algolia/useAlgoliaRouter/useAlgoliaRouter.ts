@@ -2,7 +2,7 @@ import { useRouter } from 'next/compat/router'
 import { useEffect } from 'react'
 import { useInstantSearch } from 'react-instantsearch'
 
-interface FilterParams {
+export interface FilterParams {
   query: string | null
   languageId: string | null
   subtitleId: string | null

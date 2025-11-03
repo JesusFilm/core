@@ -35,6 +35,7 @@ const initialBlock: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: []
 }
 
@@ -63,6 +64,7 @@ const journey: Journey = {
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
@@ -80,7 +82,16 @@ const journey: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  logoImageBlock: null,
+  menuButtonIcon: null,
+  menuStepBlock: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 describe('CardStyling', () => {
@@ -108,6 +119,7 @@ describe('CardStyling', () => {
       themeMode: ThemeMode.dark,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     render(
@@ -136,6 +148,7 @@ describe('CardStyling', () => {
       themeMode: ThemeMode.dark,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     const step: TreeBlock<StepBlock> = {
@@ -174,6 +187,7 @@ describe('CardStyling', () => {
       themeMode: ThemeMode.light,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     render(

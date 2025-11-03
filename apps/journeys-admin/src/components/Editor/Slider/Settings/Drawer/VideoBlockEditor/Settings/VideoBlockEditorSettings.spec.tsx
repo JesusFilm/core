@@ -3,6 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useYouTubeClosedCaptions } from '@core/journeys/ui/useYouTubeClosedCaptions'
 
 import {
   VideoBlockObjectFit as ObjectFit,
@@ -11,6 +12,41 @@ import {
 import { ThemeProvider } from '../../../../../../ThemeProvider'
 
 import { VideoBlockEditorSettings } from '.'
+
+jest.mock('@core/journeys/ui/useYouTubeClosedCaptions', () => ({
+  useYouTubeClosedCaptions: jest.fn()
+}))
+const mockUseYouTubeClosedCaptions =
+  useYouTubeClosedCaptions as jest.MockedFunction<
+    typeof useYouTubeClosedCaptions
+  >
+
+const mockYouTubeLanguages = [
+  {
+    id: 'lang-en',
+    bcp47: 'en',
+    name: [
+      {
+        value: 'English',
+        primary: true,
+        __typename: 'LanguageName' as const
+      }
+    ],
+    __typename: 'Language' as const
+  },
+  {
+    id: 'lang-es',
+    bcp47: 'es',
+    name: [
+      {
+        value: 'Spanish',
+        primary: true,
+        __typename: 'LanguageName' as const
+      }
+    ],
+    __typename: 'Language' as const
+  }
+]
 
 const video: TreeBlock = {
   id: 'video1.id',
@@ -30,7 +66,7 @@ const video: TreeBlock = {
   description: null,
   duration: null,
   image: null,
-  video: {
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -39,8 +75,13 @@ const video: TreeBlock = {
         value: 'FallingPlates'
       }
     ],
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -50,10 +91,23 @@ const video: TreeBlock = {
   },
   posterBlockId: null,
   children: [],
-  objectFit: null
+  objectFit: null,
+  subtitleLanguage: null
 }
 
 describe('VideoBlockEditorSettings', () => {
+  beforeEach(() => {
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: [],
+      loading: false,
+      error: undefined
+    })
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
   it('should disable fields when no selected block', () => {
     const { getByRole } = render(
       <ThemeProvider>
@@ -116,7 +170,8 @@ describe('VideoBlockEditorSettings', () => {
         muted: true,
         endAt: 60,
         startAt: 0,
-        objectFit: ObjectFit.fill
+        objectFit: ObjectFit.fill,
+        subtitleLanguageId: null
       })
     )
   })
@@ -150,7 +205,8 @@ describe('VideoBlockEditorSettings', () => {
         muted: false,
         endAt: 60,
         startAt: 0,
-        objectFit: ObjectFit.fill
+        objectFit: ObjectFit.fill,
+        subtitleLanguageId: null
       })
     })
 
@@ -185,7 +241,8 @@ describe('VideoBlockEditorSettings', () => {
         muted: true,
         endAt: 60,
         startAt: 11,
-        objectFit: ObjectFit.fill
+        objectFit: ObjectFit.fill,
+        subtitleLanguageId: null
       })
     )
   })
@@ -214,7 +271,8 @@ describe('VideoBlockEditorSettings', () => {
         muted: true,
         endAt: 11,
         startAt: 0,
-        objectFit: ObjectFit.fill
+        objectFit: ObjectFit.fill,
+        subtitleLanguageId: null
       })
     )
   })
@@ -241,7 +299,8 @@ describe('VideoBlockEditorSettings', () => {
         muted: true,
         endAt: 60,
         startAt: 0,
-        objectFit: ObjectFit.fit
+        objectFit: ObjectFit.fit,
+        subtitleLanguageId: null
       })
     })
   })
@@ -303,11 +362,242 @@ describe('VideoBlockEditorSettings', () => {
         muted: true,
         endAt: 10,
         startAt: 0,
-        objectFit: ObjectFit.fill
+        objectFit: ObjectFit.fill,
+        subtitleLanguageId: null
       })
     })
     expect(
       getByText('Start time has to be at least 3 seconds less than end time')
     ).toBeInTheDocument()
+  })
+
+  it('shows YouTubeSubtitleSelector for YouTube videos', () => {
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: mockYouTubeLanguages,
+      loading: false,
+      error: undefined
+    })
+
+    const { getByText } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{
+                ...video,
+                source: VideoBlockSource.youTube,
+                videoId: 'test-youtube-id'
+              }}
+              posterBlock={null}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    expect(getByText('Subtitles')).toBeInTheDocument()
+  })
+
+  it('does not show YouTubeSubtitleSelector for non-YouTube videos', () => {
+    const { queryByText } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{
+                ...video,
+                source: VideoBlockSource.internal
+              }}
+              posterBlock={null}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    expect(queryByText('Subtitles')).not.toBeInTheDocument()
+  })
+
+  it('updates formik field when subtitle is selected', async () => {
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: mockYouTubeLanguages,
+      loading: false,
+      error: undefined
+    })
+
+    const onChange = jest.fn()
+    const { getByRole } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{
+                ...video,
+                source: VideoBlockSource.youTube,
+                videoId: 'test-youtube-id'
+              }}
+              posterBlock={null}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    const combobox = getByRole('combobox')
+    fireEvent.mouseDown(combobox)
+    fireEvent.click(getByRole('option', { name: 'English' }))
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith({
+        autoplay: true,
+        muted: true,
+        endAt: 60,
+        startAt: 0,
+        objectFit: ObjectFit.fill,
+        subtitleLanguageId: 'lang-en'
+      })
+    })
+  })
+
+  it('updates subtitle language when changed', async () => {
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: mockYouTubeLanguages,
+      loading: false,
+      error: undefined
+    })
+
+    const onChange = jest.fn()
+    const { getByRole } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{
+                ...video,
+                source: VideoBlockSource.youTube,
+                videoId: 'test-youtube-id',
+                subtitleLanguage: {
+                  __typename: 'Language',
+                  id: 'lang-en'
+                }
+              }}
+              posterBlock={null}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    const combobox = getByRole('combobox')
+    fireEvent.mouseDown(combobox)
+    fireEvent.click(getByRole('option', { name: 'Spanish' }))
+
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalledWith({
+        autoplay: true,
+        muted: true,
+        endAt: 60,
+        startAt: 0,
+        objectFit: ObjectFit.fill,
+        subtitleLanguageId: 'lang-es'
+      })
+    })
+  })
+
+  it('should call useYouTubeClosedCaptions with skip false for YouTube videos with videoId', () => {
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: [],
+      loading: false,
+      error: undefined
+    })
+
+    render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{
+                ...video,
+                source: VideoBlockSource.youTube,
+                videoId: 'test-youtube-id'
+              }}
+              posterBlock={null}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    expect(mockUseYouTubeClosedCaptions).toHaveBeenCalledWith({
+      videoId: 'test-youtube-id',
+      skip: false
+    })
+  })
+
+  it('should call useYouTubeClosedCaptions with skip true for non-YouTube videos', () => {
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: [],
+      loading: false,
+      error: undefined
+    })
+
+    render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{
+                ...video,
+                source: VideoBlockSource.internal,
+                videoId: 'test-internal-id'
+              }}
+              posterBlock={null}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    expect(mockUseYouTubeClosedCaptions).toHaveBeenCalledWith({
+      videoId: 'test-internal-id',
+      skip: true
+    })
+  })
+
+  it('should call useYouTubeClosedCaptions with skip true when videoId is null', () => {
+    mockUseYouTubeClosedCaptions.mockReturnValue({
+      languages: [],
+      loading: false,
+      error: undefined
+    })
+
+    render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <VideoBlockEditorSettings
+              selectedBlock={{
+                ...video,
+                source: VideoBlockSource.youTube,
+                videoId: null
+              }}
+              posterBlock={null}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    expect(mockUseYouTubeClosedCaptions).toHaveBeenCalledWith({
+      videoId: null,
+      skip: true
+    })
   })
 })

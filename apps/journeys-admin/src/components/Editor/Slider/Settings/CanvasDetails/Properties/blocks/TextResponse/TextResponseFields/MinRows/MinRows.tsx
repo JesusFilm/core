@@ -90,7 +90,7 @@ export function MinRows(): ReactElement {
   return (
     <ToggleButtonGroup
       label={t('Minimum Size')}
-      value={selectedBlock?.minRows ?? 3}
+      value={selectedBlock?.minRows ?? 1}
       onChange={handleChange}
       options={options}
       testId="MinRows"

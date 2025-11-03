@@ -1,7 +1,7 @@
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
+import { screen, userEvent } from 'storybook/test'
 
 import '../../../../test/i18n'
 

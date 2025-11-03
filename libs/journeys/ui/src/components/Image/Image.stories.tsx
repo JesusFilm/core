@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
 
 import { journeyUiConfig } from '../../libs/journeyUiConfig'
@@ -21,6 +21,9 @@ const emptyImage: Omit<ComponentProps<typeof Image>, 'src'> = {
   width: 1600,
   height: 1067,
   blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50,
   children: []
 }
 

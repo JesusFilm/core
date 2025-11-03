@@ -6,12 +6,9 @@ import { TemplateVideoPlayer } from './TemplateVideoPlayer'
 
 describe('TemplateVideoPlayer', () => {
   const OLD_ENV = process.env
-  const mockedEnv = {
-    NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE: 'mock-customer-code'
-  }
 
   beforeEach(() => {
-    process.env = { NODE_ENV: 'test', ...mockedEnv }
+    process.env = { NODE_ENV: 'test' }
   })
 
   afterAll(() => {
@@ -35,24 +32,25 @@ describe('TemplateVideoPlayer', () => {
     ).toHaveAttribute('src', 'https://arc.gt/hls/2_0-FallingPlates/529')
   })
 
-  it('should render cloudflare videos', async () => {
+  it('should render mux videos', async () => {
     const { getByTestId } = render(
       <TemplateVideoPlayer
-        id="someCloudflareId"
-        source={VideoBlockSource.cloudflare}
+        id="someMuxId"
+        source={VideoBlockSource.mux}
+        mediaVideo={{
+          __typename: 'MuxVideo',
+          id: 'someMuxId',
+          assetId: 'assetId',
+          playbackId: 'playbackId'
+        }}
         startAt={1000}
         endAt={4000}
       />
     )
 
     expect(
-      getByTestId('TemplateVideoPlayer-someCloudflareId').querySelector(
-        'source'
-      )
-    ).toHaveAttribute(
-      'src',
-      'https://customer-mock-customer-code.cloudflarestream.com/someCloudflareId/manifest/video.m3u8'
-    )
+      getByTestId('TemplateVideoPlayer-someMuxId').querySelector('source')
+    ).toHaveAttribute('src', 'https://stream.mux.com/playbackId.m3u8')
   })
 
   it('should render youtube videos', async () => {

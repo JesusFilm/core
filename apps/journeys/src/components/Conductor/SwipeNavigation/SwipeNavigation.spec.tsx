@@ -1,8 +1,8 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -31,15 +31,12 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
-jest.mock('react-gtm-module', () => ({
-  __esModule: true,
-  default: {
-    dataLayer: jest.fn()
-  }
+jest.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: jest.fn()
 }))
 
-const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
-  typeof TagManager.dataLayer
+const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+  typeof sendGTMEvent
 >
 
 jest.mock('next-plausible', () => ({
@@ -55,21 +52,6 @@ describe('SwipeNavigation', () => {
   mockUuidv4.mockReturnValue('uuid')
   const swipeLeft = -100
   const swipeRight = 100
-
-  const originalLocation = window.location
-  const mockOrigin = 'https://example.com'
-
-  beforeAll(() => {
-    Object.defineProperty(window, 'location', {
-      value: {
-        origin: mockOrigin
-      }
-    })
-  })
-
-  afterAll(() => {
-    Object.defineProperty(window, 'location', originalLocation)
-  })
 
   const step1: TreeBlock<StepBlock> = {
     id: 'step1.id',
@@ -462,7 +444,7 @@ describe('SwipeNavigation', () => {
       expect(mockStepNextEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
-      u: `${mockOrigin}/journey.id/step1.id`,
+      u: expect.stringContaining(`/journey.id/step1.id`),
       props: {
         id: 'uuid',
         blockId: 'step1.id',
@@ -513,7 +495,7 @@ describe('SwipeNavigation', () => {
       expect(mockStepPreviousEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
-      u: `${mockOrigin}/journey.id/step2.id`,
+      u: expect.stringContaining(`/journey.id/step2.id`),
       props: {
         id: 'uuid',
         blockId: 'step2.id',
@@ -557,15 +539,13 @@ describe('SwipeNavigation', () => {
     fireEvent.touchEnd(swipeElement)
 
     await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'step_next',
-          eventId: 'uuid',
-          blockId: 'step1.id',
-          stepName: 'Step {{number}}',
-          targetStepId: 'step2.id',
-          targetStepName: 'Step {{number}}'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'step_next',
+        eventId: 'uuid',
+        blockId: 'step1.id',
+        stepName: 'Step {{number}}',
+        targetStepId: 'step2.id',
+        targetStepName: 'Step {{number}}'
       })
     )
   })
@@ -592,15 +572,13 @@ describe('SwipeNavigation', () => {
     fireEvent.touchEnd(swipeElement)
 
     await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'step_prev',
-          eventId: 'uuid',
-          blockId: 'step2.id',
-          stepName: 'Step {{number}}',
-          targetStepId: 'step1.id',
-          targetStepName: 'Step {{number}}'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'step_prev',
+        eventId: 'uuid',
+        blockId: 'step2.id',
+        stepName: 'Step {{number}}',
+        targetStepId: 'step1.id',
+        targetStepName: 'Step {{number}}'
       })
     )
   })

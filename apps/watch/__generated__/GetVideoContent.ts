@@ -9,6 +9,11 @@ import { VideoLabel, VideoVariantDownloadQuality } from "./globalTypes";
 // GraphQL query operation: GetVideoContent
 // ====================================================
 
+export interface GetVideoContent_content_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
 export interface GetVideoContent_content_imageAlt {
   __typename: "VideoImageAlt";
   value: string;
@@ -27,6 +32,26 @@ export interface GetVideoContent_content_description {
 export interface GetVideoContent_content_studyQuestions {
   __typename: "VideoStudyQuestion";
   value: string;
+  primary: boolean;
+}
+
+export interface GetVideoContent_content_bibleCitations_bibleBook_name {
+  __typename: "BibleBookName";
+  value: string;
+}
+
+export interface GetVideoContent_content_bibleCitations_bibleBook {
+  __typename: "BibleBook";
+  name: GetVideoContent_content_bibleCitations_bibleBook_name[];
+}
+
+export interface GetVideoContent_content_bibleCitations {
+  __typename: "BibleCitation";
+  bibleBook: GetVideoContent_content_bibleCitations_bibleBook;
+  chapterStart: number;
+  chapterEnd: number | null;
+  verseStart: number | null;
+  verseEnd: number | null;
 }
 
 export interface GetVideoContent_content_title {
@@ -51,6 +76,7 @@ export interface GetVideoContent_content_variant_language {
   __typename: "Language";
   id: string;
   name: GetVideoContent_content_variant_language_name[];
+  bcp47: string | null;
 }
 
 export interface GetVideoContent_content_variant {
@@ -58,6 +84,7 @@ export interface GetVideoContent_content_variant {
   id: string;
   duration: number;
   hls: string | null;
+  downloadable: boolean;
   downloads: GetVideoContent_content_variant_downloads[];
   language: GetVideoContent_content_variant_language;
   /**
@@ -71,11 +98,12 @@ export interface GetVideoContent_content {
   __typename: "Video";
   id: string;
   label: VideoLabel;
-  image: string | null;
+  images: GetVideoContent_content_images[];
   imageAlt: GetVideoContent_content_imageAlt[];
   snippet: GetVideoContent_content_snippet[];
   description: GetVideoContent_content_description[];
   studyQuestions: GetVideoContent_content_studyQuestions[];
+  bibleCitations: GetVideoContent_content_bibleCitations[];
   title: GetVideoContent_content_title[];
   variant: GetVideoContent_content_variant | null;
   variantLanguagesCount: number;
@@ -84,7 +112,7 @@ export interface GetVideoContent_content {
    */
   slug: string;
   /**
-   * the number value of the amount of children on a video
+   * The number of published child videos associated with this video
    */
   childrenCount: number;
 }

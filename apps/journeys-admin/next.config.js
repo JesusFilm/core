@@ -7,11 +7,7 @@ const { i18n } = require('./next-i18next.config')
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  nx: {
-    // Set this to true if you would like to to use SVGR
-    // See: https://github.com/gregberge/svgr
-    svgr: false
-  },
+  nx: {},
   i18n,
   images: {
     remotePatterns: [
@@ -29,7 +25,8 @@ const nextConfig = {
         hostname: `customer-${
           process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
         }.cloudflarestream.com`
-      }
+      },
+      { protocol: 'https', hostname: 'image.mux.com' }
     ]
   },
   async redirects() {
@@ -89,16 +86,23 @@ const nextConfig = {
     // handled by github actions
     ignoreDuringBuilds: process.env.CI === 'true'
   },
-  transpilePackages: ['shared-ui', 'shared-ui-dynamic'],
+  transpilePackages: [
+    'shared-ui',
+    'shared-ui-dynamic',
+    '@mui/x-data-grid',
+    '@mui/x-date-pickers',
+    '@mui/x-tree-view',
+    '@mui/x-charts'
+  ],
+  outputFileTracingExcludes: {
+    '*': [
+      'node_modules/@swc/core-linux-x64-gnu',
+      'node_modules/@swc/core-linux-x64-musl',
+      'node_modules/esbuild-linux-64/bin'
+    ]
+  },
   experimental: {
-    outputFileTracingExcludes: {
-      '*': [
-        'node_modules/@swc/core-linux-x64-gnu',
-        'node_modules/@swc/core-linux-x64-musl',
-        'node_modules/esbuild-linux-64/bin'
-      ]
-    },
-    fallbackNodePolyfills: false
+    reactCompiler: true
   }
 }
 const plugins = [withNx]

@@ -19,6 +19,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: []
 }
 
@@ -32,7 +33,10 @@ const image: TreeBlock<ImageBlock> = {
   width: 1920,
   height: 1080,
   blurhash: '',
-  children: []
+  children: [],
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const video: TreeBlock<VideoBlock> = {
@@ -54,7 +58,8 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  subtitleLanguage: null,
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -63,8 +68,13 @@ const video: TreeBlock<VideoBlock> = {
         value: 'FallingPlates'
       }
     ],
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -76,16 +86,14 @@ const video: TreeBlock<VideoBlock> = {
   children: []
 }
 
-const cloudFlareVideo: TreeBlock<VideoBlock> = {
-  ...video,
-  source: VideoBlockSource.cloudflare,
-  image: 'https://cloudflare-video-image.com'
-}
-
 const youtubeVideo: TreeBlock<VideoBlock> = {
   ...video,
   source: VideoBlockSource.youTube,
-  image: 'https://youtube-image.com'
+  image: 'https://youtube-image.com',
+  mediaVideo: {
+    __typename: 'YouTube',
+    id: video.id
+  }
 }
 
 describe('getBackgroundImage', () => {
@@ -130,18 +138,8 @@ describe('getBackgroundImage', () => {
       }
       const backgroundImage = getBackgroundImage(videoCoverBlock)
       expect(backgroundImage).toBe(
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg'
+        'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
       )
-    })
-
-    it('should return cloudflare background image', () => {
-      const cloudflareCoverBlock: TreeBlock<CardBlock> = {
-        ...card,
-        coverBlockId: cloudFlareVideo.id,
-        children: [cloudFlareVideo]
-      }
-      const backgroundImage = getBackgroundImage(cloudflareCoverBlock)
-      expect(backgroundImage).toBe('https://cloudflare-video-image.com')
     })
 
     it('should return youtube background image', () => {

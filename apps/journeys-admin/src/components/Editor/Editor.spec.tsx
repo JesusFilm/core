@@ -59,6 +59,7 @@ describe('Editor', () => {
     description: 'my cool journey',
     status: JourneyStatus.draft,
     createdAt: '2021-11-19T12:34:56.647Z',
+    updatedAt: '2021-11-19T12:34:56.647Z',
     publishedAt: null,
     blocks: [
       {
@@ -93,7 +94,16 @@ describe('Editor', () => {
     showShareButton: null,
     showLikeButton: null,
     showDislikeButton: null,
-    displayTitle: null
+    displayTitle: null,
+    logoImageBlock: null,
+    menuButtonIcon: null,
+    menuStepBlock: null,
+    journeyTheme: null,
+    journeyCustomizationDescription: null,
+    journeyCustomizationFields: [],
+    fromTemplateId: null,
+    socialNodeX: null,
+    socialNodeY: null
   }
 
   beforeEach(() => {
@@ -168,7 +178,8 @@ describe('Editor', () => {
           coverBlockId: null,
           themeMode: ThemeMode.light,
           themeName: ThemeName.base,
-          fullscreen: false
+          fullscreen: false,
+          backdropBlur: null
         },
         {
           __typename: 'TypographyBlock',
@@ -178,7 +189,11 @@ describe('Editor', () => {
           content: 'Test selected step',
           variant: null,
           color: null,
-          align: null
+          align: null,
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         }
       ]
     }

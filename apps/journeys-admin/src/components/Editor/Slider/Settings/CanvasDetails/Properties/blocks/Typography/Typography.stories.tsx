@@ -1,6 +1,6 @@
-import { jest } from '@storybook/jest'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
+import { fn } from 'storybook/test'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -29,7 +29,7 @@ const Demo: Meta<typeof Typography> = {
   }
 }
 
-const onClose = jest.fn()
+const onClose = fn()
 
 const block: TreeBlock<TypographyBlock> = {
   __typename: 'TypographyBlock',
@@ -40,7 +40,11 @@ const block: TreeBlock<TypographyBlock> = {
   color: null,
   content: '',
   variant: null,
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const Template: StoryObj<ComponentProps<typeof Typography>> = {
@@ -74,7 +78,11 @@ export const Filled = {
     color: TypographyColor.error,
     content: 'Text goes here',
     variant: TypographyVariant.overline,
-    children: []
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
 }
 

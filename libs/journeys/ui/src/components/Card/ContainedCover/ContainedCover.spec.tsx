@@ -2,6 +2,7 @@ import { render, waitFor } from '@testing-library/react'
 
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../../libs/block'
+import { BlockFields_VideoBlock_mediaVideo_Video } from '../../../libs/block/__generated__/BlockFields'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 
@@ -23,6 +24,9 @@ describe('ContainedCover', () => {
     alt: 'random image from unsplash',
     parentBlockId: 'card1.id',
     parentOrder: 0,
+    scale: null,
+    focalLeft: 50,
+    focalTop: 50,
     children: []
   }
 
@@ -46,7 +50,8 @@ describe('ContainedCover', () => {
     duration: null,
     image: null,
     objectFit: null,
-    video: {
+    subtitleLanguage: null,
+    mediaVideo: {
       __typename: 'Video',
       id: '2_0-FallingPlates',
       title: [
@@ -55,8 +60,13 @@ describe('ContainedCover', () => {
           value: 'FallingPlates'
         }
       ],
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       variant: {
         __typename: 'VideoVariant',
         id: '2_0-FallingPlates-529',
@@ -66,9 +76,6 @@ describe('ContainedCover', () => {
     },
     children: []
   }
-
-  const minifiedUnsplashImage =
-    'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
 
   // Render children with background color or background blur overlay tested in Card VR
 
@@ -96,7 +103,11 @@ describe('ContainedCover', () => {
     const imageCover = getByTestId('background-image')
 
     expect(imageCover).toHaveAccessibleName(imageBlock.alt)
-    expect(imageCover).toHaveAttribute('src', minifiedUnsplashImage)
+
+    expect(imageCover).toHaveAttribute(
+      'src',
+      expect.stringContaining(encodeURIComponent(imageBlock.src!))
+    )
   })
 
   it('should render background image with blur url', () => {
@@ -171,19 +182,28 @@ describe('ContainedCover', () => {
     const posterImage = getByTestId('video-poster-image')
 
     expect(posterImage).toHaveAccessibleName('card video image')
-    expect(posterImage).toHaveAttribute('aria-details', videoBlock.video?.image)
+    expect(posterImage).toHaveAttribute(
+      'aria-details',
+      (videoBlock.mediaVideo as BlockFields_VideoBlock_mediaVideo_Video)
+        ?.images[0]?.mobileCinematicHigh
+    )
   })
 
-  it('should render background video with default cloudflare thumbnail image', () => {
+  it('should render background video with default mux thumbnail image', () => {
     const { getByTestId, getByRole } = render(
       <ContainedCover
         backgroundColor="#DDD"
         backgroundBlur={blurUrl}
         videoBlock={{
           ...videoBlock,
-          source: VideoBlockSource.cloudflare,
-          image:
-            'https://customer-.cloudflarestream.com/2_0-FallingPlates/manifest/video.m3u8'
+          source: VideoBlockSource.mux,
+          mediaVideo: {
+            __typename: 'MuxVideo',
+            id: '2_0-FallingPlates',
+            assetId: '2_0-FallingPlates',
+            playbackId: '2_0-FallingPlates'
+          },
+          image: 'https://stream.mux.com/2_0-FallingPlates.m3u8'
         }}
       >
         {children}
@@ -195,7 +215,7 @@ describe('ContainedCover', () => {
     )
     expect(source).toHaveAttribute(
       'src',
-      'https://customer-.cloudflarestream.com/2_0-FallingPlates/manifest/video.m3u8'
+      'https://stream.mux.com/2_0-FallingPlates.m3u8'
     )
     expect(source).toHaveAttribute('type', 'application/x-mpegURL')
 
@@ -204,7 +224,7 @@ describe('ContainedCover', () => {
     expect(posterImage).toHaveAccessibleName('card video image')
     expect(posterImage).toHaveAttribute(
       'aria-details',
-      'https://customer-.cloudflarestream.com/2_0-FallingPlates/manifest/video.m3u8'
+      'https://stream.mux.com/2_0-FallingPlates.m3u8'
     )
   })
 
@@ -216,6 +236,10 @@ describe('ContainedCover', () => {
         videoBlock={{
           ...videoBlock,
           source: VideoBlockSource.youTube,
+          mediaVideo: {
+            __typename: 'YouTube',
+            id: '2_0-FallingPlates'
+          },
           image: 'http://youtube.thumbnail.image'
         }}
       >

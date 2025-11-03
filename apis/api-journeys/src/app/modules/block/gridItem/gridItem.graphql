@@ -1,0 +1,9 @@
+type GridItemBlock implements Block @shareable {
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  xl: Int! @shareable
+  lg: Int! @shareable
+  sm: Int! @shareable
+}

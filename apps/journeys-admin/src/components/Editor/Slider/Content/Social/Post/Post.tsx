@@ -1,4 +1,3 @@
-import Avatar from '@mui/material/Avatar'
 import Card from '@mui/material/Card'
 import CardMedia from '@mui/material/CardMedia'
 import Stack from '@mui/material/Stack'
@@ -10,10 +9,8 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import MessageCircle from '@core/shared/ui/icons/MessageCircle'
-import Share from '@core/shared/ui/icons/Share'
-import ThumbsUp from '@core/shared/ui/icons/ThumbsUp'
-import UserProfile2Icon from '@core/shared/ui/icons/UserProfile2'
+
+import { Tooltip } from '../../../../../Tooltip'
 
 export function Post(): ReactElement {
   const { journey } = useJourney()
@@ -33,7 +30,7 @@ export function Post(): ReactElement {
           textAlign="center"
           sx={{ fontSize: 16 }}
         >
-          {t('Social App View')}
+          {t('Social Post View')}
         </Typography>
         {journey != null && (
           <Card
@@ -48,86 +45,80 @@ export function Post(): ReactElement {
             elevation={0}
           >
             <Stack
-              pb={2}
-              mb={0}
               direction="row"
-              width="100%"
+              height="30px"
+              mb={2.5}
               justifyContent="space-between"
               alignItems="center"
+              spacing={1}
             >
-              <Avatar
-                sx={{
-                  width: 26,
-                  height: 26,
-                  mr: 2,
-                  bgcolor: (theme) => theme.palette.background.default,
-                  color: (theme) => theme.palette.background.paper
-                }}
-              >
-                <UserProfile2Icon />
-              </Avatar>
+              <Box
+                width={22}
+                height={22}
+                borderRadius={4}
+                mr={0}
+                bgcolor="background.default"
+              />
               <Box flexGrow={1}>
                 <Box
                   width={80}
                   height={16}
-                  bgcolor="#EFEFEF"
                   borderRadius="8px"
+                  bgcolor="background.default"
                 />
               </Box>
               <Box
                 width={16}
                 height={16}
-                bgcolor="#EFEFEF"
                 borderRadius="8px"
                 mr={0}
+                bgcolor="background.default"
               />
             </Stack>
-            <CardMedia
-              sx={{
-                width: 208,
-                height: 158,
-                display: 'flex',
-                flexDirection: 'column'
-              }}
-            >
-              {journey?.primaryImageBlock?.src == null ? (
-                <Box
-                  data-testid="social-preview-post-empty"
-                  display="block"
-                  width={208}
-                  height={158}
-                  bgcolor="rgba(0, 0, 0, 0.1)"
-                  borderRadius="5px"
-                />
-              ) : (
-                <Image
-                  src={journey.primaryImageBlock.src}
-                  alt={journey.primaryImageBlock.alt ?? ''}
-                  width={208}
-                  height={158}
-                  draggable="false"
-                  style={{
-                    borderRadius: '5px',
-                    maxWidth: '100%',
-                    objectFit: 'cover'
-                  }}
-                />
-              )}
-            </CardMedia>
-            <Stack
-              gap={5}
-              sx={{
-                flexDirection: 'column',
-                height: 36
-              }}
-            >
-              <Stack gap={1.5} sx={{ mt: 2 }}>
+            <Tooltip title={t('Social Image')}>
+              <CardMedia
+                sx={{
+                  mb: 2.5,
+                  width: 208,
+                  height: 158,
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}
+              >
+                {journey?.primaryImageBlock?.src == null ? (
+                  <Box
+                    data-testid="social-preview-post-empty"
+                    display="block"
+                    width={208}
+                    height={158}
+                    borderRadius="5px"
+                    bgcolor="background.default"
+                  />
+                ) : (
+                  <Image
+                    src={journey.primaryImageBlock.src}
+                    alt={journey.primaryImageBlock.alt ?? ''}
+                    width={208}
+                    height={158}
+                    draggable="false"
+                    style={{
+                      borderRadius: '5px',
+                      maxWidth: '100%',
+                      objectFit: 'cover'
+                    }}
+                  />
+                )}
+              </CardMedia>
+            </Tooltip>
+            <Stack gap={1.5} sx={{ mb: 2.75 }}>
+              <Tooltip title={t('Headline')}>
                 {isEmpty(journey?.seoTitle?.trim()) ? (
                   <Box
                     width={208}
                     height={15}
-                    bgcolor="#EFEFEF"
-                    borderRadius="8px"
+                    borderRadius={1.25}
+                    bgcolor="background.default"
+                    data-testid="HeadlineSkeleton"
                   />
                 ) : (
                   <Typography
@@ -140,12 +131,15 @@ export function Post(): ReactElement {
                     {journey.seoTitle}
                   </Typography>
                 )}
+              </Tooltip>
+              <Tooltip title={t('Secondary Text')}>
                 {isEmpty(journey?.seoDescription?.trim()) ? (
                   <Box
                     width={208}
                     height={15}
-                    bgcolor="#EFEFEF"
-                    borderRadius="8px"
+                    borderRadius={1.25}
+                    bgcolor="background.default"
+                    data-testid="SecondaryTextSkeleton"
                   />
                 ) : (
                   <Typography
@@ -158,16 +152,24 @@ export function Post(): ReactElement {
                     {journey.seoDescription}
                   </Typography>
                 )}
-              </Stack>
-              <Stack
-                flexDirection="row"
-                justifyContent="space-around"
-                color="#EFEFEF"
-              >
-                <ThumbsUp sx={{ fontSize: 15 }} />
-                <MessageCircle sx={{ fontSize: 15 }} />
-                <Share sx={{ fontSize: 15 }} />
-              </Stack>
+              </Tooltip>
+            </Stack>
+            <Stack
+              flexDirection="row"
+              justifyContent="space-around"
+              color="background.default"
+              mb={2.5}
+            >
+              {[0, 1, 2].map((i) => (
+                <Box
+                  key={i}
+                  width={16}
+                  height={16}
+                  bgcolor="background.default"
+                  borderRadius="8px"
+                  mr={0}
+                />
+              ))}
             </Stack>
           </Card>
         )}

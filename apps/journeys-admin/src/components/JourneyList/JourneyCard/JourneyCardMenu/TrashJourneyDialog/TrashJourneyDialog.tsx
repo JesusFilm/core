@@ -2,7 +2,7 @@ import { ApolloQueryResult, gql, useMutation } from '@apollo/client'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -32,6 +32,10 @@ export function TrashJourneyDialog({
   handleClose,
   refetch
 }: TrashJourneyDialogProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const { enqueueSnackbar } = useSnackbar()
+  const [loading, setLoading] = useState(false)
+
   const [trashJourney] = useMutation<JourneyTrash>(JOURNEY_TRASH, {
     variables: {
       ids: [id]
@@ -47,17 +51,15 @@ export function TrashJourneyDialog({
     }
   })
 
-  const { enqueueSnackbar } = useSnackbar()
-  const { t } = useTranslation('apps-journeys-admin')
-
   async function handleTrash(): Promise<void> {
+    setLoading(true)
     try {
       await trashJourney()
+      await refetch?.()
       enqueueSnackbar(t('Journey trashed'), {
         variant: 'success',
         preventDuplicate: true
       })
-      await refetch?.()
       handleClose()
     } catch (error) {
       if (error instanceof Error) {
@@ -66,6 +68,8 @@ export function TrashJourneyDialog({
           preventDuplicate: true
         })
       }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -74,6 +78,7 @@ export function TrashJourneyDialog({
       open={open}
       onClose={handleClose}
       dialogTitle={{ title: t('Trash Journey?'), closeButton: true }}
+      loading={loading}
       dialogAction={{
         onSubmit: handleTrash,
         submitLabel: t('Delete'),

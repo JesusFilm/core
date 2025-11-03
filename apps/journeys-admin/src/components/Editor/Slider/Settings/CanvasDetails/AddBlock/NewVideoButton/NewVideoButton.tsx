@@ -69,7 +69,8 @@ export function NewVideoButton({
       image: null,
       duration: null,
       objectFit: null,
-      video: null,
+      subtitleLanguage: null,
+      mediaVideo: null,
       action: null,
       __typename: 'VideoBlock',
       children: []

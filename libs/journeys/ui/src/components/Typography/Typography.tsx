@@ -1,7 +1,8 @@
 import MuiTypography from '@mui/material/Typography'
-import { ElementType, ReactElement } from 'react'
+import { ReactElement } from 'react'
 
 import type { TreeBlock } from '../../libs/block'
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 import { TypographyFields } from './__generated__/TypographyFields'
 
@@ -15,10 +16,13 @@ export function Typography({
   color,
   align,
   content,
+  settings,
   editableContent,
   placeholderText
 }: TypographyProps): ReactElement {
-  let displayContent: ReactElement | string = content
+  const resolvedContent = useGetValueFromJourneyCustomizationString(content)
+
+  let displayContent: ReactElement | string = resolvedContent
 
   if (editableContent != null) {
     displayContent = editableContent
@@ -26,21 +30,43 @@ export function Typography({
     displayContent = placeholderText
   }
 
+  // Use settings.color if available, otherwise fall back to enum color
+  const getTextColor = () => {
+    if (content === '') return 'text.disabled'
+    if (settings?.color != null && settings.color !== '') return settings.color
+    return color ?? undefined
+  }
+
+  const textColor = getTextColor()
+
   return (
-    <MuiTypography
-      variant={variant ?? undefined}
-      align={align ?? undefined}
-      color={content === '' ? 'text.disabled' : color ?? undefined}
-      component={
-        variant === 'overline' || variant === 'caption'
-          ? 'p'
-          : (variant as ElementType) ?? 'p'
-      }
-      gutterBottom
-      whiteSpace="pre-line"
-      data-testid="JourneysTypography"
-    >
-      {displayContent}
-    </MuiTypography>
+    <>
+      {variant === 'overline' || variant === 'caption' ? (
+        <MuiTypography
+          variant={variant ?? undefined}
+          align={align ?? undefined}
+          color={textColor}
+          component="p"
+          gutterBottom
+          whiteSpace="pre-line"
+          data-testid="JourneysTypography"
+          sx={{ wordBreak: 'break-word' }}
+        >
+          {displayContent}
+        </MuiTypography>
+      ) : (
+        <MuiTypography
+          variant={variant ?? undefined}
+          align={align ?? undefined}
+          color={textColor}
+          gutterBottom
+          whiteSpace="pre-line"
+          data-testid="JourneysTypography"
+          sx={{ wordBreak: 'break-word' }}
+        >
+          {displayContent}
+        </MuiTypography>
+      )}
+    </>
   )
 }

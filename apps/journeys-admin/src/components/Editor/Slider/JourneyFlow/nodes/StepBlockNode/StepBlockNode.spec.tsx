@@ -1,13 +1,15 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { NodeProps, ReactFlowProvider } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
-  BlockFields_FormBlock as FormBlock,
   BlockFields_RadioQuestionBlock as RadioQuestionBlock,
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_StepBlock as StepBlock,
@@ -62,6 +64,49 @@ describe('StepBlockNode', () => {
     expect(screen.getByText('Default Next Step →')).toBeInTheDocument()
   })
 
+  it('should render step without default action in website mode', () => {
+    const props = {
+      id: 'step.id',
+      xPos: 0,
+      yPos: 0,
+      dragging: false
+    } as unknown as NodeProps
+
+    const step: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'step.id',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      slug: null,
+      children: []
+    }
+
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: { ...defaultJourney, website: true } }}
+        >
+          <ReactFlowProvider>
+            <EditorProvider
+              initialState={{
+                steps: [step],
+                selectedStep: step,
+                activeContent: ActiveContent.Canvas
+              }}
+            >
+              <StepBlockNode {...props} />
+            </EditorProvider>
+          </ReactFlowProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('StepBlockNodeCard')).toBeInTheDocument()
+    expect(screen.queryByText('Default Next Step →')).not.toBeInTheDocument()
+  })
+
   it('should render step actions', () => {
     const action = {
       __typename: 'NavigateToBlockAction',
@@ -91,12 +136,6 @@ describe('StepBlockNode', () => {
         }
       ]
     } as unknown as TreeBlock<RadioQuestionBlock>
-    const form = {
-      __typename: 'FormBlock',
-      id: 'form.id',
-      action,
-      children: []
-    } as unknown as TreeBlock<FormBlock>
     const signUp = {
       __typename: 'SignUpBlock',
       id: 'signUp.id',
@@ -138,7 +177,8 @@ describe('StepBlockNode', () => {
           themeName: null,
           themeMode: null,
           fullscreen: false,
-          children: [button, radioQuestion, form, signUp, video, textResponse]
+          backdropBlur: null,
+          children: [button, radioQuestion, signUp, video, textResponse]
         }
       ]
     }
@@ -168,7 +208,6 @@ describe('StepBlockNode', () => {
     expect(
       screen.getByTestId(`ActionButton-${radioQuestion.children[0].id}`)
     ).toBeInTheDocument()
-    expect(screen.getByTestId(`ActionButton-${form.id}`)).toBeInTheDocument()
     expect(screen.getByTestId(`ActionButton-${signUp.id}`)).toBeInTheDocument()
     expect(screen.getByTestId(`ActionButton-${video.id}`)).toBeInTheDocument()
     expect(
@@ -176,7 +215,7 @@ describe('StepBlockNode', () => {
     ).toBeInTheDocument()
   })
 
-  it('should show edit step fab', () => {
+  it('should show edit step fab when selected', () => {
     const step: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
       id: 'step.id',
@@ -210,7 +249,60 @@ describe('StepBlockNode', () => {
         </ReactFlowProvider>
       </MockedProvider>
     )
-    expect(screen.getByTestId('EditStepFab')).toBeInTheDocument()
+    expect(screen.getByTestId('EditStepFab')).toBeVisible()
+  })
+
+  it('should show edit step fab when hovered', async () => {
+    const step1: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'step1.id',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      slug: null,
+      children: []
+    }
+
+    const step2: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'step2.id',
+      parentBlockId: null,
+      parentOrder: 1,
+      locked: false,
+      nextBlockId: null,
+      slug: null,
+      children: []
+    }
+
+    const props = {
+      id: 'step2.id',
+      xPos: 0,
+      yPos: 0,
+      dragging: false
+    } as unknown as NodeProps
+
+    render(
+      <MockedProvider>
+        <ReactFlowProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step1, step2],
+              selectedStep: step1,
+              activeContent: ActiveContent.Canvas
+            }}
+          >
+            <StepBlockNode {...props} />
+          </EditorProvider>
+        </ReactFlowProvider>
+      </MockedProvider>
+    )
+
+    await userEvent.hover(screen.getByTestId('StepBlockNode-step2.id'))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('EditStepFab')).toBeVisible()
+    })
   })
 
   it('should show step analytics', () => {
@@ -268,5 +360,68 @@ describe('StepBlockNode', () => {
     )
 
     expect(screen.getByTestId('StepBlockNodeAnalytics')).toBeInTheDocument()
+  })
+
+  it('should disable target handle for menu', () => {
+    const step: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'step.id',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      slug: null,
+      children: []
+    }
+
+    const props = {
+      id: 'step.id',
+      xPos: 0,
+      yPos: 0,
+      dragging: false
+    } as unknown as NodeProps
+
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: { ...defaultJourney, menuStepBlock: step } }}
+        >
+          <ReactFlowProvider>
+            <EditorProvider
+              initialState={{
+                steps: [step],
+                selectedStep: step,
+                activeContent: ActiveContent.Canvas,
+                showAnalytics: true,
+                analytics: {
+                  totalVisitors: 0,
+                  chatsStarted: 0,
+                  linksVisited: 0,
+                  referrers: { nodes: [], edges: [] },
+                  stepsStats: [],
+                  targetMap: new Map(),
+                  stepMap: new Map([
+                    [
+                      'step.id',
+                      {
+                        eventMap: new Map(),
+                        total: 10
+                      }
+                    ]
+                  ]),
+                  blockMap: new Map([['button.id', 5]])
+                }
+              }}
+            >
+              <StepBlockNode {...props} />
+            </EditorProvider>
+          </ReactFlowProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(
+      screen.queryByTestId('BaseNodeLeftHandle-shown')
+    ).not.toBeInTheDocument()
   })
 })

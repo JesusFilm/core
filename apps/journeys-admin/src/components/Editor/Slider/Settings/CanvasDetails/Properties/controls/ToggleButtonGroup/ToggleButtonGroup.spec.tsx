@@ -78,4 +78,13 @@ describe('ToggleButtonGroup', () => {
     )
     expect(getAllByTestId('Clock1Icon')).toHaveLength(2)
   })
+
+  it('renders children', () => {
+    const { getByText } = render(
+      <ToggleButtonGroup options={[]} value="abc" onChange={jest.fn()}>
+        <div data-testid="children">Children</div>
+      </ToggleButtonGroup>
+    )
+    expect(getByText('Children')).toBeInTheDocument()
+  })
 })

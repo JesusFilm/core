@@ -4,24 +4,28 @@ import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
-  BlockFields_FormBlock as FormBlock,
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_VideoBlock as VideoBlock
 } from '../../../../../../../../../__generated__/BlockFields'
+import { TextFieldFormRef } from '../../../../../../../TextFieldForm/TextFieldForm'
 import { useActionCommand } from '../../../../../../utils/useActionCommand'
 
+import { ChatAction } from './ChatAction'
+import { CustomizationToggle } from './CustomizationToggle'
 import { EmailAction } from './EmailAction'
 import { LinkAction } from './LinkAction'
 import { NavigateToBlockAction } from './NavigateToBlockAction'
-import { ActionValue, actions } from './utils/actions'
+import { PhoneAction } from './PhoneAction'
+import { ActionValue, actions, getAction } from './utils/actions'
 
 export function Action(): ReactElement {
   const {
@@ -29,22 +33,44 @@ export function Action(): ReactElement {
   } = useEditor()
   const { t } = useTranslation('apps-journeys-admin')
   const { addAction } = useActionCommand()
+  const { journey } = useJourney()
+  const linkActionRef = useRef<TextFieldFormRef | null>(null)
+  const emailActionRef = useRef<TextFieldFormRef | null>(null)
+  const chatActionRef = useRef<TextFieldFormRef | null>(null)
 
   // Add addtional types here to use this component for that block
-  const selectedBlock = stateSelectedBlock as
-    | TreeBlock<ButtonBlock>
-    | TreeBlock<FormBlock>
-    | TreeBlock<SignUpBlock>
-    | TreeBlock<VideoBlock>
-    | undefined
-  const labels = actions(t)
+  const selectedBlock = stateSelectedBlock as TreeBlock<
+    ButtonBlock | VideoBlock | SignUpBlock
+  >
   const [action, setAction] = useState<ActionValue>(
-    selectedBlock?.action?.__typename ?? 'None'
+    getAction(t, selectedBlock?.action?.__typename).value
   )
 
+  const isSubmitButton =
+    selectedBlock?.__typename === 'ButtonBlock' &&
+    selectedBlock.submitEnabled === true
+
+  const labels = actions(t)
+
+  const filteredLabels = isSubmitButton
+    ? labels.filter(
+        (action) =>
+          action.value !== 'LinkAction' &&
+          action.value !== 'EmailAction' &&
+          action.value !== 'ChatAction' &&
+          action.value !== 'PhoneAction'
+      )
+    : labels
+
   useEffect(() => {
-    setAction(selectedBlock?.action?.__typename ?? 'None')
+    setAction(getAction(t, selectedBlock?.action?.__typename).value)
   }, [selectedBlock?.action?.__typename])
+
+  useEffect(() => {
+    if (action === 'LinkAction') linkActionRef.current?.focus()
+    if (action === 'EmailAction') emailActionRef.current?.focus()
+    if (action === 'ChatAction') chatActionRef.current?.focus()
+  }, [action])
 
   function removeAction(): void {
     if (selectedBlock == null) return
@@ -67,6 +93,11 @@ export function Action(): ReactElement {
     setAction(event.target.value as ActionValue)
   }
 
+  const isLink = !isSubmitButton && action === 'LinkAction'
+  const isEmail = !isSubmitButton && action === 'EmailAction'
+  const isChat = !isSubmitButton && action === 'ChatAction'
+  const isPhone = !isSubmitButton && action === 'PhoneAction'
+
   return (
     <>
       <Stack sx={{ p: 4, pt: 0 }} data-testid="Action">
@@ -80,7 +111,7 @@ export function Action(): ReactElement {
             value={action}
             IconComponent={ChevronDownIcon}
           >
-            {labels.map((action) => {
+            {filteredLabels.map((action) => {
               return (
                 <MenuItem
                   key={`button-action-${action.value}`}
@@ -92,9 +123,14 @@ export function Action(): ReactElement {
             })}
           </Select>
         </FormControl>
-        {action === 'LinkAction' && <LinkAction />}
-        {action === 'EmailAction' && <EmailAction />}
+        {isLink && <LinkAction ref={linkActionRef} />}
+        {isEmail && <EmailAction ref={emailActionRef} />}
+        {isChat && <ChatAction ref={chatActionRef} />}
+        {isPhone && <PhoneAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
+        {(isLink || isEmail || isChat) && journey?.template && (
+          <CustomizationToggle />
+        )}
       </Stack>
     </>
   )

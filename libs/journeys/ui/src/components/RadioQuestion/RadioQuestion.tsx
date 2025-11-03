@@ -1,11 +1,8 @@
 import { gql, useMutation } from '@apollo/client'
-import Box, { BoxProps } from '@mui/material/Box'
-import ButtonGroup from '@mui/material/ButtonGroup'
-import { styled } from '@mui/material/styles'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
 import { ReactElement, useEffect, useState } from 'react'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import { RadioQuestionSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
@@ -24,6 +21,8 @@ import {
   RadioQuestionSubmissionEventCreate,
   RadioQuestionSubmissionEventCreateVariables
 } from './__generated__/RadioQuestionSubmissionEventCreate'
+import { GridVariant } from './GridVariant'
+import { ListVariant } from './ListVariant'
 
 export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
   mutation RadioQuestionSubmissionEventCreate(
@@ -38,15 +37,12 @@ export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
 interface RadioQuestionProps extends TreeBlock<RadioQuestionFields> {
   uuid?: () => string
   wrappers?: WrappersProps
-  addOption?: ReactElement
+  addOption?: () => void
 }
-
-const StyledRadioQuestion = styled(Box)<BoxProps>(({ theme }) => ({
-  marginBottom: theme.spacing(4)
-}))
 
 export function RadioQuestion({
   id: blockId,
+  gridView,
   children,
   uuid = uuidv4,
   wrappers,
@@ -116,15 +112,13 @@ export function RadioQuestion({
           }
         })
       }
-      TagManager.dataLayer({
-        dataLayer: {
-          event: 'radio_question_submission',
-          eventId: id,
-          blockId,
-          radioOptionSelectedId: radioOptionBlockId,
-          radioOptionSelectedLabel: radioOptionLabel,
-          stepName: heading
-        }
+      sendGTMEvent({
+        event: 'radio_question_submission',
+        eventId: id,
+        blockId,
+        radioOptionSelectedId: radioOptionBlockId,
+        radioOptionSelectedLabel: radioOptionLabel,
+        stepName: heading
       })
     }
     setSelectedId(radioOptionBlockId)
@@ -134,7 +128,11 @@ export function RadioQuestion({
     (option) =>
       option.__typename === 'RadioOptionBlock' &&
       (wrappers != null ? (
-        <BlockRenderer block={option} wrappers={wrappers} key={option.id} />
+        <BlockRenderer
+          block={{ ...option, gridView }}
+          wrappers={wrappers}
+          key={option.id}
+        />
       ) : (
         <RadioOption
           {...option}
@@ -142,16 +140,14 @@ export function RadioQuestion({
           selected={selectedId === option.id}
           disabled={Boolean(selectedId)}
           onClick={handleClick}
+          gridView={gridView}
         />
       ))
   )
 
-  return (
-    <StyledRadioQuestion data-testid={`JourneysRadioQuestion-${blockId}`}>
-      <ButtonGroup orientation="vertical" variant="contained" fullWidth>
-        {options}
-        {addOption}
-      </ButtonGroup>
-    </StyledRadioQuestion>
+  return gridView === true ? (
+    <GridVariant blockId={blockId} options={options} addOption={addOption} />
+  ) : (
+    <ListVariant blockId={blockId} options={options} addOption={addOption} />
   )
 }

@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -28,7 +28,10 @@ const image: ImageBlock = {
   alt: 'image.jpg',
   width: 1920,
   height: 1080,
-  blurhash: ''
+  blurhash: '',
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const Template: StoryObj<

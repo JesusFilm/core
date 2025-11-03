@@ -66,6 +66,7 @@ export interface GetAdminJourneys_journeys {
   createdAt: any;
   publishedAt: any | null;
   trashedAt: any | null;
+  updatedAt: any;
   description: string | null;
   slug: string;
   themeName: ThemeName;
@@ -80,6 +81,7 @@ export interface GetAdminJourneys_journeys {
   template: boolean | null;
   userJourneys: GetAdminJourneys_journeys_userJourneys[] | null;
   primaryImageBlock: GetAdminJourneys_journeys_primaryImageBlock | null;
+  fromTemplateId: string | null;
 }
 
 export interface GetAdminJourneys {

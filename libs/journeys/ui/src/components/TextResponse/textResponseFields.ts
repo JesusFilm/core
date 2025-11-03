@@ -5,11 +5,14 @@ export const TEXT_RESPONSE_FIELDS = gql`
     id
     parentBlockId
     parentOrder
+    required
     label
+    placeholder
     hint
     minRows
     type
     routeId
     integrationId
+    hideLabel
   }
 `

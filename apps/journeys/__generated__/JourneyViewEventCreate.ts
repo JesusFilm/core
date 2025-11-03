@@ -15,7 +15,12 @@ export interface JourneyViewEventCreate_journeyViewEventCreate {
 }
 
 export interface JourneyViewEventCreate {
-  journeyViewEventCreate: JourneyViewEventCreate_journeyViewEventCreate;
+  /**
+   * Creates a JourneyViewEvent, returns null if attempting to create another
+   * JourneyViewEvent with the same userId, journeyId, and within the same 24hr
+   * period of the previous JourneyViewEvent
+   */
+  journeyViewEventCreate: JourneyViewEventCreate_journeyViewEventCreate | null;
 }
 
 export interface JourneyViewEventCreateVariables {

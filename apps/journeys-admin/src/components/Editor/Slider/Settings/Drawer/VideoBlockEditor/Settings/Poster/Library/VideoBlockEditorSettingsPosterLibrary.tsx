@@ -148,7 +148,10 @@ export function VideoBlockEditorSettingsPosterLibrary({
       width: input.width ?? 0,
       height: input.height ?? 0,
       blurhash: input.blurhash ?? '',
-      parentOrder: 0
+      parentOrder: 0,
+      scale: null,
+      focalLeft: 50,
+      focalTop: 50
     }
 
     add({

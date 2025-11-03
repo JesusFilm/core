@@ -9,9 +9,23 @@ export const ACTION_FIELDS = gql`
     }
     ... on LinkAction {
       url
+      customizable
+      parentStepId
     }
     ... on EmailAction {
       email
+      customizable
+      parentStepId
+    }
+    ... on ChatAction {
+      chatUrl
+      customizable
+      parentStepId
+    }
+    ... on PhoneAction {
+      phone
+      countryCode
+      contactAction
     }
   }
 `

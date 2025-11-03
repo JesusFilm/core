@@ -48,7 +48,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
         description={journey.description ?? undefined}
         openGraph={{
           type: 'website',
-          title: journey.seoTitle ?? journey.title,
+          title: journey.seoTitle ?? journey.displayTitle ?? '',
           url: `https://${
             process.env.NEXT_PUBLIC_VERCEL_URL ?? 'your.nextstep.is'
           }/embed/${journey.slug}`,
@@ -117,7 +117,7 @@ export const getStaticProps: GetStaticProps<JourneyPageProps> = async (
     return {
       props: {
         ...(await serverSideTranslations(
-          context.locale ?? 'en',
+          locale ?? 'en',
           ['apps-journeys', 'libs-journeys-ui'],
           i18nConfig
         )),

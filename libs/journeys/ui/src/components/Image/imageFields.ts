@@ -10,5 +10,8 @@ export const IMAGE_FIELDS = gql`
     width
     height
     blurhash
+    scale
+    focalTop
+    focalLeft
   }
 `

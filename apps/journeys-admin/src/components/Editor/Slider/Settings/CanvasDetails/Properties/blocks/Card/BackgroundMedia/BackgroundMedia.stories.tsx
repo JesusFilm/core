@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
+import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -63,6 +64,7 @@ const journey: Journey = {
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [] as TreeBlock[],
   primaryImageBlock: null,
@@ -80,7 +82,16 @@ const journey: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  logoImageBlock: null,
+  menuButtonIcon: null,
+  menuStepBlock: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const card: TreeBlock<CardBlock> = {
@@ -93,6 +104,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: ThemeMode.light,
   themeName: null,
   fullscreen: true,
+  backdropBlur: null,
   children: []
 }
 
@@ -115,7 +127,8 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  subtitleLanguage: null,
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -124,8 +137,13 @@ const video: TreeBlock<VideoBlock> = {
         value: 'FallingPlates'
       }
     ],
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -147,7 +165,10 @@ const poster: TreeBlock<ImageBlock> = {
   height: 200,
   blurhash: '',
   alt: 'poster',
-  children: []
+  children: [],
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const image: TreeBlock<ImageBlock> = {
@@ -160,7 +181,10 @@ const image: TreeBlock<ImageBlock> = {
   width: 1920,
   height: 1080,
   blurhash: '',
-  children: []
+  children: [],
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const videoLanguages: GetVideoVariantLanguages_video = {
@@ -201,17 +225,19 @@ const Template: StoryObj<typeof BackgroundMedia> = {
         }
       ]}
     >
-      <ThemeProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <EditorProvider
-            initialState={{
-              ...args
-            }}
-          >
-            <BackgroundMedia />
-          </EditorProvider>
-        </JourneyProvider>
-      </ThemeProvider>
+      <InstantSearchTestWrapper>
+        <ThemeProvider>
+          <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <EditorProvider
+              initialState={{
+                ...args
+              }}
+            >
+              <BackgroundMedia />
+            </EditorProvider>
+          </JourneyProvider>
+        </ThemeProvider>
+      </InstantSearchTestWrapper>
     </MockedProvider>
   )
 }

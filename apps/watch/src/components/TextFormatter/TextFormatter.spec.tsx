@@ -24,6 +24,18 @@ describe('TextFormatter', () => {
     ).toHaveAttribute('href', 'https://www.fallingplates.com/')
   })
 
+  it('should append protocol to link href attribute', () => {
+    render(
+      <TextFormatter>
+        This text should appear with website www.fallingplates.com in the
+        description
+      </TextFormatter>
+    )
+    expect(
+      screen.getByRole('link', { name: 'fallingplates.com' })
+    ).toHaveAttribute('href', 'https://www.fallingplates.com')
+  })
+
   it('should render email correctly', () => {
     render(
       <TextFormatter>

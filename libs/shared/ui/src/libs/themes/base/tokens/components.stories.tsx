@@ -1,5 +1,5 @@
 import Stack from '@mui/material/Stack'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import noop from 'lodash/noop'
 
 import { ThemeName } from '../..'
@@ -22,16 +22,8 @@ const ComponentsDemo: Meta<typeof LanguageAutocomplete> = {
 
 const languages: Language[] = [
   {
-    id: '529',
-    name: [
-      {
-        value: 'English',
-        primary: true
-      }
-    ]
-  },
-  {
     id: '496',
+    slug: 'french',
     name: [
       {
         value: 'Français',
@@ -44,7 +36,18 @@ const languages: Language[] = [
     ]
   },
   {
+    id: '529',
+    slug: 'english',
+    name: [
+      {
+        value: 'English',
+        primary: true
+      }
+    ]
+  },
+  {
     id: '1106',
+    slug: 'german-standard',
     name: [
       {
         value: 'Deutsch',

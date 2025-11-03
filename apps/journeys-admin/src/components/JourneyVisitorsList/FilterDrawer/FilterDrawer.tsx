@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -8,12 +9,15 @@ import Radio from '@mui/material/Radio'
 import RadioGroup from '@mui/material/RadioGroup'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import Link from 'next/link'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
+import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import X2Icon from '@core/shared/ui/icons/X2'
 
 import { ClearAllButton } from './ClearAllButton'
+import { ExportDialog } from './ExportDialog'
 
 interface FilterDrawerProps {
   handleClose?: () => void
@@ -21,31 +25,37 @@ interface FilterDrawerProps {
   sortSetting?: 'date' | 'duration'
   chatStarted: boolean
   withPollAnswers: boolean
+  withMultiselectAnswers?: boolean
   withSubmittedText: boolean
   withIcon: boolean
   hideInteractive: boolean
-  handleClearAll?: () => void
+  handleClearAll: () => void
+  journeyId?: string
+  disableExportButton?: boolean
 }
 
 export function FilterDrawer({
+  journeyId,
   handleClose,
   handleChange,
   sortSetting,
   chatStarted,
   withPollAnswers,
+  withMultiselectAnswers,
   withSubmittedText,
   withIcon,
   hideInteractive,
-  handleClearAll
+  handleClearAll,
+  disableExportButton = false
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const [showExportDialog, setShowExportDialog] = useState(false)
+
   return (
-    <Box sx={{ height: '100vh' }} data-testid="FilterDrawer">
+    <Stack sx={{ height: '100vh' }} data-testid="FilterDrawer">
       <Box sx={{ display: { sm: 'block', md: 'none' } }}>
         <Stack direction="row" sx={{ px: 6, py: 2 }} alignItems="center">
-          <Typography variant="subtitle1">
-            {t('Filters')} <ClearAllButton handleClearAll={handleClearAll} />
-          </Typography>
+          <Typography variant="subtitle1">{t('Refine Results')}</Typography>
           <IconButton sx={{ ml: 'auto' }}>
             <X2Icon onClick={handleClose} />
           </IconButton>
@@ -54,7 +64,14 @@ export function FilterDrawer({
       </Box>
 
       <Box sx={{ px: 6, py: 5 }}>
-        <Typography variant="subtitle2">{t('Categories')}</Typography>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Typography variant="subtitle2">{t('Filter By')}</Typography>
+          <ClearAllButton handleClearAll={handleClearAll} />
+        </Stack>
         <FormGroup>
           <FormControlLabel
             control={<Checkbox />}
@@ -65,22 +82,29 @@ export function FilterDrawer({
           />
           <FormControlLabel
             control={<Checkbox />}
-            label={t('With Poll Answers')}
-            value="With Poll Answers"
+            label={t('Poll Answers')}
+            value="Poll Answers"
             onChange={handleChange}
             checked={withPollAnswers}
           />
           <FormControlLabel
             control={<Checkbox />}
-            label={t('With Submitted Text')}
-            value="With Submitted Text"
+            label={t('Multiselect Answers')}
+            value="Multiselect Answers"
+            onChange={handleChange}
+            checked={withMultiselectAnswers ?? false}
+          />
+          <FormControlLabel
+            control={<Checkbox />}
+            label={t('Submitted Text')}
+            value="Submitted Text"
             onChange={handleChange}
             checked={withSubmittedText}
           />
           <FormControlLabel
             control={<Checkbox />}
-            label={t('With Icon')}
-            value="With Icon"
+            label={t('Icon')}
+            value="Icon"
             onChange={handleChange}
             checked={withIcon}
           />
@@ -119,6 +143,42 @@ export function FilterDrawer({
           />
         </RadioGroup>
       </Box>
-    </Box>
+
+      {journeyId != null && (
+        <>
+          <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{ width: '100%' }}
+              onClick={() => setShowExportDialog(true)}
+              disabled={disableExportButton}
+            >
+              {t('Export Data')}
+            </Button>
+            <Button
+              size="small"
+              component={Link}
+              href="https://support.nextstep.is/article/1428-response-fields-and-data-analysis"
+              target="_blank"
+              rel="noopener noreferrer"
+              endIcon={<LinkExternal sx={{ width: '1rem', height: '1rem' }} />}
+              sx={{
+                width: '100%',
+                color: 'text.secondary'
+              }}
+              aria-label={`${t('Data Analytics Test')} - ${t('Opens in new tab')}`}
+            >
+              {t('Data analysis help')}
+            </Button>
+          </Box>
+          <ExportDialog
+            open={showExportDialog}
+            onClose={() => setShowExportDialog(false)}
+            journeyId={journeyId}
+          />
+        </>
+      )}
+    </Stack>
   )
 }

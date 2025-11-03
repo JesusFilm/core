@@ -12,13 +12,11 @@ import {
 } from '../../../../../__generated__/GetJourneyVisitors'
 
 interface VisitorCardDetailsProps {
-  name?: string | null
   events: Event[]
   loading: boolean
 }
 
 export function VisitorCardDetails({
-  name,
   events,
   loading
 }: VisitorCardDetailsProps): ReactElement {
@@ -26,6 +24,7 @@ export function VisitorCardDetails({
 
   const eventsFilter: Array<Event['__typename']> = [
     'ChatOpenEvent',
+    'MultiselectSubmissionEvent',
     'RadioQuestionSubmissionEvent'
   ]
 
@@ -66,10 +65,6 @@ export function VisitorCardDetails({
         </>
       ) : (
         <>
-          {name != null && (
-            <DetailsRow label={t('Name')} value={name} loading={loading} />
-          )}
-
           {eventsToRender.map((event) => {
             if (event.__typename === 'ChatOpenEvent') {
               return (

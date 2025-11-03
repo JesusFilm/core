@@ -43,7 +43,11 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
         id={`${id}-video-options`}
         icon={<Play1Icon />}
         name={t('Video Source')}
-        value={block.video?.title?.[0]?.value ?? block.title ?? ''}
+        value={
+          block.mediaVideo?.__typename === 'Video'
+            ? block.mediaVideo?.title?.[0]?.value
+            : (block.title ?? '')
+        }
       >
         <VideoOptions />
       </Accordion>

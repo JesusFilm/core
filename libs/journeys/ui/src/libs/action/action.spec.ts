@@ -1,5 +1,6 @@
 import { NextRouter } from 'next/dist/client/router'
 
+import { ContactActionType } from '../../../__generated__/globalTypes'
 import { nextActiveBlock } from '../block'
 
 import { handleAction } from '.'
@@ -44,12 +45,39 @@ describe('action', () => {
         __typename: 'EmailAction',
         parentBlockId: 'parent-id',
         gtmEventName: null,
-        email: 'edmondshen@gmail.com'
+        email: 'edmondshen@gmail.com',
+        customizable: false,
+        parentStepId: null
       })
       expect(window.open).toHaveBeenCalledWith(
         'mailto:edmondshen@gmail.com',
         '_blank'
       )
+    })
+
+    xit('should handle PhoneAction call', () => {
+      handleAction(router, {
+        __typename: 'PhoneAction',
+        parentBlockId: 'parent-id',
+        gtmEventName: null,
+        phone: '+1234567890',
+        countryCode: 'US',
+        contactAction: ContactActionType.call
+      })
+      expect(window.location.href).toBe('tel:+1234567890')
+    })
+
+    // TODO: Fix this test
+    xit('should handle PhoneAction text', () => {
+      handleAction(router, {
+        __typename: 'PhoneAction',
+        parentBlockId: 'parent-id',
+        gtmEventName: null,
+        phone: '+1234567890',
+        countryCode: 'US',
+        contactAction: ContactActionType.text
+      })
+      expect(window.location.href).toBe('sms:+1234567890')
     })
 
     it('should handle external LinkAction', () => {
@@ -59,7 +87,9 @@ describe('action', () => {
         __typename: 'LinkAction',
         parentBlockId: 'parent-id',
         gtmEventName: null,
-        url: 'http://www.google.com'
+        url: 'http://www.google.com',
+        customizable: false,
+        parentStepId: null
       })
       expect(window.open).toHaveBeenCalledWith(
         'http://www.google.com',
@@ -72,7 +102,9 @@ describe('action', () => {
         __typename: 'LinkAction',
         parentBlockId: 'parent-id',
         gtmEventName: null,
-        url: 'fact-or-fiction'
+        url: 'fact-or-fiction',
+        customizable: false,
+        parentStepId: null
       })
       expect(router.push).toHaveBeenCalledWith('fact-or-fiction')
     })
@@ -84,7 +116,9 @@ describe('action', () => {
         __typename: 'LinkAction',
         parentBlockId: 'parent-id',
         gtmEventName: null,
-        url: 'https://your.nextstep.is/fact-or-fiction'
+        url: 'https://your.nextstep.is/fact-or-fiction',
+        customizable: false,
+        parentStepId: null
       })
       expect(router.push).toHaveBeenCalledWith(
         'https://your.nextstep.is/fact-or-fiction'
@@ -98,7 +132,9 @@ describe('action', () => {
         __typename: 'LinkAction',
         parentBlockId: 'parent-id',
         gtmEventName: null,
-        url: ''
+        url: '',
+        customizable: false,
+        parentStepId: null
       })
       expect(window.open).not.toHaveBeenCalled()
       expect(router.push).not.toHaveBeenCalled()

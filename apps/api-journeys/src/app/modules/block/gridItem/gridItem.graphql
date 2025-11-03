@@ -1,9 +1,0 @@
-type GridItemBlock implements Block {
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
-  xl: Int!
-  lg: Int!
-  sm: Int!
-}

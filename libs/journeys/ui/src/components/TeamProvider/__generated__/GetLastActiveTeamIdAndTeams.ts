@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { UserTeamRole } from "./../../../../__generated__/globalTypes";
+
 // ====================================================
 // GraphQL query operation: GetLastActiveTeamIdAndTeams
 // ====================================================
@@ -19,12 +21,14 @@ export interface GetLastActiveTeamIdAndTeams_teams_userTeams_user {
   firstName: string;
   lastName: string | null;
   imageUrl: string | null;
+  email: string;
 }
 
 export interface GetLastActiveTeamIdAndTeams_teams_userTeams {
   __typename: "UserTeam";
   id: string;
   user: GetLastActiveTeamIdAndTeams_teams_userTeams_user;
+  role: UserTeamRole;
 }
 
 export interface GetLastActiveTeamIdAndTeams_teams_customDomains {

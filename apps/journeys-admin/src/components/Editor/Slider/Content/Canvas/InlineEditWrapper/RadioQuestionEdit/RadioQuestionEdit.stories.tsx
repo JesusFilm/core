@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -32,7 +32,11 @@ const heading: TreeBlock<TypographyFields> = {
   color: null,
   content: 'Question',
   variant: TypographyVariant.h3,
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const description: TreeBlock<TypographyFields> = {
@@ -44,7 +48,11 @@ const description: TreeBlock<TypographyFields> = {
   color: null,
   content: 'Description',
   variant: TypographyVariant.body2,
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const block: TreeBlock<RadioQuestionFields> = {
@@ -52,6 +60,7 @@ const block: TreeBlock<RadioQuestionFields> = {
   __typename: 'RadioQuestionBlock',
   parentBlockId: 'card0.id',
   parentOrder: 2,
+  gridView: false,
   children: [
     {
       __typename: 'RadioOptionBlock',
@@ -60,6 +69,7 @@ const block: TreeBlock<RadioQuestionFields> = {
       parentBlockId: 'RadioQuestion',
       parentOrder: 0,
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     },
     {
@@ -69,6 +79,7 @@ const block: TreeBlock<RadioQuestionFields> = {
       parentBlockId: 'RadioQuestion',
       parentOrder: 1,
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     }
   ]
@@ -94,6 +105,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image0.id',
@@ -105,7 +117,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
             parentBlockId: 'card6.id',
             parentOrder: 0,
             children: [],
-            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
+            scale: null,
+            focalLeft: 50,
+            focalTop: 50
           },
           heading,
           description,

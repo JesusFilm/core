@@ -32,7 +32,8 @@ const videoInternal: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  subtitleLanguage: null,
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -41,8 +42,13 @@ const videoInternal: TreeBlock<VideoBlock> = {
         value: 'FallingPlates'
       }
     ],
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -108,8 +114,9 @@ const videoYouTube: TreeBlock<VideoBlock> = {
   parentOrder: 0,
   action: null,
   source: VideoBlockSource.youTube,
-  video: null,
+  mediaVideo: null,
   objectFit: null,
+  subtitleLanguage: null,
   posterBlockId: 'poster1.id',
   children: []
 }
@@ -159,8 +166,8 @@ describe('VideoBlockEditor', () => {
               <VideoBlockEditor
                 selectedBlock={{
                   ...videoInternal,
-                  video: {
-                    ...videoInternal.video,
+                  mediaVideo: {
+                    ...videoInternal.mediaVideo,
                     variantLanguages: [
                       {
                         __typename: 'Language',
@@ -174,7 +181,7 @@ describe('VideoBlockEditor', () => {
                         ]
                       }
                     ]
-                  } as unknown as VideoBlock['video']
+                  } as unknown as VideoBlock['mediaVideo']
                 }}
                 onChange={jest.fn()}
               />
@@ -228,9 +235,9 @@ describe('VideoBlockEditor', () => {
               <VideoBlockEditor
                 selectedBlock={{
                   ...videoInternal,
-                  video: {
-                    ...videoInternal.video
-                  } as unknown as VideoBlock['video']
+                  mediaVideo: {
+                    ...videoInternal.mediaVideo
+                  } as unknown as VideoBlock['mediaVideo']
                 }}
                 onChange={jest.fn()}
               />
@@ -252,8 +259,8 @@ describe('VideoBlockEditor', () => {
               <VideoBlockEditor
                 selectedBlock={{
                   ...videoInternal,
-                  video: {
-                    ...videoInternal.video,
+                  mediaVideo: {
+                    ...videoInternal.mediaVideo,
                     variantLanguages: [
                       {
                         __typename: 'Language',
@@ -272,7 +279,7 @@ describe('VideoBlockEditor', () => {
                         ]
                       }
                     ]
-                  } as unknown as VideoBlock['video']
+                  } as unknown as VideoBlock['mediaVideo']
                 }}
                 onChange={jest.fn()}
               />

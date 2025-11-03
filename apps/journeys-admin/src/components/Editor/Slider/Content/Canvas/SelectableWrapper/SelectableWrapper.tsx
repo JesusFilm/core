@@ -40,20 +40,27 @@ export function SelectableWrapper({
   }
 
   // TODO: Test dispatch via E2E
+  // please check RadioOptionBlock or MultiselectOptionBlock events are being propogated properly i.e - can be re-ordered
   const handleSelectBlock = (e: MouseEvent<HTMLElement>): void => {
-    // Allow RadioQuestion select event to be overridden by RadioOption select/edit events (no e.stopPropogation)
-    if (block.__typename === 'RadioQuestionBlock') {
-      // Directly edit RadioQuestionBlock
+    // Allow container questions to be selected; options should select themselves for inline editing
+    if (
+      block.__typename === 'RadioQuestionBlock' ||
+      block.__typename === 'MultiselectBlock'
+    ) {
+      // Directly edit RadioQuestionBlock or MultiselectBlock
       updateEditor(block)
-    } else if (block.__typename === 'RadioOptionBlock') {
-      // this stopPropagation prevents links from being opened in the editor when clicked radioOptions are selected
+    } else if (
+      block.__typename === 'RadioOptionBlock' ||
+      block.__typename === 'MultiselectOptionBlock'
+    ) {
+      // this stopPropagation prevents links from being opened in the editor when clicked radioOptions are selected or multiselectOptions are selected
       e.stopPropagation()
       const parentSelected = selectedBlock?.id === block.parentBlockId
       const siblingSelected =
         selectedBlock?.parentBlockId === block.parentBlockId
 
       if (selectedBlock?.id === block.id) {
-        // Must override RadioQuestionBlock selected during event capture
+        // Must override RadioQuestionBlock or MultiselectBlock selected during event capture
         dispatch({ type: 'SetSelectedBlockAction', selectedBlock: block })
       } else if (parentSelected || siblingSelected) {
         updateEditor(block)
@@ -82,7 +89,7 @@ export function SelectableWrapper({
           top: 0,
           left: 0,
           outlineOffset: '-3px',
-          borderRadius: '20px',
+          borderRadius: '24px',
           my: '0px !important',
           '&:first-child': {
             '& > *': { zIndex: -1 }
@@ -93,6 +100,7 @@ export function SelectableWrapper({
   let borderRadius = '4px'
   switch (block.__typename) {
     case 'RadioOptionBlock':
+    case 'MultiselectOptionBlock':
       borderRadius = '8px'
       break
     case 'ImageBlock':
@@ -119,26 +127,24 @@ export function SelectableWrapper({
         ref={selectableRef}
         data-testid={`SelectableWrapper-${block.id}`}
         className={
-          block.__typename === 'RadioOptionBlock'
+          block.__typename === 'RadioOptionBlock' ||
+          block.__typename === 'MultiselectOptionBlock'
             ? 'MuiButtonGroup-root MuiButtonGroup-grouped MuiButtonGroup-groupedVertical'
             : ''
         }
-        sx={{
-          '&:first-child': {
-            '& > *': { mt: '0px' }
-          },
-          '&:last-child': {
-            '& > *': { mb: '0px' }
-          },
-          borderRadius,
-          outline: '2px solid ',
-          outlineColor:
-            selectedBlock?.id === block.id ? '#C52D3A' : 'transparent',
-          transition: (theme) => theme.transitions.create('outline-color'),
-          outlineOffset: '5px',
-          zIndex: selectedBlock?.id === block.id ? 1 : 0,
-          ...videoOutlineStyles
-        }}
+        {...(block.__typename !== 'ButtonBlock' && {
+          sx: {
+            borderRadius,
+            outline: '2px solid',
+            outlineColor:
+              selectedBlock?.id === block.id ? '#C52D3A' : 'transparent',
+            outlineOffset: '5px',
+            transition: (theme) => theme.transitions.create('outline-color'),
+            zIndex: selectedBlock?.id === block.id ? 1 : 0,
+            ...videoOutlineStyles
+          }
+        })}
+        // if changing the event handlers or their functions, please check RadioOptionBlock events are being propogated properly i.e - can be re-ordered
         onClickCapture={handleSelectBlock}
         onClick={blockNonSelectionEvents}
         onMouseDown={blockNonSelectionEvents}

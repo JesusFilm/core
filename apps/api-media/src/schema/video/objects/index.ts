@@ -1,6 +1,0 @@
-import './videoDescription'
-import './videoImageAlt'
-import './videoSnippet'
-import './videoStudyQuestion'
-import './videoSubtitle'
-import './videoTitle'

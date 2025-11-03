@@ -49,7 +49,8 @@ describe('Settings', () => {
           <EditorProvider
             initialState={{
               activeContent: ActiveContent.Canvas,
-              activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
+              activeCanvasDetailsDrawer:
+                ActiveCanvasDetailsDrawer.JourneyAppearance
             }}
           >
             <Settings />

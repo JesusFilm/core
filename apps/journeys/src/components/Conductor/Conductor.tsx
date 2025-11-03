@@ -2,20 +2,20 @@ import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { SxProps, useTheme } from '@mui/material/styles'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { ReactElement, useEffect } from 'react'
-import TagManager from 'react-gtm-module'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import { v4 as uuidv4 } from 'uuid'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { useBlocks } from '@core/journeys/ui/block'
+import { blockHistoryVar, useBlocks } from '@core/journeys/ui/block'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeName } from '@core/shared/ui/themes'
+import { FontFamilies, ThemeName } from '@core/shared/ui/themes'
 
 import { VisitorUpdateInput } from '../../../__generated__/globalTypes'
 import { JourneyViewEventCreate } from '../../../__generated__/JourneyViewEventCreate'
@@ -50,6 +50,21 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
   const theme = useTheme()
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
+
+  // Create font family strings based on journey theme
+  const fontFamilies: FontFamilies = {
+    headerFont: journey?.journeyTheme?.headerFont ?? '',
+    bodyFont: journey?.journeyTheme?.bodyFont ?? '',
+    labelFont: journey?.journeyTheme?.labelFont ?? ''
+  }
+
+  useEffect(() => {
+    blockHistoryVar([blocks[0]])
+    setTreeBlocks(blocks)
+    // multiple re-renders causes block history to be incorrect so do not pass in 'blocks' variable to deps array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setTreeBlocks, journey?.id])
+
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
@@ -105,23 +120,15 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
             )
         })
       })
-      TagManager.dataLayer({
-        dataLayer: {
-          event: 'journey_view',
-          journeyId: journey.id,
-          eventId: id,
-          journeyTitle: journey.title
-        }
+      sendGTMEvent({
+        event: 'journey_view',
+        journeyId: journey.id,
+        eventId: id,
+        journeyTitle: journey.title
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [journey])
-
-  useEffect(() => {
-    setTreeBlocks(blocks)
-    // multiple re-renders causes block history to be incorrect so do not pass in 'blocks' variable to deps array
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setTreeBlocks])
 
   const mobileNotchStyling: SxProps = {
     width: {
@@ -157,7 +164,7 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
           data-testid="Conductor"
           sx={{
             justifyContent: 'center',
-            height: '100svh',
+            height: '100dvh',
             background: theme.palette.grey[900],
             overflow: 'hidden'
           }}
@@ -187,7 +194,13 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   }
                 }}
               />
-              <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
+              <ThemeProvider
+                {...stepTheme}
+                locale={locale}
+                rtl={rtl}
+                fontFamilies={fontFamilies}
+                nested
+              >
                 <SwipeNavigation activeBlock={activeBlock} rtl={rtl}>
                   <DynamicCardList blocks={blocks} />
                 </SwipeNavigation>

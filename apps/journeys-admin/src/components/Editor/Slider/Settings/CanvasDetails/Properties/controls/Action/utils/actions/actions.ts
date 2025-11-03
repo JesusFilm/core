@@ -5,6 +5,8 @@ export type ActionValue =
   | 'NavigateToBlockAction'
   | 'LinkAction'
   | 'EmailAction'
+  | 'ChatAction'
+  | 'PhoneAction'
 
 export function actions(t: TFunction): Array<{
   value: ActionValue
@@ -26,6 +28,14 @@ export function actions(t: TFunction): Array<{
     {
       value: 'EmailAction',
       label: t('Email')
+    },
+    {
+      value: 'ChatAction',
+      label: t('Chat')
+    },
+    {
+      value: 'PhoneAction',
+      label: t('Phone')
     }
   ]
 }
@@ -38,14 +48,12 @@ interface ActionTranslation {
 /**
  * Get the action object from the value. If value is not found, return None.
  */
-export function getAction(
-  t: TFunction,
-  value?: ActionValue
-): ActionTranslation {
-  if (value == null)
+export function getAction(t: TFunction, value?: string): ActionTranslation {
+  const action = actions(t).find((act) => act.value === value)
+  if (!action)
     return {
       value: 'None',
       label: t('None')
     }
-  return actions(t).find((act) => act.value === value) as ActionTranslation
+  return action
 }

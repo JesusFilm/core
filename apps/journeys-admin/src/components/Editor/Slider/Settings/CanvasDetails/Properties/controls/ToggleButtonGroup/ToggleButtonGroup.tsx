@@ -14,6 +14,7 @@ interface ToggleButtonGroupProps<T = string | number> {
   }>
   onChange: (value: T) => void
   testId?: string
+  children?: ReactElement
 }
 
 export function ToggleButtonGroup({
@@ -21,7 +22,8 @@ export function ToggleButtonGroup({
   options,
   value,
   onChange,
-  testId
+  testId,
+  children
 }: ToggleButtonGroupProps): ReactElement {
   function handleChange(_event, value: string | number): void {
     onChange(value)
@@ -78,6 +80,15 @@ export function ToggleButtonGroup({
           </ToggleButton>
         ))}
       </MuiToggleButtonGroup>
+      {children != null && (
+        <Stack
+          sx={{
+            pt: 4
+          }}
+        >
+          {children}
+        </Stack>
+      )}
     </Stack>
   )
 }

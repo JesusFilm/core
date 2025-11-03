@@ -13,7 +13,10 @@ const image: ImageBlock = {
   alt: 'image.jpg',
   width: 1920,
   height: 1080,
-  blurhash: ''
+  blurhash: '',
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 describe('ImageThumbnail', () => {

@@ -72,6 +72,10 @@ export function Variant(): ReactElement {
       label: t('Contained')
     },
     {
+      value: ButtonVariant.outlined,
+      label: t('Outlined')
+    },
+    {
       value: ButtonVariant.text,
       label: t('Text')
     }

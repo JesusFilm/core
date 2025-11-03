@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -35,6 +35,7 @@ const filled: TreeBlock<ButtonFields> = {
   buttonVariant: null,
   startIconId: 'icon1',
   endIconId: 'icon2',
+  submitEnabled: null,
   action: null,
   children: [
     {
@@ -57,7 +58,8 @@ const filled: TreeBlock<ButtonFields> = {
       iconSize: null,
       children: []
     }
-  ]
+  ],
+  settings: null
 }
 
 const contained: TreeBlock<ButtonFields> = {
@@ -71,8 +73,10 @@ const contained: TreeBlock<ButtonFields> = {
   buttonVariant: null,
   startIconId: null,
   endIconId: null,
+  submitEnabled: null,
   action: null,
-  children: []
+  children: [],
+  settings: null
 }
 
 const text: TreeBlock<ButtonFields> = {
@@ -86,8 +90,10 @@ const text: TreeBlock<ButtonFields> = {
   buttonVariant: ButtonVariant.text,
   startIconId: null,
   endIconId: null,
+  submitEnabled: null,
   action: null,
-  children: []
+  children: [],
+  settings: null
 }
 
 const steps: Array<TreeBlock<StepBlock>> = [
@@ -110,6 +116,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image0.id',
@@ -121,7 +128,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
             parentBlockId: 'card6.id',
             parentOrder: 0,
             children: [],
-            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
+            scale: null,
+            focalLeft: 50,
+            focalTop: 50
           },
           contained,
           filled,

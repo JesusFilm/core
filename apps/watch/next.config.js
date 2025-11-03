@@ -9,7 +9,6 @@ const { i18n } = require('./next-i18next.config')
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  swcMinify: true,
   images: {
     remotePatterns: [
       { protocol: 'http', hostname: 'localhost' },
@@ -20,8 +19,10 @@ const nextConfig = {
       // jesusfilm wordpress website
       { protocol: 'https', hostname: 'develop.jesusfilm.org' },
       { protocol: 'https', hostname: 'jesusfilm.org' },
+      { protocol: 'https', hostname: 'www.jesusfilm.org' },
       // arclight image provider - cloudfront
       { protocol: 'https', hostname: 'd1wl257kev7hsz.cloudfront.net' },
+      { protocol: 'https', hostname: 'd3s4plubcuq0w9.cloudfront.net' },
       // cloudflare
       { protocol: 'https', hostname: 'imagedelivery.net' },
       {
@@ -34,16 +35,15 @@ const nextConfig = {
     minimumCacheTTL: 31536000
   },
   i18n,
+  experimental: {
+    reactCompiler: true
+  },
   modularizeImports: {
     lodash: {
       transform: 'lodash/{{member}}'
     }
   },
-  nx: {
-    // Set this to true if you would like to to use SVGR
-    // See: https://github.com/gregberge/svgr
-    svgr: false
-  },
+  nx: {},
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
@@ -54,14 +54,12 @@ const nextConfig = {
     ignoreDuringBuilds: process.env.CI === 'true'
   },
   transpilePackages: ['shared-ui'],
-  experimental: {
-    outputFileTracingExcludes: {
-      '*': [
-        'node_modules/@swc/core-linux-x64-gnu',
-        'node_modules/@swc/core-linux-x64-musl',
-        'node_modules/esbuild-linux-64/bin'
-      ]
-    }
+  outputFileTracingExcludes: {
+    '*': [
+      'node_modules/@swc/core-linux-x64-gnu',
+      'node_modules/@swc/core-linux-x64-musl',
+      'node_modules/esbuild-linux-64/bin'
+    ]
   },
   async redirects() {
     return [
@@ -74,6 +72,11 @@ const nextConfig = {
         source: '/bin/jf/watch.html/:videoId/:languageId',
         destination: '/api/jf/watch.html/:videoId/:languageId',
         permanent: false
+      },
+      {
+        source: '/watch/easter',
+        destination: '/watch/easter.html/english.html',
+        permanent: true
       }
     ]
   }

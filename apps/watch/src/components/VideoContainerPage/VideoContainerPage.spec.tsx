@@ -2,24 +2,16 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
+import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
+
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
 
 import { VideoContainerPage } from '.'
 
-jest.mock('next/router', () => ({
-  __esModule: true,
-  useRouter: () => {
-    return {
-      query: {}
-    }
-  }
-}))
-
 jest.mock('react-instantsearch')
-jest.mock('../../libs/algolia/useAlgoliaVideos')
+jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
 
 const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
   typeof useAlgoliaVideos
@@ -30,12 +22,25 @@ describe('VideoContainerPage', () => {
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: false,
       noResults: false,
-      hits: [],
+      items: [],
       showMore: jest.fn(),
       isLastPage: false,
       sendEvent: jest.fn()
     })
     jest.clearAllMocks()
+  })
+
+  it('should show language switcher', () => {
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: videos[0] }}>
+            <VideoContainerPage />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(screen.getByTestId('LanguageRoundedIcon')).toBeInTheDocument()
   })
 
   it('should render ContainerHero', () => {
@@ -85,7 +90,7 @@ describe('VideoContainerPage', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[getVideoChildrenMock]}>
         <SnackbarProvider>
-          <VideoProvider value={{ content: videos[0] }}>
+          <VideoProvider value={{ content: videos[5] }}>
             <VideoContainerPage />
           </VideoProvider>
         </SnackbarProvider>

@@ -8,10 +8,19 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
-import { BlockDuplicate } from '../../../../../../../../__generated__/BlockDuplicate'
-import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../__generated__/BlockFields'
+import {
+  BlockDuplicate,
+  BlockDuplicate_blockDuplicate_ButtonBlock
+} from '../../../../../../../../__generated__/BlockDuplicate'
+import {
+  BlockFields_ButtonBlock as ButtonBlock,
+  BlockFields_TypographyBlock as TypographyBlock
+} from '../../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
   TypographyAlign,
   TypographyColor,
   TypographyVariant
@@ -45,7 +54,11 @@ describe('DuplicateBlock', () => {
     variant: TypographyVariant.h1,
     color: TypographyColor.primary,
     align: TypographyAlign.center,
-    children: []
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
 
   const blockOrder = block?.parentOrder != null ? block.parentOrder : 0
@@ -70,7 +83,11 @@ describe('DuplicateBlock', () => {
         blockDuplicate: [
           {
             __typename: 'TypographyBlock',
-            id: 'duplicatedId'
+            id: 'duplicatedId',
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           } as unknown as TypographyBlock
         ]
       }
@@ -264,10 +281,21 @@ describe('DuplicateBlock', () => {
     const duplicateBlockResultMock = jest.fn(() => ({
       data: {
         blockDuplicate: [
-          { __typename: 'TypographyBlock', id: block.id },
           {
             __typename: 'TypographyBlock',
-            id: 'duplicatedId'
+            id: block.id,
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
+          },
+          {
+            __typename: 'TypographyBlock',
+            id: 'duplicatedId',
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           }
         ]
       }
@@ -301,5 +329,79 @@ describe('DuplicateBlock', () => {
       { __ref: `TypographyBlock:${block.id}` },
       { __ref: 'TypographyBlock:duplicatedId' }
     ])
+  })
+
+  it('should return button with submitEnabled=false on the optimistic response when duplicating a submit button', async () => {
+    const buttonBlock: TreeBlock<ButtonBlock> = {
+      id: 'button0.id',
+      __typename: 'ButtonBlock',
+      parentBlockId: 'card1.id',
+      parentOrder: 0,
+      label: 'Submit',
+      buttonVariant: ButtonVariant.contained,
+      buttonColor: ButtonColor.primary,
+      size: ButtonSize.medium,
+      submitEnabled: true,
+      action: null,
+      startIconId: null,
+      endIconId: null,
+      children: [],
+      settings: null
+    }
+
+    // capture the optimistic response from the mutation
+    let capturedOptimisticResponse: BlockDuplicate | null = null
+
+    jest
+      .spyOn(require('@apollo/client'), 'useMutation')
+      .mockImplementation(() => {
+        return [
+          (options: any) => {
+            capturedOptimisticResponse = options?.optimisticResponse
+            return Promise.resolve({ data: { blockDuplicate: [] } })
+          },
+          { loading: false }
+        ]
+      })
+
+    render(
+      <SnackbarProvider>
+        <JourneyProvider
+          value={{
+            journey: { id: 'journeyId' } as unknown as Journey,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider
+            initialState={{ selectedBlock: buttonBlock, selectedStep }}
+          >
+            <DuplicateBlock />
+          </EditorProvider>
+        </JourneyProvider>
+      </SnackbarProvider>
+    )
+
+    const button = screen.getByRole('button')
+    await userEvent.click(button)
+
+    expect(capturedOptimisticResponse).not.toBeNull()
+
+    // Assert the optimistic response returns the selected block and the duplicated block
+    expect(capturedOptimisticResponse!.blockDuplicate.length).toEqual(2)
+
+    // Cast to ButtonBlock type since we know these are button blocks
+    const originalButton = capturedOptimisticResponse!
+      .blockDuplicate[0] as BlockDuplicate_blockDuplicate_ButtonBlock
+    const duplicatedButton = capturedOptimisticResponse!
+      .blockDuplicate[1] as BlockDuplicate_blockDuplicate_ButtonBlock
+
+    expect(originalButton.id).toBe(buttonBlock.id)
+    expect(originalButton.submitEnabled).toBe(true)
+
+    // Assert that the duplicated button has the new id and submitEnabled=false
+    expect(duplicatedButton.id).toBe('newBlockId')
+    expect(duplicatedButton.submitEnabled).toBe(false)
+
+    jest.restoreAllMocks()
   })
 })

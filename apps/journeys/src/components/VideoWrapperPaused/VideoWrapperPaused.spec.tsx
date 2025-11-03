@@ -28,13 +28,14 @@ describe('VideoWrapper', () => {
       description: null,
       duration: null,
       image: null,
-      video: null,
+      mediaVideo: null,
       startAt: null,
       endAt: null,
       posterBlockId: 'image5.id',
       fullsize: null,
       action: null,
       objectFit: null,
+      subtitleLanguage: null,
       children: [
         {
           id: 'image5.id',
@@ -46,7 +47,10 @@ describe('VideoWrapper', () => {
           parentBlockId: 'video5.id',
           parentOrder: 0,
           children: [],
-          blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+          blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         }
       ]
     }
@@ -70,7 +74,10 @@ describe('VideoWrapper', () => {
             parentBlockId: 'video5.id',
             parentOrder: 0,
             src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-            width: 1920
+            width: 1920,
+            scale: null,
+            focalLeft: 50,
+            focalTop: 50
           }
         ],
         endAt: null,
@@ -88,11 +95,12 @@ describe('VideoWrapper', () => {
         duration: null,
         image: null,
         objectFit: null,
-        video: null,
+        mediaVideo: null,
         videoId: null,
-        videoVariantLanguageId: '529'
+        videoVariantLanguageId: '529',
+        subtitleLanguage: null
       },
-      {}
+      undefined
     )
   })
 
@@ -111,13 +119,14 @@ describe('VideoWrapper', () => {
       description: null,
       duration: null,
       image: null,
-      video: null,
+      mediaVideo: null,
       startAt: null,
       endAt: null,
       posterBlockId: 'image5.id',
       fullsize: null,
       action: null,
       objectFit: null,
+      subtitleLanguage: null,
       children: [
         {
           id: 'image5.id',
@@ -129,7 +138,10 @@ describe('VideoWrapper', () => {
           parentBlockId: 'video5.id',
           parentOrder: 0,
           children: [],
-          blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+          blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         }
       ]
     }
@@ -153,7 +165,10 @@ describe('VideoWrapper', () => {
             parentBlockId: 'video5.id',
             parentOrder: 0,
             src: 'https://images.unsplash.com/photo-1601142634808-38923eb7c560?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-            width: 1920
+            width: 1920,
+            scale: null,
+            focalLeft: 50,
+            focalTop: 50
           }
         ],
         endAt: null,
@@ -171,11 +186,12 @@ describe('VideoWrapper', () => {
         duration: null,
         image: null,
         objectFit: null,
-        video: null,
+        mediaVideo: null,
         videoId: null,
-        videoVariantLanguageId: '529'
+        videoVariantLanguageId: '529',
+        subtitleLanguage: null
       },
-      {}
+      undefined
     )
   })
 })

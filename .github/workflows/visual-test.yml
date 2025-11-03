@@ -1,43 +1,39 @@
 name: Visual Test
 on:
   push:
-    branches: [main, feature/*]
-  pull_request:
-    branches: [main, feature/*]
-    types: [labeled, synchronize]
-  merge_group:
-    branches: [main]
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
+    branches: [never]
+  # push:
+  #   branches: [main, feature/*]
+  # pull_request:
+  #   branches: [main, feature/*]
+  #   types: [labeled, synchronize]
+  # merge_group:
+  #   branches: [main]
 jobs:
   visual-test:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [22]
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Check branch up to date with base
         run: ./tools/scripts/check-git-diff.sh
-      - uses: actions/setup-node@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
-      - name: NPM Install
-        run: npm install --silent
-      - uses: nrwl/nx-set-shas@v3
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --silent
+      - uses: nrwl/nx-set-shas@v4
       - name: nx Install
-        run: npm install -g nx --silent
+        run: pnpm add -g nx --silent
       - name: Build Stories
         id: build-storybook
         run: nx affected --target=build-storybook shared-storybook --webpack-stats-json

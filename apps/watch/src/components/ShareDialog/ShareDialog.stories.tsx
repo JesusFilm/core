@@ -1,8 +1,7 @@
-import { expect } from '@storybook/jest'
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
+import { expect, screen, userEvent, waitFor } from 'storybook/test'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { watchConfig } from '../../libs/storybook'
@@ -27,10 +26,12 @@ const video: VideoContentFields = {
     __typename: 'VideoVariant',
     duration: videos[0].variant?.duration ?? 0,
     hls: 'https://arc.gt/4jz75',
+    downloadable: true,
     downloads: [],
     language: {
       __typename: 'Language',
       id: '529',
+      bcp47: 'en',
       name: [
         {
           __typename: 'LanguageName',

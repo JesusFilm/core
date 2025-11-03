@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
 import dayjs from 'dayjs'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 import testData from '../utils/testData.json'
 
 let randomNumber = ''
 const thirtySecondsTimeout = 30000
+
 export class TeamsPage {
   readonly page: Page
   constructor(page: Page) {
@@ -21,7 +22,6 @@ export class TeamsPage {
   memberEmail = ''
 
   async createNewTeamAndVerifyCreatedTeam() {
-    await this.clickDismissIfDialogueComesUp()
     await this.clickThreeDotOfTeams()
     await this.clickThreeDotOptions('New Team')
     await this.enterTeamName()
@@ -29,8 +29,8 @@ export class TeamsPage {
     await this.verifyTeamCreatedSnackbarMsg()
     await this.clickDiaLogBoxCloseBtn()
     await this.clickTeamSelectionDropDown()
-    await this.selectLastTeam() // due to bug
-    await this.clickTeamSelectionDropDown()
+    // await this.selectLastTeam() // due to bug
+    // await this.clickTeamSelectionDropDown()
     await this.selectCreatedNewTeam()
     await this.verifyTeamNameUpdatedInTeamSelectDropdown()
   }
@@ -60,14 +60,6 @@ export class TeamsPage {
   async verifyMemberAddedViaPlusIconAtTopOfTheRightCorner() {
     await this.clickMemberPlusIcon()
     await this.verifyMemberAdded()
-  }
-
-  async clickDismissIfDialogueComesUp() {
-    // First time user journey - Dismiss the "More journeys here" dialogue
-    const selector = 'div.MuiStack-root button:has-text("Dismiss")'
-    if (await this.page.isVisible(selector)) {
-      await this.page.click(selector)
-    }
   }
 
   async clickThreeDotOfTeams() {
@@ -114,7 +106,9 @@ export class TeamsPage {
 
   async selectLastTeam() {
     await this.page
-      .locator('ul[role="listbox"] li[role="option"]')
+      .locator('ul[role="listbox"] li[role="option"]', {
+        hasNotText: 'Shared With Me'
+      })
       .last()
       .click()
   }
@@ -139,10 +133,8 @@ export class TeamsPage {
 
   async enterTeamRename() {
     this.renameTeamName = testData.teams.teamRename + randomNumber
-    await this.page.getByLabel('Team Name', { exact: true }).clear()
-    await this.page
-      .getByLabel('Team Name', { exact: true })
-      .fill(this.renameTeamName)
+    await this.page.locator('input#title').clear()
+    await this.page.locator('input#title').fill(this.renameTeamName)
   }
 
   async clickSaveBtn() {
@@ -162,7 +154,8 @@ export class TeamsPage {
 
   async verifyRenamedTeamNameUpdatedInTeamSelectDropdown() {
     await expect(this.page.locator('div[aria-haspopup="listbox"]')).toHaveText(
-      this.renameTeamName
+      this.renameTeamName,
+      { timeout: 60000 }
     )
   }
 
@@ -187,5 +180,61 @@ export class TeamsPage {
     await this.page
       .locator('div[data-testid="member-dialog-open-avatar"]')
       .click()
+  }
+
+  //Custom Domain option in Three dot menu
+
+  async enterCustomDomainName(domainName) {
+    await this.page
+      .locator('div.MuiDialogContent-root input#name')
+      .fill(domainName)
+  }
+
+  async clickConnectBtn() {
+    await this.page
+      .locator('div.MuiDialogContent-root')
+      .getByRole('button', { name: 'Connect' })
+      .click()
+  }
+  async searchJourneyNameAndChooseFirstSuggestion(journeyNamePartial: string) {
+    await this.page
+      .locator('div.MuiDialogContent-root input#defaultJourney')
+      .pressSequentially(journeyNamePartial)
+    await this.page
+      .locator('ul#defaultJourney-listbox')
+      .getByRole('option', { name: journeyNamePartial })
+      .first()
+      .click()
+  }
+  async getDnsContentAndCopy() {
+    const copyIconPath = this.page.getByRole('button', { name: 'Copy' })
+    await copyIconPath.click()
+    return await this.page
+      .locator('div.MuiStack-root table td', { has: copyIconPath })
+      .innerText()
+  }
+  async clickCustomDomainDialogCloseIcon() {
+    await this.page.locator('button[data-testid="dialog-close-button"]').click()
+  }
+
+  async clickAddIntegrationButton() {
+    await this.page.getByTestId('Add-IntegrationsButton').click()
+  }
+  async clickGrowthSpaceIntegration() {
+    await this.page.getByTestId('growthSpaces-IntegrationsButton').click()
+  }
+  async enterAccessId(accessId: string) {
+    await this.page
+      .locator('p.MuiTypography-root:text-is("Access ID") ~ div input')
+      .fill(accessId)
+  }
+  async enterAccessSecret(accessSecret: string) {
+    await this.page
+      .locator('p.MuiTypography-root:text-is("Access Secret") ~ div input')
+      .fill(accessSecret)
+  }
+  async clickSaveBtnForintegration() {
+    //invalid credentials for Growth Spaces integration
+    await this.page.getByRole('button', { name: 'Save' }).click()
   }
 }

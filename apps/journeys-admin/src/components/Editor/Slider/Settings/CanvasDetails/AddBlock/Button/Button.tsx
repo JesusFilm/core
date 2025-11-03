@@ -55,11 +55,11 @@ export function Button({
       <StyledTooltip
         title={
           <Typography variant="caption" lineHeight="12px" sx={{ my: 1.25 }}>
-            {t(
-              disabled && value === 'Video'
-                ? 'Video Block cannot be placed on top of Blocks'
-                : 'Click to add'
-            )}
+            {disabled && value === 'Video'
+              ? t(
+                  'Video Block cannot be placed on top of Blocks or Background Video/Image'
+                )
+              : t('Click to add')}
           </Typography>
         }
         placement="top"
@@ -112,7 +112,13 @@ export function Button({
                   justifyContent: 'space-between'
                 }}
               >
-                <Stack direction="row" gap={4} ml={3}>
+                <Stack
+                  direction="row"
+                  gap={4}
+                  ml={3}
+                  mr={3}
+                  alignItems="center"
+                >
                   {icon}
                   <Typography>{t(value)}</Typography>
                 </Stack>

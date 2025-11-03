@@ -13,6 +13,7 @@ const languages: Language[] = [
   {
     __typename: 'Language',
     id: '529',
+    slug: 'english',
     name: [
       {
         value: 'English',
@@ -24,6 +25,7 @@ const languages: Language[] = [
   {
     id: '496',
     __typename: 'Language',
+    slug: 'french',
     name: [
       {
         value: 'Français',
@@ -40,6 +42,7 @@ const languages: Language[] = [
   {
     id: '1106',
     __typename: 'Language',
+    slug: 'german-standard',
     name: [
       {
         value: 'Deutsch',
@@ -91,9 +94,11 @@ describe('VideoLanguage', () => {
     fireEvent.keyDown(getByRole('combobox'), { key: 'ArrowDown' })
     fireEvent.click(getByRole('option', { name: 'French Français' }))
     expect(handleChange).toHaveBeenCalledWith({
+      __typename: 'Language',
       id: '496',
       localName: 'French',
-      nativeName: 'Français'
+      nativeName: 'Français',
+      slug: 'french'
     })
   })
 

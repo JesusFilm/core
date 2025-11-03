@@ -5,73 +5,21 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Formik } from 'formik'
+import debounce from 'lodash/debounce'
+import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
-import { type ReactElement, useMemo } from 'react'
+import { type ReactElement, useMemo, useState } from 'react'
 import { useMenu, useSearchBox } from 'react-instantsearch'
 
 import type { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
+import { ResizeObserverPolyfill } from '@core/shared/ui/ResizeObserverPolyfill'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
 
 import type { GetLanguages } from '../../../../__generated__/GetLanguages'
 import { useAlgoliaRouter } from '../../../libs/algolia/useAlgoliaRouter'
+import { SUBTITLE_LANGUAGE_IDS } from '../../../libs/localeMapping/subtitleLanguageIds'
 
 import { LanguagesFilter } from './LanguagesFilter'
-
-const subtitleLanguageIds = [
-  '411',
-  '448',
-  '483',
-  '494',
-  '496',
-  '529',
-  '531',
-  '584',
-  '1106',
-  '1109',
-  '1112',
-  '1269',
-  '1341',
-  '1942',
-  '1964',
-  '3804',
-  '3887',
-  '3934',
-  '3964',
-  '3974',
-  '4415',
-  '4432',
-  '4601',
-  '4820',
-  '4823',
-  '5541',
-  '5545',
-  '5546',
-  '5563',
-  '6464',
-  '6788',
-  '7083',
-  '7698',
-  '16639',
-  '20601',
-  '20770',
-  '21028',
-  '21046',
-  '21064',
-  '21753',
-  '21754',
-  '22500',
-  '22658',
-  '23178',
-  '53299',
-  '53424',
-  '139081',
-  '139089',
-  '140126',
-  '184497',
-  '184498',
-  '184506',
-  '184528'
-]
 
 interface FilterListProps {
   languagesData?: GetLanguages
@@ -94,7 +42,7 @@ export function FilterList({
   })
 
   const subtitleLanguages = languagesData?.languages.filter((language) =>
-    subtitleLanguageIds.includes(language.id)
+    SUBTITLE_LANGUAGE_IDS.includes(language.id)
   )
 
   const languagesMap = useMemo(
@@ -113,9 +61,10 @@ export function FilterList({
     }
   }
 
+  const [title, setTitle] = useState(query ?? '')
+
   const initialValues = useMemo(
     () => ({
-      title: query ?? '',
       language: languageOptionFromIds([languageId ?? '']),
       subtitleLanguage: languageOptionFromIds([subtitleId ?? ''])
     }),
@@ -138,64 +87,67 @@ export function FilterList({
       }
     }
 
-  const handleTitleChange = (values: typeof initialValues): void => {
-    refineSearch(values.title)
+  function handleTitleChange(value: string): void {
+    setTitle(value)
+    debounce((value) => {
+      refineSearch(value)
+    }, 300)(value)
   }
 
   return (
-    <Formik
-      initialValues={initialValues}
-      handleSubmit={handleTitleChange}
-      onSubmit={handleTitleChange}
-      enableReinitialize
-    >
-      {({ values, setFieldValue, handleChange, handleBlur }) => (
-        <Stack data-testid="FilterList" gap={4}>
-          <Stack spacing={2}>
-            <Stack direction="row" spacing={2}>
-              <VolumeUpIcon />
-              <Typography>{t('Languages')}</Typography>
+    <>
+      <ResizeObserverPolyfill />
+      <Formik initialValues={initialValues} onSubmit={noop} enableReinitialize>
+        {({ values, setFieldValue, handleBlur }) => (
+          <Stack data-testid="FilterList" gap={4}>
+            <Stack spacing={2}>
+              <Stack direction="row" spacing={2}>
+                <VolumeUpIcon />
+                <Typography variant="h6">{t('Languages')}</Typography>
+              </Stack>
+              <LanguagesFilter
+                onChange={handleLanguageChange(setFieldValue)}
+                value={values.language}
+                languages={languagesData?.languages}
+                loading={languagesLoading}
+              />
             </Stack>
-            <LanguagesFilter
-              onChange={handleLanguageChange(setFieldValue)}
-              value={values.language}
-              languages={languagesData?.languages}
-              loading={languagesLoading}
-            />
-          </Stack>
-          <Stack spacing={2}>
-            <Stack direction="row" spacing={2}>
-              <SubtitlesIcon />
-              <Typography>{t('Subtitles')}</Typography>
+            <Stack spacing={2}>
+              <Stack direction="row" spacing={2}>
+                <SubtitlesIcon />
+                <Typography variant="h6">{t('Subtitles')}</Typography>
+              </Stack>
+              <LanguagesFilter
+                onChange={handleSubtitleChange(setFieldValue)}
+                value={values.subtitleLanguage}
+                languages={subtitleLanguages}
+                loading={languagesLoading}
+                helperText={`${subtitleLanguages?.length ?? 53} languages`}
+              />
             </Stack>
-            <LanguagesFilter
-              onChange={handleSubtitleChange(setFieldValue)}
-              value={values.subtitleLanguage}
-              languages={subtitleLanguages}
-              loading={languagesLoading}
-              helperText={`${subtitleLanguages?.length ?? 53} languages`}
-            />
-          </Stack>
-          <Stack spacing={2}>
-            <Stack direction="row" spacing={2}>
-              <TitleIcon />
-              <Typography>{t('Title')}</Typography>
+            <Stack spacing={2}>
+              <Stack direction="row" spacing={2}>
+                <TitleIcon />
+                <Typography variant="h6">{t('Title')}</Typography>
+              </Stack>
+              <TextField
+                value={title}
+                name="title"
+                type="search"
+                onChange={(e) => {
+                  handleTitleChange(e.target.value)
+                }}
+                onBlur={handleBlur}
+                label="Search Titles"
+                variant="outlined"
+                helperText="724+ titles"
+                fullWidth
+              />
             </Stack>
-            <TextField
-              value={values.title}
-              name="title"
-              type="search"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              label="Search Titles"
-              variant="outlined"
-              helperText="724+ titles"
-              fullWidth
-            />
+            <SubmitListener />
           </Stack>
-          <SubmitListener />
-        </Stack>
-      )}
-    </Formik>
+        )}
+      </Formik>
+    </>
   )
 }

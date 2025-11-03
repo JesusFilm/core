@@ -10,6 +10,17 @@
     "../../../node_modules/@nx/react/typings/cssmodule.d.ts",
     "../../../node_modules/@nx/react/typings/image.d.ts"
   ],
-  "exclude": ["**/*.spec.ts", "**/*.spec.tsx", "jest.config.ts"],
-  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"]
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "jest.config.ts",
+    "postcss.config.mjs"
+  ],
+  "include": [
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.ts",
+    "**/*.tsx",
+    "../../shared/ui/src/libs/muxMetadataType/muxMetadataType.ts"
+  ]
 }

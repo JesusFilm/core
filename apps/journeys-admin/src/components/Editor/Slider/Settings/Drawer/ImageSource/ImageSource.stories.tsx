@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
@@ -33,6 +33,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: ThemeMode.light,
   themeName: null,
   fullscreen: true,
+  backdropBlur: null,
   children: []
 }
 
@@ -45,7 +46,10 @@ const image: ImageBlock = {
   width: 300,
   height: 200,
   blurhash: '',
-  alt: 'poster'
+  alt: 'poster',
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const onChange = async (): Promise<void> => await Promise.resolve()

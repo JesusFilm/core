@@ -3,8 +3,42 @@ on:
   push:
     branches:
       - stage
+permissions:
+  contents: read
+  checks: write
 jobs:
+  affected:
+    runs-on: blacksmith-2vcpu-ubuntu-2204
+    strategy:
+      matrix:
+        node-version: [22]
+    env:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --silent
+      - uses: nrwl/nx-set-shas@v4
+      - id: set-matrix
+        name: set matrix app to affected array
+        run: |
+          echo "matrix=$(pnpm exec ts-node tools/scripts/affected-apps.ts --projects apis/*)" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
   api-analytics:
+    needs: affected
+    if: contains(needs.affected.outputs.matrix, 'api-analytics')
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
       name: api-analytics
@@ -12,12 +46,15 @@ jobs:
       branch: ${{ github.ref_name }}
       endpoint_url: http://api-analytics.stage.internal:4008/graphql
     secrets:
-      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      HIVE_TOKEN: ${{ secrets.HIVE_STAGE_READ_WRITE_TOKEN }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   api-journeys:
+    needs: affected
+    if: contains(needs.affected.outputs.matrix, 'api-journeys')
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
       name: api-journeys
@@ -25,12 +62,31 @@ jobs:
       branch: ${{ github.ref_name }}
       endpoint_url: http://api-journeys.stage.internal:4001/graphql
     secrets:
-      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      HIVE_TOKEN: ${{ secrets.HIVE_STAGE_READ_WRITE_TOKEN }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  api-journeys-modern:
+    needs: affected
+    if: contains(needs.affected.outputs.matrix, 'api-journeys-modern')
+    uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
+    with:
+      name: api-journeys-modern
+      env: stage
+      branch: ${{ github.ref_name }}
+      endpoint_url: http://api-journeys-modern.stage.internal:4004/graphql
+    secrets:
+      HIVE_TOKEN: ${{ secrets.HIVE_STAGE_READ_WRITE_TOKEN }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
+      JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
+      AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   api-users:
+    needs: affected
+    if: contains(needs.affected.outputs.matrix, 'api-users')
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
       name: api-users
@@ -38,12 +94,15 @@ jobs:
       branch: ${{ github.ref_name }}
       endpoint_url: http://api-users.stage.internal:4002/graphql
     secrets:
-      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      HIVE_TOKEN: ${{ secrets.HIVE_STAGE_READ_WRITE_TOKEN }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   api-languages:
+    needs: affected
+    if: contains(needs.affected.outputs.matrix, 'api-languages')
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
       name: api-languages
@@ -51,12 +110,15 @@ jobs:
       branch: ${{ github.ref_name }}
       endpoint_url: http://api-languages.stage.internal:4003/graphql
     secrets:
-      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      HIVE_TOKEN: ${{ secrets.HIVE_STAGE_READ_WRITE_TOKEN }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   api-media:
+    needs: affected
+    if: contains(needs.affected.outputs.matrix, 'api-media')
     uses: JesusFilm/core/.github/workflows/api-deploy-worker.yml@stage
     with:
       name: api-media
@@ -64,13 +126,16 @@ jobs:
       branch: ${{ github.ref_name }}
       endpoint_url: http://api-media.stage.internal:4005/graphql
     secrets:
-      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      HIVE_TOKEN: ${{ secrets.HIVE_STAGE_READ_WRITE_TOKEN }}
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
       JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
       AWS_NETWORK_CONFIG: ${{ secrets.AWS_NETWORK_CONFIG }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
   api-gateway:
+    needs: affected
+    if: contains(needs.affected.outputs.matrix, 'api-gateway')
     uses: JesusFilm/core/.github/workflows/api-gateway-stage-worker.yml@stage
     secrets:
       AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}

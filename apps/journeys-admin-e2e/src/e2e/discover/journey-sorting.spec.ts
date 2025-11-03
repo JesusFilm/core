@@ -16,7 +16,7 @@ test.describe('verify journey sorting', () => {
     await landingPage.goToAdminUrl()
     await register.registerNewAccount() // registering new user account
     userEmail = await register.getUserEmailId() // storing the registered user email id
-    console.log('userName : ' + userEmail)
+    console.log(`userName : ${userEmail}`)
     await page.close()
   })
 

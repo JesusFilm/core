@@ -6,6 +6,7 @@ export const CARD_FIELDS = gql`
     parentBlockId
     parentOrder
     backgroundColor
+    backdropBlur
     coverBlockId
     themeMode
     themeName

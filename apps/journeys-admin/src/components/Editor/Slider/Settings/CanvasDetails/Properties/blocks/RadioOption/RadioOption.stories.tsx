@@ -1,6 +1,6 @@
-import { jest } from '@storybook/jest'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
+import { fn } from 'storybook/test'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -18,7 +18,7 @@ const Demo: Meta<typeof RadioOption> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/RadioOption'
 }
 
-const onClose = jest.fn()
+const onClose = fn()
 
 const block: TreeBlock<RadioOptionBlock> = {
   id: 'radioOption1.id',
@@ -27,6 +27,7 @@ const block: TreeBlock<RadioOptionBlock> = {
   parentOrder: 0,
   label: 'Radio Option',
   action: null,
+  pollOptionImageBlockId: null,
   children: []
 }
 

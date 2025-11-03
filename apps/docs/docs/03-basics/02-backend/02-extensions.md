@@ -31,6 +31,6 @@ nx generate-graphql api-gateway
 4. Commit the changed schema.graphql files
 
 ```
-+ apps/api-gateway/schema.graphql
++ apis/api-gateway/schema.graphql
 + apps/[project]/schema.graphql
 ```

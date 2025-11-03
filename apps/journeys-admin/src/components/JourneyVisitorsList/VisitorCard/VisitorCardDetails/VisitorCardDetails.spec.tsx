@@ -5,26 +5,6 @@ import { GetJourneyVisitors_visitors_edges_node_events as Event } from '../../..
 import { VisitorCardDetails } from '.'
 
 describe('VisitorCardDetails', () => {
-  it('should show name', () => {
-    const { getByText } = render(
-      <VisitorCardDetails
-        loading={false}
-        name="test name"
-        events={[
-          {
-            __typename: 'TextResponseSubmissionEvent',
-            id: 'event.id',
-            createdAt: 'isostring',
-            label: 'label',
-            value: 'value',
-            blockId: 'blockId'
-          }
-        ]}
-      />
-    )
-    expect(getByText('test name')).toBeInTheDocument()
-  })
-
   it('should show filtered events', () => {
     const events: Event[] = [
       {
@@ -36,7 +16,7 @@ describe('VisitorCardDetails', () => {
       },
       {
         __typename: 'TextResponseSubmissionEvent',
-        id: 'TextResponseSubmissionEvent.id',
+        id: 'TextResponseSubmissionEvent.id-1',
         createdAt: 'isostring',
         label: 'text label',
         value: 'text value',
@@ -50,6 +30,13 @@ describe('VisitorCardDetails', () => {
         value: 'radio value'
       },
       {
+        __typename: 'MultiselectSubmissionEvent',
+        id: 'MultiselectSubmissionEvent.id',
+        createdAt: 'isostring',
+        label: 'multiselect label',
+        value: 'multiselect value'
+      },
+      {
         __typename: 'ButtonClickEvent',
         id: 'ButtonClickEvent.id',
         createdAt: 'isostring',
@@ -58,12 +45,13 @@ describe('VisitorCardDetails', () => {
       }
     ]
     const { getByText, queryByText } = render(
-      <VisitorCardDetails name="test name" events={events} loading={false} />
+      <VisitorCardDetails events={events} loading={false} />
     )
 
     expect(getByText('Chat Started')).toBeInTheDocument()
     expect(getByText('text value')).toBeInTheDocument()
     expect(getByText('radio value')).toBeInTheDocument()
+    expect(getByText('multiselect value')).toBeInTheDocument()
     expect(queryByText('button value')).not.toBeInTheDocument()
   })
 
@@ -71,7 +59,7 @@ describe('VisitorCardDetails', () => {
     const events: Event[] = [
       {
         __typename: 'TextResponseSubmissionEvent',
-        id: 'TextResponseSubmissionEvent.id',
+        id: 'TextResponseSubmissionEvent.id-1',
         createdAt: 'isostring',
         label: 'text label',
         value: 'text value block id 1',
@@ -79,7 +67,7 @@ describe('VisitorCardDetails', () => {
       },
       {
         __typename: 'TextResponseSubmissionEvent',
-        id: 'TextResponseSubmissionEvent.id',
+        id: 'TextResponseSubmissionEvent.id-2',
         createdAt: 'isostring',
         label: 'text label',
         value: 'text value block id 1',
@@ -87,7 +75,7 @@ describe('VisitorCardDetails', () => {
       },
       {
         __typename: 'TextResponseSubmissionEvent',
-        id: 'TextResponseSubmissionEvent.id',
+        id: 'TextResponseSubmissionEvent.id-3',
         // older by three minutes
         createdAt: '2024-05-15T10:27:00Z',
         label: 'text label',
@@ -96,7 +84,7 @@ describe('VisitorCardDetails', () => {
       },
       {
         __typename: 'TextResponseSubmissionEvent',
-        id: 'TextResponseSubmissionEvent.id',
+        id: 'TextResponseSubmissionEvent.id-4',
         createdAt: '2024-05-15T10:30:00Z',
         label: 'text label',
         value: 'text value newer date block id 2',
@@ -104,7 +92,7 @@ describe('VisitorCardDetails', () => {
       }
     ]
     const { getAllByText, getByText } = render(
-      <VisitorCardDetails name="test name" events={events} loading={false} />
+      <VisitorCardDetails events={events} loading={false} />
     )
 
     expect(getAllByText('text value block id 1')).toHaveLength(1)
@@ -144,7 +132,7 @@ describe('VisitorCardDetails', () => {
       }
     ]
     const { queryByText, getAllByTestId } = render(
-      <VisitorCardDetails name="test name" events={events} loading />
+      <VisitorCardDetails events={events} loading />
     )
 
     expect(queryByText('Chat Started')).not.toBeInTheDocument()

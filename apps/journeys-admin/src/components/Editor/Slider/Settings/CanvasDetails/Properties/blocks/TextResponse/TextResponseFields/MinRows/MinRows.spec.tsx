@@ -23,12 +23,15 @@ const selectedBlock: TreeBlock<TextResponseBlock> = {
   parentBlockId: null,
   parentOrder: null,
   label: 'Your answer here',
+  placeholder: null,
   hint: null,
-  minRows: 3,
+  minRows: null,
   integrationId: null,
   type: null,
   routeId: null,
-  children: []
+  required: null,
+  children: [],
+  hideLabel: false
 }
 
 const mockMinRowsUpdate1 = {
@@ -54,14 +57,14 @@ const mockMinRowsUpdate2 = {
     query: TEXT_RESPONSE_MIN_ROWS_UPDATE,
     variables: {
       id: selectedBlock.id,
-      minRows: 3
+      minRows: null
     }
   },
   result: jest.fn(() => ({
     data: {
       textResponseBlockUpdate: {
         id: selectedBlock.id,
-        minRows: 3
+        minRows: null
       }
     }
   }))
@@ -88,7 +91,7 @@ const mockMinRowsUpdate3 = {
 describe('MinRows', () => {
   beforeEach(() => jest.clearAllMocks())
 
-  it('should select Three Rows by default', () => {
+  it('should select One Row by default', () => {
     render(
       <MockedProvider>
         <EditorProvider initialState={{ selectedBlock }}>
@@ -97,7 +100,7 @@ describe('MinRows', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByRole('button', { name: 'Three Rows' })).toHaveAttribute(
+    expect(screen.getByRole('button', { name: 'One Row' })).toHaveAttribute(
       'aria-pressed',
       'true'
     )

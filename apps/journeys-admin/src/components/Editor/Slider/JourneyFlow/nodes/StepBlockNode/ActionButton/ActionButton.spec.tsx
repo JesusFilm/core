@@ -4,10 +4,11 @@ import { ReactFlowProvider } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
-  BlockFields_FormBlock as FormBlock,
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_SignUpBlock as SignUpBlock,
   BlockFields_StepBlock as StepBlock,
@@ -16,6 +17,27 @@ import {
 import { mockReactFlow } from '../../../../../../../../test/mockReactFlow'
 
 import { ActionButton } from '.'
+
+const block = {
+  __typename: 'ButtonBlock',
+  id: 'button.id',
+  label: '{{ name }}'
+} as unknown as TreeBlock<ButtonBlock>
+
+const journey = {
+  id: 'journey.id',
+  template: true,
+  journeyCustomizationFields: [
+    {
+      __typename: 'JourneyCustomizationField',
+      id: '1',
+      journeyId: 'journey.id',
+      key: 'name',
+      value: 'Dank Dog',
+      defaultValue: 'Anonymous'
+    }
+  ]
+} as unknown as Journey
 
 describe('ActionButton', () => {
   beforeEach(() => {
@@ -37,12 +59,15 @@ describe('ActionButton', () => {
     )
 
     expect(screen.getByText('button action')).toBeInTheDocument()
-    expect(screen.getByTestId('BaseNodeConnectionArrowIcon')).toBeVisible()
+    expect(
+      screen.getByTestId('BaseNodeConnectionArrowIcon')
+    ).toBeInTheDocument()
   })
 
-  it('should render default label for ButtonBlock', () => {
+  it('should render default label "Button" for ButtonBlock when submitEnabled is false', () => {
     const block = {
-      __typename: 'ButtonBlock'
+      __typename: 'ButtonBlock',
+      submitEnabled: false
     } as unknown as TreeBlock<ButtonBlock>
 
     render(
@@ -56,10 +81,11 @@ describe('ActionButton', () => {
     expect(screen.getByText('Button')).toBeInTheDocument()
   })
 
-  it('should render for FormBlock', () => {
+  it('should render default label "Submit" for ButtonBlock when submitEnabled is true', () => {
     const block = {
-      __typename: 'FormBlock'
-    } as unknown as TreeBlock<FormBlock>
+      __typename: 'ButtonBlock',
+      submitEnabled: true
+    } as unknown as TreeBlock<ButtonBlock>
 
     render(
       <MockedProvider>
@@ -69,7 +95,7 @@ describe('ActionButton', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByText('Form')).toBeInTheDocument()
+    expect(screen.getByText('Submit')).toBeInTheDocument()
   })
 
   it('should render label for RadioOptionBlock', () => {
@@ -206,7 +232,9 @@ describe('ActionButton', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByTestId('BaseNodeConnectionArrowIcon')).not.toBeVisible()
+    expect(screen.getByTestId('BaseNodeConnectionArrowIcon')).toHaveStyle(
+      'opacity: 0'
+    )
   })
 
   it('should disable source handle in analytics mode', () => {
@@ -262,5 +290,42 @@ describe('ActionButton', () => {
     const bar = screen.getByTestId('AnalyticsOverlayBar')
     expect(bar).toBeInTheDocument()
     expect(bar).toHaveStyle('flex-grow: 0.5')
+  })
+
+  it('should render customized label when journey template is false', () => {
+    const nonTemplateJourney = {
+      ...journey,
+      template: false
+    } as unknown as Journey
+
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: nonTemplateJourney, variant: 'default' }}
+        >
+          <ReactFlowProvider>
+            <ActionButton stepId="step.id" block={block} />
+          </ReactFlowProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('Dank Dog')).toBeInTheDocument()
+    expect(screen.queryByText('{{ name }}')).not.toBeInTheDocument()
+  })
+
+  it('should render markdown format label when journey template is true in admin variant', () => {
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <ReactFlowProvider>
+            <ActionButton stepId="step.id" block={block} />
+          </ReactFlowProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByText('{{ name }}')).toBeInTheDocument()
+    expect(screen.queryByText('Dank Dog')).not.toBeInTheDocument()
   })
 })

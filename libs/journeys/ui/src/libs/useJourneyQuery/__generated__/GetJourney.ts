@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { IdType, JourneysQueryOptions, JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform } from "./../../../../__generated__/globalTypes";
+import { IdType, JourneysQueryOptions, JourneyStatus, ThemeName, ThemeMode, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit, UserJourneyRole, MessagePlatform, JourneyMenuButtonIcon } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetJourney
@@ -42,6 +42,8 @@ export interface GetJourney_journey_blocks_ButtonBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface GetJourney_journey_blocks_ButtonBlock_action_EmailAction {
@@ -49,9 +51,37 @@ export interface GetJourney_journey_blocks_ButtonBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type GetJourney_journey_blocks_ButtonBlock_action = GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_ButtonBlock_action_LinkAction | GetJourney_journey_blocks_ButtonBlock_action_EmailAction;
+export interface GetJourney_journey_blocks_ButtonBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface GetJourney_journey_blocks_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type GetJourney_journey_blocks_ButtonBlock_action = GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_ButtonBlock_action_LinkAction | GetJourney_journey_blocks_ButtonBlock_action_EmailAction | GetJourney_journey_blocks_ButtonBlock_action_ChatAction | GetJourney_journey_blocks_ButtonBlock_action_PhoneAction;
+
+export interface GetJourney_journey_blocks_ButtonBlock_settings {
+  __typename: "ButtonBlockSettings";
+  /**
+   * Alignment of the button
+   */
+  alignment: ButtonAlignment | null;
+}
 
 export interface GetJourney_journey_blocks_ButtonBlock {
   __typename: "ButtonBlock";
@@ -64,7 +94,9 @@ export interface GetJourney_journey_blocks_ButtonBlock {
   size: ButtonSize | null;
   startIconId: string | null;
   endIconId: string | null;
+  submitEnabled: boolean | null;
   action: GetJourney_journey_blocks_ButtonBlock_action | null;
+  settings: GetJourney_journey_blocks_ButtonBlock_settings | null;
 }
 
 export interface GetJourney_journey_blocks_CardBlock {
@@ -76,6 +108,10 @@ export interface GetJourney_journey_blocks_CardBlock {
    * backgroundColor should be a HEX color value e.g #FFFFFF for white.
    */
   backgroundColor: string | null;
+  /**
+   * backdropBlur should be a number representing blur amount in pixels e.g 20.
+   */
+  backdropBlur: number | null;
   /**
    * coverBlockId is present if a child block should be used as a cover.
    * This child block should not be rendered normally, instead it should be used
@@ -98,38 +134,6 @@ export interface GetJourney_journey_blocks_CardBlock {
    * background.
    */
   fullscreen: boolean;
-}
-
-export interface GetJourney_journey_blocks_FormBlock_action_NavigateToBlockAction {
-  __typename: "NavigateToBlockAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  blockId: string;
-}
-
-export interface GetJourney_journey_blocks_FormBlock_action_LinkAction {
-  __typename: "LinkAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  url: string;
-}
-
-export interface GetJourney_journey_blocks_FormBlock_action_EmailAction {
-  __typename: "EmailAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  email: string;
-}
-
-export type GetJourney_journey_blocks_FormBlock_action = GetJourney_journey_blocks_FormBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_FormBlock_action_LinkAction | GetJourney_journey_blocks_FormBlock_action_EmailAction;
-
-export interface GetJourney_journey_blocks_FormBlock {
-  __typename: "FormBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  form: any | null;
-  action: GetJourney_journey_blocks_FormBlock_action | null;
 }
 
 export interface GetJourney_journey_blocks_IconBlock {
@@ -156,6 +160,26 @@ export interface GetJourney_journey_blocks_ImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
+}
+
+export interface GetJourney_journey_blocks_MultiselectOptionBlock {
+  __typename: "MultiselectOptionBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+}
+
+export interface GetJourney_journey_blocks_MultiselectBlock {
+  __typename: "MultiselectBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  min: number | null;
+  max: number | null;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
@@ -170,6 +194,8 @@ export interface GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface GetJourney_journey_blocks_RadioOptionBlock_action_EmailAction {
@@ -177,9 +203,29 @@ export interface GetJourney_journey_blocks_RadioOptionBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type GetJourney_journey_blocks_RadioOptionBlock_action = GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction | GetJourney_journey_blocks_RadioOptionBlock_action_EmailAction;
+export interface GetJourney_journey_blocks_RadioOptionBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface GetJourney_journey_blocks_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type GetJourney_journey_blocks_RadioOptionBlock_action = GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction | GetJourney_journey_blocks_RadioOptionBlock_action_EmailAction | GetJourney_journey_blocks_RadioOptionBlock_action_ChatAction | GetJourney_journey_blocks_RadioOptionBlock_action_PhoneAction;
 
 export interface GetJourney_journey_blocks_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -188,6 +234,12 @@ export interface GetJourney_journey_blocks_RadioOptionBlock {
   parentOrder: number | null;
   label: string;
   action: GetJourney_journey_blocks_RadioOptionBlock_action | null;
+  /**
+   * pollOptionImageBlockId is present if a child block should be used as a poll option image.
+   *       This child block should not be rendered normally, instead it should be used
+   *       as a poll option image. Blocks are often of type ImageBlock
+   */
+  pollOptionImageBlockId: string | null;
 }
 
 export interface GetJourney_journey_blocks_RadioQuestionBlock {
@@ -195,6 +247,7 @@ export interface GetJourney_journey_blocks_RadioQuestionBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  gridView: boolean | null;
 }
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction {
@@ -209,6 +262,8 @@ export interface GetJourney_journey_blocks_SignUpBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface GetJourney_journey_blocks_SignUpBlock_action_EmailAction {
@@ -216,9 +271,29 @@ export interface GetJourney_journey_blocks_SignUpBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type GetJourney_journey_blocks_SignUpBlock_action = GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_SignUpBlock_action_LinkAction | GetJourney_journey_blocks_SignUpBlock_action_EmailAction;
+export interface GetJourney_journey_blocks_SignUpBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface GetJourney_journey_blocks_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type GetJourney_journey_blocks_SignUpBlock_action = GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_SignUpBlock_action_LinkAction | GetJourney_journey_blocks_SignUpBlock_action_EmailAction | GetJourney_journey_blocks_SignUpBlock_action_ChatAction | GetJourney_journey_blocks_SignUpBlock_action_PhoneAction;
 
 export interface GetJourney_journey_blocks_SignUpBlock {
   __typename: "SignUpBlock";
@@ -228,6 +303,14 @@ export interface GetJourney_journey_blocks_SignUpBlock {
   submitLabel: string | null;
   submitIconId: string | null;
   action: GetJourney_journey_blocks_SignUpBlock_action | null;
+}
+
+export interface GetJourney_journey_blocks_SpacerBlock {
+  __typename: "SpacerBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  spacing: number | null;
 }
 
 export interface GetJourney_journey_blocks_StepBlock {
@@ -260,12 +343,23 @@ export interface GetJourney_journey_blocks_TextResponseBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+  required: boolean | null;
   label: string;
+  placeholder: string | null;
   hint: string | null;
   minRows: number | null;
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
+  hideLabel: boolean | null;
+}
+
+export interface GetJourney_journey_blocks_TypographyBlock_settings {
+  __typename: "TypographyBlockSettings";
+  /**
+   * Color of the typography
+   */
+  color: string | null;
 }
 
 export interface GetJourney_journey_blocks_TypographyBlock {
@@ -277,39 +371,64 @@ export interface GetJourney_journey_blocks_TypographyBlock {
   color: TypographyColor | null;
   content: string;
   variant: TypographyVariant | null;
+  settings: GetJourney_journey_blocks_TypographyBlock_settings | null;
 }
 
-export interface GetJourney_journey_blocks_VideoBlock_video_title {
+export interface GetJourney_journey_blocks_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface GetJourney_journey_blocks_VideoBlock_video_variant {
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface GetJourney_journey_blocks_VideoBlock_video_variantLanguages_name {
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface GetJourney_journey_blocks_VideoBlock_video_variantLanguages {
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: GetJourney_journey_blocks_VideoBlock_video_variantLanguages_name[];
+  name: GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface GetJourney_journey_blocks_VideoBlock_video {
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: GetJourney_journey_blocks_VideoBlock_video_title[];
-  image: string | null;
-  variant: GetJourney_journey_blocks_VideoBlock_video_variant | null;
-  variantLanguages: GetJourney_journey_blocks_VideoBlock_video_variantLanguages[];
+  title: GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_title[];
+  images: GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_images[];
+  variant: GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
+
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  assetId: string | null;
+  playbackId: string | null;
+}
+
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type GetJourney_journey_blocks_VideoBlock_mediaVideo = GetJourney_journey_blocks_VideoBlock_mediaVideo_Video | GetJourney_journey_blocks_VideoBlock_mediaVideo_MuxVideo | GetJourney_journey_blocks_VideoBlock_mediaVideo_YouTube;
 
 export interface GetJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -323,6 +442,8 @@ export interface GetJourney_journey_blocks_VideoBlock_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface GetJourney_journey_blocks_VideoBlock_action_EmailAction {
@@ -330,9 +451,29 @@ export interface GetJourney_journey_blocks_VideoBlock_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type GetJourney_journey_blocks_VideoBlock_action = GetJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_VideoBlock_action_LinkAction | GetJourney_journey_blocks_VideoBlock_action_EmailAction;
+export interface GetJourney_journey_blocks_VideoBlock_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface GetJourney_journey_blocks_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type GetJourney_journey_blocks_VideoBlock_action = GetJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_VideoBlock_action_LinkAction | GetJourney_journey_blocks_VideoBlock_action_EmailAction | GetJourney_journey_blocks_VideoBlock_action_ChatAction | GetJourney_journey_blocks_VideoBlock_action_PhoneAction;
 
 export interface GetJourney_journey_blocks_VideoBlock {
   __typename: "VideoBlock";
@@ -402,11 +543,8 @@ export interface GetJourney_journey_blocks_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  /**
-   * internal source videos: video is only populated when videoID and
-   * videoVariantLanguageId are present
-   */
-  video: GetJourney_journey_blocks_VideoBlock_video | null;
+  subtitleLanguage: GetJourney_journey_blocks_VideoBlock_subtitleLanguage | null;
+  mediaVideo: GetJourney_journey_blocks_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
@@ -425,6 +563,8 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkA
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_EmailAction {
@@ -432,9 +572,29 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_Email
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
-export type GetJourney_journey_blocks_VideoTriggerBlock_triggerAction = GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_EmailAction;
+export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type GetJourney_journey_blocks_VideoTriggerBlock_triggerAction = GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_EmailAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_ChatAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_PhoneAction;
 
 export interface GetJourney_journey_blocks_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -449,7 +609,7 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock {
   triggerAction: GetJourney_journey_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetJourney_journey_blocks = GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_FormBlock | GetJourney_journey_blocks_IconBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TextResponseBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoTriggerBlock;
+export type GetJourney_journey_blocks = GetJourney_journey_blocks_GridContainerBlock | GetJourney_journey_blocks_ButtonBlock | GetJourney_journey_blocks_CardBlock | GetJourney_journey_blocks_IconBlock | GetJourney_journey_blocks_ImageBlock | GetJourney_journey_blocks_MultiselectOptionBlock | GetJourney_journey_blocks_MultiselectBlock | GetJourney_journey_blocks_RadioOptionBlock | GetJourney_journey_blocks_RadioQuestionBlock | GetJourney_journey_blocks_SignUpBlock | GetJourney_journey_blocks_SpacerBlock | GetJourney_journey_blocks_StepBlock | GetJourney_journey_blocks_TextResponseBlock | GetJourney_journey_blocks_TypographyBlock | GetJourney_journey_blocks_VideoBlock | GetJourney_journey_blocks_VideoTriggerBlock;
 
 export interface GetJourney_journey_primaryImageBlock {
   __typename: "ImageBlock";
@@ -465,6 +625,9 @@ export interface GetJourney_journey_primaryImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetJourney_journey_creatorImageBlock {
@@ -481,6 +644,9 @@ export interface GetJourney_journey_creatorImageBlock {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface GetJourney_journey_userJourneys_user {
@@ -545,6 +711,67 @@ export interface GetJourney_journey_tags {
   name: GetJourney_journey_tags_name[];
 }
 
+export interface GetJourney_journey_logoImageBlock {
+  __typename: "ImageBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  src: string | null;
+  alt: string;
+  width: number;
+  height: number;
+  /**
+   * blurhash is a compact representation of a placeholder for an image.
+   * Find a frontend implementation at https: // github.com/woltapp/blurhash
+   */
+  blurhash: string;
+  scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
+}
+
+export interface GetJourney_journey_menuStepBlock {
+  __typename: "StepBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  /**
+   * locked will be set to true if the user should not be able to manually
+   * advance to the next step.
+   */
+  locked: boolean;
+  /**
+   * nextBlockId contains the preferred block to navigate to, users will have to
+   * manually set the next block they want to card to navigate to
+   */
+  nextBlockId: string | null;
+  /**
+   * Slug should be unique amongst all blocks
+   * (server will throw BAD_USER_INPUT error if not)
+   * If not required will use the current block id
+   * If the generated slug is not unique the uuid will be placed
+   * at the end of the slug guaranteeing uniqueness
+   */
+  slug: string | null;
+}
+
+export interface GetJourney_journey_journeyTheme {
+  __typename: "JourneyTheme";
+  id: string;
+  headerFont: string | null;
+  bodyFont: string | null;
+  labelFont: string | null;
+}
+
+export interface GetJourney_journey_journeyCustomizationFields {
+  __typename: "JourneyCustomizationField";
+  id: string;
+  journeyId: string;
+  key: string;
+  value: string | null;
+  defaultValue: string | null;
+}
+
 export interface GetJourney_journey {
   __typename: "Journey";
   id: string;
@@ -557,6 +784,7 @@ export interface GetJourney_journey {
   status: JourneyStatus;
   language: GetJourney_journey_language;
   createdAt: any;
+  updatedAt: any;
   featuredAt: any | null;
   publishedAt: any | null;
   themeName: ThemeName;
@@ -585,6 +813,15 @@ export interface GetJourney_journey {
    * public title for viewers
    */
   displayTitle: string | null;
+  logoImageBlock: GetJourney_journey_logoImageBlock | null;
+  menuButtonIcon: JourneyMenuButtonIcon | null;
+  menuStepBlock: GetJourney_journey_menuStepBlock | null;
+  socialNodeX: number | null;
+  socialNodeY: number | null;
+  journeyTheme: GetJourney_journey_journeyTheme | null;
+  journeyCustomizationDescription: string | null;
+  journeyCustomizationFields: GetJourney_journey_journeyCustomizationFields[];
+  fromTemplateId: string | null;
 }
 
 export interface GetJourney {

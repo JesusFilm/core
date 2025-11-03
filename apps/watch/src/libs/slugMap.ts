@@ -31,7 +31,6 @@ export const slugMap = {
   'malay-central-pasemah': 'pasemah',
   'malay-central-ogan': 'ogan',
   'arabic-moroccan': 'arabic-moroccan-spoken',
-  ache: 'ache-2',
   banyamulenge: 'kinyamulenge',
   'javanese-cirebon': 'cirebon',
   lango: 'lango-uganda',

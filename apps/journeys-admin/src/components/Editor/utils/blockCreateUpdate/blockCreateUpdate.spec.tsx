@@ -15,7 +15,10 @@ const image: TreeBlock<ImageBlock> = {
   blurhash: '',
   width: 10,
   height: 10,
-  children: []
+  children: [],
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const response = { ...image, parentOrder: 0 }
@@ -31,7 +34,9 @@ describe('blockCreateUpdate', () => {
         ],
         id: 'journeyId',
         __typename: 'Journey'
-      }
+      },
+      'CardBlock:cardId': { __typename: 'CardBlock', id: 'cardId' },
+      'VideoBlock:videoId': { __typename: 'VideoBlock', id: 'videoId' }
     })
     expect(cache.extract()['ImageBlock:imageId']).toBeUndefined()
     blockCreateUpdate(cache, 'journeyId', response)

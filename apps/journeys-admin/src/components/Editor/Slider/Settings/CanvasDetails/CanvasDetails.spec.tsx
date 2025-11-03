@@ -37,8 +37,10 @@ describe('CanvasDetails', () => {
     size: ButtonSize.medium,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: null,
-    children: []
+    children: [],
+    settings: null
   }
 
   const mockStep: TreeBlock<StepBlock> = {
@@ -68,13 +70,14 @@ describe('CanvasDetails', () => {
     expect(screen.getByText('Add a block')).toBeInTheDocument()
   })
 
-  it('should render footer', () => {
+  it('should render JourneyAppearance', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider
             initialState={{
-              activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Footer
+              activeCanvasDetailsDrawer:
+                ActiveCanvasDetailsDrawer.JourneyAppearance
             }}
           >
             <CanvasDetails />

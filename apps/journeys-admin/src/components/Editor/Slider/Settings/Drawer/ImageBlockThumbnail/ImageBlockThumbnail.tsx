@@ -21,14 +21,31 @@ export function ImageBlockThumbnail({
 }: ImageBlockThumbnailProps): ReactElement {
   const isUnsplash =
     selectedBlock?.src?.match(/^https:\/\/images\.unsplash\.com/) ?? false
+  const IMG_WIDTH = 56
+  const IMG_HEIGHT = 56
+
+  function parseUnsplash(src): string {
+    return src
+      .replace('w=1080', `w=${IMG_WIDTH}&h=${IMG_HEIGHT}&auto=format`)
+      .replace('fit=max', 'fit=crop')
+      .replace('crop=entropy&', '')
+  }
+
+  function getImageSource(): string {
+    return parseUnsplash(selectedBlock?.src ?? '')
+  }
+
+  function getImageSourceSet(): string {
+    return `${parseUnsplash(selectedBlock?.src ?? '').replace('auto=format', 'auto=format&dpr=2')} 2x`
+  }
 
   return (
     <Box
       sx={{
         display: 'flex',
         borderRadius: 2,
-        height: 55,
-        width: 55,
+        width: IMG_WIDTH,
+        height: IMG_HEIGHT,
         backgroundColor: 'background.default',
         position: 'relative',
         justifyContent: 'center',
@@ -44,28 +61,14 @@ export function ImageBlockThumbnail({
       ) : selectedBlock?.src != null ? (
         <Box
           component="img"
-          srcSet={
-            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-            isUnsplash
-              ? `${selectedBlock.src
-                  .replace('w=1080', 'w=55&h=55&auto=format&dpr=2')
-                  .replace('fit=max', 'fit=crop')
-                  .replace('crop=entropy&', '')} 2x`
-              : undefined
-          }
-          src={
-            // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-            isUnsplash
-              ? selectedBlock.src
-                  .replace('w=1080', 'w=55&h=55&auto=format')
-                  .replace('fit=max', 'fit=crop')
-                  .replace('crop=entropy&', '')
-              : selectedBlock.src
-          }
+          // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+          srcSet={isUnsplash ? getImageSourceSet() : undefined}
+          // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+          src={isUnsplash ? getImageSource() : selectedBlock.src}
           alt={selectedBlock.alt}
           sx={{
-            width: 55,
-            height: 55,
+            width: IMG_WIDTH,
+            height: IMG_HEIGHT,
             objectFit: 'cover'
           }}
         />

@@ -1,10 +1,10 @@
 import { InMemoryCache } from '@apollo/client'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
-  GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../__generated__/GetJourney'
 import {
@@ -35,7 +35,8 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  subtitleLanguage: null,
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -44,8 +45,13 @@ const video: TreeBlock<VideoBlock> = {
         value: 'FallingPlates'
       }
     ],
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -67,7 +73,10 @@ const image: TreeBlock<ImageBlock> = {
   blurhash: '',
   width: 10,
   height: 10,
-  children: []
+  children: [],
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const journey: Journey = {
@@ -95,6 +104,7 @@ const journey: Journey = {
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [],
   primaryImageBlock: null,
@@ -112,7 +122,16 @@ const journey: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  logoImageBlock: null,
+  menuButtonIcon: null,
+  menuStepBlock: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const response = [{ ...image, parentOrder: 0 }]
@@ -129,6 +148,13 @@ describe('blockDeleteUpdate', () => {
         ],
         id: journey.id,
         __typename: 'Journey'
+      },
+      'CardBlock:cardId': {
+        __typename: 'CardBlock',
+        id: 'cardId',
+        parentBlockId: 'step1.id',
+        parentOrder: 0,
+        children: []
       },
       'VideoBlock:videoId': { ...video },
       'ImageBlock:imageId': { ...image }
@@ -175,6 +201,24 @@ describe('blockDeleteUpdate', () => {
         ],
         id: journey.id,
         __typename: 'Journey'
+      },
+      'StepBlock:step1.id': {
+        __typename: 'StepBlock',
+        id: 'step1.id',
+        locked: false,
+        nextBlockId: null,
+        parentBlockId: null,
+        parentOrder: 0,
+        children: []
+      },
+      'StepBlock:step2.id': {
+        __typename: 'StepBlock',
+        id: 'step2.id',
+        locked: false,
+        nextBlockId: null,
+        parentBlockId: null,
+        parentOrder: 1,
+        children: []
       }
     })
     blockDeleteUpdate(step1, response, cache, journey.id)

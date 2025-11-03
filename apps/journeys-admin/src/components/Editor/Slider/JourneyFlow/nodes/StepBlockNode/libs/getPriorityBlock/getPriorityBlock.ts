@@ -17,8 +17,6 @@ export function getPriorityBlock(
           return 1
         case 'TextResponseBlock':
           return 2
-        case 'FormBlock':
-          return 3
         case 'ButtonBlock':
           return 4
         case 'RadioQuestionBlock':

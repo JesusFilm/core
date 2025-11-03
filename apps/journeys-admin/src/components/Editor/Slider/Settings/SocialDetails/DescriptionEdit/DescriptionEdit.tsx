@@ -50,12 +50,12 @@ export function DescriptionEdit(): ReactElement {
   const initialValues =
     journey != null
       ? {
-          seoDescription: journey.seoDescription ?? journey.description ?? ''
+          seoDescription: journey.seoDescription ?? ''
         }
       : null
 
   const seoDescriptionSchema = object().shape({
-    seoDescription: string().max(180, t('Character limit reached')) // 180 characters just a few more words than 18 on average
+    seoDescription: string().max(179, t('Character limit reached')) // 180 characters just a few more words than 18 on average
   })
 
   return (
@@ -67,12 +67,12 @@ export function DescriptionEdit(): ReactElement {
           onSubmit={noop}
         >
           {({ values, touched, errors, handleChange, handleBlur }) => (
-            <Form>
+            <Form style={{ width: '100%' }}>
               <TextField
                 id="seoDescription"
                 name="seoDescription"
                 variant="filled"
-                label={t('Description')}
+                label={t('Secondary Text')}
                 fullWidth
                 multiline
                 maxRows={5}
@@ -89,12 +89,12 @@ export function DescriptionEdit(): ReactElement {
                 onChange={handleChange}
                 onBlur={(e) => {
                   handleBlur(e)
-                  if (errors.seoDescription == null) void handleSubmit(e)
-                }}
-                sx={{
-                  pb: 6
+                  void handleSubmit(e)
                 }}
                 data-testid="DescriptionEdit"
+                slotProps={{
+                  htmlInput: { maxLength: 180 }
+                }}
               />
             </Form>
           )}
@@ -102,13 +102,10 @@ export function DescriptionEdit(): ReactElement {
       ) : (
         <TextField
           variant="filled"
-          label={t('Description')}
+          label={t('Secondary Text')}
           fullWidth
           disabled
           helperText={t('Recommended length: up to 18 words')}
-          sx={{
-            pb: 6
-          }}
           data-testid="DescriptionEdit"
         />
       )}

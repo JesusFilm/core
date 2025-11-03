@@ -37,3 +37,21 @@ variable "forwards" {
   }))
   default = {}
 }
+
+variable "access_logs_enabled" {
+  type        = bool
+  default     = false
+  description = "Enable ALB access logs"
+}
+
+variable "access_logs_bucket" {
+  type        = string
+  default     = ""
+  description = "S3 bucket for ALB access logs"
+}
+
+variable "access_logs_prefix" {
+  type        = string
+  default     = ""
+  description = "S3 prefix for ALB access logs"
+}

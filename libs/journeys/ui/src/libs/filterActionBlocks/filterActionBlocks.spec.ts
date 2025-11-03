@@ -15,7 +15,9 @@ const buttonAction: ButtonBlockAction = {
   __typename: 'LinkAction',
   parentBlockId: 'button',
   gtmEventName: 'click',
-  url: 'https://m.me/some-user'
+  url: 'https://m.me/some-user',
+  customizable: false,
+  parentStepId: null
 }
 
 const button: TreeBlock<ButtonBlock> = {
@@ -29,8 +31,10 @@ const button: TreeBlock<ButtonBlock> = {
   size: null,
   startIconId: null,
   endIconId: null,
+  submitEnabled: null,
   action: buttonAction,
-  children: []
+  children: [],
+  settings: null
 }
 
 const RadioOption1: TreeBlock<RadioOptionFields> = {
@@ -40,6 +44,7 @@ const RadioOption1: TreeBlock<RadioOptionFields> = {
   parentBlockId: 'RadioQuestion1',
   parentOrder: 0,
   action: null,
+  pollOptionImageBlockId: null,
   children: []
 }
 
@@ -50,6 +55,7 @@ const RadioOption2: TreeBlock<RadioOptionFields> = {
   parentBlockId: 'RadioQuestion1',
   parentOrder: 1,
   action: null,
+  pollOptionImageBlockId: null,
   children: []
 }
 
@@ -58,6 +64,7 @@ const radioQuestionBlock: TreeBlock<RadioQuestionFields> = {
   id: 'RadioQuestion1',
   parentBlockId: 'RadioQuestion1',
   parentOrder: 0,
+  gridView: false,
   children: [RadioOption1, RadioOption2]
 }
 
@@ -71,6 +78,9 @@ const image: TreeBlock<ImageBlock> = {
   width: 1920,
   height: 1080,
   blurhash: '',
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50,
   children: []
 }
 
@@ -84,6 +94,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: [image, button, radioQuestionBlock]
 }
 

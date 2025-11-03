@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Stack from '@mui/material/Stack'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { SnackbarProvider } from 'notistack'
 import { ComponentPropsWithoutRef } from 'react'
 
@@ -53,6 +53,7 @@ const defaultJourney: Journey = {
   description: 'my cool journey',
   status: JourneyStatus.draft,
   createdAt: '2021-11-19T12:34:56.647Z',
+  updatedAt: '2021-11-19T12:34:56.647Z',
   publishedAt: null,
   blocks: [],
   primaryImageBlock: null,
@@ -70,7 +71,16 @@ const defaultJourney: Journey = {
   showShareButton: null,
   showLikeButton: null,
   showDislikeButton: null,
-  displayTitle: null
+  displayTitle: null,
+  logoImageBlock: null,
+  menuButtonIcon: null,
+  menuStepBlock: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 const step1: TreeBlock<StepBlock> = {
@@ -149,7 +159,12 @@ export const Website = {
     journey: {
       ...defaultJourney,
       website: true,
-      displayTitle: 'Display title'
+      displayTitle: 'Display title',
+      logoImageBlock: {
+        __typename: 'ImageBlock',
+        src: 'https://images.unsplash.com/photo-1725715443838-1574b8eb1c3a?q=80&w=5070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        alt: 'Logo'
+      }
     },
     variant: 'default'
   }

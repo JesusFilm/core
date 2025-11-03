@@ -6,7 +6,7 @@
     "firstJourneyName": "First journey",
     "secondJourneyName": "Second journey",
     "renameJourneyName": "Renamed journey",
-    "descriptionText": "Lorem Ipsum some text for descriptionText"
+    "descriptionText": "Lorem Ipsum is simply dummy text of the printing"
   },
   "teams": {
     "teamName": "Automation TeamName",
@@ -22,8 +22,6 @@
     "hostName": "Automation Tester",
     "location": "USA",
     "whatsApp": "http://example.com",
-    "descriptionText": "Lorem Ipsum is simply dummy text of the printing",
-    "imgUploadPath": "utils/testResource/Flower.jpg",
-    "videoUploadPath": "utils/testResource/SampleVideo.mp4"
+    "descriptionText": "Lorem Ipsum is simply dummy text of the printing"
   }
 }

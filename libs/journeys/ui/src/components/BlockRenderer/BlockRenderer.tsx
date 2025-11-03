@@ -6,11 +6,13 @@ import {
   BlockFields as Block,
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_CardBlock as CardBlock,
-  BlockFields_FormBlock as FormBlock,
   BlockFields_ImageBlock as ImageBlock,
+  BlockFields_MultiselectBlock as MultiselectBlock,
+  BlockFields_MultiselectOptionBlock as MultiselectOptionBlock,
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_RadioQuestionBlock as RadioQuestionBlock,
   BlockFields_SignUpBlock as SignUpBlock,
+  BlockFields_SpacerBlock as SpacerBlock,
   BlockFields_StepBlock as StepBlock,
   BlockFields_TextResponseBlock as TextResponseBlock,
   BlockFields_TypographyBlock as TypographyBlock,
@@ -29,15 +31,18 @@ export interface WrappersProps {
   Wrapper?: WrapperFn
   ButtonWrapper?: WrapperFn<ButtonBlock>
   CardWrapper?: WrapperFn<CardBlock>
-  FormWrapper?: WrapperFn<FormBlock>
   ImageWrapper?: WrapperFn<ImageBlock>
+  MultiselectOptionWrapper?: WrapperFn<MultiselectOptionBlock>
+  MultiselectQuestionWrapper?: WrapperFn<MultiselectBlock>
   RadioOptionWrapper?: WrapperFn<RadioOptionBlock>
   RadioQuestionWrapper?: WrapperFn<RadioQuestionBlock>
   SignUpWrapper?: WrapperFn<SignUpBlock>
+  SpacerWrapper?: WrapperFn<SpacerBlock>
   StepWrapper?: WrapperFn<StepBlock>
   TextResponseWrapper?: WrapperFn<TextResponseBlock>
   TypographyWrapper?: WrapperFn<TypographyBlock>
   VideoWrapper?: WrapperFn<VideoBlock>
+  DragItemWrapper?: WrapperFn
 }
 
 const DynamicButton = dynamic<TreeBlock<ButtonBlock>>(
@@ -59,20 +64,31 @@ const DynamicCard = dynamic<
     ).then((mod) => mod.Card)
 )
 
-const DynamicForm = dynamic<TreeBlock<FormBlock>>(
-  async () =>
-    await import(
-      /* webpackChunkName: "Form" */
-      '../Form'
-    ).then((mod) => mod.Form)
-)
-
 const DynamicImage = dynamic<TreeBlock<ImageBlock>>(
   async () =>
     await import(
       /* webpackChunkName: "Image" */
       '../Image'
     ).then((mod) => mod.Image)
+)
+
+const DynamicMultiselectOption = dynamic<TreeBlock<MultiselectOptionBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "MultiselectOption" */
+      '../MultiselectOption'
+    ).then((mod) => mod.MultiselectOption)
+)
+
+const DynamicMultiselectQuestion = dynamic<
+  TreeBlock<MultiselectBlock> & { wrappers?: WrappersProps }
+>(
+  async () =>
+    // eslint-disable-next-line import/no-cycle
+    await import(
+      /* webpackChunkName: "MultiselectQuestion" */
+      '../MultiselectQuestion'
+    ).then((mod) => mod.MultiselectQuestion)
 )
 
 const DynamicRadioOption = dynamic<TreeBlock<RadioOptionBlock>>(
@@ -101,6 +117,14 @@ const DynamicSignUp = dynamic<TreeBlock<SignUpBlock>>(
     ).then((mod) => mod.SignUp)
 )
 
+const DynamicSpacer = dynamic<TreeBlock<SpacerBlock>>(
+  async () =>
+    await import(
+      /* webpackChunkName: "Spacer" */
+      '../Spacer'
+    ).then((mod) => mod.Spacer)
+)
+
 const DynamicStep = dynamic<
   TreeBlock<StepBlock> & { wrappers?: WrappersProps }
 >(
@@ -127,7 +151,10 @@ const DynamicTypography = dynamic<TreeBlock<TypographyBlock>>(
 )
 
 interface BlockRenderProps {
-  block?: TreeBlock
+  block?: TreeBlock & {
+    // pass radioQuestion variant into radioOption
+    gridView?: boolean | null
+  }
   wrappers?: WrappersProps
 }
 
@@ -140,15 +167,20 @@ export function BlockRenderer({
   const Wrapper = wrappers?.Wrapper ?? DefaultWrapper
   const ButtonWrapper = wrappers?.ButtonWrapper ?? DefaultWrapper
   const CardWrapper = wrappers?.CardWrapper ?? DefaultWrapper
-  const FormWrapper = wrappers?.FormWrapper ?? DefaultWrapper
   const ImageWrapper = wrappers?.ImageWrapper ?? DefaultWrapper
+  const MultiselectOptionWrapper =
+    wrappers?.MultiselectOptionWrapper ?? DefaultWrapper
+  const MultiselectQuestionWrapper =
+    wrappers?.MultiselectQuestionWrapper ?? DefaultWrapper
   const RadioOptionWrapper = wrappers?.RadioOptionWrapper ?? DefaultWrapper
   const RadioQuestionWrapper = wrappers?.RadioQuestionWrapper ?? DefaultWrapper
   const SignUpWrapper = wrappers?.SignUpWrapper ?? DefaultWrapper
+  const SpacerWrapper = wrappers?.SpacerWrapper ?? DefaultWrapper
   const StepWrapper = wrappers?.StepWrapper ?? DefaultWrapper
   const TextResponseWrapper = wrappers?.TextResponseWrapper ?? DefaultWrapper
   const TypographyWrapper = wrappers?.TypographyWrapper ?? DefaultWrapper
   const VideoWrapper = wrappers?.VideoWrapper ?? DefaultWrapper
+  const DragItemWrapper = wrappers?.DragItemWrapper ?? DefaultWrapper
 
   if (block == null || block?.parentOrder === null) {
     return <></>
@@ -157,11 +189,13 @@ export function BlockRenderer({
   switch (block.__typename) {
     case 'ButtonBlock':
       return (
-        <Wrapper block={block}>
-          <ButtonWrapper block={block}>
-            <DynamicButton {...block} />
-          </ButtonWrapper>
-        </Wrapper>
+        <DragItemWrapper block={block}>
+          <Wrapper block={block}>
+            <ButtonWrapper block={block}>
+              <DynamicButton {...block} />
+            </ButtonWrapper>
+          </Wrapper>
+        </DragItemWrapper>
       )
     case 'CardBlock':
       return (
@@ -171,21 +205,33 @@ export function BlockRenderer({
           </CardWrapper>
         </Wrapper>
       )
-    case 'FormBlock':
-      return (
-        <Wrapper block={block}>
-          <FormWrapper block={block}>
-            <DynamicForm {...block} />
-          </FormWrapper>
-        </Wrapper>
-      )
     case 'ImageBlock':
       return (
+        <DragItemWrapper block={block}>
+          <Wrapper block={block}>
+            <ImageWrapper block={block}>
+              <DynamicImage {...block} alt={block.alt} />
+            </ImageWrapper>
+          </Wrapper>
+        </DragItemWrapper>
+      )
+    case 'MultiselectOptionBlock':
+      return (
         <Wrapper block={block}>
-          <ImageWrapper block={block}>
-            <DynamicImage {...block} alt={block.alt} />
-          </ImageWrapper>
+          <MultiselectOptionWrapper block={block}>
+            <DynamicMultiselectOption {...block} />
+          </MultiselectOptionWrapper>
         </Wrapper>
+      )
+    case 'MultiselectBlock':
+      return (
+        <DragItemWrapper block={block}>
+          <Wrapper block={block}>
+            <MultiselectQuestionWrapper block={block}>
+              <DynamicMultiselectQuestion {...block} wrappers={wrappers} />
+            </MultiselectQuestionWrapper>
+          </Wrapper>
+        </DragItemWrapper>
       )
     case 'RadioOptionBlock':
       return (
@@ -197,19 +243,33 @@ export function BlockRenderer({
       )
     case 'RadioQuestionBlock':
       return (
-        <Wrapper block={block}>
-          <RadioQuestionWrapper block={block}>
-            <DynamicRadioQuestion {...block} wrappers={wrappers} />
-          </RadioQuestionWrapper>
-        </Wrapper>
+        <DragItemWrapper block={block}>
+          <Wrapper block={block}>
+            <RadioQuestionWrapper block={block}>
+              <DynamicRadioQuestion {...block} wrappers={wrappers} />
+            </RadioQuestionWrapper>
+          </Wrapper>
+        </DragItemWrapper>
       )
     case 'SignUpBlock':
       return (
-        <Wrapper block={block}>
-          <SignUpWrapper block={block}>
-            <DynamicSignUp {...block} />
-          </SignUpWrapper>
-        </Wrapper>
+        <DragItemWrapper block={block}>
+          <Wrapper block={block}>
+            <SignUpWrapper block={block}>
+              <DynamicSignUp {...block} />
+            </SignUpWrapper>
+          </Wrapper>
+        </DragItemWrapper>
+      )
+    case 'SpacerBlock':
+      return (
+        <DragItemWrapper block={block}>
+          <Wrapper block={block}>
+            <SpacerWrapper block={block}>
+              <DynamicSpacer {...block} />
+            </SpacerWrapper>
+          </Wrapper>
+        </DragItemWrapper>
       )
     case 'StepBlock':
       return (
@@ -221,19 +281,23 @@ export function BlockRenderer({
       )
     case 'TextResponseBlock':
       return (
-        <Wrapper block={block}>
-          <TextResponseWrapper block={block}>
-            <DynamicTextResponse {...block} />
-          </TextResponseWrapper>
-        </Wrapper>
+        <DragItemWrapper block={block}>
+          <Wrapper block={block}>
+            <TextResponseWrapper block={block}>
+              <DynamicTextResponse {...block} />
+            </TextResponseWrapper>
+          </Wrapper>
+        </DragItemWrapper>
       )
     case 'TypographyBlock':
       return (
-        <Wrapper block={block}>
-          <TypographyWrapper block={block}>
-            <DynamicTypography {...block} />
-          </TypographyWrapper>
-        </Wrapper>
+        <DragItemWrapper block={block}>
+          <Wrapper block={block}>
+            <TypographyWrapper block={block}>
+              <DynamicTypography {...block} />
+            </TypographyWrapper>
+          </Wrapper>
+        </DragItemWrapper>
       )
     case 'VideoBlock':
       return (

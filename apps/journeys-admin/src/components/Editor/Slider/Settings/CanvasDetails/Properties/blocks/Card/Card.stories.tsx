@@ -1,6 +1,6 @@
-import { jest } from '@storybook/jest'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
+import { fn } from 'storybook/test'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -24,7 +24,7 @@ const Demo: Meta<typeof Card> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Card'
 }
 
-const onClose = jest.fn()
+const onClose = fn()
 
 const block: TreeBlock<CardBlock> = {
   id: 'card1.id',
@@ -36,6 +36,7 @@ const block: TreeBlock<CardBlock> = {
   themeMode: ThemeMode.light,
   themeName: ThemeName.base,
   fullscreen: false,
+  backdropBlur: null,
   children: []
 }
 
@@ -92,6 +93,7 @@ export const Filled: StoryObj<typeof Card> = {
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: true,
+      backdropBlur: null,
       children: [
         {
           __typename: 'ImageBlock',
@@ -103,7 +105,10 @@ export const Filled: StoryObj<typeof Card> = {
           parentBlockId: 'card1.id',
           parentOrder: 0,
           blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
-          children: []
+          children: [],
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         }
       ]
     }

@@ -1,13 +1,20 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  Logger
+} from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
 
 import { contextToUserId } from '@core/nest/common/firebaseClient'
 
 @Injectable()
 export class GqlAuthGuard implements CanActivate {
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  private readonly logger = new Logger(GqlAuthGuard.name)
+
+  canActivate(context: ExecutionContext): boolean {
     const req = GqlExecutionContext.create(context).getContext().req
-    const userId = await contextToUserId(context)
+    const userId = contextToUserId(context, this.logger)
     req.userId = userId
     return userId != null
   }

@@ -1,5 +1,5 @@
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { screen, userEvent } from 'storybook/test'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { ThemeMode } from '@core/shared/ui/themes'
@@ -29,9 +29,18 @@ const Template: StoryObj<typeof Header> = {
 }
 
 const WithFlagsTemplate: StoryObj<typeof Header> = {
-  render: () => (
-    <FlagsProvider flags={{ ...trueHeaderItemsFlags }}>
-      <Header themeMode={ThemeMode.light} />
+  render: (args) => (
+    <FlagsProvider
+      flags={{
+        ...trueHeaderItemsFlags
+      }}
+    >
+      <Header
+        themeMode={ThemeMode.light}
+        hideTopAppBar={args.hideTopAppBar}
+        hideBottomAppBar={args.hideBottomAppBar}
+        hideSpacer={args.hideSpacer}
+      />
     </FlagsProvider>
   )
 }
@@ -48,14 +57,24 @@ export const WithAllButtons = {
         pathname: '/watch'
       }
     }
+  },
+  args: {
+    hideTopAppBar: false,
+    hideBottomAppBar: false,
+    hideSpacer: false
   }
 }
 
 export const OpenPanel = {
-  ...Template,
+  ...WithFlagsTemplate,
   play: async () => {
-    const menuButton = screen.getAllByTestId('MenuIcon')[0]
+    const menuButton = screen.getByTestId('MenuIcon')
     await userEvent.click(menuButton)
+  },
+  args: {
+    hideTopAppBar: false,
+    hideBottomAppBar: false,
+    hideSpacer: false
   }
 }
 

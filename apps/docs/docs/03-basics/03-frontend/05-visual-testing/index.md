@@ -19,10 +19,13 @@ Used by UX to review our storybook components.
 
 # UI Change Requests
 
-You don't have to wait for Design's approval before pushing it in.
-If the change looks right to you, push in the change and let Design know that the change has been made.
-They will let you know if there is something wrong and create another ticket for it or ask for the change to be reverted.
-If however, you still want another pair of eyes on it before pushing, feel free to bring in QA into it.
+For minor UI/UX changes, designer approval is not always required before merging to production. However, these changes must still be reviewed — preferably by QA, or, in urgent cases, by another developer if QA is unavailable.
+
+All changes should undergo code review and QA testing. While small visual adjustments do not require prior designer approval, it’s important to notify the designer once the changes are in production. If designers are not satisfied with the changes, they can either request a reversion or create a ticket for further updates.
+
+If you’re uncertain whether a change qualifies as “small,” it’s best to seek designer approval. Alternatively, send the changes to a QA member, who will determine whether a designer review is necessary.
+
+This process stems from the current limited availability of our designers. As the Design team expands, this policy will need to be revisited and updated.
 
 ## UI Tests
 

@@ -59,6 +59,7 @@ describe('Properties', () => {
       __typename: 'CardBlock',
       id: 'block.id',
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     const selectedStep = {}
@@ -100,26 +101,6 @@ describe('Properties', () => {
 
     await waitFor(() =>
       expect(screen.getByTestId('CardProperties')).toBeInTheDocument()
-    )
-  })
-
-  it('should return properties for Form block', async () => {
-    const block = {
-      __typename: 'FormBlock',
-      id: 'block.id',
-      children: []
-    } as unknown as TreeBlock
-
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <Properties block={block} />
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
-      expect(screen.getByTestId('FormProperties')).toBeInTheDocument()
     )
   })
 
@@ -193,7 +174,11 @@ describe('Properties', () => {
     const block = {
       __typename: 'TypographyBlock',
       id: 'block.id',
-      children: []
+      children: [],
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } as unknown as TreeBlock
 
     render(
@@ -213,6 +198,7 @@ describe('Properties', () => {
     const block = {
       __typename: 'ButtonBlock',
       id: 'block.id',
+      submitEnabled: false,
       children: []
     } as unknown as TreeBlock
 
@@ -227,6 +213,29 @@ describe('Properties', () => {
     await waitFor(() =>
       expect(screen.getByTestId('ButtonProperties')).toBeInTheDocument()
     )
+    expect(screen.getByText('Button Properties')).toBeInTheDocument()
+  })
+
+  it('should return properties for Submit Button block', async () => {
+    const block = {
+      __typename: 'ButtonBlock',
+      id: 'block.id',
+      submitEnabled: true,
+      children: []
+    } as unknown as TreeBlock
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <Properties block={block} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('ButtonProperties')).toBeInTheDocument()
+    )
+    expect(screen.getByText('Submit Button Properties')).toBeInTheDocument()
   })
 
   it('should return properties for RadioQuestion block', async () => {
@@ -324,7 +333,7 @@ describe('Properties', () => {
       </MockedProvider>
     )
 
-    await waitFor(() => expect(container.children[0].childElementCount).toBe(0))
+    await waitFor(() => expect(container.childElementCount).toBe(0))
   })
 
   it('should return to journey map when close icon is clicked', async () => {
@@ -332,6 +341,7 @@ describe('Properties', () => {
       __typename: 'CardBlock',
       id: 'block.id',
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
     const selectedStep = {}
@@ -378,6 +388,7 @@ describe('Properties', () => {
       themeMode: ThemeMode.light,
       themeName: ThemeName.base,
       fullscreen: false,
+      backdropBlur: null,
       children: []
     }
 

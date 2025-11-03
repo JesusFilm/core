@@ -1,4 +1,4 @@
-import { StoryObj } from '@storybook/react'
+import { StoryObj } from '@storybook/nextjs'
 import { ComponentPropsWithoutRef } from 'react'
 
 import Cursor4Icon from '@core/shared/ui/icons/Cursor4'

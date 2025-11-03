@@ -14,7 +14,7 @@ import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__gen
 import { ImageBlockThumbnail } from '../ImageBlockThumbnail'
 
 interface ImageBlockHeaderProps {
-  selectedBlock: ImageBlock | null
+  selectedBlock?: ImageBlock | null
   showAdd?: boolean
   showTitle?: boolean
   onDelete?: () => void
@@ -67,12 +67,12 @@ export function ImageBlockHeader({
               {loading
                 ? t('Image is uploading...')
                 : selectedBlock?.src != null
-                ? t('Selected Image')
-                : showAdd
-                ? t('Select Image')
-                : error === true
-                ? t('Upload failed')
-                : t('No Image Selected')}
+                  ? t('Selected Image')
+                  : showAdd
+                    ? t('Select Image')
+                    : error === true
+                      ? t('Upload failed')
+                      : t('No Image Selected')}
             </Typography>
             <Typography
               variant="caption"
@@ -97,7 +97,7 @@ export function ImageBlockHeader({
         }}
       >
         {showAdd && selectedBlock?.src != null ? (
-          <Edit2Icon color="primary" />
+          <Edit2Icon color="primary" data-testid="imageBlockHeaderEdit" />
         ) : showAdd ? (
           <Plus2Icon color="primary" />
         ) : selectedBlock?.src != null ? (

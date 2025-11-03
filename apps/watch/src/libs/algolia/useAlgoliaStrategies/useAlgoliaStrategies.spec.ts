@@ -5,6 +5,7 @@ import { useHits } from 'react-instantsearch'
 
 import {
   StrategyItem,
+  removeExcerptPTags,
   transformAlgoliaStrategies,
   useAlgoliaStrategies
 } from './useAlgoliaStrategies'
@@ -12,6 +13,28 @@ import {
 jest.mock('react-instantsearch')
 
 const mockUseHits = useHits as jest.MockedFunction<typeof useHits>
+
+describe('removeExcerptPTags', () => {
+  it('should remove p tags from excerpt', () => {
+    const result = removeExcerptPTags('<p>description</p>')
+    expect(result).toBe('description')
+  })
+
+  it('should remove multiple p tags from excerpt', () => {
+    const result = removeExcerptPTags('<p>description</p><p>description</p>')
+    expect(result).toBe('descriptiondescription')
+  })
+
+  it('should handle nested p tags', () => {
+    const result = removeExcerptPTags('<p><p>description</p><p>')
+    expect(result).toBe('description')
+  })
+
+  it('should handle no p tags', () => {
+    const result = removeExcerptPTags('description')
+    expect(result).toBe('description')
+  })
+})
 
 describe('useAlgoliaStrategies', () => {
   const algoliaStrategyItem = {
@@ -21,6 +44,7 @@ describe('useAlgoliaStrategies', () => {
     post_title: 'title',
     post_date: 1671059126,
     post_date_formatted: '12/14/2022',
+    post_excerpt: '<p>description from excerpt</p>',
     post_modified: 1717597535,
     images: {
       thumbnail: {
@@ -37,7 +61,7 @@ describe('useAlgoliaStrategies', () => {
   const strategyItem = {
     id: '1',
     title: 'title',
-    description: 'description',
+    description: 'description from excerpt',
     imageUrl: 'https://example.com/image.jpg',
     link: 'https://example.com/test-page/'
   } as unknown as StrategyItem

@@ -1,0 +1,1 @@
+export { getCurrentQuality } from './getCurrentQuality'

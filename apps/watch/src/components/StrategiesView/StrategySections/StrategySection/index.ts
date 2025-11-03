@@ -1,1 +1,0 @@
-export { StrategySection } from './StrategySection'

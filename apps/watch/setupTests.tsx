@@ -1,5 +1,9 @@
 import '@testing-library/jest-dom'
+import 'isomorphic-fetch'
 import { configure } from '@testing-library/react'
+
+import { server } from './test/mswServer'
+import './test/i18n'
 
 configure({ asyncUtilTimeout: 2500 })
 
@@ -26,3 +30,8 @@ jest.mock('next/router', () => require('next-router-mock'))
 
 if (process.env.CI === 'true')
   jest.retryTimes(3, { logErrorsBeforeRetry: true })
+
+// Start/stop MSW for node test env
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
+afterEach(() => server.resetHandlers())
+afterAll(() => server.close())

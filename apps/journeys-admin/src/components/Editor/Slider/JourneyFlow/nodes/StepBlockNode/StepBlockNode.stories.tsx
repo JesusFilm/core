@@ -1,9 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
-import { userEvent, waitFor, within } from '@storybook/testing-library'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentPropsWithoutRef } from 'react'
 import { Background, ReactFlow } from 'reactflow'
+import { userEvent, waitFor, within } from 'storybook/test'
 import 'reactflow/dist/style.css'
 
 import {
@@ -42,6 +42,7 @@ const defaultNode = {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: []
       }
     ],
@@ -64,6 +65,7 @@ const defaultNode = {
             themeMode: null,
             themeName: null,
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'TypographyBlock',
@@ -74,7 +76,11 @@ const defaultNode = {
                 color: null,
                 content: 'The Journey Is On',
                 variant: 'h3',
-                children: []
+                children: [],
+                settings: {
+                  __typename: 'TypographyBlockSettings',
+                  color: null
+                }
               },
               {
                 __typename: 'TypographyBlock',
@@ -85,7 +91,11 @@ const defaultNode = {
                 color: null,
                 content: '"Go, and lead the people on their way..."',
                 variant: 'body1',
-                children: []
+                children: [],
+                settings: {
+                  __typename: 'TypographyBlockSettings',
+                  color: null
+                }
               },
               {
                 __typename: 'TypographyBlock',
@@ -94,9 +104,13 @@ const defaultNode = {
                 parentOrder: 2,
                 align: null,
                 color: null,
-                content: 'Deutoronomy 10:11',
+                content: 'Deuteronomy 10:11',
                 variant: 'caption',
-                children: []
+                children: [],
+                settings: {
+                  __typename: 'TypographyBlockSettings',
+                  color: null
+                }
               },
               {
                 __typename: 'ImageBlock',
@@ -140,6 +154,7 @@ const videoNode = {
         themeMode: 'dark',
         themeName: 'base',
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'VideoBlock',
@@ -202,6 +217,7 @@ const videoNode = {
             themeMode: 'dark',
             themeName: 'base',
             fullscreen: false,
+            backdropBlur: null,
             children: []
           }
         ]
@@ -224,6 +240,7 @@ const videoNode = {
             themeMode: 'dark',
             themeName: 'base',
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'VideoBlock',
@@ -294,6 +311,7 @@ const typographyNode = {
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'TypographyBlock',
@@ -304,7 +322,11 @@ const typographyNode = {
             color: null,
             content: 'The Journey Is On',
             variant: 'h3',
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'TypographyBlock',
@@ -315,7 +337,11 @@ const typographyNode = {
             color: null,
             content: '"Go, and lead the people on their way..."',
             variant: 'body1',
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'TypographyBlock',
@@ -324,9 +350,13 @@ const typographyNode = {
             parentOrder: 2,
             align: null,
             color: null,
-            content: 'Deutoronomy 10:11',
+            content: 'Deuteronomy 10:11',
             variant: 'caption',
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           },
           {
             __typename: 'ImageBlock',
@@ -362,6 +392,7 @@ const typographyNode = {
             themeMode: null,
             themeName: null,
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'TypographyBlock',
@@ -372,7 +403,11 @@ const typographyNode = {
                 color: null,
                 content: 'The Journey Is On',
                 variant: 'h3',
-                children: []
+                children: [],
+                settings: {
+                  __typename: 'TypographyBlockSettings',
+                  color: null
+                }
               },
               {
                 __typename: 'TypographyBlock',
@@ -383,7 +418,11 @@ const typographyNode = {
                 color: null,
                 content: '"Go, and lead the people on their way..."',
                 variant: 'body1',
-                children: []
+                children: [],
+                settings: {
+                  __typename: 'TypographyBlockSettings',
+                  color: null
+                }
               },
               {
                 __typename: 'TypographyBlock',
@@ -392,9 +431,13 @@ const typographyNode = {
                 parentOrder: 2,
                 align: null,
                 color: null,
-                content: 'Deutoronomy 10:11',
+                content: 'Deuteronomy 10:11',
                 variant: 'caption',
-                children: []
+                children: [],
+                settings: {
+                  __typename: 'TypographyBlockSettings',
+                  color: null
+                }
               },
               {
                 __typename: 'ImageBlock',
@@ -438,6 +481,7 @@ const textResponseNode = {
         themeMode: 'dark',
         themeName: 'base',
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'TextResponseBlock',
@@ -485,6 +529,7 @@ const textResponseNode = {
             themeMode: 'dark',
             themeName: 'base',
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'TextResponseBlock',
@@ -540,6 +585,7 @@ const buttonNode = {
         themeMode: 'dark',
         themeName: 'base',
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'ButtonBlock',
@@ -598,6 +644,7 @@ const buttonNode = {
             themeMode: 'dark',
             themeName: 'base',
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'ButtonBlock',
@@ -664,6 +711,7 @@ const signUpNode = {
         themeMode: 'dark',
         themeName: 'base',
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             __typename: 'SignUpBlock',
@@ -708,6 +756,7 @@ const signUpNode = {
             themeMode: 'dark',
             themeName: 'base',
             fullscreen: false,
+            backdropBlur: null,
             children: [
               {
                 __typename: 'SignUpBlock',

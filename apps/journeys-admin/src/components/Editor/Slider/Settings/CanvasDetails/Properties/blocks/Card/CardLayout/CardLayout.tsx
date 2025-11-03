@@ -1,6 +1,8 @@
 import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
+import Tooltip from '@mui/material/Tooltip'
 import Image from 'next/image'
+import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -26,7 +28,14 @@ export const CARD_BLOCK_LAYOUT_UPDATE = gql`
   }
 `
 
-export function CardLayout(): ReactElement {
+interface CardLayoutProps {
+  disableExpanded?: boolean
+}
+
+export function CardLayout({
+  disableExpanded = false
+}: CardLayoutProps): ReactElement {
+  const { t } = useTranslation()
   const {
     state: { selectedBlock, selectedStep },
     dispatch
@@ -47,6 +56,7 @@ export function CardLayout(): ReactElement {
 
   function handleLayoutChange(fullscreen: boolean): void {
     if (cardBlock == null) return
+    if (disableExpanded && fullscreen) return
 
     add({
       parameters: {
@@ -81,30 +91,50 @@ export function CardLayout(): ReactElement {
     })
   }
 
+  const selectedLayoutId = disableExpanded
+    ? 'false'
+    : cardBlock?.fullscreen.toString()
+
   return (
     <>
       <Box>
         <HorizontalSelect
           onChange={(val) => handleLayoutChange(val === 'true')}
-          id={cardBlock?.fullscreen.toString()}
+          id={selectedLayoutId}
           sx={{ px: 4, pb: 4, pt: 1 }}
         >
           <Box
-            sx={{ display: 'flex' }}
+            sx={{
+              display: 'flex',
+              ...(disableExpanded && {
+                opacity: 0.3,
+                filter: 'grayscale(100%)'
+              })
+            }}
             id="true"
             key="true"
             data-testid={cardBlock?.fullscreen === true ? 'selected' : 'true'}
+            aria-disabled={disableExpanded}
           >
-            <Image
-              src={cardLayoutExpanded}
-              alt="Expanded"
-              width={89}
-              height={137}
-              style={{
-                maxWidth: '100%',
-                height: 'auto'
-              }}
-            />
+            <Tooltip
+              title={
+                disableExpanded
+                  ? t('Not available when card contains a video')
+                  : ''
+              }
+              disableHoverListener={!disableExpanded}
+            >
+              <Image
+                src={cardLayoutExpanded}
+                alt="Expanded"
+                width={89}
+                height={137}
+                style={{
+                  maxWidth: '100%',
+                  height: 'auto'
+                }}
+              />
+            </Tooltip>
           </Box>
           <Box
             sx={{ display: 'flex' }}

@@ -1,8 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { expect } from '@storybook/jest'
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent, waitFor } from '@storybook/testing-library'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps, ReactElement, useState } from 'react'
+import { expect, screen, userEvent, waitFor } from 'storybook/test'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 

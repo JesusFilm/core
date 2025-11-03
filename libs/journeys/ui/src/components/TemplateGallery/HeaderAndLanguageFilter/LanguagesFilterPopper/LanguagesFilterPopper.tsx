@@ -82,6 +82,7 @@ export function LanguagesFilterPopper({
             }}
           >
             <FieldArray name="languages">
+              {/* eslint-disable-next-line @typescript-eslint/unbound-method */}
               {({ push, remove }) => (
                 <Popper
                   open={open}
@@ -93,6 +94,8 @@ export function LanguagesFilterPopper({
                     borderRadius: 1,
                     boxShadow: 2,
                     minWidth: 200,
+                    maxHeight: '85svh',
+                    overflowY: 'scroll',
                     width: { xs: '100%', md: anchorEl?.clientWidth }
                   }}
                   placement="bottom-start"

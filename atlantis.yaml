@@ -8,6 +8,8 @@ projects:
         [
           '../apps/*/infrastructure/**/*.tf',
           '../apps/*/infrastructure/*.tf',
+          '../apis/*/infrastructure/**/*.tf',
+          '../apis/*/infrastructure/*.tf',
           './**/*.tf',
           './*.tf',
           './.terraform.lock.hcl'

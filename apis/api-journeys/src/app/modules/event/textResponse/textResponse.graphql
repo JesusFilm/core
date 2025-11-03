@@ -1,0 +1,49 @@
+input TextResponseSubmissionEventCreateInput {
+  """
+  ID should be unique Event UUID (Provided for optimistic mutation result matching)
+  """
+  id: ID
+  blockId: ID!
+  """
+  id of the parent stepBlock
+  """
+  stepId: ID
+  """
+  stepName of the parent stepBlock
+  """
+  label: String
+  """
+  response from the TextResponseBlock form
+  """
+  value: String!
+}
+
+type TextResponseSubmissionEvent implements Event @shareable {
+  id: ID!
+  """
+  ID of the journey that the buttonBlock belongs to
+  """
+  journeyId: ID!
+  """
+  time event was created
+  """
+  createdAt: DateTime!
+  """
+  stepName of the parent stepBlock
+  """
+  label: String
+  """
+  response from the TextResponseBlock form
+  """
+  value: String
+  """
+  the id of the block this event originates from
+  """
+  blockId: String
+}
+
+extend type Mutation {
+  textResponseSubmissionEventCreate(
+    input: TextResponseSubmissionEventCreateInput!
+  ): TextResponseSubmissionEvent!
+}

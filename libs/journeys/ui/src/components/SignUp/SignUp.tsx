@@ -1,14 +1,14 @@
 import { ApolloError, gql, useMutation } from '@apollo/client'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import { SxProps } from '@mui/system/styleFunctionSx'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 import { object, string } from 'yup'
 
@@ -17,6 +17,7 @@ import { handleAction } from '../../libs/action'
 import { useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
+import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
@@ -131,13 +132,11 @@ export const SignUp = ({
             }
           })
         }
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'sign_up_submission',
-            eventId: id,
-            blockId,
-            stepName: heading
-          }
+        sendGTMEvent({
+          event: 'sign_up_submission',
+          eventId: id,
+          blockId,
+          stepName: heading
         })
       } catch (e) {
         if (e instanceof ApolloError) {
@@ -164,7 +163,8 @@ export const SignUp = ({
         onSubmit={(values) => {
           if (selectedBlock === undefined) {
             void onSubmitHandler(values).then(() => {
-              handleAction(router, action)
+              const nextStepSlug = getNextStepSlug(journey, action)
+              handleAction(router, action, nextStepSlug)
             })
           }
         }}
@@ -208,7 +208,7 @@ export const SignUp = ({
                 }
               }}
             />
-            <LoadingButton
+            <Button
               type="submit"
               data-testid="submit"
               variant="contained"
@@ -227,10 +227,10 @@ export const SignUp = ({
                 {editableSubmitLabel != null
                   ? editableSubmitLabel
                   : submitLabel != null && submitLabel !== ''
-                  ? submitLabel
-                  : t('Submit')}
+                    ? submitLabel
+                    : t('Submit')}
               </span>
-            </LoadingButton>
+            </Button>
           </Form>
         )}
       </Formik>

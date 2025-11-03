@@ -40,6 +40,7 @@ describe('useJourneyQuery', () => {
       slug: 'default',
       language,
       createdAt: formatISO(startOfYear(new Date())),
+      updatedAt: formatISO(startOfYear(new Date())),
       publishedAt: null,
       status: JourneyStatus.draft,
       seoTitle: null,
@@ -74,7 +75,16 @@ describe('useJourneyQuery', () => {
       showShareButton: null,
       showLikeButton: null,
       showDislikeButton: null,
-      displayTitle: null
+      displayTitle: null,
+      logoImageBlock: null,
+      menuButtonIcon: null,
+      menuStepBlock: null,
+      journeyTheme: null,
+      journeyCustomizationDescription: null,
+      journeyCustomizationFields: [],
+      fromTemplateId: null,
+      socialNodeX: null,
+      socialNodeY: null
     }
 
     const result = jest.fn(() => ({ data: { journey } }))

@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
@@ -22,6 +22,7 @@ const languages: Language[] = [
   {
     __typename: 'Language',
     id: '529',
+    slug: 'english',
     name: [
       {
         value: 'English',
@@ -33,6 +34,7 @@ const languages: Language[] = [
   {
     id: '496',
     __typename: 'Language',
+    slug: 'french',
     name: [
       {
         value: 'Français',
@@ -49,6 +51,7 @@ const languages: Language[] = [
   {
     id: '1106',
     __typename: 'Language',
+    slug: 'german-standard',
     name: [
       {
         value: 'Deutsch',

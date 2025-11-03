@@ -1,21 +1,37 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
+import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
+import {
+  InstantSearchApi,
+  useInfiniteHits,
+  useInstantSearch,
+  useSearchBox
+} from 'react-instantsearch'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import {
-  VideoBlockSource,
-  VideoLabel
-} from '../../../../../../../../../../__generated__/globalTypes'
+import { VideoBlockSource } from '../../../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
-import { videos } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/data'
+import { videoItems } from '../../../../../Drawer/VideoLibrary/data'
 import { GET_VIDEO } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
-import { GET_VIDEOS } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/VideoFromLocal'
 
 import { VIDEO_BLOCK_UPDATE, VideoOptions } from './VideoOptions'
+
+jest.mock('react-instantsearch')
+
+const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+  typeof useSearchBox
+>
+const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+  typeof useInstantSearch
+>
+const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
+  typeof useInfiniteHits
+>
 
 const video: TreeBlock<VideoBlock> = {
   id: 'video1.id',
@@ -36,7 +52,8 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  subtitleLanguage: null,
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -45,8 +62,13 @@ const video: TreeBlock<VideoBlock> = {
         value: 'FallingPlates'
       }
     ],
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -59,45 +81,25 @@ const video: TreeBlock<VideoBlock> = {
 }
 
 describe('VideoOptions', () => {
-  const getVideosMock = {
-    request: {
-      query: GET_VIDEOS,
-      variables: {
-        offset: 0,
-        limit: 5,
-        where: {
-          availableVariantLanguageIds: ['529'],
-          title: null,
-          labels: [
-            VideoLabel.episode,
-            VideoLabel.featureFilm,
-            VideoLabel.segment,
-            VideoLabel.shortFilm
-          ]
-        }
-      }
-    },
-    result: {
-      data: {
-        videos
-      }
-    }
-  }
-
   const getVideoMock = {
     request: {
       query: GET_VIDEO,
       variables: {
-        id: '2_0-Brand_Video',
+        id: 'videoId',
         languageId: '529'
       }
     },
     result: {
       data: {
         video: {
-          id: '2_0-Brand_Video',
-          image:
-            'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+          id: 'videoId',
+          images: [
+            {
+              __typename: 'CloudflareImage',
+              mobileCinematicHigh:
+                'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+            }
+          ],
           primaryLanguageId: '529',
           title: [
             {
@@ -120,6 +122,7 @@ describe('VideoOptions', () => {
           variantLanguages: [
             {
               __typename: 'Language',
+              slug: 'english',
               id: '529',
               name: [
                 {
@@ -135,6 +138,31 @@ describe('VideoOptions', () => {
     }
   }
 
+  const searchBox = {
+    refine: jest.fn()
+  } as unknown as SearchBoxRenderState
+
+  const infiniteHits = {
+    items: videoItems,
+    showMore: jest.fn(),
+    isLastPage: false
+  } as unknown as InfiniteHitsRenderState
+
+  const instantSearch = {
+    status: 'idle',
+    results: {
+      __isArtificial: false,
+      nbHits: videoItems.length
+    }
+  } as unknown as InstantSearchApi
+
+  beforeEach(() => {
+    mockUseSearchBox.mockReturnValue(searchBox)
+    mockUseInfiniteHits.mockReturnValue(infiniteHits)
+    mockUseInstantSearch.mockReturnValue(instantSearch)
+    jest.clearAllMocks()
+  })
+
   it('updates video block', async () => {
     const videoBlockResult = jest.fn(() => {
       return {
@@ -147,19 +175,20 @@ describe('VideoOptions', () => {
     const videoBlockUpdateVariables = {
       id: video.id,
       input: {
-        videoId: '2_0-Brand_Video',
+        videoId: 'videoId',
         videoVariantLanguageId: '529',
         source: VideoBlockSource.internal,
         startAt: 0,
         endAt: 144,
-        duration: 144
+        duration: 144,
+        subtitleLanguageId: null
       }
     }
     render(
       <MockedProvider
         mocks={[
           { ...getVideoMock, result },
-          getVideosMock,
+
           {
             request: {
               query: VIDEO_BLOCK_UPDATE,
@@ -184,10 +213,7 @@ describe('VideoOptions', () => {
     await waitFor(() =>
       fireEvent.click(screen.getByRole('button', { name: 'Select Video' }))
     )
-    await waitFor(() =>
-      expect(screen.getByText('Brand Video')).toBeInTheDocument()
-    )
-    fireEvent.click(screen.getByText('Brand Video'))
+    await waitFor(() => fireEvent.click(screen.getByText('title1')))
     await waitFor(() =>
       expect(result).toHaveBeenCalledWith(getVideoMock.request.variables)
     )
@@ -213,19 +239,20 @@ describe('VideoOptions', () => {
       <MockedProvider
         mocks={[
           { ...getVideoMock, result },
-          getVideosMock,
+
           {
             request: {
               query: VIDEO_BLOCK_UPDATE,
               variables: {
                 id: video.id,
                 input: {
-                  videoId: '2_0-Brand_Video',
+                  videoId: 'videoId',
                   videoVariantLanguageId: '529',
                   source: VideoBlockSource.internal,
                   startAt: 0,
                   endAt: 144,
-                  duration: 144
+                  duration: 144,
+                  subtitleLanguageId: null
                 }
               }
             },
@@ -266,10 +293,8 @@ describe('VideoOptions', () => {
     await waitFor(() =>
       fireEvent.click(screen.getByRole('button', { name: 'Select Video' }))
     )
-    await waitFor(() =>
-      expect(screen.getByText('Brand Video')).toBeInTheDocument()
-    )
-    fireEvent.click(screen.getByText('Brand Video'))
+    await waitFor(() => expect(screen.getByText('title1')).toBeInTheDocument())
+    fireEvent.click(screen.getByText('title1'))
     await waitFor(() =>
       expect(result).toHaveBeenCalledWith(getVideoMock.request.variables)
     )
@@ -277,5 +302,135 @@ describe('VideoOptions', () => {
     await waitFor(() => expect(result1).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
     await waitFor(() => expect(result2).toHaveBeenCalled())
+  })
+
+  it('should preserve subtitleLanguageId when re-selecting same YouTube video', async () => {
+    const videoBlockResult = jest.fn(() => {
+      return {
+        data: {
+          videoBlockUpdate: {
+            ...video,
+            videoId: 'youtubeVideoId',
+            source: VideoBlockSource.youTube,
+            subtitleLanguage: {
+              __typename: 'Language',
+              id: 'lang-en'
+            }
+          }
+        }
+      }
+    })
+
+    const videoBlockUpdateVariables = {
+      id: video.id,
+      input: {
+        videoId: 'youtubeVideoId',
+        source: VideoBlockSource.youTube,
+        startAt: 10,
+        endAt: 100,
+        subtitleLanguageId: 'lang-en'
+      }
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: VIDEO_BLOCK_UPDATE,
+              variables: videoBlockUpdateVariables
+            },
+            result: videoBlockResult
+          }
+        ]}
+      >
+        <EditorProvider
+          initialState={{
+            selectedBlock: {
+              ...video,
+              videoId: 'youtubeVideoId',
+              source: VideoBlockSource.youTube,
+              startAt: 10,
+              endAt: 100,
+              subtitleLanguage: {
+                __typename: 'Language',
+                id: 'lang-en'
+              }
+            },
+            selectedAttributeId: video.id
+          }}
+        >
+          <ThemeProvider>
+            <VideoOptions />
+          </ThemeProvider>
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('VideoBlockEditor')).toBeInTheDocument()
+    )
+  })
+
+  it('should reset subtitleLanguageId when selecting different YouTube video', async () => {
+    const videoBlockResult = jest.fn(() => {
+      return {
+        data: {
+          videoBlockUpdate: {
+            ...video,
+            videoId: 'newYoutubeVideoId',
+            source: VideoBlockSource.youTube
+          }
+        }
+      }
+    })
+
+    const videoBlockUpdateVariables = {
+      id: video.id,
+      input: {
+        videoId: 'newYoutubeVideoId',
+        source: VideoBlockSource.youTube,
+        startAt: 0,
+        endAt: 200,
+        subtitleLanguageId: null
+      }
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: VIDEO_BLOCK_UPDATE,
+              variables: videoBlockUpdateVariables
+            },
+            result: videoBlockResult
+          }
+        ]}
+      >
+        <EditorProvider
+          initialState={{
+            selectedBlock: {
+              ...video,
+              videoId: 'oldYoutubeVideoId',
+              source: VideoBlockSource.youTube,
+              subtitleLanguage: {
+                __typename: 'Language',
+                id: 'lang-es'
+              }
+            },
+            selectedAttributeId: video.id
+          }}
+        >
+          <ThemeProvider>
+            <VideoOptions />
+          </ThemeProvider>
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('VideoBlockEditor')).toBeInTheDocument()
+    )
   })
 })

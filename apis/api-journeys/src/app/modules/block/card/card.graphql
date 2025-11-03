@@ -1,0 +1,69 @@
+type CardBlock implements Block @shareable {
+  id: ID! @shareable
+  journeyId: ID! @shareable
+  parentBlockId: ID @shareable
+  parentOrder: Int @shareable
+  """
+  backgroundColor should be a HEX color value e.g #FFFFFF for white.
+  """
+  backgroundColor: String @shareable
+  """
+  backdropBlur should be a number representing blur amount in pixels e.g 20.
+  """
+  backdropBlur: Int @shareable
+  """
+  coverBlockId is present if a child block should be used as a cover.
+  This child block should not be rendered normally, instead it should be used
+  as a background. Blocks are often of type ImageBlock or VideoBlock.
+  """
+  coverBlockId: ID @shareable
+  """
+  fullscreen should control how the coverBlock is displayed. When fullscreen
+  is set to true the coverBlock Image should be displayed as a blur in the
+  background.
+  """
+  fullscreen: Boolean! @shareable
+  """
+  themeMode can override journey themeMode. If nothing is set then use
+  themeMode from journey
+  """
+  themeMode: ThemeMode @shareable
+  """
+  themeName can override journey themeName. If nothing is set then use
+  themeName from journey
+  """
+  themeName: ThemeName @shareable
+}
+
+input CardBlockCreateInput {
+  id: ID
+  journeyId: ID!
+  parentBlockId: ID!
+  backgroundColor: String
+  backdropBlur: Int
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+}
+
+input CardBlockUpdateInput {
+  parentBlockId: ID
+  coverBlockId: ID
+  backgroundColor: String
+  backdropBlur: Int
+  fullscreen: Boolean
+  themeMode: ThemeMode
+  themeName: ThemeName
+}
+
+extend type Mutation {
+  cardBlockCreate(input: CardBlockCreateInput!): CardBlock!
+  cardBlockUpdate(
+    id: ID!
+    input: CardBlockUpdateInput!
+    """
+    drop this parameter after merging teams
+    """
+    journeyId: ID
+  ): CardBlock!
+}

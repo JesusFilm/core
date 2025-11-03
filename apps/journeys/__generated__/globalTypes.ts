@@ -8,9 +8,18 @@
 //==============================================================
 
 export enum ButtonAction {
+  ChatAction = "ChatAction",
   EmailAction = "EmailAction",
   LinkAction = "LinkAction",
   NavigateToBlockAction = "NavigateToBlockAction",
+  PhoneAction = "PhoneAction",
+}
+
+export enum ButtonAlignment {
+  center = "center",
+  justify = "justify",
+  left = "left",
+  right = "right",
 }
 
 export enum ButtonColor {
@@ -28,6 +37,12 @@ export enum ButtonSize {
 
 export enum ButtonVariant {
   contained = "contained",
+  outlined = "outlined",
+  text = "text",
+}
+
+export enum ContactActionType {
+  call = "call",
   text = "text",
 }
 
@@ -78,6 +93,17 @@ export enum IdType {
   slug = "slug",
 }
 
+export enum JourneyMenuButtonIcon {
+  chevronDown = "chevronDown",
+  ellipsis = "ellipsis",
+  equals = "equals",
+  grid1 = "grid1",
+  home3 = "home3",
+  home4 = "home4",
+  menu1 = "menu1",
+  more = "more",
+}
+
 export enum JourneyStatus {
   archived = "archived",
   deleted = "deleted",
@@ -98,6 +124,7 @@ export enum MessagePlatform {
   home3 = "home3",
   home4 = "home4",
   instagram = "instagram",
+  kakaoTalk = "kakaoTalk",
   line = "line",
   linkExternal = "linkExternal",
   mail1 = "mail1",
@@ -139,6 +166,7 @@ export enum TextResponseType {
   email = "email",
   freeForm = "freeForm",
   name = "name",
+  phone = "phone",
 }
 
 export enum ThemeMode {
@@ -183,6 +211,11 @@ export enum UserJourneyRole {
   owner = "owner",
 }
 
+export enum UserTeamRole {
+  manager = "manager",
+  member = "member",
+}
+
 export enum VideoBlockObjectFit {
   fill = "fill",
   fit = "fit",
@@ -192,6 +225,7 @@ export enum VideoBlockObjectFit {
 export enum VideoBlockSource {
   cloudflare = "cloudflare",
   internal = "internal",
+  mux = "mux",
   youTube = "youTube",
 }
 
@@ -233,6 +267,8 @@ export interface ChatOpenEventCreateInput {
 export interface JourneyProfileUpdateInput {
   lastActiveTeamId?: string | null;
   journeyFlowBackButtonClicked?: boolean | null;
+  plausibleJourneyFlowViewed?: boolean | null;
+  plausibleDashboardViewed?: boolean | null;
 }
 
 export interface JourneyViewEventCreateInput {
@@ -250,6 +286,7 @@ export interface JourneysFilter {
   languageIds?: string[] | null;
   limit?: number | null;
   orderByRecent?: boolean | null;
+  fromTemplateId?: string | null;
 }
 
 export interface JourneysQueryOptions {
@@ -260,6 +297,16 @@ export interface JourneysQueryOptions {
 
 export interface LanguagesFilter {
   ids?: string[] | null;
+  bcp47?: string[] | null;
+  iso3?: string[] | null;
+}
+
+export interface MultiselectSubmissionEventCreateInput {
+  id?: string | null;
+  blockId: string;
+  stepId?: string | null;
+  label?: string | null;
+  values: string[];
 }
 
 export interface RadioQuestionSubmissionEventCreateInput {
@@ -385,6 +432,7 @@ export interface VisitorUpdateInput {
   status?: VisitorStatus | null;
   countryCode?: string | null;
   referrer?: string | null;
+  phone?: string | null;
 }
 
 //==============================================================

@@ -53,7 +53,7 @@ export function ShareButton(): ReactElement {
 
     const shareDetails = {
       url,
-      title: journey?.seoTitle ?? journey?.title ?? t('Journey'),
+      title: journey?.seoTitle ?? journey?.displayTitle ?? t('Journey'),
       text: journey?.seoDescription ?? ''
     }
 
@@ -63,7 +63,7 @@ export function ShareButton(): ReactElement {
   return (
     <>
       <StyledFooterButton onClick={handleShare} data-testid="ShareButton">
-        <ShareIcon sx={{ fontSize: 20 }} />
+        <ShareIcon sx={{ fontSize: 20 }} data-testid="ShareIcon" />
       </StyledFooterButton>
       <ShareDialog
         url={url}

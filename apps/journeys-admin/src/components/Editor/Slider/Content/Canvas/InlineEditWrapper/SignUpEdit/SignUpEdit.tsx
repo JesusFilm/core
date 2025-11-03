@@ -50,7 +50,8 @@ export function SignUpEdit({
   }, [undo?.id])
 
   useEffect(() => {
-    setValue(submitLabel)
+    if (value !== submitLabel) setValue(submitLabel)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [submitLabel])
 
   function resetCommandInput(): void {

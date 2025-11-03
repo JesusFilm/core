@@ -100,6 +100,7 @@ describe('useStepAndCardBlockCreateMutation', () => {
         backgroundColor: null,
         coverBlockId: null,
         fullscreen: false,
+        backdropBlur: null,
         parentBlockId: 'newStep.id',
         parentOrder: 0,
         themeMode: ThemeMode.dark,

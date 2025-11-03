@@ -12,21 +12,26 @@ import {
   useReducer,
   useState
 } from 'react'
-import Player from 'video.js/dist/types/player'
 
 import { isIOS, isIPhone } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
+import {
+  PlaybackEvent,
+  type PlaybackState,
+  playbackReducer
+} from '../utils/playbackReducer'
+import VideoJsPlayer from '../utils/videoJsTypes'
+import { VideoStats } from '../VideoStats'
 
 import { DesktopControls } from './DesktopControls'
 import { MobileControls } from './MobileControls'
 import { PlaybackIcon } from './PlaybackIcon'
-import { PlaybackEvent, playbackReducer } from './utils/playbackReducer'
 
 interface VideoControlProps {
-  player: Player
+  player: VideoJsPlayer
   startAt: number
   endAt: number
   isYoutube?: boolean
@@ -50,12 +55,13 @@ export function VideoControls({
   const [displayTime, setDisplayTime] = useState('0:00')
   const [progress, setProgress] = useState(0)
   const [volume, setVolume] = useState((player.volume() ?? 1) * 100)
+  const [showStats, setShowStats] = useState(false)
   const [state, dispatch] = useReducer(playbackReducer, {
     // Explicit muted state since player.muted state lags when video paused
     muted: initialMuted,
     playing: false,
     action: 'play'
-  })
+  } as PlaybackState)
 
   // Explicit fullscreen state since player.fullscreen state lags when video paused
   const [fullscreen, setFullscreen] = useState(
@@ -309,6 +315,12 @@ export function VideoControls({
     }
   }
 
+  function handleToggleStats(event: React.MouseEvent): void {
+    event.stopPropagation()
+    setShowStats((prev) => !prev)
+    player.userActive(true)
+  }
+
   function getClickHandler(
     onClick: MouseEventHandler,
     onDblClick: MouseEventHandler,
@@ -373,6 +385,12 @@ export function VideoControls({
         alignItems="center"
       >
         <PlaybackIcon state={state} loading={loading} visible={visible} />
+
+        {/* Add VideoStats component outside of the Fade component so it stays visible */}
+        {showStats && (
+          <VideoStats player={player} startAt={startAt} endAt={endAt} />
+        )}
+
         <Fade
           in
           style={{ transitionDuration: '500ms' }}
@@ -407,6 +425,8 @@ export function VideoControls({
               showFullscreenButton={variant !== 'embed' || isIPhone()}
               fullscreen={fullscreen}
               handleFullscreen={handleFullscreen}
+              handleToggleStats={handleToggleStats}
+              player={player}
             />
             <DesktopControls
               playing={state.playing}
@@ -426,6 +446,8 @@ export function VideoControls({
               showFullscreenButton={variant !== 'embed' || isIPhone()}
               fullscreen={fullscreen}
               handleFullscreen={handleFullscreen}
+              handleToggleStats={handleToggleStats}
+              player={player}
             />
           </Container>
         </Fade>

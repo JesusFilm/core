@@ -1,10 +1,11 @@
 import AddRounded from '@mui/icons-material/AddRounded'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
-import Grid from '@mui/material/Grid'
-import type { ComponentProps, ReactElement } from 'react'
-
-import { EmptySearch } from '@core/journeys/ui/EmptySearch'
+import Button from '@mui/material/Button'
+import Grid from '@mui/material/GridLegacy'
+import Paper from '@mui/material/Paper'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next'
+import type { ComponentProps, MouseEvent, ReactElement } from 'react'
 
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { VideoCard } from '../VideoCard'
@@ -18,6 +19,7 @@ export interface VideoGridProps {
   showMore?: () => void
   hasNextPage?: boolean
   hasNoResults?: boolean
+  onCardClick?: (videoId?: string) => (event: MouseEvent) => void
 }
 
 export function VideoGrid({
@@ -28,8 +30,11 @@ export function VideoGrid({
   loading = false,
   showMore,
   hasNextPage = true,
-  hasNoResults = false
+  hasNoResults = false,
+  onCardClick
 }: VideoGridProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
+
   return (
     <Grid
       container
@@ -44,6 +49,7 @@ export function VideoGrid({
               video={video}
               containerSlug={containerSlug}
               variant={variant}
+              onClick={onCardClick}
             />
           </Grid>
         ))}
@@ -77,13 +83,33 @@ export function VideoGrid({
       )}
       {!loading && hasNoResults && (
         <Grid item xs={12} justifyContent="center" alignItems="center">
-          <EmptySearch />
+          <Paper
+            elevation={0}
+            variant="outlined"
+            sx={{
+              borderRadius: 4,
+              width: '100%',
+              padding: 8
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                color: 'primary.main'
+              }}
+            >
+              {t('Sorry, no results')}
+            </Typography>
+            <Typography variant="body1" sx={{ mt: 2 }}>
+              {t('Try removing or changing something from your request')}
+            </Typography>
+          </Paper>
         </Grid>
       )}
       {showLoadMore && !hasNoResults && (
         <Grid item xs={12}>
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-            <LoadingButton
+            <Button
               variant="outlined"
               onClick={showMore}
               loading={loading}
@@ -95,9 +121,9 @@ export function VideoGrid({
               {loading
                 ? 'Loading...'
                 : hasNextPage
-                ? 'Load More'
-                : 'No More Videos'}
-            </LoadingButton>
+                  ? 'Load More'
+                  : 'No More Videos'}
+            </Button>
           </Box>
         </Grid>
       )}

@@ -8,7 +8,7 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import noop from 'lodash/noop'
 import { ReactElement, SyntheticEvent, useState } from 'react'
 
@@ -42,16 +42,8 @@ const ComponentStories = (): ReactElement => {
 
   const languages: Language[] = [
     {
-      id: '529',
-      name: [
-        {
-          value: 'English',
-          primary: true
-        }
-      ]
-    },
-    {
       id: '496',
+      slug: 'french',
       name: [
         {
           value: 'Français',
@@ -64,7 +56,18 @@ const ComponentStories = (): ReactElement => {
       ]
     },
     {
+      id: '529',
+      slug: 'english',
+      name: [
+        {
+          value: 'English',
+          primary: true
+        }
+      ]
+    },
+    {
       id: '1106',
+      slug: 'german-standard',
       name: [
         {
           value: 'Deutsch',

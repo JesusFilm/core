@@ -14,6 +14,8 @@ interface ItemProps {
   href?: string
   ButtonProps?: ComponentProps<typeof Button>
   onClick?: (event: MouseEvent<HTMLElement>) => void
+  count?: number
+  countLabel?: string
 }
 
 export function Item({
@@ -22,10 +24,14 @@ export function Item({
   label,
   href,
   ButtonProps,
-  onClick
+  onClick,
+  count,
+  countLabel
 }: ItemProps): ReactElement {
   switch (variant) {
-    case 'icon-button':
+    case 'icon-button': {
+      const { sx: buttonPropsSx, ...restButtonProps } = ButtonProps ?? {}
+
       return (
         <Tooltip
           title={label}
@@ -41,17 +47,44 @@ export function Item({
             ]
           }}
         >
-          <IconButton
-            component={href != null ? 'a' : 'button'}
-            target={href != null ? '_blank' : undefined}
-            href={href}
-            onClick={onClick}
-            {...ButtonProps}
-          >
-            {icon}
-          </IconButton>
+          <span>
+            {count != null ? (
+              <Button
+                startIcon={icon}
+                component={href != null ? 'a' : 'button'}
+                target={href != null ? '_blank' : undefined}
+                href={href}
+                onClick={onClick}
+                aria-label={label}
+                color="secondary"
+                sx={{
+                  fontWeight: 'normal',
+                  color: 'text.secondary',
+                  '& > .MuiButton-startIcon > .MuiSvgIcon-root': {
+                    fontSize: '24px'
+                  },
+                  ...buttonPropsSx
+                }}
+                {...restButtonProps}
+              >
+                {count.toLocaleString()}
+              </Button>
+            ) : (
+              <IconButton
+                component={href != null ? 'a' : 'button'}
+                target={href != null ? '_blank' : undefined}
+                href={href}
+                onClick={onClick}
+                aria-label={label}
+                {...ButtonProps}
+              >
+                {icon}
+              </IconButton>
+            )}
+          </span>
         </Tooltip>
       )
+    }
     case 'button':
       return (
         <Button
@@ -77,8 +110,16 @@ export function Item({
           href={href}
           onClick={onClick}
         >
-          <ListItemIcon>{icon}</ListItemIcon>
-          <ListItemText>{label}</ListItemText>
+          <ListItemIcon
+            sx={{
+              color: 'secondary.main'
+            }}
+          >
+            {icon}
+          </ListItemIcon>
+          <ListItemText secondary={countLabel ?? count?.toLocaleString()}>
+            {label}
+          </ListItemText>
         </MenuItem>
       )
   }

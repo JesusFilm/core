@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -39,15 +39,12 @@ jest.mock('uuid', () => ({
 
 const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>
 
-jest.mock('react-gtm-module', () => ({
-  __esModule: true,
-  default: {
-    dataLayer: jest.fn()
-  }
+jest.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: jest.fn()
 }))
 
-const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
-  typeof TagManager.dataLayer
+const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+  typeof sendGTMEvent
 >
 
 global.fetch = jest.fn(
@@ -135,6 +132,7 @@ describe('Conductor', () => {
     description: 'my cool journey',
     status: JourneyStatus.draft,
     createdAt: '2021-11-19T12:34:56.647Z',
+    updatedAt: '2021-11-19T12:34:56.647Z',
     publishedAt: null,
     blocks: [],
     primaryImageBlock: null,
@@ -152,7 +150,16 @@ describe('Conductor', () => {
     showShareButton: null,
     showLikeButton: null,
     showDislikeButton: null,
-    displayTitle: null
+    displayTitle: null,
+    logoImageBlock: null,
+    menuButtonIcon: null,
+    menuStepBlock: null,
+    journeyTheme: null,
+    journeyCustomizationDescription: null,
+    journeyCustomizationFields: [],
+    fromTemplateId: null,
+    socialNodeX: null,
+    socialNodeY: null
   }
 
   it('should create a journeyViewEvent', async () => {
@@ -235,18 +242,16 @@ describe('Conductor', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'journey_view',
-          journeyId: 'journeyId',
-          eventId: 'uuid',
-          journeyTitle: 'my journey'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'journey_view',
+        journeyId: 'journeyId',
+        eventId: 'uuid',
+        journeyTitle: 'my journey'
       })
     )
   })
 
-  it('should not throw error if no blocks', () => {
+  it('should sets block history to first block when blocks change', () => {
     const blocks: TreeBlock[] = []
     render(
       <MockedProvider>
@@ -256,7 +261,7 @@ describe('Conductor', () => {
       </MockedProvider>
     )
     expect(treeBlocksVar()).toBe(blocks)
-    expect(blockHistoryVar()).toStrictEqual([])
+    expect(blockHistoryVar()).toStrictEqual([blocks[0]])
   })
 
   describe('ltr journey', () => {

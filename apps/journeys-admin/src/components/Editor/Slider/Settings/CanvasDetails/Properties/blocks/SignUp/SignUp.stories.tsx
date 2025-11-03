@@ -1,6 +1,6 @@
-import { jest } from '@storybook/jest'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
+import { fn } from 'storybook/test'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -23,7 +23,7 @@ const Demo: Meta<typeof SignUp> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/SignUp'
 }
 
-const onClose = jest.fn()
+const onClose = fn()
 
 const block: TreeBlock<SignUpBlock> = {
   id: 'signup.id',
@@ -67,7 +67,9 @@ export const Filled: StoryObj<typeof SignUp> = {
         __typename: 'LinkAction',
         parentBlockId: 'signup.id',
         gtmEventName: 'signup',
-        url: 'https://www.google.com'
+        url: 'https://www.google.com',
+        customizable: false,
+        parentStepId: null
       },
       submitIconId: 'icon',
       children: [

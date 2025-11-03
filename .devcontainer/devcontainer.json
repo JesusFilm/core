@@ -5,7 +5,7 @@
   "name": "Core",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
-  "workspaceFolder": "/workspaces",
+  "workspaceFolder": "/workspaces/core",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -24,16 +24,19 @@
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  // "forwardPorts": [],
+  // 9747 is the port for the NX MCP server
+  "forwardPorts": [9747],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "bash /workspaces/core/.devcontainer/post-create-command.sh",
+  "postCreateCommand": "/workspaces/core/.devcontainer/post-create-command.sh",
+  "postStartCommand": "/workspaces/core/.devcontainer/post-start-command.sh",
 
   // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
   "remoteUser": "node",
   "features": {
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
     "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/aws-cli:1": {},
     "ghcr.io/devcontainers/features/python:1": {},
     "ghcr.io/devcontainers/features/terraform:1": {

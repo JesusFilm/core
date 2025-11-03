@@ -1,6 +1,6 @@
-import { jest } from '@storybook/jest'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
+import { fn } from 'storybook/test'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -26,7 +26,7 @@ const Demo: Meta<typeof Button> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Button'
 }
 
-const onClose = jest.fn()
+const onClose = fn()
 
 const block: TreeBlock<ButtonBlock> = {
   id: 'button.id',
@@ -39,8 +39,10 @@ const block: TreeBlock<ButtonBlock> = {
   size: null,
   startIconId: null,
   endIconId: null,
+  submitEnabled: null,
   action: null,
-  children: []
+  children: [],
+  settings: null
 }
 
 const Template: StoryObj<ComponentProps<typeof Button>> = {
@@ -75,6 +77,7 @@ export const Filled: StoryObj<typeof Button> = {
       size: ButtonSize.large,
       startIconId: 'icon1',
       endIconId: 'icon2',
+      submitEnabled: null,
       action: {
         __typename: 'NavigateToBlockAction',
         parentBlockId: 'button1.id',
@@ -102,7 +105,8 @@ export const Filled: StoryObj<typeof Button> = {
           iconSize: IconSize.lg,
           children: []
         }
-      ]
+      ],
+      settings: null
     }
     return (
       <EditorProvider initialState={{ selectedBlock: block }}>

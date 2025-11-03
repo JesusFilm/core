@@ -69,9 +69,10 @@ export function JourneyQuickSettingsGoals(): ReactElement {
   }
 
   return (
-    <Stack>
+    <Stack data-testid="JourneyQuickSettingsGoals">
       <GoalsList variant="minimal" goals={goals} onClose={handleClose} />
       <Drawer
+        data-testid="GoalDetailsDrawer"
         open={open}
         onClose={handleClose}
         anchor="bottom"
@@ -100,6 +101,7 @@ export function JourneyQuickSettingsGoals(): ReactElement {
               {t('Goal Details')}
             </Typography>
             <IconButton
+              data-testid="CloseGoalDetailsDrawerButton"
               onClick={handleClose}
               sx={{ display: 'inline-flex' }}
               edge="end"

@@ -1,0 +1,1 @@
+export { getMuxMetadata } from './getMuxMetadata'

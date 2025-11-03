@@ -34,7 +34,11 @@ describe('getActionLabel', () => {
             color: null,
             variant: TypographyVariant.h2,
             content: 'Step Heading',
-            children: []
+            children: [],
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           }
         ]
       }
@@ -75,7 +79,9 @@ describe('getActionLabel', () => {
       __typename: 'LinkAction',
       parentBlockId: 'parentBlock.id',
       gtmEventName: 'click',
-      url: 'https://test.com/some-address'
+      url: 'https://test.com/some-address',
+      customizable: null,
+      parentStepId: null
     }
 
     const result = getActionLabel(action)

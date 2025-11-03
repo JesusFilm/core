@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps, ReactElement, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -28,6 +28,7 @@ const languages: Language[] = [
   {
     __typename: 'Language',
     id: '529',
+    slug: 'english',
     name: [
       {
         value: 'English',
@@ -39,6 +40,7 @@ const languages: Language[] = [
   {
     id: '496',
     __typename: 'Language',
+    slug: 'french',
     name: [
       {
         value: 'Français',
@@ -55,6 +57,7 @@ const languages: Language[] = [
   {
     id: '1106',
     __typename: 'Language',
+    slug: 'german-standard',
     name: [
       {
         value: 'Deutsch',
@@ -168,7 +171,10 @@ const imageBlock: TreeBlock<ImageBlock> = {
   width: 0,
   height: 0,
   blurhash: '',
-  children: []
+  children: [],
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 const videoBlock: TreeBlock<VideoBlock> = {
   id: 'videoBlockId',
@@ -188,7 +194,8 @@ const videoBlock: TreeBlock<VideoBlock> = {
   description: null,
   duration: null,
   image: null,
-  video: null,
+  subtitleLanguage: null,
+  mediaVideo: null,
   posterBlockId: 'imageBlockId',
   objectFit: null,
   children: [imageBlock]

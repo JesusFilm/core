@@ -6,6 +6,7 @@ import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useGetValueFromJourneyCustomizationString } from '@core/journeys/ui/useGetValueFromJourneyCustomizationString'
 
 import { BlockFields as Block } from '../../../../../../../../__generated__/BlockFields'
 import { useUpdateEdge } from '../../../libs/useUpdateEdge'
@@ -35,7 +36,8 @@ export function ActionButton({
   const updateEdge = useUpdateEdge()
 
   function getTitle(block, defaultTitle): string {
-    if (block.label != null && block.label !== '') return block.label
+    if (block.label != null && block.label !== '')
+      return useGetValueFromJourneyCustomizationString(block.label)
     if (block.__typename === 'VideoBlock')
       return block.video?.title?.[0]?.value ?? block.title ?? t('Video')
     return defaultTitle
@@ -52,10 +54,10 @@ export function ActionButton({
 
   function getTitleAndConnection(): BlockUIProperties {
     switch (block.__typename) {
-      case 'ButtonBlock':
-        return extractTitleAndConnection(block, t('Button'))
-      case 'FormBlock':
-        return extractTitleAndConnection(block, t('Form'))
+      case 'ButtonBlock': {
+        const defaultTitle = block.submitEnabled ? t('Submit') : t('Button')
+        return extractTitleAndConnection(block, defaultTitle)
+      }
       case 'RadioOptionBlock':
         return extractTitleAndConnection(block, t('Option'))
       case 'SignUpBlock':

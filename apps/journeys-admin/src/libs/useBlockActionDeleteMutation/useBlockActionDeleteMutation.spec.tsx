@@ -27,12 +27,14 @@ describe('useBlockActionDeleteMutation', () => {
     size: null,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: {
       __typename: 'NavigateToBlockAction',
       gtmEventName: null,
       parentBlockId: 'step1.id',
       blockId: 'step2.id'
-    }
+    },
+    settings: null
   }
 
   it('should delete block action', async () => {

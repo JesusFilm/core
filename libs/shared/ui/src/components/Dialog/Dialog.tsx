@@ -1,11 +1,10 @@
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
-import LoadingButton from '@mui/lab/LoadingButton'
 import Button from '@mui/material/Button'
 import MuiDialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import MuiDialogTitle from '@mui/material/DialogTitle'
-import IconButton from '@mui/material/IconButton'
+import IconButton, { IconButtonProps } from '@mui/material/IconButton'
 import { SxProps, styled } from '@mui/material/styles'
 import { ReactElement, ReactNode } from 'react'
 
@@ -22,6 +21,7 @@ interface DialogProps {
   container?: HTMLElement
   loading?: boolean
   testId?: string
+  slotProps?: SlotProps
   sx?: SxProps
 }
 
@@ -35,6 +35,10 @@ interface DialogTitle {
   icon?: ReactElement
   title: string
   closeButton?: boolean
+}
+
+interface SlotProps {
+  titleButton: IconButtonProps
 }
 
 const StyledDialog = styled(MuiDialog)({
@@ -82,6 +86,7 @@ export function Dialog({
   container,
   loading = false,
   testId,
+  slotProps,
   sx
 }: DialogProps): ReactElement {
   return (
@@ -102,10 +107,11 @@ export function Dialog({
           {dialogTitle.closeButton != null && dialogTitle.closeButton && (
             <IconButton
               size="medium"
+              {...slotProps?.titleButton}
               onClick={onClose}
               data-testid="dialog-close-button"
             >
-              <CloseRoundedIcon />
+              <CloseRoundedIcon data-testid="CloseRoundedIcon" />
             </IconButton>
           )}
         </MuiDialogTitle>
@@ -120,9 +126,9 @@ export function Dialog({
               {dialogAction.closeLabel}
             </Button>
           )}
-          <LoadingButton onClick={dialogAction?.onSubmit} loading={loading}>
+          <Button onClick={dialogAction?.onSubmit} loading={loading}>
             {dialogAction.submitLabel ?? 'Save'}
-          </LoadingButton>
+          </Button>
         </DialogActions>
       ) : dialogActionChildren != null ? (
         <DialogActions data-testid="dialog-action">

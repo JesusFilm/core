@@ -30,7 +30,11 @@ describe('TypographyEdit', () => {
     content: 'test content',
     align: null,
     color: null,
-    children: []
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
 
   const mockUpdateSuccess1 = {
@@ -47,7 +51,11 @@ describe('TypographyEdit', () => {
           {
             __typename: 'TypographyBlock',
             id: 'typography.id',
-            content: 'test'
+            content: 'test',
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           }
         ]
       }
@@ -68,12 +76,47 @@ describe('TypographyEdit', () => {
           {
             __typename: 'TypographyBlock',
             id: 'typography.id',
-            content: 'test content'
+            content: 'test content',
+            settings: {
+              __typename: 'TypographyBlockSettings',
+              color: null
+            }
           }
         ]
       }
     }))
   }
+
+  const mockJourneyWithCustomization: Journey = {
+    id: 'journeyId',
+    template: false,
+    journeyCustomizationFields: [
+      {
+        id: 'field1',
+        key: 'name',
+        value: 'John Doe',
+        defaultValue: 'Guest'
+      },
+      {
+        id: 'field2',
+        key: 'company',
+        value: null,
+        defaultValue: 'Acme Corp'
+      },
+      {
+        id: 'field3',
+        key: 'email',
+        value: 'john@example.com',
+        defaultValue: 'guest@example.com'
+      }
+    ]
+  } as unknown as Journey
+
+  const mockTemplateJourney: Journey = {
+    id: 'templateId',
+    template: true,
+    journeyCustomizationFields: []
+  } as unknown as Journey
 
   beforeEach(() => jest.clearAllMocks())
 
@@ -198,5 +241,80 @@ describe('TypographyEdit', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
     await waitFor(() => expect(firstUpdateMock.result).toHaveBeenCalled())
+  })
+
+  it('should resolve customization strings in non-template journeys', () => {
+    const propsWithCustomization = {
+      ...props,
+      content: 'Hello {{ name }}, welcome to {{ company }}!'
+    }
+
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: mockJourneyWithCustomization,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider>
+            <TypographyEdit {...propsWithCustomization} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByRole('textbox')
+    expect(input).toHaveValue('Hello John Doe, welcome to Acme Corp!')
+  })
+
+  it('should use defaultValue when value is null', () => {
+    const propsWithCustomization = {
+      ...props,
+      content: 'Company: {{ company }}'
+    }
+
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: mockJourneyWithCustomization,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider>
+            <TypographyEdit {...propsWithCustomization} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByRole('textbox')
+    expect(input).toHaveValue('Company: Acme Corp')
+  })
+
+  it('should not resolve customization strings in template journeys', () => {
+    const propsWithCustomization = {
+      ...props,
+      content: 'Hello {{ name }}, welcome!'
+    }
+
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{
+            journey: mockTemplateJourney,
+            variant: 'admin'
+          }}
+        >
+          <EditorProvider>
+            <TypographyEdit {...propsWithCustomization} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByRole('textbox')
+    expect(input).toHaveValue('Hello {{ name }}, welcome!')
   })
 })

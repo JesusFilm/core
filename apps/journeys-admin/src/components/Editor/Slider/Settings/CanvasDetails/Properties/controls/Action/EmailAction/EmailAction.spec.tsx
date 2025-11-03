@@ -9,6 +9,7 @@ import {
   ButtonSize,
   ButtonVariant
 } from '../../../../../../../../../../__generated__/globalTypes'
+import { StepFields as StepBlock } from '../../../../../../../../../../__generated__/StepFields'
 import { blockActionEmailUpdateMock } from '../../../../../../../../../libs/useBlockActionEmailUpdateMutation/useBlockActionEmailUpdateMutation.mock'
 import { blockActionNavigateToBlockUpdateMock } from '../../../../../../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
@@ -32,14 +33,22 @@ describe('EmailAction', () => {
     size: ButtonSize.large,
     startIconId: null,
     endIconId: null,
+    submitEnabled: null,
     action: {
       parentBlockId: 'button2.id',
       __typename: 'EmailAction',
       gtmEventName: 'gtmEventName',
-      email: 'imissedmondshen@gmail.com'
+      email: 'imissedmondshen@gmail.com',
+      customizable: false,
+      parentStepId: null
     },
-    children: []
+    children: [],
+    settings: null
   }
+  const selectedStep = {
+    __typename: 'StepBlock',
+    id: 'step.id'
+  } as unknown as TreeBlock<StepBlock>
 
   it('displays the action email', async () => {
     render(
@@ -58,7 +67,7 @@ describe('EmailAction', () => {
     const result = jest.fn().mockReturnValue(blockActionEmailUpdateMock.result)
     render(
       <MockedProvider mocks={[{ ...blockActionEmailUpdateMock, result }]}>
-        <EditorProvider initialState={{ selectedBlock }}>
+        <EditorProvider initialState={{ selectedBlock, selectedStep }}>
           <EmailAction />
         </EditorProvider>
       </MockedProvider>
@@ -131,7 +140,8 @@ describe('EmailAction', () => {
                 gtmEventName: 'gtmEventName',
                 blockId: 'step2.id'
               }
-            }
+            },
+            selectedStep
           }}
         >
           <EmailAction />

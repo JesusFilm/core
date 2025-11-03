@@ -8,6 +8,7 @@ describe('useLanguagesQuery', () => {
     {
       __typename: 'Language',
       id: '529',
+      slug: 'english',
       name: [
         {
           value: 'English',
@@ -19,6 +20,7 @@ describe('useLanguagesQuery', () => {
     {
       id: '496',
       __typename: 'Language',
+      slug: 'french',
       name: [
         {
           value: 'Français',
@@ -35,6 +37,7 @@ describe('useLanguagesQuery', () => {
     {
       id: '1106',
       __typename: 'Language',
+      slug: 'german-standard',
       name: [
         {
           value: 'Deutsch',

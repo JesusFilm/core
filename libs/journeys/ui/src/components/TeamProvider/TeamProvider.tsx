@@ -1,4 +1,5 @@
 import { OperationVariables, QueryResult, gql, useQuery } from '@apollo/client'
+import { sendGTMEvent } from '@next/third-parties/google'
 import {
   ReactElement,
   ReactNode,
@@ -6,7 +7,6 @@ import {
   useContext,
   useState
 } from 'react'
-import TagManager from 'react-gtm-module'
 
 import {
   GetLastActiveTeamIdAndTeams,
@@ -50,7 +50,9 @@ export const GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS = gql`
           firstName
           lastName
           imageUrl
+          email
         }
+        role
       }
       customDomains {
         id
@@ -67,11 +69,9 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
 
   function updateActiveTeam(data: GetLastActiveTeamIdAndTeams): void {
     if (activeTeam != null || data.teams == null) return
-    TagManager.dataLayer({
-      dataLayer: {
-        event: 'get_teams',
-        teams: data.teams.length
-      }
+    sendGTMEvent({
+      event: 'get_teams',
+      teams: data.teams.length
     })
     const lastActiveTeam = data.teams.find(
       (team) => team.id === data.getJourneyProfile?.lastActiveTeamId
@@ -98,7 +98,7 @@ export function TeamProvider({ children }: TeamProviderProps): ReactElement {
 
   const activeTeam =
     activeTeamId != null
-      ? query.data?.teams.find((team) => team.id === activeTeamId) ?? null
+      ? (query.data?.teams.find((team) => team.id === activeTeamId) ?? null)
       : activeTeamId
 
   // query.refetch() does not rerun onCompleted

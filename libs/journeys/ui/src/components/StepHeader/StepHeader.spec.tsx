@@ -5,6 +5,15 @@ import { defaultJourney } from '../TemplateView/data'
 
 import { StepHeader } from '.'
 
+jest.mock('next/legacy/image', () => ({
+  __esModule: true,
+  default: jest.fn(
+    ({ priority, blurDataURL, objectFit, objectPosition, ...props }) => {
+      return <img {...props} />
+    }
+  )
+}))
+
 describe('StepHeader', () => {
   it('should handleClick', () => {
     const onHeaderClick = jest.fn()
@@ -28,7 +37,21 @@ describe('StepHeader', () => {
           journey: {
             ...defaultJourney,
             website: true,
-            displayTitle: 'Journey display title'
+            displayTitle: 'Journey display title',
+            logoImageBlock: {
+              __typename: 'ImageBlock',
+              id: 'logoImageBlockId',
+              src: 'https://example.com/logo.png',
+              alt: 'Logo',
+              parentBlockId: null,
+              parentOrder: null,
+              height: 10,
+              width: 10,
+              blurhash: 'blurhash',
+              scale: 1,
+              focalLeft: 50,
+              focalTop: 50
+            }
           }
         }}
       >
@@ -37,5 +60,10 @@ describe('StepHeader', () => {
     )
 
     expect(screen.getByText('Journey display title')).toBeInTheDocument()
+    expect(screen.getByRole('img')).toHaveAttribute(
+      'src',
+      'https://example.com/logo.png'
+    )
+    expect(screen.getByTestId('StepHeaderMenu')).toBeInTheDocument()
   })
 })

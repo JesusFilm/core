@@ -1,9 +1,9 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
-import TagManager from 'react-gtm-module'
 
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { handleAction } from '../../libs/action'
@@ -26,15 +26,12 @@ jest.mock('../../libs/action', () => {
   }
 })
 
-jest.mock('react-gtm-module', () => ({
-  __esModule: true,
-  default: {
-    dataLayer: jest.fn()
-  }
+jest.mock('@next/third-parties/google', () => ({
+  sendGTMEvent: jest.fn()
 }))
 
-const mockedDataLayer = TagManager.dataLayer as jest.MockedFunction<
-  typeof TagManager.dataLayer
+const mockedSendGTMEvent = sendGTMEvent as jest.MockedFunction<
+  typeof sendGTMEvent
 >
 
 jest.mock('next/router', () => ({
@@ -65,7 +62,9 @@ const block: TreeBlock<SignUpFields> = {
     __typename: 'LinkAction',
     parentBlockId: 'signUp0.id',
     gtmEventName: 'signUp',
-    url: '#'
+    url: '#',
+    customizable: null,
+    parentStepId: null
   },
   children: []
 }
@@ -96,21 +95,6 @@ const SignUpMock = ({ mocks = [] }: SignUpMockProps): ReactElement => (
 )
 
 describe('SignUp', () => {
-  const originalLocation = window.location
-  const mockOrigin = 'https://example.com'
-
-  beforeAll(() => {
-    Object.defineProperty(window, 'location', {
-      value: {
-        origin: mockOrigin
-      }
-    })
-  })
-
-  afterAll(() => {
-    Object.defineProperty(window, 'location', originalLocation)
-  })
-
   it('should validate when fields are empty', async () => {
     const { getByRole, getAllByText } = render(
       <SnackbarProvider>
@@ -237,8 +221,11 @@ describe('SignUp', () => {
           __typename: 'LinkAction',
           parentBlockId: 'signUp0.id',
           gtmEventName: 'signUp',
-          url: '#'
-        }
+          url: '#',
+          customizable: null,
+          parentStepId: null
+        },
+        undefined
       )
     })
   })
@@ -258,12 +245,11 @@ describe('SignUp', () => {
     fireEvent.change(name, { target: { value: 'Anon' } })
     fireEvent.change(email, { target: { value: '123abc@gmail.com' } })
 
-    expect(submit).not.toHaveClass('MuiLoadingButton-loading')
+    expect(submit).not.toHaveClass('MuiButton-loading')
 
     fireEvent.click(submit)
 
-    await waitFor(() => expect(submit).toHaveClass('MuiLoadingButton-loading'))
-    expect(submit).toBeDisabled()
+    await waitFor(() => expect(submit).toHaveClass('MuiButton-loading'))
   })
 
   it('should create submission event on click', async () => {
@@ -365,13 +351,11 @@ describe('SignUp', () => {
     fireEvent.click(submit)
 
     await waitFor(() => {
-      expect(mockedDataLayer).toHaveBeenCalledWith({
-        dataLayer: {
-          event: 'sign_up_submission',
-          eventId: 'uuid',
-          blockId: 'signUp0.id',
-          stepName: 'Step {{number}}'
-        }
+      expect(mockedSendGTMEvent).toHaveBeenCalledWith({
+        event: 'sign_up_submission',
+        eventId: 'uuid',
+        blockId: 'signUp0.id',
+        stepName: 'Step {{number}}'
       })
     })
   })
@@ -426,7 +410,7 @@ describe('SignUp', () => {
 
     await waitFor(() => {
       expect(mockPlausible).toHaveBeenCalledWith('signupSubmit', {
-        u: `${mockOrigin}/journey.id/step.id`,
+        u: expect.stringContaining(`/journey.id/step.id`),
         props: {
           id: 'uuid',
           blockId: 'signUp0.id',

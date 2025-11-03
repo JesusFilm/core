@@ -1,7 +1,6 @@
-import { Meta, StoryObj } from '@storybook/react'
-import { fireEvent, within } from '@storybook/testing-library'
-import noop from 'lodash/noop'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
+import { fireEvent, within } from 'storybook/test'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
@@ -29,7 +28,7 @@ const Template: StoryObj<
   render: (args) => {
     return (
       <JourneyProvider value={{ journey: args.journey, variant: 'admin' }}>
-        <TemplatePreviewTabs openTeamDialog={false} setOpenTeamDialog={noop} />
+        <TemplatePreviewTabs />
       </JourneyProvider>
     )
   }
@@ -49,7 +48,7 @@ export const Videos = {
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const canvas = within(canvasElement)
-    fireEvent.click(canvas.getByText('{{count}} Videos'))
+    await fireEvent.click(canvas.getByText('{{count}} Videos'))
   }
 }
 

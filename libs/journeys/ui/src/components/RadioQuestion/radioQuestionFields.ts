@@ -5,5 +5,6 @@ export const RADIO_QUESTION_FIELDS = gql`
     id
     parentBlockId
     parentOrder
+    gridView
   }
 `

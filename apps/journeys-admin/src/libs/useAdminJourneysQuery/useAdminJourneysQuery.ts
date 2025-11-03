@@ -21,13 +21,14 @@ export const GET_ADMIN_JOURNEYS = gql`
       createdAt
       publishedAt
       trashedAt
+      updatedAt
       description
       slug
       themeName
       themeMode
       language {
         id
-        name(primary: true) {
+        name {
           value
           primary
         }
@@ -47,13 +48,6 @@ export const GET_ADMIN_JOURNEYS = gql`
           imageUrl
         }
       }
-      language {
-        id
-        name(primary: true) {
-          value
-          primary
-        }
-      }
       primaryImageBlock {
         id
         parentBlockId
@@ -64,6 +58,7 @@ export const GET_ADMIN_JOURNEYS = gql`
         height
         blurhash
       }
+      fromTemplateId
     }
   }
 `

@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useMutation } from '@apollo/client'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { useTranslation } from 'next-i18next'
 import { usePlausible } from 'next-plausible'
 import { ReactElement, useCallback } from 'react'
-import TagManager from 'react-gtm-module'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -67,7 +67,6 @@ export function HotkeyNavigation({ rtl }: HotkeyNavigationProps): ReactElement {
       // should always be called with nextActiveBlock()
       // should match with other handleNextNavigationEventCreate functions
       // places used:
-      // libs/journeys/ui/src/components/Card/Card.tsx
       // journeys/src/components/Conductor/NavigationButton/NavigationButton.tsx
       // journeys/src/components/Conductor/SwipeNavigation/SwipeNavigation.tsx
       // journeys/src/components/Conductor/HotkeyNavigation/HotkeyNavigation.tsx
@@ -120,16 +119,13 @@ export function HotkeyNavigation({ rtl }: HotkeyNavigationProps): ReactElement {
               })
             }
           })
-
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'step_next',
-            eventId: id,
-            blockId: activeBlock.id,
-            stepName,
-            targetStepId: targetBlock.id,
-            targetStepName
-          }
+        sendGTMEvent({
+          event: 'step_next',
+          eventId: id,
+          blockId: activeBlock.id,
+          stepName,
+          targetStepId: targetBlock.id,
+          targetStepName
         })
       }
       // should always be called with previousActiveBlock()
@@ -185,15 +181,13 @@ export function HotkeyNavigation({ rtl }: HotkeyNavigationProps): ReactElement {
               })
             }
           })
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'step_prev',
-            eventId: id,
-            blockId: activeBlock.id,
-            stepName,
-            targetStepId: targetBlock?.id,
-            targetStepName
-          }
+        sendGTMEvent({
+          event: 'step_prev',
+          eventId: id,
+          blockId: activeBlock.id,
+          stepName,
+          targetStepId: targetBlock?.id,
+          targetStepName
         })
       }
 

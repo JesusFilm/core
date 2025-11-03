@@ -3,23 +3,17 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/videos-admin",
   "projectType": "application",
-  "implicitDependencies": ["locales"],
+  "tags": ["doppler_config:stg_dev"],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          "cp -r libs/locales apps/videos-admin/src",
-          "nx _build videos-admin"
-        ],
+        "commands": ["nx _build videos-admin"],
         "parallel": false
       },
       "configurations": {
         "production": {
-          "commands": [
-            "cp -r libs/locales apps/videos-admin/src",
-            "CI=true nx _build videos-admin --prod"
-          ],
+          "commands": ["CI=true nx _build videos-admin --prod"],
           "parallel": false
         }
       }
@@ -38,18 +32,22 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "VERCEL_PROJECT_ID=$VIDEOS_ADMIN_VERCEL_PROJECT_ID npx vercel pull --environment=preview --token=$VERCEL_TOKEN",
-          "npx vercel build",
-          "VERCEL_PROJECT_ID=$VIDEOS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/videos-admin/.vercel-url"
+          "VERCEL_PROJECT_ID=$VIDEOS_ADMIN_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.preview.local",
+          "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.preview.local",
+          "pnpm exec vercel build",
+          "VERCEL_PROJECT_ID=$VIDEOS_ADMIN_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/videos-admin/.vercel-url"
         ],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "VERCEL_PROJECT_ID=$VIDEOS_ADMIN_VERCEL_PROJECT_ID npx vercel pull --environment=production --token=$VERCEL_TOKEN",
-            "npx vercel build --prod",
-            "VERCEL_PROJECT_ID=$VIDEOS_ADMIN_VERCEL_PROJECT_ID npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/videos-admin/.vercel-url"
+            "VERCEL_PROJECT_ID=$VIDEOS_ADMIN_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.production.local",
+            "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.production.local",
+            "pnpm exec vercel build --prod",
+            "VERCEL_PROJECT_ID=$VIDEOS_ADMIN_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/videos-admin/.vercel-url"
           ]
         }
       }
@@ -58,7 +56,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx @datadog/datadog-ci sourcemaps upload dist/apps/videos-admin/.next/static --service=journeys --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
+          "pnpm dlx @datadog/datadog-ci@3.20.0 sourcemaps upload dist/apps/videos-admin/.next/static --service=journeys --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
         ],
         "parallel": false
       }
@@ -67,7 +65,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "npx vercel alias set $(cat apps/videos-admin/.vercel-url) videos-admin-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "pnpm exec vercel alias set $(cat apps/videos-admin/.vercel-url) videos-admin-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
           "echo \"https://videos-admin-$PR_NUMBER-jesusfilm.vercel.app\" > apps/videos-admin/.vercel-url"
         ],
         "parallel": false
@@ -79,7 +77,8 @@
         "buildTarget": "videos-admin:_build",
         "dev": true,
         "hostname": "0.0.0.0",
-        "port": 4500
+        "port": 4500,
+        "turbo": true
       },
       "configurations": {
         "production": {
@@ -96,10 +95,7 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          "cp -r libs/locales apps/videos-admin/src",
-          "nx _serve videos-admin"
-        ],
+        "commands": ["nx _serve videos-admin"],
         "parallel": false
       },
       "configurations": {
@@ -147,7 +143,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apps/videos-admin/tsconfig.json"
+        "command": "pnpm exec tsc -b apps/videos-admin/tsconfig.json"
       }
     },
     "demo": {
@@ -162,28 +158,12 @@
         }
       }
     },
-    "codegen": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "gql.tada generate output --tsconfig apps/videos-admin/tsconfig.json"
-      }
-    },
     "fetch-secrets": {
       "executor": "nx:run-commands",
       "options": {
         "commands": [
           {
             "command": "DOPPLER_TOKEN=$DOPPLER_VIDEOS_ADMIN_TOKEN doppler secrets download --no-file --format=env --project videos-admin > apps/videos-admin/.env"
-          }
-        ]
-      }
-    },
-    "extract-translations": {
-      "executor": "nx:run-commands",
-      "options": {
-        "commands": [
-          {
-            "command": "npx i18next --config apps/videos-admin/i18next-parser.config.js"
           }
         ]
       }
@@ -204,6 +184,5 @@
         "parallel": false
       }
     }
-  },
-  "tags": ["doppler_config:stg_dev"]
+  }
 }

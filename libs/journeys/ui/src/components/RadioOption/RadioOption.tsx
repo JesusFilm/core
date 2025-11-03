@@ -1,32 +1,23 @@
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked'
-import Button, { ButtonProps } from '@mui/material/Button'
-import { styled } from '@mui/material/styles'
 import { useRouter } from 'next/router'
 import { MouseEvent, ReactElement } from 'react'
 
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
+import { getNextStepSlug } from '../../libs/getNextStepSlug'
+import { useJourney } from '../../libs/JourneyProvider'
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
+import { GridVariant } from './GridVariant/GridVariant'
+import { ListVariant } from './ListVariant/ListVariant'
 
-interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
+export interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
   selected?: boolean
   disabled?: boolean
   onClick?: (selectedId: string, selectedLabel: string) => void
   editableLabel?: ReactElement
+  gridView?: boolean | null
 }
-
-export const StyledRadioOption = styled(Button)<ButtonProps>(({ theme }) => ({
-  fontFamily: theme.typography.body2.fontFamily,
-  fontSize: theme.typography.body2.fontSize,
-  fontWeight: 600,
-  lineHeight: theme.typography.body2.lineHeight,
-  textAlign: 'start',
-  justifyContent: 'flex-start',
-  borderRadius: 'inherit',
-  padding: '14px 10px 14px 14px'
-}))
 
 export function RadioOption({
   label,
@@ -35,42 +26,40 @@ export function RadioOption({
   disabled = false,
   selected = false,
   onClick,
-  editableLabel
+  editableLabel,
+  gridView = false,
+  pollOptionImageBlockId,
+  children
 }: RadioOptionProps): ReactElement {
+  const { journey } = useJourney()
   const router = useRouter()
+
+  const resolvedLabel = useGetValueFromJourneyCustomizationString(label)
 
   const handleClick = (e: MouseEvent): void => {
     e.stopPropagation()
-    onClick?.(id, label)
-    handleAction(router, action)
+    onClick?.(id, resolvedLabel)
+    const nextStepSlug = getNextStepSlug(journey, action)
+    handleAction(router, action, nextStepSlug)
   }
 
-  return (
-    <StyledRadioOption
-      variant="contained"
+  return gridView === true ? (
+    <GridVariant
+      label={resolvedLabel}
       disabled={disabled}
-      onClick={handleClick}
-      fullWidth
-      disableRipple
-      startIcon={
-        selected ? (
-          <CheckCircleIcon data-testid="RadioOptionCheckCircleIcon" />
-        ) : (
-          <RadioButtonUncheckedIcon data-testid="RadioOptionRadioButtonUncheckedIcon" />
-        )
-      }
-      sx={
-        editableLabel != null
-          ? {
-              '&:hover': {
-                backgroundColor: 'primary.main'
-              }
-            }
-          : undefined
-      }
-      data-testid="JourneysRadioOption"
-    >
-      {editableLabel ?? label}
-    </StyledRadioOption>
+      selected={selected}
+      handleClick={handleClick}
+      editableLabel={editableLabel}
+      pollOptionImageBlockId={pollOptionImageBlockId}
+      children={children}
+    />
+  ) : (
+    <ListVariant
+      label={resolvedLabel}
+      disabled={disabled}
+      selected={selected}
+      handleClick={handleClick}
+      editableLabel={editableLabel}
+    />
   )
 }

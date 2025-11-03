@@ -1,6 +1,7 @@
-import { jest } from '@storybook/jest'
-import { Meta, StoryObj } from '@storybook/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
+import { fn } from 'storybook/test'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -18,13 +19,14 @@ const Demo: Meta<typeof RadioQuestion> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/RadioQuestion'
 }
 
-const onClose = jest.fn()
+const onClose = fn()
 
 const block: TreeBlock<RadioQuestionBlock> = {
   id: 'radioQuestion1.id',
   __typename: 'RadioQuestionBlock',
   parentBlockId: 'step1.id',
   parentOrder: 0,
+  gridView: false,
   children: []
 }
 
@@ -35,11 +37,13 @@ const Template: StoryObj<
 > = {
   render: (block) => {
     return (
-      <EditorProvider initialState={{ selectedBlock: { ...block } }}>
-        <Drawer title="Poll Block Selected" onClose={onClose}>
-          <RadioQuestion {...block} />
-        </Drawer>
-      </EditorProvider>
+      <MockedProvider>
+        <EditorProvider initialState={{ selectedBlock: { ...block } }}>
+          <Drawer title="Poll Block Selected" onClose={onClose}>
+            <RadioQuestion {...block} />
+          </Drawer>
+        </EditorProvider>
+      </MockedProvider>
     )
   }
 }

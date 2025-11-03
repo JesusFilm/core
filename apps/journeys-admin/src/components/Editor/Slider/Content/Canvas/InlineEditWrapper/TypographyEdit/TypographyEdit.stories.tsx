@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -33,7 +33,11 @@ const heading: TreeBlock<TypographyFields> = {
   color: null,
   content: "What's our purpose, and how did we get here?",
   variant: TypographyVariant.h3,
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const body: TreeBlock<TypographyFields> = {
@@ -46,7 +50,11 @@ const body: TreeBlock<TypographyFields> = {
   content:
     'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
   variant: null,
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const caption: TreeBlock<TypographyFields> = {
@@ -58,7 +66,11 @@ const caption: TreeBlock<TypographyFields> = {
   color: TypographyColor.error,
   content: 'This is a caption',
   variant: TypographyVariant.caption,
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const steps: Array<TreeBlock<StepBlock>> = [
@@ -81,6 +93,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
         themeMode: null,
         themeName: null,
         fullscreen: false,
+        backdropBlur: null,
         children: [
           {
             id: 'image0.id',
@@ -92,7 +105,10 @@ const steps: Array<TreeBlock<StepBlock>> = [
             parentBlockId: 'card6.id',
             parentOrder: 0,
             children: [],
-            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ'
+            blurhash: 'LFALX]%g4Tf+?^jEMxo#00Mx%gjZ',
+            scale: null,
+            focalLeft: 50,
+            focalTop: 50
           },
           heading,
           body,

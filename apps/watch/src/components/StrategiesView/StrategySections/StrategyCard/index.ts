@@ -1,1 +1,0 @@
-export { StrategyCard } from './StrategyCard'

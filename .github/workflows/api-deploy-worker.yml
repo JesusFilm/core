@@ -16,7 +16,7 @@ on:
         required: true
         type: string
     secrets:
-      APOLLO_KEY:
+      HIVE_TOKEN:
         required: true
       AWS_DEFAULT_REGION:
         required: true
@@ -26,72 +26,52 @@ on:
         required: true
       AWS_NETWORK_CONFIG:
         required: true
+      NX_CLOUD_ACCESS_TOKEN:
+        required: true
+permissions:
+  contents: read
+  checks: write
 
 jobs:
   build-and-deploy:
-    environment: Production
+    environment: ${{ inputs.env }}
     env:
-      APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+      HIVE_TOKEN: ${{ secrets.HIVE_TOKEN }}
       ENV_SUFFIX: ${{ inputs.branch }}
       ECS_CLUSTER: jfp-ecs-cluster-${{ inputs.env }}
       ECS_SERVICE: ${{ inputs.name}}-${{ inputs.env }}-service
       ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
-    runs-on: ubuntu-latest
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [22]
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: nrwl/nx-set-shas@v3
-      - uses: actions/setup-node@v4
+      - uses: nrwl/nx-set-shas@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-
-      - name: Cache Node Modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: node-modules-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: node-modules-${{ matrix.node-version }}-
-
-      - name: NPM Install
-        run: npm install --silent
-
-      - name: nx Install
-        run: npm install -g nx --silent
-
-      - name: rover Install
-        run: npm install -g @apollo/rover@0.22.0
-
-      - name: Get affected apps
-        run: |
-          echo "apps=$(npx ts-node tools/scripts/affected-apps.ts --projects apps/api-*)" >> $GITHUB_OUTPUT
-          cat $GITHUB_OUTPUT
-        id: affected-apps
-
-      - name: Has Prisma
-        id: has_prisma
-        uses: andstor/file-existence-action@v3
-        with:
-          files: 'apps/${{inputs.name}}/db/schema.prisma'
-
-      - name: Prisma Migrate
-        if: steps.has_prisma.outputs.files_exists == 'true' && contains(steps.affected-apps.outputs.apps, inputs.name)
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --silent
+      - name: Prisma Generate
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: prisma-generate
-          projects: ${{ inputs.name }}
-          parallel: 1
+          all: true
         env:
           DISABLE_ERD: true
       - name: Build ${{ inputs.name }}
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: build
@@ -100,7 +80,7 @@ jobs:
 
       # ECS Deployment
       - name: Configure ECS AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
@@ -108,31 +88,32 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr-ecs
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push the image to Amazon ECR
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push Docker image to Amazon ECR
         id: build-image-ecs
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr-ecs.outputs.registry }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apis/${{ inputs.name }}/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+            ${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          build-args: |
+            SERVICE_VERSION=${{ env.IMAGE_TAG }}
+
+      - name: Set image output
         run: |
-          # Build a docker container and push it to ECR 
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest . -f apps/${{ inputs.name }}/Dockerfile
-          echo "Pushing image to ECR..."
-          docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "image=${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
 
       - name: Restart task definition
-        if: contains(steps.affected-apps.outputs.apps, inputs.name)
         run: |
           aws ecs update-service --force-new-deployment --service $ECS_SERVICE --cluster $ECS_CLUSTER
 
-      - name: Update stage Apollo managed subgraph
-        if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'stage')
+      - name: Update Hive managed subgraph
         run: |
-          rover subgraph publish API-GATEWAY-0zuda@stage --name ${{ inputs.name }} --routing-url ${{ inputs.endpoint_url }} --schema apps/${{ inputs.name }}/schema.graphql
-
-      - name: Update prod Apollo managed subgraph
-        if: contains(steps.affected-apps.outputs.apps, inputs.name) && contains(inputs.branch, 'main')
-        run: |
-          rover subgraph publish API-GATEWAY-0zuda@current --name ${{ inputs.name }} --routing-url ${{ inputs.endpoint_url }} --schema apps/${{ inputs.name }}/schema.graphql
+          pnpm exec hive schema:publish apis/${{ inputs.name }}/schema.graphql --service ${{ inputs.name }} --url ${{ inputs.endpoint_url }} --github

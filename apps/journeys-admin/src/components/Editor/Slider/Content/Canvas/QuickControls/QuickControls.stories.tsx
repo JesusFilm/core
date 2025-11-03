@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { SnackbarProvider } from 'notistack'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -32,7 +32,11 @@ export const Default = {
   args: {
     selectedBlock: {
       __typename: 'TypographyBlock',
-      id: 'typographyBlock.id'
+      id: 'typographyBlock.id',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     }
   }
 }

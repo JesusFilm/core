@@ -1,39 +1,45 @@
 #!/bin/bash
 
-# Change permissions of files in workspace to match primary user
-sudo chown node -R /workspaces
-sudo chgrp node -R /workspaces
+set -e
+
+echo "Starting post-create setup..."
+
 
 cd /workspaces/core
 
-# add default user to postgres
-psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;"
+# Wait for database to be ready
+echo "Waiting for database to be ready..."
+for i in {1..30}; do
+  pg_isready -h db -p 5432 -U postgres && break
+  echo "Database not ready (try $i/30)…"
+  sleep 2
+done
+[ "$i" -eq 30 ] && { echo "Postgres failed to start"; exit 1; }
+echo "Database is ready!"
 
-# install Nx CLI tool
-npm install -g nx
+# add default user to postgres (with error handling)
+echo "Creating test user in database..."
+psql -c "CREATE USER \"test-user\" WITH PASSWORD 'test-password' CREATEDB;" || echo "User test-user might already exist"
 
-# install Nest CLI tool
-npm install -g @nestjs/cli@^8.1.5
+# install pnpm
+echo "Installing pnpm..."
+corepack enable && corepack prepare pnpm --activate
 
-# install Rover CLI tool
-npm install -g @apollo/rover@0.23.0
+# install global CLIs
+echo "Installing global CLIs..."
+npm i -g nx @nestjs/cli@^8.1.5 foreman apollo graphql
 
-# install Foreman CLI tool
-npm install -g foreman
-
-# install Apollo CLI tool for codegen
-npm install -g apollo graphql
+echo "Installing rover..."
+curl -sSL https://rover.apollo.dev/nix/v0.23.0 | sh
 
 # install all dependencies
-npm i
+echo "Installing project dependencies..."
+pnpm install
 
-# install router to api gateways
-# when updating router version you'll need to:
-# - update .devcontainer/post-create-command.sh apollo router version (...nix/vX.X.X)
-# - update app/api-gateway/Dockerfile image version (...router/vX.X.X)
-# - inform all developers to rebuild their containers
-curl -sSL https://router.apollo.dev/download/nix/v1.51.0 | sh
-mv router apps/api-gateway/
-
-# update plausible db
-psql -U postgres -h db -d plausible_db < .devcontainer/plausible.sql
+# update plausible db (with error handling)
+echo "Setting up Plausible database..."
+if ! psql -h db -U postgres -d plausible_db < .devcontainer/plausible.sql; then
+  echo "❌ Plausible DB bootstrap failed" >&2
+  exit 1
+fi
+echo "Post-create setup completed!"

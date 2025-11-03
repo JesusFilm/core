@@ -1,22 +1,31 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
+import { type NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
-import {
-  type CoreVideo,
-  useAlgoliaVideos
-} from '../../libs/algolia/useAlgoliaVideos'
+import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
+
+import { type CoreVideo } from '../../libs/algolia/transformAlgoliaVideos'
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
 
 import { VideoContentPage } from '.'
 
-jest.mock('../../libs/algolia/useAlgoliaVideos')
+jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
+jest.mock('next/router', () => ({
+  useRouter: jest.fn()
+}))
 
 const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
   typeof useAlgoliaVideos
 >
+const mockRouter: Partial<NextRouter> = {
+  replace: jest.fn(),
+  asPath: '/watch/video-slug/english.html',
+  locale: 'en'
+}
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 describe('VideoContentPage', () => {
   const transformedVideos = [
@@ -49,10 +58,12 @@ describe('VideoContentPage', () => {
   ] as unknown as CoreVideo[]
 
   beforeEach(() => {
+    jest.clearAllMocks()
+    mockUseRouter.mockReturnValue(mockRouter as NextRouter)
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: false,
       noResults: false,
-      hits: transformedVideos,
+      items: transformedVideos,
       showMore: jest.fn(),
       isLastPage: false,
       sendEvent: jest.fn()
@@ -90,7 +101,7 @@ describe('VideoContentPage', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[getVideoChildrenMock]}>
         <SnackbarProvider>
-          <VideoProvider value={{ content: videos[0] }}>
+          <VideoProvider value={{ content: videos[1] }}>
             <VideoContentPage />
           </VideoProvider>
         </SnackbarProvider>
@@ -134,5 +145,18 @@ describe('VideoContentPage', () => {
     expect(getByRole('button', { name: 'Download' })).toBeInTheDocument()
     fireEvent.click(getByRole('button', { name: 'Download' }))
     expect(getByRole('dialog', { name: 'Download Video' })).toBeInTheDocument()
+  })
+
+  it('should not render download button if no downloads', () => {
+    const { queryByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <VideoProvider value={{ content: videos[5] }}>
+            <VideoContentPage />
+          </VideoProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(queryByRole('button', { name: 'Download' })).not.toBeInTheDocument()
   })
 })

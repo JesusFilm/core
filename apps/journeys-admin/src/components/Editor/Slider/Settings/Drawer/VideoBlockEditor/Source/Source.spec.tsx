@@ -1,16 +1,20 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
+import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { NextRouter, useRouter } from 'next/router'
+import {
+  InstantSearchApi,
+  useInfiniteHits,
+  useInstantSearch,
+  useSearchBox
+} from 'react-instantsearch'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import {
-  VideoBlockSource,
-  VideoLabel
-} from '../../../../../../../../__generated__/globalTypes'
-import { videos } from '../../VideoLibrary/VideoFromLocal/data'
+import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
+import { videoItems } from '../../VideoLibrary/data'
 import { GET_VIDEO } from '../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
-import { GET_VIDEOS } from '../../VideoLibrary/VideoFromLocal/VideoFromLocal'
 
 import { Source } from '.'
 
@@ -26,45 +30,37 @@ jest.mock('next/router', () => ({
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-const getVideosMock = {
-  request: {
-    query: GET_VIDEOS,
-    variables: {
-      offset: 0,
-      limit: 5,
-      where: {
-        availableVariantLanguageIds: ['529'],
-        title: null,
-        labels: [
-          VideoLabel.episode,
-          VideoLabel.featureFilm,
-          VideoLabel.segment,
-          VideoLabel.shortFilm
-        ]
-      }
-    }
-  },
-  result: {
-    data: {
-      videos
-    }
-  }
-}
+jest.mock('react-instantsearch')
+
+const mockUseSearchBox = useSearchBox as jest.MockedFunction<
+  typeof useSearchBox
+>
+const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
+  typeof useInstantSearch
+>
+const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
+  typeof useInfiniteHits
+>
 
 const getVideoMock = {
   request: {
     query: GET_VIDEO,
     variables: {
-      id: '2_0-Brand_Video',
+      id: 'videoId',
       languageId: '529'
     }
   },
   result: {
     data: {
       video: {
-        id: '2_0-Brand_Video',
-        image:
-          'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+        id: 'videoId',
+        images: [
+          {
+            __typename: 'CloudflareImage',
+            mobileCinematicHigh:
+              'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+          }
+        ],
         primaryLanguageId: '529',
         title: [
           {
@@ -93,6 +89,28 @@ describe('Source', () => {
   const push = jest.fn()
   const on = jest.fn()
 
+  beforeEach(() => {
+    mockUseSearchBox.mockReturnValue({
+      refine: jest.fn()
+    } as unknown as SearchBoxRenderState)
+
+    mockUseInfiniteHits.mockReturnValue({
+      items: videoItems,
+      showMore: jest.fn(),
+      isLastPage: false
+    } as unknown as InfiniteHitsRenderState)
+
+    mockUseInstantSearch.mockReturnValue({
+      status: 'idle',
+      results: {
+        __isArtificial: false,
+        nbHits: videoItems.length
+      }
+    } as unknown as InstantSearchApi)
+
+    jest.clearAllMocks()
+  })
+
   it('calls onChange when video selected', async () => {
     const onChange = jest.fn()
     const result = jest.fn().mockReturnValue(getVideoMock.result)
@@ -106,7 +124,7 @@ describe('Source', () => {
     } as unknown as NextRouter)
 
     render(
-      <MockedProvider mocks={[getVideosMock, { ...getVideoMock, result }]}>
+      <MockedProvider mocks={[{ ...getVideoMock, result }]}>
         <EditorProvider initialState={{ selectedAttributeId: 'video1.id' }}>
           <Source selectedBlock={null} onChange={onChange} />
         </EditorProvider>
@@ -118,16 +136,13 @@ describe('Source', () => {
       ).toBeInTheDocument()
     )
     fireEvent.click(screen.getByRole('button', { name: 'Select Video' }))
-    await waitFor(() =>
-      expect(screen.getByText('Brand Video')).toBeInTheDocument()
-    )
-    fireEvent.click(screen.getByText('Brand Video'))
+    await waitFor(() => fireEvent.click(screen.getByText('title1')))
     await waitFor(() => expect(result).toHaveBeenCalled())
     fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     await waitFor(() =>
       expect(onChange).toHaveBeenCalledWith({
         duration: 144,
-        videoId: '2_0-Brand_Video',
+        videoId: 'videoId',
         videoVariantLanguageId: '529',
         source: VideoBlockSource.internal,
         startAt: 0,
@@ -169,8 +184,9 @@ describe('Source', () => {
             parentOrder: 0,
             action: null,
             source: VideoBlockSource.youTube,
-            video: null,
+            mediaVideo: null,
             objectFit: null,
+            subtitleLanguage: null,
             posterBlockId: 'poster1.id',
             children: []
           }}
@@ -190,57 +206,6 @@ describe('Source', () => {
         name: 'What is the Bible?'
       })
     ).toHaveAttribute('src', 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg')
-  })
-
-  it('shows Cloudflare video', async () => {
-    const onChange = jest.fn()
-    render(
-      <MockedProvider>
-        <Source
-          selectedBlock={{
-            id: 'video1.id',
-            __typename: 'VideoBlock',
-            parentBlockId: 'card1.id',
-            description:
-              'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
-            duration: 348,
-            endAt: 348,
-            fullsize: true,
-            image: null,
-            muted: false,
-            autoplay: true,
-            startAt: 0,
-            title: 'What is the Bible?',
-            videoId: 'videoId',
-            videoVariantLanguageId: null,
-            parentOrder: 0,
-            action: null,
-            source: VideoBlockSource.cloudflare,
-            video: null,
-            objectFit: null,
-            posterBlockId: 'poster1.id',
-            children: []
-          }}
-          onChange={onChange}
-        />
-      </MockedProvider>
-    )
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', {
-          name: 'What is the Bible? What is the Bible? Custom Video'
-        })
-      ).toBeInTheDocument()
-    )
-    expect(
-      screen
-        .getByRole('img', {
-          name: 'What is the Bible?'
-        })
-        .getAttribute('src')
-    ).toMatch(
-      /https:\/\/customer-.*\.cloudflarestream\.com\/videoId\/thumbnails\/thumbnail.jpg\?time=2s&height=55&width=55/
-    )
   })
 
   it('shows video details on source button click', async () => {
@@ -275,8 +240,12 @@ describe('Source', () => {
             parentOrder: 0,
             action: null,
             source: VideoBlockSource.youTube,
-            video: null,
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: 'ak06MSETeo4'
+            },
             objectFit: null,
+            subtitleLanguage: null,
             posterBlockId: 'poster1.id',
             children: []
           }}

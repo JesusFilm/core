@@ -23,6 +23,9 @@ export interface JourneyImageBlockCreate_imageBlockCreate {
    * Find a frontend implementation at https: // github.com/woltapp/blurhash
    */
   blurhash: string;
+  scale: number | null;
+  focalTop: number | null;
+  focalLeft: number | null;
 }
 
 export interface JourneyImageBlockCreate {

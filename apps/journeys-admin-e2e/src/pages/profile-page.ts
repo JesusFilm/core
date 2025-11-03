@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { expect } from '@playwright/test'
-import { Page } from 'playwright-core'
+import type { Page } from 'playwright-core'
 
 const thirtySecondsTimeout = 30000
 
 export class ProfilePage {
   readonly page: Page
+  selectedLanguage: string
   constructor(page: Page) {
     this.page = page
   }
@@ -28,7 +29,7 @@ export class ProfilePage {
         'div[data-testid="JourneysAdminOnboardingPageWrapper"] h4',
         { hasText: 'Email Preferences' }
       )
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
+    ).toBeVisible({ timeout: 30000 })
   }
 
   async clickAccountNotification() {
@@ -42,7 +43,7 @@ export class ProfilePage {
       this.page.locator('#notistack-snackbar', {
         hasText: 'Email Preferences Updated.'
       })
-    ).toBeHidden({ timeout: thirtySecondsTimeout })
+    ).toBeHidden({ timeout: 30000 })
   }
 
   async activateAccountNotification() {
@@ -101,12 +102,59 @@ export class ProfilePage {
     ).toBeVisible()
     await expect(
       this.page.locator('#notistack-snackbar', { hasText: 'Logout successful' })
-    ).toBeHidden({ timeout: thirtySecondsTimeout })
+    ).toBeHidden({ timeout: 30000 })
   }
 
   async verifyloggedOut() {
     await expect(this.page.locator('input#username')).toBeVisible({
-      timeout: thirtySecondsTimeout
+      timeout: 30000
     })
+  }
+
+  async clickLanguageOption() {
+    await this.page
+      .locator('li[data-testid="JourneysAdminMenuItemLanguage"]')
+      .click()
+  }
+
+  async enterLanguage(language: string) {
+    const selectedValue = await this.page
+      .locator('div[role="dialog"] div[aria-haspopup="listbox"] p')
+      .innerText()
+    this.selectedLanguage = selectedValue === language ? 'français' : language
+    await this.page
+      .locator('div[role="dialog"] div[aria-haspopup="listbox"]')
+      .click()
+    await expect(this.page.locator('span[role="progressbar"]')).toBeHidden({
+      timeout: 30000
+    })
+    await this.page
+      .locator('ul[role="listbox"] li[role="option"]', {
+        hasText: this.selectedLanguage
+      })
+      .first()
+      .click({ timeout: 30000 })
+  }
+
+  async verifySelectedLanguageUpdatedInChangeLangPopup() {
+    await expect(
+      this.page.locator('div[role="dialog"] div[aria-haspopup="listbox"] p', {
+        hasText: this.selectedLanguage
+      })
+    ).toBeVisible()
+  }
+
+  async verifySelectedLanguageUpdatedOnTheSite() {
+    const sampleText =
+      this.selectedLanguage === 'français' ? 'Langue' : 'Lengua'
+    await expect(
+      this.page.locator('li[data-testid="JourneysAdminMenuItemLanguage"]', {
+        hasText: sampleText
+      })
+    ).toBeVisible()
+  }
+
+  async popupCloseBtn() {
+    await this.page.locator('button[data-testid="dialog-close-button"]').click()
   }
 }

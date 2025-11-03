@@ -6,12 +6,17 @@ import DebounceLink from 'apollo-link-debounce'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 
-import { TEXT_RESPONSE_LABEL_UPDATE } from './Label'
+import {
+  TEXT_RESPONSE_HIDE_LABEL_UPDATE,
+  TEXT_RESPONSE_LABEL_UPDATE
+} from './Label'
 
 import { Label } from '.'
 
@@ -27,12 +32,15 @@ describe('Edit Label field', () => {
     parentBlockId: '0',
     parentOrder: 0,
     label: 'Your answer here',
+    placeholder: null,
     hint: null,
     minRows: null,
     integrationId: null,
     type: null,
     routeId: null,
-    children: []
+    required: null,
+    children: [],
+    hideLabel: false
   }
 
   const mockLabelUpdate1 = {
@@ -84,6 +92,24 @@ describe('Edit Label field', () => {
         textResponseBlockUpdate: {
           id: block.id,
           label: 'Your answer here more'
+        }
+      }
+    }))
+  }
+
+  const mockLabelUpdateWhitespace = {
+    request: {
+      query: TEXT_RESPONSE_LABEL_UPDATE,
+      variables: {
+        id: block.id,
+        label: ''
+      }
+    },
+    result: jest.fn(() => ({
+      data: {
+        textResponseBlockUpdate: {
+          id: block.id,
+          label: ''
         }
       }
     }))
@@ -203,5 +229,135 @@ describe('Edit Label field', () => {
     const field = screen.getByRole('textbox', { name: 'Label' })
     await userEvent.type(field, ' more')
     await waitFor(() => expect(mockLabelUpdate1.result).not.toHaveBeenCalled())
+  })
+
+  it('should not call mutation if only whitespace is entered', async () => {
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([mockLabelUpdateWhitespace])
+    ])
+
+    render(
+      <MockedProvider link={link} addTypename={false}>
+        <EditorProvider initialState={{ selectedBlock: block }}>
+          <Label />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox', { name: 'Label' })
+    await userEvent.clear(field)
+    await userEvent.type(field, ' ')
+
+    await waitFor(() => {
+      expect(mockLabelUpdateWhitespace.result).not.toHaveBeenCalled()
+    })
+  })
+
+  it('should toggle the hide label', async () => {
+    const mockHideLabelUpdate = {
+      request: {
+        query: TEXT_RESPONSE_HIDE_LABEL_UPDATE,
+        variables: {
+          id: block.id,
+          hideLabel: true
+        }
+      },
+      result: jest.fn(() => ({
+        data: {
+          textResponseBlockUpdate: {
+            id: block.id,
+            hideLabel: true
+          }
+        }
+      }))
+    }
+
+    render(
+      <MockedProvider mocks={[mockHideLabelUpdate]} addTypename={false}>
+        <EditorProvider initialState={{ selectedBlock: block }}>
+          <Label />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    const toggleButton = screen.getByRole('button', { name: 'Hide label' })
+    fireEvent.click(toggleButton)
+    await waitFor(() => expect(mockHideLabelUpdate.result).toHaveBeenCalled())
+  })
+
+  it('should resolve customizable label value if journey is not a template', () => {
+    const blockWithCustomizableLabel = {
+      ...block,
+      label: '{{ label }}'
+    }
+
+    const journeyWithCustomizableFields = {
+      journeyCustomizationFields: [
+        {
+          __typename: 'JourneyCustomizationField',
+          id: '1',
+          journeyId: 'journeyId',
+          key: 'label',
+          value: 'Your customized label',
+          defaultValue: 'Default label'
+        }
+      ]
+    } as unknown as Journey
+
+    render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}
+        >
+          <EditorProvider
+            initialState={{ selectedBlock: blockWithCustomizableLabel }}
+          >
+            <Label />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox', { name: 'Label' })
+    expect(field).toHaveValue('Your customized label')
+  })
+
+  it('should not resolve customizable label value for template journeys', () => {
+    const blockWithCustomizableLabel = {
+      ...block,
+      label: '{{ label }}'
+    }
+
+    const journeyWithCustomizableFields = {
+      template: true,
+      journeyCustomizationFields: [
+        {
+          __typename: 'JourneyCustomizationField',
+          id: '1',
+          journeyId: 'journeyId',
+          key: 'label',
+          value: 'Your customized label',
+          defaultValue: 'Default label'
+        }
+      ]
+    } as unknown as Journey
+
+    render(
+      <MockedProvider mocks={[mockLabelUpdate1]} addTypename={false}>
+        <JourneyProvider
+          value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}
+        >
+          <EditorProvider
+            initialState={{ selectedBlock: blockWithCustomizableLabel }}
+          >
+            <Label />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    const field = screen.getByRole('textbox', { name: 'Label' })
+    expect(field).toHaveValue('{{ label }}')
   })
 })

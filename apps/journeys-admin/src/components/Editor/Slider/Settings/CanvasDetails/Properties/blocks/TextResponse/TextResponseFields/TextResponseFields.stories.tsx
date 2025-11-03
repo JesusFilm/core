@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -52,7 +52,9 @@ export const Complete = {
   ...Template,
   args: {
     block: {
+      required: true,
       label: 'Label limit 1234',
+      placeholder: 'Placeholder text here',
       hint: 'Hint limit 12345678910',
       minRows: 4
     }

@@ -6,6 +6,15 @@ import { ReactElement } from 'react'
 
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
+import {
+  getFooterMobileHeight,
+  getTitle,
+  hasChatWidget,
+  hasCombinedFooter,
+  hasHostAvatar,
+  hasHostDetails
+} from '../Card/utils/getFooterElements'
+import { InformationButton } from '../StepHeader/InformationButton'
 
 import { ChatButtons } from './ChatButtons'
 import { FooterButtonList } from './FooterButtonList'
@@ -15,24 +24,24 @@ import { HostTitleLocation } from './HostTitleLocation'
 interface StepFooterProps {
   onFooterClick?: () => void
   sx?: SxProps
-  title?: string
 }
 
 export function StepFooter({
   onFooterClick,
-  sx,
-  title
+  sx
 }: StepFooterProps): ReactElement {
   const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-  const hasAvatar =
-    variant === 'admin' ||
-    journey?.host?.src1 != null ||
-    journey?.host?.src2 != null
 
-  const hasChatWidget =
-    variant === 'admin' ||
-    (journey?.chatButtons != null && journey?.chatButtons.length > 0)
+  const hostAvatar = hasHostAvatar({ journey, variant })
+  const hostDetails = hasHostDetails({ journey })
+  const chat = hasChatWidget({ journey, variant })
+  const title = getTitle({ journey })
+
+  const footerMobileHeight = getFooterMobileHeight({ journey, variant })
+  const combinedFooter = hasCombinedFooter({ journey, variant })
+
+  const isWebsite = journey?.website === true
 
   return (
     <Box
@@ -55,68 +64,83 @@ export function StepFooter({
         justifyContent="space-between"
         spacing={2}
         sx={{
-          px: { xs: 6, lg: 0 },
+          px: { xs: variant === 'default' ? 6 : 3, lg: 0 },
           py: { xs: 2, lg: 0 },
-          pt: { xs: 3, sm: 0 },
+
           flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
           justifyContent: 'space-between',
           alignItems: { xs: 'flex-start', lg: 'center' },
           width: '100%'
         }}
       >
-        <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
-          <FooterButtonList />
-        </Box>
+        {!isWebsite && !combinedFooter && (
+          <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
+            <FooterButtonList />
+          </Box>
+        )}
 
         <Stack
           sx={{
             width: '100%',
-            height: 52,
+            height: { xs: footerMobileHeight, sm: 52 },
             flexDirection: rtl ? 'row-reverse' : 'row',
-            alignItems: 'center'
+            alignItems: 'center',
+            justifyContent: isWebsite ? 'space-between' : undefined,
+            mt: '0px !important'
           }}
           gap={4}
         >
-          <Stack
-            sx={{
-              width: '100%',
-              minWidth: 0,
-              flexDirection: 'row',
-              alignItems: 'center'
-            }}
-            gap={2}
-          >
-            {hasAvatar && (
-              <HostAvatars
-                hasPlaceholder={variant === 'admin'}
-                avatarSrc1={journey?.host?.src1}
-                avatarSrc2={journey?.host?.src2}
-              />
-            )}
-            <Stack sx={{ flex: '1 1 100%', minWidth: 0 }}>
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  zIndex: 1,
-                  // Always dark mode on lg breakpoint
-                  color: { xs: 'primary.main', lg: 'white' },
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}
-              >
-                {title != null
-                  ? title
-                  : journey?.displayTitle ?? journey?.seoTitle}
-              </Typography>
-              <HostTitleLocation />
-            </Stack>
-
-            <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
+          {!isWebsite && combinedFooter && (
+            <Box sx={{ display: { xs: 'flex', sm: 'none' } }}>
               <FooterButtonList />
             </Box>
-          </Stack>
-          {hasChatWidget && (
+          )}
+          {isWebsite && <InformationButton sx={{ p: 0 }} />}
+          {!isWebsite && (
+            <Stack
+              sx={{
+                width: '100%',
+                minWidth: 0,
+                flexDirection: 'row',
+                alignItems: 'center'
+              }}
+              gap={2}
+            >
+              {hostAvatar && (
+                <HostAvatars
+                  hasPlaceholder={variant === 'admin'}
+                  avatarSrc1={journey?.host?.src1}
+                  avatarSrc2={journey?.host?.src2}
+                />
+              )}
+              {(title != null || hostDetails) && (
+                <Stack sx={{ flex: '1 1 100%', minWidth: 0 }}>
+                  {title != null && (
+                    <Typography
+                      variant="subtitle1"
+                      sx={{
+                        zIndex: 1,
+                        // Always dark mode on lg breakpoint
+                        color: { xs: 'primary.main', lg: 'white' },
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                    >
+                      {title}
+                    </Typography>
+                  )}
+                  {hostDetails && <HostTitleLocation />}
+                </Stack>
+              )}
+
+              <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
+                <FooterButtonList />
+              </Box>
+            </Stack>
+          )}
+
+          {chat && (
             <Box>
               <ChatButtons />
             </Box>

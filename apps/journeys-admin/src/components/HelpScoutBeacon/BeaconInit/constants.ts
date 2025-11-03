@@ -1,9 +1,9 @@
-const desktopAppBarGap = 65
-const desktopContainerPadding = 16
+const desktopAppBarGap = 116
+const desktopContainerPadding = 20
 
 export const DESKTOP_APP_BAR_GAP = `${desktopAppBarGap}px`
 export const DESKTOP_CONTAINER_PADDING = `${desktopContainerPadding}px`
-export const DESKTOP_CONTAINER_WIDTH = '327px'
+export const DESKTOP_CONTAINER_WIDTH = '326px'
 export const DESKTOP_CONTAINER_HEIGHT = `calc(100vh - ${desktopAppBarGap}px)`
 export const DESKTOP_CONTAINER_MAX_HEIGHT = `calc(100vh - ${
   desktopAppBarGap + desktopContainerPadding

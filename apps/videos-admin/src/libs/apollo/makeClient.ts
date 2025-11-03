@@ -13,14 +13,18 @@ export function makeClient(
 ): ApolloClient<NormalizedCacheObject> {
   const httpLink = createHttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
-    ...options
+    ...options,
+    headers: {
+      ...options?.headers,
+      'x-graphql-client-name': 'videos-admin',
+      'x-graphql-client-version':
+        process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
+    }
   })
 
   return new ApolloClient({
     link: httpLink,
     cache: new InMemoryCache(cache),
-    name: 'videos-admin',
-    version: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA,
     connectToDevTools: true
   })
 }

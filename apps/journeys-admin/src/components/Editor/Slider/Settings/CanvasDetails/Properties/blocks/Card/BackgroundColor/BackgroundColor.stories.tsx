@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/testing-library'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
+import { screen, userEvent } from 'storybook/test'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -52,6 +52,7 @@ const card: TreeBlock<CardBlock> = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   fullscreen: false,
+  backdropBlur: null,
   children: []
 }
 

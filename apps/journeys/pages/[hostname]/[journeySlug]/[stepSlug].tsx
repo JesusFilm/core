@@ -39,10 +39,6 @@ function HostStepPage({ journey, locale, rtl }: StepPageProps): ReactElement {
       (block.slug === stepSlug || block.id === stepSlug)
   )
 
-  if (stepBlock == null) {
-    void router.push('/404')
-  }
-
   return (
     <>
       <Head>
@@ -95,7 +91,10 @@ function HostStepPage({ journey, locale, rtl }: StepPageProps): ReactElement {
         }}
       />
       <JourneyPageWrapper journey={journey} rtl={rtl} locale={locale}>
-        <WebView stepBlock={stepBlock as TreeBlock<StepBlock>} />
+        <WebView
+          blocks={blocks}
+          stepBlock={stepBlock as TreeBlock<StepBlock>}
+        />
       </JourneyPageWrapper>
     </>
   )
@@ -110,7 +109,10 @@ export const getStaticProps: GetStaticProps<StepPageProps> = async (
       query: GET_JOURNEY,
       variables: {
         id: context.params?.journeySlug?.toString() ?? '',
-        idType: IdType.slug
+        idType: IdType.slug,
+        options: {
+          hostname: context.params?.hostname?.toString() ?? ''
+        }
       }
     })
 
@@ -124,10 +126,27 @@ export const getStaticProps: GetStaticProps<StepPageProps> = async (
     }
 
     const { rtl, locale } = getJourneyRTL(data.journey)
+
+    const stepBlock = data.journey?.blocks?.find(
+      (block) =>
+        block.__typename === 'StepBlock' &&
+        (block.slug === context.params?.stepSlug ||
+          block.id === context.params?.stepSlug)
+    )
+
+    if (stepBlock == null)
+      return {
+        redirect: {
+          destination: `/${data.journey.slug}`,
+          permanent: false
+        },
+        revalidate: 1
+      }
+
     return {
       props: {
         ...(await serverSideTranslations(
-          context.locale ?? 'en',
+          locale ?? 'en',
           ['apps-journeys', 'libs-journeys-ui'],
           i18nConfig
         )),
@@ -147,7 +166,8 @@ export const getStaticProps: GetStaticProps<StepPageProps> = async (
             i18nConfig
           ))
         },
-        notFound: true
+        notFound: true,
+        revalidate: 1
       }
     }
     throw e

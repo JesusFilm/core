@@ -1,7 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { usePlausible } from 'next-plausible'
 import { ReactElement, useEffect } from 'react'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 import Player from 'video.js/dist/types/player'
 
@@ -201,15 +201,13 @@ export function VideoEvents({
             }
           })
         }
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'video_play',
-            eventId: id,
-            blockId,
-            videoPosition: currentTime,
-            videoTitle,
-            videoId
-          }
+        sendGTMEvent({
+          event: 'video_play',
+          eventId: id,
+          blockId,
+          videoPosition: currentTime,
+          videoTitle,
+          videoId
         })
       }
     }
@@ -261,15 +259,13 @@ export function VideoEvents({
           }
         })
       }
-      TagManager.dataLayer({
-        dataLayer: {
-          event: 'video_pause',
-          eventId: id,
-          blockId,
-          videoPosition: currentPosition,
-          videoTitle,
-          videoId
-        }
+      sendGTMEvent({
+        event: 'video_pause',
+        eventId: id,
+        blockId,
+        videoPosition: currentPosition,
+        videoTitle,
+        videoId
       })
     }
 
@@ -321,15 +317,13 @@ export function VideoEvents({
             }
           })
         }
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'video_expand',
-            eventId: id,
-            blockId,
-            videoPosition: currentPosition,
-            videoTitle,
-            videoId
-          }
+        sendGTMEvent({
+          event: 'video_expand',
+          eventId: id,
+          blockId,
+          videoPosition: currentPosition,
+          videoTitle,
+          videoId
         })
       }
     }
@@ -381,15 +375,13 @@ export function VideoEvents({
             }
           })
         }
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'video_collapse',
-            eventId: id,
-            blockId,
-            videoPosition: currentPosition,
-            videoTitle,
-            videoId
-          }
+        sendGTMEvent({
+          event: 'video_collapse',
+          eventId: id,
+          blockId,
+          videoPosition: currentPosition,
+          videoTitle,
+          videoId
         })
       }
     }
@@ -441,15 +433,13 @@ export function VideoEvents({
             }
           })
         }
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'video_start',
-            eventId: id,
-            blockId,
-            videoPosition: currentPosition,
-            videoTitle,
-            videoId
-          }
+        sendGTMEvent({
+          event: 'video_start',
+          eventId: id,
+          blockId,
+          videoPosition: currentPosition,
+          videoTitle,
+          videoId
         })
       }
     }
@@ -504,16 +494,14 @@ export function VideoEvents({
             }
           })
         }
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'video_progress',
-            eventId: id,
-            blockId,
-            videoPosition: currentPosition,
-            videoProgress: 25,
-            videoTitle,
-            videoId
-          }
+        sendGTMEvent({
+          event: 'video_progress',
+          eventId: id,
+          blockId,
+          videoPosition: currentPosition,
+          videoProgress: 25,
+          videoTitle,
+          videoId
         })
       }
     }
@@ -568,16 +556,14 @@ export function VideoEvents({
             }
           })
         }
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'video_progress',
-            eventId: id,
-            blockId,
-            videoPosition: currentPosition,
-            videoProgress: 50,
-            videoTitle,
-            videoId
-          }
+        sendGTMEvent({
+          event: 'video_progress',
+          eventId: id,
+          blockId,
+          videoPosition: currentPosition,
+          videoProgress: 50,
+          videoTitle,
+          videoId
         })
       }
     }
@@ -632,17 +618,15 @@ export function VideoEvents({
             }
           })
         }
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'video_progress',
-            journeyId: undefined,
-            eventId: id,
-            blockId,
-            videoPosition: currentPosition,
-            videoProgress: 75,
-            videoTitle,
-            videoId
-          }
+        sendGTMEvent({
+          event: 'video_progress',
+          journeyId: undefined,
+          eventId: id,
+          blockId,
+          videoPosition: currentPosition,
+          videoProgress: 75,
+          videoTitle,
+          videoId
         })
       }
     }
@@ -700,15 +684,13 @@ export function VideoEvents({
               })
             }
           })
-        TagManager.dataLayer({
-          dataLayer: {
-            event: 'video_complete',
-            eventId: id,
-            blockId,
-            videoPosition: currentPosition,
-            videoTitle,
-            videoId
-          }
+        sendGTMEvent({
+          event: 'video_complete',
+          eventId: id,
+          blockId,
+          videoPosition: currentPosition,
+          videoTitle,
+          videoId
         })
       }
     }

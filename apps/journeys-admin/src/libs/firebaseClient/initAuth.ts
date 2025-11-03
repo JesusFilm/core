@@ -33,7 +33,8 @@ export function initAuth(): void {
       path: '/',
       sameSite: 'strict',
       secure:
-        process.env.NEXT_PUBLIC_VERCEL_ENV === 'production' ||
+        process.env.NEXT_PUBLIC_VERCEL_ENV === 'prod' ||
+        process.env.NEXT_PUBLIC_VERCEL_ENV === 'stage' ||
         process.env.NEXT_PUBLIC_VERCEL_ENV === 'preview',
       signed: true
     },

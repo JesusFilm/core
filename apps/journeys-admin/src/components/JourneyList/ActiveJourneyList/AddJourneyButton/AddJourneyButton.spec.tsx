@@ -38,7 +38,7 @@ describe('AddJourneyButton', () => {
     alt: 'two hot air balloons in the sky',
     headlineTypographyContent: 'The Journey Is On',
     bodyTypographyContent: '"Go, and lead the people on their way..."',
-    captionTypographyContent: 'Deutoronomy 10:11',
+    captionTypographyContent: 'Deuteronomy 10:11',
     teamId: 'teamId'
   }
 
@@ -89,15 +89,27 @@ describe('AddJourneyButton', () => {
     },
     headlineTypographyBlockCreate: {
       id: 'headlineTypographyId',
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     },
     bodyTypographyBlockCreate: {
       id: 'bodyTypographyId',
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     },
     captionTypographyBlockCreate: {
       id: 'captionTypographyId',
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     }
   }
 

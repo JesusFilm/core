@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
@@ -47,6 +47,7 @@ const block: TreeBlock<Block> = {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [
         {
           id: 'image0.id',
@@ -58,7 +59,10 @@ const block: TreeBlock<Block> = {
           parentBlockId: 'card0.id',
           parentOrder: 0,
           children: [],
-          blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+          blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+          scale: null,
+          focalLeft: 50,
+          focalTop: 50
         },
         {
           id: 'typographyBlockId1',
@@ -69,7 +73,11 @@ const block: TreeBlock<Block> = {
           color: null,
           content: "What's our purpose, and how did we get here?",
           variant: TypographyVariant.h3,
-          children: []
+          children: [],
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         },
         {
           id: 'typographyBlockId2',
@@ -81,7 +89,11 @@ const block: TreeBlock<Block> = {
           content:
             'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
           variant: null,
-          children: []
+          children: [],
+          settings: {
+            __typename: 'TypographyBlockSettings',
+            color: null
+          }
         },
         {
           __typename: 'ButtonBlock',
@@ -94,6 +106,7 @@ const block: TreeBlock<Block> = {
           size: ButtonSize.large,
           startIconId: 'icon',
           endIconId: null,
+          submitEnabled: null,
           action: null,
           children: [
             {
@@ -106,7 +119,8 @@ const block: TreeBlock<Block> = {
               iconSize: IconSize.md,
               children: []
             }
-          ]
+          ],
+          settings: null
         }
       ]
     }

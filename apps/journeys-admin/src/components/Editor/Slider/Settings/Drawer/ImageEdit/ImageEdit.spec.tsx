@@ -7,16 +7,14 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
+import { JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE } from '../../../../../../libs/useJourneyImageBlockAssociationUpdateMutation'
+import { JOURNEY_IMAGE_BLOCK_CREATE } from '../../../../../../libs/useJourneyImageBlockCreateMutation'
+import { JOURNEY_IMAGE_BLOCK_DELETE } from '../../../../../../libs/useJourneyImageBlockDeleteMutation'
+import { JOURNEY_IMAGE_BLOCK_UPDATE } from '../../../../../../libs/useJourneyImageBlockUpdateMutation'
 import { createCloudflareUploadByUrlMock } from '../ImageBlockEditor/CustomImage/CustomUrl/data'
 import { listUnsplashCollectionPhotosMock } from '../ImageBlockEditor/UnsplashGallery/data'
 
-import {
-  ImageEdit,
-  JOURNEY_IMAGE_BLOCK_ASSOCIATION_UPDATE,
-  JOURNEY_IMAGE_BLOCK_CREATE,
-  JOURNEY_IMAGE_BLOCK_DELETE,
-  JOURNEY_IMAGE_BLOCK_UPDATE
-} from './ImageEdit'
+import { ImageEdit } from './ImageEdit'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -47,7 +45,10 @@ describe('ImageEdit', () => {
     alt: 'public',
     width: 1920,
     height: 1080,
-    blurhash: ''
+    blurhash: '',
+    scale: null,
+    focalLeft: 50,
+    focalTop: 50
   }
 
   it('should disaply placeholder icon when no image set', () => {
@@ -164,7 +165,11 @@ describe('ImageEdit', () => {
         <SnackbarProvider>
           <JourneyProvider
             value={{
-              journey: { id: 'journey.id' } as unknown as Journey,
+              journey: {
+                id: 'journey.id',
+                hostname: null,
+                slug: 'journey-id'
+              } as unknown as Journey,
               variant: 'admin'
             }}
           >
@@ -363,6 +368,8 @@ describe('ImageEdit', () => {
             value={{
               journey: {
                 id: 'journey.id',
+                hostname: null,
+                slug: 'journey-id',
                 primaryImageBlock: { ...image }
               } as unknown as Journey,
               variant: 'admin'
@@ -407,6 +414,8 @@ describe('ImageEdit', () => {
         journeyUpdate: {
           __typename: 'Journey',
           id: 'journey.id',
+          hostname: null,
+          slug: 'journey-id',
           primaryImageBlock: {
             id: image.id
           }
@@ -448,6 +457,8 @@ describe('ImageEdit', () => {
             value={{
               journey: {
                 id: 'journey.id',
+                hostname: null,
+                slug: 'journey-id',
                 creatorImageBlock: { ...image }
               } as unknown as Journey,
               variant: 'admin'
@@ -509,6 +520,8 @@ describe('ImageEdit', () => {
             value={{
               journey: {
                 id: 'journey.id',
+                hostname: null,
+                slug: 'journey-id',
                 primaryImageBlock: {
                   ...image,
                   src: 'https://imagedelivery.net/cloudflare-key/uploadId/public2'

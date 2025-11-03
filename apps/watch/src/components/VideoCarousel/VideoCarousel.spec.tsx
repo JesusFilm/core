@@ -1,14 +1,13 @@
 import { render, waitFor } from '@testing-library/react'
 
-import {
-  type CoreVideo,
-  useAlgoliaVideos
-} from '../../libs/algolia/useAlgoliaVideos'
+import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
+
+import { type CoreVideo } from '../../libs/algolia/transformAlgoliaVideos'
 import { videos } from '../Videos/__generated__/testData'
 
 import { VideoCarousel } from './VideoCarousel'
 
-jest.mock('../../libs/algolia/useAlgoliaVideos')
+jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
 
 const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
   typeof useAlgoliaVideos
@@ -48,7 +47,7 @@ describe('VideosCarousel', () => {
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: false,
       noResults: false,
-      hits: transformedVideos,
+      items: transformedVideos,
       showMore: jest.fn(),
       isLastPage: false,
       sendEvent: jest.fn()

@@ -34,6 +34,7 @@ describe('LinkNode', () => {
           themeMode: null,
           themeName: null,
           fullscreen: false,
+          backdropBlur: null,
           children: [
             {
               __typename: 'ButtonBlock',
@@ -46,13 +47,17 @@ describe('LinkNode', () => {
               size: null,
               startIconId: null,
               endIconId: null,
+              submitEnabled: null,
               action: {
                 __typename: 'LinkAction',
                 parentBlockId: 'button1.id',
                 gtmEventName: null,
-                url: 'https://www.google.com'
+                url: 'https://www.google.com',
+                customizable: false,
+                parentStepId: null
               },
-              children: []
+              children: [],
+              settings: null
             },
             {
               __typename: 'ButtonBlock',
@@ -65,13 +70,17 @@ describe('LinkNode', () => {
               size: null,
               startIconId: null,
               endIconId: null,
+              submitEnabled: null,
               action: {
                 __typename: 'EmailAction',
                 parentBlockId: 'button2.id',
                 gtmEventName: null,
-                email: 'email@example.com'
+                email: 'email@example.com',
+                customizable: false,
+                parentStepId: null
               },
-              children: []
+              children: [],
+              settings: null
             }
           ]
         }

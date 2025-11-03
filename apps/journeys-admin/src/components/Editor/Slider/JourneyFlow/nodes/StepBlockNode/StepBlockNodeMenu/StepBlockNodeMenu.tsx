@@ -4,6 +4,7 @@ import Zoom from '@mui/material/Zoom'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
+import { isIOSTouchScreen } from '@core/shared/ui/deviceUtils'
 import EllipsisIcon from '@core/shared/ui/icons/Ellipsis'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
@@ -39,16 +40,25 @@ export function StepBlockNodeMenu({
 
   return (
     <>
-      <Zoom in={appear}>
+      <Zoom in={appear && !open}>
         <Fab
           variant="extended"
           className={className}
+          // id should match target.id in onNodeDragStop function of apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/JourneyFlow.tsx
           id="edit-step"
           size="small"
           aria-controls={open ? 'edit-step-menu' : undefined}
           aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
-          onClick={handleClick}
+          // hover events and psuedo elements preventing onclicks from running on iOS devices see:
+          // https://stackoverflow.com/questions/17710893/why-when-do-i-have-to-tap-twice-to-trigger-click-on-ios#:~:text=The%20simplest%20solution%20is%20not,triggered%20on%20the%20first%20tap.
+          // see fig 6-4, https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html#//apple_ref/doc/uid/TP40006511-SW7
+          onMouseEnter={(e) => {
+            if (isIOSTouchScreen()) handleClick(e)
+          }}
+          onClick={(e) => {
+            handleClick(e)
+          }}
           sx={{
             position: 'absolute',
             top: -14,
@@ -58,7 +68,11 @@ export function StepBlockNodeMenu({
           }}
           data-testid="EditStepFab"
         >
-          <EllipsisIcon />
+          <EllipsisIcon
+            // id should match target.id in onNodeDragStop function of apps/journeys-admin/src/components/Editor/Slider/JourneyFlow/JourneyFlow.tsx
+            id="StepBlockNodeMenuIcon"
+            data-testid="EditStepFabIcon"
+          />
         </Fab>
       </Zoom>
       <Menu

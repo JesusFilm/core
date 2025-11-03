@@ -11,13 +11,14 @@ import {
   useSearchBox
 } from 'react-instantsearch'
 
-import type { CoreVideo } from '../../libs/algolia/useAlgoliaVideos'
-import { useAlgoliaVideos } from '../../libs/algolia/useAlgoliaVideos'
+import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
+
+import { type CoreVideo } from '../../libs/algolia/transformAlgoliaVideos'
 
 import { VideosPage } from './VideosPage'
 
 jest.mock('react-instantsearch')
-jest.mock('../../libs/algolia/useAlgoliaVideos')
+jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
 
 const mockUseHits = useHits as jest.MockedFunction<typeof useHits>
 const mockUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
@@ -37,8 +38,13 @@ describe('VideosPage', () => {
       __typename: 'Video',
       childrenCount: 49,
       id: 'videoId',
-      image:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_GOJ-0-0.mobileCinematicHigh.jpg',
+      images: [
+        {
+          __typename: 'CloudflareImage',
+          mobileCinematicHigh:
+            'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_GOJ-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+        }
+      ],
       imageAlt: [
         {
           value: 'Life of Jesus (Gospel of John)'
@@ -65,7 +71,7 @@ describe('VideosPage', () => {
     mockUseAlgoliaVideos.mockReturnValue({
       loading: false,
       noResults: false,
-      hits: transformedVideos,
+      items: transformedVideos,
       showMore: jest.fn(),
       isLastPage: false,
       sendEvent: jest.fn()

@@ -202,7 +202,11 @@ export function CardIntro(): ReactElement {
       color: null,
       content: t('Interactive Video'),
       variant: TypographyVariant.h6,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const title = {
@@ -213,7 +217,11 @@ export function CardIntro(): ReactElement {
       color: null,
       content: t("Jesus: History's Most Influential Figure?"),
       variant: TypographyVariant.h1,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const body = {
@@ -226,7 +234,11 @@ export function CardIntro(): ReactElement {
         'Journey through time, from dusty roads to modern cities, to understand the lasting impact and relevance of Jesus.'
       ),
       variant: TypographyVariant.body1,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const buttonBlock = {
@@ -239,7 +251,9 @@ export function CardIntro(): ReactElement {
       size: null,
       startIconId: null,
       endIconId: null,
+      submitEnabled: null,
       action: null,
+      settings: null,
       __typename: 'ButtonBlock'
     } satisfies ButtonBlock
 
@@ -266,7 +280,8 @@ export function CardIntro(): ReactElement {
     const buttonBlockUpdate = {
       ...buttonBlock,
       startIconId: startIconBlock.id,
-      endIconId: endIconBlock.id
+      endIconId: endIconBlock.id,
+      submitEnabled: null
     } satisfies ButtonBlock
 
     const videoBlock = {
@@ -287,7 +302,8 @@ export function CardIntro(): ReactElement {
       image: null,
       duration: null,
       objectFit: null,
-      video: {
+      subtitleLanguage: null,
+      mediaVideo: {
         id: '1_jf-0-0',
         __typename: 'Video',
         title: [
@@ -296,8 +312,13 @@ export function CardIntro(): ReactElement {
             __typename: 'VideoTitle'
           }
         ],
-        image:
-          'https://d1wl257kev7hsz.cloudfront.net/cinematics/1_jf-0-0.mobileCinematicHigh.jpg',
+        images: [
+          {
+            __typename: 'CloudflareImage',
+            mobileCinematicHigh:
+              'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/1_jf-0-0.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+          }
+        ],
         variant: {
           id: '1_529-jf-0-0',
           hls: 'https://arc.gt/j67rz',
@@ -327,15 +348,33 @@ export function CardIntro(): ReactElement {
             journeyId: journey.id,
             buttonId: buttonBlock.id,
             subtitleInput: {
-              ...omit(subtitle, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...subtitle,
+                  settings: { color: subtitle.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             titleInput: {
-              ...omit(title, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...title,
+                  settings: { color: title.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             bodyInput: {
-              ...omit(body, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...body,
+                  settings: { color: body.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             buttonInput: {
@@ -360,12 +399,12 @@ export function CardIntro(): ReactElement {
               ...pick(videoBlock, [
                 'id',
                 'parentBlockId',
-                'videoId',
                 'videoVariantLanguageId',
                 'startAt',
                 'endAt',
                 'source'
               ]),
+              videoId: videoBlock.mediaVideo?.id,
               journeyId: journey.id,
               isCover: true
             }

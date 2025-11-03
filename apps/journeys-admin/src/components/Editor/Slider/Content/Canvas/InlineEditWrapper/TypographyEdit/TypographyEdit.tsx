@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from 'uuid'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { resolveJourneyCustomizationString } from '@core/journeys/ui/resolveJourneyCustomizationString'
 import { Typography } from '@core/journeys/ui/Typography'
 
 import {
@@ -33,8 +35,17 @@ export function TypographyEdit({
     TypographyBlockUpdateContent,
     TypographyBlockUpdateContentVariables
   >(TYPOGRAPHY_BLOCK_UPDATE_CONTENT)
+  const { journey } = useJourney()
 
-  const [value, setValue] = useState(content)
+  const resolvedContent = !journey?.template
+    ? (resolveJourneyCustomizationString(
+        content,
+        journey?.journeyCustomizationFields ?? []
+      ) ?? content)
+    : content
+
+  const [value, setValue] = useState(resolvedContent)
+
   const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
   const [selection, setSelection] = useState({ start: 0, end: value.length })
   const {
@@ -53,8 +64,9 @@ export function TypographyEdit({
   }, [undo?.id])
 
   useEffect(() => {
-    setValue(content)
-  }, [content])
+    if (value !== resolvedContent) setValue(resolvedContent)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resolvedContent])
 
   function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })

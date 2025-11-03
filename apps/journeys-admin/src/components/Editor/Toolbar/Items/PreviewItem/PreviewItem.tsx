@@ -24,16 +24,23 @@ export function PreviewItem({
     skip: journey?.team?.id == null
   })
 
+  const journeyPath = `/api/preview?slug=${journey?.slug}`
+  const customDomainParam = hostname != null ? `&hostname=${hostname}` : ''
+  const href =
+    journey?.slug != null ? journeyPath + customDomainParam : undefined
+
   return (
     <Box data-testid="PreviewItem">
       <Item
         variant={variant}
-        href={`/api/preview?slug=${journey?.slug}${
-          hostname != null ? `&hostname=${hostname}` : ''
-        }`}
+        href={href}
         label={t('Preview')}
         icon={<Play3Icon />}
         onClick={onClick}
+        ButtonProps={{
+          disabled: href == null,
+          sx: { ml: 3 }
+        }}
       />
     </Box>
   )

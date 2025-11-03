@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import noop from 'lodash/noop'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
@@ -28,7 +28,10 @@ const Template: StoryObj<typeof CustomImage> = {
             height: 1067,
             blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
             parentBlockId: 'card',
-            parentOrder: 0
+            parentOrder: 0,
+            scale: null,
+            focalLeft: 50,
+            focalTop: 50
           }}
           onChange={noop}
         />

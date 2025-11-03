@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
 
 import BarChartSquare3Icon from '@core/shared/ui/icons/BarChartSquare3'
@@ -42,6 +42,17 @@ export const IconButtonItem = {
     variant: 'icon-button',
     icon: <BarChartSquare3Icon />,
     label: 'Icon Button Item'
+  }
+}
+
+export const IconButtonWithCountItem = {
+  ...Template,
+  args: {
+    variant: 'icon-button',
+    icon: <BarChartSquare3Icon />,
+    label: 'Icon Button Item',
+    count: 5,
+    countLabel: '5 visitors'
   }
 }
 

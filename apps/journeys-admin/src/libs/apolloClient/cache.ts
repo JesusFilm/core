@@ -10,18 +10,26 @@ export const cache = (): InMemoryCache =>
      initializing InMemoryCache.
    */
     possibleTypes: {
-      Action: ['NavigateToBlockAction', 'LinkAction', 'EmailAction'],
+      Action: [
+        'NavigateToBlockAction',
+        'LinkAction',
+        'EmailAction',
+        'ChatAction',
+        'PhoneAction'
+      ],
       Block: [
         'ButtonBlock',
         'CardBlock',
-        'FormBlock',
         'GridContainerBlock',
         'GridItemBlock',
         'IconBlock',
         'ImageBlock',
+        'MultiselectBlock',
+        'MultiselectOptionBlock',
         'RadioQuestionBlock',
         'RadioOptionBlock',
         'SignUpBlock',
+        'SpacerBlock',
         'StepBlock',
         'TextResponseBlock',
         'TypographyBlock',
@@ -47,6 +55,13 @@ export const cache = (): InMemoryCache =>
             merge(existing, incoming) {
               return [...(existing ?? []), ...incoming]
             }
+          },
+          adminJourney(_, { args, toReference }) {
+            if (args?.idType === 'databaseId' && args?.id != null)
+              return toReference({
+                __typename: 'Journey',
+                id: args.id
+              })
           }
         }
       },
@@ -79,6 +94,8 @@ export const cache = (): InMemoryCache =>
       },
       LinkAction: { keyFields: ['parentBlockId'] },
       EmailAction: { keyFields: ['parentBlockId'] },
-      NavigateToBlockAction: { keyFields: ['parentBlockId'] }
+      NavigateToBlockAction: { keyFields: ['parentBlockId'] },
+      ChatAction: { keyFields: ['parentBlockId'] },
+      PhoneAction: { keyFields: ['parentBlockId'] }
     }
   })

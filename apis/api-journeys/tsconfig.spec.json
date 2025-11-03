@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "module": "commonjs",
+    "jsx": "react-jsx",
+    "types": [
+      "jest",
+      "@jest/globals",
+      "node",
+      "@nx/react/typings/cssmodule.d.ts",
+      "@nx/react/typings/image.d.ts"
+    ]
+  },
+  "include": ["**/*.spec.ts", "**/*.d.ts", "jest.config.ts"]
+}

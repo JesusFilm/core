@@ -30,6 +30,34 @@ describe('PlausibleHelpers', () => {
       } as unknown as Action
       expect(generateActionTargetKey(action)).toBe('email:email')
     })
+
+    it('should generate target key for ChatAction', () => {
+      const action = {
+        __typename: 'ChatAction',
+        chatUrl: 'https://chat.example.com'
+      } as unknown as Action
+      expect(generateActionTargetKey(action)).toBe(
+        'chat:https://chat.example.com'
+      )
+    })
+
+    it('should generate target key for PhoneAction', () => {
+      const action = {
+        __typename: 'PhoneAction',
+        phone: 'phone'
+      } as unknown as Action
+      expect(generateActionTargetKey(action)).toBe('phone:phone')
+    })
+
+    it('should throw error for unknown action type', () => {
+      const action = {
+        __typename: 'UnknownAction',
+        unknown: 'unknown'
+      } as unknown as Action
+      expect(() => generateActionTargetKey(action)).toThrow(
+        'Unknown action type'
+      )
+    })
   })
 
   describe('keyify', () => {
@@ -98,6 +126,18 @@ describe('PlausibleHelpers', () => {
 
       expect(getTargetEventKey(action)).toBe(
         'block1.id->link:https://youtube.com'
+      )
+    })
+
+    it('should return target for chat action', () => {
+      const action = {
+        __typename: 'ChatAction',
+        parentBlockId: 'block1.id',
+        chatUrl: 'https://chat.example.com'
+      } as unknown as ButtonBlockAction
+
+      expect(getTargetEventKey(action)).toBe(
+        'block1.id->chat:https://chat.example.com'
       )
     })
 

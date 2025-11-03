@@ -1,5 +1,5 @@
-import LoadingButton from '@mui/lab/LoadingButton'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -81,7 +81,7 @@ export function JourneyVisitorsList({
           </Typography>
         )}
 
-        <LoadingButton
+        <Button
           startIcon={<AddSquare4Icon />}
           variant="outlined"
           onClick={fetchNext}
@@ -91,7 +91,7 @@ export function JourneyVisitorsList({
           sx={{ display: hasVisitors ? 'flex' : 'none' }}
         >
           {t('Load More')}
-        </LoadingButton>
+        </Button>
       </Stack>
     </Container>
   )

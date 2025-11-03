@@ -61,18 +61,6 @@ export function CardAnalytics(): ReactElement {
           value={thumbsDownClicks}
           icon={<ThumbsDownIcon sx={{ fontSize: 24 }} />}
         />
-        {primaryChat != null && (
-          <Analytic
-            title={t('widget clicks')}
-            value={primaryChatClicks}
-            icon={
-              <MessageChatIcon
-                platform={primaryChat.platform ?? MessagePlatform.custom}
-                sx={{ fontSize: 24 }}
-              />
-            }
-          />
-        )}
         {secondaryChat != null && (
           <Analytic
             title={t('widget clicks')}
@@ -80,6 +68,18 @@ export function CardAnalytics(): ReactElement {
             icon={
               <MessageChatIcon
                 platform={secondaryChat.platform ?? MessagePlatform.custom}
+                sx={{ fontSize: 24 }}
+              />
+            }
+          />
+        )}
+        {primaryChat != null && (
+          <Analytic
+            title={t('widget clicks')}
+            value={primaryChatClicks}
+            icon={
+              <MessageChatIcon
+                platform={primaryChat.platform ?? MessagePlatform.custom}
                 sx={{ fontSize: 24 }}
               />
             }

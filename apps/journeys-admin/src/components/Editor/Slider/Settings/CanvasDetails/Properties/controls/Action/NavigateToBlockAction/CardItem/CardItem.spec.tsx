@@ -30,6 +30,7 @@ describe('CardItem', () => {
         themeMode: ThemeMode.dark,
         themeName: ThemeName.base,
         fullscreen: false,
+        backdropBlur: null,
         children: []
       }
     ]

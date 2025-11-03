@@ -1,0 +1,17 @@
+type UserRole @key(fields: "id") @shareable {
+  id: ID!
+  userId: ID!
+  roles: [Role!]
+}
+
+enum Role {
+  """
+  User can create templates and
+  add them to template library
+  """
+  publisher
+}
+
+extend type Query {
+  getUserRole: UserRole
+}

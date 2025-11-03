@@ -31,7 +31,11 @@ describe('MoveBlockButton', () => {
     color: null,
     content: 'Text1',
     variant: null,
-    children: []
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
 
   const block2: TreeBlock = {
@@ -43,7 +47,11 @@ describe('MoveBlockButton', () => {
     color: null,
     content: 'Text2',
     variant: null,
-    children: []
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
 
   const block3: TreeBlock = {
@@ -55,7 +63,11 @@ describe('MoveBlockButton', () => {
     color: null,
     content: 'Text2',
     variant: null,
-    children: []
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   }
 
   const card: TreeBlock = {
@@ -68,6 +80,7 @@ describe('MoveBlockButton', () => {
     themeMode: null,
     themeName: null,
     fullscreen: false,
+    backdropBlur: null,
     children: [block1, block2]
   }
 
@@ -279,6 +292,7 @@ describe('MoveBlockButton', () => {
       themeMode: null,
       themeName: null,
       fullscreen: false,
+      backdropBlur: null,
       children: [block1]
     }
 

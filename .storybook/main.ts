@@ -1,5 +1,9 @@
+import { createRequire } from 'node:module'
+import { dirname, join } from 'node:path'
 import { StorybookConfig } from '@storybook/nextjs'
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
+
+const require = createRequire(import.meta.url)
 
 const storiesForProject = {
   journeys: [
@@ -17,12 +21,13 @@ const storiesForProject = {
     '../apps/watch/src/**/*.stories.@(js|jsx|ts|tsx)',
     '../apps/watch/src/components/**/*.stories.@(js|jsx|ts|tsx)'
   ],
-  'api-journeys': [
-    '../apps/api-journeys/src/app/emails/stories/*.stories.@(js|jsx|ts|tsx)'
+  'api-journeys-modern': [
+    '../apis/api-journeys-modern/src/emails/stories/*.stories.@(js|jsx|ts|tsx)'
   ],
   'api-users': [
-    '../apps/api-users/src/app/emails/stories/*.stories.@(js|jsx|ts|tsx)'
-  ]
+    '../apis/api-users/src/emails/stories/*.stories.@(js|jsx|ts|tsx)'
+  ],
+  'videos-admin': ['../apps/videos-admin/src/**/*.stories.@(js|jsx|ts|tsx)']
   // Add new UI projects here and in allStories
 }
 
@@ -32,26 +37,23 @@ const stories = [
   ...storiesForProject['journeys-ui'],
   ...storiesForProject['watch'],
   ...storiesForProject['shared-ui'],
-  ...storiesForProject['api-journeys'],
-  ...storiesForProject['api-users']
+  ...storiesForProject['api-journeys-modern'],
+  ...storiesForProject['api-users'],
+  ...storiesForProject['videos-admin']
 ]
 
 const config: StorybookConfig = {
-  staticDirs: [
-    './static',
-    {
-      from: '../apps/watch/public/watch/assets/fonts',
-      to: '/watch/assets/fonts'
-    }
-  ],
+  staticDirs: ['./static'],
+
   stories,
+
   addons: [
-    '@storybook/addon-essentials',
-    '@storybook/addon-interactions',
-    '@storybook/addon-a11y',
-    'storybook-addon-apollo-client',
-    '@storybook/addon-actions'
+    getAbsolutePath('@storybook/addon-a11y'),
+    getAbsolutePath('storybook-addon-apollo-client'),
+    getAbsolutePath('@chromatic-com/storybook'),
+    getAbsolutePath('@storybook/addon-docs')
   ],
+
   webpackFinal: async (config) => {
     const tsPaths = new TsconfigPathsPlugin({
       configFile: './tsconfig.base.json'
@@ -77,13 +79,20 @@ const config: StorybookConfig = {
   },
 
   framework: {
-    name: '@storybook/nextjs',
+    name: getAbsolutePath('@storybook/nextjs'),
     options: {}
   },
-
-  docs: {
-    autodocs: false
+  docs: {},
+  features: {
+    experimentalRSC: true
+  },
+  typescript: {
+    reactDocgen: 'react-docgen-typescript'
   }
 }
 
 export default config
+
+function getAbsolutePath(value: string): string {
+  return dirname(require.resolve(join(value, 'package.json')))
+}

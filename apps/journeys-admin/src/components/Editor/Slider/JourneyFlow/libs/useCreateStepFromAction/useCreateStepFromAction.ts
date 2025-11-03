@@ -98,11 +98,6 @@ export const STEP_BLOCK_DELETE_FROM_ACTION_WITHOUT_ACTION = gql`
           parentBlockId
         }
       }
-      ... on FormBlock {
-        action {
-          parentBlockId
-        }
-      }
       ... on VideoBlock {
         action {
           parentBlockId
@@ -227,6 +222,7 @@ export function useCreateStepFromAction(): (
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: false,
+      backdropBlur: null,
       coverBlockId: null,
       backgroundColor: null,
       parentOrder: 0

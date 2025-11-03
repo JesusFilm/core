@@ -17,7 +17,7 @@ import {
 } from '../../../../../../../../../__generated__/globalTypes'
 
 interface ColorDisplayIconProps {
-  color: TypographyColor | ButtonColor | IconColor | null
+  color: TypographyColor | ButtonColor | IconColor | string | null
 }
 
 enum DisplayColor {
@@ -30,14 +30,19 @@ enum DisplayColor {
 export function ColorDisplayIcon({
   color
 }: ColorDisplayIconProps): ReactElement {
-  const { journey } = useJourney()
   const {
     state: { selectedStep }
   } = useEditor()
+  const { journey } = useJourney()
 
   const card = selectedStep?.children.find(
     (block) => block.__typename === 'CardBlock'
   ) as TreeBlock<CardBlock> | undefined
+
+  const backgroundColor =
+    typeof color === 'string' && color.startsWith('#')
+      ? color
+      : DisplayColor[color ?? 'primary']
 
   return (
     <Paper
@@ -58,8 +63,7 @@ export function ColorDisplayIcon({
             height: 20,
             m: 0.5,
             borderRadius: 1000,
-            backgroundColor:
-              color !== null ? DisplayColor[color] : DisplayColor.primary
+            backgroundColor
           }}
         />
       </ThemeProvider>

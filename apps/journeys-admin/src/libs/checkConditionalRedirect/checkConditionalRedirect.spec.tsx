@@ -111,8 +111,7 @@ describe('checkConditionalRedirect', () => {
         id: 'profile.id',
         userId: 'user.id',
         acceptedTermsAt: null,
-        __typename: 'JourneyProfile',
-        onboardingFormCompletedAt: null
+        __typename: 'JourneyProfile'
       },
       teams: []
     }
@@ -140,7 +139,6 @@ describe('checkConditionalRedirect', () => {
         id: 'profile.id',
         userId: 'user.id',
         __typename: 'JourneyProfile',
-        onboardingFormCompletedAt: null,
         acceptedTermsAt: null
       },
       teams: []
@@ -163,164 +161,13 @@ describe('checkConditionalRedirect', () => {
     })
   })
 
-  it('does not redirect to onboarding form if resolvedUrl', async () => {
-    const data: GetJourneyProfileAndTeams = {
-      getJourneyProfile: {
-        id: 'profile.id',
-        userId: 'user.id',
-        acceptedTermsAt: '2023-10-07T00:00:00.000Z',
-        __typename: 'JourneyProfile',
-        onboardingFormCompletedAt: null
-      },
-      teams: []
-    }
-
-    const apolloClient = {
-      query: jest
-        .fn()
-        .mockResolvedValue({ data })
-        .mockResolvedValueOnce({ data: meData })
-    } as unknown as ApolloClient<NormalizedCacheObject>
-
-    expect(
-      await checkConditionalRedirect({
-        apolloClient,
-        resolvedUrl: '/onboarding-form?redirect=%2Fcustom-redirect-location'
-      })
-    ).toBeUndefined()
-  })
-
-  it('does not redirect to onboarding form if terms accepted before 5 sept 2023', async () => {
-    const data: GetJourneyProfileAndTeams = {
-      getJourneyProfile: {
-        id: 'profile.id',
-        userId: 'user.id',
-        acceptedTermsAt: '1970-01-01T00:00:00.000Z',
-        __typename: 'JourneyProfile',
-        onboardingFormCompletedAt: null
-      },
-      teams: [
-        {
-          id: 'teamId',
-          __typename: 'Team'
-        }
-      ]
-    }
-
-    const apolloClient = {
-      query: jest
-        .fn()
-        .mockResolvedValue({ data })
-        .mockResolvedValueOnce({ data: meData })
-    } as unknown as ApolloClient<NormalizedCacheObject>
-
-    expect(
-      await checkConditionalRedirect({
-        apolloClient,
-        resolvedUrl: '/onboarding-form?redirect=%2Fcustom-redirect-location'
-      })
-    ).toBeUndefined()
-  })
-
-  it.skip('redirect to onboarding form if onboardingFormCompletedAt is null', async () => {
-    const data: GetJourneyProfileAndTeams = {
-      getJourneyProfile: {
-        id: 'profile.id',
-        userId: 'user.id',
-        acceptedTermsAt: '2023-10-07T00:00:00.000Z',
-        __typename: 'JourneyProfile',
-        onboardingFormCompletedAt: null
-      },
-      teams: []
-    }
-
-    const apolloClient = {
-      query: jest
-        .fn()
-        .mockResolvedValue({ data })
-        .mockResolvedValueOnce({ data: meData })
-    } as unknown as ApolloClient<NormalizedCacheObject>
-
-    expect(
-      await checkConditionalRedirect({
-        apolloClient,
-        resolvedUrl: '/'
-      })
-    ).toEqual({
-      destination: '/onboarding-form',
-      permanent: false
-    })
-  })
-
-  it('skips onboarding form if onboardingFormCompletedAt is null and template quick', async () => {
-    const data: GetJourneyProfileAndTeams = {
-      getJourneyProfile: {
-        id: 'profile.id',
-        userId: 'user.id',
-        acceptedTermsAt: '2023-10-07T00:00:00.000Z',
-        __typename: 'JourneyProfile',
-        onboardingFormCompletedAt: null
-      },
-      teams: []
-    }
-
-    const apolloClient = {
-      query: jest
-        .fn()
-        .mockResolvedValue({ data })
-        .mockResolvedValueOnce({ data: meData }),
-      mutate: jest.fn().mockResolvedValue({})
-    } as unknown as ApolloClient<NormalizedCacheObject>
-
-    expect(
-      await checkConditionalRedirect({
-        apolloClient,
-        resolvedUrl: '/?redirect=%2Ftemplates%2FjourneyId%2Fquick'
-      })
-    ).toEqual({
-      destination: '/templates/journeyId/quick',
-      permanent: false
-    })
-  })
-
-  it.skip('redirect to onboarding form with redirect parameter', async () => {
-    const data: GetJourneyProfileAndTeams = {
-      getJourneyProfile: {
-        id: 'profile.id',
-        userId: 'user.id',
-        acceptedTermsAt: '2023-10-07T00:00:00.000Z',
-        __typename: 'JourneyProfile',
-        onboardingFormCompletedAt: null
-      },
-      teams: []
-    }
-
-    const apolloClient = {
-      query: jest
-        .fn()
-        .mockResolvedValue({ data })
-        .mockResolvedValueOnce({ data: meData })
-    } as unknown as ApolloClient<NormalizedCacheObject>
-
-    expect(
-      await checkConditionalRedirect({
-        apolloClient,
-        resolvedUrl: '/?redirect=%2Fcustom-redirect-location'
-      })
-    ).toEqual({
-      destination: '/onboarding-form?redirect=%2Fcustom-redirect-location',
-      permanent: false
-    })
-  })
-
   it('does not redirect to teams new if resolvedUrl', async () => {
     const data: GetJourneyProfileAndTeams = {
       getJourneyProfile: {
         id: 'profile.id',
         userId: 'user.id',
         acceptedTermsAt: '1970-01-01T00:00:00.000Z',
-        __typename: 'JourneyProfile',
-        onboardingFormCompletedAt: null
+        __typename: 'JourneyProfile'
       },
       teams: []
     }
@@ -344,8 +191,7 @@ describe('checkConditionalRedirect', () => {
         id: 'profile.id',
         userId: 'user.id',
         acceptedTermsAt: '1970-01-01T00:00:00.000Z',
-        __typename: 'JourneyProfile',
-        onboardingFormCompletedAt: null
+        __typename: 'JourneyProfile'
       },
       teams: []
     }
@@ -369,8 +215,7 @@ describe('checkConditionalRedirect', () => {
         id: 'profile.id',
         userId: 'user.id',
         acceptedTermsAt: '1970-01-01T00:00:00.000Z',
-        __typename: 'JourneyProfile',
-        onboardingFormCompletedAt: null
+        __typename: 'JourneyProfile'
       },
       teams: []
     }
@@ -397,8 +242,7 @@ describe('checkConditionalRedirect', () => {
         id: 'profile.id',
         userId: 'user.id',
         acceptedTermsAt: '1970-01-01T00:00:00.000Z',
-        __typename: 'JourneyProfile',
-        onboardingFormCompletedAt: '1970-01-01T00:00:00.000Z'
+        __typename: 'JourneyProfile'
       },
       teams: [
         {
@@ -424,8 +268,7 @@ describe('checkConditionalRedirect', () => {
         id: 'profile.id',
         userId: 'user.id',
         acceptedTermsAt: '1970-01-01T00:00:00.000Z',
-        __typename: 'JourneyProfile',
-        onboardingFormCompletedAt: null
+        __typename: 'JourneyProfile'
       },
       teams: []
     }
@@ -458,8 +301,7 @@ describe('checkConditionalRedirect', () => {
         id: 'profile.id',
         userId: 'user.id',
         acceptedTermsAt: '1970-01-01T00:00:00.000Z',
-        __typename: 'JourneyProfile',
-        onboardingFormCompletedAt: null
+        __typename: 'JourneyProfile'
       },
       teams: []
     }

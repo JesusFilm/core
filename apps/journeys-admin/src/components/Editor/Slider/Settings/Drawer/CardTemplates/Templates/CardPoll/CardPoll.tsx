@@ -222,7 +222,10 @@ export function CardPoll(): ReactElement {
       blurhash: 'LuHo2rtSIUfl.TtRRiogXot6aekC',
       height: 3456,
       src: 'https://images.unsplash.com/photo-1488048924544-c818a467dacd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0MDYwNDN8MHwxfHNlYXJjaHwyMHx8aXNyYWVsfGVufDB8fHx8MTY5NTE3MDI2NHww&ixlib=rb-4.0.3&q=80&w=1080',
-      width: 5184
+      width: 5184,
+      scale: null,
+      focalLeft: 50,
+      focalTop: 50
     } satisfies ImageBlock
 
     const subtitle = {
@@ -233,7 +236,11 @@ export function CardPoll(): ReactElement {
       color: null,
       content: t('Got an Opinion?'),
       variant: TypographyVariant.h6,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const title = {
@@ -244,13 +251,18 @@ export function CardPoll(): ReactElement {
       color: null,
       content: t("Which of Jesus' teachings challenges you the most?"),
       variant: TypographyVariant.h2,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const radioQuestionBlock = {
       id: uuidv4(),
       parentBlockId: cardId,
       parentOrder: 2,
+      gridView: false,
       __typename: 'RadioQuestionBlock'
     } satisfies RadioQuestionBlock
 
@@ -260,6 +272,7 @@ export function CardPoll(): ReactElement {
       parentOrder: 0,
       label: t('Turning the other cheek'),
       action: null,
+      pollOptionImageBlockId: null,
       __typename: 'RadioOptionBlock'
     } satisfies RadioOptionBlock
 
@@ -269,6 +282,7 @@ export function CardPoll(): ReactElement {
       parentOrder: 1,
       label: t('Loving your enemies'),
       action: null,
+      pollOptionImageBlockId: null,
       __typename: 'RadioOptionBlock'
     } satisfies RadioOptionBlock
 
@@ -278,6 +292,7 @@ export function CardPoll(): ReactElement {
       parentOrder: 2,
       label: t('Not worrying about tomorrow'),
       action: null,
+      pollOptionImageBlockId: null,
       __typename: 'RadioOptionBlock'
     } satisfies RadioOptionBlock
 
@@ -287,6 +302,7 @@ export function CardPoll(): ReactElement {
       parentOrder: 3,
       label: t('Seeking first the kingdom of God'),
       action: null,
+      pollOptionImageBlockId: null,
       __typename: 'RadioOptionBlock'
     } satisfies RadioOptionBlock
 
@@ -298,7 +314,11 @@ export function CardPoll(): ReactElement {
       color: TypographyColor.secondary,
       content: t('↑ Select an answer to continue'),
       variant: TypographyVariant.caption,
-      __typename: 'TypographyBlock'
+      __typename: 'TypographyBlock',
+      settings: {
+        __typename: 'TypographyBlockSettings',
+        color: null
+      }
     } satisfies TypographyBlock
 
     const cardBlock = {
@@ -310,6 +330,7 @@ export function CardPoll(): ReactElement {
       themeMode: ThemeMode.dark,
       themeName: ThemeName.base,
       fullscreen: true,
+      backdropBlur: null,
       __typename: 'CardBlock'
     } satisfies CardBlock
 
@@ -336,22 +357,39 @@ export function CardPoll(): ReactElement {
               isCover: true
             },
             subtitleInput: {
-              ...omit(subtitle, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...subtitle,
+                  settings: { color: subtitle.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             titleInput: {
-              ...omit(title, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...title,
+                  settings: { color: title.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             radioQuestionInput: {
-              ...omit(radioQuestionBlock, ['__typename', 'parentOrder']),
+              ...omit(radioQuestionBlock, [
+                '__typename',
+                'parentOrder',
+                'gridView'
+              ]),
               journeyId: journey.id
             },
             radioOptionInput1: {
               ...omit(radioOptionBlock1, [
                 '__typename',
                 'parentOrder',
-                'action'
+                'action',
+                'pollOptionImageBlockId'
               ]),
               journeyId: journey.id
             },
@@ -359,7 +397,8 @@ export function CardPoll(): ReactElement {
               ...omit(radioOptionBlock2, [
                 '__typename',
                 'parentOrder',
-                'action'
+                'action',
+                'pollOptionImageBlockId'
               ]),
               journeyId: journey.id
             },
@@ -367,7 +406,8 @@ export function CardPoll(): ReactElement {
               ...omit(radioOptionBlock3, [
                 '__typename',
                 'parentOrder',
-                'action'
+                'action',
+                'pollOptionImageBlockId'
               ]),
               journeyId: journey.id
             },
@@ -375,12 +415,19 @@ export function CardPoll(): ReactElement {
               ...omit(radioOptionBlock4, [
                 '__typename',
                 'parentOrder',
-                'action'
+                'action',
+                'pollOptionImageBlockId'
               ]),
               journeyId: journey.id
             },
             bodyInput: {
-              ...omit(body, ['__typename', 'parentOrder']),
+              ...omit(
+                {
+                  ...body,
+                  settings: { color: body.settings?.color }
+                },
+                ['__typename', 'parentOrder']
+              ),
               journeyId: journey.id
             },
             journeyId: journey.id,

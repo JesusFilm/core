@@ -1,0 +1,55 @@
+{
+  "name": "watch-modern-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/watch-modern-e2e/src",
+  "projectType": "application",
+  "tags": [],
+  "implicitDependencies": ["watch-modern"],
+  "targets": {
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["playwright test"],
+        "cwd": "apps/watch-modern-e2e"
+      }
+    },
+    "update-snapshots": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["playwright test --update-snapshots"],
+        "cwd": "apps/watch-modern-e2e"
+      }
+    },
+    "debug": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "PWDEBUG=1 xvfb-run playwright test --project=chromium --timeout=0"
+        ],
+        "cwd": "apps/watch-modern-e2e"
+      }
+    },
+    "show-report": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["playwright show-report"],
+        "cwd": "apps/watch-modern-e2e"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx tsc -b apps/watch-modern-e2e/tsconfig.json"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/watch-modern-e2e/eslint",
+        "cacheStrategy": "content"
+      }
+    }
+  }
+}

@@ -4,6 +4,31 @@ on:
     branches:
       - main
 jobs:
+  arclight:
+    uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-prod-worker.yml@main
+    with:
+      name: arclight
+      env: prod
+      branch: ${{ github.ref_name }}
+    secrets:
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      JFP_AWS_ACCESS_KEY_ID: ${{ secrets.JFP_AWS_ACCESS_KEY_ID }}
+      JFP_AWS_SECRET_ACCESS_KEY: ${{ secrets.JFP_AWS_SECRET_ACCESS_KEY }}
+      DOPPLER_API_ANALYTICS_TOKEN: ${{ secrets.DOPPLER_API_ANALYTICS_TOKEN }}
+      DOPPLER_API_GATEWAY_TOKEN: ${{ secrets.DOPPLER_API_GATEWAY_TOKEN }}
+      DOPPLER_API_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_API_JOURNEYS_TOKEN }}
+      DOPPLER_API_LANGUAGES_TOKEN: ${{ secrets.DOPPLER_API_LANGUAGES_TOKEN }}
+      DOPPLER_API_USERS_TOKEN: ${{ secrets.DOPPLER_API_USERS_TOKEN }}
+      DOPPLER_API_MEDIA_TOKEN: ${{ secrets.DOPPLER_API_MEDIA_TOKEN }}
+      DOPPLER_ARCLIGHT_TOKEN: ${{ secrets.DOPPLER_ARCLIGHT_TOKEN }}
+      DOPPLER_DOCS_TOKEN: ${{ secrets.DOPPLER_DOCS_TOKEN }}
+      DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
+      DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
+      DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
+      DOPPLER_WATCH_MODERN_TOKEN: ${{ secrets.DOPPLER_WATCH_MODERN_TOKEN }}
+      DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
+      DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}
+      DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
   journeys-admin:
     uses: JesusFilm/core/.github/workflows/ecs-frontend-deploy-prod-worker.yml@main
     with:
@@ -25,6 +50,7 @@ jobs:
       DOPPLER_JOURNEYS_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_TOKEN }}
       DOPPLER_JOURNEYS_ADMIN_TOKEN: ${{ secrets.DOPPLER_JOURNEYS_ADMIN_TOKEN }}
       DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
+      DOPPLER_WATCH_MODERN_TOKEN: ${{ secrets.DOPPLER_WATCH_MODERN_TOKEN }}
       DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
       DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}
       DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}

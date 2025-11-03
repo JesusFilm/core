@@ -4,7 +4,9 @@ export const VIDEO_CONTENT_FIELDS = gql`
   fragment VideoContentFields on Video {
     id
     label
-    image
+    images(aspectRatio: banner) {
+      mobileCinematicHigh
+    }
     imageAlt(languageId: $languageId, primary: true) {
       value
     }
@@ -16,14 +18,27 @@ export const VIDEO_CONTENT_FIELDS = gql`
     }
     studyQuestions(languageId: $languageId, primary: true) {
       value
+      primary
+    }
+    bibleCitations {
+      bibleBook {
+        name {
+          value
+        }
+      }
+      chapterStart
+      chapterEnd
+      verseStart
+      verseEnd
     }
     title(languageId: $languageId, primary: true) {
       value
     }
-    variant(languageId: $languageId) {
+    variant {
       id
       duration
       hls
+      downloadable
       downloads {
         quality
         size
@@ -35,6 +50,7 @@ export const VIDEO_CONTENT_FIELDS = gql`
           value
           primary
         }
+        bcp47
       }
       slug
       subtitleCount

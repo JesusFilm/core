@@ -6,29 +6,36 @@ import { useTranslation } from 'next-i18next'
 import { type ReactElement } from 'react'
 import { Index } from 'react-instantsearch'
 
+import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
 import { SearchBar } from '@core/journeys/ui/SearchBar'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
 import { PageWrapper } from '../PageWrapper'
-import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid/AlgoliaVideoGrid'
+import { AlgoliaVideoGrid } from '../VideoGrid/AlgoliaVideoGrid'
 
 import { HomeHero } from './HomeHero'
 import { SeeAllVideos } from './SeeAllVideos'
 
-export function WatchHomePage(): ReactElement {
+interface WatchHomePageProps {
+  languageId?: string | undefined
+}
+
+export function WatchHomePage({
+  languageId
+}: WatchHomePageProps): ReactElement {
   const { t } = useTranslation('apps-watch')
+  useAlgoliaRouter()
 
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
-
-  useAlgoliaRouter()
 
   return (
     <PageWrapper
       hero={<HomeHero />}
       headerThemeMode={ThemeMode.dark}
       hideHeaderSpacer
+      showLanguageSwitcher
     >
       <ThemeProvider
         themeName={ThemeName.website}
@@ -40,11 +47,13 @@ export function WatchHomePage(): ReactElement {
           data-testid="WatchHomePage"
         >
           <Container maxWidth="xxl" sx={{ paddingY: '4rem' }}>
-            <Box sx={{ pb: 10 }}>
-              <SearchBar />
-            </Box>
             <Index indexName={indexName}>
-              <AlgoliaVideoGrid variant="contained" />
+              <Box sx={{ pb: 10 }}>
+                <SearchBarProvider>
+                  <SearchBar showDropdown showLanguageButton />
+                </SearchBarProvider>
+              </Box>
+              <AlgoliaVideoGrid variant="contained" languageId={languageId} />
             </Index>
             <SeeAllVideos />
             <Box

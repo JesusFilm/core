@@ -1,7 +1,7 @@
 export {
   firebaseClient,
-  getUserFromRequest,
-  getUserIdFromRequest,
+  getUserFromPayload,
+  getUserIdFromPayload,
   auth,
   impersonateUser,
   User

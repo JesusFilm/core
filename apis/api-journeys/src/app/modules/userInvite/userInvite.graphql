@@ -1,0 +1,22 @@
+type UserInvite @key(fields: "id") @shareable {
+  id: ID!
+  journeyId: ID!
+  senderId: ID!
+  email: String!
+  acceptedAt: DateTime
+  removedAt: DateTime
+}
+
+extend type Query {
+  userInvites(journeyId: ID!): [UserInvite!]
+}
+
+input UserInviteCreateInput {
+  email: String!
+}
+
+extend type Mutation {
+  userInviteCreate(journeyId: ID!, input: UserInviteCreateInput): UserInvite
+  userInviteRemove(id: ID!, journeyId: ID!): UserInvite!
+  userInviteAcceptAll: [UserInvite!]!
+}

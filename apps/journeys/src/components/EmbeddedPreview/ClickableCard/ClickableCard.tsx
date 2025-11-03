@@ -46,32 +46,6 @@ export function ClickableCard({
           height: '100%'
         }}
       >
-        {fullscreen === false && (
-          <>
-            <Box
-              sx={{
-                mx: 'auto',
-                mb: 0,
-                height: 6.5,
-                width: '82.5%',
-                backgroundColor: '#AAACBB',
-                borderRadius: '16px 16px 0 0',
-                opacity: 0.3
-              }}
-            />
-            <Box
-              sx={{
-                mx: 'auto',
-                mb: 0,
-                height: 6.5,
-                width: '90%',
-                backgroundColor: '#AAACBB',
-                borderRadius: '16px 16px 0 0',
-                opacity: 0.6
-              }}
-            />
-          </>
-        )}
         <Box
           sx={{
             height: '100%',

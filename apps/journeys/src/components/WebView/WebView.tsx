@@ -2,11 +2,11 @@ import { useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import { SxProps, useTheme } from '@mui/material/styles'
+import { sendGTMEvent } from '@next/third-parties/google'
 import { ReactElement, useEffect } from 'react'
-import TagManager from 'react-gtm-module'
 import { v4 as uuidv4 } from 'uuid'
 
-import type { TreeBlock } from '@core/journeys/ui/block'
+import { TreeBlock, blockHistoryVar, useBlocks } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { getStepTheme } from '@core/journeys/ui/getStepTheme'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -25,9 +25,11 @@ import {
 } from '../Conductor/Conductor'
 
 interface WebViewProps {
+  blocks: TreeBlock[]
   stepBlock: TreeBlock<StepFields>
 }
-export function WebView({ stepBlock }: WebViewProps): ReactElement {
+export function WebView({ blocks, stepBlock }: WebViewProps): ReactElement {
+  const { setTreeBlocks } = useBlocks()
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
   const theme = useTheme()
@@ -39,6 +41,13 @@ export function WebView({ stepBlock }: WebViewProps): ReactElement {
   const [journeyVisitorUpdate] = useMutation<VisitorUpdateInput>(
     JOURNEY_VISITOR_UPDATE
   )
+
+  useEffect(() => {
+    setTreeBlocks(blocks)
+    blockHistoryVar([stepBlock])
+    // multiple re-renders causes block history to be incorrect so do not pass in 'blocks' variable to deps array
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stepBlock, setTreeBlocks])
 
   useEffect(() => {
     if ((variant === 'default' || variant === 'embed') && journey != null) {
@@ -83,13 +92,11 @@ export function WebView({ stepBlock }: WebViewProps): ReactElement {
             )
         })
       })
-      TagManager.dataLayer({
-        dataLayer: {
-          event: 'journey_view',
-          journeyId: journey.id,
-          eventId: id,
-          journeyTitle: journey.title
-        }
+      sendGTMEvent({
+        event: 'journey_view',
+        journeyId: journey.id,
+        eventId: id,
+        journeyTitle: journey.title
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

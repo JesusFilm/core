@@ -17,7 +17,10 @@ const image: TreeBlock<ImageBlock> = {
   parentBlockId: 'Image1',
   parentOrder: 0,
   blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
-  children: []
+  children: [],
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const card: TreeBlock<CardBlock> = {
@@ -30,6 +33,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: true,
+  backdropBlur: null,
   children: [image]
 }
 
@@ -43,6 +47,7 @@ const emptyCard: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: true,
+  backdropBlur: null,
   children: []
 }
 

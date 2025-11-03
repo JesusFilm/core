@@ -1,14 +1,22 @@
-/* eslint-disable playwright/no-networkidle */
-/* eslint-disable @typescript-eslint/strict-boolean-expressions */
-/* eslint-disable playwright/no-conditional-in-test */
 import { expect, test } from '@playwright/test'
 
 /*  
 NS Admin: Monitoring
 https://www.checklyhq.com/docs/cli/
 */
-test('NS Admin Monitoring: Check user can login and logout successfuly', async ({
-  page
+
+// Set 1 minutes timeout for this monitoring test
+test.setTimeout(60000)
+
+/**
+ * @check
+ * @name NS Admin Monitoring
+ * @retries 8 // Will retry the test 8 times
+ * @retryInterval 10 // Will wait 10 seconds between retries
+ * @maxRetryTime 600 // Will stop retrying after 10 minutes
+ */
+test('NS Admin Monitoring: Check user can login and see the dashboard', async ({
+  browser
 }) => {
   if (!process.env.PLAYWRIGHT_EMAIL || !process.env.PLAYWRIGHT_PASSWORD) {
     throw new Error(
@@ -18,35 +26,81 @@ test('NS Admin Monitoring: Check user can login and logout successfuly', async (
 
   const email = process.env.PLAYWRIGHT_EMAIL
   const password = process.env.PLAYWRIGHT_PASSWORD
+  const timeout = 60000
+  const startTime = Date.now()
+  const stepTiming: { [key: string]: number } = {}
 
-  await page.goto('https://admin.nextstep.is/')
+  // Declare variables that need cleanup
+  let context: any = null
+  let page: any = null
+  const previewPage: any = null
 
-  // Wait for all network calls to finish
-  await page.waitForLoadState('networkidle')
+  try {
+    context = await browser.newContext()
+    page = await context.newPage()
 
-  // Enter user email
-  await page.getByPlaceholder('Enter your email address here').fill(email)
-  await expect(page.locator('input[type="email"]')).toHaveValue(email)
-  await page.getByRole('button', { name: 'Continue with email' }).click()
+    // Step 1: Navigate to login page
+    const loginStart = Date.now()
+    await page.goto('https://admin.nextstep.is/', { timeout })
+    stepTiming['navigation'] = Date.now() - loginStart
 
-  // Wait for the password input to appear
-  // eslint-disable-next-line playwright/no-wait-for-selector
-  await page.waitForSelector('input[type="password"]')
-  // Wait for all network calls to finish
-  await page.waitForLoadState('networkidle')
+    // Step 2: Login
+    const authStart = Date.now()
+    await page
+      .getByPlaceholder('Enter your email address here')
+      .click({ timeout })
+    await page
+      .getByPlaceholder('Enter your email address here')
+      .fill(email, { timeout })
+    await page
+      .getByRole('button', { name: 'Continue with email' })
+      .click({ timeout })
+    await page.getByPlaceholder('Enter Password').click({ timeout })
+    await page.getByPlaceholder('Enter Password').fill(password, { timeout })
+    await page.getByRole('button', { name: 'Sign In' }).click({ timeout })
+    stepTiming['authentication'] = Date.now() - authStart
 
-  // Enter user password
-  await page.getByPlaceholder('Enter Password').click()
-  await page.getByPlaceholder('Enter Password').fill(password)
-  await page.getByRole('button', { name: 'Sign In' }).click()
+    // Step 3: Wait for and verify dashboard load
+    const dashboardStart = Date.now()
+    await expect(page.getByTestId('NavigationListItemDiscover')).toBeVisible({
+      timeout
+    })
+    stepTiming['dashboard_load'] = Date.now() - dashboardStart
 
-  // Expect that email in the profile menu matches the email used to login
-  await page.getByTestId('NavigationListItemProfile').click()
-  await expect(page.getByRole('menu')).toContainText(email)
-  await page.getByText('Logout').click()
+    // Log monitoring metrics
+    const totalDuration = Date.now() - startTime
+    console.log('=== Monitoring Metrics ===')
+    console.log(`Total Duration: ${totalDuration}ms`)
+    Object.entries(stepTiming).forEach(([step, duration]) => {
+      console.log(`${step}: ${duration}ms`)
+      // Log in Checkly-friendly format for metrics
+      console.log(`METRIC step_${step} ${duration}`)
+    })
+    // Log total duration as a metric
+    console.log(`METRIC total_duration ${totalDuration}`)
+  } catch (error) {
+    // Enhanced error logging for monitoring
+    console.log('=== Monitoring Alert ===')
+    console.log(`Error occurred at ${new Date().toISOString()}`)
+    console.log('Step timings before failure:', stepTiming)
+    console.log('Error details:', error)
 
-  // Expect that 'Continue with email' button is visible
-  await expect(
-    page.getByTestId('EmailSignInForm').getByRole('button')
-  ).toContainText('Continue with email')
+    // Checkly will automatically capture failure screenshots
+    throw error
+  } finally {
+    // Ensure resources are cleaned up even on error
+    try {
+      if (previewPage && !previewPage.isClosed()) {
+        await previewPage.close()
+      }
+      if (page && !page.isClosed()) {
+        await page.close()
+      }
+      if (context) {
+        await context.close()
+      }
+    } catch (cleanupError) {
+      console.log('Error during cleanup:', cleanupError)
+    }
+  }
 })

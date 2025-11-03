@@ -1,6 +1,6 @@
-import { jest } from '@storybook/jest'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
+import { fn } from 'storybook/test'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -24,7 +24,7 @@ const Demo: Meta<typeof TextResponse> = {
   }
 }
 
-const onClose = jest.fn()
+const onClose = fn()
 
 const block: TreeBlock<TextResponseBlock> = {
   __typename: 'TextResponseBlock',
@@ -32,12 +32,15 @@ const block: TreeBlock<TextResponseBlock> = {
   parentBlockId: null,
   parentOrder: null,
   label: '',
+  placeholder: null,
   hint: null,
   minRows: null,
+  required: null,
   integrationId: null,
   type: null,
   routeId: null,
-  children: []
+  children: [],
+  hideLabel: false
 }
 
 const Template: StoryObj<ComponentProps<typeof TextResponse>> = {
@@ -68,8 +71,10 @@ export const Complete = {
     parentBlockId: null,
     parentOrder: null,
     label: 'complete label',
+    placeholder: 'placeholder text',
     hint: 'hint text',
     minRows: 2,
+    required: true,
     children: []
   }
 }

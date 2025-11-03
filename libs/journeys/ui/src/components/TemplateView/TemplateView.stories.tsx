@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { User } from 'next-firebase-auth'
 import { ComponentProps } from 'react'
 
@@ -80,7 +80,10 @@ const primaryImageBlock: PrimaryImageBlock = {
   width: 1152,
   height: 768,
   blurhash: 'UE9Qmr%MIpWCtmbH%Mxu_4xuWYoL-;oIWYt7',
-  parentOrder: 1
+  parentOrder: 1,
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const getJourneysMockEmpty: MockedResponse<GetJourneys> = {

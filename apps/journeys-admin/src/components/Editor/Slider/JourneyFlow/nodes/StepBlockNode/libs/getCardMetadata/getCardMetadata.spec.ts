@@ -24,7 +24,11 @@ const typography: TreeBlock<TypographyBlock> = {
   color: null,
   content: 'title content',
   variant: TypographyVariant.h1,
-  children: []
+  children: [],
+  settings: {
+    __typename: 'TypographyBlockSettings',
+    color: null
+  }
 }
 
 const button1: TreeBlock<ButtonBlock> = {
@@ -38,8 +42,10 @@ const button1: TreeBlock<ButtonBlock> = {
   size: null,
   startIconId: null,
   endIconId: null,
+  submitEnabled: null,
   action: null,
-  children: []
+  children: [],
+  settings: null
 }
 
 const image: TreeBlock<ImageBlock> = {
@@ -52,7 +58,10 @@ const image: TreeBlock<ImageBlock> = {
   width: 1920,
   height: 1080,
   blurhash: '',
-  children: []
+  children: [],
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const video: TreeBlock<VideoBlock> = {
@@ -74,7 +83,8 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  subtitleLanguage: null,
+  mediaVideo: {
     __typename: 'Video' as const,
     id: '2_0-FallingPlates',
     title: [
@@ -83,8 +93,13 @@ const video: TreeBlock<VideoBlock> = {
         value: 'FallingPlates'
       }
     ],
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -113,6 +128,7 @@ const radioQuestionBlock: TreeBlock<RadioQuestionBlock> = {
   id: 'RadioQuestion1',
   parentBlockId: 'parent.id',
   parentOrder: 3,
+  gridView: false,
   children: [
     {
       __typename: 'RadioOptionBlock',
@@ -121,6 +137,7 @@ const radioQuestionBlock: TreeBlock<RadioQuestionBlock> = {
       parentBlockId: 'RadioQuestion1',
       parentOrder: 0,
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     },
     {
@@ -130,6 +147,7 @@ const radioQuestionBlock: TreeBlock<RadioQuestionBlock> = {
       parentBlockId: 'RadioQuestion1',
       parentOrder: 1,
       action: null,
+      pollOptionImageBlockId: null,
       children: []
     }
   ]
@@ -145,6 +163,7 @@ const card: TreeBlock<CardBlock> = {
   themeMode: null,
   themeName: null,
   fullscreen: false,
+  backdropBlur: null,
   children: [image, typography, button1, radioQuestionBlock]
 }
 
@@ -172,7 +191,7 @@ describe('getCardMetadata', () => {
       title: 'FallingPlates',
       subtitle: '0:00-3:20',
       bgImage:
-        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+        'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95',
       priorityBlock: video,
       hasMultipleActions: false
     })

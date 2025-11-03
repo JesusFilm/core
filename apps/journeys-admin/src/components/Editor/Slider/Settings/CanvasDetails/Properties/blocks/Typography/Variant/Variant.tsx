@@ -1,14 +1,16 @@
 import { gql, useMutation } from '@apollo/client'
+import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
-import DashIcon from '@core/shared/ui/icons/Dash'
+import Type1Icon from '@core/shared/ui/icons/Type1'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 
 import { BlockFields_TypographyBlock as TypographyBlock } from '../../../../../../../../../../__generated__/BlockFields'
@@ -32,6 +34,15 @@ export const TYPOGRAPHY_BLOCK_UPDATE_VARIANT = gql`
   }
 `
 
+const ThemeBuilderDialog = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "ThemeBuilderDialog" */
+      '../ThemeBuilderDialog'
+    ).then((mod) => mod.ThemeBuilderDialog),
+  { ssr: false }
+)
+
 export function Variant(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [typographyBlockUpdate] = useMutation<TypographyBlockUpdateVariant>(
@@ -48,12 +59,26 @@ export function Variant(): ReactElement {
     | TreeBlock<TypographyBlock>
     | undefined
 
+  const [openThemeBuilderDialog, setOpenThemeBuilderDialog] = useState(false)
+
+  const journeyTheme = journey?.journeyTheme
+  const fontFamilies = useMemo(() => {
+    if (journeyTheme == null) return
+
+    return {
+      headerFont: journeyTheme?.headerFont ?? '',
+      bodyFont: journeyTheme?.bodyFont ?? '',
+      labelFont: journeyTheme?.labelFont ?? ''
+    }
+  }, [journeyTheme])
+
   const withJourneyTheme = (children): ReactElement => (
     <ThemeProvider
       themeName={ThemeName.base}
       themeMode={ThemeMode.light}
       rtl={rtl}
       locale={locale}
+      fontFamilies={fontFamilies}
       nested
     >
       {children}
@@ -93,107 +118,127 @@ export function Variant(): ReactElement {
     })
   }
 
+  /**
+   * Typography variant options with their corresponding UI labels.
+   * Note: The mapping is intentional but non-obvious:
+   * - TypographyVariant.h1 → "Display" (largest text)
+   * - TypographyVariant.h2 → "Title"
+   * - TypographyVariant.h3 → "Heading 1"
+   * - TypographyVariant.h4 → "Heading 2"
+   * - TypographyVariant.h5 → "Heading 3"
+   * - TypographyVariant.h6 → "Heading 4"
+   * - TypographyVariant.body1 → "Large Body"
+   * - TypographyVariant.body2 → "Normal Body"
+   * - TypographyVariant.caption → "Small Body" (smallest text)
+   */
   const options = [
-    {
-      value: TypographyVariant.h1,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.h1}>{t('Header 1')}</Typography>
-      ),
-      icon: <DashIcon />
-    },
-    {
-      value: TypographyVariant.h2,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.h2}>{t('Header 2')}</Typography>
-      ),
-      icon: <DashIcon />
-    },
-    {
-      value: TypographyVariant.h3,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.h3}>{t('Header 3')}</Typography>
-      ),
-      icon: <DashIcon />
-    },
-    {
-      value: TypographyVariant.h4,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.h4}>{t('Header 4')}</Typography>
-      ),
-      icon: <DashIcon />
-    },
-    {
-      value: TypographyVariant.h5,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.h5}>{t('Header 5')}</Typography>
-      ),
-      icon: <DashIcon />
-    },
-    {
-      value: TypographyVariant.h6,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.h6}>{t('Header 6')}</Typography>
-      ),
-      icon: <DashIcon />
-    },
-    {
-      value: TypographyVariant.subtitle1,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.subtitle1}>
-          {t('Subtitle 1')}
-        </Typography>
-      ),
-      icon: <DashIcon />
-    },
-    {
-      value: TypographyVariant.subtitle2,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.subtitle2}>
-          {t('Subtitle 2')}
-        </Typography>
-      ),
-      icon: <DashIcon />
-    },
-    {
-      value: TypographyVariant.body1,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.body1}>{t('Body 1')}</Typography>
-      ),
-      icon: <DashIcon />
-    },
-    {
-      value: TypographyVariant.body2,
-      label: withJourneyTheme(
-        <Typography variant={TypographyVariant.body2}>{t('Body 2')}</Typography>
-      ),
-      icon: <DashIcon />
-    },
     {
       value: TypographyVariant.caption,
       label: withJourneyTheme(
         <Typography variant={TypographyVariant.caption}>
-          {t('Caption')}
+          {t('Small Body')}
         </Typography>
       ),
-      icon: <DashIcon />
+      icon: <></>
     },
     {
-      value: TypographyVariant.overline,
+      value: TypographyVariant.body2,
       label: withJourneyTheme(
-        <Typography variant={TypographyVariant.overline}>
-          {t('Overline')}
+        <Typography variant={TypographyVariant.body2}>
+          {t('Normal Body')}
         </Typography>
       ),
-      icon: <DashIcon />
+      icon: <></>
+    },
+    {
+      value: TypographyVariant.body1,
+      label: withJourneyTheme(
+        <Typography variant={TypographyVariant.body1}>
+          {t('Large Body')}
+        </Typography>
+      ),
+      icon: <></>
+    },
+    {
+      value: TypographyVariant.h6,
+      label: withJourneyTheme(
+        <Typography variant={TypographyVariant.h6}>{t('Heading 4')}</Typography>
+      ),
+      icon: <></>
+    },
+    {
+      value: TypographyVariant.h5,
+      label: withJourneyTheme(
+        <Typography variant={TypographyVariant.h5}>{t('Heading 3')}</Typography>
+      ),
+      icon: <></>
+    },
+    {
+      value: TypographyVariant.h4,
+      label: withJourneyTheme(
+        <Typography variant={TypographyVariant.h4}>{t('Heading 2')}</Typography>
+      ),
+      icon: <></>
+    },
+    {
+      value: TypographyVariant.h3,
+      label: withJourneyTheme(
+        <Typography variant={TypographyVariant.h3}>{t('Heading 1')}</Typography>
+      ),
+      icon: <></>
+    },
+    {
+      value: TypographyVariant.h2,
+      label: withJourneyTheme(
+        <Typography variant={TypographyVariant.h2}>{t('Title')}</Typography>
+      ),
+      icon: <></>
+    },
+    {
+      value: TypographyVariant.h1,
+      label: withJourneyTheme(
+        <Typography variant={TypographyVariant.h1}>{t('Display')}</Typography>
+      ),
+      icon: <></>
     }
   ]
 
+  const editFontThemeButton = (
+    <Button
+      color="primary"
+      sx={{
+        backgroundColor: 'background.default',
+        height: 64,
+        p: 4,
+        width: '100%',
+        justifyContent: 'center',
+        borderRadius: 3,
+        '&:hover': {
+          backgroundColor: '#E0E0E0'
+        }
+      }}
+      startIcon={<Type1Icon />}
+      onClick={() => setOpenThemeBuilderDialog(true)}
+    >
+      <Typography variant="subtitle2">{t('Edit Font Theme')}</Typography>
+    </Button>
+  )
+
   return (
-    <ToggleButtonGroup
-      value={selectedBlock?.variant ?? TypographyVariant.body2}
-      onChange={handleChange}
-      options={options}
-      testId="Variant"
-    />
+    <>
+      <ToggleButtonGroup
+        value={selectedBlock?.variant ?? TypographyVariant.body2}
+        onChange={handleChange}
+        options={options}
+        testId="Variant"
+        children={editFontThemeButton}
+      />
+      {openThemeBuilderDialog && (
+        <ThemeBuilderDialog
+          open={openThemeBuilderDialog}
+          onClose={() => setOpenThemeBuilderDialog(false)}
+        />
+      )}
+    </>
   )
 }

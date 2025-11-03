@@ -1,0 +1,1 @@
+export { MenuIconSelect } from './MenuIconSelect'

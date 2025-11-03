@@ -3,13 +3,11 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import {
-  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
-  TeamProvider
-} from '@core/journeys/ui/TeamProvider'
-import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
+import { TeamProvider } from '@core/journeys/ui/TeamProvider'
+import { getLastActiveTeamIdAndTeamsMock } from '@core/journeys/ui/TeamProvider/TeamProvider.mock'
 
 import { TeamUpdate } from '../../../../__generated__/TeamUpdate'
+import { mockUseCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery/useCurrentUserLazyQuery.mock'
 
 import { TEAM_UPDATE } from './TeamUpdateDialog'
 
@@ -17,38 +15,14 @@ import { TeamUpdateDialog } from '.'
 import '../../../../test/i18n'
 
 describe('TeamUpdateDialog', () => {
-  const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
-    request: {
-      query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-    },
-    result: {
-      data: {
-        teams: [
-          {
-            id: 'teamId',
-            title: 'Jesus Film Project',
-            publicTitle: '',
-            __typename: 'Team',
-            userTeams: [],
-            customDomains: []
-          }
-        ],
-        getJourneyProfile: {
-          __typename: 'JourneyProfile',
-          id: 'journeyProfileId',
-          lastActiveTeamId: 'teamId'
-        }
-      }
-    }
-  }
   const teamUpdateMock: MockedResponse<TeamUpdate> = {
     request: {
       query: TEAM_UPDATE,
       variables: {
         id: 'teamId',
         input: {
-          title: 'Team Title',
-          publicTitle: ''
+          title: 'Jesus Film Project',
+          publicTitle: 'Jesus Film Project'
         }
       }
     },
@@ -56,8 +30,8 @@ describe('TeamUpdateDialog', () => {
       data: {
         teamUpdate: {
           id: 'teamId',
-          title: 'Team Title',
-          publicTitle: '',
+          title: 'Jesus Film Project',
+          publicTitle: 'Jesus Film Project',
           __typename: 'Team'
         }
       }
@@ -81,7 +55,14 @@ describe('TeamUpdateDialog', () => {
     const handleClose = jest.fn()
     const cache = new InMemoryCache()
     const { getByRole, getByText, getAllByRole } = render(
-      <MockedProvider mocks={[getTeamsMock, teamUpdateMock]} cache={cache}>
+      <MockedProvider
+        mocks={[
+          getLastActiveTeamIdAndTeamsMock,
+          teamUpdateMock,
+          mockUseCurrentUserLazyQuery
+        ]}
+        cache={cache}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <TeamUpdateDialog open onClose={handleClose} />
@@ -90,23 +71,54 @@ describe('TeamUpdateDialog', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByRole('textbox')[0]).toHaveValue('Jesus Film Project')
+      expect(getAllByRole('textbox')[0]).toHaveValue('Team Title')
     )
     expect(getAllByRole('textbox')[1]).toHaveAttribute(
       'placeholder',
-      'Jesus Film Project'
+      'Team Title'
     )
     fireEvent.change(getAllByRole('textbox')[0], {
-      target: { value: 'Team Title' }
+      target: { value: 'Jesus Film Project' }
+    })
+    fireEvent.change(getAllByRole('textbox')[1], {
+      target: { value: 'Jesus Film Project' }
     })
     fireEvent.click(getByRole('button', { name: 'Save' }))
     await waitFor(() => expect(handleClose).toHaveBeenCalled())
-    expect(getByText('Team Title updated.')).toBeInTheDocument()
+    expect(getByText('Jesus Film Project updated.')).toBeInTheDocument()
+  })
+
+  it('should be disabled if user does not have required permissions', async () => {
+    const handleClose = jest.fn()
+    const cache = new InMemoryCache()
+    const { getAllByRole, getAllByText } = render(
+      <MockedProvider
+        mocks={[getLastActiveTeamIdAndTeamsMock, teamUpdateMock]}
+        cache={cache}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <TeamUpdateDialog open onClose={handleClose} />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(getAllByRole('textbox')[0]).toBeDisabled()
+    expect(getAllByRole('textbox')[1]).toBeDisabled()
+    expect(getAllByText('Only a team manager can rename a team')).toHaveLength(
+      2
+    )
   })
 
   it('validates team field', async () => {
     const { getByText, getByRole, getAllByRole } = render(
-      <MockedProvider mocks={[getTeamsMock, teamUpdateErrorMock]}>
+      <MockedProvider
+        mocks={[
+          getLastActiveTeamIdAndTeamsMock,
+          teamUpdateErrorMock,
+          mockUseCurrentUserLazyQuery
+        ]}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <TeamUpdateDialog open onClose={jest.fn()} />
@@ -115,7 +127,7 @@ describe('TeamUpdateDialog', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getAllByRole('textbox')[0]).toHaveValue('Jesus Film Project')
+      expect(getAllByRole('textbox')[0]).toHaveValue('Team Title')
     )
     fireEvent.change(getAllByRole('textbox')[0], { target: { value: '' } })
     fireEvent.click(getByRole('button', { name: 'Save' }))
@@ -143,7 +155,9 @@ describe('TeamUpdateDialog', () => {
 
   it('validates public name field', async () => {
     const { getByText, getAllByRole } = render(
-      <MockedProvider mocks={[getTeamsMock]}>
+      <MockedProvider
+        mocks={[getLastActiveTeamIdAndTeamsMock, mockUseCurrentUserLazyQuery]}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <TeamUpdateDialog open onClose={jest.fn()} />

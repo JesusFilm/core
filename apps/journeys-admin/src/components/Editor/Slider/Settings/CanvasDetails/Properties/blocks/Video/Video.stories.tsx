@@ -1,6 +1,6 @@
-import { jest } from '@storybook/jest'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentPropsWithoutRef } from 'react'
+import { fn } from 'storybook/test'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -19,7 +19,7 @@ const VideoDemo: Meta<typeof Video> = {
     'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/blocks/Video'
 }
 
-const onClose = jest.fn()
+const onClose = fn()
 
 const Template: StoryObj<ComponentPropsWithoutRef<typeof Video>> = {
   render: ({ ...args }) => {
@@ -51,7 +51,8 @@ const defaultVideo: TreeBlock<VideoBlock> = {
   description: null,
   duration: null,
   image: null,
-  video: null,
+  subtitleLanguage: null,
+  mediaVideo: null,
   posterBlockId: null,
   objectFit: null,
   children: []

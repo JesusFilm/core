@@ -1,7 +1,8 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { useTheme } from '@mui/material/styles'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { SnackbarProvider } from 'notistack'
 import { ComponentProps } from 'react'
 
 import {
@@ -43,7 +44,11 @@ const content: TreeBlock[] = [
     color: null,
     content: "What's our purpose, and how did we get here?",
     variant: TypographyVariant.h3,
-    children: []
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   },
   {
     id: 'typographyBlockId2',
@@ -55,7 +60,11 @@ const content: TreeBlock[] = [
     content:
       'Follow the journey of a curious Irishman traveling around the world looking for answers and wrestling with the things that just don’t seem to make sense. ',
     variant: null,
-    children: []
+    children: [],
+    settings: {
+      __typename: 'TypographyBlockSettings',
+      color: null
+    }
   },
   {
     __typename: 'ButtonBlock',
@@ -68,6 +77,7 @@ const content: TreeBlock[] = [
     size: ButtonSize.large,
     startIconId: 'icon',
     endIconId: null,
+    submitEnabled: null,
     action: null,
     children: [
       {
@@ -80,7 +90,8 @@ const content: TreeBlock[] = [
         iconSize: IconSize.md,
         children: []
       }
-    ]
+    ],
+    settings: null
   }
 ]
 
@@ -94,7 +105,10 @@ const image: TreeBlock<ImageFields> = {
   parentBlockId: 'Image1',
   parentOrder: 3,
   children: [],
-  blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL'
+  blurhash: 'L9AS}j^-0dVC4Tq[=~PATeXSV?aL',
+  scale: null,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 const video: TreeBlock<VideoFields> = {
@@ -115,7 +129,8 @@ const video: TreeBlock<VideoFields> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: {
+  subtitleLanguage: null,
+  mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
     title: [
@@ -124,8 +139,13 @@ const video: TreeBlock<VideoFields> = {
         value: 'FallingPlates'
       }
     ],
-    image:
-      'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_0-FallingPlates.mobileCinematicHigh.jpg',
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh:
+          'https://imagedelivery.net/tMY86qEHFACTO8_0kAeRFA/2_0-FallingPlates.mobileCinematicHigh.jpg/f=jpg,w=1280,h=600,q=95'
+      }
+    ],
     variant: {
       __typename: 'VideoVariant',
       id: '2_0-FallingPlates-529',
@@ -146,21 +166,23 @@ const Template: Story = {
     const theme = useTheme()
     return (
       <MockedProvider>
-        <Box
-          sx={{
-            height: 'calc(100vh - 80px)',
-            maxHeight: 'calc(100vh - 80px)',
-            [theme.breakpoints.up('sm')]: {
-              maxHeight: '460px'
-            },
-            [theme.breakpoints.up('lg')]: {
-              maxWidth: '854px',
-              maxHeight: '480px'
-            }
-          }}
-        >
-          <Card {...args} />
-        </Box>
+        <SnackbarProvider>
+          <Box
+            sx={{
+              height: 'calc(100vh - 80px)',
+              maxHeight: 'calc(100vh - 80px)',
+              [theme.breakpoints.up('sm')]: {
+                maxHeight: '460px'
+              },
+              [theme.breakpoints.up('lg')]: {
+                maxWidth: '854px',
+                maxHeight: '480px'
+              }
+            }}
+          >
+            <Card {...args} />
+          </Box>
+        </SnackbarProvider>
       </MockedProvider>
     )
   }
@@ -192,7 +214,8 @@ export const ImageBlur = {
     ...Default.args,
     coverBlockId: image.id,
     children: [...content, image],
-    fullscreen: true
+    fullscreen: true,
+    backdropBlur: null
   }
 }
 
