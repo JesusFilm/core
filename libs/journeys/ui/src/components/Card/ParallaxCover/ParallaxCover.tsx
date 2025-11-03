@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import {
   ReactElement,
   ReactNode,
@@ -6,17 +7,17 @@ import {
   useRef,
   useState
 } from 'react'
-import Box from '@mui/material/Box'
 
-import { ImageFields } from '../../Image/__generated__/ImageFields'
+import { NextImage } from '@core/shared/ui/NextImage'
+
+import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../libs/block'
+import { useJourney } from '../../../libs/JourneyProvider'
+import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 import { OverlayContent } from '../OverlayContent'
-import { NextImage } from '@core/shared/ui/NextImage'
-import { VideoBlockSource } from '../../../../__generated__/globalTypes'
-import { getFooterMobileSpacing } from '../utils/getFooterElements'
-import { useJourney } from '../../../libs/JourneyProvider'
 import { addAlphaToHex, stripAlphaFromHex } from '../utils/colorOpacityUtils'
+import { getFooterMobileSpacing } from '../utils/getFooterElements'
 
 interface ParallaxCoverProps {
   children: ReactNode
