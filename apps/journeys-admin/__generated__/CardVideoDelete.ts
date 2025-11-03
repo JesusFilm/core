@@ -16,6 +16,7 @@ export interface CardVideoDelete_video_ImageBlock {
 export interface CardVideoDelete_video_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardVideoDelete_video_VideoBlock_mediaVideo_Video_title {
