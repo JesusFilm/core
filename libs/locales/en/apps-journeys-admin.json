@@ -686,13 +686,9 @@
   "Please Enter Your Name": "Please Enter Your Name",
   "Clear all": "Clear all",
   "All": "All",
-<<<<<<< HEAD
-=======
-  "Poll Selection": "Poll Selection",
-  "Multiselect Submission": "Multiselect Submission",
->>>>>>> origin/main
   "Text Submission": "Text Submission",
   "Poll Selection": "Poll Selection",
+  "Multiselect Submission": "Multiselect Submission",
   "Multiselect Responses": "Multiselect Responses",
   "Toggle optional settings": "Toggle optional settings",
   "Optional settings": "Optional settings",
