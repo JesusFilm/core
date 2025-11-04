@@ -7,8 +7,8 @@
 // GraphQL query operation: YouTubeClosedCaptionLanguages
 // ====================================================
 
-export interface YouTubeClosedCaptionLanguages_youtubeClosedCaptionLanguages_ZodError {
-  __typename: "ZodError" | "Error";
+export interface YouTubeClosedCaptionLanguages_youtubeClosedCaptionLanguages_Error {
+  __typename: "Error" | "ZodError";
 }
 
 export interface YouTubeClosedCaptionLanguages_youtubeClosedCaptionLanguages_QueryYoutubeClosedCaptionLanguagesSuccess_data_name {
@@ -29,7 +29,7 @@ export interface YouTubeClosedCaptionLanguages_youtubeClosedCaptionLanguages_Que
   data: YouTubeClosedCaptionLanguages_youtubeClosedCaptionLanguages_QueryYoutubeClosedCaptionLanguagesSuccess_data[];
 }
 
-export type YouTubeClosedCaptionLanguages_youtubeClosedCaptionLanguages = YouTubeClosedCaptionLanguages_youtubeClosedCaptionLanguages_ZodError | YouTubeClosedCaptionLanguages_youtubeClosedCaptionLanguages_QueryYoutubeClosedCaptionLanguagesSuccess;
+export type YouTubeClosedCaptionLanguages_youtubeClosedCaptionLanguages = YouTubeClosedCaptionLanguages_youtubeClosedCaptionLanguages_Error | YouTubeClosedCaptionLanguages_youtubeClosedCaptionLanguages_QueryYoutubeClosedCaptionLanguagesSuccess;
 
 export interface YouTubeClosedCaptionLanguages {
   youtubeClosedCaptionLanguages: YouTubeClosedCaptionLanguages_youtubeClosedCaptionLanguages;
