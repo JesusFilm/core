@@ -41,24 +41,23 @@ export function ContactDataForm({
   const { t } = useTranslation('apps-journeys-admin')
   const [isOptionalSettingsOpen, setIsOptionalSettingsOpen] = useState(false)
 
+  const ALL_CONTACT_FIELDS = [
+    'RadioQuestionSubmissionEvent',
+    'MultiselectSubmissionEvent',
+    'SignUpSubmissionEvent',
+    'TextResponseSubmissionEvent'
+  ]
+
   const handleSelectAll = (checked: boolean): void => {
-    setSelectedFields(
-      checked
-        ? [
-            'RadioQuestionSubmissionEvent',
-            'MultiselectSubmissionEvent',
-            'SignUpSubmissionEvent',
-            'TextResponseSubmissionEvent',
-            'MultiselectSubmissionEvent'
-          ]
-        : []
-    )
+    setSelectedFields(checked ? ALL_CONTACT_FIELDS : [])
   }
 
   const toggleField = (field: string) => {
     return (checked: boolean) =>
       setSelectedFields((prev) =>
-        !checked ? prev.filter((f) => f !== field) : [...prev, field]
+        !checked
+          ? prev.filter((f) => f !== field)
+          : Array.from(new Set([...prev, field]))
       )
   }
 
@@ -73,20 +72,14 @@ export function ContactDataForm({
   }
 
   useEffect(() => {
-    setSelectedFields([
-      'RadioQuestionSubmissionEvent',
-      'MultiselectSubmissionEvent',
-      'SignUpSubmissionEvent',
-      'TextResponseSubmissionEvent',
-      'MultiselectSubmissionEvent'
-    ])
+    setSelectedFields(ALL_CONTACT_FIELDS)
   }, [setSelectedFields])
 
   return (
     <Stack>
       <FormGroup>
         <CheckboxOption
-          checked={selectedFields.length === 4}
+          checked={ALL_CONTACT_FIELDS.every((f) => selectedFields.includes(f))}
           onChange={handleSelectAll}
           label={t('All')}
         />
