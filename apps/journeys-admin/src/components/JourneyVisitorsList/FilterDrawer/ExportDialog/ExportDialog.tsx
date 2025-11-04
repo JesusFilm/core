@@ -64,6 +64,7 @@ export function ExportDialog({
   const [selectedEvents, setSelectedEvents] = useState<string[]>([])
   const [contactData, setContactData] = useState<string[]>([])
   const [exportBy, setExportBy] = useState<string>('')
+  const [includeOldData, setIncludeOldData] = useState<boolean>(false)
 
   useEffect(() => {
     if (journeyData?.journey?.createdAt != null) {
@@ -81,12 +82,15 @@ export function ExportDialog({
         }
         await exportJourneyEvents({ journeyId, filter })
       } else if (exportBy === 'Contact Data') {
-        const filter = {
+        const filter: any = {
           typenames: contactData.filter(
             (data) => data !== 'name' && data !== 'email' && data !== 'phone'
           ),
           ...(startDate && { periodRangeStart: startDate.toISOString() }),
           ...(endDate && { periodRangeEnd: endDate.toISOString() })
+        }
+        if (includeOldData) {
+          filter.includeUnconnectedCards = true
         }
         await exportJourneyContacts({
           journeyId,
@@ -190,6 +194,8 @@ export function ExportDialog({
           <ContactDataForm
             setSelectedFields={setContactData}
             selectedFields={contactData}
+            includeOldData={includeOldData}
+            setIncludeOldData={setIncludeOldData}
           />
         </Box>
       )}
