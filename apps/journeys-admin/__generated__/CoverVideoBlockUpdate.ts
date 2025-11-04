@@ -12,6 +12,7 @@ import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit, ContactAc
 export interface CoverVideoBlockUpdate_videoBlockUpdate_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_title {

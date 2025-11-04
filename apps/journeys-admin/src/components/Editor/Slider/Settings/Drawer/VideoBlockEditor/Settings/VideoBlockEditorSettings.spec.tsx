@@ -481,7 +481,8 @@ describe('VideoBlockEditorSettings', () => {
                 videoId: 'test-youtube-id',
                 subtitleLanguage: {
                   __typename: 'Language',
-                  id: 'lang-en'
+                  id: '529',
+                  bcp47: 'en'
                 }
               }}
               posterBlock={null}

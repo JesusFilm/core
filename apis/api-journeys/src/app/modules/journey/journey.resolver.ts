@@ -468,7 +468,8 @@ export class JourneyResolver {
         team: {
           include: { userTeams: true }
         },
-        journeyCustomizationFields: true
+        journeyCustomizationFields: true,
+        journeyTheme: true
       }
     })
     if (journey == null)
@@ -599,7 +600,8 @@ export class JourneyResolver {
                   'journeyTags',
                   'logoImageBlockId',
                   'menuStepBlockId',
-                  'journeyCustomizationFields'
+                  'journeyCustomizationFields',
+                  'journeyTheme'
                 ]),
                 id: duplicateJourneyId,
                 slug,
@@ -721,6 +723,17 @@ export class JourneyResolver {
           await this.prismaService.journey.update({
             where: { id: duplicateJourneyId },
             data: { menuStepBlockId: duplicateMenuStepBlockId }
+          })
+        }
+        if (journey.journeyTheme != null) {
+          await this.prismaService.journeyTheme.create({
+            data: {
+              journeyId: duplicateJourneyId,
+              userId,
+              headerFont: journey.journeyTheme.headerFont,
+              bodyFont: journey.journeyTheme.bodyFont,
+              labelFont: journey.journeyTheme.labelFont
+            }
           })
         }
         retry = false
