@@ -4,10 +4,7 @@ import { GraphQLError } from 'graphql'
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
-import {
-  getIntegrationGoogleAccessToken,
-  getTeamGoogleAccessToken
-} from '../../lib/google/googleAuth'
+import { getIntegrationGoogleAccessToken } from '../../lib/google/googleAuth'
 import {
   createSpreadsheet,
   ensureSheet,
@@ -147,7 +144,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       filter: t.arg({ type: JourneyEventsFilter, required: false }),
       select: t.arg({ type: JourneyVisitorExportSelect, required: false }),
       destination: t.arg({ type: ExportDestinationInput, required: true }),
-      integrationId: t.arg.id({ required: false })
+      integrationId: t.arg.id({ required: true })
     },
     resolve: async (
       _parent,
@@ -223,23 +220,22 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       // Compute the desired header row for this export
       const desiredHeader = columns.map((c) => c.key)
 
-      const accessToken = integrationId
-        ? (await getIntegrationGoogleAccessToken(integrationId)).accessToken
-        : (await getTeamGoogleAccessToken(journey.teamId)).accessToken
+      const accessToken = (await getIntegrationGoogleAccessToken(integrationId))
+        .accessToken
 
-      const integrationRecord =
-        integrationId != null
-          ? await prisma.integration.findUnique({
-              where: { id: integrationId },
-              select: { id: true, accountEmail: true }
-            })
-          : await prisma.integration.findFirst({
-              where: { teamId: journey.teamId, type: 'google' },
-              select: { id: true, accountEmail: true }
-            })
+      const integrationRecord = await prisma.integration.findUnique({
+        where: { id: integrationId },
+        select: { id: true, accountEmail: true }
+      })
 
-      const integrationIdUsed = integrationRecord?.id
-      const integrationEmail = integrationRecord?.accountEmail ?? null
+      if (integrationRecord == null) {
+        throw new GraphQLError('Integration not found', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      }
+
+      const integrationIdUsed = integrationRecord.id
+      const integrationEmail = integrationRecord.accountEmail ?? null
 
       let spreadsheetId: string
       let spreadsheetUrl: string
@@ -309,40 +305,36 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         append: false
       })
 
-      // Record or update Google Sheets sync configuration for this journey
-      if (integrationIdUsed != null) {
-        const existingSync = await prisma.googleSheetsSync.findFirst({
-          where: {
-            teamId: journey.teamId,
-            journeyId,
-            spreadsheetId,
-            sheetName
-          }
-        })
-
-        const syncData = {
+      // Record Google Sheets sync configuration for this journey
+      const existingSync = await prisma.googleSheetsSync.findFirst({
+        where: {
           teamId: journey.teamId,
           journeyId,
-          integrationId: integrationIdUsed,
           spreadsheetId,
-          sheetName,
-          folderId:
-            destination.mode === 'create'
-              ? (destination.folderId ?? null)
-              : null,
-          email: integrationEmail,
-          deletedAt: null
+          sheetName
         }
+      })
 
-        if (existingSync != null) {
-          await prisma.googleSheetsSync.update({
-            where: { id: existingSync.id },
-            data: syncData
-          })
-        } else {
-          await prisma.googleSheetsSync.create({ data: syncData })
-        }
+      if (existingSync != null) {
+        throw new GraphQLError(
+          'A sync already exists for this journey, spreadsheet, and sheet combination',
+          { extensions: { code: 'CONFLICT' } }
+        )
       }
+
+      const syncData = {
+        teamId: journey.teamId,
+        journeyId,
+        integrationId: integrationIdUsed,
+        spreadsheetId,
+        sheetName,
+        folderId:
+          destination.mode === 'create' ? (destination.folderId ?? null) : null,
+        email: integrationEmail,
+        deletedAt: null
+      }
+
+      await prisma.googleSheetsSync.create({ data: syncData })
 
       return { spreadsheetId, spreadsheetUrl, sheetName }
     }

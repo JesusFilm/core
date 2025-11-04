@@ -75,7 +75,7 @@ const EXPORT_TO_SHEETS = gql`
     $filter: JourneyEventsFilter
     $select: JourneyVisitorExportSelect
     $destination: JourneyVisitorGoogleSheetDestinationInput!
-    $integrationId: ID
+    $integrationId: ID!
   ) {
     journeyVisitorExportToGoogleSheet(
       journeyId: $journeyId
