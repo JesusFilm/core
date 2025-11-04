@@ -220,6 +220,7 @@ type LuminaTeamInvitation {
   id: ID
   email: String
   role: LuminaTeamMemberRole
+  teamId: ID
   createdAt: DateTime
   updatedAt: DateTime
   team: LuminaTeam
@@ -233,7 +234,8 @@ input LuminaTeamInvitationCreateInput {
 
 type LuminaTeamMember {
   id: ID
-  userId: String
+  teamId: ID
+  userId: ID
   role: LuminaTeamMemberRole
   createdAt: DateTime
   updatedAt: DateTime
@@ -253,11 +255,17 @@ input LuminaTeamMemberUpdateInput {
 
 type LuminaTeamPlan {
   id: ID
-  teamId: String
+  teamId: ID
   stripeCustomerId: String
   stripeSubscriptionId: String
   billingEmail: String
   billingName: String
+  billingAddressCity: String
+  billingAddressCountry: String
+  billingAddressLine1: String
+  billingAddressLine2: String
+  billingAddressPostalCode: String
+  billingAddressState: String
   enabled: Boolean
   currentPeriodEnd: DateTime
   cancelAtPeriodEnd: Boolean
@@ -296,8 +304,8 @@ input LuminaTeamUpdateInput {
 
 type LuminaUsage {
   id: ID
-  teamId: String
-  agentId: String
+  teamId: ID
+  agentId: ID
   widgetId: String
   websiteId: String
   apiKeyId: String
@@ -441,13 +449,13 @@ type MutationLuminaTeamMemberUpdateSuccess {
   data: LuminaTeamMember!
 }
 
-union MutationLuminaTeamPlanCreateResult = ZodError | MutationLuminaTeamPlanCreateSuccess
+union MutationLuminaTeamPlanCreateResult = ForbiddenError | NotFoundError | ZodError | MutationLuminaTeamPlanCreateSuccess
 
 type MutationLuminaTeamPlanCreateSuccess {
   data: LuminaTeamPlan!
 }
 
-union MutationLuminaTeamPlanUpdateResult = ZodError | MutationLuminaTeamPlanUpdateSuccess
+union MutationLuminaTeamPlanUpdateResult = ForbiddenError | NotFoundError | ZodError | MutationLuminaTeamPlanUpdateSuccess
 
 type MutationLuminaTeamPlanUpdateSuccess {
   data: LuminaTeamPlan!

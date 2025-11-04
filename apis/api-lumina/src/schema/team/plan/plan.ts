@@ -4,13 +4,31 @@ builder.prismaObject('TeamPlan', {
   name: 'LuminaTeamPlan',
   fields: (t) => ({
     id: t.exposeID('id'),
-    teamId: t.exposeString('teamId'),
+    teamId: t.exposeID('teamId'),
     stripeCustomerId: t.exposeString('stripeCustomerId'),
     stripeSubscriptionId: t.exposeString('stripeSubscriptionId', {
       nullable: true
     }),
     billingEmail: t.exposeString('billingEmail'),
     billingName: t.exposeString('billingName'),
+    billingAddressCity: t.exposeString('billingAddressCity', {
+      nullable: true
+    }),
+    billingAddressCountry: t.exposeString('billingAddressCountry', {
+      nullable: true
+    }),
+    billingAddressLine1: t.exposeString('billingAddressLine1', {
+      nullable: true
+    }),
+    billingAddressLine2: t.exposeString('billingAddressLine2', {
+      nullable: true
+    }),
+    billingAddressPostalCode: t.exposeString('billingAddressPostalCode', {
+      nullable: true
+    }),
+    billingAddressState: t.exposeString('billingAddressState', {
+      nullable: true
+    }),
     enabled: t.exposeBoolean('enabled'),
     currentPeriodEnd: t.expose('currentPeriodEnd', {
       type: 'DateTime',

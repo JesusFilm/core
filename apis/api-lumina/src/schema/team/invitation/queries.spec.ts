@@ -18,6 +18,7 @@ describe('team invitation queries', () => {
         email
         role
         createdAt
+        updatedAt
       }
     }
   `)
@@ -31,6 +32,8 @@ describe('team invitation queries', () => {
             teamId
             email
             role
+            createdAt
+            updatedAt
           }
         }
         ... on NotFoundError {
@@ -48,7 +51,9 @@ describe('team invitation queries', () => {
           teamId: 'teamId',
           email: 'test@example.com',
           role: 'MEMBER',
-          createdAt: new Date('2024-01-01')
+          tokenHash: 'test-hash',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01')
         }
       ])
 
@@ -63,7 +68,8 @@ describe('team invitation queries', () => {
           teamId: 'teamId',
           email: 'test@example.com',
           role: 'MEMBER',
-          createdAt: expect.any(Date)
+          createdAt: new Date('2024-01-01').toISOString(),
+          updatedAt: new Date('2024-01-01').toISOString()
         }
       ])
     })
@@ -75,7 +81,10 @@ describe('team invitation queries', () => {
         id: 'invitationId',
         teamId: 'teamId',
         email: 'test@example.com',
-        role: 'MEMBER'
+        role: 'MEMBER',
+        tokenHash: 'test-hash',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01')
       })
 
       const data = await authClient({
@@ -87,7 +96,9 @@ describe('team invitation queries', () => {
         id: 'invitationId',
         teamId: 'teamId',
         email: 'test@example.com',
-        role: 'MEMBER'
+        role: 'MEMBER',
+        createdAt: new Date('2024-01-01').toISOString(),
+        updatedAt: new Date('2024-01-01').toISOString()
       })
     })
 
@@ -99,8 +110,10 @@ describe('team invitation queries', () => {
         variables: { id: 'nonExistentId' }
       })
 
-      expect(data).toHaveProperty('data.luminaTeamInvitation.message', 'Team invitation not found')
+      expect(data).toHaveProperty(
+        'data.luminaTeamInvitation.message',
+        'Team invitation not found'
+      )
     })
   })
 })
-

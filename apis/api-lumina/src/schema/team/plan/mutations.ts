@@ -15,7 +15,7 @@ import { TeamPlanUpdateInput } from './inputs/updateInput'
 builder.mutationField('luminaTeamPlanCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'TeamPlan',
-    errors: { types: [ZodError] },
+    errors: { types: [NotFoundError, ForbiddenError, ZodError] },
     args: { input: t.arg({ required: true, type: TeamPlanCreateInput }) },
     resolve: async (query, _parent, { input }, { user }) => {
       const { teamId } = input
@@ -53,8 +53,10 @@ builder.mutationField('luminaTeamPlanCreate', (t) =>
             state: input.billingAddressState ?? undefined
           },
           metadata: {
-            user_id: id,
-            env: process.env.NODE_ENV ?? 'development'
+            teamPlanId: id,
+            teamId: teamId,
+            userId: user.id,
+            env: process.env.NODE_ENV ?? null
           }
         },
         undefined
@@ -75,10 +77,10 @@ builder.mutationField('luminaTeamPlanCreate', (t) =>
 builder.mutationField('luminaTeamPlanUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'TeamPlan',
-    errors: { types: [ZodError] },
+    errors: { types: [NotFoundError, ForbiddenError, ZodError] },
     args: { input: t.arg({ required: true, type: TeamPlanUpdateInput }) },
     resolve: async (query, _parent, { input }, { user }) => {
-      const { teamId, billingEmail, billingName } = input
+      const { teamId } = input
       const teamPlan = await prisma.teamPlan.findUnique({
         where: { teamId },
         include: { team: { include: { members: true } } }
@@ -98,10 +100,21 @@ builder.mutationField('luminaTeamPlanUpdate', (t) =>
           'You are not an owner or manager of the team',
           [{ path: ['luminaTeamPlanUpdate', 'input', 'teamId'], value: teamId }]
         )
-      if (billingName !== undefined || billingEmail !== undefined) {
+      if (
+        [
+          input.billingName,
+          input.billingEmail,
+          input.billingAddressCity,
+          input.billingAddressCountry,
+          input.billingAddressLine1,
+          input.billingAddressLine2,
+          input.billingAddressPostalCode,
+          input.billingAddressState
+        ].some(Boolean)
+      ) {
         await stripe.customers.update(teamPlan.stripeCustomerId, {
-          name: billingName ?? teamPlan.billingName,
-          email: billingEmail ?? teamPlan.billingEmail,
+          name: input.billingName ?? teamPlan.billingName,
+          email: input.billingEmail ?? teamPlan.billingEmail,
           address: {
             city:
               input.billingAddressCity ??
@@ -135,8 +148,8 @@ builder.mutationField('luminaTeamPlanUpdate', (t) =>
         where: { id: teamPlan.id },
         data: {
           ...input,
-          billingEmail: billingEmail ?? undefined,
-          billingName: billingName ?? undefined
+          billingEmail: input.billingEmail ?? undefined,
+          billingName: input.billingName ?? undefined
         }
       })
     }

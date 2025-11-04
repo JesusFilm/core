@@ -1,26 +1,29 @@
+import { Team, TeamInvitation, TeamMember } from '@core/prisma/lumina/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 
-import * as generateTokenModule from './lib/generateToken'
-import * as sendTeamInvitationEmailModule from './lib/sendTeamInvitationEmail'
+import { generateToken, generateTokenHash } from './lib/generateToken'
+import { sendTeamInvitationEmail } from './lib/sendTeamInvitationEmail'
 
-jest.mock('./lib/generateToken')
-jest.mock('./lib/sendTeamInvitationEmail')
+jest.mock('./lib/generateToken', () => ({
+  generateToken: jest.fn(),
+  generateTokenHash: jest.fn()
+}))
+jest.mock('./lib/sendTeamInvitationEmail', () => ({
+  sendTeamInvitationEmail: jest.fn()
+}))
 
-const generateTokenMock =
-  generateTokenModule.generateToken as jest.MockedFunction<
-    typeof generateTokenModule.generateToken
-  >
-const generateTokenHashMock =
-  generateTokenModule.generateTokenHash as jest.MockedFunction<
-    typeof generateTokenModule.generateTokenHash
-  >
+const generateTokenMock = generateToken as jest.MockedFunction<
+  typeof generateToken
+>
+const generateTokenHashMock = generateTokenHash as jest.MockedFunction<
+  typeof generateTokenHash
+>
+
 const sendTeamInvitationEmailMock =
-  sendTeamInvitationEmailModule.sendTeamInvitationEmail as jest.MockedFunction<
-    typeof sendTeamInvitationEmailModule.sendTeamInvitationEmail
-  >
+  sendTeamInvitationEmail as jest.MockedFunction<typeof sendTeamInvitationEmail>
 
 describe('team invitation mutations', () => {
   const authClient = getClient({
@@ -38,12 +41,17 @@ describe('team invitation mutations', () => {
             teamId
             email
             role
+            createdAt
+            updatedAt
           }
         }
         ... on ForbiddenError {
           message
         }
         ... on NotFoundError {
+          message
+        }
+        ... on ZodError {
           message
         }
       }
@@ -116,25 +124,32 @@ describe('team invitation mutations', () => {
 
   describe('luminaTeamInvitationCreate', () => {
     it('should create invitation as owner', async () => {
-      prismaMock.teamMember.findUnique.mockResolvedValue({
+      const userMember: TeamMember = {
         id: 'memberId',
         teamId: 'teamId',
         userId: 'testUserId',
-        role: 'OWNER'
-      })
+        role: 'OWNER',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01')
+      }
+      prismaMock.teamMember.findUnique.mockResolvedValue(userMember)
 
-      prismaMock.teamInvitation.create.mockResolvedValue({
+      const invitation: TeamInvitation = {
         id: 'newInvitationId',
         teamId: 'teamId',
         email: 'new@example.com',
-        role: 'MEMBER'
-      } as any)
+        role: 'MEMBER',
+        tokenHash: 'test-hash',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01')
+      }
+      prismaMock.teamInvitation.create.mockResolvedValue(invitation)
 
       const data = await authClient({
         document: CREATE_INVITATION_MUTATION,
         variables: {
           input: {
-            teamId: 'teamId',
+            teamId: '9f2c2d38-5c91-47b3-8a9b-63a472a6ffb1',
             email: 'new@example.com',
             role: 'MEMBER'
           }
@@ -146,7 +161,9 @@ describe('team invitation mutations', () => {
         id: 'newInvitationId',
         teamId: 'teamId',
         email: 'new@example.com',
-        role: 'MEMBER'
+        role: 'MEMBER',
+        createdAt: new Date('2024-01-01').toISOString(),
+        updatedAt: new Date('2024-01-01').toISOString()
       })
     })
 
@@ -155,14 +172,16 @@ describe('team invitation mutations', () => {
         id: 'memberId',
         teamId: 'teamId',
         userId: 'testUserId',
-        role: 'MEMBER'
+        role: 'MEMBER',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01')
       })
 
       const data = await authClient({
         document: CREATE_INVITATION_MUTATION,
         variables: {
           input: {
-            teamId: 'teamId',
+            teamId: '9f2c2d38-5c91-47b3-8a9b-63a472a6ffb1',
             email: 'new@example.com',
             role: 'MEMBER'
           }
@@ -172,6 +191,64 @@ describe('team invitation mutations', () => {
       expect(data).toHaveProperty(
         'data.luminaTeamInvitationCreate.message',
         'Only team owner or manager can create invitations'
+      )
+    })
+
+    it('should reject if email is not valid', async () => {
+      const data = await authClient({
+        document: CREATE_INVITATION_MUTATION,
+        variables: {
+          input: {
+            teamId: '9f2c2d38-5c91-47b3-8a9b-63a472a6ffb1',
+            email: 'invalid-email',
+            role: 'MEMBER'
+          }
+        }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaTeamInvitationCreate.message',
+        JSON.stringify(
+          [
+            {
+              validation: 'email',
+              code: 'invalid_string',
+              message: 'Invalid email',
+              path: ['input', 'email']
+            }
+          ],
+          null,
+          2
+        )
+      )
+    })
+
+    it('should reject if team id is not uuid', async () => {
+      const data = await authClient({
+        document: CREATE_INVITATION_MUTATION,
+        variables: {
+          input: {
+            teamId: 'invalid-team-id',
+            email: 'test@example.com',
+            role: 'MEMBER'
+          }
+        }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaTeamInvitationCreate.message',
+        JSON.stringify(
+          [
+            {
+              validation: 'uuid',
+              code: 'invalid_string',
+              message: 'Team ID must be a valid UUID',
+              path: ['input', 'teamId']
+            }
+          ],
+          null,
+          2
+        )
       )
     })
   })
@@ -269,8 +346,8 @@ describe('team invitation mutations', () => {
               updatedAt: new Date('2024-01-01')
             }
           ]
-        }
-      })
+        } as Team & { members: TeamMember[] }
+      } as TeamInvitation & { team: Team & { members: TeamMember[] } })
 
       prismaMock.teamInvitation.update.mockResolvedValue({
         id: 'invitationId',
@@ -292,6 +369,60 @@ describe('team invitation mutations', () => {
         id: 'invitationId',
         email: 'test@example.com'
       })
+    })
+
+    it('should reject if user is not owner or manager', async () => {
+      const invitation: TeamInvitation & {
+        team: Team & { members: TeamMember[] }
+      } = {
+        id: 'invitationId',
+        teamId: 'teamId',
+        email: 'test@example.com',
+        role: 'MEMBER',
+        tokenHash: 'hashed-token',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        team: {
+          id: 'teamId',
+          name: 'Test Team',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+          members: [
+            {
+              id: 'memberId',
+              teamId: 'teamId',
+              userId: 'testUserId',
+              role: 'MEMBER',
+              createdAt: new Date('2024-01-01'),
+              updatedAt: new Date('2024-01-01')
+            }
+          ]
+        }
+      }
+      prismaMock.teamInvitation.findUnique.mockResolvedValue(invitation)
+      const data = await authClient({
+        document: RESEND_INVITATION_MUTATION,
+        variables: { id: 'invitationId' }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaTeamInvitationResend.message',
+        'Only team owner or manager can resend invitations'
+      )
+    })
+
+    it('should reject if invitation not found', async () => {
+      prismaMock.teamInvitation.findUnique.mockResolvedValue(null)
+
+      const data = await authClient({
+        document: RESEND_INVITATION_MUTATION,
+        variables: { id: 'invitationId' }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaTeamInvitationResend.message',
+        'Team invitation not found'
+      )
     })
   })
 
@@ -320,8 +451,8 @@ describe('team invitation mutations', () => {
               updatedAt: new Date('2024-01-01')
             }
           ]
-        }
-      })
+        } as Team & { members: TeamMember[] }
+      } as TeamInvitation & { team: Team & { members: TeamMember[] } })
 
       prismaMock.teamInvitation.delete.mockResolvedValue({
         id: 'invitationId',
@@ -341,6 +472,61 @@ describe('team invitation mutations', () => {
       expect(data).toHaveProperty('data.luminaTeamInvitationDelete.data', {
         id: 'invitationId'
       })
+    })
+
+    it('should reject if user is not owner or manager', async () => {
+      const invitation: TeamInvitation & {
+        team: Team & { members: TeamMember[] }
+      } = {
+        id: 'invitationId',
+        teamId: 'teamId',
+        email: 'test@example.com',
+        role: 'MEMBER',
+        tokenHash: 'hashed-token',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        team: {
+          id: 'teamId',
+          name: 'Test Team',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+          members: [
+            {
+              id: 'memberId',
+              teamId: 'teamId',
+              userId: 'testUserId',
+              role: 'MEMBER',
+              createdAt: new Date('2024-01-01'),
+              updatedAt: new Date('2024-01-01')
+            }
+          ]
+        }
+      }
+
+      prismaMock.teamInvitation.findUnique.mockResolvedValue(invitation)
+      const data = await authClient({
+        document: DELETE_INVITATION_MUTATION,
+        variables: { id: 'invitationId' }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaTeamInvitationDelete.message',
+        'Only team owner or manager can delete invitations'
+      )
+    })
+
+    it('should reject if invitation not found', async () => {
+      prismaMock.teamInvitation.findUnique.mockResolvedValue(null)
+
+      const data = await authClient({
+        document: DELETE_INVITATION_MUTATION,
+        variables: { id: 'invitationId' }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaTeamInvitationDelete.message',
+        'Team invitation not found'
+      )
     })
   })
 })

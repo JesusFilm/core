@@ -16,6 +16,6 @@
     "noEmit": true,
     "strict": true,
     "incremental": true,
-    "tsBuildInfoFile": "../../.cache/api-journeys-modern/tsc/.tsbuildinfo"
+    "tsBuildInfoFile": "../../.cache/api-lumina/tsc/.tsbuildinfo"
   }
 }

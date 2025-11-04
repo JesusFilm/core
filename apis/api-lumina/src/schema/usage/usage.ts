@@ -4,8 +4,8 @@ builder.prismaObject('Usage', {
   name: 'LuminaUsage',
   fields: (t) => ({
     id: t.exposeID('id'),
-    teamId: t.exposeString('teamId'),
-    agentId: t.exposeString('agentId'),
+    teamId: t.exposeID('teamId'),
+    agentId: t.exposeID('agentId'),
     widgetId: t.expose('widgetId', { type: 'String', nullable: true }),
     websiteId: t.expose('websiteId', { type: 'String', nullable: true }),
     apiKeyId: t.expose('apiKeyId', { type: 'String', nullable: true }),

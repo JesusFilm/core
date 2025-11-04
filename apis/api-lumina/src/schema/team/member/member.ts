@@ -1,13 +1,13 @@
 import { builder } from '../../builder'
 import { UserRef } from '../../user'
-
 import { Role } from '../enums/role'
 
 builder.prismaObject('TeamMember', {
   name: 'LuminaTeamMember',
   fields: (t) => ({
     id: t.exposeID('id'),
-    userId: t.exposeString('userId'),
+    teamId: t.exposeID('teamId'),
+    userId: t.exposeID('userId'),
     role: t.expose('role', { type: Role }),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
     updatedAt: t.expose('updatedAt', { type: 'DateTime' }),

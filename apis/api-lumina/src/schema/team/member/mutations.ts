@@ -43,7 +43,7 @@ builder.mutationField('luminaTeamMemberUpdate', (t) =>
 
       const userMember = member.team.members.find((m) => m.userId === userId)
 
-      if (!userMember || ['OWNER', 'MANAGER'].includes(userMember.role))
+      if (!userMember || !['OWNER', 'MANAGER'].includes(userMember.role))
         throw new ForbiddenError(
           'Only team owner or manager can update member roles',
           [{ path: ['luminaTeamMemberUpdate', 'input', 'id'], value: id }]
@@ -94,7 +94,7 @@ builder.mutationField('luminaTeamMemberPromoteOwner', (t) =>
 
       const userMember = member.team.members.find((m) => m.userId === userId)
 
-      if (!userMember || ['OWNER'].includes(userMember.role))
+      if (!userMember || !['OWNER'].includes(userMember.role))
         throw new ForbiddenError('Only team owner can promote owner', [
           { path: ['luminaTeamMemberPromoteOwner', 'id'], value: id }
         ])
@@ -143,6 +143,19 @@ builder.mutationField('luminaTeamMemberDelete', (t) =>
         throw new ForbiddenError('Cannot delete current user', [
           { path: ['luminaTeamMemberDelete', 'id'], value: id }
         ])
+
+      if (member.role === 'OWNER')
+        throw new ForbiddenError(
+          'Cannot delete owner. Promote another member to owner instead then delete this member.',
+          [{ path: ['luminaTeamMemberDelete', 'id'], value: id }]
+        )
+
+      const userMember = member.team.members.find((m) => m.userId === userId)
+      if (!userMember || !['OWNER', 'MANAGER'].includes(userMember.role))
+        throw new ForbiddenError(
+          'Only team owner or manager can delete members',
+          [{ path: ['luminaTeamMemberDelete', 'id'], value: id }]
+        )
 
       return await prisma.teamMember.delete({
         ...query,

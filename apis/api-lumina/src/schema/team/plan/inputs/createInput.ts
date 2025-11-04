@@ -13,8 +13,7 @@ const schema = z.object({
   billingAddressCity: z.string().optional(),
   billingAddressCountry: z
     .enum(TWO_CHAR_COUNTRY_CODES, {
-      invalid_type_error:
-        'Billing address country must be a valid ISO 3166-1 alpha-2 code'
+      message: 'Billing address country must be a valid ISO 3166-1 alpha-2 code'
     })
     .optional(),
   billingAddressLine1: z.string().optional(),

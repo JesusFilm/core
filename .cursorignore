@@ -1,0 +1,79 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+.next/
+out-tsc/
+tmp/
+
+# Coverage
+coverage/
+**/test-results/
+**/playwright-report/
+**/playwright/.cache/
+
+# Nx cache
+.nx/
+
+# Cache directories
+.cache/
+.cache-loader/
+.docusaurus/
+.react-email/
+.sass-cache/
+
+# Terraform
+.terraform/
+terraform.tfstate*
+*.tfstate.backup
+
+# Generated files
+**/tsconfig.tsbuildinfo
+**/*.tsbuildinfo
+migrations.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+testem.log
+
+# IDE
+.idea/
+.vscode/
+.project
+.classpath
+.settings/
+*.sublime-workspace
+
+# Environment files
+.env
+.env*.local
+.dev.vars
+
+# Generated locales
+**/public/locales
+**/apps/watch-modern/src/i18n/locales/**/*
+
+# Temporary
+exports/
+imports/
+.vercel/
+.vercel-url
+
+# Prisma generated
+**/prisma/generated/
+
+# Generated GraphQL
+apis/api-gateway/router
+
+# History
+.history/
+
+# System
+.DS_Store
+Thumbs.db
+
+
+

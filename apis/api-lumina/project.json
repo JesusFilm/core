@@ -76,7 +76,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["pnpm exec tsc --noEmit -p apis/api-lumina/tsconfig.json"]
+        "command": "pnpm exec tsc -b apis/api-lumina/tsconfig.json"
       }
     }
   }

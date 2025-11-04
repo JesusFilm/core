@@ -1,3 +1,4 @@
+import { Team, TeamMember } from '@core/prisma/lumina/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
@@ -68,7 +69,7 @@ describe('team member mutations', () => {
 
   describe('luminaTeamMemberUpdate', () => {
     it('should update member role as member', async () => {
-      prismaMock.teamMember.findUnique.mockResolvedValue({
+      const member: TeamMember & { team: Team & { members: TeamMember[] } } = {
         id: 'memberId',
         teamId: 'teamId',
         userId: 'otherUserId',
@@ -85,13 +86,15 @@ describe('team member mutations', () => {
               id: 'userMemberId',
               teamId: 'teamId',
               userId: 'testUserId',
-              role: 'MEMBER',
+              role: 'MANAGER',
               createdAt: new Date('2024-01-01'),
               updatedAt: new Date('2024-01-01')
             }
           ]
         }
-      })
+      }
+
+      prismaMock.teamMember.findUnique.mockResolvedValue(member)
 
       prismaMock.teamMember.update.mockResolvedValue({
         id: 'memberId',
@@ -135,21 +138,33 @@ describe('team member mutations', () => {
       )
     })
 
-    it('should reject if user is owner or manager', async () => {
-      prismaMock.teamMember.findUnique.mockResolvedValue({
+    it('should reject if user not owner or manager', async () => {
+      const member: TeamMember & { team: Team & { members: TeamMember[] } } = {
         id: 'memberId',
         role: 'MEMBER',
+        teamId: 'teamId',
+        userId: 'otherUserId',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
         team: {
           id: 'teamId',
           members: [
             {
               id: 'userMemberId',
               userId: 'testUserId',
-              role: 'OWNER'
+              teamId: 'teamId',
+              role: 'MEMBER',
+              createdAt: new Date('2024-01-01'),
+              updatedAt: new Date('2024-01-01')
             }
-          ]
+          ],
+          name: 'Test Team',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01')
         }
-      })
+      }
+
+      prismaMock.teamMember.findUnique.mockResolvedValue(member)
 
       const data = await authClient({
         document: UPDATE_MEMBER_MUTATION,
@@ -164,24 +179,75 @@ describe('team member mutations', () => {
         'Only team owner or manager can update member roles'
       )
     })
-  })
 
-  describe('luminaTeamMemberPromoteOwner', () => {
-    it('should promote member to owner', async () => {
-      prismaMock.teamMember.findUnique.mockResolvedValue({
+    it('should reject if trying to update owner role', async () => {
+      const member: TeamMember & { team: Team & { members: TeamMember[] } } = {
         id: 'memberId',
-        role: 'MANAGER',
+        role: 'OWNER',
+        teamId: 'teamId',
+        userId: 'otherUserId',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
         team: {
           id: 'teamId',
           members: [
             {
               id: 'userMemberId',
               userId: 'testUserId',
-              role: 'OWNER'
+              teamId: 'teamId',
+              role: 'MANAGER',
+              createdAt: new Date('2024-01-01'),
+              updatedAt: new Date('2024-01-01')
             }
-          ]
+          ],
+          name: 'Test Team',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01')
         }
+      }
+
+      prismaMock.teamMember.findUnique.mockResolvedValue(member)
+
+      const data = await authClient({
+        document: UPDATE_MEMBER_MUTATION,
+        variables: { id: 'memberId', input: { role: 'OWNER' } }
       })
+
+      expect(data).toHaveProperty(
+        'data.luminaTeamMemberUpdate.message',
+        'Cannot change owner role. Use promoteOwner mutation instead.'
+      )
+    })
+  })
+
+  describe('luminaTeamMemberPromoteOwner', () => {
+    it('should promote member to owner', async () => {
+      const member: TeamMember & { team: Team & { members: TeamMember[] } } = {
+        id: 'memberId',
+        role: 'MANAGER',
+        teamId: 'teamId',
+        userId: 'otherUserId',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        team: {
+          id: 'teamId',
+          members: [
+            {
+              id: 'userMemberId',
+              userId: 'testUserId',
+              teamId: 'teamId',
+              role: 'OWNER',
+              createdAt: new Date('2024-01-01'),
+              updatedAt: new Date('2024-01-01')
+            }
+          ],
+          name: 'Test Team',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01')
+        }
+      }
+
+      prismaMock.teamMember.findUnique.mockResolvedValue(member)
 
       prismaMock.$transaction.mockImplementation(async (callback) => {
         const tx = prismaMock
@@ -209,11 +275,66 @@ describe('team member mutations', () => {
     })
 
     it('should reject if only owner can promote', async () => {
-      prismaMock.teamMember.findUnique.mockResolvedValue({
+      const member: TeamMember & { team: Team & { members: TeamMember[] } } = {
+        id: 'memberId',
+        role: 'MANAGER',
+        teamId: 'teamId',
+        userId: 'otherUserId',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        team: {
+          id: 'teamId',
+          members: [
+            {
+              id: 'userMemberId',
+              userId: 'testUserId',
+              teamId: 'teamId',
+              role: 'MANAGER',
+              createdAt: new Date('2024-01-01'),
+              updatedAt: new Date('2024-01-01')
+            }
+          ],
+          name: 'Test Team',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01')
+        }
+      }
+
+      prismaMock.teamMember.findUnique.mockResolvedValue(member)
+
+      const data = await authClient({
+        document: PROMOTE_OWNER_MUTATION,
+        variables: { id: 'memberId' }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaTeamMemberPromoteOwner.message',
+        'Only team owner can promote owner'
+      )
+    })
+
+    it('should reject if member not found', async () => {
+      prismaMock.teamMember.findUnique.mockResolvedValue(null)
+
+      const data = await authClient({
+        document: PROMOTE_OWNER_MUTATION,
+        variables: { id: 'nonExistentId' }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaTeamMemberPromoteOwner.message',
+        'Team member not found'
+      )
+    })
+  })
+
+  describe('luminaTeamMemberDelete', () => {
+    it('should delete member', async () => {
+      const member: TeamMember & { team: Team & { members: TeamMember[] } } = {
         id: 'memberId',
         teamId: 'teamId',
         userId: 'otherUserId',
-        role: 'MANAGER',
+        role: 'MEMBER',
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date('2024-01-01'),
         team: {
@@ -232,30 +353,9 @@ describe('team member mutations', () => {
             }
           ]
         }
-      })
+      }
 
-      const data = await authClient({
-        document: PROMOTE_OWNER_MUTATION,
-        variables: { id: 'memberId' }
-      })
-
-      expect(data).toHaveProperty(
-        'data.luminaTeamMemberPromoteOwner.message',
-        'Only team owner can promote owner'
-      )
-    })
-  })
-
-  describe('luminaTeamMemberDelete', () => {
-    it('should delete member', async () => {
-      prismaMock.teamMember.findUnique.mockResolvedValue({
-        id: 'memberId',
-        userId: 'otherUserId',
-        team: {
-          id: 'teamId',
-          members: []
-        }
-      })
+      prismaMock.teamMember.findUnique.mockResolvedValue(member)
 
       prismaMock.teamMember.delete.mockResolvedValue({
         id: 'memberId',
@@ -280,14 +380,32 @@ describe('team member mutations', () => {
     })
 
     it('should reject if trying to delete self', async () => {
-      prismaMock.teamMember.findUnique.mockResolvedValue({
-        id: 'memberId',
+      const member: TeamMember & { team: Team & { members: TeamMember[] } } = {
+        id: 'userMemberId',
+        teamId: 'teamId',
         userId: 'testUserId',
+        role: 'MANAGER',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
         team: {
           id: 'teamId',
-          members: []
+          name: 'Test Team',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+          members: [
+            {
+              id: 'userMemberId',
+              teamId: 'teamId',
+              userId: 'testUserId',
+              role: 'MANAGER',
+              createdAt: new Date('2024-01-01'),
+              updatedAt: new Date('2024-01-01')
+            }
+          ]
         }
-      })
+      }
+
+      prismaMock.teamMember.findUnique.mockResolvedValue(member)
 
       const data = await authClient({
         document: DELETE_MEMBER_MUTATION,
@@ -297,6 +415,98 @@ describe('team member mutations', () => {
       expect(data).toHaveProperty(
         'data.luminaTeamMemberDelete.message',
         'Cannot delete current user'
+      )
+    })
+
+    it('should reject if member not found', async () => {
+      prismaMock.teamMember.findUnique.mockResolvedValue(null)
+
+      const data = await authClient({
+        document: DELETE_MEMBER_MUTATION,
+        variables: { id: 'nonExistentId' }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaTeamMemberDelete.message',
+        'Team member not found'
+      )
+    })
+
+    it('should reject if user not owner or manager', async () => {
+      const member: TeamMember & { team: Team & { members: TeamMember[] } } = {
+        id: 'memberId',
+        role: 'MANAGER',
+        teamId: 'teamId',
+        userId: 'otherUserId',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        team: {
+          id: 'teamId',
+          name: 'Test Team',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+          members: [
+            {
+              id: 'userMemberId',
+              teamId: 'teamId',
+              userId: 'testUserId',
+              role: 'MEMBER',
+              createdAt: new Date('2024-01-01'),
+              updatedAt: new Date('2024-01-01')
+            }
+          ]
+        }
+      }
+
+      prismaMock.teamMember.findUnique.mockResolvedValue(member)
+
+      const data = await authClient({
+        document: DELETE_MEMBER_MUTATION,
+        variables: { id: 'memberId' }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaTeamMemberDelete.message',
+        'Only team owner or manager can delete members'
+      )
+    })
+
+    it('should reject if trying to delete owner', async () => {
+      const member: TeamMember & { team: Team & { members: TeamMember[] } } = {
+        id: 'memberId',
+        role: 'OWNER',
+        teamId: 'teamId',
+        userId: 'otherUserId',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        team: {
+          id: 'teamId',
+          name: 'Test Team',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+          members: [
+            {
+              id: 'userMemberId',
+              teamId: 'teamId',
+              userId: 'testUserId',
+              role: 'MANAGER',
+              createdAt: new Date('2024-01-01'),
+              updatedAt: new Date('2024-01-01')
+            }
+          ]
+        }
+      }
+
+      prismaMock.teamMember.findUnique.mockResolvedValue(member)
+
+      const data = await authClient({
+        document: DELETE_MEMBER_MUTATION,
+        variables: { id: 'memberId' }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaTeamMemberDelete.message',
+        'Cannot delete owner. Promote another member to owner instead then delete this member.'
       )
     })
   })

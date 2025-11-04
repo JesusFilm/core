@@ -7,6 +7,7 @@ builder.prismaObject('TeamInvitation', {
     id: t.exposeID('id'),
     email: t.exposeString('email'),
     role: t.expose('role', { type: Role }),
+    teamId: t.exposeID('teamId'),
     createdAt: t.expose('createdAt', { type: 'DateTime' }),
     updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
     team: t.relation('team')

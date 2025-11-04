@@ -32,6 +32,8 @@ describe('team member queries', () => {
             teamId
             userId
             role
+            createdAt
+            updatedAt
           }
         }
         ... on NotFoundError {
@@ -69,8 +71,8 @@ describe('team member queries', () => {
         teamId: 'teamId',
         userId: 'userId',
         role: 'OWNER',
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date)
+        createdAt: new Date('2024-01-01').toISOString(),
+        updatedAt: new Date('2024-01-01').toISOString()
       }
     ])
   })
@@ -80,7 +82,9 @@ describe('team member queries', () => {
       id: 'memberId',
       teamId: 'teamId',
       userId: 'userId',
-      role: 'OWNER'
+      role: 'OWNER',
+      createdAt: new Date('2024-01-01'),
+      updatedAt: new Date('2024-01-01')
     })
 
     const data = await authClient({
@@ -92,7 +96,9 @@ describe('team member queries', () => {
       id: 'memberId',
       teamId: 'teamId',
       userId: 'userId',
-      role: 'OWNER'
+      role: 'OWNER',
+      createdAt: new Date('2024-01-01').toISOString(),
+      updatedAt: new Date('2024-01-01').toISOString()
     })
   })
 
@@ -104,7 +110,9 @@ describe('team member queries', () => {
       variables: { id: 'nonExistentId' }
     })
 
-    expect(data).toHaveProperty('data.luminaTeamMember.message', 'Team member not found')
+    expect(data).toHaveProperty(
+      'data.luminaTeamMember.message',
+      'Team member not found'
+    )
   })
 })
-

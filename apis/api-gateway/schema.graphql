@@ -2681,6 +2681,7 @@ type LuminaTeamInvitation @join__type(graph: API_LUMINA)  {
   id: ID
   email: String
   role: LuminaTeamMemberRole
+  teamId: ID
   createdAt: DateTime
   updatedAt: DateTime
   team: LuminaTeam
@@ -2688,7 +2689,8 @@ type LuminaTeamInvitation @join__type(graph: API_LUMINA)  {
 
 type LuminaTeamMember @join__type(graph: API_LUMINA)  {
   id: ID
-  userId: String
+  teamId: ID
+  userId: ID
   role: LuminaTeamMemberRole
   createdAt: DateTime
   updatedAt: DateTime
@@ -2698,11 +2700,17 @@ type LuminaTeamMember @join__type(graph: API_LUMINA)  {
 
 type LuminaTeamPlan @join__type(graph: API_LUMINA)  {
   id: ID
-  teamId: String
+  teamId: ID
   stripeCustomerId: String
   stripeSubscriptionId: String
   billingEmail: String
   billingName: String
+  billingAddressCity: String
+  billingAddressCountry: String
+  billingAddressLine1: String
+  billingAddressLine2: String
+  billingAddressPostalCode: String
+  billingAddressState: String
   enabled: Boolean
   currentPeriodEnd: DateTime
   cancelAtPeriodEnd: Boolean
@@ -2713,8 +2721,8 @@ type LuminaTeamPlan @join__type(graph: API_LUMINA)  {
 
 type LuminaUsage @join__type(graph: API_LUMINA)  {
   id: ID
-  teamId: String
-  agentId: String
+  teamId: ID
+  agentId: ID
   widgetId: String
   websiteId: String
   apiKeyId: String
@@ -3449,9 +3457,9 @@ union MutationLuminaTeamMemberPromoteOwnerResult @join__type(graph: API_LUMINA) 
 
 union MutationLuminaTeamMemberUpdateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamMemberUpdateSuccess")  = ForbiddenError | NotFoundError | MutationLuminaTeamMemberUpdateSuccess
 
-union MutationLuminaTeamPlanCreateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamPlanCreateSuccess")  = ZodError | MutationLuminaTeamPlanCreateSuccess
+union MutationLuminaTeamPlanCreateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamPlanCreateSuccess")  = ForbiddenError | NotFoundError | ZodError | MutationLuminaTeamPlanCreateSuccess
 
-union MutationLuminaTeamPlanUpdateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamPlanUpdateSuccess")  = ZodError | MutationLuminaTeamPlanUpdateSuccess
+union MutationLuminaTeamPlanUpdateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamPlanUpdateSuccess")  = ForbiddenError | NotFoundError | ZodError | MutationLuminaTeamPlanUpdateSuccess
 
 union MutationLuminaTeamUpdateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamUpdateSuccess")  = ForbiddenError | NotFoundError | ZodError | MutationLuminaTeamUpdateSuccess
 
