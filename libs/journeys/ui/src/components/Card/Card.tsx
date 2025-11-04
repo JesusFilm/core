@@ -94,6 +94,7 @@ export function Card({
   const theme = useTheme()
   const { blockHistory, treeBlocks } = useBlocks()
   const { variant, journey } = useJourney()
+  const borderRadius = { xs: 'inherit', lg: journey?.website === true ? 0 : 3 }
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
@@ -237,7 +238,7 @@ export function Card({
             height: '100%',
             width: '100%',
             overflow: 'hidden',
-            borderRadius: { xs: 'inherit', lg: 3 }
+            borderRadius
           }}
         >
           <Paper
@@ -246,7 +247,7 @@ export function Card({
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              borderRadius: { xs: 'inherit', lg: 3 },
+              borderRadius,
               backgroundColor,
               width: '100%',
               height: '100%',

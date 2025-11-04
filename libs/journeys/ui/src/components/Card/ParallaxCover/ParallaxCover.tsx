@@ -62,6 +62,116 @@ export function ParallaxCover({
 }: ParallaxCoverProps): ReactElement {
   const baseBackgroundColor = stripAlphaFromHex(backgroundColor)
 
+  const BackgroundLayer = (
+    <Box
+      data-testid="parallax-background-layer"
+      sx={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 0
+      }}
+    >
+      {imageBlock != null && backgroundBlur != null && (
+        <>
+          <NextImage
+            data-testid="background-image"
+            src={imageBlock.src ?? backgroundBlur}
+            alt={imageBlock.alt}
+            placeholder="blur"
+            blurDataURL={backgroundBlur}
+            layout="fill"
+            objectFit="cover"
+            sx={{
+              transform: 'scale(2) translate(0px, -25%)'
+            }}
+          />
+          <Box
+            sx={{
+              height: '100%',
+              width: '100%',
+              WebkitBackdropFilter: `blur(${BACKGROUND_BLUR})`,
+              backdropFilter: `blur(${BACKGROUND_BLUR})`
+            }}
+          />
+        </>
+      )}
+    </Box>
+  )
+
+  const ParallaxImage = (
+    <Box
+      data-testid="parallax-cover-layer"
+      sx={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: PARALLAX_IMAGE_HEIGHT,
+        transform: `translateZ(${PARALLAX_TRANSFORM_Z}) scale(${PARALLAX_SCALE})`,
+        transformOrigin: 'center top',
+        zIndex: 1,
+        webkitMask: `linear-gradient(to top, transparent 0%, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_30)} ${IMAGE_MASK_STOP_1}, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_60)} ${IMAGE_MASK_STOP_2}, ${baseBackgroundColor} ${IMAGE_MASK_STOP_3})`,
+        mask: `linear-gradient(to top, transparent 0%, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_30)} ${IMAGE_MASK_STOP_1}, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_60)} ${IMAGE_MASK_STOP_2}, ${baseBackgroundColor} ${IMAGE_MASK_STOP_3})`
+      }}
+    >
+      {imageBlock != null && backgroundBlur != null && (
+        <NextImage
+          data-testid="parallax-cover-image"
+          src={imageBlock.src ?? backgroundBlur}
+          alt={imageBlock.alt}
+          placeholder="blur"
+          blurDataURL={backgroundBlur}
+          layout="fill"
+          objectFit="cover"
+        />
+      )}
+    </Box>
+  )
+
+  const ParallaxContent = (
+    <Box
+      data-testid="parallax-cover-content"
+      sx={{
+        position: 'relative',
+        minHeight: VIEWPORT_HEIGHT,
+        paddingTop: CONTENT_PADDING_TOP,
+        transform: 'translateZ(0)',
+        zIndex: 2
+      }}
+    >
+      <Box
+        sx={{
+          position: 'absolute',
+          top: CONTENT_PADDING_TOP,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: -1,
+          pointerEvents: 'none',
+          backgroundColor: `${baseBackgroundColor}${CONTENT_OVERLAY_OPACITY}`,
+          WebkitMask: `linear-gradient(to bottom, transparent 0%, ${addAlphaToHex(baseBackgroundColor, CONTENT_MASK_ALPHA_50)} ${CONTENT_MASK_STOP_1}, ${baseBackgroundColor} ${CONTENT_MASK_STOP_2})`,
+          mask: `linear-gradient(to bottom, transparent 0%, ${addAlphaToHex(baseBackgroundColor, CONTENT_MASK_ALPHA_50)} ${CONTENT_MASK_STOP_1}, ${baseBackgroundColor} ${CONTENT_MASK_STOP_2})`
+        }}
+      />
+      <OverlayContent
+        hasFullscreenVideo={hasFullscreenVideo}
+        sx={{
+          mx: 'auto',
+          width: {
+            xs: 'calc(100% - 32px - env(safe-area-inset-left) - env(safe-area-inset-right))',
+            sm: 360,
+            md: 500
+          }
+        }}
+      >
+        {children}
+      </OverlayContent>
+    </Box>
+  )
+
   return (
     <Box
       data-testid="parallax-cover"
@@ -71,44 +181,7 @@ export function ParallaxCover({
         overflow: 'hidden'
       }}
     >
-      {/* Fixed background - stays in place while content scrolls */}
-      <Box
-        data-testid="parallax-background-layer"
-        sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 0
-        }}
-      >
-        {imageBlock != null && backgroundBlur != null && (
-          <>
-            <NextImage
-              data-testid="background-image"
-              src={imageBlock.src ?? backgroundBlur}
-              alt={imageBlock.alt}
-              placeholder="blur"
-              blurDataURL={backgroundBlur}
-              layout="fill"
-              objectFit="cover"
-              sx={{
-                transform: 'scale(2) translate(0px, -25%)'
-              }}
-            />
-            <Box
-              sx={{
-                height: '100%',
-                width: '100%',
-                WebkitBackdropFilter: `blur(${BACKGROUND_BLUR})`,
-                backdropFilter: `blur(${BACKGROUND_BLUR})`
-              }}
-            />
-          </>
-        )}
-      </Box>
-
+      {BackgroundLayer}
       <Box
         data-testid="parallax-cover-wrapper"
         sx={{
@@ -122,63 +195,8 @@ export function ParallaxCover({
           zIndex: 1
         }}
       >
-        {/* Parallax cover image - appears above background, below content */}
-        <Box
-          data-testid="parallax-cover-layer"
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: PARALLAX_IMAGE_HEIGHT,
-            transform: `translateZ(${PARALLAX_TRANSFORM_Z}) scale(${PARALLAX_SCALE})`,
-            transformOrigin: 'center top',
-            zIndex: 1,
-            webkitMask: `linear-gradient(to top, transparent 0%, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_30)} ${IMAGE_MASK_STOP_1}, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_60)} ${IMAGE_MASK_STOP_2}, ${baseBackgroundColor} ${IMAGE_MASK_STOP_3})`,
-            mask: `linear-gradient(to top, transparent 0%, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_30)} ${IMAGE_MASK_STOP_1}, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_60)} ${IMAGE_MASK_STOP_2}, ${baseBackgroundColor} ${IMAGE_MASK_STOP_3})`
-          }}
-        >
-          {imageBlock != null && backgroundBlur != null && (
-            <NextImage
-              data-testid="parallax-cover-image"
-              src={imageBlock.src ?? backgroundBlur}
-              alt={imageBlock.alt}
-              placeholder="blur"
-              blurDataURL={backgroundBlur}
-              layout="fill"
-              objectFit="cover"
-            />
-          )}
-        </Box>
-
-        <Box
-          data-testid="parallax-cover-content"
-          sx={{
-            position: 'relative',
-            minHeight: VIEWPORT_HEIGHT,
-            paddingTop: CONTENT_PADDING_TOP,
-            transform: 'translateZ(0)',
-            zIndex: 2
-          }}
-        >
-          <Box
-            sx={{
-              position: 'absolute',
-              top: CONTENT_PADDING_TOP,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              zIndex: -1,
-              pointerEvents: 'none',
-              backgroundColor: `${baseBackgroundColor}${CONTENT_OVERLAY_OPACITY}`,
-              WebkitMask: `linear-gradient(to bottom, transparent 0%, ${addAlphaToHex(baseBackgroundColor, CONTENT_MASK_ALPHA_50)} ${CONTENT_MASK_STOP_1}, ${baseBackgroundColor} ${CONTENT_MASK_STOP_2})`,
-              mask: `linear-gradient(to bottom, transparent 0%, ${addAlphaToHex(baseBackgroundColor, CONTENT_MASK_ALPHA_50)} ${CONTENT_MASK_STOP_1}, ${baseBackgroundColor} ${CONTENT_MASK_STOP_2})`
-            }}
-          />
-          <OverlayContent hasFullscreenVideo={hasFullscreenVideo} sx={{}}>
-            {children}
-          </OverlayContent>
-        </Box>
+        {ParallaxImage}
+        {ParallaxContent}
       </Box>
     </Box>
   )
