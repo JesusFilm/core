@@ -11,12 +11,9 @@ import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 import { ImageEdit } from '../../../../../Slider/Settings/Drawer/ImageEdit/ImageEdit'
 import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
-import { CustomizeTemplate } from './CustomizeTemplate'
-
 export function AboutTabPanel(): ReactElement {
   const { values, handleChange, errors } = useTemplateSettingsForm()
   const { t } = useTranslation('apps-journeys-admin')
-
   return (
     <>
       <Stack direction="row" spacing={5}>
@@ -44,9 +41,7 @@ export function AboutTabPanel(): ReactElement {
         />
       </Stack>
       <Divider />
-      <CustomizeTemplate />
       <TextField
-        data-testid="StrategySlugEdit"
         id="strategySlug"
         name="strategySlug"
         value={values.strategySlug}

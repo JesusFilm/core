@@ -42,8 +42,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_actio
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_EmailAction {
@@ -51,8 +49,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_actio
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_ButtonBlock_action_ChatAction {
@@ -194,8 +190,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_EmailAction {
@@ -203,8 +197,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_RadioOptionBlock_action_ChatAction {
@@ -262,8 +254,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_actio
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_EmailAction {
@@ -271,8 +261,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_actio
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_SignUpBlock_action_ChatAction {
@@ -443,8 +431,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_EmailAction {
@@ -452,8 +438,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_action_ChatAction {
@@ -564,8 +548,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_EmailAction {
@@ -573,8 +555,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoTriggerBlock_triggerAction_ChatAction {
@@ -764,15 +744,6 @@ export interface GetPublisherTemplate_publisherTemplate_journeyTheme {
   labelFont: string | null;
 }
 
-export interface GetPublisherTemplate_publisherTemplate_journeyCustomizationFields {
-  __typename: "JourneyCustomizationField";
-  id: string;
-  journeyId: string;
-  key: string;
-  value: string | null;
-  defaultValue: string | null;
-}
-
 export interface GetPublisherTemplate_publisherTemplate {
   __typename: "Journey";
   id: string;
@@ -820,9 +791,6 @@ export interface GetPublisherTemplate_publisherTemplate {
   socialNodeX: number | null;
   socialNodeY: number | null;
   journeyTheme: GetPublisherTemplate_publisherTemplate_journeyTheme | null;
-  journeyCustomizationDescription: string | null;
-  journeyCustomizationFields: GetPublisherTemplate_publisherTemplate_journeyCustomizationFields[];
-  fromTemplateId: string | null;
 }
 
 export interface GetPublisherTemplate {

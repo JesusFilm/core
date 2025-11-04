@@ -53,9 +53,7 @@ const blocks: Blocks[] = [
       __typename: 'LinkAction',
       parentBlockId: '84d742c8-9905-4b77-8987-99c08c04cde3',
       gtmEventName: null,
-      url: 'https://www.google.com/',
-      customizable: null,
-      parentStepId: null
+      url: 'https://www.google.com/'
     },
     settings: null
   },
@@ -75,9 +73,7 @@ const blocks: Blocks[] = [
       __typename: 'LinkAction',
       parentBlockId: 'button2.id',
       gtmEventName: null,
-      url: 'https://m.me/some_user',
-      customizable: null,
-      parentStepId: null
+      url: 'https://m.me/some_user'
     },
     settings: null
   },
@@ -97,9 +93,7 @@ const blocks: Blocks[] = [
       __typename: 'LinkAction',
       parentBlockId: '84d742c8-9905-4b77-8987-99c08c04cde3',
       gtmEventName: null,
-      url: 'https://www.bible.com/',
-      customizable: null,
-      parentStepId: null
+      url: 'https://www.bible.com/'
     },
     settings: null
   },

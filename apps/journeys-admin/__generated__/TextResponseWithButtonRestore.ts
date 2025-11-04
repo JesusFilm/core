@@ -28,8 +28,6 @@ export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_L
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_EmailAction {
@@ -37,8 +35,6 @@ export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_E
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_ChatAction {
@@ -180,8 +176,6 @@ export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_act
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_EmailAction {
@@ -189,8 +183,6 @@ export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_act
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_ChatAction {
@@ -248,8 +240,6 @@ export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_L
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_EmailAction {
@@ -257,8 +247,6 @@ export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_E
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_ChatAction {
@@ -429,8 +417,6 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_Li
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_EmailAction {
@@ -438,8 +424,6 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_Em
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_ChatAction {
@@ -550,8 +534,6 @@ export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_tr
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_EmailAction {
@@ -559,8 +541,6 @@ export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_tr
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_ChatAction {
@@ -617,8 +597,6 @@ export interface TextResponseWithButtonRestore_button_ButtonBlock_action_LinkAct
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_ButtonBlock_action_EmailAction {
@@ -626,8 +604,6 @@ export interface TextResponseWithButtonRestore_button_ButtonBlock_action_EmailAc
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_ButtonBlock_action_ChatAction {
@@ -769,8 +745,6 @@ export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_Li
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_EmailAction {
@@ -778,8 +752,6 @@ export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_Em
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_ChatAction {
@@ -837,8 +809,6 @@ export interface TextResponseWithButtonRestore_button_SignUpBlock_action_LinkAct
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_SignUpBlock_action_EmailAction {
@@ -846,8 +816,6 @@ export interface TextResponseWithButtonRestore_button_SignUpBlock_action_EmailAc
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_SignUpBlock_action_ChatAction {
@@ -1018,8 +986,6 @@ export interface TextResponseWithButtonRestore_button_VideoBlock_action_LinkActi
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_VideoBlock_action_EmailAction {
@@ -1027,8 +993,6 @@ export interface TextResponseWithButtonRestore_button_VideoBlock_action_EmailAct
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_VideoBlock_action_ChatAction {
@@ -1139,8 +1103,6 @@ export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerA
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_EmailAction {
@@ -1148,8 +1110,6 @@ export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerA
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_ChatAction {
@@ -1206,8 +1166,6 @@ export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_Link
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_EmailAction {
@@ -1215,8 +1173,6 @@ export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_Emai
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_ChatAction {
@@ -1358,8 +1314,6 @@ export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_EmailAction {
@@ -1367,8 +1321,6 @@ export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_ChatAction {
@@ -1426,8 +1378,6 @@ export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_Link
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_EmailAction {
@@ -1435,8 +1385,6 @@ export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_Emai
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_ChatAction {
@@ -1607,8 +1555,6 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_LinkA
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_EmailAction {
@@ -1616,8 +1562,6 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_Email
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_ChatAction {
@@ -1728,8 +1672,6 @@ export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_trigg
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_EmailAction {
@@ -1737,8 +1679,6 @@ export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_trigg
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_ChatAction {
@@ -1795,8 +1735,6 @@ export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_LinkAc
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_EmailAction {
@@ -1804,8 +1742,6 @@ export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_EmailA
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_ChatAction {
@@ -1947,8 +1883,6 @@ export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_L
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_EmailAction {
@@ -1956,8 +1890,6 @@ export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_E
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_ChatAction {
@@ -2015,8 +1947,6 @@ export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_LinkAc
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_EmailAction {
@@ -2024,8 +1954,6 @@ export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_EmailA
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_ChatAction {
@@ -2196,8 +2124,6 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_LinkAct
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_EmailAction {
@@ -2205,8 +2131,6 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_EmailAc
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_ChatAction {
@@ -2317,8 +2241,6 @@ export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_trigger
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_EmailAction {
@@ -2326,8 +2248,6 @@ export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_trigger
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_ChatAction {

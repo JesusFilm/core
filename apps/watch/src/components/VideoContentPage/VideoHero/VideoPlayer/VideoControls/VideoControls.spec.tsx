@@ -29,7 +29,8 @@ jest.mock('fscreen', () => ({
   default: {
     requestFullscreen: jest.fn(),
     exitFullscreen: jest.fn(),
-    addEventListener: jest.fn()
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn()
   }
 }))
 
@@ -293,7 +294,7 @@ describe('VideoControls', () => {
             subtitleOn: false
           }}
         >
-          <PlayerProvider>
+          <PlayerProvider initialState={{ durationSeconds: 100 }}>
             <VideoProvider value={{ content: videos[0] }}>
               <VideoControls player={player} />
               <TestPlayerState />
@@ -538,7 +539,7 @@ describe('VideoControls', () => {
   })
 
   it('updates progress percent not yet emitted', async () => {
-    jest.spyOn(player, 'currentTime').mockReturnValue(26) // > 10% of 250
+    jest.spyOn(player, 'currentTime').mockReturnValue(27) // > 10% of 250 (10.8% rounds to 11)
 
     const testVideo = {
       ...videos[0],

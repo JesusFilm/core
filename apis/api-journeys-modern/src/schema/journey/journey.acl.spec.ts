@@ -242,15 +242,6 @@ describe('journeyAcl', () => {
     it('denies when user has no userTeam or userJourneys', () => {
       expect(can(Action.Update, journeyEmpty, user)).toBe(false)
     })
-
-    describe('publisher', () => {
-      it('allows when publisher for template', () => {
-        const publisherUser = { ...user, roles: ['publisher'] }
-        expect(
-          can(Action.Update, journeyUnpublishedTemplate, publisherUser)
-        ).toBe(true)
-      })
-    })
   })
 
   describe('delete', () => {

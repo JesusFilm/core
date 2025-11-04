@@ -42,8 +42,6 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_ac
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_EmailAction {
@@ -51,8 +49,6 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_ac
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock_action_ChatAction {
@@ -194,8 +190,6 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlo
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_EmailAction {
@@ -203,8 +197,6 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlo
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_ChatAction {
@@ -262,8 +254,6 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_ac
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_EmailAction {
@@ -271,8 +261,6 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_ac
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock_action_ChatAction {
@@ -443,8 +431,6 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_act
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action_EmailAction {
@@ -452,8 +438,6 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_act
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_action_ChatAction {
@@ -564,8 +548,6 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBl
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_EmailAction {
@@ -573,8 +555,6 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBl
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction_ChatAction {
@@ -764,15 +744,6 @@ export interface GetAdminJourneyWithPlausibleToken_journey_journeyTheme {
   labelFont: string | null;
 }
 
-export interface GetAdminJourneyWithPlausibleToken_journey_journeyCustomizationFields {
-  __typename: "JourneyCustomizationField";
-  id: string;
-  journeyId: string;
-  key: string;
-  value: string | null;
-  defaultValue: string | null;
-}
-
 export interface GetAdminJourneyWithPlausibleToken_journey {
   __typename: "Journey";
   id: string;
@@ -820,9 +791,6 @@ export interface GetAdminJourneyWithPlausibleToken_journey {
   socialNodeX: number | null;
   socialNodeY: number | null;
   journeyTheme: GetAdminJourneyWithPlausibleToken_journey_journeyTheme | null;
-  journeyCustomizationDescription: string | null;
-  journeyCustomizationFields: GetAdminJourneyWithPlausibleToken_journey_journeyCustomizationFields[];
-  fromTemplateId: string | null;
   /**
    * used in a plausible share link to embed report
    */

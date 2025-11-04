@@ -12,10 +12,21 @@ HTMLFormElement.prototype.requestSubmit = jest.fn(function () {
 })
 
 // Mock React's useState before other imports to ensure it's available
+const mockSetIsTranscoding = jest.fn()
+const mockSetTranscodeJobId = jest.fn()
 
 jest.mock('react', () => {
   const originalReact = jest.requireActual('react')
   const mockUseState = jest.fn().mockImplementation((initialValue) => {
+    // Mock different state setters based on the initial value
+    if (initialValue === false && typeof initialValue === 'boolean') {
+      // This should match for isLoading and isTranscoding
+      return [false, mockSetIsTranscoding]
+    }
+    if (initialValue === null) {
+      // This will match for transcodeJobId, transcodeProgress, uploadedFile, videoDimensions
+      return [null, mockSetTranscodeJobId]
+    }
     // Default fallback for other useState calls
     return [initialValue, jest.fn()]
   })
@@ -38,6 +49,14 @@ jest.mock('@apollo/client', () => {
       // Return different mock functions based on the mutation
       if (operationName === 'VideoVariantDownloadCreate') {
         return [jest.fn(), { loading: false, error: null }]
+      }
+      if (operationName === 'TranscodeAsset') {
+        return [
+          jest.fn().mockResolvedValue({
+            data: { transcodeAsset: 'mock-transcode-job-id' }
+          }),
+          { loading: false, error: null }
+        ]
       }
       if (operationName === 'EnableMuxDownload') {
         return [
@@ -62,6 +81,14 @@ jest.mock('@apollo/client', () => {
           }
         }
       }
+    })),
+    useQuery: jest.fn(() => ({
+      data: {
+        getTranscodeAssetProgress: 50
+      },
+      refetch: jest.fn().mockResolvedValue({
+        data: { getTranscodeAssetProgress: 100 }
+      })
     }))
   }
 })
@@ -117,8 +144,11 @@ jest.mock('formik', () => ({
 // Mock the FileUpload component to handle quality type
 jest.mock('../../../../../../../../../components/FileUpload', () => ({
   FileUpload: ({ onDrop }) => {
-    // Only render if not auto
-    if (formikValues.quality === 'auto') {
+    // Only render if not generate quality or auto
+    if (
+      formikValues.quality?.startsWith('generate-') ||
+      formikValues.quality === 'auto'
+    ) {
       return null
     }
 
@@ -460,6 +490,26 @@ describe('AddVideoVariantDownloadDialog', () => {
     // after initial render
     expect(screen.getByTestId('submit-button').textContent).toBe('Generate')
 
+    // Change quality to generate-high
+    Object.assign(formikValues, {
+      quality: 'generate-high',
+      file: null
+    })
+
+    // Re-render to reflect the new quality value
+    rerender(
+      <AddVideoVariantDownloadDialog
+        params={{
+          videoId: mockVideoId,
+          variantId: mockVariantId,
+          downloadId: mockLanguageId
+        }}
+      />
+    )
+
+    // Button should now say "Generate"
+    expect(screen.getByTestId('submit-button').textContent).toBe('Generate')
+
     // Change quality to auto
     Object.assign(formikValues, {
       quality: 'auto',
@@ -477,7 +527,7 @@ describe('AddVideoVariantDownloadDialog', () => {
       />
     )
 
-    // Button should now say "Generate"
+    // Button should still say "Generate"
     expect(screen.getByTestId('submit-button').textContent).toBe('Generate')
   })
 })

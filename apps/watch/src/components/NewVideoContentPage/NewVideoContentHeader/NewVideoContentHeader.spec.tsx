@@ -60,9 +60,11 @@ describe('NewVideoContentHeader', () => {
       '/watch/jesus'
     )
     expect(
-      screen.getByRole('button', { name: 'Watch Full Film' })
+      screen.getByRole('link', { name: 'Watch Full Film' })
     ).toBeInTheDocument()
-    expect(screen.getByText('Clip 20 of 20')).toBeInTheDocument()
+    expect(
+      screen.getByText('Clip {{current}} of {{total}}')
+    ).toBeInTheDocument()
     expect(screen.getByTestId('container-progress-short')).toHaveTextContent(
       '20/61'
     )
@@ -79,8 +81,10 @@ describe('NewVideoContentHeader', () => {
       'href',
       '/watch/lumo'
     )
-    expect(screen.getByRole('button', { name: 'See All' })).toBeInTheDocument()
-    expect(screen.getByText('Clip 3 of 20')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'See All' })).toBeInTheDocument()
+    expect(
+      screen.getByText('Clip {{current}} of {{total}}')
+    ).toBeInTheDocument()
     expect(screen.getByTestId('container-progress-short')).toHaveTextContent(
       '3/4'
     )
@@ -102,6 +106,6 @@ describe('NewVideoContentHeader', () => {
         <NewVideoContentHeader />
       </VideoProvider>
     )
-    expect(screen.queryByTestId('NewVideoContentHeader')?.firstChild).toBeNull()
+    expect(screen.queryByTestId('NewVideoContentHeader')).toBeNull()
   })
 })

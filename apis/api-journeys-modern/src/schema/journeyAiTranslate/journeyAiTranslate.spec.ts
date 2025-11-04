@@ -1,5 +1,7 @@
 import { generateObject, streamObject } from 'ai'
 
+import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
+
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { Action, ability } from '../../lib/auth/ability'
@@ -53,6 +55,7 @@ function createMockAsyncIterator<T>(items: T[]): AsyncIterable<T> {
 
 describe('journeyAiTranslateCreate mutation', () => {
   const mockAbility = ability as jest.MockedFunction<typeof ability>
+  const mockSubject = subject as jest.MockedFunction<typeof subject>
   const mockGenerateObject = generateObject as jest.MockedFunction<
     typeof generateObject
   >
