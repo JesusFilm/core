@@ -10,13 +10,10 @@ import { JourneyEventsFilter } from '../event/journey/inputs'
 
 import { JourneyVisitorExportSelect } from './inputs'
 
-// Sanitize CSV cells to prevent injection attacks and preserve leading zeros
+// Minimal sanitization: rely on csv-stringify to quote and escape internal quotes
 function sanitizeCSVCell(value: string): string {
-  // Trim the value to remove leading and trailing whitespace
-  const trimmed = value?.trim()
-  if (!trimmed) return ''
-  // Check for formulas that could be executed in Excel/CSV viewers
-  return /^[=+\-@]/.test(trimmed) ? `'${trimmed}` : trimmed
+  if (value == null) return ''
+  return typeof value === 'string' ? value : String(value)
 }
 
 // Convert a wall-clock datetime in a specific IANA timezone into a UTC Date
@@ -802,6 +799,9 @@ builder.queryField('journeyVisitorExport', (t) => {
         // Stream rows directly to CSV without collecting in memory
         const stringifier = stringify({
           header: false,
+          quoted: true,
+          quote: '"',
+          escape: '"',
           columns: columns.map((col) => ({ key: col.key })),
           cast: {
             string: (value: any) => String(value ?? '')
