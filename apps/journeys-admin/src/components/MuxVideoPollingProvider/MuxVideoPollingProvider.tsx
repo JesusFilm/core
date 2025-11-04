@@ -33,10 +33,15 @@ interface PollingTask {
   status: 'processing' | 'completed' | 'error'
   startTime: number
   stopPolling: () => void
+  onComplete?: () => void
 }
 
 interface MuxVideoPollingContextType {
-  startPolling: (videoId: string, languageCode?: string) => void
+  startPolling: (
+    videoId: string,
+    languageCode?: string,
+    onComplete?: () => void
+  ) => void
   stopPolling: (videoId: string) => void
   getPollingStatus: (videoId: string) => PollingTask | null
 }
@@ -176,23 +181,29 @@ export function MuxVideoPollingProvider({
   }, [])
 
   const handlePollingComplete = useCallback(
-    (videoId: string) => {
-      setPollingTasks((prev) => {
-        const task = prev.get(videoId)
-        if (task == null) return prev
+    async (videoId: string) => {
+      const task = pollingTasks.get(videoId)
+      if (task == null) return
 
-        task.stopPolling()
+      task.stopPolling()
+
+      setPollingTasks((prev) => {
         const next = new Map(prev)
         next.set(videoId, { ...task, status: 'completed' })
         return next
       })
 
-      showSnackbar(t('Video upload completed'), 'success', true)
-
-      // Refetch queries to update UI
-      void apolloClient.refetchQueries({
+      // Wait for refetch to complete to ensure data is in cache
+      await apolloClient.refetchQueries({
         include: 'active'
       })
+
+      showSnackbar(t('Video upload completed'), 'success', true)
+
+      // Call the completion callback after data is ready
+      if (task.onComplete != null) {
+        task.onComplete()
+      }
 
       // Remove from state after notification
       setTimeout(() => {
@@ -206,7 +217,7 @@ export function MuxVideoPollingProvider({
         })
       }, TASK_CLEANUP_DELAY)
     },
-    [showSnackbar, apolloClient]
+    [showSnackbar, apolloClient, t, pollingTasks]
   )
 
   const handlePollingError = useCallback(
@@ -239,7 +250,7 @@ export function MuxVideoPollingProvider({
   )
 
   const startPolling = useCallback(
-    (videoId: string, languageCode?: string) => {
+    (videoId: string, languageCode?: string, onComplete?: () => void) => {
       // Show start notification only once per video
       if (!hasShownStartNotification.current.has(videoId)) {
         showSnackbar(t('Video upload in progress'), 'success')
@@ -248,7 +259,7 @@ export function MuxVideoPollingProvider({
 
       const startTime = Date.now()
 
-      // Create task entry immediately
+      // Create task entry immediately with callback
       setPollingTasks((prev) => {
         const next = new Map(prev)
         next.set(videoId, {
@@ -256,6 +267,7 @@ export function MuxVideoPollingProvider({
           languageCode,
           status: 'processing',
           startTime,
+          onComplete,
           stopPolling: () => {
             // Reference the stopQuery function from the ref map
             stopQueryRefs.current.get(videoId)?.()
@@ -264,7 +276,7 @@ export function MuxVideoPollingProvider({
         return next
       })
     },
-    [showSnackbar]
+    [showSnackbar, t]
   )
 
   const stopPolling = useCallback((videoId: string) => {

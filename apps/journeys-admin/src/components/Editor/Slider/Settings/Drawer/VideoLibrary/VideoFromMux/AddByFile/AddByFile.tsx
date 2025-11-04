@@ -45,7 +45,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const isValidLanguage = useValidateMuxLanguage(rawLanguageCode)
   const languageCode =
     isValidLanguage && rawLanguageCode != null ? rawLanguageCode : undefined
-  const { startPolling, stopPolling, getPollingStatus } = useMuxVideoPolling()
+  const { startPolling, stopPolling } = useMuxVideoPolling()
 
   const [uploading, setUploading] = useState(false)
   const [processing, setProcessing] = useState(false)
@@ -68,27 +68,6 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     useMutation<CreateMuxVideoUploadByFileMutation>(
       CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION
     )
-
-  // Monitor polling status for completion
-  useEffect(() => {
-    if (!processing || currentVideoIdRef.current == null) return
-
-    const checkInterval = setInterval(() => {
-      const status = getPollingStatus(currentVideoIdRef.current ?? '')
-
-      if (status?.status === 'completed') {
-        onChange(currentVideoIdRef.current ?? '')
-        resetUploadStatus()
-      } else if (status?.status === 'error') {
-        setError(new Error(t('Video processing failed')))
-        resetUploadStatus()
-      }
-    }, 500) // Check every 500ms
-
-    return () => {
-      clearInterval(checkInterval)
-    }
-  }, [processing, getPollingStatus, onChange])
 
   const onDrop = async (): Promise<void> => {
     setfileTooLarge(false)
@@ -113,8 +92,11 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     upload.on('success', (): void => {
       setUploading(false)
       setProcessing(true)
-      // Start polling in the provider
-      startPolling(videoId, languageCode)
+      // Start polling with completion callback
+      startPolling(videoId, languageCode, () => {
+        onChange(videoId)
+        resetUploadStatus()
+      })
     })
     upload.on('error', (err): void => {
       setError(err.detail)
