@@ -16,6 +16,7 @@ import TableRow from '@mui/material/TableRow'
 import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
+import { format } from 'date-fns'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { KeyboardEvent, ReactElement, useEffect, useState } from 'react'
@@ -25,12 +26,10 @@ import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
-import { format } from 'date-fns'
-
 import { useIntegrationQuery } from '../../../../libs/useIntegrationQuery/useIntegrationQuery'
 
 const GET_JOURNEY_CREATED_AT = gql`
-  query GetJourneyCreatedAt($id: ID!) {
+  query GoogleSheetsSyncDialogJourney($id: ID!) {
     journey: adminJourney(id: $id, idType: databaseId) {
       id
       createdAt
@@ -54,6 +53,8 @@ const GET_GOOGLE_SHEETS_SYNCS = gql`
       id
       spreadsheetId
       sheetName
+      email
+      deletedAt
       createdAt
       integration {
         __typename
@@ -89,7 +90,7 @@ const EXPORT_TO_SHEETS = gql`
 `
 
 const DELETE_GOOGLE_SHEETS_SYNC = gql`
-  mutation GoogleSheetsSyncDelete($id: ID!) {
+  mutation GoogleSheetsSyncDialogDelete($id: ID!) {
     googleSheetsSyncDelete(id: $id) {
       id
     }
@@ -100,6 +101,8 @@ interface GoogleSheetsSyncItem {
   id: string
   spreadsheetId: string | null
   sheetName: string | null
+  email: string | null
+  deletedAt: string | null
   createdAt: string
   integration: {
     __typename: string
@@ -179,6 +182,20 @@ export function GoogleSheetsSyncDialog({
   }, [open, deletingSyncId])
 
   const googleSheetsSyncs = syncsData?.googleSheetsSyncs ?? []
+  const activeSyncs = googleSheetsSyncs.filter((sync) => sync.deletedAt == null)
+  const historySyncs = googleSheetsSyncs.filter(
+    (sync) => sync.deletedAt != null
+  )
+
+  function getStartedByLabel(sync: GoogleSheetsSyncItem): string {
+    if (sync.integration?.__typename === 'IntegrationGoogle') {
+      return sync.integration.accountEmail ?? sync.email ?? 'N/A'
+    }
+
+    if (sync.email != null && sync.email !== '') return sync.email
+
+    return 'N/A'
+  }
 
   function getSpreadsheetUrl(sync: GoogleSheetsSyncItem): string | null {
     if (sync.spreadsheetId == null || sync.spreadsheetId === '') return null
@@ -396,7 +413,7 @@ export function GoogleSheetsSyncDialog({
         ],
         awaitRefetchQueries: true
       })
-      enqueueSnackbar(t('Sync deleted'), { variant: 'success' })
+      enqueueSnackbar(t('Sync removed'), { variant: 'success' })
     } catch (error) {
       enqueueSnackbar((error as Error).message, { variant: 'error' })
     } finally {
@@ -454,7 +471,7 @@ export function GoogleSheetsSyncDialog({
             >
               <CircularProgress size={24} aria-label={t('Loading')} />
             </Box>
-          ) : googleSheetsSyncs.length === 0 ? (
+          ) : activeSyncs.length === 0 ? (
             <Typography variant="body2">
               {t(
                 'There are no active Google Sheet syncs. Add a new sync to start syncing your data.'
@@ -476,15 +493,12 @@ export function GoogleSheetsSyncDialog({
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {googleSheetsSyncs.map((sync) => {
+                  {activeSyncs.map((sync) => {
                     const createdAtDate = new Date(sync.createdAt)
                     const formattedDate = !Number.isNaN(createdAtDate.getTime())
                       ? format(createdAtDate, 'yyyy-MM-dd')
                       : 'N/A'
-                    const startedBy =
-                      sync.integration?.__typename === 'IntegrationGoogle'
-                        ? (sync.integration.accountEmail ?? 'N/A')
-                        : 'N/A'
+                    const startedBy = getStartedByLabel(sync)
                     const isDeleting = deletingSyncId === sync.id
 
                     return (
@@ -585,6 +599,118 @@ export function GoogleSheetsSyncDialog({
               </Table>
             </TableContainer>
           )}
+
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Typography variant="h6">{t('History')}</Typography>
+            {historySyncs.length === 0 ? (
+              <Typography variant="body2">
+                {t('No removed syncs yet.')}
+              </Typography>
+            ) : (
+              <TableContainer sx={{ maxHeight: 240 }}>
+                <Table
+                  stickyHeader
+                  size="small"
+                  aria-label={t('Removed syncs')}
+                >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>{t('Sheet ID')}</TableCell>
+                      <TableCell>{t('Tab Name')}</TableCell>
+                      <TableCell sx={{ width: 120 }}>
+                        {t('Removed At')}
+                      </TableCell>
+                      <TableCell>{t('Started By')}</TableCell>
+                      <TableCell sx={{ width: 120 }}>{t('Status')}</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {historySyncs.map((sync) => {
+                      const removedAtDate = sync.deletedAt
+                        ? new Date(sync.deletedAt)
+                        : null
+                      const removedAt =
+                        removedAtDate != null &&
+                        !Number.isNaN(removedAtDate.getTime())
+                          ? format(removedAtDate, 'yyyy-MM-dd')
+                          : 'N/A'
+                      const startedBy = getStartedByLabel(sync)
+
+                      return (
+                        <TableRow
+                          key={sync.id}
+                          hover
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`${t('Open link in new tab')}: ${
+                            sync.sheetName ??
+                            sync.spreadsheetId ??
+                            t('Not found')
+                          }`}
+                          onClick={() => handleOpenSyncRow(sync)}
+                          onKeyDown={(event) =>
+                            handleSyncRowKeyDown(event, sync)
+                          }
+                          sx={{
+                            cursor: 'pointer',
+                            '&:focus-visible': {
+                              outline: (theme) =>
+                                `2px solid ${theme.palette.primary.main}`,
+                              outlineOffset: 2
+                            }
+                          }}
+                        >
+                          <TableCell width="40%">
+                            <Tooltip
+                              title={sync.spreadsheetId ?? ''}
+                              arrow
+                              placement="top"
+                            >
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  maxWidth: 240,
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis'
+                                }}
+                              >
+                                {sync.spreadsheetId ?? 'N/A'}
+                              </Typography>
+                            </Tooltip>
+                          </TableCell>
+                          <TableCell>
+                            <Tooltip
+                              title={sync.sheetName ?? ''}
+                              arrow
+                              placement="top"
+                            >
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  maxWidth: 200,
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis'
+                                }}
+                              >
+                                {sync.sheetName ?? 'N/A'}
+                              </Typography>
+                            </Tooltip>
+                          </TableCell>
+                          <TableCell sx={{ width: 120 }}>{removedAt}</TableCell>
+                          <TableCell>{startedBy}</TableCell>
+                          <TableCell sx={{ width: 120 }}>
+                            <Chip label={t('Removed')} size="small" />
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+          </Box>
         </Box>
       </Dialog>
 
@@ -617,13 +743,11 @@ export function GoogleSheetsSyncDialog({
             </Typography>
             <Select
               value={integrationId ?? ''}
-              onChange={(e) =>
-                setIntegrationId(
-                  (e.target.value as string) === ''
-                    ? undefined
-                    : (e.target.value as string)
-                )
-              }
+              onChange={(event) => {
+                const { value } = event.target
+                if (typeof value !== 'string') return
+                setIntegrationId(value === '' ? undefined : value)
+              }}
               displayEmpty
               inputProps={{ 'aria-label': t('Integration account') }}
               IconComponent={ChevronDown}
@@ -664,9 +788,12 @@ export function GoogleSheetsSyncDialog({
           <FormControl fullWidth>
             <Select
               value={googleMode}
-              onChange={(e) =>
-                setGoogleMode(e.target.value as 'create' | 'existing')
-              }
+              onChange={(event) => {
+                const { value } = event.target
+                if (value === 'create' || value === 'existing') {
+                  setGoogleMode(value)
+                }
+              }}
               IconComponent={ChevronDown}
               inputProps={{ 'aria-label': t('Destination') }}
             >

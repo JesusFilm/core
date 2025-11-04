@@ -35,6 +35,14 @@ export const IntegrationDelete = builder.mutationField(
           })
         }
 
+        await prisma.googleSheetsSync.updateMany({
+          where: { integrationId: id },
+          data: {
+            deletedAt: new Date(),
+            integrationId: null
+          }
+        })
+
         return await prisma.integration.delete({ where: { id } })
       }
     })

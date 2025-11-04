@@ -13,20 +13,22 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
-import { useRouter } from 'next/router'
+import { format } from 'date-fns'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
-import { useIntegrationQuery } from '../../../libs/useIntegrationQuery'
-import { GET_INTEGRATION } from '../../../libs/useIntegrationQuery'
-import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
-import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvitesQuery'
-import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
-import { format } from 'date-fns'
+import { UserTeamRole } from '../../../../__generated__/globalTypes'
+import {
+  GET_INTEGRATION,
+  useIntegrationQuery
+} from '../../../libs/useIntegrationQuery'
+import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
+import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvitesQuery'
 
 export const INTEGRATION_GOOGLE_UPDATE = gql`
   mutation IntegrationGoogleUpdate(
@@ -53,6 +55,8 @@ const GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION = gql`
       id
       spreadsheetId
       sheetName
+      email
+      deletedAt
       createdAt
       journey {
         id
@@ -64,7 +68,7 @@ const GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION = gql`
 `
 
 const DELETE_GOOGLE_SHEETS_SYNC = gql`
-  mutation GoogleSheetsSyncDelete($id: ID!) {
+  mutation GoogleIntegrationDetailsSyncDelete($id: ID!) {
     googleSheetsSyncDelete(id: $id) {
       id
     }
@@ -76,6 +80,8 @@ interface GoogleSheetsSyncsByIntegrationQuery {
     id: string
     spreadsheetId: string | null
     sheetName: string | null
+    email: string | null
+    deletedAt: string | null
     createdAt: string
     journey: {
       id: string
@@ -122,10 +128,19 @@ export function GoogleIntegrationDetails(): ReactElement {
     )
 
   const googleSheetsSyncs = syncsData?.googleSheetsSyncsByIntegration ?? []
+  const activeSyncs = googleSheetsSyncs.filter((sync) => sync.deletedAt == null)
+  const historySyncs = googleSheetsSyncs.filter(
+    (sync) => sync.deletedAt != null
+  )
   const [syncPendingDelete, setSyncPendingDelete] = useState<string | null>(
     null
   )
   const [deletingSyncId, setDeletingSyncId] = useState<string | null>(null)
+
+  function getStartedByLabel(sync: (typeof googleSheetsSyncs)[number]): string {
+    if (sync.email != null && sync.email !== '') return sync.email
+    return 'N/A'
+  }
 
   function handleRequestDeleteSync(syncId: string): void {
     setSyncPendingDelete(syncId)
@@ -151,7 +166,7 @@ export function GoogleIntegrationDetails(): ReactElement {
         ],
         awaitRefetchQueries: true
       })
-      enqueueSnackbar(t('Sync deleted'), { variant: 'success' })
+      enqueueSnackbar(t('Sync removed'), { variant: 'success' })
       setSyncPendingDelete(null)
     } catch (error) {
       if (error instanceof Error) {
@@ -389,13 +404,13 @@ export function GoogleIntegrationDetails(): ReactElement {
         <Stack gap={2}>
           <span>
             {t(
-              'Removing this Google integration will permanently delete all active Google Sheets syncs for this team. This cannot be undone.'
+              'Removing this Google integration will mark all active Google Sheets syncs as removed and unlink them from this account. This cannot be undone.'
             )}
           </span>
         </Stack>
       </Dialog>
 
-      <Stack gap={2}>
+      <Stack gap={4}>
         <Typography variant="h6">{t('Google Sheets Syncs')}</Typography>
         {syncsLoading ? (
           <Box
@@ -408,131 +423,274 @@ export function GoogleIntegrationDetails(): ReactElement {
           >
             <CircularProgress size={24} aria-label={t('Loading')} />
           </Box>
-        ) : googleSheetsSyncs.length === 0 ? (
-          <Typography variant="body2">
-            {t('There are no Google Sheets syncs for this integration yet.')}
-          </Typography>
         ) : (
-          <TableContainer>
-            <Table
-              size="small"
-              stickyHeader
-              aria-label={t('Google Sheets Syncs')}
-            >
-              <TableHead>
-                <TableRow>
-                  <TableCell>{t('Sheet ID')}</TableCell>
-                  <TableCell>{t('Tab Name')}</TableCell>
-                  <TableCell>{t('Journey')}</TableCell>
-                  <TableCell sx={{ width: 120 }}>{t('Sync Start')}</TableCell>
-                  <TableCell sx={{ width: 120 }}>{t('Status')}</TableCell>
-                  {canManageSyncs && (
-                    <TableCell sx={{ width: 80 }} align="right">
-                      {t('Actions')}
-                    </TableCell>
-                  )}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {googleSheetsSyncs.map((sync) => {
-                  const createdAtDate = new Date(sync.createdAt)
-                  const formattedDate = !Number.isNaN(createdAtDate.getTime())
-                    ? format(createdAtDate, 'yyyy-MM-dd')
-                    : 'N/A'
-                  const journeySlug = sync.journey?.slug ?? 'N/A'
-                  const journeyTitle = sync.journey?.title ?? ''
-
-                  return (
-                    <TableRow key={sync.id} hover>
-                      <TableCell width="40%">
-                        <Tooltip
-                          title={sync.spreadsheetId ?? ''}
-                          arrow
-                          placement="top"
-                        >
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              maxWidth: 240,
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis'
-                            }}
-                          >
-                            {sync.spreadsheetId ?? 'N/A'}
-                          </Typography>
-                        </Tooltip>
-                      </TableCell>
-                      <TableCell>
-                        <Tooltip
-                          title={sync.sheetName ?? ''}
-                          arrow
-                          placement="top"
-                        >
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              maxWidth: 200,
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis'
-                            }}
-                          >
-                            {sync.sheetName ?? 'N/A'}
-                          </Typography>
-                        </Tooltip>
-                      </TableCell>
-                      <TableCell>
-                        <Tooltip title={journeyTitle} arrow placement="top">
-                          <Typography
-                            component="span"
-                            variant="body2"
-                            sx={{
-                              maxWidth: 200,
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis'
-                            }}
-                          >
-                            {journeySlug}
-                          </Typography>
-                        </Tooltip>
-                      </TableCell>
-                      <TableCell sx={{ width: 120 }}>{formattedDate}</TableCell>
-                      <TableCell sx={{ width: 120 }}>
-                        <Chip
-                          label={t('Active')}
-                          color="success"
-                          size="small"
-                        />
-                      </TableCell>
-                      {canManageSyncs && (
-                        <TableCell sx={{ width: 80 }} align="right">
-                          <IconButton
-                            aria-label={t('Delete sync')}
-                            color="error"
-                            size="small"
-                            disabled={deletingSyncId === sync.id}
-                            onClick={() => handleRequestDeleteSync(sync.id)}
-                          >
-                            {deletingSyncId === sync.id ? (
-                              <CircularProgress
-                                size={18}
-                                color="inherit"
-                                aria-label={t('Deleting sync')}
-                              />
-                            ) : (
-                              <Trash2Icon width={18} height={18} />
-                            )}
-                          </IconButton>
-                        </TableCell>
+          <>
+            <Stack gap={2}>
+              <Typography variant="subtitle1">{t('Active')}</Typography>
+              {activeSyncs.length === 0 ? (
+                <Typography variant="body2">
+                  {historySyncs.length > 0
+                    ? t(
+                        'There are no active Google Sheets syncs. Removed syncs are listed in history below.'
+                      )
+                    : t(
+                        'There are no Google Sheets syncs for this integration yet.'
                       )}
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </Typography>
+              ) : (
+                <TableContainer>
+                  <Table
+                    size="small"
+                    stickyHeader
+                    aria-label={t('Active syncs')}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>{t('Sheet ID')}</TableCell>
+                        <TableCell>{t('Tab Name')}</TableCell>
+                        <TableCell>{t('Journey')}</TableCell>
+                        <TableCell sx={{ width: 120 }}>
+                          {t('Sync Start')}
+                        </TableCell>
+                        <TableCell>{t('Started By')}</TableCell>
+                        <TableCell sx={{ width: 120 }}>{t('Status')}</TableCell>
+                        {canManageSyncs && (
+                          <TableCell sx={{ width: 80 }} align="right">
+                            {t('Actions')}
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {activeSyncs.map((sync) => {
+                        const createdAtDate = new Date(sync.createdAt)
+                        const formattedDate = !Number.isNaN(
+                          createdAtDate.getTime()
+                        )
+                          ? format(createdAtDate, 'yyyy-MM-dd')
+                          : 'N/A'
+                        const journeySlug = sync.journey?.slug ?? 'N/A'
+                        const journeyTitle = sync.journey?.title ?? ''
+                        const startedBy = getStartedByLabel(sync)
+
+                        return (
+                          <TableRow key={sync.id} hover>
+                            <TableCell width="40%">
+                              <Tooltip
+                                title={sync.spreadsheetId ?? ''}
+                                arrow
+                                placement="top"
+                              >
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    maxWidth: 240,
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis'
+                                  }}
+                                >
+                                  {sync.spreadsheetId ?? 'N/A'}
+                                </Typography>
+                              </Tooltip>
+                            </TableCell>
+                            <TableCell>
+                              <Tooltip
+                                title={sync.sheetName ?? ''}
+                                arrow
+                                placement="top"
+                              >
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    maxWidth: 200,
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis'
+                                  }}
+                                >
+                                  {sync.sheetName ?? 'N/A'}
+                                </Typography>
+                              </Tooltip>
+                            </TableCell>
+                            <TableCell>
+                              <Tooltip
+                                title={journeyTitle}
+                                arrow
+                                placement="top"
+                              >
+                                <Typography
+                                  component="span"
+                                  variant="body2"
+                                  sx={{
+                                    maxWidth: 200,
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis'
+                                  }}
+                                >
+                                  {journeySlug}
+                                </Typography>
+                              </Tooltip>
+                            </TableCell>
+                            <TableCell sx={{ width: 120 }}>
+                              {formattedDate}
+                            </TableCell>
+                            <TableCell>{startedBy}</TableCell>
+                            <TableCell sx={{ width: 120 }}>
+                              <Chip
+                                label={t('Active')}
+                                color="success"
+                                size="small"
+                              />
+                            </TableCell>
+                            {canManageSyncs && (
+                              <TableCell sx={{ width: 80 }} align="right">
+                                <IconButton
+                                  aria-label={t('Delete sync')}
+                                  color="error"
+                                  size="small"
+                                  disabled={deletingSyncId === sync.id}
+                                  onClick={() =>
+                                    handleRequestDeleteSync(sync.id)
+                                  }
+                                >
+                                  {deletingSyncId === sync.id ? (
+                                    <CircularProgress
+                                      size={18}
+                                      color="inherit"
+                                      aria-label={t('Deleting sync')}
+                                    />
+                                  ) : (
+                                    <Trash2Icon width={18} height={18} />
+                                  )}
+                                </IconButton>
+                              </TableCell>
+                            )}
+                          </TableRow>
+                        )
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
+            </Stack>
+
+            <Stack gap={2}>
+              <Typography variant="subtitle1">{t('History')}</Typography>
+              {historySyncs.length === 0 ? (
+                <Typography variant="body2">
+                  {t('No removed syncs yet.')}
+                </Typography>
+              ) : (
+                <TableContainer>
+                  <Table
+                    size="small"
+                    stickyHeader
+                    aria-label={t('Removed syncs')}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>{t('Sheet ID')}</TableCell>
+                        <TableCell>{t('Tab Name')}</TableCell>
+                        <TableCell>{t('Journey')}</TableCell>
+                        <TableCell sx={{ width: 120 }}>
+                          {t('Removed At')}
+                        </TableCell>
+                        <TableCell>{t('Started By')}</TableCell>
+                        <TableCell sx={{ width: 120 }}>{t('Status')}</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {historySyncs.map((sync) => {
+                        const removedAtDate = sync.deletedAt
+                          ? new Date(sync.deletedAt)
+                          : null
+                        const removedAt =
+                          removedAtDate != null &&
+                          !Number.isNaN(removedAtDate.getTime())
+                            ? format(removedAtDate, 'yyyy-MM-dd')
+                            : 'N/A'
+                        const journeySlug = sync.journey?.slug ?? 'N/A'
+                        const journeyTitle = sync.journey?.title ?? ''
+                        const startedBy = getStartedByLabel(sync)
+
+                        return (
+                          <TableRow key={sync.id} hover>
+                            <TableCell width="40%">
+                              <Tooltip
+                                title={sync.spreadsheetId ?? ''}
+                                arrow
+                                placement="top"
+                              >
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    maxWidth: 240,
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis'
+                                  }}
+                                >
+                                  {sync.spreadsheetId ?? 'N/A'}
+                                </Typography>
+                              </Tooltip>
+                            </TableCell>
+                            <TableCell>
+                              <Tooltip
+                                title={sync.sheetName ?? ''}
+                                arrow
+                                placement="top"
+                              >
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    maxWidth: 200,
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis'
+                                  }}
+                                >
+                                  {sync.sheetName ?? 'N/A'}
+                                </Typography>
+                              </Tooltip>
+                            </TableCell>
+                            <TableCell>
+                              <Tooltip
+                                title={journeyTitle}
+                                arrow
+                                placement="top"
+                              >
+                                <Typography
+                                  component="span"
+                                  variant="body2"
+                                  sx={{
+                                    maxWidth: 200,
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis'
+                                  }}
+                                >
+                                  {journeySlug}
+                                </Typography>
+                              </Tooltip>
+                            </TableCell>
+                            <TableCell sx={{ width: 120 }}>
+                              {removedAt}
+                            </TableCell>
+                            <TableCell>{startedBy}</TableCell>
+                            <TableCell sx={{ width: 120 }}>
+                              <Chip label={t('Removed')} size="small" />
+                            </TableCell>
+                          </TableRow>
+                        )
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
+            </Stack>
+          </>
         )}
       </Stack>
 

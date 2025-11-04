@@ -74,7 +74,9 @@ export const GoogleSheetsSyncCreateMutation = builder.mutationField(
             spreadsheetId: input.spreadsheetId,
             sheetName: input.sheetName,
             folderId: input.folderId ?? null,
-            appendMode: input.appendMode ?? true
+            appendMode: input.appendMode ?? true,
+            email: googleIntegration.accountEmail ?? null,
+            deletedAt: null
           }
         })
       }

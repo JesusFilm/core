@@ -34,7 +34,7 @@ builder.mutationField('googleSheetsSyncDelete', (t) =>
       const isTeamManagerOrOwner = sync.team.userTeams.some(
         (ut) => ut.userId === userId && ut.role === 'manager'
       )
-      const isIntegrationOwner = sync.integration.userId === userId
+      const isIntegrationOwner = sync.integration?.userId === userId
 
       if (!isIntegrationOwner && !isTeamManagerOrOwner) {
         throw new GraphQLError('Forbidden', {
@@ -42,7 +42,14 @@ builder.mutationField('googleSheetsSyncDelete', (t) =>
         })
       }
 
-      return await prisma.googleSheetsSync.delete({ ...query, where: { id } })
+      return await prisma.googleSheetsSync.update({
+        ...query,
+        where: { id },
+        data: {
+          deletedAt: new Date(),
+          integrationId: null
+        }
+      })
     }
   })
 )

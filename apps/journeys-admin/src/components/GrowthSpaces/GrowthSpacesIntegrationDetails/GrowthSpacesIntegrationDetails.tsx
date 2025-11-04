@@ -145,8 +145,8 @@ export function GrowthSpacesIntegrationDetails(): ReactElement {
       (integration) => integration.id === integrationId
     )
     if (selectedIntegration != null) {
-      setAccessId(selectedIntegration.accessId)
-      setAccessSecret(selectedIntegration.accessSecretPart)
+      setAccessId(selectedIntegration.accessId ?? undefined)
+      setAccessSecret(selectedIntegration.accessSecretPart ?? undefined)
     }
   }, [data?.integrations, integrationId])
 

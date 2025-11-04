@@ -56,7 +56,7 @@ export function App(): ReactElement {
     data?.integrations
       // eslint-disable-next-line @typescript-eslint/naming-convention
       .filter(({ __typename }) => __typename === 'IntegrationGrowthSpaces')
-      .map(({ id, accessId }) => ({ value: id, label: accessId })) ?? []
+      .map(({ id, accessId }) => ({ value: id, label: accessId ?? id })) ?? []
 
   function handleChange(integrationId: string | null): void {
     if (selectedBlock == null) return

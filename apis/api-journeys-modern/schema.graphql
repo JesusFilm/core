@@ -429,9 +429,11 @@ type GoogleSheetsSync {
   sheetName: String
   folderId: String
   appendMode: Boolean
+  email: String
+  deletedAt: DateTime
   createdAt: DateTime!
   updatedAt: DateTime!
-  integration: Integration!
+  integration: Integration
   journey: Journey!
 }
 

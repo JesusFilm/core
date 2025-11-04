@@ -227,15 +227,19 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         ? (await getIntegrationGoogleAccessToken(integrationId)).accessToken
         : (await getTeamGoogleAccessToken(journey.teamId)).accessToken
 
-      // Determine which integration was used for this export
-      const integrationIdUsed =
-        integrationId ??
-        (
-          await prisma.integration.findFirst({
-            where: { teamId: journey.teamId, type: 'google' },
-            select: { id: true }
-          })
-        )?.id
+      const integrationRecord =
+        integrationId != null
+          ? await prisma.integration.findUnique({
+              where: { id: integrationId },
+              select: { id: true, accountEmail: true }
+            })
+          : await prisma.integration.findFirst({
+              where: { teamId: journey.teamId, type: 'google' },
+              select: { id: true, accountEmail: true }
+            })
+
+      const integrationIdUsed = integrationRecord?.id
+      const integrationEmail = integrationRecord?.accountEmail ?? null
 
       let spreadsheetId: string
       let spreadsheetUrl: string
@@ -311,7 +315,6 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           where: {
             teamId: journey.teamId,
             journeyId,
-            integrationId: integrationIdUsed,
             spreadsheetId,
             sheetName
           }
@@ -327,7 +330,9 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
             destination.mode === 'create'
               ? (destination.folderId ?? null)
               : null,
-          appendMode: true
+          appendMode: true,
+          email: integrationEmail,
+          deletedAt: null
         }
 
         if (existingSync != null) {

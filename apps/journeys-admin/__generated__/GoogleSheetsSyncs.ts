@@ -7,32 +7,28 @@
 // GraphQL query operation: GoogleSheetsSyncs
 // ====================================================
 
+export interface GoogleSheetsSyncs_googleSheetsSyncs_integration_IntegrationGrowthSpaces {
+  __typename: "IntegrationGrowthSpaces";
+  id: string;
+}
+
 export interface GoogleSheetsSyncs_googleSheetsSyncs_integration_IntegrationGoogle {
   __typename: "IntegrationGoogle";
   id: string;
   accountEmail: string | null;
 }
 
-export interface GoogleSheetsSyncs_googleSheetsSyncs_integration_IntegrationGrowthSpaces {
-  __typename: "IntegrationGrowthSpaces";
-  id: string;
-}
-
-export type GoogleSheetsSyncs_googleSheetsSyncs_integration =
-  | GoogleSheetsSyncs_googleSheetsSyncs_integration_IntegrationGoogle
-  | GoogleSheetsSyncs_googleSheetsSyncs_integration_IntegrationGrowthSpaces;
+export type GoogleSheetsSyncs_googleSheetsSyncs_integration = GoogleSheetsSyncs_googleSheetsSyncs_integration_IntegrationGrowthSpaces | GoogleSheetsSyncs_googleSheetsSyncs_integration_IntegrationGoogle;
 
 export interface GoogleSheetsSyncs_googleSheetsSyncs {
   __typename: "GoogleSheetsSync";
   id: string | null;
   spreadsheetId: string | null;
   sheetName: string | null;
-  folderId: string | null;
-  appendMode: boolean | null;
-  journeyId: string | null;
-  teamId: string | null;
+  email: string | null;
+  deletedAt: any | null;
   createdAt: any;
-  integration: GoogleSheetsSyncs_googleSheetsSyncs_integration;
+  integration: GoogleSheetsSyncs_googleSheetsSyncs_integration | null;
 }
 
 export interface GoogleSheetsSyncs {

@@ -240,9 +240,9 @@ export default interface PrismaTypes {
         ListRelations: never;
         Relations: {
             integration: {
-                Shape: Integration;
+                Shape: Integration | null;
                 Name: "Integration";
-                Nullable: false;
+                Nullable: true;
             };
             journey: {
                 Shape: Journey;

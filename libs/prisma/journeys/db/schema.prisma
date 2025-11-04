@@ -283,21 +283,24 @@ model GoogleSheetsSync {
   id            String   @id @default(uuid())
   teamId        String
   journeyId     String
-  integrationId String
+  integrationId String?
   spreadsheetId String
   sheetName     String
   folderId      String?
   appendMode    Boolean  @default(true)
+  email         String?
+  deletedAt     DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  integration Integration @relation(fields: [integrationId], references: [id], onDelete: Cascade)
-  journey     Journey     @relation(fields: [journeyId], references: [id], onDelete: Cascade)
-  team        Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  integration Integration? @relation(fields: [integrationId], references: [id], onDelete: SetNull)
+  journey     Journey      @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  team        Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@index(teamId)
   @@index(journeyId)
   @@index(integrationId)
+  @@index(deletedAt)
 }
 
 model UserTeam {

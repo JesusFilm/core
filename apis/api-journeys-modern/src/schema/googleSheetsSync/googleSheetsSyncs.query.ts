@@ -33,7 +33,10 @@ builder.queryField('googleSheetsSyncs', (t) =>
       return prisma.googleSheetsSync.findMany({
         ...query,
         where: { journeyId },
-        orderBy: { createdAt: 'desc' }
+        orderBy: [
+          { deletedAt: 'asc' },
+          { createdAt: 'desc' }
+        ]
       })
     }
   })

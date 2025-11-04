@@ -45,7 +45,10 @@ builder.queryField('googleSheetsSyncsByIntegration', (t) =>
       return prisma.googleSheetsSync.findMany({
         ...query,
         where: { integrationId },
-        orderBy: { createdAt: 'desc' }
+        orderBy: [
+          { deletedAt: 'asc' },
+          { createdAt: 'desc' }
+        ]
       })
     }
   })

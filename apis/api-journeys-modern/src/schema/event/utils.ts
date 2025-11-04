@@ -229,7 +229,7 @@ export async function appendEventToGoogleSheets({
 }): Promise<void> {
   // find sync config
   const sync = await prisma.googleSheetsSync.findFirst({
-    where: { journeyId, teamId }
+    where: { journeyId, teamId, deletedAt: null }
   })
   if (sync == null) return
 

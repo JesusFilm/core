@@ -50,11 +50,21 @@ export function Route(): ReactElement {
     (integration) => selectedBlock?.integrationId === integration.id
   )
 
+  const growthSpacesIntegration =
+    selectedIntegration?.__typename === 'IntegrationGrowthSpaces'
+      ? selectedIntegration
+      : null
+
   const options =
-    selectedIntegration?.routes.map(({ id, name }) => ({
-      value: id,
-      label: name
-    })) ?? []
+    growthSpacesIntegration?.routes
+      ?.filter(
+        (route): route is NonNullable<typeof route> & { id: string } =>
+          route?.id != null
+      )
+      .map(({ id, name }) => ({
+        value: id,
+        label: name ?? id
+      })) ?? []
 
   function handleChange(routeId: string | null): void {
     if (selectedBlock == null) return

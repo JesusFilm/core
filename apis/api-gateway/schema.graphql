@@ -2433,9 +2433,11 @@ type GoogleSheetsSync @join__type(graph: API_JOURNEYS_MODERN)  {
   sheetName: String
   folderId: String
   appendMode: Boolean
+  email: String
+  deletedAt: DateTime
   createdAt: DateTime!
   updatedAt: DateTime!
-  integration: Integration!
+  integration: Integration
   journey: Journey!
 }
 
