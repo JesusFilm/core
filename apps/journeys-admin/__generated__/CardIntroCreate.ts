@@ -227,6 +227,12 @@ export interface CardIntroCreate_buttonBlockUpdate {
   settings: CardIntroCreate_buttonBlockUpdate_settings | null;
 }
 
+export interface CardIntroCreate_video_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+}
+
 export interface CardIntroCreate_video_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -391,6 +397,7 @@ export interface CardIntroCreate_video {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardIntroCreate_video_subtitleLanguage | null;
   mediaVideo: CardIntroCreate_video_mediaVideo | null;
   /**
    * action that should be performed when the video ends

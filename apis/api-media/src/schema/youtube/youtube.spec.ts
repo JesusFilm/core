@@ -191,6 +191,114 @@ describe('youtube', () => {
       ])
     })
 
+    it('should lowercase language codes before querying gateway', async () => {
+      const mockYouTubeResponse = {
+        data: {
+          items: [
+            {
+              snippet: {
+                language: 'EN',
+                trackKind: 'standard'
+              }
+            },
+            {
+              snippet: {
+                language: 'ES',
+                trackKind: 'standard'
+              }
+            },
+            {
+              snippet: {
+                language: 'Fr',
+                trackKind: 'standard'
+              }
+            },
+            {
+              snippet: {
+                language: 'DE',
+                trackKind: 'asr'
+              }
+            }
+          ]
+        }
+      }
+
+      const mockGatewayResponse = {
+        data: {
+          languages: [
+            {
+              id: '529',
+              bcp47: 'en',
+              name: [
+                {
+                  value: 'English',
+                  primary: true
+                }
+              ]
+            },
+            {
+              id: '530',
+              bcp47: 'es',
+              name: [
+                {
+                  value: 'Spanish',
+                  primary: true
+                }
+              ]
+            },
+            {
+              id: '531',
+              bcp47: 'fr',
+              name: [
+                {
+                  value: 'French',
+                  primary: true
+                }
+              ]
+            }
+          ]
+        }
+      }
+
+      mockedAxios.get.mockResolvedValueOnce(mockYouTubeResponse)
+
+      const mockApolloQuery = jest
+        .fn()
+        .mockResolvedValueOnce(mockGatewayResponse)
+      mockedCreateApolloClient.mockReturnValue({
+        query: mockApolloQuery
+      } as any)
+
+      const data = await client({
+        document: YOUTUBE_CLOSED_CAPTION_LANGUAGES,
+        variables: { videoId: 'test-video-id' }
+      })
+
+      expect(mockApolloQuery).toHaveBeenCalledWith({
+        query: expect.any(Object),
+        variables: {
+          select: {
+            id: true
+          },
+          where: {
+            bcp47: ['en', 'es', 'fr']
+          }
+        }
+      })
+
+      expect(data).toHaveProperty('data.youtubeClosedCaptionLanguages.data', [
+        {
+          id: '529'
+        },
+        {
+          id: '530'
+        },
+        {
+          id: '531'
+        }
+      ])
+    })
+
     it('should return empty array when no standard captions are available', async () => {
       const mockYouTubeResponse = {
         data: {

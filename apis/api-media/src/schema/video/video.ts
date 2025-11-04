@@ -401,6 +401,11 @@ builder.prismaObjectField(Video, 'children', (t) =>
         published: true,
         availableLanguages: { isEmpty: false }
       }
+      // Display unpublished and incomplete children in videos-admin
+      if (context.clientName != null && context.clientName === 'videos-admin') {
+        whereCondition.published = undefined
+        whereCondition.availableLanguages = undefined
+      }
       if (isValidClientName(context.clientName)) {
         whereCondition.NOT = {
           restrictViewPlatforms: {
