@@ -3116,7 +3116,7 @@ union MutationPlaylistItemRemoveResult @join__type(graph: API_MEDIA)  @join__uni
 
 union MutationPlaylistItemsReorderResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistItemsReorderSuccess")  = NotFoundError | MutationPlaylistItemsReorderSuccess
 
-union MutationPlaylistUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistUpdateSuccess")  = ZodError | NotFoundError | MutationPlaylistUpdateSuccess
+union MutationPlaylistUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistUpdateSuccess")  = NotFoundError | ZodError | MutationPlaylistUpdateSuccess
 
 union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
 
@@ -3128,7 +3128,7 @@ union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__
 
 union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = NotFoundError | MutationShortLinkDomainUpdateSuccess
 
-union MutationShortLinkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkUpdateSuccess")  = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
+union MutationShortLinkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkUpdateSuccess")  = NotFoundError | ZodError | MutationShortLinkUpdateSuccess
 
 union QueryPlaylistResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryPlaylistSuccess")  = NotFoundError | QueryPlaylistSuccess
 
@@ -3138,7 +3138,7 @@ union QueryShortLinkDomainResult @join__type(graph: API_MEDIA)  @join__unionMemb
 
 union QueryShortLinkResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkSuccess")  = NotFoundError | QueryShortLinkSuccess
 
-union QueryYoutubeClosedCaptionLanguagesResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "Error")  @join__unionMember(graph: API_MEDIA, member: "QueryYoutubeClosedCaptionLanguagesSuccess")  = ZodError | Error | QueryYoutubeClosedCaptionLanguagesSuccess
+union QueryYoutubeClosedCaptionLanguagesResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "Error")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "QueryYoutubeClosedCaptionLanguagesSuccess")  = Error | ZodError | QueryYoutubeClosedCaptionLanguagesSuccess
 
 enum ThemeMode @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   dark @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -4305,6 +4305,7 @@ input JourneyEventsFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: A
   typenames: [String!]
   periodRangeStart: DateTime
   periodRangeEnd: DateTime
+  includeUnconnectedCards: Boolean
 }
 
 input JourneyNotificationUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
