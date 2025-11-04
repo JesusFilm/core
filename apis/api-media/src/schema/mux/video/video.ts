@@ -372,7 +372,7 @@ builder.mutationFields((t) => ({
             isUserGenerated,
             maxResolutionValue,
             downloadable ?? false,
-            generateSubtitlesInput?.languageCode
+            generateSubtitlesInput
           )
 
           return await prisma.muxVideo.create({

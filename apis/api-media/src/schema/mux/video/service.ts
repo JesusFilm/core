@@ -110,16 +110,23 @@ export async function createVideoByDirectUpload(
   userGenerated: boolean,
   maxResolution?: Mux.Video.Asset['max_resolution_tier'],
   downloadable = false,
-  languageCode?: string | null
+  generateSubtitlesInput?: { languageCode: string; languageName: string } | null
 ): Promise<{ id: string; uploadUrl: string }> {
   if (process.env.CORS_ORIGIN == null) throw new Error('Missing CORS_ORIGIN')
 
-  const generateSubtitles = languageCode != null && userGenerated ? true : false
+  const generateSubtitles =
+    generateSubtitlesInput != null && userGenerated ? true : false
 
   // if generating subs, validate the language code
   if (generateSubtitles) {
-    if (!isValidMuxGeneratedSubtitleLanguageCode(languageCode)) {
-      throw new Error(`Invalid language code: ${languageCode}`)
+    if (
+      !isValidMuxGeneratedSubtitleLanguageCode(
+        generateSubtitlesInput!.languageCode
+      )
+    ) {
+      throw new Error(
+        `Invalid language code: ${generateSubtitlesInput!.languageCode}`
+      )
     }
   }
 
@@ -145,9 +152,9 @@ export async function createVideoByDirectUpload(
             {
               generated_subtitles: [
                 {
-                  language_code:
-                    languageCode as MuxGeneratedSubtitleLanguageCode,
-                  name: languageCode + ' auto-generated'
+                  language_code: generateSubtitlesInput!
+                    .languageCode as MuxGeneratedSubtitleLanguageCode,
+                  name: generateSubtitlesInput!.languageName
                 }
               ]
             }

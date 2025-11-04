@@ -47,8 +47,7 @@ const mockMuxVideo: MuxVideo = {
   createdAt: new Date(),
   updatedAt: new Date(),
   readyToStream: true,
-  downloadable: true,
-  showGeneratedSubtitles: false
+  downloadable: true
 }
 
 const mockMuxVideoAsset = {

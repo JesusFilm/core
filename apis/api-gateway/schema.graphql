@@ -1252,6 +1252,7 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   """
   objectFit: VideoBlockObjectFit
   subtitleLanguage: Language
+  showGeneratedSubtitles: Boolean @join__field(graph: API_JOURNEYS_MODERN) 
   mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
@@ -4724,6 +4725,7 @@ input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   fullsize: Boolean
   posterBlockId: ID
   subtitleLanguageId: ID
+  showGeneratedSubtitles: Boolean
 }
 
 input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4747,6 +4749,7 @@ input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
     youTube source: videoId required
   """
   source: VideoBlockSource
+  showGeneratedSubtitles: Boolean
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
@@ -4798,7 +4801,8 @@ input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
 }
 
 input GenerateSubtitlesInput @join__type(graph: API_MEDIA)  {
-  languageCode: String
+  languageCode: String!
+  languageName: String!
 }
 
 input ImageInput @join__type(graph: API_MEDIA)  {

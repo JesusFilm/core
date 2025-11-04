@@ -585,7 +585,8 @@ describe('mux/video', () => {
             userGenerated: true,
             maxResolution: 'fhd',
             generateSubtitlesInput: {
-              languageCode: 'en'
+              languageCode: 'en',
+              languageName: 'English'
             }
           }
         })
@@ -593,7 +594,7 @@ describe('mux/video', () => {
           true,
           '1080p',
           false,
-          'en'
+          { languageCode: 'en', languageName: 'English' }
         )
         expect(result).toHaveProperty('data.createMuxVideoUploadByFile', {
           id: 'videoId',
@@ -623,8 +624,9 @@ describe('mux/video', () => {
             userGenerated: true,
             maxResolution: 'fhd',
             generateSubtitlesInput: {
-              languageCode: 'invalid'
-            }
+              languageCode: 'invalid',
+              languageName: 'Invalid'
+            } as any
           }
         })) as {
           data: any
