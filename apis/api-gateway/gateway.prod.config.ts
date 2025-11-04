@@ -1,4 +1,4 @@
-import { createOtlpGrpcExporter, defineConfig } from '@graphql-hive/gateway'
+import { defineConfig } from '@graphql-hive/gateway'
 
 import { commonConfig } from './src/common.config'
 
@@ -13,13 +13,9 @@ export const gatewayConfig = defineConfig({
   // Poll Hive CDN for supergraph updates without restart
   pollingInterval: 10_000,
   openTelemetry: {
-    exporters: [
-      createOtlpGrpcExporter({
-        url: 'http://0.0.0.0:4317'
-      })
-    ],
-    serviceName: 'api-gateway'
+    traces: true
   },
+  // OpenTelemetry configuration moved in v2. Prefer CLI flags or the new plugin.
   cors(request) {
     const origin = request.headers.get('Origin') ?? ''
     const defaultCors: Parameters<typeof defineConfig>[0]['cors'] = {
