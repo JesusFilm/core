@@ -23,13 +23,17 @@ describe('journeyVisitorExport', () => {
     headers: { authorization: 'token' },
     context: { currentUser: mockUser }
   })
+  // Cast needed because Prisma findUnique has generics that hide jest mock helpers in TS
+  const jf = prismaMock.journey.findUnique as unknown as jest.Mock
+  const evFM = prismaMock.event.findMany as unknown as jest.Mock
+  const jvFM = prismaMock.journeyVisitor.findMany as unknown as jest.Mock
 
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
   it('should return CSV formatted string with two header rows and visitor data', async () => {
-    prismaMock.journey.findUnique.mockResolvedValueOnce({
+    jf.mockResolvedValueOnce({
       id: 'journey1',
       team: {
         userTeams: [{ userId: mockUser.id, role: 'manager' }]
@@ -74,13 +78,13 @@ describe('journeyVisitorExport', () => {
         }
       ]
     } as any)
-    prismaMock.event.findMany.mockResolvedValueOnce([
+    evFM.mockResolvedValueOnce([
       {
         blockId: 'blockFirst',
         label: 'Button Click'
       } as any
     ])
-    prismaMock.journeyVisitor.findMany.mockResolvedValueOnce([
+    jvFM.mockResolvedValueOnce([
       {
         id: 'jv1',
         createdAt: new Date('2024-01-01T00:00:00Z'),
@@ -112,7 +116,7 @@ describe('journeyVisitorExport', () => {
   })
 
   it('should filter by typename when provided', async () => {
-    prismaMock.journey.findUnique.mockResolvedValueOnce({
+    jf.mockResolvedValueOnce({
       id: 'journey1',
       team: {
         userTeams: [{ userId: mockUser.id, role: 'manager' }]
@@ -130,21 +134,22 @@ describe('journeyVisitorExport', () => {
         }
       ]
     } as any)
-    prismaMock.event.findMany.mockResolvedValueOnce([
+    evFM.mockResolvedValueOnce([
       {
         blockId: 'block1',
         label: 'Button Click'
       } as any
     ])
 
-    prismaMock.journeyVisitor.findMany.mockResolvedValue([])
+    jvFM.mockResolvedValue([])
 
     const result = await authClient({
       document: JOURNEY_VISITOR_EXPORT_QUERY,
       variables: {
         journeyId: 'journey1',
         filter: {
-          typenames: ['ButtonClickEvent', 'TextResponseSubmissionEvent']
+          typenames: ['ButtonClickEvent', 'TextResponseSubmissionEvent'],
+          includeUnconnectedCards: true
         }
       }
     })
@@ -170,7 +175,7 @@ describe('journeyVisitorExport', () => {
   })
 
   it('should not filter by typenames when empty array is provided but ignore event headers', async () => {
-    prismaMock.journey.findUnique.mockResolvedValueOnce({
+    jf.mockResolvedValueOnce({
       id: 'journey1',
       team: {
         userTeams: [{ userId: mockUser.id, role: 'manager' }]
@@ -188,13 +193,13 @@ describe('journeyVisitorExport', () => {
         }
       ]
     } as any)
-    prismaMock.event.findMany.mockResolvedValueOnce([
+    evFM.mockResolvedValueOnce([
       {
         blockId: 'block1',
         label: 'Button Click'
       } as any
     ])
-    prismaMock.journeyVisitor.findMany.mockResolvedValue([
+    jvFM.mockResolvedValue([
       {
         id: 'jv1',
         createdAt: new Date('2024-01-01T00:00:00Z'),
@@ -214,7 +219,8 @@ describe('journeyVisitorExport', () => {
       variables: {
         journeyId: 'journey1',
         filter: {
-          typenames: []
+          typenames: [],
+          includeUnconnectedCards: true
         }
       }
     })
@@ -239,7 +245,7 @@ describe('journeyVisitorExport', () => {
   })
 
   it('should filter by date range when provided', async () => {
-    prismaMock.journey.findUnique.mockResolvedValueOnce({
+    jf.mockResolvedValueOnce({
       id: 'journey1',
       team: {
         userTeams: [{ userId: mockUser.id, role: 'manager' }]
@@ -247,8 +253,8 @@ describe('journeyVisitorExport', () => {
       userJourneys: [],
       blocks: []
     } as any)
-    prismaMock.event.findMany.mockResolvedValueOnce([])
-    prismaMock.journeyVisitor.findMany.mockResolvedValue([])
+    evFM.mockResolvedValueOnce([])
+    jvFM.mockResolvedValue([])
 
     const result = await authClient({
       document: JOURNEY_VISITOR_EXPORT_QUERY,
@@ -256,7 +262,8 @@ describe('journeyVisitorExport', () => {
         journeyId: 'journey1',
         filter: {
           periodRangeStart: '2024-01-01T00:00:00Z',
-          periodRangeEnd: '2024-12-31T23:59:59Z'
+          periodRangeEnd: '2024-12-31T23:59:59Z',
+          includeUnconnectedCards: true
         }
       }
     })
@@ -282,7 +289,7 @@ describe('journeyVisitorExport', () => {
   })
 
   it('should handle multiple events for the same block by concatenating values', async () => {
-    prismaMock.journey.findUnique.mockResolvedValueOnce({
+    jf.mockResolvedValueOnce({
       id: 'journey1',
       team: {
         userTeams: [{ userId: mockUser.id, role: 'manager' }]
@@ -300,14 +307,14 @@ describe('journeyVisitorExport', () => {
         }
       ]
     } as any)
-    prismaMock.event.findMany.mockResolvedValueOnce([
+    evFM.mockResolvedValueOnce([
       {
         blockId: 'block1',
         label: 'Button Click'
       } as any
     ])
 
-    prismaMock.journeyVisitor.findMany.mockResolvedValue([
+    jvFM.mockResolvedValue([
       {
         id: 'jv1',
         createdAt: new Date('2024-01-01T00:00:00Z'),
@@ -342,7 +349,7 @@ describe('journeyVisitorExport', () => {
   })
 
   it('should handle multiple events for the same block with different labels', async () => {
-    prismaMock.journey.findUnique.mockResolvedValueOnce({
+    jf.mockResolvedValueOnce({
       id: 'journey1',
       team: {
         userTeams: [{ userId: mockUser.id, role: 'manager' }]
@@ -360,7 +367,7 @@ describe('journeyVisitorExport', () => {
         }
       ]
     } as any)
-    prismaMock.event.findMany.mockResolvedValueOnce([
+    evFM.mockResolvedValueOnce([
       {
         blockId: 'block1',
         label: 'Button Click'
@@ -371,7 +378,7 @@ describe('journeyVisitorExport', () => {
       } as any
     ])
 
-    prismaMock.journeyVisitor.findMany.mockResolvedValue([
+    jvFM.mockResolvedValue([
       {
         id: 'jv1',
         createdAt: new Date('2024-01-01T00:00:00Z'),
@@ -406,7 +413,7 @@ describe('journeyVisitorExport', () => {
   })
 
   it('should not include visitors with no events', async () => {
-    prismaMock.journey.findUnique.mockResolvedValueOnce({
+    jf.mockResolvedValueOnce({
       id: 'journey1',
       team: {
         userTeams: [{ userId: mockUser.id, role: 'manager' }]
@@ -414,8 +421,8 @@ describe('journeyVisitorExport', () => {
       userJourneys: [],
       blocks: []
     } as any)
-    prismaMock.event.findMany.mockResolvedValueOnce([])
-    prismaMock.journeyVisitor.findMany.mockResolvedValue([])
+    evFM.mockResolvedValueOnce([])
+    jvFM.mockResolvedValue([])
 
     const result = await authClient({
       document: JOURNEY_VISITOR_EXPORT_QUERY,
@@ -428,7 +435,7 @@ describe('journeyVisitorExport', () => {
   })
 
   it('should handle empty results gracefully', async () => {
-    prismaMock.journey.findUnique.mockResolvedValueOnce({
+    jf.mockResolvedValueOnce({
       id: 'journey1',
       team: {
         userTeams: [{ userId: mockUser.id, role: 'manager' }]
@@ -436,8 +443,8 @@ describe('journeyVisitorExport', () => {
       userJourneys: [],
       blocks: []
     } as any)
-    prismaMock.event.findMany.mockResolvedValueOnce([])
-    prismaMock.journeyVisitor.findMany.mockResolvedValue([])
+    evFM.mockResolvedValueOnce([])
+    jvFM.mockResolvedValue([])
 
     const result = await authClient({
       document: JOURNEY_VISITOR_EXPORT_QUERY,
@@ -450,7 +457,7 @@ describe('journeyVisitorExport', () => {
   })
 
   it('should error when journey is not found', async () => {
-    prismaMock.journey.findUnique.mockResolvedValueOnce(null)
+    jf.mockResolvedValueOnce(null)
 
     const result = await authClient({
       document: JOURNEY_VISITOR_EXPORT_QUERY,
@@ -461,7 +468,7 @@ describe('journeyVisitorExport', () => {
   })
 
   it('should error when user is not allowed to export journey', async () => {
-    prismaMock.journey.findUnique.mockResolvedValueOnce({
+    jf.mockResolvedValueOnce({
       id: 'journey1',
       team: { userTeams: [{ userId: 'otherUserId', role: 'manager' }] },
       userJourneys: [],
@@ -480,7 +487,7 @@ describe('journeyVisitorExport', () => {
   })
 
   it('should include card headings in second header row', async () => {
-    prismaMock.journey.findUnique.mockResolvedValueOnce({
+    jf.mockResolvedValueOnce({
       id: 'journey1',
       team: { userTeams: [{ userId: mockUser.id, role: 'manager' }] },
       userJourneys: [],
@@ -560,7 +567,7 @@ describe('journeyVisitorExport', () => {
       ]
     } as any)
 
-    prismaMock.event.findMany.mockResolvedValueOnce([
+    evFM.mockResolvedValueOnce([
       {
         blockId: 'block1',
         label: 'What is your name?'
@@ -570,7 +577,7 @@ describe('journeyVisitorExport', () => {
         label: 'Select an option'
       } as any
     ])
-    prismaMock.journeyVisitor.findMany.mockResolvedValueOnce([
+    jvFM.mockResolvedValueOnce([
       {
         id: 'jv1',
         createdAt: new Date('2024-01-15T00:00:00Z'),
@@ -605,7 +612,7 @@ describe('journeyVisitorExport', () => {
   })
 
   it('should use "Multiselect" as header for RadioMultiselectBlock types', async () => {
-    prismaMock.journey.findUnique.mockResolvedValueOnce({
+    jf.mockResolvedValueOnce({
       id: 'journey1',
       team: { userTeams: [{ userId: mockUser.id, role: 'manager' }] },
       userJourneys: [],
@@ -649,13 +656,13 @@ describe('journeyVisitorExport', () => {
       ]
     } as any)
 
-    prismaMock.event.findMany.mockResolvedValueOnce([
+    evFM.mockResolvedValueOnce([
       {
         blockId: 'block1',
         label: 'Select multiple options'
       } as any
     ])
-    prismaMock.journeyVisitor.findMany.mockResolvedValueOnce([
+    jvFM.mockResolvedValueOnce([
       {
         id: 'jv1',
         createdAt: new Date('2024-01-20T00:00:00Z'),
