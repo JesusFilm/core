@@ -50,6 +50,7 @@ const MuxVideo = builder.prismaObject('MuxVideo', {
     }),
     readyToStream: t.exposeBoolean('readyToStream', { nullable: false }),
     downloadable: t.exposeBoolean('downloadable', { nullable: false }),
+    showGeneratedSubtitles: t.exposeBoolean('showGeneratedSubtitles'),
     videoVariants: t.relation('videoVariants', { nullable: false })
   })
 })
@@ -505,7 +506,45 @@ builder.mutationFields((t) => ({
 
       return true
     }
-  })
+  }),
+  updateMuxVideoSubtitleSettings: t
+    .withAuth({ isAuthenticated: true })
+    .prismaField({
+      type: 'MuxVideo',
+      nullable: false,
+      args: {
+        id: t.arg({ type: 'ID', required: true }),
+        showGeneratedSubtitles: t.arg({ type: 'Boolean', required: true })
+      },
+      resolve: async (
+        query,
+        _root,
+        { id, showGeneratedSubtitles },
+        { user, currentRoles }
+      ) => {
+        if (user == null) {
+          throw new GraphQLError('User not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+        }
+
+        // Verify ownership (non-publishers can only update their own videos)
+        const where: Prisma.MuxVideoWhereUniqueInput = { id }
+        if (!currentRoles.includes('publisher')) {
+          where.userId = user.id
+        }
+
+        // Verify video exists and user has access
+        await prisma.muxVideo.findUniqueOrThrow({ where })
+
+        // Update the subtitle setting
+        return await prisma.muxVideo.update({
+          ...query,
+          where: { id },
+          data: { showGeneratedSubtitles }
+        })
+      }
+    })
 }))
 
 builder.asEntity(MuxVideo, {

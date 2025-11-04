@@ -14,9 +14,8 @@ import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
 import { CreateMuxVideoUploadByFileMutation } from '../../../../../../../../../__generated__/CreateMuxVideoUploadByFileMutation'
+import { useValidateMuxLanguage } from '../../../../../../../../libs/useValidateMuxLanguage'
 import { useMuxVideoPolling } from '../../../../../../../MuxVideoPollingProvider'
-
-import { isValidMuxLanguageCode } from '../../utils'
 
 import { fileToMuxUpload } from './utils/addByFileUtils'
 export const CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
@@ -43,10 +42,9 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const { journey } = useJourney()
   const rawLanguageCode = journey?.language.bcp47
   // Validate language code - only pass valid Mux-supported languages
+  const isValidLanguage = useValidateMuxLanguage(rawLanguageCode)
   const languageCode =
-    rawLanguageCode != null && isValidMuxLanguageCode(rawLanguageCode)
-      ? rawLanguageCode
-      : null
+    isValidLanguage && rawLanguageCode != null ? rawLanguageCode : undefined
   const { startPolling, stopPolling, getPollingStatus } = useMuxVideoPolling()
 
   const [uploading, setUploading] = useState(false)

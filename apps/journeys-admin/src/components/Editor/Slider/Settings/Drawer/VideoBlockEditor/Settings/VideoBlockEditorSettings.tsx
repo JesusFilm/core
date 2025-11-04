@@ -15,6 +15,7 @@ import { ReactElement, useEffect, useRef } from 'react'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import {
   type YouTubeLanguage,
   useYouTubeClosedCaptions
@@ -65,6 +66,7 @@ export function VideoBlockEditorSettings({
 }: VideoBlockEditorSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
+  const { journey } = useJourney()
 
   // Fetch closed captions using custom hook
   const { languages: availableSubtitles } = useYouTubeClosedCaptions({
@@ -164,7 +166,15 @@ export function VideoBlockEditorSettings({
               />
             )}
             {selectedBlock?.source === VideoBlockSource.mux && (
-              <MuxSubtitleEnablementToggle disabled={selectedBlock == null} />
+              <MuxSubtitleEnablementToggle
+                muxVideoId={
+                  selectedBlock?.mediaVideo?.__typename === 'MuxVideo'
+                    ? selectedBlock.mediaVideo.id
+                    : null
+                }
+                journeyLanguageCode={journey?.language.bcp47}
+                disabled={selectedBlock == null}
+              />
             )}
             <Divider />
           </Stack>

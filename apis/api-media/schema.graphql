@@ -206,6 +206,7 @@ type Mutation {
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
+  updateMuxVideoSubtitleSettings(id: ID!, showGeneratedSubtitles: Boolean!): MuxVideo!
   playlistCreate(input: PlaylistCreateInput!): MutationPlaylistCreateResult
   playlistUpdate(id: ID!, input: PlaylistUpdateInput!): MutationPlaylistUpdateResult
   playlistDelete(id: ID!): MutationPlaylistDeleteResult
@@ -477,6 +478,7 @@ type MuxVideo
   createdAt: Date!
   readyToStream: Boolean!
   downloadable: Boolean!
+  showGeneratedSubtitles: Boolean
   videoVariants: [VideoVariant!]!
 }
 

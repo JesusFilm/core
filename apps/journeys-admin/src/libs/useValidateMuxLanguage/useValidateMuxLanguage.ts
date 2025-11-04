@@ -7,7 +7,7 @@
  * @param languageCode - BCP47 language code (e.g., 'en', 'es', 'fr')
  * @returns true if language is supported by Mux, false otherwise
  */
-export function isValidMuxLanguageCode(
+export function useValidateMuxLanguage(
   languageCode: string | null | undefined
 ): boolean {
   if (languageCode == null) return false
