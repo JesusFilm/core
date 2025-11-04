@@ -4,6 +4,7 @@ import Stack from '@mui/material/Stack'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
 
 import { IntegrationType } from '../../../../__generated__/globalTypes'
@@ -12,6 +13,7 @@ import { IntegrationsButton } from './IntegrationsButton'
 
 export function Integrations(): ReactElement {
   const router = useRouter()
+  const { teamIntegrations } = useFlags()
   return (
     <Paper elevation={0} square sx={{ height: '100%' }}>
       <Container
@@ -24,12 +26,14 @@ export function Integrations(): ReactElement {
       >
         <BreadcrumbNavigation />
         <Stack direction="row" gap={4} sx={{ flexWrap: 'wrap', mt: 10 }}>
-          <IntegrationsButton
-            url={`/teams/${
-              router.query.teamId as string
-            }/integrations/new/growth-spaces`}
-            type={IntegrationType.growthSpaces}
-          />
+          {teamIntegrations && (
+            <IntegrationsButton
+              url={`/teams/${
+                router.query.teamId as string
+              }/integrations/new/growth-spaces`}
+              type={IntegrationType.growthSpaces}
+            />
+          )}
           <IntegrationsButton
             url={`/teams/${
               router.query.teamId as string
