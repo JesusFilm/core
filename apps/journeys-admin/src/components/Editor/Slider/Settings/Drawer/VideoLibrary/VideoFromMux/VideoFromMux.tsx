@@ -9,17 +9,17 @@ import {
 import { AddByFile } from './AddByFile'
 
 interface VideoFromMuxProps {
-  onSelect: (block: VideoBlockUpdateInput) => void
+  onSelect: (block: VideoBlockUpdateInput, shouldCloseDrawer?: boolean) => void
 }
 
 export function VideoFromMux({ onSelect }: VideoFromMuxProps): ReactElement {
-  const handleChange = (id: string): void => {
+  const handleChange = (id: string, shouldCloseDrawer?: boolean): void => {
     const block: VideoBlockUpdateInput = {
       videoId: id,
       source: VideoBlockSource.mux,
       startAt: 0
     }
-    onSelect(block)
+    onSelect(block, shouldCloseDrawer)
   }
 
   return (

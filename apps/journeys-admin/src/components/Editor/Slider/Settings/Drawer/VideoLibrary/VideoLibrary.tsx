@@ -47,7 +47,7 @@ interface VideoLibraryProps {
   open: boolean
   onClose?: () => void
   selectedBlock?: TreeBlock<VideoBlock> | null
-  onSelect?: (block: VideoBlockUpdateInput) => void
+  onSelect?: (block: VideoBlockUpdateInput, shouldFocus?: boolean) => void
 }
 
 export function VideoLibrary({
@@ -92,10 +92,19 @@ export function VideoLibrary({
     if (route != null) setRoute(route)
   }
 
-  const onSelect = (block: VideoBlockUpdateInput): void => {
-    if (handleSelect != null) handleSelect(block)
+  const onSelect = (
+    block: VideoBlockUpdateInput,
+    shouldCloseDrawer = true
+  ): void => {
+    // Always persist the mutation to update the video block
+    // Pass shouldCloseDrawer as shouldFocus to prevent navigation on background uploads
+    if (handleSelect != null) handleSelect(block, shouldCloseDrawer)
     setOpenVideoDetails(false)
-    onClose?.()
+    // Only close drawer if requested
+    // Background upload completions pass false to avoid closing wrong drawer
+    if (shouldCloseDrawer) {
+      onClose?.()
+    }
   }
 
   const handleVideoDetailsClose = (closeParent?: boolean): void => {

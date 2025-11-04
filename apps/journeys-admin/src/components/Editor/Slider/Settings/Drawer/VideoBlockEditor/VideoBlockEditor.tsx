@@ -22,7 +22,10 @@ const VideoBlockEditorSettings = dynamic(
 
 interface VideoBlockEditorProps {
   selectedBlock: TreeBlock<VideoBlock> | null
-  onChange: (input: VideoBlockUpdateInput) => Promise<void>
+  onChange: (
+    input: VideoBlockUpdateInput,
+    shouldFocus?: boolean
+  ) => Promise<void>
 }
 
 export function VideoBlockEditor({

@@ -34,7 +34,7 @@ export const CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
 `
 
 interface AddByFileProps {
-  onChange: (id: string) => void
+  onChange: (id: string, shouldCloseDrawer?: boolean) => void
 }
 
 export function AddByFile({ onChange }: AddByFileProps): ReactElement {
@@ -94,7 +94,9 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
       setProcessing(true)
       // Start polling with completion callback
       startPolling(videoId, languageCode, () => {
-        onChange(videoId)
+        // Always call onChange to persist the mutation
+        // Never close drawer on upload completion - user may have navigated to different block
+        onChange(videoId, false)
         resetUploadStatus()
       })
     })
