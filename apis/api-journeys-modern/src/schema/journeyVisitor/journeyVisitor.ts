@@ -802,6 +802,7 @@ builder.queryField('journeyVisitorExport', (t) => {
           quoted: true,
           quote: '"',
           escape: '"',
+          quoted_empty: true,
           columns: columns.map((col) => ({ key: col.key })),
           cast: {
             string: (value: any) => String(value ?? '')

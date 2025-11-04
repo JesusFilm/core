@@ -111,7 +111,7 @@ describe('journeyVisitorExport', () => {
     // Third row+: visitor data
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'Date,Welcome Card\nDate,Button Click\n2024-01-01,Submit\n'
+      '"Date","Welcome Card"\n"Date","Button Click"\n"2024-01-01","Submit"\n'
     )
   })
 
@@ -156,7 +156,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'Date,\nDate,Button Click\n'
+      '"Date",""\n"Date","Button Click"\n'
     )
 
     expect(prismaMock.event.findMany).toHaveBeenCalledWith({
@@ -227,7 +227,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'Date,\nDate,Button Click\n2024-01-01,Submit\n'
+      '"Date",""\n"Date","Button Click"\n"2024-01-01","Submit"\n'
     )
 
     expect(prismaMock.event.findMany).toHaveBeenCalledWith({
@@ -268,7 +268,10 @@ describe('journeyVisitorExport', () => {
       }
     })
 
-    expect(result).toHaveProperty('data.journeyVisitorExport', 'Date\nDate\n')
+    expect(result).toHaveProperty(
+      'data.journeyVisitorExport',
+      '"Date"\n"Date"\n'
+    )
 
     expect(prismaMock.event.findMany).toHaveBeenCalledWith({
       where: {
@@ -344,7 +347,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'Date,\nDate,Button Click\n2024-01-01,Submit; Cancel\n'
+      '"Date",""\n"Date","Button Click"\n"2024-01-01","Submit; Cancel"\n'
     )
   })
 
@@ -408,7 +411,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'Date,,\nDate,Button Click,Button Click New Label\n2024-01-01,Submit,Cancel\n'
+      '"Date","",""\n"Date","Button Click","Button Click New Label"\n"2024-01-01","Submit","Cancel"\n'
     )
   })
 
@@ -431,7 +434,10 @@ describe('journeyVisitorExport', () => {
       }
     })
 
-    expect(result).toHaveProperty('data.journeyVisitorExport', 'Date\nDate\n')
+    expect(result).toHaveProperty(
+      'data.journeyVisitorExport',
+      '"Date"\n"Date"\n'
+    )
   })
 
   it('should handle empty results gracefully', async () => {
@@ -453,7 +459,10 @@ describe('journeyVisitorExport', () => {
       }
     })
 
-    expect(result).toHaveProperty('data.journeyVisitorExport', 'Date\nDate\n')
+    expect(result).toHaveProperty(
+      'data.journeyVisitorExport',
+      '"Date"\n"Date"\n'
+    )
   })
 
   it('should error when journey is not found', async () => {
@@ -607,7 +616,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'Date,Question 1 Card,Question 2 Card\nDate,What is your name?,Poll\n2024-01-15,John Doe,Option A\n'
+      '"Date","Question 1 Card","Question 2 Card"\n"Date","What is your name?","Poll"\n"2024-01-15","John Doe","Option A"\n'
     )
   })
 
@@ -692,7 +701,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      'Date,Choose Your Options\nDate,Multiselect\n2024-01-20,Option 1; Option 2\n'
+      '"Date","Choose Your Options"\n"Date","Multiselect"\n"2024-01-20","Option 1; Option 2"\n'
     )
   })
 })
