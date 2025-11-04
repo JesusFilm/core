@@ -337,7 +337,7 @@ builder.queryField('journeyVisitorExport', (t) => {
         stepsForConnectivity.forEach((s) => {
           const descendants = collectDescendants(s.id, [])
           descendants.forEach((node) => {
-            const targetBlockId: string | undefined = (node as any)?.action
+            const targetBlockId: string | undefined = (node)?.action
               ?.blockId
             if (targetBlockId != null) {
               const targetStep = idToBlock.get(targetBlockId)
