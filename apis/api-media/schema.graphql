@@ -132,7 +132,8 @@ type ForeignKeyConstraintErrorLocation {
 }
 
 input GenerateSubtitlesInput {
-  languageCode: String
+  languageCode: String!
+  languageName: String!
 }
 
 enum IdType {

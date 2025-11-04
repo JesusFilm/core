@@ -176,12 +176,10 @@ describe('MuxVideoService', () => {
         url: 'https://upload.mux.com/ugc-video'
       } as any)
 
-      const result = await createVideoByDirectUpload(
-        true,
-        undefined,
-        false,
-        'en'
-      )
+      const result = await createVideoByDirectUpload(true, undefined, false, {
+        languageCode: 'en',
+        languageName: 'English'
+      })
 
       expect(mockMux.video.uploads.create).toHaveBeenCalledWith({
         cors_origin: 'https://example.com',
@@ -195,7 +193,7 @@ describe('MuxVideoService', () => {
               generated_subtitles: [
                 {
                   language_code: 'en',
-                  name: 'en auto-generated'
+                  name: 'English'
                 }
               ]
             }
@@ -214,7 +212,10 @@ describe('MuxVideoService', () => {
         url: 'https://upload.mux.com/video'
       } as any)
 
-      await createVideoByDirectUpload(false, undefined, false, 'en')
+      await createVideoByDirectUpload(false, undefined, false, {
+        languageCode: 'en',
+        languageName: 'English'
+      })
 
       expect(mockMux.video.uploads.create).toHaveBeenCalledWith({
         cors_origin: 'https://example.com',
@@ -230,7 +231,10 @@ describe('MuxVideoService', () => {
 
     it('should throw error when invalid language code is provided', async () => {
       await expect(
-        createVideoByDirectUpload(true, undefined, false, 'invalid')
+        createVideoByDirectUpload(true, undefined, false, {
+          languageCode: 'invalid',
+          languageName: 'Invalid'
+        })
       ).rejects.toThrow('Invalid language code: invalid')
     })
 

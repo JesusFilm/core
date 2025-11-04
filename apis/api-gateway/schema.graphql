@@ -4796,7 +4796,8 @@ input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
 }
 
 input GenerateSubtitlesInput @join__type(graph: API_MEDIA)  {
-  languageCode: String
+  languageCode: String!
+  languageName: String!
 }
 
 input ImageInput @join__type(graph: API_MEDIA)  {
