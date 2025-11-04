@@ -32,14 +32,16 @@ const PARALLAX_SCALE = 1.5
 const BACKGROUND_BLUR = '40px'
 
 // Gradient mask constants - Parallax image bottom fade
-const IMAGE_MASK_ALPHA_30 = 30
-const IMAGE_MASK_ALPHA_60 = 60
-const IMAGE_MASK_STOP_1 = '3%'
-const IMAGE_MASK_STOP_2 = '6%'
-const IMAGE_MASK_STOP_3 = '12%'
+const IMAGE_MASK_ALPHA_20 = 20
+const IMAGE_MASK_ALPHA_40 = 40
+const IMAGE_MASK_ALPHA_70 = 70
+const IMAGE_MASK_STOP_1 = '5%'
+const IMAGE_MASK_STOP_2 = '10%'
+const IMAGE_MASK_STOP_3 = '18%'
+const IMAGE_MASK_STOP_4 = '25%'
 
 // Gradient mask constants - Content overlay top fade
-const CONTENT_OVERLAY_OPACITY = 'A1'
+const CONTENT_OVERLAY_OPACITY = 'dd'
 const CONTENT_MASK_ALPHA_50 = 50
 const CONTENT_MASK_STOP_1 = '5%'
 const CONTENT_MASK_STOP_2 = '15%'
@@ -105,8 +107,8 @@ export function ParallaxCover({
         transform: `translateZ(${PARALLAX_TRANSFORM_Z}) scale(${PARALLAX_SCALE})`,
         transformOrigin: 'center top',
         zIndex: 1,
-        webkitMask: `linear-gradient(to top, transparent 0%, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_30)} ${IMAGE_MASK_STOP_1}, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_60)} ${IMAGE_MASK_STOP_2}, ${baseBackgroundColor} ${IMAGE_MASK_STOP_3})`,
-        mask: `linear-gradient(to top, transparent 0%, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_30)} ${IMAGE_MASK_STOP_1}, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_60)} ${IMAGE_MASK_STOP_2}, ${baseBackgroundColor} ${IMAGE_MASK_STOP_3})`
+        webkitMask: `linear-gradient(to top, transparent 0%, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_20)} ${IMAGE_MASK_STOP_1}, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_40)} ${IMAGE_MASK_STOP_2}, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_70)} ${IMAGE_MASK_STOP_3}, ${baseBackgroundColor} ${IMAGE_MASK_STOP_4})`,
+        mask: `linear-gradient(to top, transparent 0%, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_20)} ${IMAGE_MASK_STOP_1}, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_40)} ${IMAGE_MASK_STOP_2}, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_70)} ${IMAGE_MASK_STOP_3}, ${baseBackgroundColor} ${IMAGE_MASK_STOP_4})`
       }}
     >
       {imageBlock != null && backgroundBlur != null && (
