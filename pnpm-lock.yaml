@@ -19172,7 +19172,7 @@ packages:
   puppeteer@23.7.0:
     resolution: {integrity: sha512-YTgo0KFe8NtBcI9hCu/xsjPFumEhu8kA7QqLr6Uh79JcEsUcUt+go966NgKYXJ+P3Fuefrzn2SXwV3cyOe/UcQ==}
     engines: {node: '>=18'}
-    deprecated: < 24.15.0 is no longer supported
+    deprecated: < 24.9.0 is no longer supported
     hasBin: true
 
   pure-rand@6.1.0:
@@ -19186,7 +19186,6 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
-
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qrcode.react@4.2.0:
