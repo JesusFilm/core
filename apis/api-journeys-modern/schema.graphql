@@ -435,6 +435,11 @@ type GoogleSheetsSync {
   journey: Journey!
 }
 
+input GoogleSheetsSyncsFilter {
+  journeyId: ID
+  integrationId: ID
+}
+
 enum GridAlignItems {
   baseline
   flexStart
@@ -1461,8 +1466,7 @@ type Query {
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
   journeySimpleGet(id: ID!): Json
-  googleSheetsSyncs(journeyId: ID!): [GoogleSheetsSync!]!
-  googleSheetsSyncsByIntegration(integrationId: ID!): [GoogleSheetsSync!]!
+  googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!): [GoogleSheetsSync!]!
   integrationGooglePickerToken(teamId: ID!, integrationId: ID): String!
 
   """

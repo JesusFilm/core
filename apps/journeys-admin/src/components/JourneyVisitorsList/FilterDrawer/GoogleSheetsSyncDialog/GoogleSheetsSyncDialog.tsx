@@ -50,8 +50,8 @@ const GET_GOOGLE_PICKER_TOKEN = gql`
 `
 
 const GET_GOOGLE_SHEETS_SYNCS = gql`
-  query GoogleSheetsSyncs($journeyId: ID!) {
-    googleSheetsSyncs(journeyId: $journeyId) {
+  query GoogleSheetsSyncs($filter: GoogleSheetsSyncsFilter!) {
+    googleSheetsSyncs(filter: $filter) {
       id
       spreadsheetId
       sheetName
@@ -118,7 +118,10 @@ interface GoogleSheetsSyncsQueryData {
 }
 
 interface GoogleSheetsSyncsQueryVariables {
-  journeyId: string
+  filter: {
+    journeyId?: string
+    integrationId?: string
+  }
 }
 
 interface GoogleSheetsSyncDialogProps {
@@ -161,7 +164,7 @@ export function GoogleSheetsSyncDialog({
   useEffect(() => {
     if (!open) return
     void loadSyncs({
-      variables: { journeyId },
+      variables: { filter: { journeyId } },
       fetchPolicy: 'network-only'
     })
   }, [open, journeyId, loadSyncs])
@@ -389,7 +392,7 @@ export function GoogleSheetsSyncDialog({
       }
       enqueueSnackbar(t('Sync created'), { variant: 'success' })
       await loadSyncs({
-        variables: { journeyId },
+        variables: { filter: { journeyId } },
         fetchPolicy: 'network-only'
       })
       onClose()
@@ -406,7 +409,7 @@ export function GoogleSheetsSyncDialog({
         refetchQueries: [
           {
             query: GET_GOOGLE_SHEETS_SYNCS,
-            variables: { journeyId }
+            variables: { filter: { journeyId } }
           }
         ],
         awaitRefetchQueries: true

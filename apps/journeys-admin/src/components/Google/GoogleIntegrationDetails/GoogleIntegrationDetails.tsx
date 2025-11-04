@@ -50,8 +50,8 @@ export const INTEGRATION_DELETE = gql`
 `
 
 const GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION = gql`
-  query GoogleSheetsSyncsByIntegration($integrationId: ID!) {
-    googleSheetsSyncsByIntegration(integrationId: $integrationId) {
+  query GoogleSheetsSyncsByIntegration($filter: GoogleSheetsSyncsFilter!) {
+    googleSheetsSyncs(filter: $filter) {
       id
       spreadsheetId
       sheetName
@@ -76,7 +76,7 @@ const DELETE_GOOGLE_SHEETS_SYNC = gql`
 `
 
 interface GoogleSheetsSyncsByIntegrationQuery {
-  googleSheetsSyncsByIntegration: Array<{
+  googleSheetsSyncs: Array<{
     id: string
     spreadsheetId: string | null
     sheetName: string | null
@@ -122,12 +122,12 @@ export function GoogleIntegrationDetails(): ReactElement {
     useQuery<GoogleSheetsSyncsByIntegrationQuery>(
       GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION,
       {
-        variables: { integrationId: integrationId as string },
+        variables: { filter: { integrationId: integrationId as string } },
         skip: typeof integrationId !== 'string'
       }
     )
 
-  const googleSheetsSyncs = syncsData?.googleSheetsSyncsByIntegration ?? []
+  const googleSheetsSyncs = syncsData?.googleSheetsSyncs ?? []
   const activeSyncs = googleSheetsSyncs.filter((sync) => sync.deletedAt == null)
   const historySyncs = googleSheetsSyncs.filter(
     (sync) => sync.deletedAt != null
@@ -161,7 +161,7 @@ export function GoogleIntegrationDetails(): ReactElement {
         refetchQueries: [
           {
             query: GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION,
-            variables: { integrationId }
+            variables: { filter: { integrationId } }
           }
         ],
         awaitRefetchQueries: true

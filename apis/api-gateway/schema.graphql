@@ -791,8 +791,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   node(id: ID!) : Node @join__field(graph: API_JOURNEYS_MODERN) 
   nodes(ids: [ID!]!) : [Node]! @join__field(graph: API_JOURNEYS_MODERN) 
   journeySimpleGet(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
-  googleSheetsSyncs(journeyId: ID!) : [GoogleSheetsSync!]! @join__field(graph: API_JOURNEYS_MODERN) 
-  googleSheetsSyncsByIntegration(integrationId: ID!) : [GoogleSheetsSync!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!) : [GoogleSheetsSync!]! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGooglePickerToken(teamId: ID!, integrationId: ID) : String! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
@@ -4658,6 +4657,11 @@ input EmailActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   email: String!
   customizable: Boolean
   parentStepId: String
+}
+
+input GoogleSheetsSyncsFilter @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyId: ID
+  integrationId: ID
 }
 
 input IntegrationGoogleCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
