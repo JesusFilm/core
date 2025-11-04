@@ -236,14 +236,14 @@ export function HeroSubtitleOverlay({
   return (
     <>
       <div
-        className="pointer-events-none absolute z-2 inset-x-0 bottom-[26px] flex justify-center px-6 font-mono"
+        className="pointer-events-none absolute z-2 inset-x-0 top-1/2 -translate-y-1/2 md:top-auto md:translate-y-0 md:bottom-[0px] flex justify-center px-6 min-h-[120px]"
         aria-live="polite"
       >
-        <div className="flex max-w-4xl flex-col gap-3 text-center text-white">
+        <div className="flex max-w-4xl flex-col text-center text-white md:-mr-20  md:max-w-[400px] lg:max-w-none justify-center">
           {segments[currentSegmentIndex] != null && (
             <span
               key={segments[currentSegmentIndex].id}
-              className="hero-subtitle-line mx-auto px-6 py-4 text-2xl font-semibold leading-tight  tracking-wider md:text-xl text-shadow-lg"
+              className="hero-subtitle-line mx-auto px-6 py-4 md:font-mono font-bold md:font-semibold leading-tight tracking-wider text-2xl md:text-lg lg:text-xl uppercase md:normal-case text-shadow-lg"
 
             >
               {segments[currentSegmentIndex].text}

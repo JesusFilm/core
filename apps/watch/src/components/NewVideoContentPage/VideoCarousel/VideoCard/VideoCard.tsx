@@ -48,7 +48,7 @@ function CardContent({
   const ContentElement = interactive ? 'div' : 'div'
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col">
       <ContainerElement
         data-testid={`VideoCardButton-${data.slug}`}
         {...(interactive && {
@@ -58,7 +58,7 @@ function CardContent({
         className="beveled rounded-lg w-full relative text-left border-none bg-transparent p-0 cursor-pointer disabled:cursor-default"
       >
         <ContentElement
-          className="relative max-w-[200px] h-60 flex flex-col justify-end w-full rounded-xl cursor-pointer bg-black"
+          className="relative h-48 md:h-60 flex flex-col justify-end w-full rounded-xl cursor-pointer bg-black"
           {...(interactive && {
             tabIndex: 0,
             role: 'button',

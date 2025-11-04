@@ -182,7 +182,7 @@ export function VideoCarousel({
         mousewheel={{ forceToAxis: true }}
         grabCursor
         slidesPerView="auto"
-        spaceBetween={20}
+        spaceBetween={0}
         slidesOffsetAfter={40}
         navigation={{
           nextEl: nextRef.current,
@@ -211,7 +211,7 @@ export function VideoCarousel({
                       : `video-${slide.id}`
                   }
                   virtualIndex={index}
-                  className={`max-w-[200px] ${index === 0 ? 'padded-l' : ''}`}
+                  className={`max-w-[140px] md:max-w-[200px] mr-2 md:mr-6 ${index === 0 ? 'padded-l' : ''}`}
                   data-testid={`CarouselSlide-${slide.id}`}
                 >
                   <VideoCard

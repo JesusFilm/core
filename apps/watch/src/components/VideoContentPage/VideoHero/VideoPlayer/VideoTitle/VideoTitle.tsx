@@ -125,7 +125,7 @@ export function VideoTitle({
 
       {/* Muted version */}
       {(mute || volume === 0) && (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 pr-30 md:pr-0">
           {videoLabel && (
             <div
               className={`
@@ -147,12 +147,12 @@ export function VideoTitle({
           {videoDescription && isPreview && (
             <p
               className={`
-                text-stone-300
-                ${isMuxInsert ? 'text-3xl leading-snug' : 'text-md leading-relaxed'}
-                font-sans max-w-3xl mb-2 animate-fade-in-up animation-delay-400 line-clamp-3 text-shadow-xs
+                text-stone-300/70 hidden lg:line-clamp-2 xl:lg:line-clamp-3
+                ${isMuxInsert ? 'text-xl md:text-3xl leading-snug' : 'text-md leading-relaxed'}
+                font-sans max-w-3xl mb-2 animate-fade-in-up animation-delay-400 text-shadow-xs
               `}
             >
-              {videoDescription}
+              {videoDescription.replace(/\n/g, '')}
             </p>
           )}
         </div>
@@ -181,11 +181,11 @@ export function VideoTitle({
           locale={false}
           id={action ? "mux-action-button" : "watch-now-button"}
           className={clsx(
-            "inline-flex z-1 items-center justify-center gap-2 px-5 py-3",
+            "hidden md:inline-flex z-1 items-center justify-center gap-2 px-5 py-3",
             "bg-[#CB333B] text-lg font-medium text-stone-100",
             "rounded-full shadow-md transition-colors duration-200",
             "hover:bg-[#A4343A] font-sans cursor-pointer self-start no-underline",
-            "animate-fade-in-up animation-delay-500",
+            "animate-fade-in-up animation-delay-500"
 
           )}
         >

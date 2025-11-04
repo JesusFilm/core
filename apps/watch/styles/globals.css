@@ -127,6 +127,14 @@
   summary[aria-disabled='true'] {
     cursor: not-allowed;
   }
+
+  /* Video carousel dimensions */
+  :root {
+    --ratio-sm: 1/1;
+    --ratio-md: 239/100;
+    --ratio-sm-expanded: 1/1;
+    --ratio-md-expanded: 185/100;
+  }
 }
 
 /* 2. Components layer - medium specificity */

@@ -433,10 +433,10 @@ export function HeroVideo({
     <>
     <div
       className={clsx(
-        "fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners [body[style*='padding-right']_&]:right-[15px]",
+        "fixed top-0  left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners [body[style*='padding-right']_&]:right-[15px]",
         {
-          'aspect-[239/100]': isPreview && collapsed,
-          'aspect-[185/100]  max-w-[1920px]': !isPreview || !collapsed
+          'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]': isPreview && collapsed,
+          'aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)]  max-w-[1920px]': !isPreview || !collapsed
         }
       )}
       data-testid="ContentHeroVideoContainer"
@@ -447,9 +447,17 @@ export function HeroVideo({
             key={currentMuxInsert ? currentMuxInsert.id : variant?.hls}
             data-testid="ContentHeroVideo"
             ref={videoRef}
+            // className={clsx(
+            //   'vjs [&_.vjs-tech]:object-cover [&_.vjs-tech]:md:object-cover hero-hide-native-subtitles',
+            //   { 'cursor-pointer': isPreview }
+            // )}
             className={clsx(
-              'vjs [&_.vjs-tech]:object-contain [&_.vjs-tech]:md:object-cover hero-hide-native-subtitles',
-              { 'cursor-pointer': isPreview }
+              'vjs hero-hide-native-subtitles md:[&_.vjs-tech]:object-cover',
+              {
+                '[&_.vjs-tech]:object-cover': isPreview && collapsed,
+                '[&_.vjs-tech]:object-contain': !isPreview || !collapsed,
+                'cursor-pointer': isPreview,
+              }
             )}
             style={{
               position: 'absolute',

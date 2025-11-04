@@ -34,10 +34,10 @@ export function VideoContentHero({
   return (
     <div
       className={clsx(
-        'w-full flex items-end relative bg-[#131111] z-[1] transition-all duration-300 ease-out overflow-hidden',
+        'w-full flex items-end relative bg-[#000] z-[1] transition-all duration-300 ease-out overflow-hidden',
         {
-          'aspect-[239/100]': isPreview && collapsed,
-          'aspect-[185/100] max-h-max': !isPreview || !collapsed
+          'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]': isPreview && collapsed,
+          'aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)] max-h-max': !isPreview || !collapsed
         }
       )}
       data-testid="ContentHero"
