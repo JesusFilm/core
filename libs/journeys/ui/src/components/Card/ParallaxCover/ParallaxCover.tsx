@@ -28,6 +28,30 @@ interface ParallaxCoverProps {
   hasFullscreenVideo?: boolean
 }
 
+// Layout constants
+const VIEWPORT_HEIGHT = '100vh'
+const PARALLAX_IMAGE_HEIGHT = '40vh'
+const CONTENT_PADDING_TOP = '30vh'
+
+// Parallax effect constants
+const PARALLAX_PERSPECTIVE = '1px'
+const PARALLAX_TRANSFORM_Z = '-0.5px'
+const PARALLAX_SCALE = 1.5
+const BACKGROUND_BLUR = '40px'
+
+// Gradient mask constants - Parallax image bottom fade
+const IMAGE_MASK_ALPHA_30 = 30
+const IMAGE_MASK_ALPHA_60 = 60
+const IMAGE_MASK_STOP_1 = '3%'
+const IMAGE_MASK_STOP_2 = '6%'
+const IMAGE_MASK_STOP_3 = '12%'
+
+// Gradient mask constants - Content overlay top fade
+const CONTENT_OVERLAY_OPACITY = 'A1'
+const CONTENT_MASK_ALPHA_50 = 50
+const CONTENT_MASK_STOP_1 = '5%'
+const CONTENT_MASK_STOP_2 = '15%'
+
 export function ParallaxCover({
   children,
   backgroundColor,
@@ -43,7 +67,7 @@ export function ParallaxCover({
       data-testid="parallax-cover"
       sx={{
         position: 'relative',
-        height: '100vh',
+        height: VIEWPORT_HEIGHT,
         overflow: 'hidden'
       }}
     >
@@ -77,8 +101,8 @@ export function ParallaxCover({
               sx={{
                 height: '100%',
                 width: '100%',
-                WebkitBackdropFilter: 'blur(40px)',
-                backdropFilter: 'blur(40px)'
+                WebkitBackdropFilter: `blur(${BACKGROUND_BLUR})`,
+                backdropFilter: `blur(${BACKGROUND_BLUR})`
               }}
             />
           </>
@@ -89,10 +113,10 @@ export function ParallaxCover({
         data-testid="parallax-cover-wrapper"
         sx={{
           position: 'relative',
-          height: '100vh',
+          height: VIEWPORT_HEIGHT,
           overflowY: 'auto',
           overflowX: 'hidden',
-          perspective: '1px',
+          perspective: PARALLAX_PERSPECTIVE,
           perspectiveOrigin: 'top center',
           transformStyle: 'preserve-3d',
           zIndex: 1
@@ -106,13 +130,12 @@ export function ParallaxCover({
             top: 0,
             left: 0,
             right: 0,
-            height: '40vh',
-            transform: 'translateZ(-0.5px) scale(1.5)',
+            height: PARALLAX_IMAGE_HEIGHT,
+            transform: `translateZ(${PARALLAX_TRANSFORM_Z}) scale(${PARALLAX_SCALE})`,
             transformOrigin: 'center top',
             zIndex: 1,
-            webkitMask:
-              'linear-gradient(to top, transparent 0%, rgba(0,0,0,0.3) 3%, rgba(0,0,0,0.6) 6%, black 12%)',
-            mask: 'linear-gradient(to top, transparent 0%, rgba(0,0,0,0.3) 3%, rgba(0,0,0,0.6) 6%, black 12%)'
+            webkitMask: `linear-gradient(to top, transparent 0%, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_30)} ${IMAGE_MASK_STOP_1}, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_60)} ${IMAGE_MASK_STOP_2}, ${baseBackgroundColor} ${IMAGE_MASK_STOP_3})`,
+            mask: `linear-gradient(to top, transparent 0%, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_30)} ${IMAGE_MASK_STOP_1}, ${addAlphaToHex(baseBackgroundColor, IMAGE_MASK_ALPHA_60)} ${IMAGE_MASK_STOP_2}, ${baseBackgroundColor} ${IMAGE_MASK_STOP_3})`
           }}
         >
           {imageBlock != null && backgroundBlur != null && (
@@ -132,8 +155,8 @@ export function ParallaxCover({
           data-testid="parallax-cover-content"
           sx={{
             position: 'relative',
-            minHeight: '100vh',
-            paddingTop: '30vh',
+            minHeight: VIEWPORT_HEIGHT,
+            paddingTop: CONTENT_PADDING_TOP,
             transform: 'translateZ(0)',
             zIndex: 2
           }}
@@ -141,16 +164,15 @@ export function ParallaxCover({
           <Box
             sx={{
               position: 'absolute',
-              top: '30vh',
+              top: CONTENT_PADDING_TOP,
               left: 0,
               right: 0,
               bottom: 0,
               zIndex: -1,
               pointerEvents: 'none',
-              backgroundColor: `${baseBackgroundColor}CC`,
-              WebkitMask:
-                'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 5%, black 15%)',
-              mask: 'linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.5) 5%, black 15%)'
+              backgroundColor: `${baseBackgroundColor}${CONTENT_OVERLAY_OPACITY}`,
+              WebkitMask: `linear-gradient(to bottom, transparent 0%, ${addAlphaToHex(baseBackgroundColor, CONTENT_MASK_ALPHA_50)} ${CONTENT_MASK_STOP_1}, ${baseBackgroundColor} ${CONTENT_MASK_STOP_2})`,
+              mask: `linear-gradient(to bottom, transparent 0%, ${addAlphaToHex(baseBackgroundColor, CONTENT_MASK_ALPHA_50)} ${CONTENT_MASK_STOP_1}, ${baseBackgroundColor} ${CONTENT_MASK_STOP_2})`
             }}
           />
           <OverlayContent hasFullscreenVideo={hasFullscreenVideo} sx={{}}>
