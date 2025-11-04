@@ -11,7 +11,6 @@ export const GoogleSheetsSync = builder.prismaObject('GoogleSheetsSync', {
     spreadsheetId: t.exposeString('spreadsheetId'),
     sheetName: t.exposeString('sheetName'),
     folderId: t.exposeString('folderId', { nullable: true }),
-    appendMode: t.exposeBoolean('appendMode'),
     email: t.exposeString('email', { nullable: true }),
     deletedAt: t.expose('deletedAt', { type: 'DateTime', nullable: true }),
     createdAt: t.expose('createdAt', { type: 'DateTime', nullable: false }),

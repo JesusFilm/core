@@ -287,7 +287,6 @@ model GoogleSheetsSync {
   spreadsheetId String
   sheetName     String
   folderId      String?
-  appendMode    Boolean   @default(true)
   email         String?
   deletedAt     DateTime?
   createdAt     DateTime  @default(now())

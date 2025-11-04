@@ -2432,7 +2432,6 @@ type GoogleSheetsSync @join__type(graph: API_JOURNEYS_MODERN)  {
   spreadsheetId: String
   sheetName: String
   folderId: String
-  appendMode: Boolean
   email: String
   deletedAt: DateTime
   createdAt: DateTime!
@@ -4652,7 +4651,6 @@ input CreateGoogleSheetsSyncInput @join__type(graph: API_JOURNEYS_MODERN)  {
   spreadsheetId: String!
   sheetName: String!
   folderId: String
-  appendMode: Boolean
 }
 
 input EmailActionInput @join__type(graph: API_JOURNEYS_MODERN)  {

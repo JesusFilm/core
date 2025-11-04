@@ -8,8 +8,7 @@ export const CreateGoogleSheetsSyncInput = builder.inputType(
       integrationId: t.string({ required: true }),
       spreadsheetId: t.string({ required: true }),
       sheetName: t.string({ required: true }),
-      folderId: t.string(),
-      appendMode: t.boolean()
+      folderId: t.string()
     })
   }
 )

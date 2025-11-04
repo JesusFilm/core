@@ -330,7 +330,6 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
             destination.mode === 'create'
               ? (destination.folderId ?? null)
               : null,
-          appendMode: true,
           email: integrationEmail,
           deletedAt: null
         }

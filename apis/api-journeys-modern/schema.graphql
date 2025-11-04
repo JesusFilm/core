@@ -310,7 +310,6 @@ input CreateGoogleSheetsSyncInput {
   spreadsheetId: String!
   sheetName: String!
   folderId: String
-  appendMode: Boolean
 }
 
 type CustomDomain
@@ -428,7 +427,6 @@ type GoogleSheetsSync {
   spreadsheetId: String
   sheetName: String
   folderId: String
-  appendMode: Boolean
   email: String
   deletedAt: DateTime
   createdAt: DateTime!
