@@ -67,18 +67,22 @@ export function MuxSubtitleEnablementToggle({
   const [toggleChecked, setToggleChecked] = useState(false)
 
   // Query subtitle track status
-  const { data: subtitleTrackData, error: subtitleTrackError } =
-    useQuery<GetMyGeneratedMuxSubtitleTrack>(
-      GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
-      {
-        variables: {
-          muxVideoId: muxVideoId ?? '',
-          bcp47: journeyLanguageCode ?? ''
-        },
-        skip:
-          !isValidLanguage || muxVideoId == null || journeyLanguageCode == null
-      }
-    )
+  const {
+    data: subtitleTrackData,
+    error: subtitleTrackError,
+    startPolling,
+    stopPolling
+  } = useQuery<GetMyGeneratedMuxSubtitleTrack>(
+    GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
+    {
+      variables: {
+        muxVideoId: muxVideoId ?? '',
+        bcp47: journeyLanguageCode ?? ''
+      },
+      skip:
+        !isValidLanguage || muxVideoId == null || journeyLanguageCode == null
+    }
+  )
 
   // Extract subtitle track from union result
   const subtitleTrack =
@@ -86,6 +90,19 @@ export function MuxSubtitleEnablementToggle({
     'QueryGetMyGeneratedMuxSubtitleTrackSuccess'
       ? subtitleTrackData.getMyGeneratedMuxSubtitleTrack.data
       : null
+
+  // Poll for subtitle track status changes when processing
+  useEffect(() => {
+    if (subtitleTrack?.status === 'processing') {
+      startPolling(3000)
+    } else {
+      stopPolling()
+    }
+
+    return () => {
+      stopPolling()
+    }
+  }, [subtitleTrack?.status, startPolling, stopPolling])
 
   // Query MuxVideo for current subtitle setting
   const { data: muxVideoData } = useQuery<GetMyMuxVideo>(GET_MY_MUX_VIDEO, {
