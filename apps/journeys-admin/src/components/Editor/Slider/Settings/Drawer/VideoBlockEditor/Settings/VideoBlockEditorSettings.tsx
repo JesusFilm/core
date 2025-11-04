@@ -37,6 +37,7 @@ import {
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
 
+import { MuxSubtitleEnablementToggle } from './MuxSubtitles'
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 import { YouTubeSubtitleSelector } from './SubtitleSelector'
 
@@ -141,8 +142,8 @@ export function VideoBlockEditorSettings({
     >
       <Stack direction="column" spacing={6}>
         {/* Subtitles */}
-        {/* Only show subtitles for YouTube source, MUX and Internal not yet supported*/}
-        {selectedBlock?.source === VideoBlockSource.youTube && (
+        {(selectedBlock?.source === VideoBlockSource.youTube ||
+          selectedBlock?.source === VideoBlockSource.mux) && (
           <Stack direction="column" spacing={4}>
             <Typography
               variant="subtitle2"
@@ -152,14 +153,19 @@ export function VideoBlockEditorSettings({
             >
               {t('Subtitles')}
             </Typography>
-            <YouTubeSubtitleSelector
-              selectedSubtitleId={values.subtitleLanguageId}
-              availableLanguages={availableSubtitles}
-              onChange={async (subtitleLanguageId) => {
-                await setFieldValue('subtitleLanguageId', subtitleLanguageId)
-              }}
-              disabled={selectedBlock == null}
-            />
+            {selectedBlock?.source === VideoBlockSource.youTube && (
+              <YouTubeSubtitleSelector
+                selectedSubtitleId={values.subtitleLanguageId}
+                availableLanguages={availableSubtitles}
+                onChange={async (subtitleLanguageId) => {
+                  await setFieldValue('subtitleLanguageId', subtitleLanguageId)
+                }}
+                disabled={selectedBlock == null}
+              />
+            )}
+            {selectedBlock?.source === VideoBlockSource.mux && (
+              <MuxSubtitleEnablementToggle disabled={selectedBlock == null} />
+            )}
             <Divider />
           </Stack>
         )}

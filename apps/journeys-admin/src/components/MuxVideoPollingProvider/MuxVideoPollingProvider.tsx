@@ -14,6 +14,7 @@ import {
 } from 'react'
 
 import { GetMyMuxVideoQuery } from '../../../__generated__/GetMyMuxVideoQuery'
+import { useTranslation } from 'react-i18next'
 
 export const GET_MY_MUX_VIDEO_QUERY = gql`
   query GetMyMuxVideoQuery($id: ID!) {
@@ -47,6 +48,7 @@ const MuxVideoPollingContext = createContext<
 const STORAGE_KEY = 'mux-video-polls'
 const POLL_INTERVAL = 3000 // 3 seconds
 const MAX_POLL_TIME = 60000 // 60 seconds
+const TASK_CLEANUP_DELAY = 1000 // Delay before removing completed/errored tasks from pollingTasks
 
 interface StoredPoll {
   videoId: string
@@ -106,6 +108,7 @@ export function MuxVideoPollingProvider({
   const [pollingTasks, setPollingTasks] = useState<Map<string, PollingTask>>(
     new Map()
   )
+  const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
   const apolloClient = useApolloClient()
   const hasShownStartNotification = useRef<Set<string>>(new Set())
@@ -173,7 +176,7 @@ export function MuxVideoPollingProvider({
   }, [])
 
   const handlePollingComplete = useCallback(
-    (videoId: string, languageCode?: string) => {
+    (videoId: string) => {
       setPollingTasks((prev) => {
         const task = prev.get(videoId)
         if (task == null) return prev
@@ -184,12 +187,7 @@ export function MuxVideoPollingProvider({
         return next
       })
 
-      const message =
-        languageCode != null
-          ? 'Video upload and subtitle generation completed'
-          : 'Video upload completed'
-
-      showSnackbar(message, 'success', true)
+      showSnackbar(t('Video upload completed'), 'success', true)
 
       // Refetch queries to update UI
       void apolloClient.refetchQueries({
@@ -206,13 +204,13 @@ export function MuxVideoPollingProvider({
           }
           return next
         })
-      }, 1000)
+      }, TASK_CLEANUP_DELAY)
     },
     [showSnackbar, apolloClient]
   )
 
   const handlePollingError = useCallback(
-    (videoId: string, error?: string) => {
+    (videoId: string, error: string) => {
       setPollingTasks((prev) => {
         const task = prev.get(videoId)
         if (task == null) return prev
@@ -223,7 +221,7 @@ export function MuxVideoPollingProvider({
         return next
       })
 
-      showSnackbar(error ?? 'Video upload interrupted', 'error', true)
+      showSnackbar(error, 'error', true)
 
       // Remove from state after notification
       setTimeout(() => {
@@ -235,7 +233,7 @@ export function MuxVideoPollingProvider({
           }
           return next
         })
-      }, 1000)
+      }, TASK_CLEANUP_DELAY)
     },
     [showSnackbar]
   )
@@ -244,12 +242,7 @@ export function MuxVideoPollingProvider({
     (videoId: string, languageCode?: string) => {
       // Show start notification only once per video
       if (!hasShownStartNotification.current.has(videoId)) {
-        const message =
-          languageCode != null
-            ? 'Video upload and subtitle generation in progress'
-            : 'Video upload in progress'
-
-        showSnackbar(message, 'success')
+        showSnackbar(t('Video upload in progress'), 'success')
         hasShownStartNotification.current.add(videoId)
       }
 
@@ -322,20 +315,18 @@ export function MuxVideoPollingProvider({
             video?.assetId != null &&
             video?.playbackId != null
           ) {
-            handlePollingComplete(videoId, task.languageCode)
+            handlePollingComplete(videoId)
           }
 
           // Check timeout
           if (Date.now() - task.startTime > MAX_POLL_TIME) {
-            console.warn(
-              `Mux video poll for video ${videoId} gave up after 60s`
-            )
             stopQuery()
-            handlePollingError(videoId, 'Video processing timed out')
+            handlePollingError(videoId, t('Video processing timed out'))
           }
         },
         onError: (error) => {
-          handlePollingError(videoId, error.message)
+          // Log securely (error)
+          handlePollingError(videoId, t('Something went wrong, try again'))
         }
       })
 

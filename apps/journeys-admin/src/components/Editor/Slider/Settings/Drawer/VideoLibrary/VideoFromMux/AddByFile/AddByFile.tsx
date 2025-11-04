@@ -82,7 +82,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
         onChange(currentVideoIdRef.current ?? '')
         resetUploadStatus()
       } else if (status?.status === 'error') {
-        setError(new Error('Video processing failed'))
+        setError(new Error(t('Video processing failed')))
         resetUploadStatus()
       }
     }, 500) // Check every 500ms
