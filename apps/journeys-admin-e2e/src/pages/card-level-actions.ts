@@ -34,7 +34,10 @@ export class CardLevelActionPage {
    */
   async getFirstJourneyCardFrame() {
     const iframeElement = this.page.locator(this.journeyCardFrame).first()
-    await iframeElement.waitFor({ state: 'attached', timeout: sixtySecondsTimeout })
+    await iframeElement.waitFor({
+      state: 'attached',
+      timeout: sixtySecondsTimeout
+    })
     const frame = await iframeElement.contentFrame()
     if (!frame) {
       throw new Error('Frame not found')
@@ -140,7 +143,10 @@ export class CardLevelActionPage {
       'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]',
       { hasText: text }
     )
-    await textElement.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+    await textElement.waitFor({
+      state: 'visible',
+      timeout: sixtySecondsTimeout
+    })
     await textElement.scrollIntoViewIfNeeded()
     await this.page.waitForTimeout(500) // Wait for element to stabilize
     // Use two clicks instead of dblclick for better reliability
@@ -193,9 +199,13 @@ export class CardLevelActionPage {
 
   async clickDeleteBtnInToolTipBar() {
     const frame = await this.getFirstJourneyCardFrame()
-    const deleteButton = frame.locator('div[role="tooltip"] button[id="delete-block-actions"]')
+    const deleteButton = frame.locator(
+      'div[role="tooltip"] button[id="delete-block-actions"]'
+    )
     await expect(deleteButton).toHaveCount(1, { timeout: 10000 })
-    await deleteButton.first().click({ timeout: sixtySecondsTimeout, delay: 3000 })
+    await deleteButton
+      .first()
+      .click({ timeout: sixtySecondsTimeout, delay: 3000 })
   }
 
   async verifyAddedTextDeletedFromJourneyCard() {
@@ -694,7 +704,7 @@ export class CardLevelActionPage {
     await expect(
       frame.locator(
         'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestionList"]'
-        )
+      )
     ).toBeHidden()
   }
 
@@ -1598,7 +1608,10 @@ export class CardLevelActionPage {
       throw new Error('No images found in gallery')
     }
     const imageLocator = imageListItems.first().locator('img')
-    await imageLocator.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+    await imageLocator.waitFor({
+      state: 'visible',
+      timeout: sixtySecondsTimeout
+    })
     await imageLocator.scrollIntoViewIfNeeded()
     await imageLocator.click({ timeout: sixtySecondsTimeout })
   }

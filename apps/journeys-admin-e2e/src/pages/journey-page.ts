@@ -1275,7 +1275,8 @@ export class JourneyPage {
   }
   async clickCloseIconForQrCodeDialog() {
     await this.page
-      .getByRole('heading', { name: 'QR Code' }).getByTestId('dialog-close-button')
+      .getByRole('heading', { name: 'QR Code' })
+      .getByTestId('dialog-close-button')
       .click()
   }
   async validateUrlFieldInShareDialog(expectedValue: string) {
