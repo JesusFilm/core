@@ -1,12 +1,5 @@
 import Box from '@mui/material/Box'
-import {
-  ReactElement,
-  ReactNode,
-  RefObject,
-  useEffect,
-  useRef,
-  useState
-} from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 import { NextImage } from '@core/shared/ui/NextImage'
 
@@ -17,7 +10,6 @@ import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 import { OverlayContent } from '../OverlayContent'
 import { addAlphaToHex, stripAlphaFromHex } from '../utils/colorOpacityUtils'
-import { getFooterMobileSpacing } from '../utils/getFooterElements'
 
 interface ParallaxCoverProps {
   children: ReactNode
