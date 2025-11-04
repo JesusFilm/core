@@ -28,14 +28,27 @@ export class CardLevelActionPage {
     this.journeyName = testData.journey.firstJourneyName + this.randomNumber
   }
 
+  /**
+   * Gets the first frame from the journey card iframe
+   * This is needed because there can be multiple iframes and frameLocator throws strict mode violations
+   */
+  async getFirstJourneyCardFrame() {
+    const iframeElement = this.page.locator(this.journeyCardFrame).first()
+    await iframeElement.waitFor({ state: 'attached', timeout: sixtySecondsTimeout })
+    const frame = await iframeElement.contentFrame()
+    if (!frame) {
+      throw new Error('Frame not found')
+    }
+    return frame
+  }
+
   async clickOnJourneyCard() {
-    await this.page
-      .frameLocator(this.journeyCardFrame)
+    const frame = await this.getFirstJourneyCardFrame()
+    await frame
       .locator('div[data-testid="CardOverlayImageContainer"]')
       .first()
       .waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
-    await this.page
-      .frameLocator(this.journeyCardFrame)
+    await frame
       .locator('div[data-testid="CardOverlayImageContainer"]')
       .first()
       .click({ delay: 1000 })
@@ -122,13 +135,18 @@ export class CardLevelActionPage {
   async clickOnCreatedOrRenamedTextInJourneyCard(createdOrRenamed: string) {
     const text =
       createdOrRenamed === 'created' ? this.journeyName : this.renameJourmeyName
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator(
-        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]',
-        { hasText: text }
-      )
-      .dblclick({ delay: 3000 })
+    const frame = await this.getFirstJourneyCardFrame()
+    const textElement = frame.locator(
+      'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]',
+      { hasText: text }
+    )
+    await textElement.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+    await textElement.scrollIntoViewIfNeeded()
+    await this.page.waitForTimeout(500) // Wait for element to stabilize
+    // Use two clicks instead of dblclick for better reliability
+    await textElement.click({ timeout: sixtySecondsTimeout })
+    await this.page.waitForTimeout(300)
+    await textElement.click({ timeout: sixtySecondsTimeout })
   }
 
   async editTextInJourneyCard() {
@@ -174,15 +192,10 @@ export class CardLevelActionPage {
   }
 
   async clickDeleteBtnInToolTipBar() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator('div[role="tooltip"] button[id="delete-block-actions"]')
-    ).toHaveCount(1, { timeout: 10000 })
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator('div[role="tooltip"] button[id="delete-block-actions"]')
-      .click({ timeout: sixtySecondsTimeout, delay: 3000 })
+    const frame = await this.getFirstJourneyCardFrame()
+    const deleteButton = frame.locator('div[role="tooltip"] button[id="delete-block-actions"]')
+    await expect(deleteButton).toHaveCount(1, { timeout: 10000 })
+    await deleteButton.first().click({ timeout: sixtySecondsTimeout, delay: 3000 })
   }
 
   async verifyAddedTextDeletedFromJourneyCard() {
@@ -211,7 +224,13 @@ export class CardLevelActionPage {
         'div[data-testid="ImageSource"] button[data-testid="card click area"]',
         { hasText: 'Select Image' }
       )
-      .click()
+      .waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+    await this.page
+      .locator(
+        'div[data-testid="ImageSource"] button[data-testid="card click area"]',
+        { hasText: 'Select Image' }
+      )
+      .click({ timeout: sixtySecondsTimeout, force: true })
   }
   async clickSelectedImageBtn() {
     await this.page
@@ -671,11 +690,10 @@ export class CardLevelActionPage {
   }
 
   async verifyPollOptionsDeletedFromCard() {
+    const frame = await this.getFirstJourneyCardFrame()
     await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestionList"]'
+      frame.locator(
+        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestionList"]'
         )
     ).toBeHidden()
   }
@@ -718,14 +736,15 @@ export class CardLevelActionPage {
   }
 
   async enterLabelBelowFeedBcakProperty() {
-    await this.page.locator('input#label').click({ delay: 1000 })
-    await this.page.locator('input#label').clear()
-    await this.page
-      .locator('input#label')
-      .pressSequentially(testData.cardLevelAction.feedBackLabel, {
-        timeout: 240000,
-        delay: 300
-      })
+    const labelInput = this.page.locator('input#label')
+    await labelInput.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+    await labelInput.click({ delay: 1000 })
+    await labelInput.clear()
+    await labelInput.fill('')
+    await labelInput.pressSequentially(testData.cardLevelAction.feedBackLabel, {
+      timeout: sixtySecondsTimeout,
+      delay: 100
+    })
     // Added 2 sec timeout as a workaround to slow down the action
     await this.page.waitForTimeout(2000)
   }
@@ -904,11 +923,13 @@ export class CardLevelActionPage {
   }
 
   async clicSelectHostBtn() {
-    await this.page
-      .locator(
-        'div[data-testid="HostSelection"] div[data-testid="JourneysAdminContainedIconButton"] button'
-      )
-      .click()
+    const hostButton = this.page.locator(
+      'div[data-testid="HostSelection"] div[data-testid="JourneysAdminContainedIconButton"] button'
+    )
+    await hostButton.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+    await hostButton.scrollIntoViewIfNeeded()
+    await this.page.waitForTimeout(500) // Wait for element to stabilize
+    await hostButton.click({ timeout: sixtySecondsTimeout, force: true })
   }
 
   async clickCreateNewBtn() {
@@ -1114,27 +1135,21 @@ export class CardLevelActionPage {
   }
 
   async deleteAllThePollOptions() {
-    const pollOptionCount = await this.page
-      .frameLocator(this.journeyCardFrame)
+    const frame = await this.getFirstJourneyCardFrame()
+    const pollOptionCount = await frame
       .locator(
         'div[data-testid*="JourneysRadioQuestionList"] div[role="group"] [data-testid*="SelectableWrapper"]'
       )
       .count()
     for (let poll = 0; poll < pollOptionCount; poll++) {
-      await this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid*="JourneysRadioQuestionList"] div[role="group"] [data-testid*="SelectableWrapper"]'
-        )
-        .last()
-        .click()
-      await this.page
-        .frameLocator(this.journeyCardFrame)
+      await frame
         .locator(
           'div[data-testid*="JourneysRadioQuestionList"] div[role="group"] [data-testid*="SelectableWrapper"]'
         )
         .last()
         .click({ delay: 2000 })
+      // Wait a bit before clicking delete
+      await this.page.waitForTimeout(500)
       await this.clickDeleteBtnInToolTipBar()
       await this.verifyToastMessage()
     }
@@ -1575,7 +1590,17 @@ export class CardLevelActionPage {
       .click()
   }
   async selectFirstImageFromGalleryForFooter() {
-    await this.page.locator('li[data-testid *="image"] img').first().click()
+    // Wait for gallery to load images - check if any images exist
+    await this.page.waitForTimeout(2000) // Give time for images to load
+    const imageListItems = this.page.locator('li[data-testid *="image"]')
+    const count = await imageListItems.count()
+    if (count === 0) {
+      throw new Error('No images found in gallery')
+    }
+    const imageLocator = imageListItems.first().locator('img')
+    await imageLocator.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+    await imageLocator.scrollIntoViewIfNeeded()
+    await imageLocator.click({ timeout: sixtySecondsTimeout })
   }
   async valdiateSelectedImageWithDeleteIcon() {
     await expect(

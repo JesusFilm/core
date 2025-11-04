@@ -1238,15 +1238,18 @@ export class JourneyPage {
     ).toBeVisible()
   }
   async clickDownloadDropDownAndSelectCopyShortLink() {
-    await this.page
-      .locator(
-        'div.MuiDialogContent-root button[data-testid="DownloadDropdown"]'
-      )
-      .click()
-    await this.page
+    const dropdownButton = this.page.locator(
+      'div.MuiDialogContent-root button[data-testid="DownloadDropdown"]'
+    )
+    await dropdownButton.waitFor({ state: 'visible', timeout: 60000 })
+    await dropdownButton.click()
+    const menuItem = this.page
       .locator('div.MuiDialogContent-root div[role="tooltip"]')
       .getByRole('menuitem', { name: 'Copy Short Link' })
-      .click()
+    await menuItem.waitFor({ state: 'visible', timeout: 60000 })
+    await menuItem.click()
+    // Wait a bit for the copy action to complete
+    await this.page.waitForTimeout(1000)
   }
   async downloadQRCodeAsPng() {
     const qrDownload = this.page.waitForEvent('download', { timeout: 60000 })
@@ -1272,7 +1275,7 @@ export class JourneyPage {
   }
   async clickCloseIconForQrCodeDialog() {
     await this.page
-      .locator('div.MuiDialog-paper button[data-testid="dialog-close-button"]')
+      .getByRole('heading', { name: 'QR Code' }).getByTestId('dialog-close-button')
       .click()
   }
   async validateUrlFieldInShareDialog(expectedValue: string) {
