@@ -18,8 +18,8 @@ COPY ./libs/prisma/analytics/db ./prisma
 
 RUN corepack enable && corepack prepare pnpm --activate
 RUN pnpm install --prod --silent
-RUN pnpm add @prisma/client@6.5.0
-RUN pnpm add -D prisma@6.5.0
+RUN pnpm add @prisma/client@6.18.0
+RUN pnpm add -D prisma@6.18.0
 RUN pnpm exec prisma generate --generator client --schema ./prisma/schema.prisma
 
 CMD node ./main.js
