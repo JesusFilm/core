@@ -100,10 +100,10 @@ importers:
         version: 3.17.1(graphql-yoga@5.15.1(graphql@16.10.0))(graphql@16.10.0)
       '@hono/swagger-ui':
         specifier: ^0.5.0
-        version: 0.5.2(hono@4.9.10)
+        version: 0.5.2(hono@4.10.3)
       '@hono/zod-openapi':
         specifier: ^1.1.4
-        version: 1.1.4(hono@4.9.10)(zod@4.1.12)
+        version: 1.1.4(hono@4.10.3)(zod@4.1.12)
       '@launchdarkly/node-server-sdk':
         specifier: ^9.10.2
         version: 9.10.2
@@ -385,7 +385,7 @@ importers:
         version: 5.15.1(graphql@16.10.0)
       hono:
         specifier: ^4.7.1
-        version: 4.9.10
+        version: 4.10.3
       i18next:
         specifier: ^23.16.8
         version: 23.16.8
@@ -2963,6 +2963,7 @@ packages:
   '@datadog/native-iast-rewriter@2.8.0':
     resolution: {integrity: sha512-DKmtvlmCld9RIJwDcPKWNkKYWYQyiuOrOtynmBppJiUv/yfCOuZtsQV4Zepj40H33sLiQyi5ct6dbWl53vxqkA==}
     engines: {node: '>= 10'}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   '@datadog/native-iast-taint-tracking@3.2.0':
     resolution: {integrity: sha512-Mc6FzCoyvU5yXLMsMS9yKnEqJMWoImAukJXolNWCTm+JQYCMf2yMsJ8pBAm7KyZKliamM9rCn7h7Tr2H3lXwjA==}
@@ -14439,8 +14440,8 @@ packages:
     resolution: {integrity: sha512-eSmmWE5bZTK2Nou4g0AI3zZ9rswp7GRKoKXS1BLUkvPviOqs4YTN1djQIqrXy9k5gEtdLPy86JjRwsNM9tnDcA==}
     engines: {node: '>=0.10.0'}
 
-  hono@4.9.10:
-    resolution: {integrity: sha512-AlI15ijFyKTXR7eHo7QK7OR4RoKIedZvBuRjO8iy4zrxvlY5oFCdiRG/V/lFJHCNXJ0k72ATgnyzx8Yqa5arug==}
+  hono@4.10.3:
+    resolution: {integrity: sha512-2LOYWUbnhdxdL8MNbNg9XZig6k+cZXm5IjHn2Aviv7honhBMOHb+jxrKIeJRZJRmn+htUCKhaicxwXuUDlchRA==}
     engines: {node: '>=16.9.0'}
 
   hosted-git-info@2.8.9:
@@ -15649,6 +15650,7 @@ packages:
   keygrip@1.1.0:
     resolution: {integrity: sha512-iYSchDJ+liQ8iwbSI2QqsQOvqv58eJCEanyJPJi+Khyu8smkcKSFUCbPwzFcL7YVtZ6eONjqRX/38caJ7QjRAQ==}
     engines: {node: '>= 0.6'}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
@@ -18707,7 +18709,7 @@ packages:
   puppeteer@23.7.0:
     resolution: {integrity: sha512-YTgo0KFe8NtBcI9hCu/xsjPFumEhu8kA7QqLr6Uh79JcEsUcUt+go966NgKYXJ+P3Fuefrzn2SXwV3cyOe/UcQ==}
     engines: {node: '>=18'}
-    deprecated: < 24.10.2 is no longer supported
+    deprecated: < 24.15.0 is no longer supported
     hasBin: true
 
   pure-rand@6.1.0:
@@ -18721,6 +18723,7 @@ packages:
     engines: {node: '>=0.6.0', teleport: '>=0.2.0'}
     deprecated: |-
       You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript developers strong feelings about promises. They can almost certainly migrate to the native JavaScript promise now. Thank you literally everyone for joining me in this bet against the odds. Be excellent to each other.
+
       (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
 
   qrcode.react@4.2.0:
@@ -28188,21 +28191,21 @@ snapshots:
       '@tanstack/vue-virtual': 3.10.9(vue@3.5.13(typescript@5.9.3))
       vue: 3.5.13(typescript@5.9.3)
 
-  '@hono/swagger-ui@0.5.2(hono@4.9.10)':
+  '@hono/swagger-ui@0.5.2(hono@4.10.3)':
     dependencies:
-      hono: 4.9.10
+      hono: 4.10.3
 
-  '@hono/zod-openapi@1.1.4(hono@4.9.10)(zod@4.1.12)':
+  '@hono/zod-openapi@1.1.4(hono@4.10.3)(zod@4.1.12)':
     dependencies:
       '@asteasolutions/zod-to-openapi': 8.1.0(zod@4.1.12)
-      '@hono/zod-validator': 0.7.4(hono@4.9.10)(zod@4.1.12)
-      hono: 4.9.10
+      '@hono/zod-validator': 0.7.4(hono@4.10.3)(zod@4.1.12)
+      hono: 4.10.3
       openapi3-ts: 4.5.0
       zod: 4.1.12
 
-  '@hono/zod-validator@0.7.4(hono@4.9.10)(zod@4.1.12)':
+  '@hono/zod-validator@0.7.4(hono@4.10.3)(zod@4.1.12)':
     dependencies:
-      hono: 4.9.10
+      hono: 4.10.3
       zod: 4.1.12
 
   '@humanfs/core@0.19.1': {}
@@ -39749,7 +39752,7 @@ snapshots:
     dependencies:
       parse-passwd: 1.0.0
 
-  hono@4.9.10: {}
+  hono@4.10.3: {}
 
   hosted-git-info@2.8.9: {}
 
