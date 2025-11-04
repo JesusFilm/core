@@ -1901,6 +1901,48 @@ describe('JourneyResolver', () => {
       })
     })
 
+    it('should duplicate journey theme when present', async () => {
+      const journeyTheme = {
+        id: 'themeId',
+        journeyId: 'journeyId',
+        userId: 'userId',
+        headerFont: 'Montserrat',
+        bodyFont: 'Open Sans',
+        labelFont: 'Roboto',
+        createdAt: new Date('2021-11-19T12:34:56.647Z'),
+        updatedAt: new Date('2021-11-19T12:34:56.647Z')
+      }
+
+      const journeyWithTheme = {
+        ...journeyWithUserTeamAndCustomizationFields,
+        journeyTheme
+      } as typeof journeyWithUserTeamAndCustomizationFields & {
+        journeyTheme: typeof journeyTheme
+      }
+
+      mockUuidv4.mockReturnValueOnce('duplicateJourneyId')
+      mockUuidv4.mockReturnValueOnce(duplicatedStep.id)
+      mockUuidv4.mockReturnValueOnce('duplicateFieldId')
+      prismaService.journey.findUnique
+        .mockReset()
+        // lookup existing journey to duplicate and authorize
+        .mockResolvedValueOnce(journeyWithTheme)
+        // lookup duplicate journey once created and authorize
+        .mockResolvedValueOnce(journeyWithUserTeam)
+
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+
+      expect(prismaService.journeyTheme.create).toHaveBeenCalledWith({
+        data: {
+          journeyId: 'duplicateJourneyId',
+          userId: 'userId',
+          headerFont: 'Montserrat',
+          bodyFont: 'Open Sans',
+          labelFont: 'Roboto'
+        }
+      })
+    })
+
     it('throws error and does not get stuck in retry loop', async () => {
       prismaService.journey.create.mockRejectedValueOnce(
         new Error('database error')

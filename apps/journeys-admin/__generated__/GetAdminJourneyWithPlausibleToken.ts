@@ -377,6 +377,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBloc
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_mediaVideo_Video_title {
