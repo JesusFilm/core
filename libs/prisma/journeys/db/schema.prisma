@@ -280,18 +280,18 @@ model Integration {
 }
 
 model GoogleSheetsSync {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   teamId        String
   journeyId     String
   integrationId String?
   spreadsheetId String
   sheetName     String
   folderId      String?
-  appendMode    Boolean  @default(true)
+  appendMode    Boolean   @default(true)
   email         String?
   deletedAt     DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   integration Integration? @relation(fields: [integrationId], references: [id], onDelete: SetNull)
   journey     Journey      @relation(fields: [journeyId], references: [id], onDelete: Cascade)
