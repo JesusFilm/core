@@ -82,10 +82,10 @@ builder.queryFields((t) => ({
               source: 'generated',
               status:
                 muxTrack.status === 'ready'
-                  ? 'ready'
+                  ? MuxSubtitleTrackStatus.ready
                   : muxTrack.status === 'preparing'
-                    ? 'processing'
-                    : 'errored'
+                    ? MuxSubtitleTrackStatus.processing
+                    : MuxSubtitleTrackStatus.errored
             }
           })
         }
@@ -112,10 +112,10 @@ builder.queryFields((t) => ({
             data: {
               status:
                 muxTrack.status === 'ready'
-                  ? 'ready'
+                  ? MuxSubtitleTrackStatus.ready
                   : muxTrack.status === 'preparing'
-                    ? 'processing'
-                    : 'errored'
+                    ? MuxSubtitleTrackStatus.processing
+                    : MuxSubtitleTrackStatus.errored
             }
           })
         }
