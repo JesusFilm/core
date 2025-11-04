@@ -3,7 +3,8 @@ import { GraphQLError } from 'graphql'
 import { MuxSubtitleTrackStatus, prisma } from '@core/prisma/media/client'
 
 import { builder } from '../../builder'
-import { getVideo } from '../video/service'
+
+import { getMuxTrackByBcp47 } from './service'
 
 builder.prismaObject('MuxSubtitleTrack', {
   fields: (t) => ({
@@ -61,13 +62,10 @@ builder.queryFields((t) => ({
             throw new Error('Mux asset ID is null')
           }
 
-          const muxAsset = await getVideo(muxVideo.assetId, isUserGenerated)
-
-          const muxTrack = muxAsset.tracks?.find(
-            (track) =>
-              track.type === 'text' &&
-              track.language_code === bcp47 &&
-              track.text_source === 'generated_vod'
+          const muxTrack = await getMuxTrackByBcp47(
+            muxVideo.assetId,
+            bcp47,
+            isUserGenerated
           )
 
           if (muxTrack == null || muxTrack.id == null) {
@@ -97,10 +95,10 @@ builder.queryFields((t) => ({
             throw new Error('Mux asset ID is null')
           }
 
-          const muxAsset = await getVideo(muxVideo.assetId, isUserGenerated)
-
-          const muxTrack = muxAsset.tracks?.find(
-            (track) => track.id === subtitleTrack.trackId
+          const muxTrack = await getMuxTrackByBcp47(
+            muxVideo.assetId,
+            bcp47,
+            isUserGenerated
           )
 
           if (muxTrack == null || muxTrack.id == null) {
