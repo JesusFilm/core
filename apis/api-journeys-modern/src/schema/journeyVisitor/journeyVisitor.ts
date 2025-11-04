@@ -233,7 +233,10 @@ builder.queryField('journeyVisitorExport', (t) => {
                 parentOrder: true,
                 nextBlockId: true,
                 action: true,
-                content: true
+                content: true,
+                x: true,
+                y: true,
+                deletedAt: true
               }
             }
           }
@@ -250,11 +253,161 @@ builder.queryField('journeyVisitorExport', (t) => {
             extensions: { code: 'FORBIDDEN' }
           })
         }
+        // Build a map of blocks and connectivity info for filtering
+        // Consider only non-deleted blocks for connectivity and headers
+        const journeyBlocks = journey.blocks.filter(
+          (b: any) => b.deletedAt == null
+        )
+        const idToBlock = new Map(journeyBlocks.map((b) => [b.id, b]))
+
+        // Determine connected steps by following nextBlockId chains from start steps
+        interface StepBlockConn {
+          id: string
+          nextBlockId: string | null
+        }
+        const stepsForConnectivity: StepBlockConn[] = journeyBlocks
+          .filter((b) => b.typename === 'StepBlock')
+          .map((b: any) => ({ id: b.id, nextBlockId: b.nextBlockId }))
+
+        // Build incoming edges considering both nextBlockId and button navigate actions
+        const hasIncomingLinkConn = new Set<string>()
+        const outgoingByStep = new Map<string, Set<string>>()
+
+        // nextBlockId edges
+        stepsForConnectivity.forEach((s) => {
+          if (s.nextBlockId != null) {
+            hasIncomingLinkConn.add(s.nextBlockId)
+            const from = s.id
+            const to = s.nextBlockId
+            const set = outgoingByStep.get(from) ?? new Set<string>()
+            set.add(to)
+            outgoingByStep.set(from, set)
+          }
+        })
+
+        // Button edges will be added later, constrained to primary card descendants
+
+        // Choose a single entry step like the frontend: first top-level StepBlock by parentOrder
+        function chooseEntryStepId(): string | null {
+          const topLevelSteps = journeyBlocks
+            .filter(
+              (b: any) => b.typename === 'StepBlock' && b.parentBlockId == null
+            )
+            .sort(
+              (a: any, b: any) =>
+                (a.parentOrder ?? 9999) - (b.parentOrder ?? 9999)
+            )
+          return topLevelSteps[0]?.id ?? null
+        }
+
+        // getStepAncestorId removed (no longer needed)
+
+        // Build children map for DFS traversal
+        const childrenByParent = new Map<string, any[]>()
+        journeyBlocks.forEach((b: any) => {
+          if (b.parentBlockId != null) {
+            const arr = childrenByParent.get(b.parentBlockId) ?? []
+            arr.push(b)
+            childrenByParent.set(b.parentBlockId, arr)
+          }
+        })
+
+        // Determine the primary CardBlock for each step (first by parentOrder)
+        function getPrimaryCardForStep(stepId: string): any | undefined {
+          const children = childrenByParent.get(stepId) ?? []
+          const cards = children.filter((c) => c.typename === 'CardBlock')
+          if (cards.length === 0) return undefined
+          return cards.reduce((min: any, cur: any) => {
+            const minOrder = min.parentOrder ?? Number.MAX_SAFE_INTEGER
+            const curOrder = cur.parentOrder ?? Number.MAX_SAFE_INTEGER
+            return curOrder < minOrder ? cur : min
+          })
+        }
+
+        // Add button navigation edges from ANY descendants under the step
+        function collectDescendants(rootId: string, acc: any[] = []): any[] {
+          const kids = childrenByParent.get(rootId) ?? []
+          for (const child of kids) {
+            acc.push(child)
+            collectDescendants(child.id, acc)
+          }
+          return acc
+        }
+
+        stepsForConnectivity.forEach((s) => {
+          const descendants = collectDescendants(s.id, [])
+          descendants.forEach((node) => {
+            const targetBlockId: string | undefined = (node as any)?.action
+              ?.blockId
+            if (targetBlockId != null) {
+              const targetStep = idToBlock.get(targetBlockId)
+              if (targetStep?.typename === 'StepBlock') {
+                hasIncomingLinkConn.add(targetStep.id)
+                const set = outgoingByStep.get(s.id) ?? new Set<string>()
+                set.add(targetStep.id)
+                outgoingByStep.set(s.id, set)
+              }
+            }
+          })
+        })
+
+        const startStepsConn = stepsForConnectivity.filter(
+          (s) => !hasIncomingLinkConn.has(s.id)
+        )
+
+        const includeOld = filter?.includeUnconnectedCards === true
+        const traversalRoots: string[] = includeOld
+          ? startStepsConn.map((s) => s.id)
+          : (() => {
+              const root = chooseEntryStepId()
+              return root != null ? [root] : []
+            })()
+
+        const connectedStepIds = new Set<string>()
+        traversalRoots.forEach((rootId) => {
+          const queue: string[] = [rootId]
+          const visited = new Set<string>()
+          while (queue.length > 0) {
+            const stepId = queue.shift()!
+            if (visited.has(stepId)) continue
+            visited.add(stepId)
+            connectedStepIds.add(stepId)
+            const nextFromMap = outgoingByStep.get(stepId)
+            if (nextFromMap != null) {
+              nextFromMap.forEach((n) => queue.push(n))
+            }
+          }
+        })
+
+        // Collect allowed block ids: descendants of primary card blocks of connected steps
+        const allowedBlockIds = new Set<string>()
+        function dfsCollect(blockId: string): void {
+          allowedBlockIds.add(blockId)
+          const kids = childrenByParent.get(blockId) ?? []
+          for (const child of kids) {
+            dfsCollect(child.id)
+          }
+        }
+
+        for (const stepId of connectedStepIds) {
+          const primaryCard = getPrimaryCardForStep(stepId)
+          if (primaryCard != null) {
+            dfsCollect(primaryCard.id)
+          }
+        }
+
+        // Build base event filter and apply connectivity filter by default
         const eventWhere: Prisma.EventWhereInput = {
           journeyId: journeyId,
-          blockId: { not: null },
           label: { not: null }
         }
+
+        if (filter?.includeUnconnectedCards !== true) {
+          eventWhere.blockId = { in: Array.from(allowedBlockIds) }
+        } else {
+          eventWhere.blockId = { not: null }
+        }
+
         if (filter?.typenames && filter.typenames.length > 0) {
           eventWhere.typename = { in: filter.typenames }
         }
@@ -267,6 +420,7 @@ builder.queryField('journeyVisitorExport', (t) => {
             eventWhere.createdAt.lte = filter.periodRangeEnd
           }
         }
+
         // Get unique blockId_label combinations for headers using Prisma
         const blockHeadersResult = await prisma.event.findMany({
           where: eventWhere,
@@ -276,9 +430,8 @@ builder.queryField('journeyVisitorExport', (t) => {
           },
           distinct: ['blockId', 'label']
         })
-        // Build a map of blocks for hierarchy lookups
-        const journeyBlocks = journey.blocks
-        const idToBlock = new Map(journeyBlocks.map((b) => [b.id, b]))
+        // (logging moved below after 'steps' is declared)
+        // Build a map of blocks for hierarchy lookups (already defined above)
 
         // Build step navigation order
         interface StepBlock {
@@ -293,6 +446,26 @@ builder.queryField('journeyVisitorExport', (t) => {
             nextBlockId: b.nextBlockId,
             parentOrder: b.parentOrder
           }))
+
+        // Debug logging to verify filtering/select logic
+        {
+          const includeOld = filter?.includeUnconnectedCards === true
+          const startStepIds = startStepsConn.map((s) => s.id)
+          const sampleAllowed = Array.from(allowedBlockIds).slice(0, 10)
+          console.log('[journeyVisitorExport]', {
+            journeyId,
+            includeUnconnectedCards: includeOld,
+            totalBlocks: journeyBlocks.length,
+            totalSteps: steps.length,
+            startSteps: startStepIds.length,
+            startStepIds,
+            connectedSteps: connectedStepIds.size,
+            traversalRoots,
+            allowedBlockIdsCount: allowedBlockIds.size,
+            sampleAllowedBlockIds: sampleAllowed,
+            headerCandidates: blockHeadersResult.length
+          })
+        }
 
         // Build navigation order: find steps with no incoming links and follow nextBlockId chains
         const stepMap = new Map(steps.map((s) => [s.id, s]))
