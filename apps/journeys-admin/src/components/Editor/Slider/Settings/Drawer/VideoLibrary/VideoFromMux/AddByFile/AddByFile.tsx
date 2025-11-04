@@ -16,6 +16,8 @@ import Upload1Icon from '@core/shared/ui/icons/Upload1'
 import { CreateMuxVideoUploadByFileMutation } from '../../../../../../../../../__generated__/CreateMuxVideoUploadByFileMutation'
 import { useMuxVideoPolling } from '../../../../../../../MuxVideoPollingProvider'
 
+import { isValidMuxLanguageCode } from '../../utils'
+
 import { fileToMuxUpload } from './utils/addByFileUtils'
 export const CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
   mutation CreateMuxVideoUploadByFileMutation(
@@ -39,7 +41,12 @@ interface AddByFileProps {
 export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
-  const languageCode = journey?.language.bcp47
+  const rawLanguageCode = journey?.language.bcp47
+  // Validate language code - only pass valid Mux-supported languages
+  const languageCode =
+    rawLanguageCode != null && isValidMuxLanguageCode(rawLanguageCode)
+      ? rawLanguageCode
+      : null
   const { startPolling, stopPolling, getPollingStatus } = useMuxVideoPolling()
 
   const [uploading, setUploading] = useState(false)
