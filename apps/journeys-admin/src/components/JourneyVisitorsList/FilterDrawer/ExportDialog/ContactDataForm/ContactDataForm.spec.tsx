@@ -26,19 +26,16 @@ describe('ContactDataForm', () => {
 
     // Check if all contact data fields are rendered
     expect(screen.getByLabelText('Poll Selection')).toBeInTheDocument()
-    expect(screen.getByLabelText('Multiselect Submission')).toBeInTheDocument()
+    expect(screen.getByLabelText('Multiselect Responses')).toBeInTheDocument()
     expect(screen.getByLabelText('Subscription')).toBeInTheDocument()
     expect(screen.getByLabelText('Text Submission')).toBeInTheDocument()
-    expect(
-      screen.getByLabelText('Multiselect Selection(s)')
-    ).toBeInTheDocument()
 
     // Check initial state - all checkboxes should be checked
     expect(screen.getByLabelText('All')).toBeChecked()
     expect(screen.getByLabelText('Poll Selection')).toBeChecked()
     expect(screen.getByLabelText('Subscription')).toBeChecked()
     expect(screen.getByLabelText('Text Submission')).toBeChecked()
-    expect(screen.getByLabelText('Multiselect Submission')).toBeChecked()
+    expect(screen.getByLabelText('Multiselect Responses')).toBeChecked()
   })
 
   it('handles "Select All" checkbox correctly', () => {
@@ -51,7 +48,7 @@ describe('ContactDataForm', () => {
     expect(screen.getByLabelText('Poll Selection')).not.toBeChecked()
     expect(screen.getByLabelText('Subscription')).not.toBeChecked()
     expect(screen.getByLabelText('Text Submission')).not.toBeChecked()
-    expect(screen.getByLabelText('Multiselect Submission')).not.toBeChecked()
+    expect(screen.getByLabelText('Multiselect Responses')).not.toBeChecked()
 
     // Check all again
     fireEvent.click(selectAllCheckbox)
@@ -59,7 +56,7 @@ describe('ContactDataForm', () => {
     expect(screen.getByLabelText('Poll Selection')).toBeChecked()
     expect(screen.getByLabelText('Subscription')).toBeChecked()
     expect(screen.getByLabelText('Text Submission')).toBeChecked()
-    expect(screen.getByLabelText('Multiselect Selection(s)')).toBeChecked()
+    expect(screen.getByLabelText('Multiselect Responses')).toBeChecked()
   })
 
   it('handles individual checkbox selection correctly', () => {
@@ -69,7 +66,7 @@ describe('ContactDataForm', () => {
     fireEvent.click(screen.getByLabelText('Poll Selection'))
     fireEvent.click(screen.getByLabelText('Subscription'))
     fireEvent.click(screen.getByLabelText('Text Submission'))
-    fireEvent.click(screen.getByLabelText('Multiselect Submission'))
+    fireEvent.click(screen.getByLabelText('Multiselect Responses'))
     expect(screen.getByTestId('selected-fields')).toHaveTextContent('')
 
     // Check Poll Selection
@@ -96,20 +93,12 @@ describe('ContactDataForm', () => {
       'RadioQuestionSubmissionEvent, SignUpSubmissionEvent, TextResponseSubmissionEvent'
     )
 
-    // Check Multiselect Selection(s)
-    fireEvent.click(screen.getByLabelText('Multiselect Selection(s)'))
-    expect(screen.getByLabelText('Multiselect Selection(s)')).toBeChecked()
+    // Check Multiselect Responses
+    fireEvent.click(screen.getByLabelText('Multiselect Responses'))
+    expect(screen.getByLabelText('Multiselect Responses')).toBeChecked()
     expect(screen.getByLabelText('All')).toBeChecked()
     expect(screen.getByTestId('selected-fields')).toHaveTextContent(
       'RadioQuestionSubmissionEvent, SignUpSubmissionEvent, TextResponseSubmissionEvent, MultiselectSubmissionEvent'
-    )
-
-    // Check Multiselect Submission
-    fireEvent.click(screen.getByLabelText('Multiselect Submission'))
-    expect(screen.getByLabelText('Multiselect Submission')).toBeChecked()
-    expect(screen.getByLabelText('All')).toBeChecked()
-    expect(screen.getByTestId('selected-fields')).toHaveTextContent(
-      'name, email, phone, RadioQuestionSubmissionEvent, SignUpSubmissionEvent, TextResponseSubmissionEvent, MultiselectSubmissionEvent'
     )
   })
 })
