@@ -315,6 +315,14 @@ export function VideoControls({
     })
   }, [player, id, variant, title, durationSeconds, dispatchPlayer])
 
+  const togglePlay = useCallback(() => {
+    if (play) {
+      handlePause()
+    } else {
+      handlePlay()
+    }
+  }, [handlePause, handlePlay, play])
+
   // Separate handlers for player events that don't update global state
   const handlePlayerEventPlay = useCallback(() => {
     // Just analytics for player events, don't update global state
@@ -647,7 +655,7 @@ export function VideoControls({
         justifyContent: 'flex-end',
         zIndex: 2
       }}
-      onClick={getClickHandler(handlePlay, () => {
+      onClick={getClickHandler(togglePlay, () => {
         void handleFullscreen()
       })}
       onMouseMove={() => player?.userActive(true)}
@@ -806,7 +814,7 @@ export function VideoControls({
                 >
                   <IconButton
                     id={play ? 'pause-button' : 'play-button'}
-                    onClick={handlePlay}
+                    onClick={togglePlay}
                     sx={{ display: { xs: 'none', md: 'flex' } }}
                   >
                     {!play ? (

@@ -105,7 +105,7 @@ describe('VideoControls', () => {
         </WatchProvider>
       </MockedProvider>
     )
-    expect(screen.getByText('player.play: false')).toBeInTheDocument()
+    await screen.findByText('player.play: false')
     await userEvent.click(screen.getByTestId('PlayArrowRoundedIcon'))
     await waitFor(() => {
       expect(screen.getByText('player.play: true')).toBeInTheDocument()
@@ -136,7 +136,9 @@ describe('VideoControls', () => {
       </MockedProvider>
     )
     await userEvent.click(screen.getByTestId('PauseRoundedIcon'))
-    expect(screen.getByText('player.play: false')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('player.play: false')).toBeInTheDocument()
+    })
   })
 
   it('unmutes the video on mute icon click', async () => {
@@ -284,7 +286,15 @@ describe('VideoControls', () => {
   })
 
   it('updates progress on timeupdate event handler', async () => {
-    jest.spyOn(player, 'currentTime').mockReturnValue(0)
+    const currentTimeSpy = jest.spyOn(player, 'currentTime').mockReturnValue(0)
+    const testVideo = {
+      ...videos[0],
+      variant: {
+        ...videos[0].variant,
+        duration: 100
+      }
+    }
+
     render(
       <MockedProvider>
         <WatchProvider
@@ -295,7 +305,7 @@ describe('VideoControls', () => {
           }}
         >
           <PlayerProvider initialState={{ durationSeconds: 100 }}>
-            <VideoProvider value={{ content: videos[0] }}>
+            <VideoProvider value={{ content: testVideo as VideoContentFields }}>
               <VideoControls player={player} />
               <TestPlayerState />
             </VideoProvider>
@@ -303,10 +313,12 @@ describe('VideoControls', () => {
         </WatchProvider>
       </MockedProvider>
     )
-    expect(screen.getByText('player.currentTime: 0:00')).toBeInTheDocument()
-    expect(screen.getByText('player.progress: 0')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('player.currentTime: 0:00')).toBeInTheDocument()
+      expect(screen.getByText('player.progress: 0')).toBeInTheDocument()
+    })
     act(() => {
-      jest.spyOn(player, 'currentTime').mockReturnValue(50)
+      currentTimeSpy.mockReturnValue(50)
       // event needs to be triggered manually because of jsdom limitations
       player.trigger('timeupdate')
     })
@@ -539,7 +551,7 @@ describe('VideoControls', () => {
   })
 
   it('updates progress percent not yet emitted', async () => {
-    jest.spyOn(player, 'currentTime').mockReturnValue(27) // > 10% of 250 (10.8% rounds to 11)
+    const currentTimeSpy = jest.spyOn(player, 'currentTime').mockReturnValue(0)
 
     const testVideo = {
       ...videos[0],
@@ -571,11 +583,14 @@ describe('VideoControls', () => {
         screen.getByText('player.durationSeconds: 250')
       ).toBeInTheDocument()
     })
-    expect(
-      screen.getByText('player.progressPercentNotYetEmitted: 10,25,50,75,90')
-    ).toBeInTheDocument()
+    await waitFor(() => {
+      expect(
+        screen.getByText('player.progressPercentNotYetEmitted: 10,25,50,75,90')
+      ).toBeInTheDocument()
+    })
 
     act(() => {
+      currentTimeSpy.mockReturnValue(27)
       player.trigger('timeupdate')
     })
 
