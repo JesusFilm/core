@@ -454,7 +454,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   ): MuxVideo! @join__field(graph: API_MEDIA) 
   enableMuxDownload(id: ID!, resolution: String) : MuxVideo @join__field(graph: API_MEDIA) 
   deleteMuxVideo(id: ID!, userGenerated: Boolean) : Boolean! @join__field(graph: API_MEDIA) 
-  updateMuxVideoSubtitleSettings(id: ID!, showGeneratedSubtitles: Boolean!) : MuxVideo! @join__field(graph: API_MEDIA) 
   playlistCreate(input: PlaylistCreateInput!) : MutationPlaylistCreateResult @join__field(graph: API_MEDIA) 
   playlistUpdate(id: ID!, input: PlaylistUpdateInput!) : MutationPlaylistUpdateResult @join__field(graph: API_MEDIA) 
   playlistDelete(id: ID!) : MutationPlaylistDeleteResult @join__field(graph: API_MEDIA) 
@@ -1252,6 +1251,7 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   """
   objectFit: VideoBlockObjectFit
   subtitleLanguage: Language
+  showGeneratedSubtitles: Boolean @join__field(graph: API_JOURNEYS_MODERN) 
   mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
@@ -2442,7 +2442,6 @@ type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId
   createdAt: Date! @join__field(graph: API_MEDIA) 
   readyToStream: Boolean! @join__field(graph: API_MEDIA) 
   downloadable: Boolean! @join__field(graph: API_MEDIA) 
-  showGeneratedSubtitles: Boolean @join__field(graph: API_MEDIA) 
   videoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
 }
 
@@ -4724,6 +4723,7 @@ input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   fullsize: Boolean
   posterBlockId: ID
   subtitleLanguageId: ID
+  showGeneratedSubtitles: Boolean
 }
 
 input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4747,6 +4747,7 @@ input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
     youTube source: videoId required
   """
   source: VideoBlockSource
+  showGeneratedSubtitles: Boolean
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
@@ -4798,7 +4799,8 @@ input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
 }
 
 input GenerateSubtitlesInput @join__type(graph: API_MEDIA)  {
-  languageCode: String
+  languageCode: String!
+  languageName: String!
 }
 
 input ImageInput @join__type(graph: API_MEDIA)  {

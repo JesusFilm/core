@@ -4,7 +4,8 @@ import { CreateMuxVideoUploadByFileMutationVariables } from '../../../../../../.
 
 export function fileToMuxUpload(
   file: File,
-  languageCode?: string
+  languageCode?: string,
+  languageName?: string
 ): {
   variables: CreateMuxVideoUploadByFileMutationVariables
 } {
@@ -13,7 +14,9 @@ export function fileToMuxUpload(
     variables: {
       name: fileName,
       generateSubtitlesInput:
-        languageCode != null ? { languageCode } : undefined
+        languageCode != null && languageName != null
+          ? { languageCode, languageName }
+          : undefined
     }
   }
 }

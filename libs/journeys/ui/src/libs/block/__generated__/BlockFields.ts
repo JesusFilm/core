@@ -531,6 +531,7 @@ export interface BlockFields_VideoBlock {
    */
   objectFit: VideoBlockObjectFit | null;
   subtitleLanguage: BlockFields_VideoBlock_subtitleLanguage | null;
+  showGeneratedSubtitles: boolean | null;
   mediaVideo: BlockFields_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

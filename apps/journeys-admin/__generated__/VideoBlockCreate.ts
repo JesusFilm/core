@@ -180,6 +180,7 @@ export interface VideoBlockCreate_videoBlockCreate {
    */
   objectFit: VideoBlockObjectFit | null;
   subtitleLanguage: VideoBlockCreate_videoBlockCreate_subtitleLanguage | null;
+  showGeneratedSubtitles: boolean | null;
   mediaVideo: VideoBlockCreate_videoBlockCreate_mediaVideo | null;
   /**
    * action that should be performed when the video ends

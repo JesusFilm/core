@@ -4,9 +4,6 @@ CREATE TYPE "MuxSubtitleTrackSource" AS ENUM ('uploaded', 'generated');
 -- CreateEnum
 CREATE TYPE "MuxSubtitleTrackStatus" AS ENUM ('processing', 'ready', 'errored');
 
--- AlterTable
-ALTER TABLE "MuxVideo" ADD COLUMN     "showGeneratedSubtitles" BOOLEAN;
-
 -- CreateTable
 CREATE TABLE "MuxSubtitleTrack" (
     "id" TEXT NOT NULL,

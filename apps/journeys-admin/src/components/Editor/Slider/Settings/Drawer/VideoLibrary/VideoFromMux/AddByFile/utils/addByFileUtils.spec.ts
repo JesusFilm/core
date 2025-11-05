@@ -5,7 +5,7 @@ import { fileToMuxUpload, getBuffer } from './addByFileUtils'
 
 describe('addByFileUtils', () => {
   describe('fileToMuxUpload', () => {
-    it('should return correct variables for Mux video upload', () => {
+    it('should return correct variables for Mux video upload without language', () => {
       const mockFile = new File([''], 'video.mp4', {
         type: 'video/mp4',
         lastModified: new Date().getTime()
@@ -15,7 +15,59 @@ describe('addByFileUtils', () => {
 
       expect(result).toEqual({
         variables: {
-          name: 'video'
+          name: 'video',
+          generateSubtitlesInput: undefined
+        }
+      })
+    })
+
+    it('should return correct variables with language code and name', () => {
+      const mockFile = new File([''], 'video.mp4', {
+        type: 'video/mp4',
+        lastModified: new Date().getTime()
+      })
+
+      const result = fileToMuxUpload(mockFile, 'en', 'English')
+
+      expect(result).toEqual({
+        variables: {
+          name: 'video',
+          generateSubtitlesInput: {
+            languageCode: 'en',
+            languageName: 'English'
+          }
+        }
+      })
+    })
+
+    it('should not include generateSubtitlesInput if only languageCode is provided', () => {
+      const mockFile = new File([''], 'video.mp4', {
+        type: 'video/mp4',
+        lastModified: new Date().getTime()
+      })
+
+      const result = fileToMuxUpload(mockFile, 'en')
+
+      expect(result).toEqual({
+        variables: {
+          name: 'video',
+          generateSubtitlesInput: undefined
+        }
+      })
+    })
+
+    it('should not include generateSubtitlesInput if only languageName is provided', () => {
+      const mockFile = new File([''], 'video.mp4', {
+        type: 'video/mp4',
+        lastModified: new Date().getTime()
+      })
+
+      const result = fileToMuxUpload(mockFile, undefined, 'English')
+
+      expect(result).toEqual({
+        variables: {
+          name: 'video',
+          generateSubtitlesInput: undefined
         }
       })
     })

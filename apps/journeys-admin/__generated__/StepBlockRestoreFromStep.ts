@@ -541,6 +541,7 @@ export interface StepBlockRestoreFromStep_blockRestore_VideoBlock {
    */
   objectFit: VideoBlockObjectFit | null;
   subtitleLanguage: StepBlockRestoreFromStep_blockRestore_VideoBlock_subtitleLanguage | null;
+  showGeneratedSubtitles: boolean | null;
   mediaVideo: StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
