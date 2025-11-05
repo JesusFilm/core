@@ -355,12 +355,10 @@ describe('ExportDialog', () => {
       fireEvent.click(screen.getByText('Contact Data'))
 
       expect(screen.getByLabelText('All')).toBeChecked()
-      expect(screen.getByLabelText('Name')).toBeChecked()
-      expect(screen.getByLabelText('Email')).toBeChecked()
-      expect(screen.getByLabelText('Phone')).toBeChecked()
       expect(screen.getByLabelText('Poll Selection')).toBeChecked()
       expect(screen.getByLabelText('Subscription')).toBeChecked()
       expect(screen.getByLabelText('Text Submission')).toBeChecked()
+      expect(screen.getByLabelText('Multiselect Responses')).toBeChecked()
 
       fireEvent.click(screen.getByRole('button', { name: 'Export (CSV)' }))
       expect(mockExportJourneyContacts).toHaveBeenCalledWith({
@@ -370,15 +368,11 @@ describe('ExportDialog', () => {
             'RadioQuestionSubmissionEvent',
             'MultiselectSubmissionEvent',
             'SignUpSubmissionEvent',
-            'TextResponseSubmissionEvent'
+            'TextResponseSubmissionEvent',
+            'MultiselectSubmissionEvent'
           ]),
           periodRangeEnd: expect.any(String)
-        }),
-        select: {
-          name: true,
-          email: true,
-          phone: true
-        }
+        })
       })
       await waitFor(() => {
         expect(mockOnClose).toHaveBeenCalled()
@@ -401,7 +395,7 @@ describe('ExportDialog', () => {
 
       expect(screen.getByLabelText('All')).toBeChecked()
       fireEvent.click(screen.getByLabelText('All'))
-      fireEvent.click(screen.getByLabelText('Name'))
+      fireEvent.click(screen.getByLabelText('Poll Selection'))
 
       expect(screen.getByRole('button', { name: 'Export (CSV)' })).toBeEnabled()
 
@@ -409,13 +403,8 @@ describe('ExportDialog', () => {
       expect(mockExportJourneyContacts).toHaveBeenCalledWith({
         journeyId: 'journey1',
         filter: {
-          typenames: [],
+          typenames: ['RadioQuestionSubmissionEvent'],
           periodRangeEnd: expect.any(String)
-        },
-        select: {
-          name: true,
-          email: false,
-          phone: false
         }
       })
       await waitFor(() => {
