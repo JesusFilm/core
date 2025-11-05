@@ -24,6 +24,8 @@ export function VideoFromMux({ onSelect }: VideoFromMuxProps): ReactElement {
       videoId: id,
       source: VideoBlockSource.mux,
       startAt: 0,
+      // conditionally add subtitleLanguageId - only if valid mux language,
+      // else we assume no subtitle generation will happen for the video
       ...(isValidLanguage &&
         journey?.language?.id != null && {
           subtitleLanguageId: journey.language.id
