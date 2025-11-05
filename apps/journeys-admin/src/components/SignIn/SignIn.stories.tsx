@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { initializeApp } from 'firebase/app'
 import noop from 'lodash/noop'
 import { ComponentProps, ReactNode } from 'react'

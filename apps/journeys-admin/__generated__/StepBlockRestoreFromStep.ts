@@ -9,8 +9,8 @@ import { StepBlockUpdateInput, ButtonVariant, ButtonColor, ButtonSize, ContactAc
 // GraphQL mutation operation: StepBlockRestoreFromStep
 // ====================================================
 
-export interface StepBlockRestoreFromStep_blockRestore_MultiselectBlock {
-  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
+export interface StepBlockRestoreFromStep_blockRestore_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -151,6 +151,23 @@ export interface StepBlockRestoreFromStep_blockRestore_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+}
+
+export interface StepBlockRestoreFromStep_blockRestore_MultiselectOptionBlock {
+  __typename: "MultiselectOptionBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+}
+
+export interface StepBlockRestoreFromStep_blockRestore_MultiselectBlock {
+  __typename: "MultiselectBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  min: number | null;
+  max: number | null;
 }
 
 export interface StepBlockRestoreFromStep_blockRestore_RadioOptionBlock_action_NavigateToBlockAction {
@@ -359,6 +376,12 @@ export interface StepBlockRestoreFromStep_blockRestore_TypographyBlock {
   settings: StepBlockRestoreFromStep_blockRestore_TypographyBlock_settings | null;
 }
 
+export interface StepBlockRestoreFromStep_blockRestore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+}
+
 export interface StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -525,6 +548,7 @@ export interface StepBlockRestoreFromStep_blockRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: StepBlockRestoreFromStep_blockRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: StepBlockRestoreFromStep_blockRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -592,7 +616,7 @@ export interface StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock {
   triggerAction: StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock_triggerAction;
 }
 
-export type StepBlockRestoreFromStep_blockRestore = StepBlockRestoreFromStep_blockRestore_MultiselectBlock | StepBlockRestoreFromStep_blockRestore_ButtonBlock | StepBlockRestoreFromStep_blockRestore_CardBlock | StepBlockRestoreFromStep_blockRestore_IconBlock | StepBlockRestoreFromStep_blockRestore_ImageBlock | StepBlockRestoreFromStep_blockRestore_RadioOptionBlock | StepBlockRestoreFromStep_blockRestore_RadioQuestionBlock | StepBlockRestoreFromStep_blockRestore_SignUpBlock | StepBlockRestoreFromStep_blockRestore_SpacerBlock | StepBlockRestoreFromStep_blockRestore_StepBlock | StepBlockRestoreFromStep_blockRestore_TextResponseBlock | StepBlockRestoreFromStep_blockRestore_TypographyBlock | StepBlockRestoreFromStep_blockRestore_VideoBlock | StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock;
+export type StepBlockRestoreFromStep_blockRestore = StepBlockRestoreFromStep_blockRestore_GridContainerBlock | StepBlockRestoreFromStep_blockRestore_ButtonBlock | StepBlockRestoreFromStep_blockRestore_CardBlock | StepBlockRestoreFromStep_blockRestore_IconBlock | StepBlockRestoreFromStep_blockRestore_ImageBlock | StepBlockRestoreFromStep_blockRestore_MultiselectOptionBlock | StepBlockRestoreFromStep_blockRestore_MultiselectBlock | StepBlockRestoreFromStep_blockRestore_RadioOptionBlock | StepBlockRestoreFromStep_blockRestore_RadioQuestionBlock | StepBlockRestoreFromStep_blockRestore_SignUpBlock | StepBlockRestoreFromStep_blockRestore_SpacerBlock | StepBlockRestoreFromStep_blockRestore_StepBlock | StepBlockRestoreFromStep_blockRestore_TextResponseBlock | StepBlockRestoreFromStep_blockRestore_TypographyBlock | StepBlockRestoreFromStep_blockRestore_VideoBlock | StepBlockRestoreFromStep_blockRestore_VideoTriggerBlock;
 
 export interface StepBlockRestoreFromStep_stepBlockUpdate {
   __typename: "StepBlock";

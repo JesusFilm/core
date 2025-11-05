@@ -13,6 +13,12 @@ export interface CardVideoDelete_video_ImageBlock {
   __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
 }
 
+export interface CardVideoDelete_video_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+}
+
 export interface CardVideoDelete_video_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -179,6 +185,7 @@ export interface CardVideoDelete_video_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CardVideoDelete_video_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardVideoDelete_video_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

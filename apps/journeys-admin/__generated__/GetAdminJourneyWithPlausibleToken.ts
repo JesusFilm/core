@@ -23,8 +23,8 @@ export interface GetAdminJourneyWithPlausibleToken_journey_language {
   name: GetAdminJourneyWithPlausibleToken_journey_language_name[];
 }
 
-export interface GetAdminJourneyWithPlausibleToken_journey_blocks_MultiselectBlock {
-  __typename: "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock";
+export interface GetAdminJourneyWithPlausibleToken_journey_blocks_GridContainerBlock {
+  __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
@@ -165,6 +165,23 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_ImageBlock {
   scale: number | null;
   focalTop: number | null;
   focalLeft: number | null;
+}
+
+export interface GetAdminJourneyWithPlausibleToken_journey_blocks_MultiselectOptionBlock {
+  __typename: "MultiselectOptionBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  label: string;
+}
+
+export interface GetAdminJourneyWithPlausibleToken_journey_blocks_MultiselectBlock {
+  __typename: "MultiselectBlock";
+  id: string;
+  parentBlockId: string | null;
+  parentOrder: number | null;
+  min: number | null;
+  max: number | null;
 }
 
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction {
@@ -363,6 +380,12 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBloc
   settings: GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBlock_settings | null;
 }
 
+export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+}
+
 export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -529,6 +552,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_subtitleLanguage | null;
   mediaVideo: GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -596,7 +620,7 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBl
   triggerAction: GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock_triggerAction;
 }
 
-export type GetAdminJourneyWithPlausibleToken_journey_blocks = GetAdminJourneyWithPlausibleToken_journey_blocks_MultiselectBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_CardBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_IconBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_ImageBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_RadioQuestionBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_SpacerBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_StepBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_TextResponseBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock;
+export type GetAdminJourneyWithPlausibleToken_journey_blocks = GetAdminJourneyWithPlausibleToken_journey_blocks_GridContainerBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_ButtonBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_CardBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_IconBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_ImageBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_MultiselectOptionBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_MultiselectBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_RadioOptionBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_RadioQuestionBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_SignUpBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_SpacerBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_StepBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_TextResponseBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_TypographyBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock | GetAdminJourneyWithPlausibleToken_journey_blocks_VideoTriggerBlock;
 
 export interface GetAdminJourneyWithPlausibleToken_journey_primaryImageBlock {
   __typename: "ImageBlock";

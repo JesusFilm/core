@@ -73,7 +73,8 @@ describe('InitAndPlay', () => {
         assetId: 'muxAssetId',
         playbackId: 'muxPlaybackId'
       },
-      videoVariantLanguageId: 'languageId'
+      videoVariantLanguageId: 'languageId',
+      subtitleLanguage: null
     }
   })
 

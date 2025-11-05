@@ -14,6 +14,12 @@ export interface CoverBlockRestore_blockRestore_StepBlock {
   id: string;
 }
 
+export interface CoverBlockRestore_blockRestore_VideoBlock_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+}
+
 export interface CoverBlockRestore_blockRestore_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -180,6 +186,7 @@ export interface CoverBlockRestore_blockRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  subtitleLanguage: CoverBlockRestore_blockRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CoverBlockRestore_blockRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
