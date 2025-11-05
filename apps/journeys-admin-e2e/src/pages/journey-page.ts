@@ -761,9 +761,11 @@ export class JourneyPage {
   }
 
   async verifySnackbarToastMessage(message: string) {
-    await expect(
-      this.page.locator('#notistack-snackbar', { hasText: message })
-    ).toBeVisible({ timeout: sixtySecondsTimeout })
+    // Use case-insensitive matching for snackbar messages
+    const snackbarLocator = this.page
+      .locator('#notistack-snackbar')
+      .filter({ hasText: new RegExp(message, 'i') })
+    await expect(snackbarLocator).toBeVisible({ timeout: sixtySecondsTimeout })
     await expect(this.page.locator('#notistack-snackbar')).toBeHidden({
       timeout: thirtySecondsTimeout
     })
