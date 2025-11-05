@@ -1,4 +1,4 @@
-import { Badge } from '@ui/components/badge'
+import { Badge } from '@core/shared/uimodern/components/badge'
 import { ReactElement } from 'react'
 
 export interface QuickListProps {

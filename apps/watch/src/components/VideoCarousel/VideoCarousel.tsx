@@ -12,7 +12,7 @@ import {
 } from '../../../src/types/inserts'
 import { VideoCard as CarouselVideoCard } from '../CarouselVideoCard/VideoCard'
 
-import { cn } from '../../libs/cn'
+import { cn } from '@core/shared/uimodern/utils'
 
 export interface VideoCarouselProps {
   slides: VideoCarouselSlide[]
