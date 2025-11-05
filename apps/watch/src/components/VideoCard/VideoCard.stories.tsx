@@ -1,11 +1,11 @@
 import Grid from '@mui/material/GridLegacy'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/__generated__/testData'
-import { getAlgoliaVideosHandlers } from '../VideosPage/VideosPage.handlers'
+import { getAlgoliaVideosHandlers } from '../PageVideos/PageVideos.handlers'
 
 import { VideoCard } from '.'
 

@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 
 import i18nConfig from '../../../../next-i18next.config'
-import { CollectionsPage } from '../../../../src/components/CollectionsPage/languages/en'
+import { PageCollections } from '../../../../src/components/PageCollections/languages/en'
 import { getFlags } from '../../../../src/libs/getFlags'
 
 export default function EasterPage(): ReactElement {
@@ -48,7 +48,7 @@ export default function EasterPage(): ReactElement {
         }}
       />
       <SnackbarProvider>
-        <CollectionsPage />
+        <PageCollections />
       </SnackbarProvider>
     </>
   )

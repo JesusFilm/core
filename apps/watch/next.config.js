@@ -30,7 +30,9 @@ const nextConfig = {
         hostname: `customer-${
           process.env.NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE ?? ''
         }.cloudflarestream.com`
-      }
+      },
+      // Mux video service
+      { protocol: 'https', hostname: 'image.mux.com' }
     ],
     minimumCacheTTL: 31536000
   },
@@ -43,11 +45,7 @@ const nextConfig = {
       transform: 'lodash/{{member}}'
     }
   },
-  nx: {
-    // Set this to true if you would like to to use SVGR
-    // See: https://github.com/gregberge/svgr
-    svgr: false
-  },
+  nx: {},
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions

@@ -17,7 +17,7 @@ import { createApolloClient } from '../../../src/libs/apolloClient'
 import { getCookie } from '../../../src/libs/cookieHandler'
 import { getFlags } from '../../../src/libs/getFlags'
 import { getLanguageIdFromLocale } from '../../../src/libs/getLanguageIdFromLocale'
-import { PlayerProvider } from '../../../src/libs/playerContext/PlayerContext'
+import { PlayerProvider } from '../../../src/libs/playerContext'
 import { slugMap } from '../../../src/libs/slugMap'
 import { VIDEO_CONTENT_FIELDS } from '../../../src/libs/videoContentFields'
 import { VideoProvider } from '../../../src/libs/videoContext'
@@ -56,11 +56,11 @@ interface Part2PageProps {
   videoAudioLanguageIds: string[]
 }
 
-const DynamicVideoContainerPage = dynamic(
+const DynamicPageVideoContainer = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "VideoContainerPage" */
-      '../../../src/components/VideoContainerPage'
+      /* webpackChunkName: "PageVideoContainer" */
+      '../../../src/components/PageVideoContainer'
     )
 )
 
@@ -68,8 +68,8 @@ const DynamicNewContentPage = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "NewContentPage" */
-      '../../../src/components/NewVideoContentPage'
-    ).then((mod) => mod.NewVideoContentPage)
+      '../../../src/components/PageSingleVideo'
+    ).then((mod) => mod.PageSingleVideo)
 )
 
 export default function Part2Page({
@@ -91,10 +91,10 @@ export default function Part2Page({
       <WatchProvider initialState={initialWatchState}>
         <VideoProvider value={{ content }}>
           <PlayerProvider>
-            {content.variant?.hls != null ? (
+            {content.variant?.hls != null && content.variant?.hls != '' ? (
               <DynamicNewContentPage />
             ) : (
-              <DynamicVideoContainerPage />
+              <DynamicPageVideoContainer />
             )}
           </PlayerProvider>
         </VideoProvider>
