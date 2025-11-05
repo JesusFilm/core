@@ -5,7 +5,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList
-} from '@ui/components/command'
+} from '@core/shared/uimodern/components/command'
 import { Check, ChevronsUpDown, Globe } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -13,7 +13,7 @@ import { useRefinementList } from 'react-instantsearch'
 
 import { languageRefinementProps } from '@core/journeys/ui/algolia/SearchBarProvider'
 
-import { cn } from '../../libs/cn'
+import { cn } from '@core/shared/uimodern/utils'
 import { useLanguages } from '../../libs/useLanguages'
 import { Button } from '../ui/button'
 

@@ -3,7 +3,7 @@ import {
   DialogContent,
   DialogOverlay,
   DialogPortal
-} from '@ui/components/dialog'
+} from '@core/shared/uimodern/components/dialog'
 import { useTranslation } from 'next-i18next'
 import { FocusEvent, ReactElement } from 'react'
 

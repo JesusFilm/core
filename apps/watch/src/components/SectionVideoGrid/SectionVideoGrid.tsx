@@ -3,7 +3,7 @@ import { ReactElement, useMemo } from 'react'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
 
-import { cn } from '../../libs/cn'
+import { cn } from '@core/shared/uimodern/utils'
 import {
   SectionVideoCollectionCarouselSlide,
   SectionVideoCollectionCarouselSource,

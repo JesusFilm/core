@@ -5,7 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
 
-import { cn } from '../../libs/cn'
+import { cn } from '@core/shared/uimodern/utils'
 import { VideoCard } from '../VideoCard'
 
 import {
