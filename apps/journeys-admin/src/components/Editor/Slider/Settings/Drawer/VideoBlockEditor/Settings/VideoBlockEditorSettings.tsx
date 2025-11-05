@@ -38,7 +38,7 @@ import {
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
 
-import { MuxSubtitleEnablementToggle } from './MuxSubtitles'
+import { MuxSubtitleSwitch } from './MuxSubtitles'
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 import { YouTubeSubtitleSelector } from './SubtitleSelector'
 
@@ -167,7 +167,7 @@ export function VideoBlockEditorSettings({
               />
             )}
             {selectedBlock?.source === VideoBlockSource.mux && (
-              <MuxSubtitleEnablementToggle
+              <MuxSubtitleSwitch
                 videoBlockId={selectedBlock?.id ?? null}
                 muxVideoId={
                   selectedBlock?.mediaVideo?.__typename === 'MuxVideo'

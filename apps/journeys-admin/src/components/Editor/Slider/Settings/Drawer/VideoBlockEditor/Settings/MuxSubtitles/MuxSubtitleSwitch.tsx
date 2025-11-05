@@ -48,17 +48,17 @@ export const VIDEO_BLOCK_UPDATE_SUBTITLE = gql`
   }
 `
 
-interface MuxSubtitleEnablementToggleProps {
+interface MuxSubtitleSwitchProps {
   videoBlockId: string | null
   muxVideoId: string | null
   journeyLanguageCode: string | null | undefined
 }
 
-export function MuxSubtitleEnablementToggle({
+export function MuxSubtitleSwitch({
   videoBlockId,
   muxVideoId,
   journeyLanguageCode
-}: MuxSubtitleEnablementToggleProps): ReactElement {
+}: MuxSubtitleSwitchProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const isValidLanguage = useValidateMuxLanguage(journeyLanguageCode)
