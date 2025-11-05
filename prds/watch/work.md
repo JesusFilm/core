@@ -130,3 +130,35 @@
 
 - Consider showing a brief tooltip on first visit explaining the Skip control for accessibility.
 - Evaluate whether skip interactions should emit analytics distinct from autoplay completions.
+
+# Watch Page Transitions
+
+## Goals
+
+- [x] Introduce a global transition shell so navigating between Watch pages feels deliberate and modern.
+- [x] Blend in a branded gradient wash during the transition without blocking interactions.
+- [x] Keep the integration confined to `_app.tsx` so individual pages stay unaware of the animation layer.
+
+## Obstacles
+
+- The watch lint task currently fails with dozens of pre-existing violations, masking new regressions.
+- CSS-only transitions can easily steal pointer events when layered globally.
+
+## Resolutions
+
+- Verified the new component in isolation with `pnpm dlx eslint apps/watch/src/components/PageTransition/PageTransition.tsx` while documenting the broader lint backlog.
+- Wrapped page content in a `SwitchTransition` + `CSSTransition` duo and used `pointer-events: none` overlays so the gradient never interferes with clicks.
+
+## Test Coverage
+
+- `pnpm dlx eslint apps/watch/src/components/PageTransition/PageTransition.tsx`
+- `NX_DAEMON=false pnpm dlx nx lint watch --skip-nx-cache --output-style=stream` *(fails from legacy lint violations; see terminal log for the existing errors.)*
+
+## User Flows
+
+- Navigate between Watch routes → current page lifts and fades → soft gradient wash trails the route change → destination content settles smoothly into place.
+
+## Follow-up Ideas
+
+- Consider layering a page-level progress indicator tied to router events so longer navigations still feel responsive.
+- Audit the outstanding lint failures and capture dedicated cleanup tickets so future UI work gains faster feedback loops.
