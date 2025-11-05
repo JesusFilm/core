@@ -130,3 +130,35 @@
 
 - Consider showing a brief tooltip on first visit explaining the Skip control for accessibility.
 - Evaluate whether skip interactions should emit analytics distinct from autoplay completions.
+
+# Watch Page Creative Transitions
+
+## Goals
+
+- [x] Introduce a cohesive transition system that animates between `/watch` pages.
+- [x] Ensure transitions feel modern without overwhelming users who prefer reduced motion.
+- [x] Keep the solution framework-agnostic so other screens can reuse it later.
+
+## Obstacles
+
+- Needed to orchestrate exit/enter states manually because no animation helper library exists in the project.
+- Had to respect `prefers-reduced-motion` while still providing layered effects for everyone else.
+
+## Resolutions
+
+- Added a `PageTransition` wrapper that stages outgoing and incoming routes with timed swapping logic.
+- Authored dedicated CSS (blurred slides + sheen overlay) to create a cinematic yet performant effect.
+- Included a custom reduced-motion hook to gracefully fall back to instant page swaps.
+
+## Test Coverage
+
+- `pnpm dlx nx lint watch` *(fails: existing lint debt across unrelated components)*
+
+## User Flows
+
+- Navigate between `/watch`, `/watch/videos`, and a video detail page -> outgoing view glides upward while the next fades in with a soft blur.
+
+## Follow-up Ideas
+
+- Consider exposing transition duration tokens so editorial teams can fine-tune pacing per campaign.
+- Explore hooking analytics into the transition wrapper to measure navigation sentiment.

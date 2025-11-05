@@ -18,12 +18,14 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import i18nConfig from '../next-i18next.config'
+import { PageTransition } from '../src/components/PageTransition/PageTransition'
 import { useApolloClient } from '../src/libs/apolloClient'
 
 import 'swiper/css'
 import 'swiper/css/a11y'
 import 'swiper/css/navigation'
 import '../styles/globals.css'
+import '../styles/page-transition.css'
 import './fonts/fonts.css'
 
 // Polyfills
@@ -145,7 +147,9 @@ function WatchApp({
                 <GoogleTagManager
                   gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ''}
                 />
-                <Component {...pageProps} />
+                <PageTransition>
+                  <Component {...pageProps} />
+                </PageTransition>
               </InstantSearchProvider>
             </ThemeProvider>
           </AppCacheProvider>
