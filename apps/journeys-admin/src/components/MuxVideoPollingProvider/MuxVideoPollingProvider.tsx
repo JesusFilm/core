@@ -253,7 +253,7 @@ export function MuxVideoPollingProvider({
     (videoId: string, languageCode?: string, onComplete?: () => void) => {
       // Show start notification only once per video
       if (!hasShownStartNotification.current.has(videoId)) {
-        showSnackbar(t('Video upload in progress'), 'success')
+        showSnackbar(t('Video upload in progress'), 'success', true)
         hasShownStartNotification.current.add(videoId)
       }
 
