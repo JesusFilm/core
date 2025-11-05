@@ -1,6 +1,6 @@
 @import 'tailwindcss';
-/*@source "../../../../libs/ui/src";*/
-/*@import '../../../../libs/ui/src/styles/globals.css';*/
+@source "./src/**/*.{js,ts,jsx,tsx}";
+@source "../../libs/**/*.{js,ts,jsx,tsx}";
 
 @theme {
   --font-sans:
@@ -325,7 +325,7 @@
   }
 
   .overlay-texture {
-    background-image: url('/assets/overlay.svg');
+    background-image: url('../public/assets/overlay.svg');
     background-repeat: repeat;
     background-size: auto;
     mix-blend-mode: multiply;
@@ -333,7 +333,7 @@
   }
 
   .overlay-texture-image {
-    background-image: url('/assets/overlay.svg');
+    background-image: url('../public/assets/overlay.svg');
   }
 
   /* VideoCard specific utilities */

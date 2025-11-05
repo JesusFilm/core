@@ -1,8 +1,7 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 
-import { videos } from '../Videos/__generated__/testData'
-
+import { VideoLabel } from '../../../__generated__/globalTypes'
 import { VideoCard } from './VideoCard'
 
 type StoryArgs = ComponentPropsWithoutRef<typeof VideoCard>
@@ -15,16 +14,26 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
+// Mock data that matches UnifiedCardData interface
+const mockVideoData = {
+  id: '1_jf-0-0',
+  title: 'Test Video Title',
+  images: [{ mobileCinematicHigh: 'https://example.com/image.jpg' }],
+  imageAlt: [{ value: 'Test video' }],
+  label: VideoLabel.featureFilm,
+  slug: 'test-video'
+}
+
 export const Default: Story = {
   args: {
-    video: videos[0],
+    data: mockVideoData,
     active: false
   }
 }
 
 export const Active: Story = {
   args: {
-    video: videos[0],
+    data: mockVideoData,
     active: true
   }
 }

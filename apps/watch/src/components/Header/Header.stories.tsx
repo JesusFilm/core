@@ -1,5 +1,5 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
-import { screen, userEvent } from 'storybook/test'
+import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent } from '@storybook/test'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { ThemeMode } from '@core/shared/ui/themes'
@@ -29,7 +29,7 @@ const Template: StoryObj<typeof Header> = {
 }
 
 const WithFlagsTemplate: StoryObj<typeof Header> = {
-  render: (args) => (
+  render: () => (
     <FlagsProvider
       flags={{
         ...trueHeaderItemsFlags
@@ -37,9 +37,6 @@ const WithFlagsTemplate: StoryObj<typeof Header> = {
     >
       <Header
         themeMode={ThemeMode.light}
-        hideTopAppBar={args.hideTopAppBar}
-        hideBottomAppBar={args.hideBottomAppBar}
-        hideSpacer={args.hideSpacer}
       />
     </FlagsProvider>
   )

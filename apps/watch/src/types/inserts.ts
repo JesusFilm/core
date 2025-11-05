@@ -87,12 +87,14 @@ export function isVideoSlide(
 }
 
 // Unified interface for both video cards and mux inserts
+import { VideoLabel } from '../../__generated__/globalTypes'
+
 export interface UnifiedCardData {
   id: string
-  title: string | string[]
+  title: string | Array<{ value: string }>
   images: Array<{ mobileCinematicHigh: string }>
   imageAlt: Array<{ value: string }>
-  label: string
+  label: VideoLabel
   slug?: string
   variant?: { slug: string }
   // Mux-specific additions

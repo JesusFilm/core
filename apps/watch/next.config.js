@@ -2,6 +2,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true'
 })
 const { composePlugins, withNx } = require('@nx/next')
+const path = require('path')
 
 const { i18n } = require('./next-i18next.config')
 
@@ -45,7 +46,9 @@ const nextConfig = {
       transform: 'lodash/{{member}}'
     }
   },
-  nx: {},
+  nx: {
+    svgr: false,
+  },
   productionBrowserSourceMaps: true,
   typescript: {
     // handled by github actions
@@ -63,6 +66,27 @@ const nextConfig = {
       'node_modules/esbuild-linux-64/bin'
     ]
   },
+  webpack(config) {
+    // make /assets/* in CSS work inside Nx monorepo
+    config.resolve.alias['/assets'] = path.resolve(__dirname, 'public/assets')
+
+    // Configure SVGR manually to replace deprecated NX SVGR support
+    // SVGs can be imported as React components or as URLs
+    config.module.rules.push({
+      test: /\.svg$/i,
+      type: 'asset',
+      resourceQuery: /url/, // *.svg?url
+    })
+    config.module.rules.push({
+      test: /\.svg$/i,
+      issuer: /\.[jt]sx?$/,
+      resourceQuery: { not: [/url/] }, // exclude if *.svg?url
+      use: ['@svgr/webpack'],
+    })
+
+    return config
+  },
+
   async redirects() {
     return [
       {

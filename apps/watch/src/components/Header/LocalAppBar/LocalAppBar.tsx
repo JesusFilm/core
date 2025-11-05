@@ -9,7 +9,7 @@ import Image from 'next/image'
 import NextLink from 'next/link'
 import { MouseEventHandler, ReactElement, useState } from 'react'
 
-import logo from '../assets/logo.svg'
+import logo from '../assets/logo.svg?url'
 
 const DynamicLanguageSwitchDialog = dynamic(
   () =>

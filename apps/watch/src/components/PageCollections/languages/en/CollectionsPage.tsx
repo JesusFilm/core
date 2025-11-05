@@ -9,7 +9,7 @@ import {
   ContentItem
 } from '../../CollectionNavigationCarousel'
 import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
-import { CollectionsPageContent } from '../../CollectionsPageContent'
+import { PageCollectionsContent } from '../PageCollectionsContent/CollectionsPageContent'
 import { CollectionsVideoContent } from '../../CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCarousel'
 import { ContainerHero } from '../../ContainerHero'
@@ -85,7 +85,7 @@ export function PageCollections(): ReactElement {
       hideHeader
       hideFooter
     >
-      <CollectionsPageContent>
+      <PageCollectionsContent>
         <CollectionNavigationCarousel contentItems={navigationContentItems} />
         <CollectionIntroText
           title="The Real Easter story"
@@ -1342,7 +1342,7 @@ Because the greatest celebration in human history is about far more than traditi
             buttonText: 'Join Our Bible study'
           }}
         />
-      </CollectionsPageContent>
+      </PageCollectionsContent>
     </PageWrapper>
   )
 }

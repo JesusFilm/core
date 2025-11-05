@@ -72,7 +72,7 @@ function PageMainBody({ languageId }: PageMainProps): ReactElement {
       >
         <CollectionsRail languageId={languageId} />
         <SectionNewsletterSignup />
-        <SectionLanguageMap />
+        {/* <SectionLanguageMap /> */}
         <SectionPromo />
       </ContainerWithMedia>
     </div>

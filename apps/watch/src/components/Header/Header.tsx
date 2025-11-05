@@ -32,17 +32,11 @@ export function Header({
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   return (
-    <>
-      <ThemeProvider
-        themeName={ThemeName.website}
-        themeMode={themeMode}
-        nested
-      ></ThemeProvider>
-      <ThemeProvider
-        themeName={ThemeName.website}
-        themeMode={ThemeMode.light}
-        nested
-      >
+    <ThemeProvider
+      themeName={ThemeName.website}
+      themeMode={ThemeMode.light}
+      nested
+    >
         <SwipeableDrawer
           anchor="right"
           open={drawerOpen}
@@ -83,7 +77,6 @@ export function Header({
             </Box>
           </Container>
         </SwipeableDrawer>
-      </ThemeProvider>
-    </>
+    </ThemeProvider>
   )
 }

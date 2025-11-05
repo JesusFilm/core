@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/react'
 
 import { watchConfig } from '../../../libs/storybook'
 

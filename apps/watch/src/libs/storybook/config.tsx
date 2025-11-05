@@ -1,4 +1,4 @@
-import { Decorator } from '@storybook/nextjs'
+import { Decorator } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 
 import { sharedUiConfig } from '@core/shared/ui/sharedUiConfig'
