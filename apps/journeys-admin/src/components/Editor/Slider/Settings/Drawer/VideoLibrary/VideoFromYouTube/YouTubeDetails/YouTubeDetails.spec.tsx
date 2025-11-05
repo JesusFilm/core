@@ -198,8 +198,8 @@ describe('YouTubeDetails', () => {
     mswServer.use(getVideosWithOffsetAndUrl)
     mockUseYouTubeClosedCaptions.mockReturnValue({
       languages: [
-        { id: 'lang1', bcp47: 'en', name: { value: 'English', primary: true } },
-        { id: 'lang2', bcp47: 'es', name: { value: 'Spanish', primary: false } }
+        { id: '529', bcp47: 'en', name: { value: 'English', primary: true } },
+        { id: '21028', bcp47: 'es', name: { value: 'Spanish', primary: false } }
       ],
       loading: false,
       error: undefined
@@ -226,7 +226,8 @@ describe('YouTubeDetails', () => {
       objectFit: null,
       subtitleLanguage: {
         __typename: 'Language' as const,
-        id: 'lang2'
+        id: '529',
+        bcp47: 'en'
       },
       mediaVideo: null,
       action: null,
@@ -257,7 +258,7 @@ describe('YouTubeDetails', () => {
       expect.objectContaining({
         youtube: {
           cc_load_policy: 1,
-          cc_lang_pref: 'es'
+          cc_lang_pref: 'en'
         },
         fluid: true,
         controls: true,
@@ -345,8 +346,8 @@ describe('YouTubeDetails', () => {
     mswServer.use(getVideosWithOffsetAndUrl)
     mockUseYouTubeClosedCaptions.mockReturnValue({
       languages: [
-        { id: 'lang1', bcp47: 'en', name: { value: 'English', primary: true } },
-        { id: 'lang2', bcp47: 'es', name: { value: 'Spanish', primary: false } }
+        { id: '529', bcp47: 'en', name: { value: 'English', primary: true } },
+        { id: '21028', bcp47: 'es', name: { value: 'Spanish', primary: false } }
       ],
       loading: false,
       error: undefined
@@ -373,7 +374,8 @@ describe('YouTubeDetails', () => {
       objectFit: null,
       subtitleLanguage: {
         __typename: 'Language' as const,
-        id: 'lang2'
+        id: '529',
+        bcp47: 'en'
       },
       mediaVideo: null,
       action: null,
@@ -415,7 +417,7 @@ describe('YouTubeDetails', () => {
     expect(mockPlayer.tech_.ytPlayer.setOption).toHaveBeenCalledWith(
       'captions',
       'track',
-      { languageCode: 'es' }
+      { languageCode: 'en' }
     )
     expect(mockPlayer.tech_.ytPlayer.unloadModule).not.toHaveBeenCalled()
   })
@@ -579,7 +581,8 @@ describe('YouTubeDetails', () => {
       objectFit: null,
       subtitleLanguage: {
         __typename: 'Language' as const,
-        id: 'lang1'
+        id: '529',
+        bcp47: 'en'
       },
       mediaVideo: null,
       action: null,
@@ -681,7 +684,8 @@ describe('YouTubeDetails', () => {
       objectFit: null,
       subtitleLanguage: {
         __typename: 'Language' as const,
-        id: 'lang-en'
+        id: '529',
+        bcp47: 'en'
       },
       mediaVideo: null,
       action: null,
@@ -713,7 +717,7 @@ describe('YouTubeDetails', () => {
       startAt: 10,
       source: VideoBlockSource.youTube,
       videoId: 'jQaeIJOA6J0',
-      subtitleLanguageId: 'lang-en'
+      subtitleLanguageId: '529'
     })
   })
 
@@ -808,7 +812,8 @@ describe('YouTubeDetails', () => {
       objectFit: null,
       subtitleLanguage: {
         __typename: 'Language' as const,
-        id: 'lang-es'
+        id: '529',
+        bcp47: 'en'
       },
       mediaVideo: null,
       action: null,
