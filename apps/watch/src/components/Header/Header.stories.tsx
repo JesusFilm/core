@@ -37,9 +37,7 @@ const WithFlagsTemplate: StoryObj<typeof Header> = {
     >
       <Header
         themeMode={ThemeMode.light}
-        hideTopAppBar={args.hideTopAppBar}
-        hideBottomAppBar={args.hideBottomAppBar}
-        hideSpacer={args.hideSpacer}
+        showLanguageSwitcher={args.showLanguageSwitcher}
       />
     </FlagsProvider>
   )
@@ -59,9 +57,7 @@ export const WithAllButtons = {
     }
   },
   args: {
-    hideTopAppBar: false,
-    hideBottomAppBar: false,
-    hideSpacer: false
+    showLanguageSwitcher: false
   }
 }
 
@@ -72,9 +68,7 @@ export const OpenPanel = {
     await userEvent.click(menuButton)
   },
   args: {
-    hideTopAppBar: false,
-    hideBottomAppBar: false,
-    hideSpacer: false
+    showLanguageSwitcher: false
   }
 }
 

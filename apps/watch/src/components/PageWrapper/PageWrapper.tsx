@@ -19,6 +19,7 @@ interface PageWrapperProps {
   headerThemeMode?: ThemeMode
   hideFooter?: boolean
   isFullscreen?: boolean
+  showLanguageSwitcher?: boolean
 }
 
 export function PageWrapper({
@@ -28,13 +29,15 @@ export function PageWrapper({
   testId,
   headerThemeMode,
   hideFooter = false,
-  isFullscreen = false
+  isFullscreen = false,
+  showLanguageSwitcher = false
 }: PageWrapperProps): ReactElement {
   return (
     <Div100vh>
       {hideHeader !== true && (
         <Header
           themeMode={headerThemeMode}
+          showLanguageSwitcher={showLanguageSwitcher}
         />
       )}
       <Stack

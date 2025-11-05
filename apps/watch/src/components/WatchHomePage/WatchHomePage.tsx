@@ -52,13 +52,7 @@ function WatchHomePageBody({ languageId }: WatchHomePageProps): ReactElement {
 
   return (
     <div>
-      <Header
-        themeMode={ThemeMode.dark}
-        hideTopAppBar
-        hideBottomAppBar
-        hideSpacer
-        showLanguageSwitcher
-      />
+      <Header themeMode={ThemeMode.dark} showLanguageSwitcher />
       <Index indexName={indexName}>
         <SearchComponent languageId={languageId} />
       </Index>
