@@ -22,6 +22,20 @@ export function MuxDetails({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<VideoJsPlayer | null>(null)
 
+  const updateSubtitleTracks = (player: VideoJsPlayer | null): void => {
+    if (player == null) return
+
+    const tracks = getCaptionsAndSubtitleTracks(player)
+    tracks.forEach((track) => {
+      if (track.kind === 'subtitles') {
+        track.mode =
+          (activeVideoBlock?.showGeneratedSubtitles ?? false)
+            ? 'showing'
+            : 'hidden'
+      }
+    })
+  }
+
   useEffect(() => {
     if (
       open &&
@@ -35,6 +49,22 @@ export function MuxDetails({
         controls: true,
         poster: `https://image.mux.com/${activeVideoBlock.mediaVideo.playbackId}/thumbnail.png?time=1`
       }) as VideoJsPlayer
+
+      const player = playerRef.current
+
+      // Listen for loadedmetadata event, reliable way for knowing when tracks are ready
+      // Added for edge case on intial view of player where useEffect does not have tracks
+      const handleLoadedMetadata = (): void => {
+        updateSubtitleTracks(playerRef.current)
+      }
+
+      player.on('loadedmetadata', handleLoadedMetadata)
+
+      return () => {
+        if (playerRef.current != null) {
+          playerRef.current.off('loadedmetadata', handleLoadedMetadata)
+        }
+      }
     }
   }, [
     activeVideoBlock,
@@ -44,17 +74,7 @@ export function MuxDetails({
   ])
 
   useEffect(() => {
-    if (playerRef.current != null) {
-      const tracks = getCaptionsAndSubtitleTracks(playerRef.current)
-      tracks.forEach((track) => {
-        if (track.kind === 'subtitles') {
-          track.mode =
-            (activeVideoBlock?.showGeneratedSubtitles ?? false)
-              ? 'showing'
-              : 'hidden'
-        }
-      })
-    }
+    updateSubtitleTracks(playerRef.current)
   })
 
   return (
