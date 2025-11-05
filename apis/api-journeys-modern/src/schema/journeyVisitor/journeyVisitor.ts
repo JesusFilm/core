@@ -76,14 +76,21 @@ function parseDateInTimeZoneToUtc(
     return asUtcMs - instant.getTime()
   }
 
-  const offset1 = getTimeZoneOffsetMs(initial, timeZone)
-  let utcMs = initial.getTime() - offset1
-  // Recompute once to handle DST transitions precisely
-  const offset2 = getTimeZoneOffsetMs(new Date(utcMs), timeZone)
-  if (offset2 !== offset1) {
-    utcMs = initial.getTime() - offset2
+  try {
+    const offset1 = getTimeZoneOffsetMs(initial, timeZone)
+    let utcMs = initial.getTime() - offset1
+    // Recompute once to handle DST transitions precisely
+    const offset2 = getTimeZoneOffsetMs(new Date(utcMs), timeZone)
+    if (offset2 !== offset1) {
+      utcMs = initial.getTime() - offset2
+    }
+    return new Date(utcMs)
+  } catch (err) {
+    if (err instanceof RangeError) {
+      return initial
+    }
+    throw err
   }
-  return new Date(utcMs)
 }
 
 // Format a Date as YYYY-MM-DD for a specific IANA timezone
