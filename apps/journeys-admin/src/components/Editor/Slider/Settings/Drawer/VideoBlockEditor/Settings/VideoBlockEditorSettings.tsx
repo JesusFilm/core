@@ -68,7 +68,6 @@ export function VideoBlockEditorSettings({
   const { journey } = useJourney()
   const isWebsite = journey?.website === true
   const { enqueueSnackbar } = useSnackbar()
-  const { journey } = useJourney()
 
   // Fetch closed captions using custom hook
   const { languages: availableSubtitles } = useYouTubeClosedCaptions({
