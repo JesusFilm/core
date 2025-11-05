@@ -134,7 +134,11 @@ export function BackgroundMediaVideo({
       objectFit: input.objectFit ?? null,
       subtitleLanguage:
         input.subtitleLanguageId != null
-          ? { __typename: 'Language', id: input.subtitleLanguageId }
+          ? {
+              __typename: 'Language',
+              id: input.subtitleLanguageId,
+              bcp47: ''
+            }
           : null
     }
 
