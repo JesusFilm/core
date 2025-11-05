@@ -151,7 +151,9 @@ export function FilterDrawer({
           <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
             {disableExportButton ? (
               <Tooltip
-                title={t("Only members of this journey's team can export data.")}
+                title={t(
+                  "Only members of this journey's team can export data."
+                )}
                 placement="top"
               >
                 <span>
