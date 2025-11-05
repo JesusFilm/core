@@ -87,14 +87,12 @@ export function SubtitleButton({
   }, [open, setActive, visible])
 
   // Get caption tracks and determine button state
-  const youtubeCaptionTracks = getCaptionsAndSubtitleTracks(player)
-  const activeYoutubeTrack = youtubeCaptionTracks.find(
-    (track) => track.mode === 'showing'
-  )
+  const tracks = getCaptionsAndSubtitleTracks(player)
+  const activeTrack = tracks.find((track) => track.mode === 'showing')
 
   // Determine button state based on available tracks and active track
-  const hasAvailableTracks = youtubeCaptionTracks.length > 0
-  const isTrackSelected = activeYoutubeTrack != null
+  const hasAvailableTracks = tracks.length > 0
+  const isTrackSelected = activeTrack != null
   const isDisabled = !hasAvailableTracks
 
   return (
@@ -132,8 +130,8 @@ export function SubtitleButton({
         anchorEl={anchorEl}
         open={open && visible}
         onClose={handleClose}
-        youtubeCaptionTracks={youtubeCaptionTracks}
-        activeYoutubeTrack={activeYoutubeTrack}
+        tracks={tracks}
+        activeTrack={activeTrack}
         onChange={handleSubtitleChange}
       />
     </>
