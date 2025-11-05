@@ -2,8 +2,8 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { BlockFields_StepBlock } from '@core/journeys/ui/block/__generated__/BlockFields'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import {
   ButtonColor,

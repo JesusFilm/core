@@ -249,6 +249,7 @@ describe('CustomizationToggle', () => {
     const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
     expect(toggle).toBeChecked()
   })
+
   it('renders toggle for ChatAction and reflects checked state', () => {
     const selectedBlock = {
       id: 'button-5',
