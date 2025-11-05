@@ -124,14 +124,14 @@ describe('Swatch', () => {
       renderWithTheme(<Swatch id="named-color" color="red" />)
 
       const swatch = screen.getByTestId('Swatch-named-color')
-      expect(swatch).toHaveStyle({ backgroundColor: 'rgb(255, 0, 0)' })
+      expect(swatch).toHaveStyle({ backgroundColor: 'red' })
     })
 
     it('handles transparent color', () => {
       renderWithTheme(<Swatch id="transparent" color="transparent" />)
 
       const swatch = screen.getByTestId('Swatch-transparent')
-      expect(swatch).toHaveStyle({ backgroundColor: 'rgba(0, 0, 0, 0)' })
+      expect(swatch).toHaveStyle({ backgroundColor: 'transparent' })
     })
   })
 

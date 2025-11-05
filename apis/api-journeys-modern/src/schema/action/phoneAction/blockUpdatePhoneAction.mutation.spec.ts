@@ -1,7 +1,6 @@
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
-import { ACTION_UPDATE_RESET } from '../blockUpdateAction.mutation'
 
 describe('blockUpdatePhoneAction mutation', () => {
   const authClient = getClient({
@@ -14,8 +13,6 @@ describe('blockUpdatePhoneAction mutation', () => {
       blockUpdatePhoneAction(id: $id, input: $input) {
         __typename
         phone
-        countryCode
-        contactAction
         gtmEventName
       }
     }
@@ -48,9 +45,7 @@ describe('blockUpdatePhoneAction mutation', () => {
       prismaMock.action.upsert.mockResolvedValueOnce({
         parentBlockId: '1',
         gtmEventName: null,
-        phone: '+15551234567',
-        countryCode: 'US',
-        contactAction: 'call'
+        phone: '+15551234567'
       } as any)
 
       const result = await authClient({
@@ -60,8 +55,7 @@ describe('blockUpdatePhoneAction mutation', () => {
           input: {
             gtmEventName: null,
             phone: '+15551234567',
-            countryCode: 'US',
-            contactAction: 'call'
+            countryCode: 'US'
           }
         }
       })
@@ -72,14 +66,16 @@ describe('blockUpdatePhoneAction mutation', () => {
           gtmEventName: null,
           phone: '+15551234567',
           countryCode: 'US',
-          contactAction: 'call',
           parentBlock: { connect: { id: '1' } }
         },
         update: {
-          ...ACTION_UPDATE_RESET,
+          url: null,
+          target: null,
+          email: null,
           phone: '+15551234567',
           countryCode: 'US',
-          contactAction: 'call',
+          journey: { disconnect: true },
+          block: { disconnect: true },
           gtmEventName: null
         }
       })
@@ -89,8 +85,6 @@ describe('blockUpdatePhoneAction mutation', () => {
           blockUpdatePhoneAction: {
             __typename: 'PhoneAction',
             phone: '+15551234567',
-            countryCode: 'US',
-            contactAction: 'call',
             gtmEventName: null
           }
         }
@@ -109,8 +103,7 @@ describe('blockUpdatePhoneAction mutation', () => {
           input: {
             gtmEventName: null,
             phone: '+15551234567',
-            countryCode: 'US',
-            contactAction: 'call'
+            countryCode: 'US'
           }
         }
       })
@@ -135,8 +128,7 @@ describe('blockUpdatePhoneAction mutation', () => {
           input: {
             gtmEventName: null,
             phone: '+15551234567',
-            countryCode: 'US',
-            contactAction: 'call'
+            countryCode: 'US'
           }
         }
       })
@@ -162,8 +154,7 @@ describe('blockUpdatePhoneAction mutation', () => {
           input: {
             gtmEventName: null,
             phone: '+15551234567',
-            countryCode: 'US',
-            contactAction: 'call'
+            countryCode: 'US'
           }
         }
       })

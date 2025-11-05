@@ -242,6 +242,15 @@ describe('journeyAcl', () => {
     it('denies when user has no userTeam or userJourneys', () => {
       expect(can(Action.Update, journeyEmpty, user)).toBe(false)
     })
+
+    describe('publisher', () => {
+      it('allows when publisher for template', () => {
+        const publisherUser = { ...user, roles: ['publisher'] }
+        expect(
+          can(Action.Update, journeyUnpublishedTemplate, publisherUser)
+        ).toBe(true)
+      })
+    })
   })
 
   describe('delete', () => {
@@ -259,28 +268,6 @@ describe('journeyAcl', () => {
 
     it('delegates to manage (denies when user is journey editor)', () => {
       expect(can(Action.Delete, journeyUserJourneyEditor, user)).toBe(false)
-    })
-  })
-
-  describe('export', () => {
-    it('allows when user is journey owner', () => {
-      expect(can(Action.Export, journeyUserJourneyOwner, user)).toBe(true)
-    })
-
-    it('allows when user is team member', () => {
-      expect(can(Action.Export, journeyUserTeamMember, user)).toBe(true)
-    })
-
-    it('allows when user is team manager', () => {
-      expect(can(Action.Export, journeyUserTeamManager, user)).toBe(true)
-    })
-
-    it('denies when user is journey editor', () => {
-      expect(can(Action.Export, journeyUserJourneyEditor, user)).toBe(false)
-    })
-
-    it('denies when user has no userTeam or userJourneys', () => {
-      expect(can(Action.Export, journeyEmpty, user)).toBe(false)
     })
   })
 })

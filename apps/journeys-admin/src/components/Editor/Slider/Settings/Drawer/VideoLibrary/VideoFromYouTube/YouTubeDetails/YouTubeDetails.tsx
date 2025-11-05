@@ -1,17 +1,15 @@
-import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Skeleton from '@mui/material/Skeleton'
-import Slide, { SlideProps } from '@mui/material/Slide'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import Box from '@mui/system/Box'
 import { useTranslation } from 'next-i18next'
-import { useSnackbar } from 'notistack'
+import fetch from 'node-fetch'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
 
-import { useYouTubeClosedCaptions } from '@core/journeys/ui/useYouTubeClosedCaptions'
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import CheckIcon from '@core/shared/ui/icons/Check'
 
@@ -38,12 +36,8 @@ const fetcher = async (id: string): Promise<YoutubeVideo> => {
 export function YouTubeDetails({
   open,
   id,
-  onSelect,
-  activeVideoBlock
-}: Pick<
-  VideoDetailsProps,
-  'open' | 'id' | 'onSelect' | 'activeVideoBlock'
->): ReactElement {
+  onSelect
+}: Pick<VideoDetailsProps, 'open' | 'id' | 'onSelect'>): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<Player | null>(null)
@@ -53,35 +47,12 @@ export function YouTubeDetails({
     fetcher
   )
 
-  // Get subtitle language ID from the active video block
-  const subtitleLanguageId = activeVideoBlock?.subtitleLanguage?.id ?? null
-
-  // Fetch closed captions using custom hook
-  const { languages: captionLanguages, loading: captionsLoading } =
-    useYouTubeClosedCaptions({
-      videoId: id,
-      skip: !open || id == null
-    })
-
-  // Derive bcp47 code from caption data by matching subtitleLanguageId
-  const subtitleLanguageBcp47 =
-    captionLanguages.find((lang) => lang.id === subtitleLanguageId)?.bcp47 ??
-    null
-
   const handleSelect = (): void => {
     onSelect({
       videoId: id,
       source: VideoBlockSource.youTube,
-      startAt:
-        activeVideoBlock?.videoId === id ? (activeVideoBlock?.startAt ?? 0) : 0,
-      endAt:
-        activeVideoBlock?.videoId === id
-          ? (activeVideoBlock?.endAt ?? time)
-          : time,
-      subtitleLanguageId:
-        activeVideoBlock?.videoId === id
-          ? (activeVideoBlock?.subtitleLanguage?.id ?? null)
-          : null
+      startAt: 0,
+      endAt: time
     })
   }
 
@@ -94,76 +65,19 @@ export function YouTubeDetails({
 
   const videoDescription = data?.snippet.description ?? ''
 
-  // Create visible player (only recreate when data or subtitleLanguageBcp47 changes)
   useEffect(() => {
-    if (videoRef.current != null && data != null) {
-      const youtubeOptions = {
-        youtube: {
-          cc_load_policy: subtitleLanguageBcp47 != null ? 1 : 0,
-          ...(subtitleLanguageBcp47 != null && {
-            cc_lang_pref: subtitleLanguageBcp47
-          })
-        }
-      }
-
+    if (videoRef.current != null) {
       playerRef.current = videojs(videoRef.current, {
         ...defaultVideoJsOptions,
-        ...youtubeOptions,
         fluid: true,
         controls: true,
         poster: data?.snippet?.thumbnails?.default?.url ?? undefined
       })
-
       playerRef.current.on('playing', () => {
         setPlaying(true)
-        if (subtitleLanguageBcp47 != null) {
-          playerRef?.current?.tech_?.ytPlayer?.loadModule('captions')
-          playerRef?.current?.tech_?.ytPlayer?.setOption('captions', 'track', {
-            languageCode: subtitleLanguageBcp47
-          })
-        } else {
-          playerRef?.current?.tech_?.ytPlayer?.unloadModule('captions')
-        }
       })
     }
-  }, [data, subtitleLanguageBcp47])
-
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar()
-
-  // Handle when subtitles are available but none selected
-  useEffect(() => {
-    if (
-      data != null &&
-      !captionsLoading &&
-      captionLanguages.length > 0 &&
-      subtitleLanguageId === null
-    ) {
-      enqueueSnackbar(t('Subtitles are available for this video'), {
-        variant: 'success',
-        preventDuplicate: true,
-        autoHideDuration: 4000,
-        action: (snackbarId) => (
-          <Button
-            onClick={() => closeSnackbar(snackbarId)}
-            sx={{ color: 'white' }}
-          >
-            {t('Dismiss')}
-          </Button>
-        ),
-        TransitionComponent: (props: SlideProps) => (
-          <Slide {...props} direction="up" />
-        )
-      })
-    }
-  }, [
-    data,
-    captionsLoading,
-    captionLanguages,
-    subtitleLanguageId,
-    enqueueSnackbar,
-    closeSnackbar,
-    t
-  ])
+  }, [data])
 
   const loading = data == null && error == null
 

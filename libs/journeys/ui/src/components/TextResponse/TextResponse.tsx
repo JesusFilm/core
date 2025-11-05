@@ -6,16 +6,14 @@ import Typography from '@mui/material/Typography'
 import { SxProps } from '@mui/system/styleFunctionSx'
 import { useFormikContext } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { TextResponseType } from '../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
-import { useJourney } from '../../libs/JourneyProvider'
 import { TextField } from '../TextField'
 
 import { TextResponseFields } from './__generated__/TextResponseFields'
-import { getTextResponseValues } from './utils/getTextResponseValues'
 
 /**
  * GraphQL mutation for creating a text response submission event.
@@ -57,8 +55,7 @@ export const TextResponse = ({
   hint,
   minRows,
   type,
-  required,
-  hideLabel
+  required
 }: TextResponseProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
   const [value, setValue] = useState('')
@@ -72,34 +69,14 @@ export const TextResponse = ({
     state: { selectedBlock }
   } = useEditor()
 
-  const { journey, variant } = useJourney()
-
   const formikValue = formikContext?.values?.[blockId] ?? ''
   const isSubmitting = formikContext?.isSubmitting ?? false
   const handleChange = formikContext?.handleChange
   const handleBlur = formikContext?.handleBlur
 
   const currentValue = formikValue ?? value
-
-  const {
-    label: resolvedLabel,
-    placeholder: resolvedPlaceholder,
-    hint: resolvedHint
-  } = useMemo(
-    () =>
-      getTextResponseValues(
-        { label, placeholder, hint },
-        journey?.journeyCustomizationFields ?? [],
-        variant ?? 'default',
-        journey?.template
-      ),
-    [label, placeholder, hint, journey?.journeyCustomizationFields, variant]
-  )
-
   const trimmedPlaceholder =
-    resolvedPlaceholder != null
-      ? resolvedPlaceholder.trim().replace(/\s+/g, ' ')
-      : ''
+    placeholder != null ? placeholder.trim().replace(/\s+/g, ' ') : ''
 
   useEffect(() => {
     if (formikContext != null && formikValue !== value) {
@@ -120,16 +97,6 @@ export const TextResponse = ({
     }
   }
 
-  const helperText = (() => {
-    if (resolvedHint != null && resolvedHint.trim() !== '') {
-      return resolvedHint
-    }
-    if (required && (hideLabel || resolvedLabel.trim() === '')) {
-      return t('This field is required.')
-    }
-    return ''
-  })()
-
   return (
     <Box sx={{ mb: 4 }} data-testid="JourneysTextResponse">
       <Stack
@@ -137,26 +104,24 @@ export const TextResponse = ({
         flexDirection="column"
         spacing={1}
       >
-        {hideLabel !== true && (
-          <Typography
-            id={`textResponse-label-${blockId}`}
-            variant="subtitle2"
-            sx={{
-              fontSize: 14,
-              fontWeight: 500,
-              fontFamily: theme.typography.button.fontFamily
-            }}
-          >
-            {resolvedLabel.trim() === '' ? t('Label') : resolvedLabel}
-            {(required ?? false) ? '*' : ''}
-          </Typography>
-        )}
+        <Typography
+          id={`textResponse-label-${blockId}`}
+          variant="subtitle2"
+          sx={{
+            fontSize: 14,
+            fontWeight: 500,
+            fontFamily: theme.typography.button.fontFamily
+          }}
+        >
+          {label.trim() === '' ? t('Label') : label}
+          {(required ?? false) ? '*' : ''}
+        </Typography>
         <TextField
           id={`textResponse-field`}
           name={blockId}
           placeholder={trimmedPlaceholder}
           value={currentValue}
-          helperText={helperText}
+          helperText={hint != null ? hint : ''}
           multiline
           disabled={isSubmitting}
           minRows={minRows ?? 1}

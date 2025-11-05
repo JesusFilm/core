@@ -1,17 +1,25 @@
 import { GraphQLError } from 'graphql'
 
-import { prisma } from '@core/prisma/journeys/client'
+import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../../lib/auth/ability'
 import { builder } from '../../builder'
 import { INCLUDE_JOURNEY_ACL } from '../../journey/journey.acl'
-import { ACTION_UPDATE_RESET } from '../blockUpdateAction.mutation'
 import { canBlockHaveAction } from '../canBlockHaveAction'
 
 import { PhoneActionInput } from './inputs'
 import { PhoneActionRef } from './phoneAction'
 
 const phoneRegex = /^\+[1-9]\d{1,14}$/
+
+const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
+  url: null,
+  target: null,
+  email: null,
+  phone: null,
+  journey: { disconnect: true },
+  block: { disconnect: true }
+}
 
 builder.mutationField('blockUpdatePhoneAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({

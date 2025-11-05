@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'

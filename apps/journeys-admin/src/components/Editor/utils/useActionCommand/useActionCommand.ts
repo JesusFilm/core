@@ -10,12 +10,10 @@ import {
   BlockFields_SignUpBlock_action,
   BlockFields_VideoBlock_action
 } from '../../../../../__generated__/BlockFields'
-import { useBlockActionChatUpdateMutation } from '../../../../libs/useBlockActionChatUpdateMutation'
 import { useBlockActionDeleteMutation } from '../../../../libs/useBlockActionDeleteMutation'
 import { useBlockActionEmailUpdateMutation } from '../../../../libs/useBlockActionEmailUpdateMutation'
 import { useBlockActionLinkUpdateMutation } from '../../../../libs/useBlockActionLinkUpdateMutation'
 import { useBlockActionNavigateToBlockUpdateMutation } from '../../../../libs/useBlockActionNavigateToBlockUpdateMutation'
-import { useBlockActionPhoneUpdateMutation } from '../../../../libs/useBlockActionPhoneUpdateMutation'
 
 export type Action =
   | BlockFields_ButtonBlock_action
@@ -40,10 +38,8 @@ export function useActionCommand(): {
   const [actionDelete] = useBlockActionDeleteMutation()
   const [actionLinkUpdate] = useBlockActionLinkUpdateMutation()
   const [actionEmailUpdate] = useBlockActionEmailUpdateMutation()
-  const [actionPhoneUpdate] = useBlockActionPhoneUpdateMutation()
   const [actionNavigateToBlockUpdate] =
     useBlockActionNavigateToBlockUpdateMutation()
-  const [actionChatUpdate] = useBlockActionChatUpdateMutation()
 
   return {
     addAction({
@@ -77,25 +73,19 @@ export function useActionCommand(): {
             })
           switch (action?.__typename) {
             case 'LinkAction':
-              void actionLinkUpdate(block, action.url)
-              break
-            case 'EmailAction':
-              void actionEmailUpdate(block, action.email)
-              break
-            case 'ChatAction':
-              void actionChatUpdate(
+              void actionLinkUpdate(
                 block,
-                action.chatUrl,
+                action.url,
                 action.customizable,
                 action.parentStepId
               )
               break
-            case 'PhoneAction':
-              void actionPhoneUpdate(
+            case 'EmailAction':
+              void actionEmailUpdate(
                 block,
-                action.phone,
-                action.countryCode,
-                action.contactAction
+                action.email,
+                action.customizable,
+                action.parentStepId
               )
               break
             case 'NavigateToBlockAction':

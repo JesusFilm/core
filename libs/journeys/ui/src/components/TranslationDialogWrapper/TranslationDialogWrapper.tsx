@@ -16,7 +16,6 @@ interface TranslationDialogWrapperProps {
   title: string
   loadingText?: string
   loading: boolean
-  disabled?: boolean
   testId?: string
   children: ReactNode
   submitLabel?: string
@@ -45,7 +44,6 @@ interface TranslationDialogWrapperProps {
  * @param {string} props.title - The title to display in the dialog header
  * @param {string} [props.loadingText] - Optional custom text to display during loading state
  * @param {boolean} props.loading - Flag indicating whether the dialog is in a loading state
- * @param {boolean} props.disabled - Flag indicating whether the dialog is disabled
  * @param {string} [props.testId] - Optional test ID for testing purposes
  * @param {ReactNode} props.children - The content to render within the dialog
  * @param {string} [props.submitLabel] - Optional custom label for the submit button (defaults to "Create")
@@ -61,7 +59,6 @@ export function TranslationDialogWrapper({
   title,
   loadingText,
   loading,
-  disabled = false,
   testId,
   children,
   submitLabel,
@@ -101,7 +98,6 @@ export function TranslationDialogWrapper({
                 variant="contained"
                 onClick={onTranslate}
                 loading={loading}
-                disabled={disabled}
                 sx={{
                   backgroundColor: 'secondary.dark'
                 }}

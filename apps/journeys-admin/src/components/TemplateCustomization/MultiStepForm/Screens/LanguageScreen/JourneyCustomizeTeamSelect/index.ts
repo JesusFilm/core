@@ -1,1 +1,0 @@
-export { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'

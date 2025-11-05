@@ -2,10 +2,8 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { SxProps } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { useParams } from 'next/navigation'
 import { ReactElement } from 'react'
 
-import { useEditor } from '../../libs/EditorProvider'
 import { useJourney } from '../../libs/JourneyProvider'
 import { getJourneyRTL } from '../../libs/rtl'
 import {
@@ -34,9 +32,6 @@ export function StepFooter({
 }: StepFooterProps): ReactElement {
   const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
-  const {
-    state: { selectedStep }
-  } = useEditor()
 
   const hostAvatar = hasHostAvatar({ journey, variant })
   const hostDetails = hasHostDetails({ journey })
@@ -46,16 +41,7 @@ export function StepFooter({
   const footerMobileHeight = getFooterMobileHeight({ journey, variant })
   const combinedFooter = hasCombinedFooter({ journey, variant })
 
-  const { menuButtonIcon } = journey ?? {}
-  const hasMenuButtonIcon = menuButtonIcon != null
-
-  const menuStepBlockId = journey?.menuStepBlock?.id
-  const urlParams = useParams()
-  const currentPath = urlParams?.['stepSlug']
-
   const isWebsite = journey?.website === true
-  const isMenu =
-    menuStepBlockId === currentPath || selectedStep?.id === menuStepBlockId
 
   return (
     <Box
@@ -99,10 +85,7 @@ export function StepFooter({
             height: { xs: footerMobileHeight, sm: 52 },
             flexDirection: rtl ? 'row-reverse' : 'row',
             alignItems: 'center',
-            justifyContent:
-              isWebsite && isMenu && hasMenuButtonIcon
-                ? 'space-between'
-                : 'flex-end',
+            justifyContent: isWebsite ? 'space-between' : undefined,
             mt: '0px !important'
           }}
           gap={4}
@@ -112,11 +95,7 @@ export function StepFooter({
               <FooterButtonList />
             </Box>
           )}
-          {isWebsite && isMenu && hasMenuButtonIcon && (
-            <Box>
-              <InformationButton sx={{ p: 0 }} />
-            </Box>
-          )}
+          {isWebsite && <InformationButton sx={{ p: 0 }} />}
           {!isWebsite && (
             <Stack
               sx={{

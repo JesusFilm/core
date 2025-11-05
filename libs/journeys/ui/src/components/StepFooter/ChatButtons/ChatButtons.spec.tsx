@@ -102,12 +102,12 @@ describe('ChatButtons', () => {
     logoImageBlock: null,
     menuButtonIcon: null,
     menuStepBlock: null,
+    socialNodeX: null,
+    socialNodeY: null,
     journeyTheme: null,
     journeyCustomizationDescription: null,
     journeyCustomizationFields: [],
-    fromTemplateId: null,
-    socialNodeX: null,
-    socialNodeY: null
+    fromTemplateId: null
   }
 
   const result = jest.fn(() => ({
@@ -135,8 +135,23 @@ describe('ChatButtons', () => {
     }
   ]
 
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
   beforeEach(() => {
     jest.clearAllMocks()
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
   })
 
   it('renders chat buttons', () => {
@@ -173,7 +188,7 @@ describe('ChatButtons', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(window.open).toHaveBeenCalledWith(chatButtons[0].link, '_blank')
     expect(mockPlausible).toHaveBeenCalledWith('footerChatButtonClick', {
-      u: expect.stringContaining(`/journeyId/step`),
+      u: `${mockOrigin}/journeyId/step`,
       props: {
         id: '1',
         blockId: 'step',

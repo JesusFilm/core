@@ -1,1 +1,0 @@
-export { MultiselectOption } from './MultiselectOption'

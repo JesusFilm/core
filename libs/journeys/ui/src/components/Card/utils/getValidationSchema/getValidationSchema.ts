@@ -1,11 +1,9 @@
 import { TFunction } from 'next-i18next'
-import { array, object, string } from 'yup'
+import { object, string } from 'yup'
 
 import { TextResponseType } from '../../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../../libs/block'
-import { BlockFields_MultiselectBlock as MultiselectBlock } from '../../../../libs/block/__generated__/BlockFields'
 import { TextResponseFields } from '../../../TextResponse/__generated__/TextResponseFields'
-import { getMultiselectBlocks } from '../getMultiselectBlocks'
 import { getTextResponseBlocks } from '../getTextResponseBlocks'
 
 /**
@@ -18,8 +16,7 @@ export function getValidationSchema(
   children: TreeBlock[],
   t: TFunction
 ): ReturnType<typeof object> {
-  // Use a broad schema record to support both string and array validations
-  const validationSchema: Record<string, any> = {}
+  const validationSchema: Record<string, ReturnType<typeof string>> = {}
   const textResponseBlocks = getTextResponseBlocks(children) as Array<
     TreeBlock<TextResponseFields>
   >
@@ -42,37 +39,6 @@ export function getValidationSchema(
     }
 
     validationSchema[block.id] = fieldSchema
-  })
-
-  // Multiselect validations: enforce min and max when provided
-  const multiselectBlocks: Array<TreeBlock<MultiselectBlock>> =
-    getMultiselectBlocks(children)
-  multiselectBlocks.forEach((block) => {
-    const min = block.min
-    const max = block.max
-
-    // Only build schema if either min or max is set
-    if (typeof min === 'number' && min > 0) {
-      const base = array().of(string())
-      const withMin = base.min(
-        min,
-        t('Select at least {{count}} options.', { count: min })
-      )
-      validationSchema[block.id] =
-        typeof max === 'number' && max > 0
-          ? withMin.max(
-              max,
-              t('Select up to {{count}} options.', { count: max })
-            )
-          : withMin
-      return
-    }
-
-    if (typeof max === 'number' && max > 0) {
-      validationSchema[block.id] = array()
-        .of(string())
-        .max(max, t('Select up to {{count}} options.', { count: max }))
-    }
   })
 
   return object().shape(validationSchema)

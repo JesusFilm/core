@@ -80,7 +80,7 @@ export const journey: Journey = {
         parentBlockId: 'button1.id',
         gtmEventName: null,
         url: 'https://www.google.com/',
-        customizable: false,
+        customizable: null,
         parentStepId: null
       },
       settings: null
@@ -132,7 +132,7 @@ export const journey: Journey = {
         parentBlockId: 'signup.id',
         gtmEventName: 'signup',
         url: 'https://www.google.com/',
-        customizable: false,
+        customizable: null,
         parentStepId: null
       },
       submitIconId: 'icon'
@@ -166,10 +166,10 @@ export const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
+  socialNodeX: null,
+  socialNodeY: null,
   journeyTheme: null,
   journeyCustomizationDescription: null,
   journeyCustomizationFields: [],
-  fromTemplateId: null,
-  socialNodeX: null,
-  socialNodeY: null
+  fromTemplateId: null
 }

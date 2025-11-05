@@ -6,10 +6,7 @@ import { graphql } from '@core/shared/gql'
 
 export const videoBlockYouTubeSchema = z.object({
   videoId: z
-    .string({
-      error: (issue) =>
-        issue.input === undefined ? 'videoId is required' : undefined
-    })
+    .string({ required_error: 'videoId is required' })
     .regex(/^[-\w]{11}$/, 'videoId must be a valid YouTube videoId')
 })
 
@@ -20,12 +17,7 @@ export const videoBlockInternalSchema = z.object({
 
 export const videoBlockMuxSchema = z.object({
   videoId: z
-    .string({
-      error: (issue) =>
-        issue.input === undefined
-          ? 'videoId is required for mux source'
-          : undefined
-    })
+    .string({ required_error: 'videoId is required for mux source' })
     .min(1)
 })
 

@@ -4,8 +4,6 @@ import { ReactFlowProvider } from 'reactflow'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import {
   BlockFields_ButtonBlock as ButtonBlock,
@@ -17,27 +15,6 @@ import {
 import { mockReactFlow } from '../../../../../../../../test/mockReactFlow'
 
 import { ActionButton } from '.'
-
-const block = {
-  __typename: 'ButtonBlock',
-  id: 'button.id',
-  label: '{{ name }}'
-} as unknown as TreeBlock<ButtonBlock>
-
-const journey = {
-  id: 'journey.id',
-  template: true,
-  journeyCustomizationFields: [
-    {
-      __typename: 'JourneyCustomizationField',
-      id: '1',
-      journeyId: 'journey.id',
-      key: 'name',
-      value: 'Dank Dog',
-      defaultValue: 'Anonymous'
-    }
-  ]
-} as unknown as Journey
 
 describe('ActionButton', () => {
   beforeEach(() => {
@@ -59,9 +36,7 @@ describe('ActionButton', () => {
     )
 
     expect(screen.getByText('button action')).toBeInTheDocument()
-    expect(
-      screen.getByTestId('BaseNodeConnectionArrowIcon')
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('BaseNodeConnectionArrowIcon')).toBeVisible()
   })
 
   it('should render default label "Button" for ButtonBlock when submitEnabled is false', () => {
@@ -232,9 +207,7 @@ describe('ActionButton', () => {
       </MockedProvider>
     )
 
-    expect(screen.getByTestId('BaseNodeConnectionArrowIcon')).toHaveStyle(
-      'opacity: 0'
-    )
+    expect(screen.getByTestId('BaseNodeConnectionArrowIcon')).not.toBeVisible()
   })
 
   it('should disable source handle in analytics mode', () => {
@@ -290,42 +263,5 @@ describe('ActionButton', () => {
     const bar = screen.getByTestId('AnalyticsOverlayBar')
     expect(bar).toBeInTheDocument()
     expect(bar).toHaveStyle('flex-grow: 0.5')
-  })
-
-  it('should render customized label when journey template is false', () => {
-    const nonTemplateJourney = {
-      ...journey,
-      template: false
-    } as unknown as Journey
-
-    render(
-      <MockedProvider>
-        <JourneyProvider
-          value={{ journey: nonTemplateJourney, variant: 'default' }}
-        >
-          <ReactFlowProvider>
-            <ActionButton stepId="step.id" block={block} />
-          </ReactFlowProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByText('Dank Dog')).toBeInTheDocument()
-    expect(screen.queryByText('{{ name }}')).not.toBeInTheDocument()
-  })
-
-  it('should render markdown format label when journey template is true in admin variant', () => {
-    render(
-      <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <ReactFlowProvider>
-            <ActionButton stepId="step.id" block={block} />
-          </ReactFlowProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByText('{{ name }}')).toBeInTheDocument()
-    expect(screen.queryByText('Dank Dog')).not.toBeInTheDocument()
   })
 })

@@ -4,8 +4,6 @@ import { BUTTON_FIELDS } from '../../components/Button/buttonFields'
 import { CARD_FIELDS } from '../../components/Card/cardFields'
 import { ICON_FIELDS } from '../../components/Icon/iconFields'
 import { IMAGE_FIELDS } from '../../components/Image/imageFields'
-import { MULTISELECT_OPTION_FIELDS } from '../../components/MultiselectOption/multiselectOptionFields'
-import { MULTISELECT_QUESTION_FIELDS } from '../../components/MultiselectQuestion/multiselectQuestionFields'
 import { RADIO_OPTION_FIELDS } from '../../components/RadioOption/radioOptionFields'
 import { RADIO_QUESTION_FIELDS } from '../../components/RadioQuestion/radioQuestionFields'
 import { SIGN_UP_FIELDS } from '../../components/SignUp/signUpFields'
@@ -21,8 +19,6 @@ export const BLOCK_FIELDS = gql`
   ${CARD_FIELDS}
   ${ICON_FIELDS}
   ${IMAGE_FIELDS}
-  ${MULTISELECT_OPTION_FIELDS}
-  ${MULTISELECT_QUESTION_FIELDS}
   ${RADIO_OPTION_FIELDS}
   ${RADIO_QUESTION_FIELDS}
   ${SIGN_UP_FIELDS}
@@ -47,12 +43,6 @@ export const BLOCK_FIELDS = gql`
     }
     ... on ImageBlock {
       ...ImageFields
-    }
-    ... on MultiselectOptionBlock {
-      ...MultiselectOptionFields
-    }
-    ... on MultiselectBlock {
-      ...MultiselectQuestionFields
     }
     ... on RadioOptionBlock {
       ...RadioOptionFields

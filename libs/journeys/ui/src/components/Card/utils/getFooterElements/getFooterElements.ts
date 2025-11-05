@@ -1,5 +1,4 @@
 import { JourneyFields } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { JourneyProviderContext } from '../../../../libs/JourneyProvider/JourneyProvider'
 
 export const FULL_HEIGHT = '90px'
 export const HALF_HEIGHT = '60px'
@@ -8,7 +7,7 @@ export const WEBSITE_HEIGHT = '0px'
 
 interface JourneyInfoProps {
   journey?: JourneyFields
-  variant?: JourneyProviderContext['variant'] | undefined
+  variant?: 'default' | 'admin' | 'embed' | undefined
 }
 
 export function hasReactions({ journey }: JourneyInfoProps): boolean {

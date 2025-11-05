@@ -27,7 +27,6 @@ export const FILTERED_EVENTS = ALL_EVENT_TYPES.filter(
     event === 'ButtonClickEvent' ||
     event === 'ChatOpenEvent' ||
     event === 'JourneyViewEvent' ||
-    event === 'MultiselectSubmissionEvent' ||
     event === 'RadioQuestionSubmissionEvent' ||
     event === 'SignUpSubmissionEvent' ||
     event === 'TextResponseSubmissionEvent' ||

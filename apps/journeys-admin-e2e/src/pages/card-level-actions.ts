@@ -29,28 +29,20 @@ export class CardLevelActionPage {
   }
 
   async clickOnJourneyCard() {
+    await this.page.waitForLoadState('load')
     await this.page
       .frameLocator(this.journeyCardFrame)
-      .locator('div[data-testid="CardOverlayImageContainer"]')
       .first()
-      .waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
-    await this.page
-      .frameLocator(this.journeyCardFrame)
       .locator('div[data-testid="CardOverlayImageContainer"]')
       .first()
       .click({ delay: 1000 })
   }
 
   async clickOnVideoJourneyCard() {
+    await this.page.waitForLoadState('load')
     await this.page
       .frameLocator(this.journeyCardFrame)
-      .locator(
-        'div[data-testid="CardOverlayImageContainer"] img[data-testid="background-image"]'
-      )
       .first()
-      .waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
-    await this.page
-      .frameLocator(this.journeyCardFrame)
       .locator(
         'div[data-testid="CardOverlayImageContainer"] img[data-testid="background-image"]'
       )
@@ -88,6 +80,7 @@ export class CardLevelActionPage {
   async enterTextInJourneysTypographyField() {
     await this.page
       .frameLocator(this.journeyCardFrame)
+      .first()
       .locator(
         'p[data-testid="JourneysTypography"] textarea[placeholder="Add your text here..."]'
       )
@@ -95,6 +88,7 @@ export class CardLevelActionPage {
       .clear()
     await this.page
       .frameLocator(this.journeyCardFrame)
+      .first()
       .locator(
         'p[data-testid="JourneysTypography"] textarea[placeholder="Add your text here..."]'
       )
@@ -197,9 +191,7 @@ export class CardLevelActionPage {
   }
 
   async waitUntilJourneyCardLoaded() {
-    await this.page
-      .locator('div[data-testid="StrategyItem"] button')
-      .waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+    await this.page.waitForLoadState('load')
     await expect(
       this.page.locator('div[data-testid="StrategyItem"] button')
     ).toBeVisible({ timeout: sixtySecondsTimeout })
@@ -486,6 +478,7 @@ export class CardLevelActionPage {
     for (let property = 0; property < properties; property++) {
       await this.page
         .frameLocator(this.journeyCardFrame)
+        .first()
         .locator(
           'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]'
         )
@@ -503,6 +496,7 @@ export class CardLevelActionPage {
         .catch(async () => {
           await this.page
             .frameLocator(this.journeyCardFrame)
+            .first()
             .locator(
               'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]'
             )

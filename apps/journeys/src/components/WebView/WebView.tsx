@@ -29,19 +29,10 @@ interface WebViewProps {
   stepBlock: TreeBlock<StepFields>
 }
 export function WebView({ blocks, stepBlock }: WebViewProps): ReactElement {
-  const { setTreeBlocks, blockHistory } = useBlocks()
+  const { setTreeBlocks } = useBlocks()
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
   const theme = useTheme()
-
-  const activeBlock = blockHistory[blockHistory.length - 1] as
-    | TreeBlock<StepFields>
-    | undefined
-
-  const hasVideoBlock =
-    activeBlock?.children[0]?.children.some(
-      (block) => block.__typename === 'VideoBlock'
-    ) ?? false
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
@@ -170,15 +161,13 @@ export function WebView({ blocks, stepBlock }: WebViewProps): ReactElement {
             <BlockRenderer block={stepBlock} />
           </Box>
         </ThemeProvider>
-        {!hasVideoBlock && (
-          <StepFooter
-            sx={{
-              ...mobileNotchStyling,
-              display: 'flex',
-              px: { lg: 8 }
-            }}
-          />
-        )}
+        <StepFooter
+          sx={{
+            ...mobileNotchStyling,
+            display: 'flex',
+            px: { lg: 8 }
+          }}
+        />
       </Container>
     </ThemeProvider>
   )

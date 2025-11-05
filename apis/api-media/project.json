@@ -131,16 +131,16 @@
         "command": "pnpm exec ts-node apis/api-media/src/scripts/data-import.ts"
       }
     },
+    "subtitle-migrate-r2": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node apis/api-media/src/scripts/subtitle-migrate-r2.ts"
+      }
+    },
     "download-migrate-r2": {
       "executor": "nx:run-commands",
       "options": {
         "command": "pnpm exec ts-node apis/api-media/src/scripts/download-migrate-r2.ts"
-      }
-    },
-    "master-migrate-r2": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "pnpm exec ts-node apis/api-media/src/scripts/master-migrate-r2.ts"
       }
     },
     "copy-distro-downloads": {

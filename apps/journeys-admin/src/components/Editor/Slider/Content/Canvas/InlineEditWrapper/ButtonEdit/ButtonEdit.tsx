@@ -7,8 +7,6 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { resolveJourneyCustomizationString } from '@core/journeys/ui/resolveJourneyCustomizationString'
 
 import {
   ButtonBlockUpdateContent,
@@ -35,20 +33,12 @@ export function ButtonEdit({
   ...buttonProps
 }: ButtonEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { journey } = useJourney()
-
-  const resolvedLabel = !journey?.template
-    ? (resolveJourneyCustomizationString(
-        label,
-        journey?.journeyCustomizationFields ?? []
-      ) ?? label)
-    : label
 
   const [buttonBlockUpdate] = useMutation<
     ButtonBlockUpdateContent,
     ButtonBlockUpdateContentVariables
   >(BUTTON_BLOCK_UPDATE_CONTENT)
-  const [value, setValue] = useState(resolvedLabel)
+  const [value, setValue] = useState(label)
   const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
   const {
     add,
@@ -66,9 +56,9 @@ export function ButtonEdit({
   }, [undo?.id])
 
   useEffect(() => {
-    if (value !== resolvedLabel) setValue(resolvedLabel)
+    if (value !== label) setValue(label)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resolvedLabel])
+  }, [label])
 
   function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })

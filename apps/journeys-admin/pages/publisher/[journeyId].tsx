@@ -4,9 +4,7 @@ import { AuthAction, withUser, withUserTokenSSR } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
-import { Configure, InstantSearch } from 'react-instantsearch'
 
-import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 import { JOURNEY_FIELDS } from '@core/journeys/ui/JourneyProvider/journeyFields'
 
 import { GetPublisher } from '../../__generated__/GetPublisher'
@@ -46,21 +44,9 @@ function TemplateEditPage(): ReactElement {
     Role.publisher
   )
 
-  const searchClient = useInstantSearchClient()
-
   useInvalidJourneyRedirect(data)
-
   return (
-    <InstantSearch
-      searchClient={searchClient}
-      indexName={process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''}
-      stalledSearchDelay={500}
-    >
-      <Configure
-        ruleContexts={['home_page']}
-        filters="label:episode OR label:featureFilm OR label:segment OR label:shortFilm"
-        hitsPerPage={5}
-      />
+    <>
       {isPublisher === true && (
         <>
           <NextSeo
@@ -83,7 +69,7 @@ function TemplateEditPage(): ReactElement {
           <PublisherInvite />
         </>
       )}
-    </InstantSearch>
+    </>
   )
 }
 

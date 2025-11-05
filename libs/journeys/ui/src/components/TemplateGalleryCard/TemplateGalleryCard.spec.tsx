@@ -167,8 +167,7 @@ describe('TemplateGalleryCard from different route', () => {
     )
   })
 
-  xit('should focus templategallerycard', async () => {
-    // disabled due to Jest v30 compatibility issues
+  it('should focus templategallerycard', async () => {
     mockUseRouter.mockReturnValue({
       pathname: '/journeys'
     } as unknown as NextRouter)

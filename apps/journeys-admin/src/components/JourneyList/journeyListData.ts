@@ -83,8 +83,7 @@ export const defaultJourney: Journey = {
   userJourneys,
   trashedAt: null,
   template: false,
-  primaryImageBlock: null,
-  fromTemplateId: null
+  primaryImageBlock: null
 }
 
 export const journeyWithImage: Journey = {

@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/react'
 import { ReactElement, useState } from 'react'
 
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'

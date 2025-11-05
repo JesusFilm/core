@@ -28,8 +28,7 @@ describe('useTextResponseWithButtonDelete', () => {
       integrationId: null,
       placeholder: null,
       required: null,
-      __typename: 'TextResponseBlock' as const,
-      hideLabel: false
+      __typename: 'TextResponseBlock' as const
     } satisfies TextResponseBlock,
     buttonBlock: {
       id: 'button.id',

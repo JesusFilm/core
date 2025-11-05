@@ -2,7 +2,6 @@ import MuiTypography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import type { TreeBlock } from '../../libs/block'
-import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 import { TypographyFields } from './__generated__/TypographyFields'
 
@@ -20,9 +19,7 @@ export function Typography({
   editableContent,
   placeholderText
 }: TypographyProps): ReactElement {
-  const resolvedContent = useGetValueFromJourneyCustomizationString(content)
-
-  let displayContent: ReactElement | string = resolvedContent
+  let displayContent: ReactElement | string = content
 
   if (editableContent != null) {
     displayContent = editableContent
@@ -50,7 +47,6 @@ export function Typography({
           gutterBottom
           whiteSpace="pre-line"
           data-testid="JourneysTypography"
-          sx={{ wordBreak: 'break-word' }}
         >
           {displayContent}
         </MuiTypography>
@@ -62,7 +58,6 @@ export function Typography({
           gutterBottom
           whiteSpace="pre-line"
           data-testid="JourneysTypography"
-          sx={{ wordBreak: 'break-word' }}
         >
           {displayContent}
         </MuiTypography>

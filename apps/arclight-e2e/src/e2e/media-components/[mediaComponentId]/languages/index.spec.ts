@@ -98,6 +98,8 @@ test.describe('media component languages', () => {
       languageTag: expect.any(String),
       url: expect.any(String)
     })
+    expect(language.subtitleUrls?.srt).toBeUndefined()
+    expect(language.subtitleUrls?.m3u8).toBeUndefined()
 
     // No web-specific properties
     expect(language).not.toHaveProperty('webEmbedPlayer')
@@ -157,12 +159,14 @@ test.describe('media component languages', () => {
 
     // Subtitle formats
     expect(language.subtitleUrls).toBeDefined()
-    expect(language.subtitleUrls?.vtt?.[0]).toMatchObject({
+    expect(language.subtitleUrls?.m3u8?.[0]).toMatchObject({
       languageId: expect.any(Number),
       languageName: expect.any(String),
       languageTag: expect.any(String),
       url: expect.any(String)
     })
+    expect(language.subtitleUrls?.vtt).toBeUndefined()
+    expect(language.subtitleUrls?.srt).toBeUndefined()
   })
 
   test('download URL includes metadata', async ({ request }) => {

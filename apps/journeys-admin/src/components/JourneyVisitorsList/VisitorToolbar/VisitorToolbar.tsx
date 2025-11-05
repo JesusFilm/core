@@ -13,7 +13,6 @@ interface VisitorProps {
   sortSetting?: 'date' | 'duration'
   chatStarted: boolean
   withPollAnswers: boolean
-  withMultiselectAnswers?: boolean
   withSubmittedText: boolean
   withIcon: boolean
   hideInteractive: boolean
@@ -25,7 +24,6 @@ export function VisitorToolbar({
   sortSetting,
   chatStarted,
   withPollAnswers,
-  withMultiselectAnswers,
   withSubmittedText,
   withIcon,
   hideInteractive
@@ -60,7 +58,6 @@ export function VisitorToolbar({
           sortSetting={sortSetting}
           chatStarted={chatStarted}
           withPollAnswers={withPollAnswers}
-          withMultiselectAnswers={withMultiselectAnswers}
           withSubmittedText={withSubmittedText}
           withIcon={withIcon}
           hideInteractive={hideInteractive}

@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
@@ -15,10 +15,10 @@ const LinkActionStory: Meta<typeof LinkAction> = {
   ...simpleComponentConfig,
   component: LinkAction,
   title:
-    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/LinkAction'
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/ActionStates'
 }
 
-export const LinkActionComponent: StoryObj<typeof LinkAction> = {
+export const Link: StoryObj<typeof LinkAction> = {
   render: () => {
     const selectedBlock = steps[1].children[0].children[3]
 

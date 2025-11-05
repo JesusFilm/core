@@ -57,7 +57,6 @@ describe('TemplateCardPreview', () => {
       expect(getAllByTestId('TemplateCardsSwiperSlide')).toHaveLength(7)
     )
     expect(getByTestId('UseTemplatesSlide')).toBeInTheDocument()
-    expect(getByTestId('UseThisTemplateButtonSkeleton')).toBeInTheDocument()
   })
 
   it('renders correct number of cards on small breakpoints', async () => {

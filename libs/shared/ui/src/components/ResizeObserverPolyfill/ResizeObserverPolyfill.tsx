@@ -28,14 +28,10 @@ export function useResizeObserverPolyfill(): void {
     if (window.ResizeObserver != null) return
 
     void import(
-      /* webpackChunkName: "resize-observer-polyfill" */ 'resize-observer-polyfill' as any
-    )
-      .then((mod: any) => {
-        window.ResizeObserver = mod.default
-      })
-      .catch(() => {
-        // Polyfill not available, but modern browsers have native ResizeObserver
-      })
+      /* webpackChunkName: "resize-observer-polyfill" */ 'resize-observer-polyfill'
+    ).then((mod) => {
+      window.ResizeObserver = mod.default
+    })
   }, [])
 }
 

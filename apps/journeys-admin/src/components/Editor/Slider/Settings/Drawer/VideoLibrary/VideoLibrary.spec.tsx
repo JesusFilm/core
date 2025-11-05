@@ -254,7 +254,6 @@ describe('VideoLibrary', () => {
               id: 'videoId'
             },
             objectFit: null,
-            subtitleLanguage: null,
             posterBlockId: 'poster1.id',
             children: []
           }}

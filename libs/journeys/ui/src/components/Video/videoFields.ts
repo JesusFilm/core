@@ -22,10 +22,6 @@ export const VIDEO_FIELDS = gql`
     image
     duration
     objectFit
-    subtitleLanguage {
-      id
-      bcp47
-    }
     mediaVideo {
       ... on Video {
         id

@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/react'
 
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -86,9 +86,12 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null,
-  journeyTheme: null
+  socialNodeY: null
 }
 
 const card: TreeBlock<CardBlock> = {
@@ -124,7 +127,6 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  subtitleLanguage: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',

@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import FilePlus1Icon from '@core/shared/ui/icons/FilePlus1'

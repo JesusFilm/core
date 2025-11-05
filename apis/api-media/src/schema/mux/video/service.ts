@@ -1,6 +1,6 @@
 import Mux from '@mux/mux-node'
 
-import { MaxResolutionTierEnum } from './enums/maxResolutionTierEnum'
+import { MaxResolutionTierEnum } from './enums/maxResolutionTier'
 
 // Type guard to safely check if a value is a valid MaxResolutionTierEnum key
 export function isValidMaxResolutionTier(

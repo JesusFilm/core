@@ -33,7 +33,7 @@ interface MediaCountryResponse {
       counts: {
         countrySpeakerCount: { value: number | null; description: string }
       }
-      primaryCountryId: string
+      primaryCountryId: string | null
       name: string | undefined
       nameNative: string | undefined
       alternateLanguageName: string
@@ -269,10 +269,9 @@ mediaCountry.openapi(route, async (c) => {
             }
           },
           primaryCountryId:
-            countryLanguage.language.countryLanguages.find((cl) => cl.primary)
-              ?.country?.id ??
-            countryLanguage.language.countryLanguages[0]?.country?.id ??
-            'US',
+            countryLanguage.language.countryLanguages.find(
+              (countryLanguage) => countryLanguage.primary
+            )?.country.id ?? '',
           name: countryLanguage.language.name.find(({ primary }) => !primary)
             ?.value,
           nameNative: countryLanguage.language.name.find(

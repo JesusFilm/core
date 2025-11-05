@@ -1,1 +1,0 @@
-export { SocialScreenSocialImage } from './SocialScreenSocialImage'

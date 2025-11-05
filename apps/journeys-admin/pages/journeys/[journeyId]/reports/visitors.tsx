@@ -119,7 +119,6 @@ function JourneyVisitorsPage({
   const [endCursor, setEndCursor] = useState<string | null>()
   const [chatStarted, setChatStarted] = useState(false)
   const [withPollAnswers, setWithPollAnswers] = useState(false)
-  const [withMultiselectAnswers, setWithMultiselectAnswers] = useState(false)
   const [withSubmittedText, setWithSubmittedText] = useState(
     router.query.withSubmittedText === 'true'
   )
@@ -136,7 +135,6 @@ function JourneyVisitorsPage({
           journeyId,
           hasChatStarted: chatStarted,
           hasPollAnswers: withPollAnswers,
-          hasMultiselectSubmission: withMultiselectAnswers,
           hasTextResponse: withSubmittedText,
           hasIcon: withIcon,
           hideInactive: hideInteractive
@@ -215,9 +213,6 @@ function JourneyVisitorsPage({
       case 'Poll Answers':
         setWithPollAnswers(e.target.checked as boolean)
         break
-      case 'Multiselect Answers':
-        setWithMultiselectAnswers(e.target.checked as boolean)
-        break
       case 'Submitted Text':
         setWithSubmittedText(e.target.checked as boolean)
         break
@@ -239,7 +234,6 @@ function JourneyVisitorsPage({
   const handleClearAll = (): void => {
     setChatStarted(false)
     setWithPollAnswers(false)
-    setWithMultiselectAnswers(false)
     setWithSubmittedText(false)
     setWithIcon(false)
     setHideInterActive(false)
@@ -276,7 +270,6 @@ function JourneyVisitorsPage({
               sortSetting={sortSetting}
               chatStarted={chatStarted}
               withPollAnswers={withPollAnswers}
-              withMultiselectAnswers={withMultiselectAnswers}
               withSubmittedText={withSubmittedText}
               withIcon={withIcon}
               hideInteractive={hideInteractive}
@@ -308,7 +301,6 @@ function JourneyVisitorsPage({
             sortSetting={sortSetting}
             chatStarted={chatStarted}
             withPollAnswers={withPollAnswers}
-            withMultiselectAnswers={withMultiselectAnswers}
             withSubmittedText={withSubmittedText}
             withIcon={withIcon}
             hideInteractive={hideInteractive}

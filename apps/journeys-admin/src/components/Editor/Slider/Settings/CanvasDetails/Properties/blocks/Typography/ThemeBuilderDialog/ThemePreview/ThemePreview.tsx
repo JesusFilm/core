@@ -61,8 +61,7 @@ export function ThemePreview({
     integrationId: null,
     type: null,
     routeId: null,
-    children: [],
-    hideLabel: false
+    children: []
   }
 
   return (

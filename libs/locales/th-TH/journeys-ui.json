@@ -1,8 +1,3 @@
 {
-  "Failed to duplicate journey to team, please refresh the page and try again": "ไม่สามารถทำซ้ำการเดินทางไปยังทีมได้ กรุณาโหลดหน้าใหม่และลองอีกครั้ง",
-  "Let's get started!": "มาเริ่มกันเลย!",
-  "A few quick edits and your template will be ready to share.": "แก้ไขเล็กน้อยแล้วเทมเพลตของคุณก็พร้อมที่จะแชร์",
-  "Select a language": "เลือกภาษา",
-  "Select a team": "เลือกทีม",
-  "Next Step": "ขั้นตอนถัดไป"
+  "None": "ไม่มี"
 }

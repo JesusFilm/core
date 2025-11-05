@@ -42,14 +42,9 @@ test.describe('Feature film', () => {
     // Wait for the JESUS page content to load (look for elements that indicate we're on the JESUS page)
     await page.waitForSelector('h1:has-text("JESUS")', { timeout: 60000 })
 
-    // Wait for video carousel to load
-    await page.waitForSelector('[data-testid="VideoCarousel"]', {
-      timeout: 60000
-    })
-
-    // Wait for Birth of Jesus chapter to be available
-    const birthOfJesusButton = page.getByTestId(
-      'VideoCardButton-birth-of-jesus'
+    // Wait for Birth of Jesus chapter to be available - try multiple selectors
+    const birthOfJesusButton = page.locator(
+      '[data-testid="VideoCardButton-birth-of-jesus"]'
     )
     await birthOfJesusButton.waitFor({ timeout: 60000 })
 

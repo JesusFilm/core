@@ -3,11 +3,15 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ContactActionType } from "./globalTypes";
-
 // ====================================================
 // GraphQL fragment: VideoTriggerFields
 // ====================================================
+
+export interface VideoTriggerFields_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
 
 export interface VideoTriggerFields_triggerAction_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -21,6 +25,8 @@ export interface VideoTriggerFields_triggerAction_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface VideoTriggerFields_triggerAction_EmailAction {
@@ -28,27 +34,11 @@ export interface VideoTriggerFields_triggerAction_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface VideoTriggerFields_triggerAction_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface VideoTriggerFields_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type VideoTriggerFields_triggerAction = VideoTriggerFields_triggerAction_NavigateToBlockAction | VideoTriggerFields_triggerAction_LinkAction | VideoTriggerFields_triggerAction_EmailAction | VideoTriggerFields_triggerAction_ChatAction | VideoTriggerFields_triggerAction_PhoneAction;
+export type VideoTriggerFields_triggerAction = VideoTriggerFields_triggerAction_PhoneAction | VideoTriggerFields_triggerAction_NavigateToBlockAction | VideoTriggerFields_triggerAction_LinkAction | VideoTriggerFields_triggerAction_EmailAction;
 
 export interface VideoTriggerFields {
   __typename: "VideoTriggerBlock";

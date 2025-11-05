@@ -7,7 +7,11 @@ const { i18n } = require('./next-i18next.config')
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  nx: {},
+  nx: {
+    // Set this to true if you would like to to use SVGR
+    // See: https://github.com/gregberge/svgr
+    svgr: false
+  },
   i18n,
   images: {
     remotePatterns: [

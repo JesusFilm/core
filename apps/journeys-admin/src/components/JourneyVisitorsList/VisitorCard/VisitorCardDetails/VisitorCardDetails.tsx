@@ -24,7 +24,6 @@ export function VisitorCardDetails({
 
   const eventsFilter: Array<Event['__typename']> = [
     'ChatOpenEvent',
-    'MultiselectSubmissionEvent',
     'RadioQuestionSubmissionEvent'
   ]
 

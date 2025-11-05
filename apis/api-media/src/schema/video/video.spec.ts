@@ -23,12 +23,7 @@ import { ResultOf, graphql } from '@core/shared/gql'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 
-import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
 import { getLanguageIdFromInfo } from './video'
-
-jest.mock('./lib/updateAvailableLanguages', () => ({
-  updateVideoAvailableLanguages: jest.fn()
-}))
 
 describe('video', () => {
   const client = getClient()
@@ -650,10 +645,7 @@ describe('video', () => {
       expect(prismaMock.video.findMany).toHaveBeenCalledWith({
         skip: 0,
         take: 100,
-        where: {
-          published: true,
-          availableLanguages: { isEmpty: false }
-        },
+        where: { published: true },
         include: {
           _count: {
             select: {
@@ -664,8 +656,7 @@ describe('video', () => {
               },
               variants: {
                 where: {
-                  published: true,
-                  languageId: undefined
+                  published: true
                 }
               }
             }
@@ -712,16 +703,10 @@ describe('video', () => {
             }
           },
           parents: {
-            where: {
-              published: true,
-              availableLanguages: { isEmpty: false }
-            }
+            where: {}
           },
           children: {
-            where: {
-              published: true,
-              availableLanguages: { isEmpty: false }
-            }
+            where: {}
           },
           snippet: {
             orderBy: {
@@ -841,7 +826,6 @@ describe('video', () => {
         take: 20,
         where: {
           published: true,
-          availableLanguages: { isEmpty: false },
           title: {
             some: {
               value: {
@@ -860,8 +844,7 @@ describe('video', () => {
               },
               variants: {
                 where: {
-                  published: true,
-                  languageId: undefined
+                  published: true
                 }
               }
             }
@@ -914,16 +897,10 @@ describe('video', () => {
             }
           },
           parents: {
-            where: {
-              published: true,
-              availableLanguages: { isEmpty: false }
-            }
+            where: {}
           },
           children: {
-            where: {
-              published: true,
-              availableLanguages: { isEmpty: false }
-            }
+            where: {}
           },
           snippet: {
             orderBy: {
@@ -1028,470 +1005,6 @@ describe('video', () => {
       })
       expect(data).toHaveProperty('data.videos', result)
     })
-
-    it('should query video.variants with video variant filter', async () => {
-      prismaMock.video.findMany.mockResolvedValueOnce(videos)
-
-      const data = await client({
-        document: graphql(`
-          query VideoWithVariants($input: VideoVariantFilter!) {
-            videos {
-              id
-              variants(input: $input) {
-                id
-              }
-            }
-          }
-        `),
-        variables: {
-          input: {
-            languageId: '987',
-            onlyPublished: false
-          }
-        }
-      })
-      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          include: {
-            variants: {
-              where: {
-                published: undefined,
-                languageId: '987'
-              }
-            }
-          }
-        })
-      )
-      expect(data).toHaveProperty('data.videos', [
-        {
-          id: 'videoId',
-          variants: [
-            {
-              id: 'variantId2'
-            },
-            {
-              id: 'variantId1'
-            }
-          ]
-        }
-      ])
-    })
-
-    it('should query video.variants with languageId in filter', async () => {
-      prismaMock.video.findMany.mockResolvedValueOnce(videos)
-
-      const data = await client({
-        document: graphql(`
-          query VideoWithVariants($input: VideoVariantFilter!) {
-            videos {
-              id
-              variants(input: $input) {
-                id
-              }
-            }
-          }
-        `),
-        variables: {
-          input: {
-            languageId: '987'
-          }
-        }
-      })
-      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          include: {
-            variants: {
-              where: {
-                published: true,
-                languageId: '987'
-              }
-            }
-          }
-        })
-      )
-      expect(data).toHaveProperty('data.videos', [
-        {
-          id: 'videoId',
-          variants: [
-            {
-              id: 'variantId2'
-            },
-            {
-              id: 'variantId1'
-            }
-          ]
-        }
-      ])
-    })
-
-    it('should query video.variantLanguagesCount with video variant filter', async () => {
-      prismaMock.video.findMany.mockResolvedValueOnce(videos)
-
-      const data = await client({
-        document: graphql(`
-          query VideoWithVariantLanguagesCount($input: VideoVariantFilter!) {
-            videos {
-              id
-              variantLanguagesCount(input: $input)
-            }
-          }
-        `),
-        variables: {
-          input: {
-            languageId: '987',
-            onlyPublished: false
-          }
-        }
-      })
-      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          include: {
-            _count: {
-              select: {
-                variants: {
-                  where: {
-                    published: undefined,
-                    languageId: '987'
-                  }
-                }
-              }
-            }
-          }
-        })
-      )
-      expect(data).toHaveProperty('data.videos', [
-        {
-          id: 'videoId',
-          variantLanguagesCount: 2
-        }
-      ])
-    })
-
-    it('should query video.variantLanguagesCount with languageId in filter', async () => {
-      prismaMock.video.findMany.mockResolvedValueOnce(videos)
-
-      const data = await client({
-        document: graphql(`
-          query VideoWithVariantLanguagesCount($input: VideoVariantFilter!) {
-            videos {
-              id
-              variantLanguagesCount(input: $input)
-            }
-          }
-        `),
-        variables: {
-          input: {
-            languageId: '987'
-          }
-        }
-      })
-      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          include: {
-            _count: {
-              select: {
-                variants: {
-                  where: {
-                    published: true,
-                    languageId: '987'
-                  }
-                }
-              }
-            }
-          }
-        })
-      )
-      expect(data).toHaveProperty('data.videos', [
-        {
-          id: 'videoId',
-          variantLanguagesCount: 2
-        }
-      ])
-    })
-
-    it('should query video.variantLanguagesWithSlug with video variant filter', async () => {
-      prismaMock.video.findMany.mockResolvedValueOnce(videos)
-
-      const data = await client({
-        document: graphql(`
-          query VideoWithVariantLanguagesWithSlug($input: VideoVariantFilter!) {
-            videos {
-              id
-              variantLanguagesWithSlug(input: $input) {
-                slug
-              }
-            }
-          }
-        `),
-        variables: {
-          input: {
-            languageId: '987',
-            onlyPublished: false
-          }
-        }
-      })
-      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          include: {
-            variants: {
-              select: {
-                languageId: true,
-                slug: true
-              },
-              where: {
-                published: undefined,
-                languageId: '987'
-              }
-            }
-          }
-        })
-      )
-      expect(data).toHaveProperty('data.videos', [
-        {
-          id: 'videoId',
-          variantLanguagesWithSlug: [
-            {
-              slug: 'slug2'
-            },
-            {
-              slug: 'slug1'
-            }
-          ]
-        }
-      ])
-    })
-
-    it('should query video.variantLanguagesWithSlug with languageId in filter', async () => {
-      prismaMock.video.findMany.mockResolvedValueOnce(videos)
-
-      const data = await client({
-        document: graphql(`
-          query VideoWithVariantLanguagesWithSlug($input: VideoVariantFilter!) {
-            videos {
-              id
-              variantLanguagesWithSlug(input: $input) {
-                slug
-              }
-            }
-          }
-        `),
-        variables: {
-          input: {
-            languageId: '987'
-          }
-        }
-      })
-      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          include: {
-            variants: {
-              select: {
-                languageId: true,
-                slug: true
-              },
-              where: {
-                published: true,
-                languageId: '987'
-              }
-            }
-          }
-        })
-      )
-      expect(data).toHaveProperty('data.videos', [
-        {
-          id: 'videoId',
-          variantLanguagesWithSlug: [
-            {
-              slug: 'slug2'
-            },
-            {
-              slug: 'slug1'
-            }
-          ]
-        }
-      ])
-    })
-
-    it('should filter out videos with empty availableLanguages in public query', async () => {
-      const videosWithAndWithoutLanguages: VideoAndIncludes[] = [
-        {
-          ...videos[0],
-          id: 'video-with-languages',
-          availableLanguages: ['en', 'es']
-        },
-        {
-          ...videos[0],
-          id: 'video-without-languages',
-          availableLanguages: []
-        }
-      ]
-
-      prismaMock.video.findMany.mockResolvedValueOnce([
-        videosWithAndWithoutLanguages[0]
-      ])
-
-      const data = await client({
-        document: graphql(`
-          query VideosWithAvailableLanguages {
-            videos {
-              id
-              availableLanguages
-            }
-          }
-        `)
-      })
-
-      // Verify that the query includes the availableLanguages filter
-      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({
-            published: true,
-            availableLanguages: { isEmpty: false }
-          })
-        })
-      )
-
-      // Verify only video with languages is returned
-      expect(data).toHaveProperty('data.videos', [
-        {
-          id: 'video-with-languages',
-          availableLanguages: ['en', 'es']
-        }
-      ])
-    })
-
-    it('should filter children and parents by availableLanguages', async () => {
-      // Mock with only filtered data (as Prisma would return after applying where filters)
-      const videoWithFilteredRelations: VideoAndIncludes[] = [
-        {
-          ...videos[0],
-          children: [
-            {
-              id: 'child-with-languages',
-              published: true,
-              availableLanguages: ['en']
-            } as unknown as Video
-          ],
-          parents: [
-            {
-              id: 'parent-with-languages',
-              published: true,
-              availableLanguages: ['en']
-            } as unknown as Video
-          ]
-        }
-      ]
-
-      prismaMock.video.findMany.mockResolvedValueOnce(
-        videoWithFilteredRelations
-      )
-
-      const data = await client({
-        document: graphql(`
-          query VideosWithFilteredRelations {
-            videos {
-              id
-              children {
-                id
-              }
-              parents {
-                id
-              }
-            }
-          }
-        `)
-      })
-
-      // Verify that children and parents are filtered by availableLanguages
-      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          include: expect.objectContaining({
-            children: {
-              where: {
-                published: true,
-                availableLanguages: { isEmpty: false }
-              }
-            },
-            parents: {
-              where: {
-                published: true,
-                availableLanguages: { isEmpty: false }
-              }
-            }
-          })
-        })
-      )
-
-      expect(data).toHaveProperty('data.videos', [
-        {
-          id: 'videoId',
-          children: [{ id: 'child-with-languages' }],
-          parents: [{ id: 'parent-with-languages' }]
-        }
-      ])
-    })
-
-    it('should include unpublished/incomplete children for videos-admin client', async () => {
-      prismaMock.video.findMany.mockResolvedValueOnce(videos)
-      prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
-      prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
-        id: 'variantId'
-      } as unknown as VideoVariant)
-
-      const videosAdminClient = getClient({
-        headers: {
-          'x-graphql-client-name': 'videos-admin'
-        }
-      })
-
-      await videosAdminClient({
-        document: VIDEOS_QUERY
-      })
-
-      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          include: expect.objectContaining({
-            children: {
-              where: expect.not.objectContaining({
-                published: true,
-                availableLanguages: { isEmpty: false }
-              })
-            }
-          })
-        })
-      )
-    })
-
-    it('should keep children filters for non videos-admin clients', async () => {
-      prismaMock.video.findMany.mockResolvedValueOnce(videos)
-      prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
-      prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
-        id: 'variantId'
-      } as unknown as VideoVariant)
-
-      const nonAdminClient = getClient({
-        headers: {
-          'x-graphql-client-name': 'test-client'
-        }
-      })
-
-      await nonAdminClient({
-        document: VIDEOS_QUERY
-      })
-
-      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          include: expect.objectContaining({
-            children: {
-              where: {
-                published: true,
-                availableLanguages: { isEmpty: false }
-              }
-            }
-          })
-        })
-      )
-    })
   })
 
   describe('video', () => {
@@ -1514,8 +1027,7 @@ describe('video', () => {
       expect(prismaMock.video.findUniqueOrThrow).toHaveBeenCalledWith({
         where: {
           id: 'videoId',
-          published: true,
-          availableLanguages: { isEmpty: false }
+          published: true
         }
       })
       expect(data).toHaveProperty('data.video', { id: 'videoId' })
@@ -1533,7 +1045,6 @@ describe('video', () => {
       expect(prismaMock.video.findFirstOrThrow).toHaveBeenCalledWith({
         where: {
           published: true,
-          availableLanguages: { isEmpty: false },
           variants: { some: { slug: 'slug' } }
         }
       })
@@ -1577,16 +1088,7 @@ describe('video', () => {
         }
       })
       expect(prismaMock.video.count).toHaveBeenCalledWith({
-        where: {
-          published: true,
-          availableLanguages: { isEmpty: false },
-          id: undefined,
-          label: undefined,
-          locked: undefined,
-          subtitles: undefined,
-          title: undefined,
-          variants: undefined
-        }
+        where: { published: true }
       })
       expect(data).toHaveProperty('data.videosCount', 1)
     })
@@ -1605,10 +1107,7 @@ describe('video', () => {
         where: {
           id: undefined,
           label: undefined,
-          locked: undefined,
           published: true,
-          availableLanguages: { isEmpty: false },
-          subtitles: undefined,
           title: { some: { value: { search: 'Jesus' } } },
           variants: undefined
         }
@@ -1889,8 +1388,7 @@ describe('video', () => {
               },
               variants: {
                 where: {
-                  published: true,
-                  languageId: undefined
+                  published: true
                 }
               }
             }
@@ -1935,16 +1433,10 @@ describe('video', () => {
             }
           },
           parents: {
-            where: {
-              published: true,
-              availableLanguages: { isEmpty: false }
-            }
+            where: {}
           },
           children: {
-            where: {
-              published: true,
-              availableLanguages: { isEmpty: false }
-            }
+            where: {}
           },
           snippet: {
             orderBy: {
@@ -2071,8 +1563,7 @@ describe('video', () => {
               },
               variants: {
                 where: {
-                  published: true,
-                  languageId: undefined
+                  published: true
                 }
               }
             }
@@ -2083,16 +1574,10 @@ describe('video', () => {
             }
           },
           children: {
-            where: {
-              published: true,
-              availableLanguages: { isEmpty: false }
-            }
+            where: {}
           },
           parents: {
-            where: {
-              published: true,
-              availableLanguages: { isEmpty: false }
-            }
+            where: {}
           },
           description: {
             orderBy: {
@@ -3159,88 +2644,6 @@ describe('video', () => {
         expect(result).toHaveProperty('data.videoDelete', {
           id: 'videoId'
         })
-      })
-    })
-
-    describe('fixVideoLanguages', () => {
-      const FIX_VIDEO_LANGUAGES_MUTATION = graphql(`
-        mutation FixVideoLanguages($videoId: ID!) {
-          fixVideoLanguages(videoId: $videoId)
-        }
-      `)
-
-      const mockUpdateVideoAvailableLanguages =
-        updateVideoAvailableLanguages as jest.MockedFunction<
-          typeof updateVideoAvailableLanguages
-        >
-
-      beforeEach(() => {
-        mockUpdateVideoAvailableLanguages.mockClear()
-      })
-
-      it('should fix video languages successfully', async () => {
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
-          id: 'userId',
-          userId: 'userId',
-          roles: ['publisher']
-        })
-        prismaMock.video.findUnique.mockResolvedValue({
-          id: 'videoId'
-        } as any)
-        mockUpdateVideoAvailableLanguages.mockResolvedValue([])
-
-        const result = await authClient({
-          document: FIX_VIDEO_LANGUAGES_MUTATION,
-          variables: {
-            videoId: 'videoId'
-          }
-        })
-
-        expect(prismaMock.video.findUnique).toHaveBeenCalledWith({
-          where: { id: 'videoId' },
-          select: { id: true }
-        })
-        expect(mockUpdateVideoAvailableLanguages).toHaveBeenCalledWith(
-          'videoId'
-        )
-        expect(result).toHaveProperty('data.fixVideoLanguages', true)
-      })
-
-      it('should fail if video not found', async () => {
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
-          id: 'userId',
-          userId: 'userId',
-          roles: ['publisher']
-        })
-        prismaMock.video.findUnique.mockResolvedValue(null)
-
-        const result = await authClient({
-          document: FIX_VIDEO_LANGUAGES_MUTATION,
-          variables: {
-            videoId: 'nonExistentId'
-          }
-        })
-
-        expect(prismaMock.video.findUnique).toHaveBeenCalledWith({
-          where: { id: 'nonExistentId' },
-          select: { id: true }
-        })
-        expect(mockUpdateVideoAvailableLanguages).not.toHaveBeenCalled()
-        expect(result).toHaveProperty('data', null)
-        expect(result).toHaveProperty('errors')
-      })
-
-      it('should fail if not publisher', async () => {
-        const result = await client({
-          document: FIX_VIDEO_LANGUAGES_MUTATION,
-          variables: {
-            videoId: 'videoId'
-          }
-        })
-
-        expect(result).toHaveProperty('data', null)
-        expect(prismaMock.video.findUnique).not.toHaveBeenCalled()
-        expect(mockUpdateVideoAvailableLanguages).not.toHaveBeenCalled()
       })
     })
 

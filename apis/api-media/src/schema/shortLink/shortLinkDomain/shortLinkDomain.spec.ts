@@ -45,7 +45,7 @@ describe('shortLinkDomain', () => {
 
   beforeEach(() => {
     prismaMock.$transaction.mockImplementation(
-      async (cb: any) => await cb(prismaMock)
+      async (cb) => await cb(prismaMock)
     )
     prismaMock.userMediaRole.findUnique.mockResolvedValue({
       id: 'userId',
@@ -522,8 +522,8 @@ describe('shortLinkDomain', () => {
                 [
                   {
                     code: 'custom',
-                    path: ['input', 'hostname'],
-                    message: 'hostname must be valid'
+                    message: 'hostname must be valid',
+                    path: ['input', 'hostname']
                   }
                 ],
                 null,

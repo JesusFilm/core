@@ -26,7 +26,6 @@ input BlockUpdateActionInput {
   phone: String
   countryCode: String
   target: String
-  chatUrl: String
   blockId: String
 }
 
@@ -47,7 +46,6 @@ enum ButtonAction {
   LinkAction
   EmailAction
   PhoneAction
-  ChatAction
 }
 
 enum ButtonAlignment {
@@ -123,33 +121,6 @@ type ButtonClickEvent implements Event
   label: String
   value: String
   action: ButtonAction
-  actionValue: String
-}
-
-input ButtonClickEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """stepName of the parent stepBlock"""
-  label: String
-
-  """label of the button"""
-  value: String
-
-  """Action type of the button when it was clicked"""
-  action: ButtonAction
-
-  """
-  The label for each corresponding action, mapping below: 
-  NavigateToBlockAction - StepName (generated in client) of the StepBlock 
-  LinkAction - url of the link
-  """
   actionValue: String
 }
 
@@ -236,26 +207,6 @@ input CardBlockUpdateInput {
   themeName: ThemeName
 }
 
-type ChatAction implements Action
-  @shareable
-{
-  parentBlockId: ID!
-  gtmEventName: String
-  parentBlock: Block!
-  chatUrl: String!
-  target: String
-  customizable: Boolean
-  parentStepId: String
-}
-
-input ChatActionInput {
-  gtmEventName: String
-  chatUrl: String!
-  target: String
-  customizable: Boolean
-  parentStepId: String
-}
-
 type ChatButton
   @shareable
 {
@@ -286,22 +237,10 @@ type ChatOpenEvent implements Event
 }
 
 input ChatOpenEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
   id: ID
   blockId: ID!
-
-  """id of the parent stepBlock"""
   stepId: ID
-
-  """messagePlatform of the link used for chat"""
   value: MessagePlatform
-}
-
-enum ContactActionType {
-  call
-  text
 }
 
 type CustomDomain
@@ -395,7 +334,6 @@ enum EventType {
   StepViewEvent
   StepNextEvent
   StepPreviousEvent
-  MultiselectSubmissionEvent
   TextResponseSubmissionEvent
   VideoStartEvent
   VideoPlayEvent
@@ -950,7 +888,6 @@ type JourneyVisitor
   lastTextResponse: String
   lastRadioQuestion: String
   lastRadioOptionSubmission: String
-  lastMultiselectSubmission: String
   countryCode: String
   messagePlatform: MessagePlatform
   notes: String
@@ -958,18 +895,10 @@ type JourneyVisitor
   events: [Event!]!
 }
 
-input JourneyVisitorExportSelect {
-  name: Boolean
-  email: Boolean
-  phone: Boolean
-  createdAt: Boolean
-}
-
 input JourneyVisitorFilter {
   journeyId: String!
   hasChatStarted: Boolean
   hasPollAnswers: Boolean
-  hasMultiselectSubmission: Boolean
   hasTextResponse: Boolean
   hasIcon: Boolean
   hideInactive: Boolean
@@ -1100,86 +1029,7 @@ enum MessagePlatform {
   settings
 }
 
-type MultiselectBlock implements Block
-  @shareable
-{
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
-  min: Int
-  max: Int
-}
-
-input MultiselectBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-}
-
-input MultiselectBlockUpdateInput {
-  parentBlockId: ID
-  min: Int
-  max: Int
-}
-
-type MultiselectOptionBlock implements Block
-  @shareable
-{
-  id: ID!
-  journeyId: ID!
-  parentBlockId: ID
-  parentOrder: Int
-  label: String!
-}
-
-input MultiselectOptionBlockCreateInput {
-  id: ID
-  journeyId: ID!
-  parentBlockId: ID!
-  label: String!
-}
-
-input MultiselectOptionBlockUpdateInput {
-  parentBlockId: ID
-  label: String
-}
-
-type MultiselectSubmissionEvent implements Event
-  @shareable
-{
-  id: ID!
-  journeyId: ID!
-  createdAt: DateTime!
-  label: String
-  value: String
-}
-
-input MultiselectSubmissionEventCreateInput {
-  id: ID
-  blockId: ID!
-  stepId: ID
-  label: String
-  values: [String!]!
-}
-
 type Mutation {
-  multiselectBlockCreate(input: MultiselectBlockCreateInput!): MultiselectBlock!
-  multiselectBlockUpdate(
-    id: ID!
-    input: MultiselectBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): MultiselectBlock!
-  multiselectOptionBlockCreate(input: MultiselectOptionBlockCreateInput!): MultiselectOptionBlock!
-  multiselectOptionBlockUpdate(
-    id: ID!
-    input: MultiselectOptionBlockUpdateInput!
-
-    """drop this parameter after merging teams"""
-    journeyId: ID
-  ): MultiselectOptionBlock!
   videoBlockCreate(input: VideoBlockCreateInput!): VideoBlock! @override(from: "api-journeys")
   videoBlockUpdate(
     id: ID!
@@ -1194,10 +1044,6 @@ type Mutation {
   blockUpdateLinkAction(id: ID!, input: LinkActionInput!, journeyId: ID): LinkAction! @override(from: "api-journeys")
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction! @override(from: "api-journeys")
   blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID): PhoneAction! @override(from: "api-journeys")
-  blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID): ChatAction! @override(from: "api-journeys")
-  buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
-  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @override(from: "api-journeys")
-  multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent! @override(from: "api-journeys")
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
@@ -1254,14 +1100,12 @@ type PhoneAction implements Action
   parentBlock: Block!
   phone: String!
   countryCode: String!
-  contactAction: ContactActionType!
 }
 
 input PhoneActionInput {
   gtmEventName: String
   phone: String!
   countryCode: String!
-  contactAction: ContactActionType = call
 }
 
 input PlausibleStatsAggregateFilter {
@@ -1358,11 +1202,6 @@ type Query {
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
   journeySimpleGet(id: ID!): Json
-
-  """
-  Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
-  """
-  journeyVisitorExport(journeyId: ID!, filter: JourneyEventsFilter, select: JourneyVisitorExportSelect): String
 }
 
 type RadioOptionBlock implements Block
@@ -1954,7 +1793,6 @@ type VideoBlock implements Block
   objectFit: VideoBlockObjectFit
   posterBlockId: ID
   fullsize: Boolean
-  subtitleLanguage: Language
   action: Action
   mediaVideo: MediaVideo
 }
@@ -1982,7 +1820,6 @@ input VideoBlockCreateInput {
   autoplay: Boolean
   fullsize: Boolean
   posterBlockId: ID
-  subtitleLanguageId: ID
 }
 
 enum VideoBlockObjectFit {
@@ -2013,7 +1850,6 @@ input VideoBlockUpdateInput {
   muted: Boolean
   autoplay: Boolean
   fullsize: Boolean
-  subtitleLanguageId: ID
 
   """
   internal source: videoId and videoVariantLanguageId required

@@ -41,7 +41,6 @@ describe('useAdminJourneysQuery', () => {
             status: JourneyStatus.draft,
             seoTitle: null,
             seoDescription: null,
-            fromTemplateId: null,
             userJourneys: [
               {
                 __typename: 'UserJourney',

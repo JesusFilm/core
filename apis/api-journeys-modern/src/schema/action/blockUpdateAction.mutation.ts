@@ -13,7 +13,7 @@ import { canBlockHaveAction } from './canBlockHaveAction'
 import { BlockUpdateActionInput } from './inputs'
 
 const emailSchema = z.object({
-  email: z.email()
+  email: z.string().email()
 })
 
 const linkActionInputSchema = z.object({
@@ -24,7 +24,7 @@ const linkActionInputSchema = z.object({
 
 const emailActionInputSchema = z.object({
   gtmEventName: z.string().nullish(),
-  email: z.email()
+  email: z.string().email()
 })
 
 const navigateToBlockActionInputSchema = z.object({
@@ -38,19 +38,11 @@ const phoneActionInputSchema = z.object({
   countryCode: z.string()
 })
 
-const chatActionInputSchema = z.object({
-  gtmEventName: z.string().nullish(),
-  chatUrl: z.string(),
-  target: z.string().nullish()
-})
-
-export const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
+const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
   url: null,
   target: null,
   email: null,
   phone: null,
-  contactAction: null,
-  chatUrl: null,
   journey: { disconnect: true },
   block: { disconnect: true }
 }
@@ -87,15 +79,12 @@ builder.mutationField('blockUpdateAction', (t) =>
         navigateToBlockActionInputSchema.safeParse(input)
       const { success: isPhone, data: phoneInput } =
         phoneActionInputSchema.safeParse(input)
-      const { success: isChat, data: chatInput } =
-        chatActionInputSchema.safeParse(input)
 
       const numberOfValidInputs = [
         isLink,
         isEmail,
         isNavigateToBlock,
-        isPhone,
-        isChat
+        isPhone
       ].filter(Boolean).length
 
       if (numberOfValidInputs > 1)
@@ -210,20 +199,6 @@ builder.mutationField('blockUpdateAction', (t) =>
           update: {
             ...ACTION_UPDATE_RESET,
             ...phoneInput
-          }
-        })
-      }
-
-      if (isChat) {
-        return await prisma.action.upsert({
-          where: { parentBlockId: id },
-          create: {
-            ...chatInput,
-            parentBlock: { connect: { id: block.id } }
-          },
-          update: {
-            ...ACTION_UPDATE_RESET,
-            ...chatInput
           }
         })
       }

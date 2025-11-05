@@ -107,12 +107,12 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
+  socialNodeX: null,
+  socialNodeY: null,
   journeyTheme: null,
   journeyCustomizationDescription: null,
   journeyCustomizationFields: [],
-  fromTemplateId: null,
-  socialNodeX: null,
-  socialNodeY: null
+  fromTemplateId: null
 }
 
 const block: TreeBlock<StepFields> = {
@@ -160,6 +160,21 @@ const block: TreeBlock<StepFields> = {
 }
 
 describe('Step', () => {
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
+  })
+
   const mockStepViewEventCreate: MockedResponse<StepViewEventCreate> = {
     request: {
       query: STEP_VIEW_EVENT_CREATE,
@@ -199,7 +214,7 @@ describe('Step', () => {
       expect(mockStepViewEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('pageview', {
-      u: expect.stringContaining(`/journeyId/Step1`),
+      u: `${mockOrigin}/journeyId/Step1`,
       props: {
         id: 'uuid',
         blockId: 'Step1',
@@ -218,9 +233,14 @@ describe('Step', () => {
     })
   })
 
-  xit('should create a stepViewEvent with a UTM code', async () => {
-    // disabled due to Jest v30 compatibility issues
+  it('should create a stepViewEvent with a UTM code', async () => {
     const mockSearch = '?utm_source=source&utm_campaign=campaign'
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin,
+        search: mockSearch
+      }
+    })
 
     mockUuidv4.mockReturnValueOnce('uuid')
     treeBlocksVar([block])
@@ -239,7 +259,7 @@ describe('Step', () => {
       expect(mockStepViewEventCreate.result).toHaveBeenCalled()
     )
     expect(mockPlausible).toHaveBeenCalledWith('pageview', {
-      u: expect.stringContaining(`/journeyId/Step1/${mockSearch}`),
+      u: `${mockOrigin}/journeyId/Step1/${mockSearch}`,
       props: {
         id: 'uuid',
         blockId: 'Step1',

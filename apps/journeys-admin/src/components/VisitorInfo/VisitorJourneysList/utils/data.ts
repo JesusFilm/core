@@ -100,18 +100,6 @@ export const radioQuestionSubmissionEvent: TimelineItem = {
   duration: '0.01'
 }
 
-export const multiselectSubmissionEvent: TimelineItem = {
-  event: {
-    __typename: 'MultiselectSubmissionEvent',
-    id: 'MultiselectSubmissionEventId',
-    journeyId: 'journeyId',
-    label: 'What did you enjoy most?',
-    value: 'Adventure, Friends, Food',
-    createdAt: '2022-11-02T03:20:26.368Z'
-  },
-  duration: '0.01'
-}
-
 export const signUpSubmissionEvent: TimelineItem = {
   event: {
     __typename: 'SignUpSubmissionEvent',

@@ -21,12 +21,12 @@ export function getInteropContext({
     ipAddressInput === '' ? '127.0.0.1' : (ipAddressInput ?? '127.0.0.1')
   ).split(', ')[0]
 
-  const ipResult = z.union([z.ipv4(), z.ipv6()]).safeParse(normalizedIpAddress)
-
-  if (!ipResult.success)
-    throw new Error(`Invalid IP address (${normalizedIpAddress})`)
-
-  const ipAddress = ipResult.data
+  const ipAddress = z
+    .string()
+    .ip({
+      message: `Invalid IP address (${normalizedIpAddress})`
+    })
+    .parse(normalizedIpAddress)
 
   if (!validateIpV4(ipAddress)) return null
 

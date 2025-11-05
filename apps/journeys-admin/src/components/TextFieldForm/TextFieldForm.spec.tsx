@@ -1,10 +1,9 @@
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
-import React from 'react'
 import { object, string } from 'yup'
 
 import Search1Icon from '@core/shared/ui/icons/Search1'
 
-import { TextFieldForm, TextFieldFormRef } from './TextFieldForm'
+import { TextFieldForm } from './TextFieldForm'
 
 describe('TextFieldForm', () => {
   it('should render TextFieldForm', () => {
@@ -171,25 +170,5 @@ describe('TextFieldForm', () => {
       clipboardData: { getData: () => 'https://google.com' }
     })
     expect(onPaste).toHaveBeenCalled()
-  })
-
-  it('should focus the text field when ref focus method is called', () => {
-    const ref = React.createRef<TextFieldFormRef>()
-    const { getByRole } = render(
-      <TextFieldForm
-        id="focusTest"
-        label="Focus Test"
-        onSubmit={jest.fn()}
-        ref={ref}
-      />
-    )
-
-    const textField = getByRole('textbox')
-
-    act(() => {
-      ref.current?.focus()
-    })
-
-    expect(textField).toHaveFocus()
   })
 })

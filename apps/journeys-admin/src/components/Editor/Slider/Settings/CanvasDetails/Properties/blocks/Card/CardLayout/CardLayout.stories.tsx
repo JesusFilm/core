@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/react'
 import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -75,9 +75,12 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null,
-  journeyTheme: null
+  socialNodeY: null
 }
 
 const block: TreeBlock<CardBlock> = {

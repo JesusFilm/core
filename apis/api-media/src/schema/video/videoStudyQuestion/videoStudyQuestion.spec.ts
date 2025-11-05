@@ -41,7 +41,7 @@ describe('videoStudyQuestion', () => {
 
       it('should create video study question', async () => {
         prismaMock.$transaction.mockImplementation(
-          async (callback: any) => await callback(prismaMock)
+          async (callback) => await callback(prismaMock)
         )
         ;(updateOrderCreate as jest.Mock).mockResolvedValue(undefined)
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
@@ -128,7 +128,7 @@ describe('videoStudyQuestion', () => {
 
       it('should update video study question', async () => {
         prismaMock.$transaction.mockImplementation(
-          async (callback: any) => await callback(prismaMock)
+          async (callback) => await callback(prismaMock)
         )
         prismaMock.videoStudyQuestion.findUnique.mockResolvedValue({
           id: 'id',
@@ -189,7 +189,7 @@ describe('videoStudyQuestion', () => {
 
       it('should throw if not found', async () => {
         prismaMock.$transaction.mockImplementation(
-          async (callback: any) => await callback(prismaMock)
+          async (callback) => await callback(prismaMock)
         )
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
@@ -214,7 +214,7 @@ describe('videoStudyQuestion', () => {
 
       it('should throw if referenced video not found', async () => {
         prismaMock.$transaction.mockImplementation(
-          async (callback: any) => await callback(prismaMock)
+          async (callback) => await callback(prismaMock)
         )
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
@@ -258,7 +258,7 @@ describe('videoStudyQuestion', () => {
 
       it('should delete video study question', async () => {
         prismaMock.$transaction.mockImplementation(
-          async (callback: any) => await callback(prismaMock)
+          async (callback) => await callback(prismaMock)
         )
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
@@ -307,7 +307,7 @@ describe('videoStudyQuestion', () => {
 
       it('should throw if not found', async () => {
         prismaMock.$transaction.mockImplementation(
-          async (callback: any) => await callback(prismaMock)
+          async (callback) => await callback(prismaMock)
         )
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',

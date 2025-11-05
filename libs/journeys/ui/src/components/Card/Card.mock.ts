@@ -147,7 +147,9 @@ export const action: LinkAction = {
   __typename: 'LinkAction',
   parentBlockId: 'button',
   gtmEventName: null,
-  url: 'https://test.com/some-site'
+  url: 'https://test.com/some-site',
+  customizable: null,
+  parentStepId: null
 }
 
 export const textResponseBlock: TreeBlock<TextResponseBlock> = {
@@ -163,8 +165,7 @@ export const textResponseBlock: TreeBlock<TextResponseBlock> = {
   type: TextResponseType.freeForm,
   routeId: null,
   integrationId: null,
-  required: null,
-  hideLabel: false
+  required: null
 }
 
 export const imageBlock: TreeBlock<ImageFields> = {
@@ -220,7 +221,6 @@ export const videoBlock: TreeBlock<VideoFields> = {
   duration: null,
   image: null,
   objectFit: null,
-  subtitleLanguage: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -259,9 +259,7 @@ export const journey = {
   id: 'journey.id',
   language: {
     bcp: 'en'
-  },
-  journeyCustomizationFields: [],
-  fromTemplateId: null
+  }
 } as unknown as Journey
 
 // GraphQL mocks

@@ -1,6 +1,6 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/react'
+import { expect, screen, userEvent, waitFor } from '@storybook/test'
 import { ComponentPropsWithoutRef } from 'react'
-import { expect, screen, userEvent, waitFor } from 'storybook/test'
 
 import {
   JourneyStatus,
@@ -66,12 +66,12 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
+  socialNodeX: null,
+  socialNodeY: null,
   journeyTheme: null,
   journeyCustomizationDescription: null,
   journeyCustomizationFields: [],
-  fromTemplateId: null,
-  socialNodeX: null,
-  socialNodeY: null
+  fromTemplateId: null
 }
 
 type Story = StoryObj<ComponentPropsWithoutRef<typeof InformationButton>>

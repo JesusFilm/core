@@ -4,7 +4,6 @@ import { useRouter } from 'next/router'
 import { ReactElement, ReactNode } from 'react'
 
 import DiamondIcon from '@core/shared/ui/icons/Diamond'
-import { NextImage } from '@core/shared/ui/NextImage'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 
@@ -25,31 +24,16 @@ export function Logo(): ReactElement {
 
   const children: ReactNode = showLogo ? (
     <Box
+      component="img"
+      src={logo.src ?? ''}
+      alt={logo.alt}
+      onClick={handleHomeClick}
       sx={{
         width: 44,
         height: 44,
-        borderRadius: '50%',
-        overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        cursor: 'pointer'
+        objectFit: 'contain'
       }}
-      onClick={handleHomeClick}
-    >
-      <NextImage
-        src={logo.src ?? ''}
-        alt={logo.alt}
-        width={300}
-        height={300}
-        layout="intrinsic"
-        objectFit="cover"
-        sx={{
-          transform: `scale(${(logo.scale ?? 100) / 100})`,
-          transformOrigin: `${logo.focalLeft}% ${logo.focalTop}%`
-        }}
-      />
-    </Box>
+    />
   ) : showEmpty ? (
     <Box
       data-testid="empty-logo"
@@ -75,5 +59,5 @@ export function Logo(): ReactElement {
     </IconButton>
   )
 
-  return <Box sx={{ width: 44, height: 44 }}>{children}</Box>
+  return children
 }

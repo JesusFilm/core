@@ -11,11 +11,6 @@ import { builder } from '../builder'
 import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
 import { deleteVideo } from '../mux/video/service'
-import {
-  addLanguageToVideo,
-  removeLanguageFromVideoIfUnused,
-  updateParentCollectionLanguages
-} from '../video/lib/updateAvailableLanguages'
 import { VideoSubtitle } from '../video/videoSubtitle'
 
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
@@ -219,6 +214,58 @@ export async function handleParentVariantCreation(
   )
 
   await Promise.allSettled(promises)
+}
+
+async function updateAvailableLanguages(
+  videoId: string,
+  languageId: string,
+  action: 'add' | 'check'
+) {
+  if (action === 'add') {
+    // Atomic add with duplicate prevention
+    await prisma.video.update({
+      where: {
+        id: videoId,
+        NOT: {
+          availableLanguages: {
+            has: languageId
+          }
+        }
+      },
+      data: {
+        availableLanguages: {
+          push: languageId
+        }
+      }
+    })
+  } else if (action === 'check') {
+    // Use a transaction to ensure consistency
+    await prisma.$transaction(async (tx) => {
+      const video = await tx.video.findUnique({
+        where: { id: videoId },
+        select: { availableLanguages: true }
+      })
+
+      if (!video) return
+
+      const hasOtherVariants = await tx.videoVariant.count({
+        where: { videoId, languageId, published: true }
+      })
+
+      if (hasOtherVariants === 0) {
+        await tx.video.update({
+          where: { id: videoId },
+          data: {
+            availableLanguages: {
+              set: video.availableLanguages.filter(
+                (lang: string) => lang !== languageId
+              )
+            }
+          }
+        })
+      }
+    })
+  }
 }
 
 // Helper function to handle parent variant cleanup for child videos
@@ -478,11 +525,11 @@ builder.mutationFields((t) => ({
           version: input.version ?? undefined
         }
       })
-      // Update video's availableLanguages and cascade to parent collections only for published variants
-      if (newVariant.published) {
-        await addLanguageToVideo(newVariant.videoId, newVariant.languageId)
-        await updateParentCollectionLanguages(newVariant.videoId)
-      }
+      await updateAvailableLanguages(
+        newVariant.videoId,
+        newVariant.languageId,
+        'add'
+      )
 
       // Handle parent variant creation for child videos
       try {
@@ -576,23 +623,18 @@ builder.mutationFields((t) => ({
         }
 
         // Update availableLanguages array based on published status change
-        try {
-          if (isNowPublished) {
-            await addLanguageToVideo(
-              currentVariant.videoId,
-              currentVariant.languageId
-            )
-          } else {
-            await removeLanguageFromVideoIfUnused(
-              currentVariant.videoId,
-              currentVariant.languageId
-            )
-          }
-
-          // Cascade update to parent collections
-          await updateParentCollectionLanguages(currentVariant.videoId)
-        } catch (error) {
-          console.error('Language management update error:', error)
+        if (isNowPublished) {
+          await updateAvailableLanguages(
+            currentVariant.videoId,
+            currentVariant.languageId,
+            'add'
+          )
+        } else {
+          await updateAvailableLanguages(
+            currentVariant.videoId,
+            currentVariant.languageId,
+            'check'
+          )
         }
       }
 
@@ -722,14 +764,7 @@ builder.mutationFields((t) => ({
       }
 
       // Update availableLanguages array when variant is deleted
-      try {
-        await removeLanguageFromVideoIfUnused(videoId, languageId)
-
-        // Cascade update to parent collections
-        await updateParentCollectionLanguages(videoId)
-      } catch (error) {
-        console.error('Language management cleanup error:', error)
-      }
+      await updateAvailableLanguages(videoId, languageId, 'check')
 
       try {
         await updateVideoVariantInAlgolia(id)

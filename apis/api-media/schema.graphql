@@ -182,6 +182,8 @@ enum MediaRole {
 }
 
 type Mutation {
+  """Transcode an asset. Returns the bullmq job ID."""
+  transcodeAsset(input: TranscodeVideoInput!): String
   createCloudflareUploadByFile(input: ImageInput): CloudflareImage!
   createCloudflareUploadByUrl(url: String!, input: ImageInput): CloudflareImage!
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
@@ -205,8 +207,7 @@ type Mutation {
   playlistCreate(input: PlaylistCreateInput!): MutationPlaylistCreateResult
   playlistUpdate(id: ID!, input: PlaylistUpdateInput!): MutationPlaylistUpdateResult
   playlistDelete(id: ID!): MutationPlaylistDeleteResult
-  playlistItemAdd(playlistId: ID!, videoVariantIds: [ID!]!): MutationPlaylistItemAddResult
-  playlistItemAddWithVideoAndLanguageIds(playlistId: ID!, videos: [PlaylistItemVideoInput!]!): MutationPlaylistItemAddWithVideoAndLanguageIdsResult
+  playlistItemAdd(id: ID, playlistId: ID!, videoVariantId: ID!): MutationPlaylistItemAddResult
   playlistItemRemove(playlistId: ID!, itemId: ID!): MutationPlaylistItemRemoveResult
   playlistItemsReorder(playlistId: ID!, itemIds: [ID!]!): MutationPlaylistItemsReorderResult
 
@@ -243,7 +244,6 @@ type Mutation {
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
   videoDelete(id: ID!): Video!
-  fixVideoLanguages(videoId: ID!): Boolean!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
   videoDescriptionUpdate(input: VideoTranslationUpdateInput!): VideoDescription!
   videoDescriptionDelete(id: ID!): VideoDescription!
@@ -305,13 +305,7 @@ type MutationPlaylistDeleteSuccess {
 union MutationPlaylistItemAddResult = NotFoundError | MutationPlaylistItemAddSuccess
 
 type MutationPlaylistItemAddSuccess {
-  data: [PlaylistItem!]!
-}
-
-union MutationPlaylistItemAddWithVideoAndLanguageIdsResult = NotFoundError | MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess
-
-type MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess {
-  data: [PlaylistItem!]!
+  data: PlaylistItem!
 }
 
 union MutationPlaylistItemRemoveResult = NotFoundError | MutationPlaylistItemRemoveSuccess
@@ -548,17 +542,6 @@ type PlaylistItem {
   playlist: Playlist!
 }
 
-"""
-The video variant to add to the playlist. This is used instead of the videoVariantId as clients typically know the video id and language id of the video variant but not the videoVariantId.
-"""
-input PlaylistItemVideoInput {
-  """The video id of the video variant"""
-  videoId: String!
-
-  """The language id of the video variant"""
-  languageId: String!
-}
-
 input PlaylistUpdateInput {
   name: String
   note: String
@@ -567,6 +550,7 @@ input PlaylistUpdateInput {
 }
 
 type Query {
+  getTranscodeAssetProgress(jobId: String!): Int
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
@@ -628,7 +612,6 @@ type Query {
   videoEdition(id: ID!): VideoEdition
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
-  youtubeClosedCaptionLanguages(videoId: ID!): QueryYoutubeClosedCaptionLanguagesResult!
   arclightApiKeys: [ArclightApiKey!]!
   arclightApiKeyByKey(key: String!): ArclightApiKey
 }
@@ -677,12 +660,6 @@ type QueryShortLinksConnection {
 type QueryShortLinksConnectionEdge {
   node: ShortLink
   cursor: String!
-}
-
-union QueryYoutubeClosedCaptionLanguagesResult = ZodError | Error | QueryYoutubeClosedCaptionLanguagesSuccess
-
-type QueryYoutubeClosedCaptionLanguagesSuccess {
-  data: [Language!]!
 }
 
 enum RedirectType {
@@ -811,6 +788,14 @@ type TaxonomyName {
   label: String!
   language: Language!
   taxonomy: Taxonomy!
+}
+
+input TranscodeVideoInput {
+  r2AssetId: String!
+  resolution: String!
+  videoBitrate: String
+  outputFilename: String!
+  outputPath: String!
 }
 
 enum UnsplashColor {
@@ -1272,7 +1257,6 @@ input VideoVariantDownloadUpdateInput {
 
 input VideoVariantFilter {
   onlyPublished: Boolean = true
-  languageId: ID
 }
 
 input VideoVariantUpdateInput {

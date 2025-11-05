@@ -8,14 +8,11 @@ import {
   BlockActionDelete,
   BlockActionDeleteVariables
 } from '../../../../../__generated__/BlockActionDelete'
-import { ContactActionType } from '../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../libs/TestEditorState'
-import { blockActionChatUpdateMock } from '../../../../libs/useBlockActionChatUpdateMutation/useBlockActionChatUpdateMutation.mock'
 import { BLOCK_ACTION_DELETE } from '../../../../libs/useBlockActionDeleteMutation/useBlockActionDeleteMutation'
 import { blockActionEmailUpdateMock } from '../../../../libs/useBlockActionEmailUpdateMutation/useBlockActionEmailUpdateMutation.mock'
 import { blockActionLinkUpdateMock } from '../../../../libs/useBlockActionLinkUpdateMutation/useBlockActionLinkUpdateMutation.mock'
 import { blockActionNavigateToBlockUpdateMock } from '../../../../libs/useBlockActionNavigateToBlockUpdateMutation/useBlockActionNavigateToBlockUpdateMutation.mock'
-import { blockActionPhoneUpdateMock } from '../../../../libs/useBlockActionPhoneUpdateMutation/useBlockActionPhoneUpdateMutation.mock'
 import { CommandRedoItem } from '../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 
@@ -72,7 +69,9 @@ describe('useActionCommand', () => {
           __typename: 'LinkAction',
           url: 'https://github.com',
           parentBlockId: 'button2.id',
-          gtmEventName: ''
+          gtmEventName: '',
+          customizable: false,
+          parentStepId: 'step.id'
         },
         undoAction: null
       })
@@ -115,7 +114,9 @@ describe('useActionCommand', () => {
           __typename: 'EmailAction',
           email: 'edmondwashere@gmail.com',
           parentBlockId: 'button2.id',
-          gtmEventName: ''
+          gtmEventName: '',
+          customizable: false,
+          parentStepId: 'step.id'
         },
         undoAction: null
       })
@@ -160,96 +161,6 @@ describe('useActionCommand', () => {
         action: {
           __typename: 'NavigateToBlockAction',
           blockId: 'step2.id',
-          parentBlockId: 'button2.id',
-          gtmEventName: ''
-        },
-        undoAction: null
-      })
-      const undo = screen.getByRole('button', { name: 'Undo' })
-      await waitFor(() => expect(undo).not.toBeDisabled())
-      fireEvent.click(undo)
-      await waitFor(() => expect(mockResult).toHaveBeenCalled())
-      const redo = screen.getByRole('button', { name: 'Redo' })
-      await waitFor(() => expect(redo).not.toBeDisabled())
-      fireEvent.click(redo)
-      await waitFor(() => expect(mockRedoResult).toHaveBeenCalled())
-    })
-
-    it('should call actionChatUpdate and handle undo/redo', async () => {
-      const mockResult = jest.fn().mockReturnValue(blockActionDeleteMock.result)
-      const mockRedoResult = jest
-        .fn()
-        .mockReturnValue(blockActionChatUpdateMock.result)
-      const { result } = renderHook(() => useActionCommand(), {
-        wrapper: ({ children }) => (
-          <MockedProvider
-            mocks={[
-              blockActionChatUpdateMock,
-              { ...blockActionDeleteMock, result: mockResult },
-              { ...blockActionChatUpdateMock, result: mockRedoResult }
-            ]}
-          >
-            <CommandProvider>
-              <CommandUndoItem variant="icon-button" />
-              <CommandRedoItem variant="icon-button" />
-              {children}
-            </CommandProvider>
-          </MockedProvider>
-        )
-      })
-      result.current.addAction({
-        blockId: 'button2.id',
-        blockTypename: 'ButtonBlock',
-        action: {
-          __typename: 'ChatAction',
-          chatUrl: 'https://chat.example.com',
-          parentBlockId: 'button2.id',
-          gtmEventName: '',
-          customizable: false,
-          parentStepId: 'step.id'
-        },
-        undoAction: null
-      })
-      const undo = screen.getByRole('button', { name: 'Undo' })
-      await waitFor(() => expect(undo).not.toBeDisabled())
-      fireEvent.click(undo)
-      await waitFor(() => expect(mockResult).toHaveBeenCalled())
-      const redo = screen.getByRole('button', { name: 'Redo' })
-      await waitFor(() => expect(redo).not.toBeDisabled())
-      fireEvent.click(redo)
-      await waitFor(() => expect(mockRedoResult).toHaveBeenCalled())
-    })
-
-    it('should call actionPhoneUpdate and handle undo/redo', async () => {
-      const mockResult = jest.fn().mockReturnValue(blockActionDeleteMock.result)
-      const mockRedoResult = jest
-        .fn()
-        .mockReturnValue(blockActionPhoneUpdateMock.result)
-      const { result } = renderHook(() => useActionCommand(), {
-        wrapper: ({ children }) => (
-          <MockedProvider
-            mocks={[
-              blockActionPhoneUpdateMock,
-              { ...blockActionDeleteMock, result: mockResult },
-              { ...blockActionPhoneUpdateMock, result: mockRedoResult }
-            ]}
-          >
-            <CommandProvider>
-              <CommandUndoItem variant="icon-button" />
-              <CommandRedoItem variant="icon-button" />
-              {children}
-            </CommandProvider>
-          </MockedProvider>
-        )
-      })
-      result.current.addAction({
-        blockId: 'button2.id',
-        blockTypename: 'ButtonBlock',
-        action: {
-          __typename: 'PhoneAction',
-          phone: '+19876543210',
-          countryCode: 'US',
-          contactAction: ContactActionType.call,
           parentBlockId: 'button2.id',
           gtmEventName: ''
         },
@@ -337,7 +248,9 @@ describe('useActionCommand', () => {
           __typename: 'LinkAction',
           url: 'https://github.com',
           parentBlockId: 'button2.id',
-          gtmEventName: ''
+          gtmEventName: '',
+          customizable: false,
+          parentStepId: 'step.id'
         },
         undoAction: null,
         editorFocus: {

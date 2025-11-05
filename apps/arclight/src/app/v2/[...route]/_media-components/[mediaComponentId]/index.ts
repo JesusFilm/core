@@ -4,7 +4,7 @@ import { HTTPException } from 'hono/http-exception'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
-import { generateCacheKey, getWithStaleCache } from '../../../../../lib/cache'
+import { getDownloadSize } from '../../../../../lib/downloadHelpers'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
 import { getDefaultPlatformForApiKey } from '../../../../../lib/getPlatformFromApiKey'
 import { mediaComponentSchema } from '../../mediaComponent.schema'
@@ -151,7 +151,7 @@ mediaComponent.openapi(route, async (c) => {
   const expand = c.req.query('expand') ?? ''
   const filter = c.req.query('filter') ?? ''
 
-  const apiKey = c.req.query('apiKey') ?? ''
+  const apiKey = c.req.query('apiKey')
 
   let platform = c.req.query('platform')
   if (!platform && apiKey) {
@@ -171,50 +171,16 @@ mediaComponent.openapi(route, async (c) => {
 
   const { metadataLanguageId, fallbackLanguageId } = languageResult
 
-  const cacheKey = generateCacheKey([
-    'media-component',
-    mediaComponentId ?? '',
-    expand,
-    filter,
-    platform,
-    apiKey ?? '',
-    ...metadataLanguageTags.slice(0, 20)
-  ])
-
-  const cachedData = await getWithStaleCache(cacheKey, async () => {
-    let data
-    try {
-      const result = await getApolloClient().query<ResultOf<typeof GET_VIDEO>>({
-        query: GET_VIDEO,
-        variables: {
-          metadataLanguageId,
-          fallbackLanguageId,
-          id: mediaComponentId
-        }
-      })
-      data = result.data
-    } catch (error) {
-      if (error instanceof Error && error.message.includes('not found')) {
-        return {
-          data: {
-            message: `Video not found for media component: ${mediaComponentId}`,
-            logref: 404
-          },
-          statusCode: 404
-        }
+  try {
+    const { data } = await getApolloClient().query<ResultOf<typeof GET_VIDEO>>({
+      query: GET_VIDEO,
+      variables: {
+        metadataLanguageId,
+        fallbackLanguageId,
+        id: mediaComponentId
       }
-      throw error
-    }
-
-    if (data.video == null) {
-      return {
-        data: {
-          message: `Video not found for media component: ${mediaComponentId}`,
-          logref: 404
-        },
-        statusCode: 404
-      }
-    }
+    })
+    if (data.video == null) return c.notFound()
 
     const video = data.video
 
@@ -225,15 +191,15 @@ mediaComponent.openapi(route, async (c) => {
       video.snippet[0]?.value == null &&
       video.description[0]?.value == null
     ) {
-      return {
-        data: {
-          message: `No metadata found for metadata language tags: ${metadataLanguageTags.join(
-            ','
-          )}`,
+      return new Response(
+        JSON.stringify({
+          message: `Media component '${mediaComponentId}' resource not found!`,
           logref: 404
-        },
-        statusCode: 404
-      }
+        }),
+        {
+          status: 404
+        }
+      )
     }
 
     const descriptorsonlyResponse = {
@@ -261,10 +227,9 @@ mediaComponent.openapi(route, async (c) => {
     }
 
     if (filter.includes('descriptorsonly')) {
-      return { data: descriptorsonlyResponse, statusCode: 200 }
+      return c.json(descriptorsonlyResponse)
     }
-
-    const responseData = {
+    const response = {
       mediaComponentId,
       componentType: video.variant?.hls != null ? 'content' : 'container',
       subType: video.label,
@@ -290,10 +255,16 @@ mediaComponent.openapi(route, async (c) => {
       containsCount: video.childrenCount,
       isDownloadable: video.variant?.downloadable ?? false,
       downloadSizes: {
-        approximateSmallDownloadSizeInBytes:
-          video.variant?.downloads.find((d) => d.quality === 'low')?.size ?? 0,
-        approximateLargeDownloadSizeInBytes:
-          video.variant?.downloads.find((d) => d.quality === 'high')?.size ?? 0
+        approximateSmallDownloadSizeInBytes: getDownloadSize(
+          video.variant?.downloads,
+          'low',
+          apiKey
+        ),
+        approximateLargeDownloadSizeInBytes: getDownloadSize(
+          video.variant?.downloads,
+          'high',
+          apiKey
+        )
       },
       bibleCitations: video.bibleCitations.map((citation) => ({
         osisBibleBook: citation.osisId,
@@ -334,8 +305,14 @@ mediaComponent.openapi(route, async (c) => {
       }
     }
 
-    return { data: responseData, statusCode: 200 }
-  })
-
-  return c.json(cachedData.data, cachedData.statusCode as 200 | 404 | 500)
+    return c.json(response)
+  } catch {
+    return c.json(
+      {
+        message: `Media component '${mediaComponentId}' resource not found!`,
+        logref: 404
+      },
+      404
+    )
+  }
 })

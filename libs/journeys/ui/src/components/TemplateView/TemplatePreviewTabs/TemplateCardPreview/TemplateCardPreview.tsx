@@ -25,7 +25,7 @@ import { BlockRenderer } from '../../../BlockRenderer'
 import { CardWrapper } from '../../../CardWrapper'
 import { FramePortal } from '../../../FramePortal'
 import { VideoWrapper } from '../../../VideoWrapper'
-import { TemplateActionButton } from '../../TemplateViewHeader/TemplateActionButton/TemplateActionButton'
+import { CreateJourneyButton } from '../../CreateJourneyButton'
 
 interface TemplateCardPreviewProps {
   steps?: Array<TreeBlock<StepBlock>>
@@ -198,7 +198,7 @@ export function TemplateCardPreview({
             >
               {t('Use this template to see more!')}
             </Typography>
-            <TemplateActionButton signedIn={authUser?.id != null} />
+            <CreateJourneyButton signedIn={authUser?.id != null} />
           </Stack>
           <Box
             sx={{

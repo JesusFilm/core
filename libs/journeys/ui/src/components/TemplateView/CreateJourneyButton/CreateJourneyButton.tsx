@@ -13,10 +13,6 @@ import { AccountCheckDialog } from '../AccountCheckDialog'
 
 interface CreateJourneyButtonProps {
   signedIn?: boolean
-  /* Automatically open the team dialog when the user signs in with createNew=true in the URL.
-   * Only one CreateJourneyButton per page should have this set to true to avoid opening multiple instances of the dialog.
-   */
-  openTeamDialogOnSignIn?: boolean
 }
 
 interface JourneyLanguage {
@@ -34,8 +30,7 @@ const DynamicCopyToTeamDialog = dynamic(
 )
 
 export function CreateJourneyButton({
-  signedIn = false,
-  openTeamDialogOnSignIn = false
+  signedIn = false
 }: CreateJourneyButtonProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { enqueueSnackbar } = useSnackbar()
@@ -222,12 +217,11 @@ export function CreateJourneyButton({
     if (
       router.query.createNew === 'true' &&
       signedIn &&
-      openTeamDialogOnSignIn &&
       setOpenTeamDialog !== undefined
     ) {
       setOpenTeamDialog(true)
     }
-  }, [signedIn, router, setOpenTeamDialog, openTeamDialogOnSignIn])
+  }, [signedIn, router, setOpenTeamDialog])
 
   return (
     <>

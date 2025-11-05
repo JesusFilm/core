@@ -96,7 +96,7 @@ export function SlugDialog({
             <Dialog
               open={open}
               onClose={handleClose(resetForm)}
-              dialogTitle={{ title: t('Edit Link') }}
+              dialogTitle={{ title: t('Edit URL') }}
               dialogAction={{
                 onSubmit: handleSubmit,
                 closeLabel: t('Cancel')

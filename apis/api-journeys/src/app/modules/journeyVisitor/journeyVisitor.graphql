@@ -64,7 +64,6 @@ type JourneyVisitor @key(fields: "visitorId journeyId") @shareable {
   populated by RadioQuestionSubmission mutation
   """
   lastRadioOptionSubmission: String
-  lastMultiselectSubmission: String
   events: [Event!]!
   visitor: Visitor!
 }
@@ -95,7 +94,6 @@ input JourneyVisitorFilter {
   journeyId: String!
   hasChatStarted: Boolean
   hasPollAnswers: Boolean
-  hasMultiselectSubmission: Boolean
   hasTextResponse: Boolean
   hasIcon: Boolean
   hideInactive: Boolean

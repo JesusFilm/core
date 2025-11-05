@@ -3,29 +3,18 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import {
-  JourneyMenuButtonIcon,
   JourneyStatus,
   ThemeMode,
   ThemeName
 } from '../../../__generated__/globalTypes'
-import { TreeBlock } from '../../libs/block'
-import { EditorProvider } from '../../libs/EditorProvider'
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import {
-  JourneyFields as Journey,
-  JourneyFields_menuStepBlock as MenuStepBlock
-} from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../libs/useJourneyQuery/__generated__/GetJourney'
+import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 
 import { StepFooter } from './StepFooter'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: () => true
-}))
-
-jest.mock('next/navigation', () => ({
-  useParams: () => ({ stepSlug: null })
 }))
 
 describe('StepFooter', () => {
@@ -84,12 +73,12 @@ describe('StepFooter', () => {
     logoImageBlock: null,
     menuButtonIcon: null,
     menuStepBlock: null,
+    socialNodeX: null,
+    socialNodeY: null,
     journeyTheme: null,
     journeyCustomizationDescription: null,
     journeyCustomizationFields: [],
-    fromTemplateId: null,
-    socialNodeX: null,
-    socialNodeY: null
+    fromTemplateId: null
   }
 
   it('should render custom styles', () => {
@@ -213,133 +202,28 @@ describe('StepFooter', () => {
 
       expect(screen.getAllByTestId('StepFooterButtonList')).toHaveLength(2)
     })
-
-    it('should not show information if no menu icon is set', () => {
-      render(
-        <MockedProvider>
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: { ...journey, menuButtonIcon: null },
-                variant: 'admin'
-              }}
-            >
-              <StepFooter />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
-      expect(screen.queryByTestId('InformationButton')).not.toBeInTheDocument()
-    })
-
-    it('should show information if website and menu icon is set and on menu step', () => {
-      render(
-        <MockedProvider>
-          <SnackbarProvider>
-            <JourneyProvider
-              value={{
-                journey: {
-                  ...journey,
-                  website: true,
-                  menuButtonIcon: JourneyMenuButtonIcon.home3
-                },
-                variant: 'admin'
-              }}
-            >
-              <StepFooter />
-            </JourneyProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
-      expect(screen.getByTestId('InformationButton')).toBeInTheDocument()
-    })
   })
 
   describe('website', () => {
     const websiteJourney = {
       ...journey,
-      website: true,
-      menuStepBlock: {
-        __typename: 'StepBlock',
-        id: 'menuStepBlockId'
-      } as MenuStepBlock,
-      menuButtonIcon: JourneyMenuButtonIcon.home3
+      website: true
     }
 
     it('should show information', () => {
       render(
         <MockedProvider>
           <SnackbarProvider>
-            <EditorProvider
-              initialState={{
-                selectedStep: {
-                  id: 'menuStepBlockId',
-                  __typename: 'StepBlock'
-                } as TreeBlock<StepBlock>
-              }}
+            <JourneyProvider
+              value={{ journey: websiteJourney, variant: 'admin' }}
             >
-              <JourneyProvider
-                value={{ journey: websiteJourney, variant: 'admin' }}
-              >
-                <StepFooter />
-              </JourneyProvider>
-            </EditorProvider>
+              <StepFooter />
+            </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
 
       expect(screen.getByTestId('InformationButton')).toBeInTheDocument()
-    })
-
-    it('should not show information if no menu icon is set', () => {
-      render(
-        <MockedProvider>
-          <SnackbarProvider>
-            <EditorProvider
-              initialState={{
-                selectedStep: {
-                  id: 'menuStepBlockId',
-                  __typename: 'StepBlock'
-                } as TreeBlock<StepBlock>
-              }}
-            >
-              <JourneyProvider
-                value={{
-                  journey: { ...websiteJourney, menuButtonIcon: null },
-                  variant: 'admin'
-                }}
-              >
-                <StepFooter />
-              </JourneyProvider>
-            </EditorProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
-      expect(screen.queryByTestId('InformationButton')).not.toBeInTheDocument()
-    })
-
-    it('should not show information if not on menu step', () => {
-      render(
-        <MockedProvider>
-          <SnackbarProvider>
-            <EditorProvider
-              initialState={{
-                selectedStep: {
-                  id: 'someStepId',
-                  __typename: 'StepBlock'
-                } as TreeBlock<StepBlock>
-              }}
-            >
-              <JourneyProvider
-                value={{ journey: websiteJourney, variant: 'admin' }}
-              >
-                <StepFooter />
-              </JourneyProvider>
-            </EditorProvider>
-          </SnackbarProvider>
-        </MockedProvider>
-      )
-      expect(screen.queryByTestId('InformationButton')).not.toBeInTheDocument()
     })
 
     it('should chat buttons', () => {

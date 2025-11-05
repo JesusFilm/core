@@ -143,7 +143,7 @@ describe('ShareItem', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: 'Share' }))
     expect(screen.getByRole('dialog')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Edit Link' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Edit URL' }))
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
@@ -153,20 +153,18 @@ describe('ShareItem', () => {
       )
     })
 
-    expect(
-      screen.getByRole('dialog', { name: 'Edit Link' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Edit URL' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
 
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Edit Link' })
+        screen.getByRole('button', { name: 'Edit URL' })
       ).toBeInTheDocument()
     })
     expect(
-      screen.getByRole('button', { name: 'Embed Embed Journey' }) // Two buttons ("Embed" and "Embed Journey") are used for mobile/desktop
+      screen.getByRole('button', { name: 'Embed Journey' })
     ).toBeInTheDocument()
   })
 
@@ -189,7 +187,7 @@ describe('ShareItem', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: 'Share' }))
     expect(screen.getByRole('dialog')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Embed Embed Journey' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Embed Journey' }))
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
         { query: { param: 'embed-journey' } },
@@ -208,11 +206,11 @@ describe('ShareItem', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Edit Link' })
+        screen.getByRole('button', { name: 'Edit URL' })
       ).toBeInTheDocument()
     })
     expect(
-      screen.getByRole('button', { name: 'Embed Embed Journey' })
+      screen.getByRole('button', { name: 'Embed Journey' })
     ).toBeInTheDocument()
   })
 
@@ -265,7 +263,7 @@ describe('ShareItem', () => {
         'QR Code'
       )
     )
-    fireEvent.click(screen.getAllByTestId('dialog-close-button')[1])
+    fireEvent.click(screen.getByTestId('dialog-close-button'))
     await waitFor(() =>
       expect(
         screen.getByRole('button', { name: 'QR Code' })
@@ -299,9 +297,6 @@ describe('ShareItem', () => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(
         'https://default.domain.com/default'
       )
-    })
-    await waitFor(() => {
-      expect(screen.getByText('Link copied')).toBeInTheDocument()
     })
   })
 
@@ -384,56 +379,5 @@ describe('ShareItem', () => {
         'https://custom.domain.com/default'
       )
     })
-    await waitFor(() => {
-      expect(screen.getByText('Link copied')).toBeInTheDocument()
-    })
-  })
-
-  it('should render ShareIcon when buttonVariant is icon', () => {
-    render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[journeyForSharingMock]}>
-          <JourneyProvider
-            value={{ journey: defaultJourney, variant: 'admin' }}
-          >
-            <ShareItem
-              variant="button"
-              journey={defaultJourney}
-              buttonVariant="icon"
-            />
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    const shareButton = screen.getByRole('button', { name: 'Share' })
-    expect(shareButton).toBeInTheDocument()
-
-    const shareIcon = shareButton.querySelector('svg')
-    expect(shareIcon).toBeInTheDocument()
-  })
-
-  it('should not render ShareIcon when buttonVariant is default', () => {
-    render(
-      <SnackbarProvider>
-        <MockedProvider mocks={[journeyForSharingMock]}>
-          <JourneyProvider
-            value={{ journey: defaultJourney, variant: 'admin' }}
-          >
-            <ShareItem
-              variant="button"
-              journey={defaultJourney}
-              buttonVariant="default"
-            />
-          </JourneyProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-
-    const shareButton = screen.getByRole('button', { name: 'Share' })
-    expect(shareButton).toBeInTheDocument()
-
-    const shareIcon = shareButton.querySelector('svg')
-    expect(shareIcon).not.toBeInTheDocument()
   })
 })

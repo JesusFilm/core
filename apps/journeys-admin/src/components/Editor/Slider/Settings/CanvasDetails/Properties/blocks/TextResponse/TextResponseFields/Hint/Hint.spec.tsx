@@ -6,8 +6,6 @@ import DebounceLink from 'apollo-link-debounce'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../__generated__/BlockFields'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
@@ -36,8 +34,7 @@ describe('Edit Hint field', () => {
     type: null,
     routeId: null,
     required: null,
-    children: [],
-    hideLabel: false
+    children: []
   }
 
   const initialState = {
@@ -212,80 +209,5 @@ describe('Edit Hint field', () => {
     const field = screen.getByRole('textbox', { name: 'Hint' })
     await userEvent.type(field, ' more')
     await waitFor(() => expect(mockHintUpdate1.result).not.toHaveBeenCalled())
-  })
-
-  it('should resolve customizable hint value for journeys that are not templates', () => {
-    const blockWithCustomizableHint = {
-      ...block,
-      hint: '{{ hint }}'
-    }
-
-    const journeyWithCustomizableFields = {
-      journeyCustomizationFields: [
-        {
-          __typename: 'JourneyCustomizationField',
-          id: '1',
-          journeyId: 'journeyId',
-          key: 'hint',
-          value: 'Your customized hint',
-          defaultValue: 'Default hint'
-        }
-      ]
-    } as unknown as Journey
-
-    render(
-      <MockedProvider mocks={[mockHintUpdate1]} addTypename={false}>
-        <JourneyProvider
-          value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}
-        >
-          <EditorProvider
-            initialState={{ selectedBlock: blockWithCustomizableHint }}
-          >
-            <Hint />
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    const field = screen.getByRole('textbox', { name: 'Hint' })
-    expect(field).toHaveValue('Your customized hint')
-  })
-
-  it('should not resolve customizable hint value for template journeys', () => {
-    const blockWithCustomizableHint = {
-      ...block,
-      hint: '{{ hint }}'
-    }
-
-    const journeyWithCustomizableFields = {
-      template: true,
-      journeyCustomizationFields: [
-        {
-          __typename: 'JourneyCustomizationField',
-          id: '1',
-          journeyId: 'journeyId',
-          key: 'hint',
-          value: 'Your customized hint',
-          defaultValue: 'Default hint'
-        }
-      ]
-    } as unknown as Journey
-
-    render(
-      <MockedProvider mocks={[mockHintUpdate1]} addTypename={false}>
-        <JourneyProvider
-          value={{ journey: journeyWithCustomizableFields, variant: 'admin' }}
-        >
-          <EditorProvider
-            initialState={{ selectedBlock: blockWithCustomizableHint }}
-          >
-            <Hint />
-          </EditorProvider>
-        </JourneyProvider>
-      </MockedProvider>
-    )
-
-    const field = screen.getByRole('textbox', { name: 'Hint' })
-    expect(field).toHaveValue('{{ hint }}')
   })
 })

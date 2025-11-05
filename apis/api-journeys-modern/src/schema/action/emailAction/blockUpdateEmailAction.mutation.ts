@@ -1,19 +1,27 @@
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
-import { prisma } from '@core/prisma/journeys/client'
+import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { Action, ability, subject } from '../../../lib/auth/ability'
 import { builder } from '../../builder'
-import { ACTION_UPDATE_RESET } from '../blockUpdateAction.mutation'
 import { canBlockHaveAction } from '../canBlockHaveAction'
 
 import { EmailActionRef } from './emailAction'
 import { EmailActionInput } from './inputs'
 
 const emailSchema = z.object({
-  email: z.email()
+  email: z.string().email()
 })
+
+const ACTION_UPDATE_RESET: Prisma.ActionUpdateInput = {
+  url: null,
+  target: null,
+  email: null,
+  phone: null,
+  journey: { disconnect: true },
+  block: { disconnect: true }
+}
 
 builder.mutationField('blockUpdateEmailAction', (t) =>
   t.withAuth({ isAuthenticated: true }).field({

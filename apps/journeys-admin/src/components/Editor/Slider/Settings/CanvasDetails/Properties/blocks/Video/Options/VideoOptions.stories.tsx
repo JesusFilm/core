@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -43,7 +43,6 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  subtitleLanguage: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',

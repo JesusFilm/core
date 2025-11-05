@@ -55,7 +55,7 @@ export function DescriptionEdit(): ReactElement {
       : null
 
   const seoDescriptionSchema = object().shape({
-    seoDescription: string().max(179, t('Character limit reached')) // 180 characters just a few more words than 18 on average
+    seoDescription: string().max(180, t('Character limit reached')) // 180 characters just a few more words than 18 on average
   })
 
   return (
@@ -67,7 +67,7 @@ export function DescriptionEdit(): ReactElement {
           onSubmit={noop}
         >
           {({ values, touched, errors, handleChange, handleBlur }) => (
-            <Form style={{ width: '100%' }}>
+            <Form>
               <TextField
                 id="seoDescription"
                 name="seoDescription"
@@ -89,12 +89,12 @@ export function DescriptionEdit(): ReactElement {
                 onChange={handleChange}
                 onBlur={(e) => {
                   handleBlur(e)
-                  void handleSubmit(e)
+                  if (errors.seoDescription == null) void handleSubmit(e)
+                }}
+                sx={{
+                  pb: 6
                 }}
                 data-testid="DescriptionEdit"
-                slotProps={{
-                  htmlInput: { maxLength: 180 }
-                }}
               />
             </Form>
           )}
@@ -106,6 +106,9 @@ export function DescriptionEdit(): ReactElement {
           fullWidth
           disabled
           helperText={t('Recommended length: up to 18 words')}
+          sx={{
+            pb: 6
+          }}
           data-testid="DescriptionEdit"
         />
       )}

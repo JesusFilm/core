@@ -4,8 +4,7 @@
     "sourceMap": false,
     "outDir": "../../dist/out-tsc",
     "allowJs": true,
-    "types": ["node"],
-    "tsBuildInfoFile": "../../.cache/watch-e2e/tsc/.tsbuildinfo.e2e"
+    "types": ["node"]
   },
   "include": ["src/**/*.ts", "src/**/*.js", "playwright.config.ts"]
 }

@@ -10,8 +10,13 @@ jest.mock('next/router', () => ({
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-xdescribe('HandleNewAccountRedirect', () => {
+describe('HandleNewAccountRedirect', () => {
   const push = jest.fn()
+  Object.defineProperty(window, 'location', {
+    configurable: true,
+    enumerable: true,
+    value: { origin: 'http://localhost:4200' }
+  })
 
   afterEach(() => {
     jest.clearAllMocks()
@@ -31,7 +36,7 @@ xdescribe('HandleNewAccountRedirect', () => {
     expect(push).toHaveBeenCalledWith({
       pathname: '/users/sign-in',
       query: {
-        redirect: expect.stringContaining('/customparam?newAccount=true')
+        redirect: 'http://localhost:4200/customparam?newAccount=true'
       }
     })
   })

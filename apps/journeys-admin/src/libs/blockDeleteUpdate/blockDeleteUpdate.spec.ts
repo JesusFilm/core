@@ -1,10 +1,10 @@
 import { InMemoryCache } from '@apollo/client'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
 import {
   GetJourney_journey_blocks_ImageBlock as ImageBlock,
-  GetJourney_journey as Journey,
   GetJourney_journey_blocks_VideoBlock as VideoBlock
 } from '../../../__generated__/GetJourney'
 import {
@@ -35,7 +35,6 @@ const video: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  subtitleLanguage: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -126,9 +125,12 @@ const journey: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null,
-  journeyTheme: null
+  socialNodeY: null
 }
 
 const response = [{ ...image, parentOrder: 0 }]

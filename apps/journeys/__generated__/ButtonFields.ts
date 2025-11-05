@@ -3,11 +3,17 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: ButtonFields
 // ====================================================
+
+export interface ButtonFields_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
 
 export interface ButtonFields_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
@@ -21,6 +27,8 @@ export interface ButtonFields_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface ButtonFields_action_EmailAction {
@@ -28,27 +36,11 @@ export interface ButtonFields_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface ButtonFields_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface ButtonFields_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type ButtonFields_action = ButtonFields_action_NavigateToBlockAction | ButtonFields_action_LinkAction | ButtonFields_action_EmailAction | ButtonFields_action_ChatAction | ButtonFields_action_PhoneAction;
+export type ButtonFields_action = ButtonFields_action_PhoneAction | ButtonFields_action_NavigateToBlockAction | ButtonFields_action_LinkAction | ButtonFields_action_EmailAction;
 
 export interface ButtonFields_settings {
   __typename: "ButtonBlockSettings";

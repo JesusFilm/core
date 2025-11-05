@@ -1,11 +1,4 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-# Source nvm if available
-if [ -f ~/.nvm/nvm.sh ]; then
-  . ~/.nvm/nvm.sh
-elif [ -f ~/.bashrc ]; then
-  . ~/.bashrc
-fi
-
 npx validate-branch-name

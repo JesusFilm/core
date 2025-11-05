@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/react'
 
 // import CircularProgress from '@mui/material/CircularProgress'
 import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
@@ -78,7 +78,6 @@ const iconNames: IconName[] = [
   'Drag',
   'DuplicateCard',
   'Edit2',
-  'Edit3',
   'Ellipsis',
   'Email',
   'Embed',
@@ -173,7 +172,6 @@ const iconNames: IconName[] = [
   'Play1',
   'Play2',
   'Play3',
-  'Phone',
   'Plus1',
   'Plus2',
   'Plus3',

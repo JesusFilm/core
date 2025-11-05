@@ -22,7 +22,7 @@ describe('useTextResponseWithButtonCreate', () => {
       id: 'textResponse.id',
       parentBlockId: 'card.id',
       parentOrder: 0,
-      label: 'Field Name',
+      label: 'Label',
       hint: null,
       minRows: null,
       type: null,
@@ -30,8 +30,7 @@ describe('useTextResponseWithButtonCreate', () => {
       integrationId: null,
       placeholder: null,
       required: null,
-      __typename: 'TextResponseBlock' as const,
-      hideLabel: false
+      __typename: 'TextResponseBlock' as const
     } satisfies TextResponseBlock,
     buttonBlock: {
       id: 'button.id',

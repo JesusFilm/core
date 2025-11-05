@@ -6,8 +6,6 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { Typography } from '@core/journeys/ui/Typography'
 
 import { ButtonFields } from '../../../../../../../__generated__/ButtonFields'
-import { MultiselectOptionFields } from '../../../../../../../__generated__/MultiselectOptionFields'
-import { MultiselectQuestionFields } from '../../../../../../../__generated__/MultiselectQuestionFields'
 import { RadioOptionFields } from '../../../../../../../__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQuestionFields'
 import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
@@ -15,8 +13,6 @@ import { TextResponseFields } from '../../../../../../../__generated__/TextRespo
 import { TypographyFields } from '../../../../../../../__generated__/TypographyFields'
 
 import { ButtonEdit } from './ButtonEdit'
-import { MultiselectOptionEdit } from './MultiselectOptionEdit'
-import { MultiselectQuestionEdit } from './MultiselectQuestionEdit'
 import { RadioOptionEdit } from './RadioOptionEdit'
 import { RadioQuestionEdit } from './RadioQuestionEdit'
 import { SignUpEdit } from './SignUpEdit'
@@ -30,8 +26,6 @@ interface InlineEditWrapperProps
     | RadioOptionFields
     | TextResponseFields
     | SignUpFields
-    | MultiselectQuestionFields
-    | MultiselectOptionFields
   > {}
 
 export function InlineEditWrapper({
@@ -45,8 +39,7 @@ export function InlineEditWrapper({
 
   const showEditable =
     selectedBlock?.id === block.id ||
-    ((block.__typename === 'RadioQuestionBlock' ||
-      block.__typename === 'MultiselectBlock') &&
+    (block.__typename === 'RadioQuestionBlock' &&
       selectedBlock?.parentBlockId === block.id)
 
   let component = children
@@ -76,18 +69,6 @@ export function InlineEditWrapper({
       break
     case 'SignUpBlock':
       if (showEditable) component = <SignUpEdit {...block} />
-      break
-    case 'MultiselectBlock':
-      if (showEditable)
-        component = (
-          <MultiselectQuestionEdit
-            {...block}
-            wrappers={(children.props as any).wrappers}
-          />
-        )
-      break
-    case 'MultiselectOptionBlock':
-      if (showEditable) component = <MultiselectOptionEdit {...block} />
       break
   }
 

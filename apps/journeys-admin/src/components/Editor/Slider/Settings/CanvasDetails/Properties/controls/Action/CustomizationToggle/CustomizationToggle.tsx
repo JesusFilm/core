@@ -25,9 +25,6 @@ export function CustomizationToggle(): ReactElement {
   if (actionBlock?.action?.__typename === 'EmailAction') {
     customizable = actionBlock?.action?.customizable ?? false
   }
-  if (actionBlock?.action?.__typename === 'ChatAction') {
-    customizable = actionBlock?.action?.customizable ?? false
-  }
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>): void {
     if (actionBlock == null || selectedStep == null) return
@@ -76,46 +73,30 @@ export function CustomizationToggle(): ReactElement {
       })
       return
     }
-
-    if (action?.__typename === 'ChatAction') {
-      addAction({
-        blockId: id,
-        blockTypename,
-        action: {
-          __typename: 'ChatAction',
-          parentBlockId: id,
-          gtmEventName: '',
-          chatUrl: action.chatUrl,
-          customizable: newCustomizable,
-          parentStepId: selectedStep.id
-        },
-        undoAction: action,
-        editorFocus: {
-          selectedStep,
-          selectedBlock: actionBlock
-        }
-      })
-      return
-    }
   }
 
   return (
-    <Stack
-      direction="row"
-      alignItems="center"
-      width="100%"
-      gap={1}
-      sx={{
-        mt: 2
-      }}
-    >
-      <Switch
-        disabled={actionBlock == null}
-        checked={customizable}
-        onChange={handleChange}
-        inputProps={{ 'aria-label': t('Toggle customizable') }}
-      />
-      <Typography variant="body1">{t('Needs Customization')}</Typography>
-    </Stack>
+    <>
+      {actionBlock != null &&
+        (actionBlock.action?.__typename === 'LinkAction' ||
+          actionBlock.action?.__typename === 'EmailAction') && (
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+            width="100%"
+            sx={{
+              mt: 2
+            }}
+          >
+            <Typography variant="body1">{t('Customize')}</Typography>
+            <Switch
+              checked={customizable}
+              onChange={handleChange}
+              inputProps={{ 'aria-label': t('Toggle customizable') }}
+            />
+          </Stack>
+        )}
+    </>
   )
 }

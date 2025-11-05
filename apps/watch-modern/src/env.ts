@@ -48,7 +48,7 @@ export const env = createEnv({
     NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE: z.string(),
     NEXT_PUBLIC_DATADOG_APPLICATION_ID: z.string().optional(),
     NEXT_PUBLIC_DATADOG_CLIENT_TOKEN: z.string().optional(),
-    NEXT_PUBLIC_DATADOG_ENV: z.string().prefault('development'),
+    NEXT_PUBLIC_DATADOG_ENV: z.string().default('development'),
     NEXT_PUBLIC_DATADOG_SITE: z
       .enum([
         'datadoghq.com',
@@ -59,7 +59,7 @@ export const env = createEnv({
         'ap1.datadoghq.com',
         'ap2.datadoghq.com'
       ])
-      .prefault('datadoghq.com'),
+      .default('datadoghq.com'),
     NEXT_PUBLIC_DATADOG_VERSION: z.string().optional()
   },
 

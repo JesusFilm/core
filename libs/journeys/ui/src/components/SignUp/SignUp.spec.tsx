@@ -62,7 +62,9 @@ const block: TreeBlock<SignUpFields> = {
     __typename: 'LinkAction',
     parentBlockId: 'signUp0.id',
     gtmEventName: 'signUp',
-    url: '#'
+    url: '#',
+    customizable: null,
+    parentStepId: null
   },
   children: []
 }
@@ -93,6 +95,21 @@ const SignUpMock = ({ mocks = [] }: SignUpMockProps): ReactElement => (
 )
 
 describe('SignUp', () => {
+  const originalLocation = window.location
+  const mockOrigin = 'https://example.com'
+
+  beforeAll(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        origin: mockOrigin
+      }
+    })
+  })
+
+  afterAll(() => {
+    Object.defineProperty(window, 'location', originalLocation)
+  })
+
   it('should validate when fields are empty', async () => {
     const { getByRole, getAllByText } = render(
       <SnackbarProvider>
@@ -219,7 +236,9 @@ describe('SignUp', () => {
           __typename: 'LinkAction',
           parentBlockId: 'signUp0.id',
           gtmEventName: 'signUp',
-          url: '#'
+          url: '#',
+          customizable: null,
+          parentStepId: null
         },
         undefined
       )
@@ -406,7 +425,7 @@ describe('SignUp', () => {
 
     await waitFor(() => {
       expect(mockPlausible).toHaveBeenCalledWith('signupSubmit', {
-        u: expect.stringContaining(`/journey.id/step.id`),
+        u: `${mockOrigin}/journey.id/step.id`,
         props: {
           id: 'uuid',
           blockId: 'signUp0.id',

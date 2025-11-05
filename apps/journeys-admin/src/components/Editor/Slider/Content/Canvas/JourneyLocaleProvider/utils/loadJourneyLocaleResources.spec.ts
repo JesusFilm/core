@@ -110,18 +110,4 @@ describe('loadJourneyLocaleResources', () => {
       }
     })
   })
-
-  test('returns early without attempting imports when locale is not in LOCALE_MAP', async () => {
-    const { loadJourneyLocaleResources }: ModuleUnderTest = await import(
-      /* webpackChunkName: "test-loadJourneyLocaleResources" */ './loadJourneyLocaleResources'
-    )
-
-    await loadJourneyLocaleResources(
-      'someRandomLocale',
-      setResourcesMock,
-      'someRandomLocale'
-    )
-
-    expect(setResourcesMock).not.toHaveBeenCalled()
-  })
 })

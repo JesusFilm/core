@@ -80,7 +80,7 @@ export function NewTextResponseButton(): ReactElement {
       id: uuidv4(),
       parentBlockId: card.id,
       parentOrder: card.children.length ?? 0,
-      label: t('Field Name'),
+      label: t('Label'),
       placeholder: null,
       hint: null,
       minRows: null,
@@ -88,8 +88,7 @@ export function NewTextResponseButton(): ReactElement {
       routeId: null,
       integrationId: null,
       required: null,
-      __typename: 'TextResponseBlock',
-      hideLabel: false
+      __typename: 'TextResponseBlock'
     }
 
     if (!hasSubmitButton) {

@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { builder } from '../../builder'
 
 const PlaylistCreateInputSchema = z.object({
-  id: z.uuid('ID must be a valid UUID').optional(),
+  id: z.string().uuid('ID must be a valid UUID').optional(),
   name: z
     .string()
     .min(1, 'Name is required')

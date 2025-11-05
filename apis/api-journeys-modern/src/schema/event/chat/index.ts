@@ -1,4 +1,2 @@
-import './chatOpenEventCreate.mutation'
+import './inputs'
 import './chatOpenEvent'
-
-export { ChatOpenEventRef } from './chatOpenEvent'

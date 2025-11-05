@@ -33,7 +33,6 @@ export const journeyVideoBlocks: Blocks[] = [
     image: null,
     duration: 118,
     objectFit: null,
-    subtitleLanguage: null,
     mediaVideo: {
       __typename: 'Video',
       id: '1_0-TrainV_1Install',
@@ -78,7 +77,6 @@ export const journeyVideoBlocks: Blocks[] = [
     image: null,
     duration: null,
     objectFit: null,
-    subtitleLanguage: null,
     mediaVideo: {
       __typename: 'Video',
       id: '1_0-TrainV_5Ministry',
@@ -123,7 +121,6 @@ export const journeyVideoBlocks: Blocks[] = [
     image: null,
     duration: null,
     objectFit: null,
-    subtitleLanguage: null,
     mediaVideo: {
       __typename: 'Video',
       id: '1_cl1302-0-0',
@@ -169,7 +166,6 @@ export const journeyVideoBlocks: Blocks[] = [
     image: 'https://i.ytimg.com/vi/TDBSCCrem-Q/hqdefault.jpg',
     duration: 120,
     objectFit: null,
-    subtitleLanguage: null,
     mediaVideo: null,
     action: null
   },
@@ -214,7 +210,6 @@ export const journeyVideoBlocks: Blocks[] = [
     image: null,
     duration: 147,
     objectFit: null,
-    subtitleLanguage: null,
     mediaVideo: {
       __typename: 'Video',
       id: '1_cl1305-0-0',
@@ -334,7 +329,6 @@ export const videoBlocksFiltered = [
     image: 'https://i.ytimg.com/vi/ghTiJv0oVck/hqdefault.jpg',
     duration: 218,
     objectFit: null,
-    subtitleLanguage: null,
     mediaVideo: {
       __typename: 'YouTube',
       id: 'ghTiJv0oVck'
@@ -412,7 +406,6 @@ export const videoBlocksFiltered = [
     image: 'https://i.ytimg.com/vi/90XbaaQerz8/hqdefault.jpg',
     duration: 188,
     objectFit: null,
-    subtitleLanguage: null,
     mediaVideo: {
       __typename: 'YouTube',
       id: '90XbaaQerz8'
@@ -442,7 +435,6 @@ export const videoBlocksFiltered = [
     image: null,
     duration: null,
     objectFit: null,
-    subtitleLanguage: null,
     mediaVideo: {
       __typename: 'Video',
       id: '1_jf-0-0',
@@ -490,7 +482,6 @@ export const videoBlocksFiltered = [
     image: null,
     duration: 112,
     objectFit: null,
-    subtitleLanguage: null,
     mediaVideo: {
       __typename: 'Video',
       id: '1_cl1303-0-0',
@@ -538,7 +529,6 @@ export const videoBlocksFiltered = [
     image: null,
     duration: 0,
     objectFit: null,
-    subtitleLanguage: null,
     mediaVideo: {
       __typename: 'Video',
       id: '1_jf6125-0-0',

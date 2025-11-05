@@ -243,9 +243,7 @@ export class JourneyPage {
     const createJourneyLoaderPath = this.page.locator(
       'div[data-testid="JourneysAdminImageThumbnail"] span[class*="MuiCircularProgress"]'
     )
-    await this.page
-      .locator('div[data-testid="JourneysAdminContainedIconButton"] button')
-      .waitFor({ state: 'visible', timeout: 150000 })
+    await this.page.waitForLoadState('load')
     await expect(
       this.page.locator(
         'div[data-testid="JourneysAdminContainedIconButton"] button'
@@ -1073,12 +1071,7 @@ export class JourneyPage {
   }
 
   async clickOnJourneyCard() {
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .first()
-      .locator('div[data-testid="CardOverlayImageContainer"]')
-      .first()
-      .waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+    await this.page.waitForLoadState('load')
     await this.page
       .frameLocator(this.journeyCardFrame)
       .first()
@@ -1219,7 +1212,7 @@ export class JourneyPage {
     expect(clipBoardText).toContain(actualValue)
   }
   async editUrlAndSave() {
-    await this.clickButtonInShareDialog('Edit Link')
+    await this.clickButtonInShareDialog('Edit URL')
     const updatedSlugName = await this.UpdateUrlSlug()
     await this.clickDialogActionBtnsInShareDialog('Save')
     await this.validateUrlUpdatedUrl(updatedSlugName)

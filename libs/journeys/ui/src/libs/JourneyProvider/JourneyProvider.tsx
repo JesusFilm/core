@@ -1,17 +1,16 @@
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
-
 import { JourneyFields as Journey } from './__generated__/JourneyFields'
 
-export interface JourneyProviderContext {
+interface Context {
   journey?: Journey
-  variant?: 'default' | 'admin' | 'embed' | 'customize'
+  variant?: 'default' | 'admin' | 'embed'
 }
 
-const JourneyContext = createContext<JourneyProviderContext>({
+const JourneyContext = createContext<Context>({
   variant: 'default'
 })
 
-export function useJourney(): JourneyProviderContext {
+export function useJourney(): Context {
   const context = useContext(JourneyContext)
 
   return context
@@ -19,7 +18,7 @@ export function useJourney(): JourneyProviderContext {
 
 interface JourneyProviderProps {
   children: ReactNode
-  value?: Partial<JourneyProviderContext>
+  value?: Partial<Context>
 }
 
 export function JourneyProvider({

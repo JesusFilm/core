@@ -2,8 +2,6 @@ import { fireEvent, render, screen } from '@testing-library/react'
 
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
-import { JourneyProvider } from '../../libs/JourneyProvider'
-import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
 
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 
@@ -70,57 +68,6 @@ describe('RadioOption', () => {
         undefined
       )
     })
-
-    it('resolves label from journey customization fields', () => {
-      const journey = {
-        journeyCustomizationFields: [
-          {
-            __typename: 'JourneyCustomizationField',
-            id: '1',
-            journeyId: 'journeyId',
-            key: 'name',
-            value: 'Alice',
-            defaultValue: 'Anonymous'
-          }
-        ]
-      } as unknown as Journey
-
-      const withTemplate = { ...block, label: '{{ name }}' }
-
-      render(
-        <JourneyProvider value={{ journey, variant: 'default' }}>
-          <RadioOption {...withTemplate} />
-        </JourneyProvider>
-      )
-
-      expect(screen.getByRole('button')).toHaveTextContent('Alice')
-    })
-
-    it('does not resolve label in admin variant for template journeys', () => {
-      const journey = {
-        template: true,
-        journeyCustomizationFields: [
-          {
-            __typename: 'JourneyCustomizationField',
-            id: '1',
-            journeyId: 'journeyId',
-            key: 'name',
-            value: 'Alice',
-            defaultValue: 'Anonymous'
-          }
-        ]
-      } as unknown as Journey
-
-      const withTemplate = { ...block, label: '{{ name }}' }
-
-      render(
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
-          <RadioOption {...withTemplate} />
-        </JourneyProvider>
-      )
-
-      expect(screen.getByRole('button')).toHaveTextContent('{{ name }}')
-    })
   })
 
   describe('grid variant', () => {
@@ -149,31 +96,6 @@ describe('RadioOption', () => {
         },
         undefined
       )
-    })
-
-    it('resolves label from journey customization fields in grid view', () => {
-      const journey = {
-        journeyCustomizationFields: [
-          {
-            __typename: 'JourneyCustomizationField',
-            id: '1',
-            journeyId: 'journeyId',
-            key: 'name',
-            value: 'Alice',
-            defaultValue: 'Anonymous'
-          }
-        ]
-      } as unknown as Journey
-
-      const withTemplate = { ...block, label: '{{ name }}' }
-
-      render(
-        <JourneyProvider value={{ journey, variant: 'default' }}>
-          <RadioOption {...withTemplate} gridView />
-        </JourneyProvider>
-      )
-
-      expect(screen.getByText('Alice')).toBeInTheDocument()
     })
   })
 })

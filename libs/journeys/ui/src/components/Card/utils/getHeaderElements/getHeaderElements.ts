@@ -1,9 +1,8 @@
 import { JourneyFields } from '../../../../libs/JourneyProvider/__generated__/JourneyFields'
-import { JourneyProviderContext } from '../../../../libs/JourneyProvider/JourneyProvider'
 
 export function showHeader(
   journey?: JourneyFields,
-  variant?: JourneyProviderContext['variant']
+  variant?: 'admin' | 'embed' | 'default'
 ): boolean {
   if (journey == null || variant == null) return false
 

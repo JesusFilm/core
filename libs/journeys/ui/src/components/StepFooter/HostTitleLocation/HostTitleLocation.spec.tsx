@@ -65,12 +65,12 @@ describe('HostTitleLocation', () => {
     logoImageBlock: null,
     menuButtonIcon: null,
     menuStepBlock: null,
+    socialNodeX: null,
+    socialNodeY: null,
     journeyTheme: null,
     journeyCustomizationDescription: null,
     journeyCustomizationFields: [],
-    fromTemplateId: null,
-    socialNodeX: null,
-    socialNodeY: null
+    fromTemplateId: null
   }
 
   const rtlLanguage = {

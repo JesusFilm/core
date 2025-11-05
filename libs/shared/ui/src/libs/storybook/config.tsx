@@ -1,4 +1,4 @@
-import { Decorator } from '@storybook/nextjs'
+import { Decorator } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 
 import { ThemeProvider } from '../../components/ThemeProvider'

@@ -86,14 +86,7 @@ export function Accordion({
       >
         <Stack spacing={3} alignItems="center" direction="row">
           {icon}
-          <Box
-            sx={{
-              maxWidth: '24ch',
-              overflow: 'hidden',
-              position: 'relative',
-              top: 2
-            }}
-          >
+          <Box sx={{ maxWidth: '24ch', overflow: 'hidden' }}>
             {value != null ? (
               <>
                 <Typography variant="caption" color="text.secondary" noWrap>

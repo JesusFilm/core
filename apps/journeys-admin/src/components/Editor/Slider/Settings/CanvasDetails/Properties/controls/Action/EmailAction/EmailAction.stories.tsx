@@ -2,7 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
@@ -15,10 +15,10 @@ const EmailActionStory: Meta<typeof EmailAction> = {
   ...simpleComponentConfig,
   component: EmailAction,
   title:
-    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/EmailAction'
+    'Journeys-Admin/Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/ActionStates'
 }
 
-export const EmailActionComponent: StoryObj<typeof EmailAction> = {
+export const Email: StoryObj<typeof EmailAction> = {
   render: () => {
     const selectedBlock = steps[1].children[0].children[4]
 

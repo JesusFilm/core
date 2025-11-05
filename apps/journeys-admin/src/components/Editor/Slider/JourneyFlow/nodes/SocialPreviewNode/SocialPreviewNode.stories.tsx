@@ -1,6 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { StoryObj } from '@storybook/nextjs'
+import { StoryObj } from '@storybook/react'
 import { SnackbarProvider } from 'notistack'
 import { Background, ReactFlow } from 'reactflow'
 
@@ -144,9 +144,12 @@ const defaultJourney: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null,
   socialNodeX: null,
-  socialNodeY: null,
-  journeyTheme: null
+  socialNodeY: null
 }
 
 const blankSeoJourney: Journey = {

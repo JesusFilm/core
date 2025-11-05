@@ -19,7 +19,7 @@ jest.mock('next/router', () => ({
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
-xdescribe('GrowthSpacesIntegrationDetails', () => {
+describe('GrowthSpacesIntegrationDetails', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -68,48 +68,31 @@ xdescribe('GrowthSpacesIntegrationDetails', () => {
         </MockedProvider>
       )
 
-      // Wait for the component to load with initial values
-      await waitFor(() =>
-        expect(screen.getByDisplayValue('access.id')).toBeInTheDocument()
+      const accessIdInput = await waitFor(() =>
+        screen.getByDisplayValue('access.id')
       )
-
-      // Get the first input field (access id) and make it visible by clicking on it
-      const accessIdInput = screen.getByDisplayValue('access.id')
-      fireEvent.click(accessIdInput)
-
-      // Change the value and trigger blur to submit
+      fireEvent.click(screen.getAllByTestId('EyeClosedIcon')[0])
       fireEvent.change(accessIdInput, {
         target: { value: 'new.access.id' }
       })
-      fireEvent.blur(accessIdInput)
+      fireEvent.submit(accessIdInput)
       await waitFor(() =>
         expect(screen.getByDisplayValue('new.access.id')).toBeInTheDocument()
       )
 
-      // Wait for the second input and make it visible by clicking on it
-      await waitFor(() =>
-        expect(screen.getByDisplayValue('access.secret')).toBeInTheDocument()
+      const accessSecretInput = await waitFor(() =>
+        screen.getByDisplayValue('access.secret')
       )
-      const accessSecretInput = screen.getByDisplayValue('access.secret')
-      fireEvent.click(accessSecretInput)
-
-      // Change the value and trigger blur to submit
+      fireEvent.click(screen.getAllByTestId('EyeClosedIcon')[0])
       fireEvent.change(accessSecretInput, {
         target: { value: 'new.access.secret' }
       })
-      fireEvent.blur(accessSecretInput)
+      fireEvent.submit(accessSecretInput)
       await waitFor(() =>
         expect(
           screen.getByDisplayValue('new.access.secret')
         ).toBeInTheDocument()
       )
-
-      await waitFor(() => {
-        expect(screen.getByDisplayValue('new.access.id')).toBeInTheDocument()
-        expect(
-          screen.getByDisplayValue('new.access.secret')
-        ).toBeInTheDocument()
-      })
 
       fireEvent.click(screen.getByRole('button', { name: 'Save' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
@@ -161,36 +144,27 @@ xdescribe('GrowthSpacesIntegrationDetails', () => {
         </MockedProvider>
       )
 
-      // Wait for the component to load with initial values
-      await waitFor(() =>
-        expect(screen.getByDisplayValue('access.id')).toBeInTheDocument()
+      const accessIdInput = await waitFor(() =>
+        screen.getByDisplayValue('access.id')
       )
-
-      // Get the first input field (access id) and make it visible by clicking on it
-      const accessIdInput = screen.getByDisplayValue('access.id')
-      fireEvent.click(accessIdInput)
-
-      // Change the value and trigger blur to submit
+      fireEvent.click(screen.getAllByTestId('EyeClosedIcon')[0])
       fireEvent.change(accessIdInput, {
         target: { value: 'new.access.id' }
       })
-      fireEvent.blur(accessIdInput)
+      await waitFor(() => fireEvent.submit(accessIdInput))
       await waitFor(() =>
         expect(screen.getByDisplayValue('new.access.id')).toBeInTheDocument()
       )
 
-      // Wait for the second input and make it visible by clicking on it
-      await waitFor(() =>
-        expect(screen.getByDisplayValue('access.secret')).toBeInTheDocument()
+      const accessSecretInput = await waitFor(() =>
+        screen.getByDisplayValue('access.secret')
       )
-      const accessSecretInput = screen.getByDisplayValue('access.secret')
-      fireEvent.click(accessSecretInput)
+      fireEvent.click(screen.getAllByTestId('EyeClosedIcon')[0])
 
-      // Change the value and trigger blur to submit
       fireEvent.change(accessSecretInput, {
         target: { value: 'new.access.secret' }
       })
-      fireEvent.blur(accessSecretInput)
+      await waitFor(() => fireEvent.submit(accessSecretInput))
       await waitFor(() =>
         expect(
           screen.getByDisplayValue('new.access.secret')

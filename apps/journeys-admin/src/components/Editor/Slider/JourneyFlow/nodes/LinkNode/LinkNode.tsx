@@ -10,7 +10,6 @@ import { getLinkActionGoal } from '@core/journeys/ui/Button/utils/getLinkActionG
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
 import { getGoalDetails } from '@core/journeys/ui/getGoalDetails'
-import { ActionBlock } from '@core/journeys/ui/isActionBlock'
 
 import { BaseNode, HandleVariant } from '../BaseNode'
 import { LINK_NODE_HEIGHT, LINK_NODE_WIDTH } from '../StepBlockNode/libs/sizes'
@@ -28,7 +27,7 @@ export function LinkNode({ id }: NodeProps): ReactElement {
     ?.flatMap((step) => filterActionBlocks(step))
     .find(({ id }) => id === strippedNodeId)
 
-  function getActionDetail(matchedActionBlock?: ActionBlock): string {
+  function getActionDetail(matchedActionBlock): string {
     switch (matchedActionBlock?.action?.__typename) {
       case 'LinkAction':
         return matchedActionBlock.action.url

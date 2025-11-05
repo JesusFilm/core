@@ -22,5 +22,4 @@ export interface TextResponseFields {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
-  hideLabel: boolean | null;
 }

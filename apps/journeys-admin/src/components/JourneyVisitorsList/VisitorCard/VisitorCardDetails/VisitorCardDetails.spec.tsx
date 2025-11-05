@@ -30,13 +30,6 @@ describe('VisitorCardDetails', () => {
         value: 'radio value'
       },
       {
-        __typename: 'MultiselectSubmissionEvent',
-        id: 'MultiselectSubmissionEvent.id',
-        createdAt: 'isostring',
-        label: 'multiselect label',
-        value: 'multiselect value'
-      },
-      {
         __typename: 'ButtonClickEvent',
         id: 'ButtonClickEvent.id',
         createdAt: 'isostring',
@@ -51,7 +44,6 @@ describe('VisitorCardDetails', () => {
     expect(getByText('Chat Started')).toBeInTheDocument()
     expect(getByText('text value')).toBeInTheDocument()
     expect(getByText('radio value')).toBeInTheDocument()
-    expect(getByText('multiselect value')).toBeInTheDocument()
     expect(queryByText('button value')).not.toBeInTheDocument()
   })
 

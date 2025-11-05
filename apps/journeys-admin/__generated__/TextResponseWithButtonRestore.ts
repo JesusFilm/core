@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, ThemeMode, ThemeName, IconName, IconSize, IconColor, TextResponseType, TypographyAlign, TypographyColor, TypographyVariant, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: TextResponseWithButtonRestore
@@ -14,6 +14,12 @@ export interface TextResponseWithButtonRestore_textResponse_GridContainerBlock {
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+}
+
+export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_NavigateToBlockAction {
@@ -28,6 +34,8 @@ export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_L
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_EmailAction {
@@ -35,27 +43,11 @@ export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_E
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_textResponse_ButtonBlock_action = TextResponseWithButtonRestore_textResponse_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_EmailAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_ChatAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_textResponse_ButtonBlock_action = TextResponseWithButtonRestore_textResponse_ButtonBlock_action_PhoneAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_ButtonBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_textResponse_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -147,21 +139,10 @@ export interface TextResponseWithButtonRestore_textResponse_ImageBlock {
   focalLeft: number | null;
 }
 
-export interface TextResponseWithButtonRestore_textResponse_MultiselectOptionBlock {
-  __typename: "MultiselectOptionBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  label: string;
-}
-
-export interface TextResponseWithButtonRestore_textResponse_MultiselectBlock {
-  __typename: "MultiselectBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  min: number | null;
-  max: number | null;
+export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_NavigateToBlockAction {
@@ -176,6 +157,8 @@ export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_act
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_EmailAction {
@@ -183,27 +166,11 @@ export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_act
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action = TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_EmailAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_ChatAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action = TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_PhoneAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_RadioOptionBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_textResponse_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -228,6 +195,12 @@ export interface TextResponseWithButtonRestore_textResponse_RadioQuestionBlock {
   gridView: boolean | null;
 }
 
+export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -240,6 +213,8 @@ export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_L
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_EmailAction {
@@ -247,27 +222,11 @@ export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_E
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_textResponse_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_textResponse_SignUpBlock_action = TextResponseWithButtonRestore_textResponse_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_EmailAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_ChatAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_textResponse_SignUpBlock_action = TextResponseWithButtonRestore_textResponse_SignUpBlock_action_PhoneAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_SignUpBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_textResponse_SignUpBlock {
   __typename: "SignUpBlock";
@@ -325,7 +284,6 @@ export interface TextResponseWithButtonRestore_textResponse_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
-  hideLabel: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_TypographyBlock_settings {
@@ -346,12 +304,6 @@ export interface TextResponseWithButtonRestore_textResponse_TypographyBlock {
   content: string;
   variant: TypographyVariant | null;
   settings: TextResponseWithButtonRestore_textResponse_TypographyBlock_settings | null;
-}
-
-export interface TextResponseWithButtonRestore_textResponse_VideoBlock_subtitleLanguage {
-  __typename: "Language";
-  id: string;
-  bcp47: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_title {
@@ -405,6 +357,12 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVide
 
 export type TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo = TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video | TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_MuxVideo | TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_YouTube;
 
+export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -417,6 +375,8 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_Li
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_EmailAction {
@@ -424,27 +384,11 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_Em
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_textResponse_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_textResponse_VideoBlock_action = TextResponseWithButtonRestore_textResponse_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_EmailAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_ChatAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_textResponse_VideoBlock_action = TextResponseWithButtonRestore_textResponse_VideoBlock_action_PhoneAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_textResponse_VideoBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_textResponse_VideoBlock {
   __typename: "VideoBlock";
@@ -514,12 +458,17 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: TextResponseWithButtonRestore_textResponse_VideoBlock_subtitleLanguage | null;
   mediaVideo: TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
   action: TextResponseWithButtonRestore_textResponse_VideoBlock_action | null;
+}
+
+export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -534,6 +483,8 @@ export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_tr
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_EmailAction {
@@ -541,27 +492,11 @@ export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_tr
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_EmailAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_ChatAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_PhoneAction;
+export type TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_PhoneAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -576,13 +511,19 @@ export interface TextResponseWithButtonRestore_textResponse_VideoTriggerBlock {
   triggerAction: TextResponseWithButtonRestore_textResponse_VideoTriggerBlock_triggerAction;
 }
 
-export type TextResponseWithButtonRestore_textResponse = TextResponseWithButtonRestore_textResponse_GridContainerBlock | TextResponseWithButtonRestore_textResponse_ButtonBlock | TextResponseWithButtonRestore_textResponse_CardBlock | TextResponseWithButtonRestore_textResponse_IconBlock | TextResponseWithButtonRestore_textResponse_ImageBlock | TextResponseWithButtonRestore_textResponse_MultiselectOptionBlock | TextResponseWithButtonRestore_textResponse_MultiselectBlock | TextResponseWithButtonRestore_textResponse_RadioOptionBlock | TextResponseWithButtonRestore_textResponse_RadioQuestionBlock | TextResponseWithButtonRestore_textResponse_SignUpBlock | TextResponseWithButtonRestore_textResponse_SpacerBlock | TextResponseWithButtonRestore_textResponse_StepBlock | TextResponseWithButtonRestore_textResponse_TextResponseBlock | TextResponseWithButtonRestore_textResponse_TypographyBlock | TextResponseWithButtonRestore_textResponse_VideoBlock | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock;
+export type TextResponseWithButtonRestore_textResponse = TextResponseWithButtonRestore_textResponse_GridContainerBlock | TextResponseWithButtonRestore_textResponse_ButtonBlock | TextResponseWithButtonRestore_textResponse_CardBlock | TextResponseWithButtonRestore_textResponse_IconBlock | TextResponseWithButtonRestore_textResponse_ImageBlock | TextResponseWithButtonRestore_textResponse_RadioOptionBlock | TextResponseWithButtonRestore_textResponse_RadioQuestionBlock | TextResponseWithButtonRestore_textResponse_SignUpBlock | TextResponseWithButtonRestore_textResponse_SpacerBlock | TextResponseWithButtonRestore_textResponse_StepBlock | TextResponseWithButtonRestore_textResponse_TextResponseBlock | TextResponseWithButtonRestore_textResponse_TypographyBlock | TextResponseWithButtonRestore_textResponse_VideoBlock | TextResponseWithButtonRestore_textResponse_VideoTriggerBlock;
 
 export interface TextResponseWithButtonRestore_button_GridContainerBlock {
   __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+}
+
+export interface TextResponseWithButtonRestore_button_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_ButtonBlock_action_NavigateToBlockAction {
@@ -597,6 +538,8 @@ export interface TextResponseWithButtonRestore_button_ButtonBlock_action_LinkAct
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_ButtonBlock_action_EmailAction {
@@ -604,27 +547,11 @@ export interface TextResponseWithButtonRestore_button_ButtonBlock_action_EmailAc
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_button_ButtonBlock_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_button_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_button_ButtonBlock_action = TextResponseWithButtonRestore_button_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_button_ButtonBlock_action_EmailAction | TextResponseWithButtonRestore_button_ButtonBlock_action_ChatAction | TextResponseWithButtonRestore_button_ButtonBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_button_ButtonBlock_action = TextResponseWithButtonRestore_button_ButtonBlock_action_PhoneAction | TextResponseWithButtonRestore_button_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_button_ButtonBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_button_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -716,21 +643,10 @@ export interface TextResponseWithButtonRestore_button_ImageBlock {
   focalLeft: number | null;
 }
 
-export interface TextResponseWithButtonRestore_button_MultiselectOptionBlock {
-  __typename: "MultiselectOptionBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  label: string;
-}
-
-export interface TextResponseWithButtonRestore_button_MultiselectBlock {
-  __typename: "MultiselectBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  min: number | null;
-  max: number | null;
+export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_NavigateToBlockAction {
@@ -745,6 +661,8 @@ export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_Li
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_EmailAction {
@@ -752,27 +670,11 @@ export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_Em
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_button_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_button_RadioOptionBlock_action = TextResponseWithButtonRestore_button_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_EmailAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_ChatAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_button_RadioOptionBlock_action = TextResponseWithButtonRestore_button_RadioOptionBlock_action_PhoneAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_button_RadioOptionBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_button_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -797,6 +699,12 @@ export interface TextResponseWithButtonRestore_button_RadioQuestionBlock {
   gridView: boolean | null;
 }
 
+export interface TextResponseWithButtonRestore_button_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_button_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -809,6 +717,8 @@ export interface TextResponseWithButtonRestore_button_SignUpBlock_action_LinkAct
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_SignUpBlock_action_EmailAction {
@@ -816,27 +726,11 @@ export interface TextResponseWithButtonRestore_button_SignUpBlock_action_EmailAc
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_button_SignUpBlock_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_button_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_button_SignUpBlock_action = TextResponseWithButtonRestore_button_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_button_SignUpBlock_action_EmailAction | TextResponseWithButtonRestore_button_SignUpBlock_action_ChatAction | TextResponseWithButtonRestore_button_SignUpBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_button_SignUpBlock_action = TextResponseWithButtonRestore_button_SignUpBlock_action_PhoneAction | TextResponseWithButtonRestore_button_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_button_SignUpBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_button_SignUpBlock {
   __typename: "SignUpBlock";
@@ -894,7 +788,6 @@ export interface TextResponseWithButtonRestore_button_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
-  hideLabel: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_button_TypographyBlock_settings {
@@ -915,12 +808,6 @@ export interface TextResponseWithButtonRestore_button_TypographyBlock {
   content: string;
   variant: TypographyVariant | null;
   settings: TextResponseWithButtonRestore_button_TypographyBlock_settings | null;
-}
-
-export interface TextResponseWithButtonRestore_button_VideoBlock_subtitleLanguage {
-  __typename: "Language";
-  id: string;
-  bcp47: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_title {
@@ -974,6 +861,12 @@ export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_YouT
 
 export type TextResponseWithButtonRestore_button_VideoBlock_mediaVideo = TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video | TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_MuxVideo | TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_YouTube;
 
+export interface TextResponseWithButtonRestore_button_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_button_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -986,6 +879,8 @@ export interface TextResponseWithButtonRestore_button_VideoBlock_action_LinkActi
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_VideoBlock_action_EmailAction {
@@ -993,27 +888,11 @@ export interface TextResponseWithButtonRestore_button_VideoBlock_action_EmailAct
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_button_VideoBlock_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_button_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_button_VideoBlock_action = TextResponseWithButtonRestore_button_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_button_VideoBlock_action_EmailAction | TextResponseWithButtonRestore_button_VideoBlock_action_ChatAction | TextResponseWithButtonRestore_button_VideoBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_button_VideoBlock_action = TextResponseWithButtonRestore_button_VideoBlock_action_PhoneAction | TextResponseWithButtonRestore_button_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_button_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_button_VideoBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_button_VideoBlock {
   __typename: "VideoBlock";
@@ -1083,12 +962,17 @@ export interface TextResponseWithButtonRestore_button_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: TextResponseWithButtonRestore_button_VideoBlock_subtitleLanguage | null;
   mediaVideo: TextResponseWithButtonRestore_button_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
   action: TextResponseWithButtonRestore_button_VideoBlock_action | null;
+}
+
+export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1103,6 +987,8 @@ export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerA
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_EmailAction {
@@ -1110,27 +996,11 @@ export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerA
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_EmailAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_ChatAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_PhoneAction;
+export type TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_PhoneAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface TextResponseWithButtonRestore_button_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -1145,13 +1015,19 @@ export interface TextResponseWithButtonRestore_button_VideoTriggerBlock {
   triggerAction: TextResponseWithButtonRestore_button_VideoTriggerBlock_triggerAction;
 }
 
-export type TextResponseWithButtonRestore_button = TextResponseWithButtonRestore_button_GridContainerBlock | TextResponseWithButtonRestore_button_ButtonBlock | TextResponseWithButtonRestore_button_CardBlock | TextResponseWithButtonRestore_button_IconBlock | TextResponseWithButtonRestore_button_ImageBlock | TextResponseWithButtonRestore_button_MultiselectOptionBlock | TextResponseWithButtonRestore_button_MultiselectBlock | TextResponseWithButtonRestore_button_RadioOptionBlock | TextResponseWithButtonRestore_button_RadioQuestionBlock | TextResponseWithButtonRestore_button_SignUpBlock | TextResponseWithButtonRestore_button_SpacerBlock | TextResponseWithButtonRestore_button_StepBlock | TextResponseWithButtonRestore_button_TextResponseBlock | TextResponseWithButtonRestore_button_TypographyBlock | TextResponseWithButtonRestore_button_VideoBlock | TextResponseWithButtonRestore_button_VideoTriggerBlock;
+export type TextResponseWithButtonRestore_button = TextResponseWithButtonRestore_button_GridContainerBlock | TextResponseWithButtonRestore_button_ButtonBlock | TextResponseWithButtonRestore_button_CardBlock | TextResponseWithButtonRestore_button_IconBlock | TextResponseWithButtonRestore_button_ImageBlock | TextResponseWithButtonRestore_button_RadioOptionBlock | TextResponseWithButtonRestore_button_RadioQuestionBlock | TextResponseWithButtonRestore_button_SignUpBlock | TextResponseWithButtonRestore_button_SpacerBlock | TextResponseWithButtonRestore_button_StepBlock | TextResponseWithButtonRestore_button_TextResponseBlock | TextResponseWithButtonRestore_button_TypographyBlock | TextResponseWithButtonRestore_button_VideoBlock | TextResponseWithButtonRestore_button_VideoTriggerBlock;
 
 export interface TextResponseWithButtonRestore_startIcon_GridContainerBlock {
   __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+}
+
+export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_NavigateToBlockAction {
@@ -1166,6 +1042,8 @@ export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_Link
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_EmailAction {
@@ -1173,27 +1051,11 @@ export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_Emai
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_startIcon_ButtonBlock_action = TextResponseWithButtonRestore_startIcon_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_EmailAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_ChatAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_startIcon_ButtonBlock_action = TextResponseWithButtonRestore_startIcon_ButtonBlock_action_PhoneAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_ButtonBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_startIcon_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -1285,21 +1147,10 @@ export interface TextResponseWithButtonRestore_startIcon_ImageBlock {
   focalLeft: number | null;
 }
 
-export interface TextResponseWithButtonRestore_startIcon_MultiselectOptionBlock {
-  __typename: "MultiselectOptionBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  label: string;
-}
-
-export interface TextResponseWithButtonRestore_startIcon_MultiselectBlock {
-  __typename: "MultiselectBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  min: number | null;
-  max: number | null;
+export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1314,6 +1165,8 @@ export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_EmailAction {
@@ -1321,27 +1174,11 @@ export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action = TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_EmailAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_ChatAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action = TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_PhoneAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_RadioOptionBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_startIcon_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -1366,6 +1203,12 @@ export interface TextResponseWithButtonRestore_startIcon_RadioQuestionBlock {
   gridView: boolean | null;
 }
 
+export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1378,6 +1221,8 @@ export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_Link
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_EmailAction {
@@ -1385,27 +1230,11 @@ export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_Emai
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_startIcon_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_startIcon_SignUpBlock_action = TextResponseWithButtonRestore_startIcon_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_EmailAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_ChatAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_startIcon_SignUpBlock_action = TextResponseWithButtonRestore_startIcon_SignUpBlock_action_PhoneAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_SignUpBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_startIcon_SignUpBlock {
   __typename: "SignUpBlock";
@@ -1463,7 +1292,6 @@ export interface TextResponseWithButtonRestore_startIcon_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
-  hideLabel: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_TypographyBlock_settings {
@@ -1484,12 +1312,6 @@ export interface TextResponseWithButtonRestore_startIcon_TypographyBlock {
   content: string;
   variant: TypographyVariant | null;
   settings: TextResponseWithButtonRestore_startIcon_TypographyBlock_settings | null;
-}
-
-export interface TextResponseWithButtonRestore_startIcon_VideoBlock_subtitleLanguage {
-  __typename: "Language";
-  id: string;
-  bcp47: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_title {
@@ -1543,6 +1365,12 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Y
 
 export type TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo = TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video | TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_MuxVideo | TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_YouTube;
 
+export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1555,6 +1383,8 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_LinkA
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_EmailAction {
@@ -1562,27 +1392,11 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_Email
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_startIcon_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_startIcon_VideoBlock_action = TextResponseWithButtonRestore_startIcon_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_EmailAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_ChatAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_startIcon_VideoBlock_action = TextResponseWithButtonRestore_startIcon_VideoBlock_action_PhoneAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_startIcon_VideoBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_startIcon_VideoBlock {
   __typename: "VideoBlock";
@@ -1652,12 +1466,17 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: TextResponseWithButtonRestore_startIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
   action: TextResponseWithButtonRestore_startIcon_VideoBlock_action | null;
+}
+
+export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -1672,6 +1491,8 @@ export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_trigg
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_EmailAction {
@@ -1679,27 +1500,11 @@ export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_trigg
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_EmailAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_ChatAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_PhoneAction;
+export type TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_PhoneAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -1714,13 +1519,19 @@ export interface TextResponseWithButtonRestore_startIcon_VideoTriggerBlock {
   triggerAction: TextResponseWithButtonRestore_startIcon_VideoTriggerBlock_triggerAction;
 }
 
-export type TextResponseWithButtonRestore_startIcon = TextResponseWithButtonRestore_startIcon_GridContainerBlock | TextResponseWithButtonRestore_startIcon_ButtonBlock | TextResponseWithButtonRestore_startIcon_CardBlock | TextResponseWithButtonRestore_startIcon_IconBlock | TextResponseWithButtonRestore_startIcon_ImageBlock | TextResponseWithButtonRestore_startIcon_MultiselectOptionBlock | TextResponseWithButtonRestore_startIcon_MultiselectBlock | TextResponseWithButtonRestore_startIcon_RadioOptionBlock | TextResponseWithButtonRestore_startIcon_RadioQuestionBlock | TextResponseWithButtonRestore_startIcon_SignUpBlock | TextResponseWithButtonRestore_startIcon_SpacerBlock | TextResponseWithButtonRestore_startIcon_StepBlock | TextResponseWithButtonRestore_startIcon_TextResponseBlock | TextResponseWithButtonRestore_startIcon_TypographyBlock | TextResponseWithButtonRestore_startIcon_VideoBlock | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock;
+export type TextResponseWithButtonRestore_startIcon = TextResponseWithButtonRestore_startIcon_GridContainerBlock | TextResponseWithButtonRestore_startIcon_ButtonBlock | TextResponseWithButtonRestore_startIcon_CardBlock | TextResponseWithButtonRestore_startIcon_IconBlock | TextResponseWithButtonRestore_startIcon_ImageBlock | TextResponseWithButtonRestore_startIcon_RadioOptionBlock | TextResponseWithButtonRestore_startIcon_RadioQuestionBlock | TextResponseWithButtonRestore_startIcon_SignUpBlock | TextResponseWithButtonRestore_startIcon_SpacerBlock | TextResponseWithButtonRestore_startIcon_StepBlock | TextResponseWithButtonRestore_startIcon_TextResponseBlock | TextResponseWithButtonRestore_startIcon_TypographyBlock | TextResponseWithButtonRestore_startIcon_VideoBlock | TextResponseWithButtonRestore_startIcon_VideoTriggerBlock;
 
 export interface TextResponseWithButtonRestore_endIcon_GridContainerBlock {
   __typename: "GridContainerBlock" | "GridItemBlock";
   id: string;
   parentBlockId: string | null;
   parentOrder: number | null;
+}
+
+export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_NavigateToBlockAction {
@@ -1735,6 +1546,8 @@ export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_LinkAc
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_EmailAction {
@@ -1742,27 +1555,11 @@ export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_EmailA
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_endIcon_ButtonBlock_action = TextResponseWithButtonRestore_endIcon_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_EmailAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_ChatAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_endIcon_ButtonBlock_action = TextResponseWithButtonRestore_endIcon_ButtonBlock_action_PhoneAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_ButtonBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_endIcon_ButtonBlock_settings {
   __typename: "ButtonBlockSettings";
@@ -1854,21 +1651,10 @@ export interface TextResponseWithButtonRestore_endIcon_ImageBlock {
   focalLeft: number | null;
 }
 
-export interface TextResponseWithButtonRestore_endIcon_MultiselectOptionBlock {
-  __typename: "MultiselectOptionBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  label: string;
-}
-
-export interface TextResponseWithButtonRestore_endIcon_MultiselectBlock {
-  __typename: "MultiselectBlock";
-  id: string;
-  parentBlockId: string | null;
-  parentOrder: number | null;
-  min: number | null;
-  max: number | null;
+export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_NavigateToBlockAction {
@@ -1883,6 +1669,8 @@ export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_L
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_EmailAction {
@@ -1890,27 +1678,11 @@ export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_E
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action = TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_EmailAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_ChatAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action = TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_PhoneAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_RadioOptionBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_endIcon_RadioOptionBlock {
   __typename: "RadioOptionBlock";
@@ -1935,6 +1707,12 @@ export interface TextResponseWithButtonRestore_endIcon_RadioQuestionBlock {
   gridView: boolean | null;
 }
 
+export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -1947,6 +1725,8 @@ export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_LinkAc
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_EmailAction {
@@ -1954,27 +1734,11 @@ export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_EmailA
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_endIcon_SignUpBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_endIcon_SignUpBlock_action = TextResponseWithButtonRestore_endIcon_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_EmailAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_ChatAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_endIcon_SignUpBlock_action = TextResponseWithButtonRestore_endIcon_SignUpBlock_action_PhoneAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_SignUpBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_endIcon_SignUpBlock {
   __typename: "SignUpBlock";
@@ -2032,7 +1796,6 @@ export interface TextResponseWithButtonRestore_endIcon_TextResponseBlock {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
-  hideLabel: boolean | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_TypographyBlock_settings {
@@ -2053,12 +1816,6 @@ export interface TextResponseWithButtonRestore_endIcon_TypographyBlock {
   content: string;
   variant: TypographyVariant | null;
   settings: TextResponseWithButtonRestore_endIcon_TypographyBlock_settings | null;
-}
-
-export interface TextResponseWithButtonRestore_endIcon_VideoBlock_subtitleLanguage {
-  __typename: "Language";
-  id: string;
-  bcp47: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_title {
@@ -2112,6 +1869,12 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_You
 
 export type TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo = TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video | TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_MuxVideo | TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_YouTube;
 
+export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -2124,6 +1887,8 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_LinkAct
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_EmailAction {
@@ -2131,27 +1896,11 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_EmailAc
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_endIcon_VideoBlock_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_endIcon_VideoBlock_action = TextResponseWithButtonRestore_endIcon_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_EmailAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_ChatAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_PhoneAction;
+export type TextResponseWithButtonRestore_endIcon_VideoBlock_action = TextResponseWithButtonRestore_endIcon_VideoBlock_action_PhoneAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_LinkAction | TextResponseWithButtonRestore_endIcon_VideoBlock_action_EmailAction;
 
 export interface TextResponseWithButtonRestore_endIcon_VideoBlock {
   __typename: "VideoBlock";
@@ -2221,12 +1970,17 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: TextResponseWithButtonRestore_endIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
   action: TextResponseWithButtonRestore_endIcon_VideoBlock_action | null;
+}
+
+export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction {
@@ -2241,6 +1995,8 @@ export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_trigger
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_EmailAction {
@@ -2248,27 +2004,11 @@ export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_trigger
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_EmailAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_ChatAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_PhoneAction;
+export type TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction = TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_PhoneAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_NavigateToBlockAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_LinkAction | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction_EmailAction;
 
 export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock {
   __typename: "VideoTriggerBlock";
@@ -2283,7 +2023,7 @@ export interface TextResponseWithButtonRestore_endIcon_VideoTriggerBlock {
   triggerAction: TextResponseWithButtonRestore_endIcon_VideoTriggerBlock_triggerAction;
 }
 
-export type TextResponseWithButtonRestore_endIcon = TextResponseWithButtonRestore_endIcon_GridContainerBlock | TextResponseWithButtonRestore_endIcon_ButtonBlock | TextResponseWithButtonRestore_endIcon_CardBlock | TextResponseWithButtonRestore_endIcon_IconBlock | TextResponseWithButtonRestore_endIcon_ImageBlock | TextResponseWithButtonRestore_endIcon_MultiselectOptionBlock | TextResponseWithButtonRestore_endIcon_MultiselectBlock | TextResponseWithButtonRestore_endIcon_RadioOptionBlock | TextResponseWithButtonRestore_endIcon_RadioQuestionBlock | TextResponseWithButtonRestore_endIcon_SignUpBlock | TextResponseWithButtonRestore_endIcon_SpacerBlock | TextResponseWithButtonRestore_endIcon_StepBlock | TextResponseWithButtonRestore_endIcon_TextResponseBlock | TextResponseWithButtonRestore_endIcon_TypographyBlock | TextResponseWithButtonRestore_endIcon_VideoBlock | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock;
+export type TextResponseWithButtonRestore_endIcon = TextResponseWithButtonRestore_endIcon_GridContainerBlock | TextResponseWithButtonRestore_endIcon_ButtonBlock | TextResponseWithButtonRestore_endIcon_CardBlock | TextResponseWithButtonRestore_endIcon_IconBlock | TextResponseWithButtonRestore_endIcon_ImageBlock | TextResponseWithButtonRestore_endIcon_RadioOptionBlock | TextResponseWithButtonRestore_endIcon_RadioQuestionBlock | TextResponseWithButtonRestore_endIcon_SignUpBlock | TextResponseWithButtonRestore_endIcon_SpacerBlock | TextResponseWithButtonRestore_endIcon_StepBlock | TextResponseWithButtonRestore_endIcon_TextResponseBlock | TextResponseWithButtonRestore_endIcon_TypographyBlock | TextResponseWithButtonRestore_endIcon_VideoBlock | TextResponseWithButtonRestore_endIcon_VideoTriggerBlock;
 
 export interface TextResponseWithButtonRestore {
   /**

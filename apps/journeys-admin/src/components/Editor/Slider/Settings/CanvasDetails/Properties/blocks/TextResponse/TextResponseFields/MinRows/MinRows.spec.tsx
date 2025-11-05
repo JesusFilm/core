@@ -30,8 +30,7 @@ const selectedBlock: TreeBlock<TextResponseBlock> = {
   type: null,
   routeId: null,
   required: null,
-  children: [],
-  hideLabel: false
+  children: []
 }
 
 const mockMinRowsUpdate1 = {

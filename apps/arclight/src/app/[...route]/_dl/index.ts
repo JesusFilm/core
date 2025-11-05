@@ -6,6 +6,7 @@ import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../lib/apolloClient'
 import { getBrightcoveUrl } from '../../../lib/brightcove'
+import { findDownloadWithFallback } from '../../../lib/downloadHelpers'
 import { setCorsHeaders } from '../../../lib/redirectUtils'
 
 const GET_VIDEO_VARIANT = graphql(`
@@ -101,6 +102,7 @@ export const dl = new OpenAPIHono()
 dl.openapi(dlRoute, async (c: Context) => {
   setCorsHeaders(c)
   const { mediaComponentId, languageId } = c.req.param()
+  const apiKey = c.req.query('apiKey')
   const clientIp =
     c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || ''
 
@@ -119,7 +121,7 @@ dl.openapi(dlRoute, async (c: Context) => {
         )
       }
     }
-    const download = variant.downloads?.find((d) => d.quality === 'low')
+    const download = findDownloadWithFallback(variant.downloads, 'low', apiKey)
 
     if (!download?.url) {
       return c.json({ error: 'Low quality download URL not available' }, 404)

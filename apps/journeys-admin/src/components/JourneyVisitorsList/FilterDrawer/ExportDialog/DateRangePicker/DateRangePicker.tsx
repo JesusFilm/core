@@ -26,16 +26,12 @@ export function DateRangePicker({
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Box sx={{ py: 2, pr: 2, width: '100%' }}>
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          spacing={2}
-          alignItems={{ xs: 'stretch', sm: 'center' }}
-        >
+        <Stack direction="row" spacing={2} alignItems="center">
           <CalendarIcon sx={{ color: 'text.secondary' }} />
           <Stack
-            direction={{ xs: 'column', sm: 'row' }}
+            direction="row"
             spacing={2}
-            sx={{ flex: 1 }}
+            sx={{ flex: 1, '& > *': { flex: 1 } }}
           >
             <DatePicker
               label={t('From')}
@@ -47,6 +43,7 @@ export function DateRangePicker({
               }}
               slotProps={{
                 textField: {
+                  size: 'small',
                   fullWidth: true
                 }
               }}
@@ -61,6 +58,7 @@ export function DateRangePicker({
               }}
               slotProps={{
                 textField: {
+                  size: 'small',
                   fullWidth: true
                 }
               }}

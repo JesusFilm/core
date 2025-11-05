@@ -1,21 +1,15 @@
 import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import FormControl from '@mui/material/FormControl'
-import MenuItem from '@mui/material/MenuItem'
-import Select from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
-import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 
-import { useJourneyContactsExport } from '../../../../libs/useJourneyContactsExport'
 import { useJourneyEventsExport } from '../../../../libs/useJourneyEventsExport'
 
-import { ContactDataForm } from './ContactDataForm'
 import { DateRangePicker } from './DateRangePicker'
 import { FilterForm } from './FilterForm'
 
@@ -47,10 +41,7 @@ export function ExportDialog({
 }: ExportDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { exportJourneyEvents, downloading: eventsDownloading } =
-    useJourneyEventsExport()
-  const { exportJourneyContacts, downloading: contactsDownloading } =
-    useJourneyContactsExport()
+  const { exportJourneyEvents, downloading } = useJourneyEventsExport()
   const { data: journeyData } = useQuery(GET_JOURNEY_CREATED_AT, {
     variables: { id: journeyId }
   })
@@ -62,9 +53,6 @@ export function ExportDialog({
   )
   const [endDate, setEndDate] = useState<Date | null>(new Date())
   const [selectedEvents, setSelectedEvents] = useState<string[]>([])
-  const [contactData, setContactData] = useState<string[]>([])
-  const [exportBy, setExportBy] = useState<string>('')
-
   useEffect(() => {
     if (journeyData?.journey?.createdAt != null) {
       setStartDate(new Date(journeyData.journey.createdAt))
@@ -73,31 +61,13 @@ export function ExportDialog({
 
   const handleExport = async (): Promise<void> => {
     try {
-      if (exportBy === 'Visitor Actions') {
-        const filter = {
-          typenames: selectedEvents,
-          ...(startDate && { periodRangeStart: startDate.toISOString() }),
-          ...(endDate && { periodRangeEnd: endDate.toISOString() })
-        }
-        await exportJourneyEvents({ journeyId, filter })
-      } else if (exportBy === 'Contact Data') {
-        const filter = {
-          typenames: contactData.filter(
-            (data) => data !== 'name' && data !== 'email' && data !== 'phone'
-          ),
-          ...(startDate && { periodRangeStart: startDate.toISOString() }),
-          ...(endDate && { periodRangeEnd: endDate.toISOString() })
-        }
-        await exportJourneyContacts({
-          journeyId,
-          filter,
-          select: {
-            name: contactData.includes('name'),
-            email: contactData.includes('email'),
-            phone: contactData.includes('phone')
-          }
-        })
+      const filter = {
+        typenames: selectedEvents,
+        ...(startDate && { periodRangeStart: startDate.toISOString() }),
+        ...(endDate && { periodRangeEnd: endDate.toISOString() })
       }
+
+      await exportJourneyEvents({ journeyId, filter })
       onClose()
     } catch (error) {
       enqueueSnackbar(error.message, {
@@ -120,12 +90,8 @@ export function ExportDialog({
           variant="contained"
           color="secondary"
           onClick={handleExport}
-          loading={eventsDownloading || contactsDownloading}
-          disabled={
-            exportBy === '' ||
-            (exportBy === 'Visitor Actions' && selectedEvents.length === 0) ||
-            (exportBy === 'Contact Data' && contactData.length === 0)
-          }
+          loading={downloading}
+          disabled={selectedEvents.length === 0}
           sx={{
             mb: { xs: 0, sm: 3 },
             mr: { xs: 0, sm: 3 }
@@ -141,63 +107,12 @@ export function ExportDialog({
         onStartDateChange={setStartDate}
         onEndDateChange={setEndDate}
       />
-      <Box
-        sx={{
-          pt: 4,
-          pr: 2,
-          display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          alignItems: { xs: 'stretch', sm: 'center' },
-          gap: 2
-        }}
-      >
-        <Typography
-          variant="subtitle2"
-          sx={{ whiteSpace: 'nowrap', minWidth: 'fit-content' }}
-        >
-          {t('Export By:')}
+      <Box sx={{ pt: 4 }}>
+        <Typography variant="subtitle2" gutterBottom>
+          {t('Select visitor actions')}
         </Typography>
-        <FormControl fullWidth>
-          <Select
-            value={exportBy}
-            onChange={(e) => setExportBy(e.target.value)}
-            displayEmpty
-            inputProps={{ 'aria-label': t('Export By:') }}
-            IconComponent={ChevronDown}
-            renderValue={(selected) => {
-              if (!selected) {
-                return t('Select Data')
-              }
-              return selected
-            }}
-          >
-            <MenuItem value="" disabled hidden>
-              {t('Select Data')}
-            </MenuItem>
-            <MenuItem value="Visitor Actions">{t('Visitor Actions')}</MenuItem>
-            <MenuItem value="Contact Data">{t('Contact Data')}</MenuItem>
-          </Select>
-        </FormControl>
+        <FilterForm setSelectedEvents={setSelectedEvents} />
       </Box>
-      {exportBy === 'Visitor Actions' && (
-        <Box sx={{ pt: 4 }}>
-          <Typography variant="subtitle2" gutterBottom>
-            {t('Select visitor actions:')}
-          </Typography>
-          <FilterForm setSelectedEvents={setSelectedEvents} />
-        </Box>
-      )}
-      {exportBy === 'Contact Data' && (
-        <Box sx={{ pt: 4 }}>
-          <Typography variant="subtitle2" gutterBottom>
-            {t('Select contact data:')}
-          </Typography>
-          <ContactDataForm
-            setSelectedFields={setContactData}
-            selectedFields={contactData}
-          />
-        </Box>
-      )}
     </Dialog>
   )
 }

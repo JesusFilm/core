@@ -60,7 +60,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "pnpm dlx @datadog/datadog-ci@3.20.0 sourcemaps upload dist/apps/short-links/.next/static --service=short-links --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
+          "pnpm dlx @datadog/datadog-ci sourcemaps upload dist/apps/short-links/.next/static --service=short-links --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
         ],
         "parallel": false
       }

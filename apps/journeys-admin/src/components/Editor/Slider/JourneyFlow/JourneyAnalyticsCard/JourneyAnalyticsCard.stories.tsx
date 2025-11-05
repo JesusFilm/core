@@ -1,4 +1,4 @@
-import { StoryObj } from '@storybook/nextjs'
+import { StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 
 import { EditorProvider, EditorState } from '@core/journeys/ui/EditorProvider'

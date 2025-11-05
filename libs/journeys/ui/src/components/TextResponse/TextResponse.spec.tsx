@@ -31,8 +31,7 @@ const block: TreeBlock<TextResponseFields> = {
   integrationId: null,
   type: null,
   routeId: null,
-  children: [],
-  hideLabel: false
+  children: []
 }
 
 interface TextResponseMockProps {
@@ -82,8 +81,7 @@ describe('TextResponse', () => {
       integrationId: null,
       type: null,
       routeId: null,
-      children: [],
-      hideLabel: false
+      children: []
     }
 
     render(
@@ -113,8 +111,7 @@ describe('TextResponse', () => {
       type: null,
       routeId: null,
       required: null,
-      children: [],
-      hideLabel: false
+      children: []
     }
 
     render(
@@ -264,65 +261,5 @@ describe('TextResponse', () => {
     )
 
     expect(screen.getByText('This field is required')).toBeInTheDocument()
-  })
-
-  it('should not show label if hideLabel is true', () => {
-    const hideLabelBlock: TreeBlock<TextResponseFields> = {
-      ...block,
-      hideLabel: true
-    }
-
-    render(
-      <JourneyProvider>
-        <SnackbarProvider>
-          <TextResponse {...hideLabelBlock} />
-        </SnackbarProvider>
-      </JourneyProvider>
-    )
-
-    // The label should not be visible when hideLabel is true
-    expect(screen.queryByText('Your answer here')).not.toBeInTheDocument()
-    expect(screen.queryByText('Label')).not.toBeInTheDocument()
-
-    // The textbox should still be present
-    expect(screen.getByRole('textbox')).toBeInTheDocument()
-  })
-
-  it('should show hint text', () => {
-    const blockWithHint: TreeBlock<TextResponseFields> = {
-      ...block,
-      hint: 'Please provide your thoughts on this topic'
-    }
-
-    render(
-      <JourneyProvider>
-        <SnackbarProvider>
-          <TextResponse {...blockWithHint} />
-        </SnackbarProvider>
-      </JourneyProvider>
-    )
-
-    expect(
-      screen.getByText('Please provide your thoughts on this topic')
-    ).toBeInTheDocument()
-  })
-
-  it('should show required text in hint', () => {
-    const requiredBlockWithHiddenLabel: TreeBlock<TextResponseFields> = {
-      ...block,
-      required: true,
-      hideLabel: true,
-      label: ''
-    }
-
-    render(
-      <JourneyProvider>
-        <SnackbarProvider>
-          <TextResponse {...requiredBlockWithHiddenLabel} />
-        </SnackbarProvider>
-      </JourneyProvider>
-    )
-
-    expect(screen.getByText('This field is required.')).toBeInTheDocument()
   })
 })

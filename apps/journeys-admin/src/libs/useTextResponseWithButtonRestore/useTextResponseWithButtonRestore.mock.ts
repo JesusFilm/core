@@ -40,8 +40,7 @@ export const textResponseWithButtonRestoreMock: MockedResponse<
           integrationId: null,
           placeholder: null,
           required: null,
-          __typename: 'TextResponseBlock',
-          hideLabel: false
+          __typename: 'TextResponseBlock'
         }
       ],
       button: [

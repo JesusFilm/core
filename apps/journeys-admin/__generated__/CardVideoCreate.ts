@@ -3,17 +3,11 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./globalTypes";
+import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CardVideoCreate
 // ====================================================
-
-export interface CardVideoCreate_video_subtitleLanguage {
-  __typename: "Language";
-  id: string;
-  bcp47: string | null;
-}
 
 export interface CardVideoCreate_video_mediaVideo_Video_title {
   __typename: "VideoTitle";
@@ -66,6 +60,12 @@ export interface CardVideoCreate_video_mediaVideo_YouTube {
 
 export type CardVideoCreate_video_mediaVideo = CardVideoCreate_video_mediaVideo_Video | CardVideoCreate_video_mediaVideo_MuxVideo | CardVideoCreate_video_mediaVideo_YouTube;
 
+export interface CardVideoCreate_video_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+}
+
 export interface CardVideoCreate_video_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -78,6 +78,8 @@ export interface CardVideoCreate_video_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface CardVideoCreate_video_action_EmailAction {
@@ -85,27 +87,11 @@ export interface CardVideoCreate_video_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-}
-
-export interface CardVideoCreate_video_action_ChatAction {
-  __typename: "ChatAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  chatUrl: string;
   customizable: boolean | null;
   parentStepId: string | null;
 }
 
-export interface CardVideoCreate_video_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-  phone: string;
-  countryCode: string;
-  contactAction: ContactActionType;
-}
-
-export type CardVideoCreate_video_action = CardVideoCreate_video_action_NavigateToBlockAction | CardVideoCreate_video_action_LinkAction | CardVideoCreate_video_action_EmailAction | CardVideoCreate_video_action_ChatAction | CardVideoCreate_video_action_PhoneAction;
+export type CardVideoCreate_video_action = CardVideoCreate_video_action_PhoneAction | CardVideoCreate_video_action_NavigateToBlockAction | CardVideoCreate_video_action_LinkAction | CardVideoCreate_video_action_EmailAction;
 
 export interface CardVideoCreate_video {
   __typename: "VideoBlock";
@@ -175,7 +161,6 @@ export interface CardVideoCreate_video {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: CardVideoCreate_video_subtitleLanguage | null;
   mediaVideo: CardVideoCreate_video_mediaVideo | null;
   /**
    * action that should be performed when the video ends

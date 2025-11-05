@@ -14,7 +14,7 @@ import {
   forwardRef,
   useMemo
 } from 'react'
-import { FixedSizeList as List } from 'react-window'
+import { List } from 'react-window'
 
 import { ResizeObserverPolyfill } from '../ResizeObserverPolyfill'
 
@@ -107,7 +107,6 @@ export function LanguageAutocomplete({
     params: AutocompleteRenderInputParams
   ): ReactNode => (
     <TextField
-      data-testid="LanguageAutocompleteInput"
       {...params}
       hiddenLabel
       placeholder="Search Language"
@@ -155,17 +154,15 @@ export function LanguageAutocomplete({
       <Box ref={ref} {...other}>
         <ResizeObserverPolyfill />
         <List
-          children={
+          rowComponent={
             renderOption != null
               ? (renderOption as any)
               : (defaultRenderOption as any)
           }
-          itemCount={itemCount}
-          itemSize={itemSize}
-          itemData={{ rows: itemData }}
+          rowCount={itemCount}
+          rowHeight={itemSize}
+          rowProps={{ rows: itemData }}
           overscanCount={5}
-          height={Math.min(itemCount * itemSize + 10, smUp ? 400 : 200)}
-          width="100%"
           style={{
             height: Math.min(itemCount * itemSize + 10, smUp ? 400 : 200),
             width: '100%'

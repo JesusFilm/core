@@ -13,7 +13,6 @@ import { Drawer } from '../../Drawer'
 
 import { NewButtonButton } from './NewButtonButton'
 import { NewImageButton } from './NewImageButton'
-import { NewMultiselectButton } from './NewMultiselectButton'
 import { NewRadioQuestionButton } from './NewRadioQuestionButton'
 import { NewSpacerButton } from './NewSpacerButton'
 import { NewTextResponseButton } from './NewTextResponseButton'
@@ -55,9 +54,6 @@ export function AddBlock(): ReactElement {
         </Grid>
         <Grid item xs={6} md={12}>
           <NewRadioQuestionButton />
-        </Grid>
-        <Grid item xs={6} md={12}>
-          <NewMultiselectButton />
         </Grid>
         <Grid item xs={6} md={12}>
           <NewTextResponseButton />

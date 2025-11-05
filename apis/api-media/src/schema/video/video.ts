@@ -31,7 +31,6 @@ import { VideoLabel } from './enums/videoLabel'
 import { VideoCreateInput } from './inputs/videoCreate'
 import { VideosFilter } from './inputs/videosFilter'
 import { VideoUpdateInput } from './inputs/videoUpdate'
-import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
 import { videosFilter } from './lib/videosFilter'
 
 // Helper function to check if video viewing is restricted for the current platform
@@ -393,16 +392,7 @@ builder.prismaObjectField(Video, 'children', (t) =>
     type: [Video],
     nullable: false,
     select: (_args, context) => {
-      const whereCondition: Prisma.VideoWhereInput = {
-        // Only show published children with available languages
-        published: true,
-        availableLanguages: { isEmpty: false }
-      }
-      // Display unpublished and incomplete children in videos-admin
-      if (context.clientName != null && context.clientName === 'videos-admin') {
-        whereCondition.published = undefined
-        whereCondition.availableLanguages = undefined
-      }
+      const whereCondition: Prisma.VideoWhereInput = {}
       if (isValidClientName(context.clientName)) {
         whereCondition.NOT = {
           restrictViewPlatforms: {
@@ -431,11 +421,7 @@ builder.prismaObjectField(Video, 'parents', (t) =>
     type: [Video],
     nullable: false,
     select: (_args, context) => {
-      const whereCondition: Prisma.VideoWhereInput = {
-        // Only show published parents with available languages
-        published: true,
-        availableLanguages: { isEmpty: false }
-      }
+      const whereCondition: Prisma.VideoWhereInput = {}
       if (isValidClientName(context.clientName)) {
         whereCondition.NOT = {
           restrictViewPlatforms: {
@@ -528,19 +514,11 @@ builder.queryFields((t) => ({
           idType === IdTypeShape.slug
             ? await prisma.video.findFirstOrThrow({
                 ...query,
-                where: {
-                  variants: { some: { slug: id } },
-                  published: true,
-                  availableLanguages: { isEmpty: false }
-                }
+                where: { variants: { some: { slug: id } }, published: true }
               })
             : await prisma.video.findUniqueOrThrow({
                 ...query,
-                where: {
-                  id,
-                  published: true,
-                  availableLanguages: { isEmpty: false }
-                }
+                where: { id, published: true }
               })
 
         // Check if video viewing is restricted for the current platform
@@ -572,10 +550,7 @@ builder.queryFields((t) => ({
     },
     resolve: async (query, _parent, { offset, limit, where }, context) => {
       const filter = videosFilter(where ?? {})
-
-      // Public query: only show published videos with available languages
       filter.published = true
-      filter.availableLanguages = { isEmpty: false }
 
       // Add platform restriction filter if clientName is provided
       if (isValidClientName(context.clientName)) {
@@ -600,10 +575,7 @@ builder.queryFields((t) => ({
     nullable: false,
     resolve: async (_parent, { where }, context) => {
       const filter = videosFilter(where ?? {})
-
-      // Public query: only show published videos with available languages
       filter.published = true
-      filter.availableLanguages = { isEmpty: false }
 
       // Add platform restriction filter if clientName is provided
       if (isValidClientName(context.clientName)) {
@@ -939,33 +911,6 @@ builder.mutationFields((t) => ({
       }
 
       return deletedVideo
-    }
-  }),
-  fixVideoLanguages: t.withAuth({ isPublisher: true }).field({
-    type: 'Boolean',
-    nullable: false,
-    args: {
-      videoId: t.arg.id({ required: true })
-    },
-    resolve: async (_parent, { videoId }) => {
-      // Verify video exists
-      const video = await prisma.video.findUnique({
-        where: { id: videoId },
-        select: { id: true }
-      })
-
-      if (video == null) {
-        throw new GraphQLError(`Video with id ${videoId} not found`)
-      }
-
-      // Use shared helper to recalculate and update availableLanguages
-      try {
-        await updateVideoAvailableLanguages(videoId)
-      } catch (error) {
-        console.error('Language management update error:', error)
-      }
-
-      return true
     }
   })
 }))

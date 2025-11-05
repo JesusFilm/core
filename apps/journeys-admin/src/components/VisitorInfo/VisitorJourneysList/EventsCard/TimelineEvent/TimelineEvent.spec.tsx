@@ -5,7 +5,6 @@ import {
   buttonClickNavigateToBlockEvent,
   chatOpenedEvent,
   journeyViewEvent,
-  multiselectSubmissionEvent,
   radioQuestionSubmissionEvent,
   signUpSubmissionEvent,
   stepNextEvent,
@@ -91,15 +90,6 @@ describe('TimelineEvent', () => {
     expect(getByText('Poll:')).toBeInTheDocument()
     expect(getByText('How do you feel about your journey?')).toBeInTheDocument()
     expect(getByText('10/10 would do it again')).toBeInTheDocument()
-  })
-
-  it('shows multiselectSubmissionEvent', () => {
-    const { getByText } = render(
-      <TimelineEvent timelineItem={multiselectSubmissionEvent} />
-    )
-    expect(getByText('Poll:')).toBeInTheDocument()
-    expect(getByText('What did you enjoy most?')).toBeInTheDocument()
-    expect(getByText('Adventure, Friends, Food')).toBeInTheDocument()
   })
 
   it('shows stepNextEvent', () => {

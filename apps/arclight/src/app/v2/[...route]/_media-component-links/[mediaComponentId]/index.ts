@@ -3,6 +3,7 @@ import { OpenAPIHono, createRoute, z } from '@hono/zod-openapi'
 import { ResultOf, graphql } from '@core/shared/gql'
 
 import { getApolloClient } from '../../../../../lib/apolloClient'
+import { getDownloadSize } from '../../../../../lib/downloadHelpers'
 import { mediaComponentSchema } from '../../mediaComponent.schema'
 
 const GET_VIDEO_CHILDREN = graphql(`
@@ -54,11 +55,10 @@ const GET_VIDEO_CHILDREN = graphql(`
         }
         childrenCount
         availableLanguages
-        variants(input: { languageId: "529" }) {
+        variant {
           hls
           lengthInMilliseconds
           language {
-            id
             bcp47
           }
           downloadable
@@ -114,11 +114,10 @@ const GET_VIDEO_CHILDREN = graphql(`
         }
         childrenCount
         availableLanguages
-        variants(input: { languageId: "529" }) {
+        variant {
           hls
           lengthInMilliseconds
           language {
-            id
             bcp47
           }
           downloadable
@@ -135,15 +134,6 @@ const GET_VIDEO_CHILDREN = graphql(`
 `)
 
 export const mediaComponentLinksWithId = new OpenAPIHono()
-
-// Type definitions for getPrimaryVariant
-type VideoData = ResultOf<typeof GET_VIDEO_CHILDREN>
-type Video = NonNullable<VideoData['video']>
-type VideoVariant = Video['children'][number]['variants'][number]
-
-// Helper function to get the primary variant (first variant)
-const getPrimaryVariant = (variants: VideoVariant[]): VideoVariant | null =>
-  variants?.[0] || null
 
 const ParamsSchema = z.object({
   mediaComponentId: z.string()
@@ -296,7 +286,7 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                 ({
                   id,
                   label,
-                  variants,
+                  variant,
                   images,
                   childrenCount,
                   bibleCitations,
@@ -306,68 +296,68 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                   snippet,
                   description,
                   studyQuestions
-                }) => {
-                  const variant = getPrimaryVariant(variants)
-                  return {
-                    mediaComponentId: id,
-                    componentType:
-                      variant?.hls !== null ? 'content' : 'collection',
-                    contentType: 'video',
-                    subType: label,
-                    imageUrls: {
-                      thumbnail:
-                        images.find((image) => image.thumbnail != null)
-                          ?.thumbnail ?? '',
-                      videoStill:
-                        images.find((image) => image.videoStill != null)
-                          ?.videoStill ?? '',
-                      mobileCinematicHigh:
-                        images.find(
-                          (image) => image.mobileCinematicHigh != null
-                        )?.mobileCinematicHigh ?? '',
-                      mobileCinematicLow:
-                        images.find((image) => image.mobileCinematicLow != null)
-                          ?.mobileCinematicLow ?? '',
-                      mobileCinematicVeryLow:
-                        images.find(
-                          (image) => image.mobileCinematicVeryLow != null
-                        )?.mobileCinematicVeryLow ?? ''
-                    },
-                    lengthInMilliseconds: variant?.lengthInMilliseconds ?? 0,
-                    containsCount: childrenCount,
-                    isDownloadable: variant?.downloadable ?? false,
-                    downloadSizes: {
-                      approximateSmallDownloadSizeInBytes:
-                        variant?.downloads?.find((d) => d.quality === 'low')
-                          ?.size ?? 0,
-                      approximateLargeDownloadSizeInBytes:
-                        variant?.downloads?.find((d) => d.quality === 'high')
-                          ?.size ?? 0
-                    },
-                    bibleCitations: bibleCitations.map((citation) => ({
-                      osisBibleBook: citation.osisId,
-                      chapterStart: citation.chapterStart,
-                      verseStart: citation.verseStart,
-                      chapterEnd: citation.chapterEnd,
-                      verseEnd: citation.verseEnd
-                    })),
-                    ...(expand.includes('languageIds')
-                      ? {
-                          languageIds: video.availableLanguages.map((id) =>
-                            Number(id)
-                          )
-                        }
-                      : {}),
-                    primaryLanguageId: Number(primaryLanguageId),
-                    title: title[0]?.value ?? '',
-                    shortDescription: snippet[0]?.value ?? '',
-                    longDescription: description[0]?.value ?? '',
-                    studyQuestions: studyQuestions.map(
-                      (question) => question.value
+                }) => ({
+                  mediaComponentId: id,
+                  componentType:
+                    variant?.hls !== null ? 'content' : 'collection',
+                  contentType: 'video',
+                  subType: label,
+                  imageUrls: {
+                    thumbnail:
+                      images.find((image) => image.thumbnail != null)
+                        ?.thumbnail ?? '',
+                    videoStill:
+                      images.find((image) => image.videoStill != null)
+                        ?.videoStill ?? '',
+                    mobileCinematicHigh:
+                      images.find((image) => image.mobileCinematicHigh != null)
+                        ?.mobileCinematicHigh ?? '',
+                    mobileCinematicLow:
+                      images.find((image) => image.mobileCinematicLow != null)
+                        ?.mobileCinematicLow ?? '',
+                    mobileCinematicVeryLow:
+                      images.find(
+                        (image) => image.mobileCinematicVeryLow != null
+                      )?.mobileCinematicVeryLow ?? ''
+                  },
+                  lengthInMilliseconds: variant?.lengthInMilliseconds ?? 0,
+                  containsCount: childrenCount,
+                  isDownloadable: variant?.downloadable ?? false,
+                  downloadSizes: {
+                    approximateSmallDownloadSizeInBytes: getDownloadSize(
+                      variant?.downloads,
+                      'low',
+                      apiKey
                     ),
-                    metadataLanguageTag: 'en'
-                  }
-                }
+                    approximateLargeDownloadSizeInBytes: getDownloadSize(
+                      variant?.downloads,
+                      'high',
+                      apiKey
+                    )
+                  },
+                  bibleCitations: bibleCitations.map((citation) => ({
+                    osisBibleBook: citation.osisId,
+                    chapterStart: citation.chapterStart,
+                    verseStart: citation.verseStart,
+                    chapterEnd: citation.chapterEnd,
+                    verseEnd: citation.verseEnd
+                  })),
+                  ...(expand.includes('languageIds')
+                    ? {
+                        languageIds: video.availableLanguages.map((id) =>
+                          Number(id)
+                        )
+                      }
+                    : {}),
+                  primaryLanguageId: Number(primaryLanguageId),
+                  title: title[0]?.value ?? '',
+                  shortDescription: snippet[0]?.value ?? '',
+                  longDescription: description[0]?.value ?? '',
+                  studyQuestions: studyQuestions.map(
+                    (question) => question.value
+                  ),
+                  metadataLanguageTag: 'en'
+                })
               ),
             ...(!rel.includes('contains')
               ? {
@@ -383,7 +373,7 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                       ({
                         id,
                         label,
-                        variants,
+                        variant,
                         images,
                         childrenCount,
                         bibleCitations,
@@ -393,72 +383,71 @@ mediaComponentLinksWithId.openapi(route, async (c) => {
                         snippet,
                         description,
                         studyQuestions
-                      }) => {
-                        const variant = getPrimaryVariant(variants)
-                        return {
-                          mediaComponentId: id,
-                          componentType:
-                            variant?.hls !== null ? 'content' : 'collection',
-                          contentType: 'none',
-                          subType: label,
-                          imageUrls: {
-                            thumbnail:
-                              images.find((image) => image.thumbnail != null)
-                                ?.thumbnail ?? '',
-                            videoStill:
-                              images.find((image) => image.videoStill != null)
-                                ?.videoStill ?? '',
-                            mobileCinematicHigh:
-                              images.find(
-                                (image) => image.mobileCinematicHigh != null
-                              )?.mobileCinematicHigh ?? '',
-                            mobileCinematicLow:
-                              images.find(
-                                (image) => image.mobileCinematicLow != null
-                              )?.mobileCinematicLow ?? '',
-                            mobileCinematicVeryLow:
-                              images.find(
-                                (image) => image.mobileCinematicVeryLow != null
-                              )?.mobileCinematicVeryLow ?? ''
-                          },
-                          lengthInMilliseconds:
-                            variant?.lengthInMilliseconds ?? 0,
-                          containsCount: childrenCount,
-                          isDownloadable: variant?.downloadable ?? false,
-                          downloadSizes: {
-                            approximateSmallDownloadSizeInBytes:
-                              variant?.downloads?.find(
-                                (d) => d.quality === 'low'
-                              )?.size ?? 0,
-                            approximateLargeDownloadSizeInBytes:
-                              variant?.downloads?.find(
-                                (d) => d.quality === 'high'
-                              )?.size ?? 0
-                          },
-                          bibleCitations: bibleCitations.map((citation) => ({
-                            osisBibleBook: citation.osisId,
-                            chapterStart: citation.chapterStart,
-                            verseStart: citation.verseStart,
-                            chapterEnd: citation.chapterEnd,
-                            verseEnd: citation.verseEnd
-                          })),
-                          ...(expand.includes('languageIds')
-                            ? {
-                                languageIds: availableLanguages.map((id) =>
-                                  Number(id)
-                                )
-                              }
-                            : {}),
-                          primaryLanguageId: Number(primaryLanguageId),
-                          title: title[0]?.value ?? '',
-                          shortDescription: snippet[0]?.value ?? '',
-                          longDescription: description[0]?.value ?? '',
-                          studyQuestions: studyQuestions.map(
-                            (question) => question.value
+                      }) => ({
+                        mediaComponentId: id,
+                        componentType:
+                          variant?.hls !== null ? 'content' : 'collection',
+                        contentType: 'none',
+                        subType: label,
+                        imageUrls: {
+                          thumbnail:
+                            images.find((image) => image.thumbnail != null)
+                              ?.thumbnail ?? '',
+                          videoStill:
+                            images.find((image) => image.videoStill != null)
+                              ?.videoStill ?? '',
+                          mobileCinematicHigh:
+                            images.find(
+                              (image) => image.mobileCinematicHigh != null
+                            )?.mobileCinematicHigh ?? '',
+                          mobileCinematicLow:
+                            images.find(
+                              (image) => image.mobileCinematicLow != null
+                            )?.mobileCinematicLow ?? '',
+                          mobileCinematicVeryLow:
+                            images.find(
+                              (image) => image.mobileCinematicVeryLow != null
+                            )?.mobileCinematicVeryLow ?? ''
+                        },
+                        lengthInMilliseconds:
+                          variant?.lengthInMilliseconds ?? 0,
+                        containsCount: childrenCount,
+                        isDownloadable: variant?.downloadable ?? false,
+                        downloadSizes: {
+                          approximateSmallDownloadSizeInBytes: getDownloadSize(
+                            variant?.downloads,
+                            'low',
+                            apiKey
                           ),
-                          metadataLanguageTag: 'en'
-                        }
-                      }
+                          approximateLargeDownloadSizeInBytes: getDownloadSize(
+                            variant?.downloads,
+                            'high',
+                            apiKey
+                          )
+                        },
+                        bibleCitations: bibleCitations.map((citation) => ({
+                          osisBibleBook: citation.osisId,
+                          chapterStart: citation.chapterStart,
+                          verseStart: citation.verseStart,
+                          chapterEnd: citation.chapterEnd,
+                          verseEnd: citation.verseEnd
+                        })),
+                        ...(expand.includes('languageIds')
+                          ? {
+                              languageIds: availableLanguages.map((id) =>
+                                Number(id)
+                              )
+                            }
+                          : {}),
+                        primaryLanguageId: Number(primaryLanguageId),
+                        title: title[0]?.value ?? '',
+                        shortDescription: snippet[0]?.value ?? '',
+                        longDescription: description[0]?.value ?? '',
+                        studyQuestions: studyQuestions.map(
+                          (question) => question.value
+                        ),
+                        metadataLanguageTag: 'en'
+                      })
                     )
                 }
               : {})

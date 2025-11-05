@@ -10,13 +10,7 @@ export const cache = (): InMemoryCache =>
      initializing InMemoryCache.
    */
     possibleTypes: {
-      Action: [
-        'NavigateToBlockAction',
-        'LinkAction',
-        'EmailAction',
-        'ChatAction',
-        'PhoneAction'
-      ],
+      Action: ['NavigateToBlockAction', 'LinkAction', 'EmailAction'],
       Block: [
         'ButtonBlock',
         'CardBlock',
@@ -24,8 +18,6 @@ export const cache = (): InMemoryCache =>
         'GridItemBlock',
         'IconBlock',
         'ImageBlock',
-        'MultiselectBlock',
-        'MultiselectOptionBlock',
         'RadioQuestionBlock',
         'RadioOptionBlock',
         'SignUpBlock',
@@ -94,8 +86,6 @@ export const cache = (): InMemoryCache =>
       },
       LinkAction: { keyFields: ['parentBlockId'] },
       EmailAction: { keyFields: ['parentBlockId'] },
-      NavigateToBlockAction: { keyFields: ['parentBlockId'] },
-      ChatAction: { keyFields: ['parentBlockId'] },
-      PhoneAction: { keyFields: ['parentBlockId'] }
+      NavigateToBlockAction: { keyFields: ['parentBlockId'] }
     }
   })

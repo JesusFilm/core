@@ -1,8 +1,8 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/react'
+import { screen, userEvent } from '@storybook/test'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps, ReactElement } from 'react'
-import { screen, userEvent } from 'storybook/test'
 
 import {
   IconName,
@@ -62,8 +62,7 @@ const textResponseProps: ComponentProps<typeof TextResponse> = {
   required: null,
   type: null,
   routeId: null,
-  children: [],
-  hideLabel: false
+  children: []
 }
 
 const submitEventMock: MockedResponse = {

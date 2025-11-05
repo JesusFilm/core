@@ -427,30 +427,4 @@ describe('transformEvents', () => {
       }
     ])
   })
-
-  it('should convert MultiselectSubmissionEvent comma-separated values to semicolons', () => {
-    const events: EventEdge[] = [
-      {
-        __typename: 'JourneyEventEdge',
-        cursor: 'c1',
-        node: {
-          __typename: 'JourneyEvent',
-          journeyId: 'j1',
-          visitorId: 'v1',
-          label: 'Question',
-          value: 'Red, Blue, Green',
-          typename: 'MultiselectSubmissionEvent',
-          progress: null,
-          journeySlug: 'slug',
-          visitorName: null,
-          visitorEmail: null,
-          visitorPhone: null,
-          createdAt: '2024-03-20T10:00:00Z'
-        }
-      }
-    ]
-
-    const transformed = transformEvents(events)
-    expect(transformed[0].value).toBe('Red; Blue; Green')
-  })
 })

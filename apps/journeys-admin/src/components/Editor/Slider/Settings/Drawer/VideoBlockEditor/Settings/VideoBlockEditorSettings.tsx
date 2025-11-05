@@ -11,15 +11,10 @@ import { FormikValues, useFormik } from 'formik'
 import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useRef } from 'react'
+import { ReactElement } from 'react'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import {
-  type YouTubeLanguage,
-  useYouTubeClosedCaptions
-} from '@core/journeys/ui/useYouTubeClosedCaptions'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 import Play2Icon from '@core/shared/ui/icons/Play2'
 import StopCircleContainedIcon from '@core/shared/ui/icons/StopCircleContained'
@@ -39,9 +34,6 @@ import {
 } from '../../../../../../../../__generated__/globalTypes'
 
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
-import { YouTubeSubtitleSelector } from './SubtitleSelector'
-
-export type { YouTubeLanguage }
 
 interface Values extends FormikValues {
   autoplay: boolean
@@ -49,7 +41,6 @@ interface Values extends FormikValues {
   startAt: string
   endAt: string
   objectFit: ObjectFit
-  subtitleLanguageId: string | null
 }
 
 interface VideoBlockEditorSettingsProps {
@@ -64,25 +55,13 @@ export function VideoBlockEditorSettings({
   onChange
 }: VideoBlockEditorSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { journey } = useJourney()
-  const isWebsite = journey?.website === true
   const { enqueueSnackbar } = useSnackbar()
-
-  // Fetch closed captions using custom hook
-  const { languages: availableSubtitles } = useYouTubeClosedCaptions({
-    videoId: selectedBlock?.videoId,
-    skip:
-      selectedBlock?.source !== VideoBlockSource.youTube ||
-      selectedBlock?.videoId == null
-  })
-
   const initialValues: Values = {
     autoplay: selectedBlock?.autoplay ?? true,
     muted: selectedBlock?.muted ?? true,
     startAt: secondsToTimeFormat(selectedBlock?.startAt ?? 0),
     endAt: secondsToTimeFormat(selectedBlock?.endAt ?? 0),
-    objectFit: selectedBlock?.objectFit ?? ObjectFit.fill,
-    subtitleLanguageId: selectedBlock?.subtitleLanguage?.id ?? null
+    objectFit: selectedBlock?.objectFit ?? ObjectFit.fill
   }
   const { values, errors, handleChange, setFieldValue } = useFormik<Values>({
     initialValues,
@@ -138,36 +117,8 @@ export function VideoBlockEditorSettings({
   })
 
   return (
-    <Box
-      sx={{ px: 4, pt: 2, width: '100%' }}
-      data-testid="VideoBlockEditorSettings"
-    >
+    <Box sx={{ px: 4, width: '100%' }} data-testid="VideoBlockEditorSettings">
       <Stack direction="column" spacing={6}>
-        {/* Subtitles */}
-        {/* Only show subtitles for YouTube source, MUX and Internal not yet supported*/}
-        {selectedBlock?.source === VideoBlockSource.youTube && (
-          <Stack direction="column" spacing={4}>
-            <Typography
-              variant="subtitle2"
-              sx={{
-                color: selectedBlock == null ? 'action.disabled' : undefined
-              }}
-            >
-              {t('Subtitles')}
-            </Typography>
-            <YouTubeSubtitleSelector
-              selectedSubtitleId={values.subtitleLanguageId}
-              availableLanguages={availableSubtitles}
-              onChange={async (subtitleLanguageId) => {
-                await setFieldValue('subtitleLanguageId', subtitleLanguageId)
-              }}
-              disabled={selectedBlock == null}
-            />
-            <Divider />
-          </Stack>
-        )}
-
-        {/* Timing */}
         <Stack direction="column" spacing={2}>
           <Typography
             variant="subtitle2"
@@ -224,34 +175,28 @@ export function VideoBlockEditorSettings({
             />
           </Stack>
         </Stack>
-
-        {/* Aspect ratio */}
         <Stack direction="column" spacing={2}>
           <Stack>
             <Typography
               variant="subtitle2"
               sx={{
                 color:
-                  selectedBlock?.source === VideoBlockSource.youTube ||
-                  isWebsite
+                  selectedBlock?.source === VideoBlockSource.youTube
                     ? 'action.disabled'
                     : undefined
               }}
             >
               {t('Aspect ratio')}
             </Typography>
-            {(selectedBlock?.source === VideoBlockSource.youTube ||
-              isWebsite) && (
+            {selectedBlock?.source === VideoBlockSource.youTube && (
               <Typography variant="caption" color="action.disabled">
-                {isWebsite
-                  ? t('This option is not available for microwebsites')
-                  : t('This option is not available for YouTube videos')}
+                {t('This option is not available for YouTube videos')}
               </Typography>
             )}
           </Stack>
           <ToggleButtonGroup
             value={
-              selectedBlock?.source === VideoBlockSource.youTube || isWebsite
+              selectedBlock?.source === VideoBlockSource.youTube
                 ? ObjectFit.fit
                 : values.objectFit
             }
@@ -261,9 +206,7 @@ export function VideoBlockEditorSettings({
               if (value != null) await setFieldValue('objectFit', value)
             }}
             aria-label="Object Fit"
-            disabled={
-              selectedBlock?.source === VideoBlockSource.youTube || isWebsite
-            }
+            disabled={selectedBlock?.source === VideoBlockSource.youTube}
           >
             <ToggleButton
               sx={{
@@ -297,8 +240,6 @@ export function VideoBlockEditorSettings({
             </ToggleButton>
           </ToggleButtonGroup>
         </Stack>
-
-        {/* Autoplay */}
         <Stack direction="column" spacing={4}>
           <Stack direction="row" justifyContent="space-between">
             <Stack direction="column">

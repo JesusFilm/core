@@ -1,6 +1,6 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 import { ComponentProps } from 'react'
-import { fn } from 'storybook/test'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -67,7 +67,9 @@ export const Filled: StoryObj<typeof SignUp> = {
         __typename: 'LinkAction',
         parentBlockId: 'signup.id',
         gtmEventName: 'signup',
-        url: 'https://www.google.com'
+        url: 'https://www.google.com',
+        customizable: false,
+        parentStepId: null
       },
       submitIconId: 'icon',
       children: [

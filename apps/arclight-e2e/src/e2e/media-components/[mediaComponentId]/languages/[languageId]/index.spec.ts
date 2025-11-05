@@ -82,6 +82,7 @@ test.describe('media component language', () => {
     expect(data.platform).toBe('ios')
     expect(data.streamingUrls).toHaveProperty('m3u8')
     expect(data.subtitleUrls).toHaveProperty('vtt')
+    expect(data.subtitleUrls).not.toHaveProperty('srt')
   })
 
   test('with Android platform returns Android specific URLs', async ({
@@ -113,6 +114,7 @@ test.describe('media component language', () => {
     expect(data).toHaveProperty('webEmbedPlayer')
     expect(data).toHaveProperty('webEmbedSharePlayer')
     expect(data.subtitleUrls).toHaveProperty('vtt')
+    expect(data.subtitleUrls).not.toHaveProperty('srt')
   })
 
   test('with expand=contains includes child components', async ({

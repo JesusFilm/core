@@ -1,19 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
-import { JourneyMenuButtonIcon } from '../../../__generated__/globalTypes'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { defaultJourney } from '../TemplateView/data'
 
 import { StepHeader } from '.'
-
-jest.mock('next/legacy/image', () => ({
-  __esModule: true,
-  default: jest.fn(
-    ({ priority, blurDataURL, objectFit, objectPosition, ...props }) => {
-      return <img {...props} />
-    }
-  )
-}))
 
 describe('StepHeader', () => {
   it('should handleClick', () => {
@@ -38,7 +28,6 @@ describe('StepHeader', () => {
           journey: {
             ...defaultJourney,
             website: true,
-            menuButtonIcon: JourneyMenuButtonIcon.home3,
             displayTitle: 'Journey display title',
             logoImageBlock: {
               __typename: 'ImageBlock',
@@ -67,18 +56,5 @@ describe('StepHeader', () => {
       'https://example.com/logo.png'
     )
     expect(screen.getByTestId('StepHeaderMenu')).toBeInTheDocument()
-  })
-
-  it('should render information icon when menu button icon is null', () => {
-    render(
-      <JourneyProvider
-        value={{
-          journey: { ...defaultJourney, menuButtonIcon: null }
-        }}
-      >
-        <StepHeader />
-      </JourneyProvider>
-    )
-    expect(screen.getByTestId('InformationButton')).toBeInTheDocument()
   })
 })

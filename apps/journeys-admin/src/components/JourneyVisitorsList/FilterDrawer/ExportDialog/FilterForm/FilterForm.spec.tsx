@@ -25,18 +25,16 @@ describe('FilterForm', () => {
     expect(screen.getByLabelText('Chat Open')).toBeInTheDocument()
     expect(screen.getByLabelText('Text Submission')).toBeInTheDocument()
     expect(screen.getByLabelText('Poll Selection')).toBeInTheDocument()
-    expect(screen.getByLabelText('Multiselect Submission')).toBeInTheDocument()
     expect(screen.getByLabelText('Button Click')).toBeInTheDocument()
     expect(screen.getByLabelText('Subscription')).toBeInTheDocument()
 
     // Check if video events section is rendered
-    expect(screen.getByLabelText('Video Interactions')).toBeInTheDocument()
+    expect(screen.getByLabelText('Video Events')).toBeInTheDocument()
 
     // Check initial state - all checkboxes should be checked
     expect(screen.getByLabelText('All')).toBeChecked()
     expect(screen.getByLabelText('Journey Start')).toBeChecked()
-    expect(screen.getByLabelText('Video Interactions')).toBeChecked()
-    expect(screen.getByLabelText('Multiselect Submission')).toBeChecked()
+    expect(screen.getByLabelText('Video Events')).toBeChecked()
   })
 
   it('handles "Select All" checkbox correctly', () => {
@@ -47,15 +45,13 @@ describe('FilterForm', () => {
     fireEvent.click(selectAllCheckbox)
     expect(selectAllCheckbox).not.toBeChecked()
     expect(screen.getByLabelText('Journey Start')).not.toBeChecked()
-    expect(screen.getByLabelText('Video Interactions')).not.toBeChecked()
-    expect(screen.getByLabelText('Multiselect Submission')).not.toBeChecked()
+    expect(screen.getByLabelText('Video Events')).not.toBeChecked()
 
     // Check all again
     fireEvent.click(selectAllCheckbox)
     expect(selectAllCheckbox).toBeChecked()
     expect(screen.getByLabelText('Journey Start')).toBeChecked()
-    expect(screen.getByLabelText('Video Interactions')).toBeChecked()
-    expect(screen.getByLabelText('Multiselect Submission')).toBeChecked()
+    expect(screen.getByLabelText('Video Events')).toBeChecked()
   })
 
   it('expands and collapses video events section', async () => {
@@ -95,13 +91,13 @@ describe('FilterForm', () => {
     fireEvent.click(screen.getByTestId('video-events-expander'))
 
     // Uncheck all video events
-    fireEvent.click(screen.getByLabelText('Video Interactions'))
+    fireEvent.click(screen.getByLabelText('Video Events'))
     expect(screen.getByLabelText('Start')).not.toBeChecked()
     expect(screen.getByLabelText('Play')).not.toBeChecked()
     expect(screen.getByLabelText('Complete')).not.toBeChecked()
 
     // Check all video events again
-    fireEvent.click(screen.getByLabelText('Video Interactions'))
+    fireEvent.click(screen.getByLabelText('Video Events'))
     expect(screen.getByLabelText('Start')).toBeChecked()
     expect(screen.getByLabelText('Play')).toBeChecked()
     expect(screen.getByLabelText('Complete')).toBeChecked()
@@ -117,7 +113,6 @@ describe('FilterForm', () => {
         EventType.ChatOpenEvent,
         EventType.TextResponseSubmissionEvent,
         EventType.RadioQuestionSubmissionEvent,
-        EventType.MultiselectSubmissionEvent,
         EventType.ButtonClickEvent,
         EventType.SignUpSubmissionEvent,
         EventType.VideoStartEvent,
@@ -149,7 +144,7 @@ describe('FilterForm', () => {
     fireEvent.click(screen.getByLabelText('Start'))
 
     // Video Events checkbox should be in indeterminate state
-    const videoEventsCheckbox = screen.getByLabelText('Video Interactions')
+    const videoEventsCheckbox = screen.getByLabelText('Video Events')
     expect(videoEventsCheckbox).toHaveAttribute('data-indeterminate', 'true')
   })
 })

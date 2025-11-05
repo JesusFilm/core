@@ -1,6 +1,6 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/react'
+import { fn } from '@storybook/test'
 import { ComponentProps } from 'react'
-import { fn } from 'storybook/test'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -39,8 +39,7 @@ const block: TreeBlock<TextResponseBlock> = {
   integrationId: null,
   type: null,
   routeId: null,
-  children: [],
-  hideLabel: false
+  children: []
 }
 
 const Template: StoryObj<ComponentProps<typeof TextResponse>> = {

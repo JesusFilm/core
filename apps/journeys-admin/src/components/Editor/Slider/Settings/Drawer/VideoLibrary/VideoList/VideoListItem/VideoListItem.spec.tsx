@@ -27,8 +27,7 @@ describe('Video List Item', () => {
     expect(getByText('03:06')).toBeInTheDocument()
   })
 
-  xit('should open VideoDetails', async () => {
-    // times out in jest 30
+  it('should open VideoDetails', async () => {
     const onSelect = jest.fn()
     const getVideoMock = {
       request: {

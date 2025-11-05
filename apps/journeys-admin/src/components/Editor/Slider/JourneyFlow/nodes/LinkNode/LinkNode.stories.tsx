@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
-import { Meta, StoryObj } from '@storybook/nextjs'
+import { Meta, StoryObj } from '@storybook/react'
 import { ComponentPropsWithoutRef } from 'react'
 import { Background, ReactFlow } from 'reactflow'
 
@@ -129,7 +129,9 @@ export const Link = {
           __typename: 'LinkAction',
           parentBlockId: 'button.id',
           gtmEventName: null,
-          url: 'https://www.google.com'
+          url: 'https://www.google.com',
+          customizable: false,
+          parentStepId: null
         })
       ]
     }
@@ -153,7 +155,9 @@ export const Bible = {
           __typename: 'LinkAction',
           parentBlockId: 'button.id',
           gtmEventName: null,
-          url: 'https://www.bible.com'
+          url: 'https://www.bible.com',
+          customizable: false,
+          parentStepId: null
         })
       ]
     }
@@ -177,7 +181,9 @@ export const Chat = {
           __typename: 'LinkAction',
           parentBlockId: 'button.id',
           gtmEventName: null,
-          url: 'https://m.me/example'
+          url: 'https://m.me/example',
+          customizable: false,
+          parentStepId: null
         })
       ]
     }
@@ -201,7 +207,9 @@ export const Email = {
           __typename: 'EmailAction',
           parentBlockId: 'button.id',
           gtmEventName: null,
-          email: 'email@example.com'
+          email: 'email@example.com',
+          customizable: false,
+          parentStepId: null
         })
       ]
     }

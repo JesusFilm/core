@@ -1,7 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { SnackbarProvider, enqueueSnackbar } from 'notistack'
+import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
@@ -22,12 +22,6 @@ import { FontFamily } from './ThemeSettings'
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
-}))
-
-// Mock notistack
-jest.mock('notistack', () => ({
-  ...jest.requireActual('notistack'),
-  enqueueSnackbar: jest.fn()
 }))
 
 describe('ThemeBuilderDialog', () => {
@@ -82,7 +76,10 @@ describe('ThemeBuilderDialog', () => {
       headerFont: FontFamily.Montserrat,
       bodyFont: FontFamily.Inter,
       labelFont: FontFamily.Nunito
-    }
+    },
+    journeyCustomizationDescription: null,
+    journeyCustomizationFields: [],
+    fromTemplateId: null
   }
 
   const mockJourneyWithoutTheme: JourneyFields = {
@@ -245,10 +242,7 @@ describe('ThemeBuilderDialog', () => {
       expect(updateMock.result).toHaveBeenCalled()
     })
     expect(handleClose).toHaveBeenCalled()
-    expect(enqueueSnackbar).toHaveBeenCalledWith('Fonts updated', {
-      variant: 'success',
-      preventDuplicate: true
-    })
+    expect(screen.getByText('Fonts updated')).toBeInTheDocument()
   })
 
   it('should create journey fonts when confirm is clicked and theme does not exist', async () => {
@@ -269,10 +263,7 @@ describe('ThemeBuilderDialog', () => {
       expect(createMock.result).toHaveBeenCalled()
     })
     expect(handleClose).toHaveBeenCalled()
-    expect(enqueueSnackbar).toHaveBeenCalledWith('Theme created', {
-      variant: 'success',
-      preventDuplicate: true
-    })
+    expect(screen.getByText('Theme created')).toBeInTheDocument()
   })
 
   it('should show error snackbar when update fails', async () => {
@@ -302,10 +293,7 @@ describe('ThemeBuilderDialog', () => {
 
     fireEvent.click(screen.getByText('Confirm'))
     await waitFor(() => {
-      expect(enqueueSnackbar).toHaveBeenCalledWith('Failed to update fonts', {
-        variant: 'error',
-        preventDuplicate: true
-      })
+      expect(screen.queryByText('Failed to update fonts')).toBeInTheDocument()
     })
   })
 
@@ -337,13 +325,17 @@ describe('ThemeBuilderDialog', () => {
       </SnackbarProvider>
     )
 
+    const spy = jest.spyOn(require('notistack'), 'enqueueSnackbar')
     fireEvent.click(screen.getByText('Confirm'))
-    await waitFor(() => {
-      expect(enqueueSnackbar).toHaveBeenCalledWith('Failed to create theme', {
-        variant: 'error',
-        preventDuplicate: true
-      })
-    })
+    await waitFor(() =>
+      expect(spy).toHaveBeenCalledWith(
+        'Failed to create theme',
+        expect.objectContaining({
+          variant: 'error',
+          preventDuplicate: true
+        })
+      )
+    )
   })
 
   it('should disable confirm button while loading', async () => {

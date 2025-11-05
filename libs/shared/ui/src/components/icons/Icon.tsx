@@ -70,7 +70,6 @@ import Download2 from './Download2'
 import Drag from './Drag'
 import DuplicateCard from './DuplicateCard'
 import Edit2 from './Edit2'
-import Edit3 from './Edit3'
 import Ellipsis from './Ellipsis'
 import Email from './Email'
 import Embed from './Embed'
@@ -160,7 +159,6 @@ import Passport from './Passport'
 import Pause1 from './Pause1'
 import Pause2 from './Pause2'
 import Pause3 from './Pause3'
-import Phone from './Phone'
 import Play1 from './Play1'
 import Play2 from './Play2'
 import Play3 from './Play3'
@@ -294,7 +292,6 @@ export type IconName =
   | 'Drag'
   | 'DuplicateCard'
   | 'Edit2'
-  | 'Edit3'
   | 'Ellipsis'
   | 'Email'
   | 'Embed'
@@ -387,7 +384,6 @@ export type IconName =
   | 'Play1'
   | 'Play2'
   | 'Play3'
-  | 'Phone'
   | 'Plus1'
   | 'Plus2'
   | 'Plus3'
@@ -522,7 +518,6 @@ const iconComponents: IconComponents = {
   Drag,
   DuplicateCard,
   Edit2,
-  Edit3,
   Ellipsis,
   Email,
   Embed,
@@ -615,7 +610,6 @@ const iconComponents: IconComponents = {
   Play1,
   Play2,
   Play3,
-  Phone,
   Plus1,
   Plus2,
   Plus3,

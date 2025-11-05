@@ -343,9 +343,7 @@ mediaLanguages.openapi(route, async (c) => {
           }),
           primaryCountryId:
             language.countryLanguages.find(({ primary }) => primary)?.country
-              ?.id ??
-            language.countryLanguages[0]?.country?.id ??
-            'US',
+              .id ?? '',
           name:
             language.name[0]?.value ?? language.fallbackName[0]?.value ?? '',
           nameNative:
