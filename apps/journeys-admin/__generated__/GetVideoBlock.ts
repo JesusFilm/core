@@ -3,77 +3,81 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./../../../../__generated__/globalTypes";
+import { VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./globalTypes";
 
 // ====================================================
-// GraphQL fragment: VideoFields
+// GraphQL query operation: GetVideoBlock
 // ====================================================
 
-export interface VideoFields_subtitleLanguage {
+export interface GetVideoBlock_block_ImageBlock {
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+}
+
+export interface GetVideoBlock_block_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
   bcp47: string | null;
 }
 
-export interface VideoFields_mediaVideo_Video_title {
+export interface GetVideoBlock_block_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface VideoFields_mediaVideo_Video_images {
+export interface GetVideoBlock_block_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface VideoFields_mediaVideo_Video_variant {
+export interface GetVideoBlock_block_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface VideoFields_mediaVideo_Video_variantLanguages_name {
+export interface GetVideoBlock_block_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface VideoFields_mediaVideo_Video_variantLanguages {
+export interface GetVideoBlock_block_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: VideoFields_mediaVideo_Video_variantLanguages_name[];
+  name: GetVideoBlock_block_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface VideoFields_mediaVideo_Video {
+export interface GetVideoBlock_block_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: VideoFields_mediaVideo_Video_title[];
-  images: VideoFields_mediaVideo_Video_images[];
-  variant: VideoFields_mediaVideo_Video_variant | null;
-  variantLanguages: VideoFields_mediaVideo_Video_variantLanguages[];
+  title: GetVideoBlock_block_VideoBlock_mediaVideo_Video_title[];
+  images: GetVideoBlock_block_VideoBlock_mediaVideo_Video_images[];
+  variant: GetVideoBlock_block_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: GetVideoBlock_block_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
-export interface VideoFields_mediaVideo_MuxVideo {
+export interface GetVideoBlock_block_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
   assetId: string | null;
   playbackId: string | null;
 }
 
-export interface VideoFields_mediaVideo_YouTube {
+export interface GetVideoBlock_block_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type VideoFields_mediaVideo = VideoFields_mediaVideo_Video | VideoFields_mediaVideo_MuxVideo | VideoFields_mediaVideo_YouTube;
+export type GetVideoBlock_block_VideoBlock_mediaVideo = GetVideoBlock_block_VideoBlock_mediaVideo_Video | GetVideoBlock_block_VideoBlock_mediaVideo_MuxVideo | GetVideoBlock_block_VideoBlock_mediaVideo_YouTube;
 
-export interface VideoFields_action_NavigateToBlockAction {
+export interface GetVideoBlock_block_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface VideoFields_action_LinkAction {
+export interface GetVideoBlock_block_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
@@ -82,7 +86,7 @@ export interface VideoFields_action_LinkAction {
   parentStepId: string | null;
 }
 
-export interface VideoFields_action_EmailAction {
+export interface GetVideoBlock_block_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
@@ -91,7 +95,7 @@ export interface VideoFields_action_EmailAction {
   parentStepId: string | null;
 }
 
-export interface VideoFields_action_ChatAction {
+export interface GetVideoBlock_block_VideoBlock_action_ChatAction {
   __typename: "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
@@ -100,7 +104,7 @@ export interface VideoFields_action_ChatAction {
   parentStepId: string | null;
 }
 
-export interface VideoFields_action_PhoneAction {
+export interface GetVideoBlock_block_VideoBlock_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
   gtmEventName: string | null;
@@ -109,9 +113,9 @@ export interface VideoFields_action_PhoneAction {
   contactAction: ContactActionType;
 }
 
-export type VideoFields_action = VideoFields_action_NavigateToBlockAction | VideoFields_action_LinkAction | VideoFields_action_EmailAction | VideoFields_action_ChatAction | VideoFields_action_PhoneAction;
+export type GetVideoBlock_block_VideoBlock_action = GetVideoBlock_block_VideoBlock_action_NavigateToBlockAction | GetVideoBlock_block_VideoBlock_action_LinkAction | GetVideoBlock_block_VideoBlock_action_EmailAction | GetVideoBlock_block_VideoBlock_action_ChatAction | GetVideoBlock_block_VideoBlock_action_PhoneAction;
 
-export interface VideoFields {
+export interface GetVideoBlock_block_VideoBlock {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
@@ -179,11 +183,21 @@ export interface VideoFields {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: VideoFields_subtitleLanguage | null;
+  subtitleLanguage: GetVideoBlock_block_VideoBlock_subtitleLanguage | null;
   showGeneratedSubtitles: boolean | null;
-  mediaVideo: VideoFields_mediaVideo | null;
+  mediaVideo: GetVideoBlock_block_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
-  action: VideoFields_action | null;
+  action: GetVideoBlock_block_VideoBlock_action | null;
+}
+
+export type GetVideoBlock_block = GetVideoBlock_block_ImageBlock | GetVideoBlock_block_VideoBlock;
+
+export interface GetVideoBlock {
+  block: GetVideoBlock_block;
+}
+
+export interface GetVideoBlockVariables {
+  id: string;
 }

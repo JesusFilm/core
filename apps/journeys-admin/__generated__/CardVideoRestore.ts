@@ -184,6 +184,7 @@ export interface CardVideoRestore_video_VideoBlock {
    */
   objectFit: VideoBlockObjectFit | null;
   subtitleLanguage: CardVideoRestore_video_VideoBlock_subtitleLanguage | null;
+  showGeneratedSubtitles: boolean | null;
   mediaVideo: CardVideoRestore_video_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

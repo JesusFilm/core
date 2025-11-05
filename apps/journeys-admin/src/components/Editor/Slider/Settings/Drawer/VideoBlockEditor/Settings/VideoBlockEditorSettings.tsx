@@ -167,6 +167,7 @@ export function VideoBlockEditorSettings({
             )}
             {selectedBlock?.source === VideoBlockSource.mux && (
               <MuxSubtitleEnablementToggle
+                videoBlockId={selectedBlock?.id ?? null}
                 muxVideoId={
                   selectedBlock?.mediaVideo?.__typename === 'MuxVideo'
                     ? selectedBlock.mediaVideo.id

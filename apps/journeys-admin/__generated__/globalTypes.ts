@@ -417,7 +417,8 @@ export interface EmailActionInput {
 }
 
 export interface GenerateSubtitlesInput {
-  languageCode?: string | null;
+  languageCode: string;
+  languageName: string;
 }
 
 export interface HostCreateInput {

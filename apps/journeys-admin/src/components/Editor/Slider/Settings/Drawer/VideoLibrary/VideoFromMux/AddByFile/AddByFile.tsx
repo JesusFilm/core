@@ -45,6 +45,9 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const isValidLanguage = useValidateMuxLanguage(rawLanguageCode)
   const languageCode =
     isValidLanguage && rawLanguageCode != null ? rawLanguageCode : undefined
+  const languageName = journey?.language.name.find(
+    (name) => name.primary
+  )?.value
   const { startPolling, stopPolling } = useMuxVideoPolling()
 
   const [uploading, setUploading] = useState(false)
@@ -115,7 +118,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const onDropAccepted = async (files: File[]): Promise<void> => {
     if (files.length > 0) {
       const { data } = await createMuxVideoUploadByFile(
-        fileToMuxUpload(files[0], languageCode)
+        fileToMuxUpload(files[0], languageCode, languageName)
       )
 
       if (

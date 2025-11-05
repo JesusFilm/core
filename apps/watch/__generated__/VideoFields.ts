@@ -180,6 +180,7 @@ export interface VideoFields {
    */
   objectFit: VideoBlockObjectFit | null;
   subtitleLanguage: VideoFields_subtitleLanguage | null;
+  showGeneratedSubtitles: boolean | null;
   mediaVideo: VideoFields_mediaVideo | null;
   /**
    * action that should be performed when the video ends

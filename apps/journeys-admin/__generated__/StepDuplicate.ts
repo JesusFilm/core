@@ -541,6 +541,7 @@ export interface StepDuplicate_blockDuplicate_VideoBlock {
    */
   objectFit: VideoBlockObjectFit | null;
   subtitleLanguage: StepDuplicate_blockDuplicate_VideoBlock_subtitleLanguage | null;
+  showGeneratedSubtitles: boolean | null;
   mediaVideo: StepDuplicate_blockDuplicate_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

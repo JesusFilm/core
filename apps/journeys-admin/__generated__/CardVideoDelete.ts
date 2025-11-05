@@ -184,6 +184,7 @@ export interface CardVideoDelete_video_VideoBlock {
    */
   objectFit: VideoBlockObjectFit | null;
   subtitleLanguage: CardVideoDelete_video_VideoBlock_subtitleLanguage | null;
+  showGeneratedSubtitles: boolean | null;
   mediaVideo: CardVideoDelete_video_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

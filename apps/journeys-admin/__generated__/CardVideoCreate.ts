@@ -180,6 +180,7 @@ export interface CardVideoCreate_video {
    */
   objectFit: VideoBlockObjectFit | null;
   subtitleLanguage: CardVideoCreate_video_subtitleLanguage | null;
+  showGeneratedSubtitles: boolean | null;
   mediaVideo: CardVideoCreate_video_mediaVideo | null;
   /**
    * action that should be performed when the video ends
