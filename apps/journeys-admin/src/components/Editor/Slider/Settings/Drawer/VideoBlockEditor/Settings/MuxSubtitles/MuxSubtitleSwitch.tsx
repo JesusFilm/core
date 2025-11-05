@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 
 import { GetMyGeneratedMuxSubtitleTrack } from '../../../../../../../../../__generated__/GetMyGeneratedMuxSubtitleTrack'
@@ -60,7 +59,6 @@ export function MuxSubtitleSwitch({
   journeyLanguageCode
 }: MuxSubtitleSwitchProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { journey } = useJourney()
   const isValidLanguage = useValidateMuxLanguage(journeyLanguageCode)
   const [toggleChecked, setToggleChecked] = useState(false)
 
@@ -139,8 +137,7 @@ export function MuxSubtitleSwitch({
         variables: {
           id: videoBlockId,
           input: {
-            showGeneratedSubtitles: newValue,
-            subtitleLanguageId: journey?.language?.id
+            showGeneratedSubtitles: newValue
           }
         }
       })
