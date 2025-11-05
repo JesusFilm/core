@@ -1,6 +1,12 @@
 import Subtitles from '@mui/icons-material/Subtitles'
 import IconButton from '@mui/material/IconButton'
-import { ReactElement, useState } from 'react'
+import {
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  useEffect,
+  useState
+} from 'react'
 
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import { getCaptionsAndSubtitleTracks } from '../../utils/getCaptionsAndSubtitleTracks'
@@ -16,12 +22,14 @@ interface SubtitleButtonProps {
   player: VideoJsPlayer
   source: VideoBlockSource
   visible: boolean
+  setActive: Dispatch<SetStateAction<boolean>>
 }
 
 export function SubtitleButton({
   player,
   source,
-  visible
+  visible,
+  setActive
 }: SubtitleButtonProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
@@ -31,6 +39,7 @@ export function SubtitleButton({
 
   function handleClose(): void {
     setAnchorEl(null)
+    setActive(false)
   }
 
   function handleSubtitleChange(trackId: string | null): void {
@@ -69,6 +78,13 @@ export function SubtitleButton({
   }
 
   const open = Boolean(anchorEl)
+
+  // keep controls visible when menu is open
+  useEffect(() => {
+    if (open) {
+      setActive(true)
+    }
+  }, [open, setActive, visible])
 
   // Get caption tracks and determine button state
   const youtubeCaptionTracks = getCaptionsAndSubtitleTracks(player)
