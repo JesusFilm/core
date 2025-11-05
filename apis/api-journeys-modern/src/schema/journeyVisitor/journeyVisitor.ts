@@ -10,10 +10,31 @@ import { JourneyEventsFilter } from '../event/journey/inputs'
 
 import { JourneyVisitorExportSelect } from './inputs'
 
-// Minimal sanitization: rely on csv-stringify to quote and escape internal quotes
+// Sanitize CSV cell while preserving leading whitespace and neutralizing formulas
 function sanitizeCSVCell(value: string): string {
   if (value == null) return ''
-  return typeof value === 'string' ? value : String(value)
+  const str = typeof value === 'string' ? value : String(value)
+
+  // Preserve leading whitespace; inspect first non-whitespace character
+  const leadingMatch = str.match(/^\s*/)
+  const leadingWhitespace = leadingMatch != null ? leadingMatch[0] : ''
+  const rest = str.slice(leadingWhitespace.length)
+
+  if (rest.length === 0) return str
+  // If already explicitly text (leading apostrophe), leave unchanged
+  if (rest[0] === "'") return str
+  const first = rest[0]
+  if (first === '=' || first === '+' || first === '-' || first === '@') {
+    return `${leadingWhitespace}'${rest}`
+  }
+  // Heuristic: treat phone-like numeric strings as text to preserve leading zeros
+  // Strip common formatting characters and check if remaining are digits (optionally prefixed by '+')
+  const compact = rest.replace(/[\s().-]/g, '')
+  const isNumericLike = /^\+?\d{7,}$/.test(compact)
+  if (isNumericLike) {
+    return `${leadingWhitespace}'${rest}`
+  }
+  return str
 }
 
 // Convert a wall-clock datetime in a specific IANA timezone into a UTC Date
