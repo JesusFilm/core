@@ -226,4 +226,21 @@ describe('WebView', () => {
     )
     expect(screen.queryByTestId('JourneysStepFooter')).not.toBeInTheDocument()
   })
+
+  it('should have active-card class for fullscreen support', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <JourneyProvider value={{ journey }}>
+          <SnackbarProvider>
+            <WebView
+              blocks={basic}
+              stepBlock={basic[0] as TreeBlock<StepFields>}
+            />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const activeCard = document.querySelector('.active-card')
+    expect(activeCard).toBeInTheDocument()
+  })
 })
