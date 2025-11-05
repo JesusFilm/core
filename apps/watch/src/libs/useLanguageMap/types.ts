@@ -10,4 +10,5 @@ export interface LanguageMapPoint {
   latitude: number
   longitude: number
   isPrimaryCountryLanguage: boolean
+  speakers: number
 }

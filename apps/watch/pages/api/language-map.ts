@@ -73,7 +73,7 @@ function buildLanguagePoint({
   latitude?: number | null
   longitude?: number | null
   isPrimaryCountryLanguage: boolean
-  speakers: number
+  speakers?: number | null
 }): LanguageMapPoint | null {
   if (latitude == null || longitude == null) return null
 
@@ -93,7 +93,7 @@ function buildLanguagePoint({
     latitude,
     longitude,
     isPrimaryCountryLanguage,
-    speakers
+    speakers: speakers ?? 0
   }
 }
 
