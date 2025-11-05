@@ -363,6 +363,7 @@ export interface CardQuoteRestore_image_TypographyBlock {
 export interface CardQuoteRestore_image_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardQuoteRestore_image_VideoBlock_mediaVideo_Video_title {
@@ -951,6 +952,7 @@ export interface CardQuoteRestore_subtitle_TypographyBlock {
 export interface CardQuoteRestore_subtitle_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_title {
@@ -1539,6 +1541,7 @@ export interface CardQuoteRestore_title_TypographyBlock {
 export interface CardQuoteRestore_title_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardQuoteRestore_title_VideoBlock_mediaVideo_Video_title {
@@ -2127,6 +2130,7 @@ export interface CardQuoteRestore_body_TypographyBlock {
 export interface CardQuoteRestore_body_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardQuoteRestore_body_VideoBlock_mediaVideo_Video_title {
