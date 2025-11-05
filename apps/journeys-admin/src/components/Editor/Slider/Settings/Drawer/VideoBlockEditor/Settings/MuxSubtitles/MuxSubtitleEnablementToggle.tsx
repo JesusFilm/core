@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 
 import { GetMyGeneratedMuxSubtitleTrack } from '../../../../../../../../../__generated__/GetMyGeneratedMuxSubtitleTrack'
@@ -59,6 +60,7 @@ export function MuxSubtitleEnablementToggle({
   journeyLanguageCode
 }: MuxSubtitleEnablementToggleProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
   const isValidLanguage = useValidateMuxLanguage(journeyLanguageCode)
   const [toggleChecked, setToggleChecked] = useState(false)
 
@@ -86,7 +88,6 @@ export function MuxSubtitleEnablementToggle({
     'QueryGetMyGeneratedMuxSubtitleTrackSuccess'
       ? subtitleTrackData.getMyGeneratedMuxSubtitleTrack.data
       : null
-
 
   // Mux subtitle generation typically takes longer to complete than the video upload does
   // Poll to check when completed.
@@ -138,7 +139,8 @@ export function MuxSubtitleEnablementToggle({
         variables: {
           id: videoBlockId,
           input: {
-            showGeneratedSubtitles: newValue
+            showGeneratedSubtitles: newValue,
+            subtitleLanguageId: journey?.language?.id
           }
         }
       })
@@ -161,7 +163,9 @@ export function MuxSubtitleEnablementToggle({
     isErrored ||
     updating
 
-  let labelText = !isValidLanguage ? t('Subtitles not available for this video') : ''
+  let labelText = !isValidLanguage
+    ? t('Subtitles not available for this video')
+    : ''
   if (isValidLanguage && isProcessing) {
     labelText = t(
       'Auto subtitle generation in progress, please try again later'
@@ -180,11 +184,11 @@ export function MuxSubtitleEnablementToggle({
           }}
         />
       </Stack>
-      {(
+      {
         <Typography variant="caption" color="text.secondary">
           {labelText}
         </Typography>
-      )}
+      }
     </Stack>
   )
 }
