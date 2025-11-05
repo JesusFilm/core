@@ -7,10 +7,12 @@ const overlaySchema = z.object({
   title: z.string().min(1, 'overlay.title is required'),
   collection: z.string().min(1, 'overlay.collection is required'),
   description: z.string().min(1, 'overlay.description is required'),
-  action: z.object({
-    label: z.string().min(1, 'action.label is required'),
-    url: z.string().min(1, 'action.url is required')
-  }).optional()
+  action: z
+    .object({
+      label: z.string().min(1, 'action.label is required'),
+      url: z.string().min(1, 'action.url is required')
+    })
+    .optional()
 })
 
 const triggerSchema = z.discriminatedUnion('type', [
@@ -31,12 +33,9 @@ const muxInsertSchema = z.object({
   enabled: z.boolean().default(true),
   source: z.literal('mux'),
   playbackIds: z
-    .array(
-      z
-        .string()
-        .min(1, 'playbackIds must contain non-empty strings'),
-      { required_error: 'playbackIds are required' }
-    )
+    .array(z.string().min(1, 'playbackIds must contain non-empty strings'), {
+      required_error: 'playbackIds are required'
+    })
     .min(1, 'playbackIds must include at least one ID'),
   duration: z
     .number({ invalid_type_error: 'duration must be a number' })

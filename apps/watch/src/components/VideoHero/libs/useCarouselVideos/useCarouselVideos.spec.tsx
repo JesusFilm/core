@@ -118,15 +118,33 @@ describe('useCarouselVideos', () => {
       sessionStorage.clear()
     }
 
-    ;(getPlaylistConfig as jest.MockedFunction<typeof getPlaylistConfig>).mockReturnValue(createDefaultConfig())
-    ;(getDeterministicOffset as jest.MockedFunction<typeof getDeterministicOffset>).mockReturnValue(0)
-    ;(getRandomFromMultipleCollections as jest.MockedFunction<typeof getRandomFromMultipleCollections>).mockReturnValue({
+    ;(
+      getPlaylistConfig as jest.MockedFunction<typeof getPlaylistConfig>
+    ).mockReturnValue(createDefaultConfig())
+    ;(
+      getDeterministicOffset as jest.MockedFunction<
+        typeof getDeterministicOffset
+      >
+    ).mockReturnValue(0)
+    ;(
+      getRandomFromMultipleCollections as jest.MockedFunction<
+        typeof getRandomFromMultipleCollections
+      >
+    ).mockReturnValue({
       collectionId: 'collection1',
       childIndex: 0
     })
-    ;(isVideoAlreadyPlayed as jest.MockedFunction<typeof isVideoAlreadyPlayed>).mockReturnValue(false)
-    ;(isPoolExhausted as jest.MockedFunction<typeof isPoolExhausted>).mockReturnValue(false)
-    ;(filterOutBlacklistedVideos as jest.MockedFunction<typeof filterOutBlacklistedVideos>).mockImplementation((videos) => videos)
+    ;(
+      isVideoAlreadyPlayed as jest.MockedFunction<typeof isVideoAlreadyPlayed>
+    ).mockReturnValue(false)
+    ;(
+      isPoolExhausted as jest.MockedFunction<typeof isPoolExhausted>
+    ).mockReturnValue(false)
+    ;(
+      filterOutBlacklistedVideos as jest.MockedFunction<
+        typeof filterOutBlacklistedVideos
+      >
+    ).mockImplementation((videos) => videos)
     apolloMocks = [...defaultMocks]
   })
 
@@ -195,5 +213,4 @@ describe('useCarouselVideos', () => {
 
     expect(result.current.error).toBeNull()
   })
-
 })

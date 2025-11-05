@@ -116,7 +116,11 @@ export function SectionVideoCarousel({
           'absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-opacity duration-500 ease-in-out filter sepia-off blur-lg mix-blend-overlay',
           isBackgroundVisible ? 'opacity-30' : 'opacity-0'
         )}
-        style={hoverBackground != null ? { backgroundImage: `url(${hoverBackground})` } : undefined}
+        style={
+          hoverBackground != null
+            ? { backgroundImage: `url(${hoverBackground})` }
+            : undefined
+        }
         aria-hidden="true"
       />
       <div className="absolute inset-0 z-1 bg-[url(/watch/assets/overlay.svg)] bg-repeat mix-blend-multiply" />

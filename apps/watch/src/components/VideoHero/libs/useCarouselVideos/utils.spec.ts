@@ -1,4 +1,7 @@
-import { filterOutBlacklistedVideos, normalizeBlacklistedVideoIds } from './utils'
+import {
+  filterOutBlacklistedVideos,
+  normalizeBlacklistedVideoIds
+} from './utils'
 
 describe('normalizeBlacklistedVideoIds', () => {
   it('returns an empty array when value is undefined', () => {
@@ -20,18 +23,11 @@ describe('filterOutBlacklistedVideos', () => {
   })
 
   it('filters videos whose IDs are in the blacklist', () => {
-    const videos = [
-      { id: 'video-1' },
-      { id: 'video-2' },
-      { id: 'video-3' }
-    ]
+    const videos = [{ id: 'video-1' }, { id: 'video-2' }, { id: 'video-3' }]
 
     const result = filterOutBlacklistedVideos(videos, new Set(['video-2']))
 
-    expect(result).toEqual([
-      { id: 'video-1' },
-      { id: 'video-3' }
-    ])
+    expect(result).toEqual([{ id: 'video-1' }, { id: 'video-3' }])
   })
 
   it('ignores entries without an ID', () => {

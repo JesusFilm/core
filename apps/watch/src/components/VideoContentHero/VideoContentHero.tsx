@@ -28,23 +28,27 @@ export function VideoContentHero({
   const [collapsed, setCollapsed] = useState(true)
   const [wasUnmuted, setWasUnmuted] = useState(false)
 
-
   const languageSlug = variant?.slug?.split('/')[1]
 
-  const handleMuteToggle = useCallback((isMuted: boolean): void => {
-    setCollapsed(isMuted)
-    if (!isMuted) {
-      setWasUnmuted(true)
-    }
-  }, [collapsed])
+  const handleMuteToggle = useCallback(
+    (isMuted: boolean): void => {
+      setCollapsed(isMuted)
+      if (!isMuted) {
+        setWasUnmuted(true)
+      }
+    },
+    [collapsed]
+  )
 
   return (
     <div
       className={clsx(
         'w-full flex items-end relative bg-[#000] z-[1] transition-all duration-300 ease-out overflow-hidden',
         {
-          'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]': isPreview && collapsed,
-          'aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)]': !isPreview || !collapsed
+          'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]':
+            isPreview && collapsed,
+          'aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)]':
+            !isPreview || !collapsed
         }
       )}
       data-testid="ContentHero"

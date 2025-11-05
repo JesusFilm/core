@@ -26,29 +26,30 @@ export function SectionNewsletterSignup(): ReactElement {
   const [languages, setLanguages] = useState<string[]>([])
   const [submitted, setSubmitted] = useState(false)
 
-  const audienceOptions: Array<{ value: AudienceOption; label: string }> = useMemo(
-    () => [
-      {
-        value: 'missionary',
-        label: t('newsletterSection.audience.missionary', {
-          defaultValue: 'A missionary'
-        })
-      },
-      {
-        value: 'organization',
-        label: t('newsletterSection.audience.organization', {
-          defaultValue: 'Part of a mission organization'
-        })
-      },
-      {
-        value: 'private',
-        label: t('newsletterSection.audience.private', {
-          defaultValue: 'An individual believer'
-        })
-      }
-    ],
-    [t]
-  )
+  const audienceOptions: Array<{ value: AudienceOption; label: string }> =
+    useMemo(
+      () => [
+        {
+          value: 'missionary',
+          label: t('newsletterSection.audience.missionary', {
+            defaultValue: 'A missionary'
+          })
+        },
+        {
+          value: 'organization',
+          label: t('newsletterSection.audience.organization', {
+            defaultValue: 'Part of a mission organization'
+          })
+        },
+        {
+          value: 'private',
+          label: t('newsletterSection.audience.private', {
+            defaultValue: 'An individual believer'
+          })
+        }
+      ],
+      [t]
+    )
 
   const interestOptions: SelectOption[] = useMemo(
     () => [
@@ -84,15 +85,21 @@ export function SectionNewsletterSignup(): ReactElement {
     () => [
       {
         value: 'english',
-        label: t('newsletterSection.languages.english', { defaultValue: 'English' })
+        label: t('newsletterSection.languages.english', {
+          defaultValue: 'English'
+        })
       },
       {
         value: 'spanish',
-        label: t('newsletterSection.languages.spanish', { defaultValue: 'Spanish' })
+        label: t('newsletterSection.languages.spanish', {
+          defaultValue: 'Spanish'
+        })
       },
       {
         value: 'french',
-        label: t('newsletterSection.languages.french', { defaultValue: 'French' })
+        label: t('newsletterSection.languages.french', {
+          defaultValue: 'French'
+        })
       },
       {
         value: 'portuguese',
@@ -102,7 +109,9 @@ export function SectionNewsletterSignup(): ReactElement {
       },
       {
         value: 'chinese',
-        label: t('newsletterSection.languages.chinese', { defaultValue: 'Chinese' })
+        label: t('newsletterSection.languages.chinese', {
+          defaultValue: 'Chinese'
+        })
       },
       {
         value: 'other',
@@ -117,7 +126,10 @@ export function SectionNewsletterSignup(): ReactElement {
     setSubmitted(false)
   }
 
-  function toggleValue(value: string, setState: Dispatch<React.SetStateAction<string[]>>): void {
+  function toggleValue(
+    value: string,
+    setState: Dispatch<React.SetStateAction<string[]>>
+  ): void {
     setState((previous) =>
       previous.includes(value)
         ? previous.filter((currentValue) => currentValue !== value)
@@ -146,7 +158,9 @@ export function SectionNewsletterSignup(): ReactElement {
         <div className="bg-black/50 backdrop-blur-md border border-white/15 rounded-[32px] p-8 md:p-12 lg:p-16 flex flex-col gap-10">
           <div className="space-y-4 text-white">
             <p className="text-sm uppercase tracking-[0.3em] text-white/60">
-              {t('newsletterSection.kicker', { defaultValue: 'Stay connected' })}
+              {t('newsletterSection.kicker', {
+                defaultValue: 'Stay connected'
+              })}
             </p>
             <h2 className="text-3xl md:text-4xl font-semibold">
               {t('newsletterSection.title', {
@@ -192,7 +206,8 @@ export function SectionNewsletterSignup(): ReactElement {
                 />
                 <p className="text-xs text-white/50">
                   {t('newsletterSection.nameHelper', {
-                    defaultValue: 'We\'ll use this to personalize your subscription.'
+                    defaultValue:
+                      "We'll use this to personalize your subscription."
                   })}
                 </p>
               </div>
@@ -201,7 +216,9 @@ export function SectionNewsletterSignup(): ReactElement {
                   htmlFor="newsletter-email"
                   className="text-sm font-semibold uppercase tracking-wide text-white/70"
                 >
-                  {t('newsletterSection.emailLabel', { defaultValue: 'Email address' })}
+                  {t('newsletterSection.emailLabel', {
+                    defaultValue: 'Email address'
+                  })}
                 </label>
                 <input
                   id="newsletter-email"
@@ -225,11 +242,12 @@ export function SectionNewsletterSignup(): ReactElement {
                     })}
                   </p>
                 ) : (
-                <p className="text-xs text-white/50">
-                  {t('newsletterSection.emailHelper', {
-                    defaultValue: 'We\'ll send updates and resources to this address.'
-                  })}
-                </p>
+                  <p className="text-xs text-white/50">
+                    {t('newsletterSection.emailHelper', {
+                      defaultValue:
+                        "We'll send updates and resources to this address."
+                    })}
+                  </p>
                 )}
               </div>
             </div>
@@ -256,7 +274,9 @@ export function SectionNewsletterSignup(): ReactElement {
                             onChange={handleAudienceChange}
                             className="size-4 accent-white"
                           />
-                          <span className="text-sm md:text-base">{option.label}</span>
+                          <span className="text-sm md:text-base">
+                            {option.label}
+                          </span>
                         </label>
                       ))}
                     </div>
@@ -281,7 +301,9 @@ export function SectionNewsletterSignup(): ReactElement {
                             onChange={handleInterestsChange}
                             className="size-4 accent-white"
                           />
-                          <span className="text-sm md:text-base">{option.label}</span>
+                          <span className="text-sm md:text-base">
+                            {option.label}
+                          </span>
                         </label>
                       ))}
                     </div>
@@ -306,20 +328,26 @@ export function SectionNewsletterSignup(): ReactElement {
                             onChange={handleLanguagesChange}
                             className="size-4 accent-white"
                           />
-                          <span className="text-sm md:text-base">{option.label}</span>
+                          <span className="text-sm md:text-base">
+                            {option.label}
+                          </span>
                         </label>
                       ))}
                     </div>
                   </fieldset>
                 </div>
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                  <Button type="submit" className="h-12 rounded-2xl px-8 text-base font-semibold">
+                  <Button
+                    type="submit"
+                    className="h-12 rounded-2xl px-8 text-base font-semibold"
+                  >
                     {t('newsletterSection.cta', { defaultValue: 'Sign Up' })}
                   </Button>
                   {submitted && (
                     <p className="text-sm text-emerald-300">
                       {t('newsletterSection.successMessage', {
-                        defaultValue: 'Thanks for subscribing! We will keep you updated.'
+                        defaultValue:
+                          'Thanks for subscribing! We will keep you updated.'
                       })}
                     </p>
                   )}

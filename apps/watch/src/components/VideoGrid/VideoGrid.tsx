@@ -50,11 +50,16 @@ export function VideoGrid({
     }
 
     if (selectedLanguages.length === 1) {
-      return t('Latest videos in {{language}}', { language: selectedLanguages[0] })
+      return t('Latest videos in {{language}}', {
+        language: selectedLanguages[0]
+      })
     }
 
     return t('Latest videos in {{languages}}', {
-      languages: selectedLanguages.slice(0, -1).join(', ') + ' and ' + selectedLanguages[selectedLanguages.length - 1]
+      languages:
+        selectedLanguages.slice(0, -1).join(', ') +
+        ' and ' +
+        selectedLanguages[selectedLanguages.length - 1]
     })
   }
 
@@ -63,8 +68,7 @@ export function VideoGrid({
       ? 'grid-cols-2 md:grid-cols-4 xl:grid-cols-5'
       : 'grid-cols-1 md:grid-cols-3 xl:grid-cols-4'
 
-  const fallbackSkeletonCount =
-    orientation === 'vertical' ? 5 : 4
+  const fallbackSkeletonCount = orientation === 'vertical' ? 5 : 4
 
   return (
     <div
@@ -129,14 +133,10 @@ export function VideoGrid({
                 />
               </div>
               <div className="flex-1 flex flex-col gap-4 text-center md:text-left items-center md:items-start">
-                <span
-                  className="uppercase tracking-widest text-[#FF9E00] font-sans font-bold mb-0 animate-fade-in-up animation-delay-100 text-md"
-                >
+                <span className="uppercase tracking-widest text-[#FF9E00] font-sans font-bold mb-0 animate-fade-in-up animation-delay-100 text-md">
                   {t('No videos found')}
                 </span>
-                <p
-                  className="font-bold text-stone-50 text-shadow-xs mb-0 font-sans animate-fade-in-up animation-delay-200 text-2xl md:text-2xl lg:text-3xl xl:text-4xl"
-                >
+                <p className="font-bold text-stone-50 text-shadow-xs mb-0 font-sans animate-fade-in-up animation-delay-200 text-2xl md:text-2xl lg:text-3xl xl:text-4xl">
                   {t('No catch here—try the other side of the boat.')}
                 </p>
                 {onClearSearch != null && (
@@ -161,21 +161,22 @@ export function VideoGrid({
                   </h6>
                 </div>
                 <div className={`grid gap-4 ${fallbackGridColumns}`}>
-                  {(fallbackLoading ? Array.from({ length: fallbackSkeletonCount }) : fallbackVideos).map(
-                    (video, index) => (
-                      <div key={index} className="w-full">
-                        <VideoCard
-                          video={fallbackLoading ? undefined : video}
-                          orientation={orientation}
-                          containerSlug={containerSlug}
-                          index={index}
-                          onClick={onCardClick}
-                          analyticsTag={analyticsTag}
-                          showSequenceNumber={showSequenceNumbers}
-                        />
-                      </div>
-                    )
-                  )}
+                  {(fallbackLoading
+                    ? Array.from({ length: fallbackSkeletonCount })
+                    : fallbackVideos
+                  ).map((video, index) => (
+                    <div key={index} className="w-full">
+                      <VideoCard
+                        video={fallbackLoading ? undefined : video}
+                        orientation={orientation}
+                        containerSlug={containerSlug}
+                        index={index}
+                        onClick={onCardClick}
+                        analyticsTag={analyticsTag}
+                        showSequenceNumber={showSequenceNumbers}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

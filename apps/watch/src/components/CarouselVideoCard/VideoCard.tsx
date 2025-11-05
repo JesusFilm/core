@@ -52,7 +52,10 @@ function CardContent({
       <ContainerElement
         data-testid={`VideoCardButton-${data.slug}`}
         {...(interactive && {
-          name: typeof data.title === 'string' ? data.title : last(data.title)?.value,
+          name:
+            typeof data.title === 'string'
+              ? data.title
+              : last(data.title)?.value,
           disabled: data == null
         })}
         className="beveled rounded-lg w-full relative text-left border-none bg-transparent p-0 cursor-pointer disabled:cursor-default"
@@ -132,7 +135,9 @@ function CardContent({
               }}
               data-testid={`CarouselItemTitle-${data.slug}`}
             >
-              {typeof data.title === 'string' ? data.title : last(data.title)?.value}
+              {typeof data.title === 'string'
+                ? data.title
+                : last(data.title)?.value}
             </h3>
           </div>
         </ContentElement>
@@ -178,7 +183,9 @@ export function VideoCard({
     className: `block beveled no-underline text-inherit ${
       transparent ? 'opacity-70' : ''
     } cursor-pointer`,
-    'aria-label': (typeof data.title === 'string' ? data.title : last(data.title)?.value) ?? `Video ${data.slug}`,
+    'aria-label':
+      (typeof data.title === 'string' ? data.title : last(data.title)?.value) ??
+      `Video ${data.slug}`,
     'data-testid': `VideoCard-${data.id}`
   }
 

@@ -71,7 +71,9 @@ export function VideoCard({
     <a
       href={href}
       className={`block no-underline text-inherit ${
-        video != null ? 'pointer-events-auto cursor-pointer' : 'pointer-events-none'
+        video != null
+          ? 'pointer-events-auto cursor-pointer'
+          : 'pointer-events-none'
       }`}
       aria-label="VideoCard"
       data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}

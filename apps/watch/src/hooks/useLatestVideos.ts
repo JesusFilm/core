@@ -9,11 +9,7 @@ import { VIDEO_CHILD_FIELDS } from '../libs/videoChildFields'
 
 const GET_LATEST_VIDEOS = gql`
   ${VIDEO_CHILD_FIELDS}
-  query GetLatestVideos(
-    $where: VideosFilter
-    $languageId: ID
-    $limit: Int
-  ) {
+  query GetLatestVideos($where: VideosFilter, $languageId: ID, $limit: Int) {
     videos(where: $where, limit: $limit) {
       ...VideoChildFields
       publishedAt
@@ -40,18 +36,18 @@ export function useLatestVideos({
     [languageId]
   )
 
-  const { data, loading } = useQuery<
-    GetLatestVideos,
-    GetLatestVideosVariables
-  >(GET_LATEST_VIDEOS, {
-    variables: {
-      languageId,
-      where,
-      limit
-    },
-    fetchPolicy: 'cache-first',
-    skip
-  })
+  const { data, loading } = useQuery<GetLatestVideos, GetLatestVideosVariables>(
+    GET_LATEST_VIDEOS,
+    {
+      variables: {
+        languageId,
+        where,
+        limit
+      },
+      fetchPolicy: 'cache-first',
+      skip
+    }
+  )
 
   const videos = useMemo(() => {
     const items = data?.videos ?? []

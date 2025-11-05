@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useRef, useState, type MouseEvent, type ReactElement } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent,
+  type ReactElement
+} from 'react'
 
 import { useRefinementList } from 'react-instantsearch'
 
@@ -58,7 +65,9 @@ export function AlgoliaVideoGrid({
 
     // Update state with current selections, or keep previous if none selected
     // This ensures we show selected languages even when there are no results
-    setSelectedLanguages(currentSelected.length > 0 ? currentSelected : lastSelectedRef.current)
+    setSelectedLanguages(
+      currentSelected.length > 0 ? currentSelected : lastSelectedRef.current
+    )
   }, [languageFilters])
 
   const [activeLanguageId, setActiveLanguageId] = useState<string | undefined>(

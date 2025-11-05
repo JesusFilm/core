@@ -23,9 +23,7 @@ interface PageMainProps {
   languageId?: string | undefined
 }
 
-function PageMainContent({
-  languageId
-}: PageMainProps): ReactElement {
+function PageMainContent({ languageId }: PageMainProps): ReactElement {
   const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX ?? ''
 
   return (
@@ -81,9 +79,7 @@ function PageMainBody({ languageId }: PageMainProps): ReactElement {
   )
 }
 
-export function PageMain({
-  languageId
-}: PageMainProps): ReactElement {
+export function PageMain({ languageId }: PageMainProps): ReactElement {
   return (
     <PlayerProvider>
       <WatchProvider>

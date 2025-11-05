@@ -2,7 +2,14 @@ import { ReactElement, useCallback } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
-import { VideoCarouselSlide, isMuxSlide, transformMuxSlide, transformVideoChild, UnifiedCardData, CarouselVideoLike } from '../../../src/types/inserts'
+import {
+  VideoCarouselSlide,
+  isMuxSlide,
+  transformMuxSlide,
+  transformVideoChild,
+  UnifiedCardData,
+  CarouselVideoLike
+} from '../../../src/types/inserts'
 import { VideoCard as CarouselVideoCard } from '../CarouselVideoCard/VideoCard'
 
 import { cn } from '../../libs/cn'
@@ -24,54 +31,68 @@ export function VideoCarousel({
   onVideoSelect,
   onSlideChange
 }: VideoCarouselProps): ReactElement | null {
-  const handleSlideChange = useCallback((swiper: any) => {
-    const activeIndex = swiper.activeIndex
-    if (onSlideChange != null) {
-      onSlideChange(activeIndex)
-    }
-    if (slides[activeIndex] != null) {
-      onVideoSelect(slides[activeIndex].id)
-    }
-  }, [slides, onVideoSelect, onSlideChange])
-
-  const transformCarouselVideoToUnifiedData = useCallback((video: CarouselVideoLike): UnifiedCardData => {
-    // Handle CarouselVideo (which has title: {value: string}[])
-    const title = Array.isArray(video.title) && video.title.length > 0
-      ? video.title.map(t => t.value)
-      : [video.id] // fallback
-
-    const images = Array.isArray(video.images) && video.images.length > 0
-      ? video.images.map(img => ({ mobileCinematicHigh: img.mobileCinematicHigh || '' }))
-      : []
-
-    const imageAlt = Array.isArray(video.imageAlt) && video.imageAlt.length > 0
-      ? video.imageAlt.map(alt => ({ value: alt.value }))
-      : []
-
-    return {
-      id: video.id,
-      title,
-      images,
-      imageAlt,
-      label: (video as any).label || 'video',
-      slug: video.slug,
-      variant: video.variant ? { slug: video.variant.slug } : undefined,
-      isMuxInsert: false
-    }
-  }, [])
-
-  const transformSlideToUnifiedData = useCallback((slide: VideoCarouselSlide): UnifiedCardData => {
-    if (isMuxSlide(slide)) {
-      return transformMuxSlide(slide)
-    } else {
-      // Check if it's VideoChildFields (has __typename) or CarouselVideo
-      if ('__typename' in slide.video) {
-        return transformVideoChild(slide.video)
-      } else {
-        return transformCarouselVideoToUnifiedData(slide.video)
+  const handleSlideChange = useCallback(
+    (swiper: any) => {
+      const activeIndex = swiper.activeIndex
+      if (onSlideChange != null) {
+        onSlideChange(activeIndex)
       }
-    }
-  }, [transformCarouselVideoToUnifiedData])
+      if (slides[activeIndex] != null) {
+        onVideoSelect(slides[activeIndex].id)
+      }
+    },
+    [slides, onVideoSelect, onSlideChange]
+  )
+
+  const transformCarouselVideoToUnifiedData = useCallback(
+    (video: CarouselVideoLike): UnifiedCardData => {
+      // Handle CarouselVideo (which has title: {value: string}[])
+      const title =
+        Array.isArray(video.title) && video.title.length > 0
+          ? video.title.map((t) => t.value)
+          : [video.id] // fallback
+
+      const images =
+        Array.isArray(video.images) && video.images.length > 0
+          ? video.images.map((img) => ({
+              mobileCinematicHigh: img.mobileCinematicHigh || ''
+            }))
+          : []
+
+      const imageAlt =
+        Array.isArray(video.imageAlt) && video.imageAlt.length > 0
+          ? video.imageAlt.map((alt) => ({ value: alt.value }))
+          : []
+
+      return {
+        id: video.id,
+        title,
+        images,
+        imageAlt,
+        label: (video as any).label || 'video',
+        slug: video.slug,
+        variant: video.variant ? { slug: video.variant.slug } : undefined,
+        isMuxInsert: false
+      }
+    },
+    []
+  )
+
+  const transformSlideToUnifiedData = useCallback(
+    (slide: VideoCarouselSlide): UnifiedCardData => {
+      if (isMuxSlide(slide)) {
+        return transformMuxSlide(slide)
+      } else {
+        // Check if it's VideoChildFields (has __typename) or CarouselVideo
+        if ('__typename' in slide.video) {
+          return transformVideoChild(slide.video)
+        } else {
+          return transformCarouselVideoToUnifiedData(slide.video)
+        }
+      }
+    },
+    [transformCarouselVideoToUnifiedData]
+  )
 
   if (!loading && slides.length === 0) return null
 
@@ -108,7 +129,9 @@ export function VideoCarousel({
                   <div
                     className={cn(
                       'transition-opacity duration-200',
-                      slide.id === activeVideoId ? 'opacity-100' : 'opacity-60 hover:opacity-80'
+                      slide.id === activeVideoId
+                        ? 'opacity-100'
+                        : 'opacity-60 hover:opacity-80'
                     )}
                   >
                     <CarouselVideoCard

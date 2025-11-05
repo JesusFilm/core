@@ -158,16 +158,10 @@ describe('VideoGrid', () => {
     })
 
     render(
-      <VideoGrid
-        videos={[]}
-        hasNoResults
-        fallbackVideos={videos.slice(0, 1)}
-      />
+      <VideoGrid videos={[]} hasNoResults fallbackVideos={videos.slice(0, 1)} />
     )
 
-    expect(
-      screen.getByText('Latest videos')
-    ).toBeInTheDocument()
+    expect(screen.getByText('Latest videos')).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { level: 3, name: 'JESUS' })
     ).toBeInTheDocument()

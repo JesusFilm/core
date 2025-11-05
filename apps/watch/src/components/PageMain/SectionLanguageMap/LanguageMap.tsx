@@ -14,7 +14,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import type { LanguageMapPoint } from '../../../libs/useLanguageMap'
 
-const STYLE_URL = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
+const STYLE_URL =
+  'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
 const SOURCE_ID = 'language-countries'
 const COUNTRY_FILL_LAYER_ID = 'language-country-fill'
 const COUNTRY_BORDER_LAYER_ID = 'language-country-border'
@@ -37,7 +38,9 @@ function toFlagEmoji(countryId: string): string {
     return '🏳️'
   }
 
-  const codePoints = [...countryId.toUpperCase()].map((char) => 0x1f1e6 + char.charCodeAt(0) - 65)
+  const codePoints = [...countryId.toUpperCase()].map(
+    (char) => 0x1f1e6 + char.charCodeAt(0) - 65
+  )
   if (codePoints.some((value) => value < 0x1f1e6 || value > 0x1f1ff)) {
     return '🏳️'
   }
@@ -58,8 +61,14 @@ interface CountryShapeProperties {
   'ISO3166-1-Alpha-2'?: string
 }
 
-type CountryShapeFeature = Feature<CountryFeatureGeometry, CountryShapeProperties>
-type CountryShapeCollection = FeatureCollection<CountryFeatureGeometry, CountryShapeProperties>
+type CountryShapeFeature = Feature<
+  CountryFeatureGeometry,
+  CountryShapeProperties
+>
+type CountryShapeCollection = FeatureCollection<
+  CountryFeatureGeometry,
+  CountryShapeProperties
+>
 
 interface CountryShapeData {
   geometry: CountryFeatureGeometry
@@ -103,9 +112,15 @@ interface CountryFeatureProperties {
   iso3Code?: string
 }
 
-type GeoJSONCountryFeature = Feature<CountryFeatureGeometry, CountryFeatureProperties>
+type GeoJSONCountryFeature = Feature<
+  CountryFeatureGeometry,
+  CountryFeatureProperties
+>
 
-type CountryFeatureCollection = FeatureCollection<CountryFeatureGeometry, CountryFeatureProperties>
+type CountryFeatureCollection = FeatureCollection<
+  CountryFeatureGeometry,
+  CountryFeatureProperties
+>
 
 function normalizeCountryKey(value: string): string {
   return value
@@ -115,7 +130,9 @@ function normalizeCountryKey(value: string): string {
     .toUpperCase()
 }
 
-function createCountryShapeIndex(features: CountryShapeFeature[]): CountryShapeIndex {
+function createCountryShapeIndex(
+  features: CountryShapeFeature[]
+): CountryShapeIndex {
   const byCode = new Map<string, CountryShapeData>()
   const byName = new Map<string, CountryShapeData>()
 
@@ -149,7 +166,9 @@ function createCountryShapeIndex(features: CountryShapeFeature[]): CountryShapeI
   return { byCode, byName }
 }
 
-function computeBoundsFromGeometry(geometry: CountryFeatureGeometry): LngLatBoundsLike {
+function computeBoundsFromGeometry(
+  geometry: CountryFeatureGeometry
+): LngLatBoundsLike {
   let minLng = Infinity
   let maxLng = -Infinity
   let minLat = Infinity
@@ -178,15 +197,20 @@ function computeBoundsFromGeometry(geometry: CountryFeatureGeometry): LngLatBoun
     }
   }
 
-  if (!Number.isFinite(minLng) || !Number.isFinite(maxLng) || !Number.isFinite(minLat) || !Number.isFinite(maxLat)) {
+  if (
+    !Number.isFinite(minLng) ||
+    !Number.isFinite(maxLng) ||
+    !Number.isFinite(minLat) ||
+    !Number.isFinite(maxLat)
+  ) {
     return [
       [-180, -90],
       [180, 90]
     ]
   }
 
-  const lngPadding = (maxLng - minLng) === 0 ? 0.8 : (maxLng - minLng) * 0.15
-  const latPadding = (maxLat - minLat) === 0 ? 0.8 : (maxLat - minLat) * 0.15
+  const lngPadding = maxLng - minLng === 0 ? 0.8 : (maxLng - minLng) * 0.15
+  const latPadding = maxLat - minLat === 0 ? 0.8 : (maxLat - minLat) * 0.15
 
   return [
     [minLng - lngPadding, minLat - latPadding],
@@ -272,12 +296,19 @@ function aggregateCountries(
       map.set(point.countryId, record)
     }
 
-    if ((record.countryName === 'Unknown country' || record.countryName === '') && point.countryName) {
+    if (
+      (record.countryName === 'Unknown country' || record.countryName === '') &&
+      point.countryName
+    ) {
       record.countryName = point.countryName
     }
 
     if (record.shape == null) {
-      record.shape = findCountryShape(point.countryId, point.countryName, shapeIndex)
+      record.shape = findCountryShape(
+        point.countryId,
+        point.countryName,
+        shapeIndex
+      )
     }
 
     record.minLng = Math.min(record.minLng, point.longitude)
@@ -297,13 +328,16 @@ function aggregateCountries(
         speakers: point.speakers
       })
     } else if (point.isPrimaryCountryLanguage && !existingLanguage.isPrimary) {
-      record.languages.set(point.languageId, { ...existingLanguage, isPrimary: true })
+      record.languages.set(point.languageId, {
+        ...existingLanguage,
+        isPrimary: true
+      })
     }
   }
 
   return Array.from(map.values()).map((country, index) => {
-    const languages = Array.from(country.languages.values()).sort((a, b) =>
-      b.speakers - a.speakers
+    const languages = Array.from(country.languages.values()).sort(
+      (a, b) => b.speakers - a.speakers
     )
 
     const languageCount = languages.length
@@ -374,7 +408,9 @@ function aggregateCountries(
   })
 }
 
-function createFeatureCollection(countries: CountryAggregation[]): CountryFeatureCollection {
+function createFeatureCollection(
+  countries: CountryAggregation[]
+): CountryFeatureCollection {
   return {
     type: 'FeatureCollection',
     features: countries.map((country) => country.feature)
@@ -385,13 +421,17 @@ function isCountryFeature(
   feature: MapboxGeoJSONFeature | undefined
 ): feature is MapboxGeoJSONFeature & { properties: CountryFeatureProperties } {
   return (
-    (feature?.geometry?.type === 'Polygon' || feature?.geometry?.type === 'MultiPolygon') &&
+    (feature?.geometry?.type === 'Polygon' ||
+      feature?.geometry?.type === 'MultiPolygon') &&
     feature.properties != null &&
     typeof feature.properties.countryId === 'string'
   )
 }
 
-export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): JSX.Element {
+export function LanguageMap({
+  points,
+  unsupportedMessage
+}: LanguageMapProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<MapInstance | null>(null)
   const featureCollectionRef = useRef<CountryFeatureCollection | null>(null)
@@ -403,18 +443,29 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
     count: 0
   })
 
-  const [countryShapes, setCountryShapes] = useState<CountryShapeFeature[] | null>(null)
+  const [countryShapes, setCountryShapes] = useState<
+    CountryShapeFeature[] | null
+  >(null)
   const [isUnsupported, setIsUnsupported] = useState(false)
   const [activeCountryId, setActiveCountryId] = useState<string | null>(null)
-  const [selectedCountryId, setSelectedCountryId] = useState<string | null>(null)
+  const [selectedCountryId, setSelectedCountryId] = useState<string | null>(
+    null
+  )
 
   const shapeIndex = useMemo(
-    () => (countryShapes != null ? createCountryShapeIndex(countryShapes) : null),
+    () =>
+      countryShapes != null ? createCountryShapeIndex(countryShapes) : null,
     [countryShapes]
   )
 
-  const countries = useMemo(() => aggregateCountries(points, shapeIndex), [points, shapeIndex])
-  const featureCollection = useMemo(() => createFeatureCollection(countries), [countries])
+  const countries = useMemo(
+    () => aggregateCountries(points, shapeIndex),
+    [points, shapeIndex]
+  )
+  const featureCollection = useMemo(
+    () => createFeatureCollection(countries),
+    [countries]
+  )
 
   useEffect(() => {
     let isMounted = true
@@ -455,7 +506,8 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
 
   useEffect(() => {
     const canvas = document.createElement('canvas')
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
+    const gl =
+      canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
     if (!gl) {
       setIsUnsupported(true)
       return
@@ -474,8 +526,14 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
       attributionControl: true
     })
 
-    map.addControl(new maplibregl.NavigationControl({ visualizePitch: false }), 'top-right')
-    map.addControl(new maplibregl.ScaleControl({ unit: 'metric' }), 'bottom-left')
+    map.addControl(
+      new maplibregl.NavigationControl({ visualizePitch: false }),
+      'top-right'
+    )
+    map.addControl(
+      new maplibregl.ScaleControl({ unit: 'metric' }),
+      'bottom-left'
+    )
     map.scrollZoom.disable()
 
     map.on('load', () => {
@@ -570,17 +628,25 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
       const previousHover = hoveredCountryIdRef.current
 
       if (previousHover != null) {
-        mapInstance.setFeatureState({ source: SOURCE_ID, id: previousHover }, { hovered: false })
+        mapInstance.setFeatureState(
+          { source: SOURCE_ID, id: previousHover },
+          { hovered: false }
+        )
       }
 
       if (nextId != null) {
-        mapInstance.setFeatureState({ source: SOURCE_ID, id: nextId }, { hovered: true })
+        mapInstance.setFeatureState(
+          { source: SOURCE_ID, id: nextId },
+          { hovered: true }
+        )
       }
 
       hoveredCountryIdRef.current = nextId
     }
 
-    const handleCountryClick = (event: MapMouseEvent | MapLayerMouseEvent): void => {
+    const handleCountryClick = (
+      event: MapMouseEvent | MapLayerMouseEvent
+    ): void => {
       const feature = event.features?.[0]
       if (!isCountryFeature(feature)) return
 
@@ -646,15 +712,28 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
       if (source == null) return
 
       if (previousActiveRef.current != null) {
-        map.setFeatureState({ source: SOURCE_ID, id: previousActiveRef.current }, { active: false })
+        map.setFeatureState(
+          { source: SOURCE_ID, id: previousActiveRef.current },
+          { active: false }
+        )
       }
 
       if (activeCountryId != null) {
-        map.setFeatureState({ source: SOURCE_ID, id: activeCountryId }, { active: true })
-        const activeCountry = countries.find((country) => country.countryId === activeCountryId)
+        map.setFeatureState(
+          { source: SOURCE_ID, id: activeCountryId },
+          { active: true }
+        )
+        const activeCountry = countries.find(
+          (country) => country.countryId === activeCountryId
+        )
         if (activeCountry != null) {
           map.fitBounds(activeCountry.bounds, {
-            padding: { top: 40, bottom: 40, left: 40, right: activeCountryId != null ? 360 : 40 },
+            padding: {
+              top: 40,
+              bottom: 40,
+              left: 40,
+              right: activeCountryId != null ? 360 : 40
+            },
             duration: 500
           })
         }
@@ -710,7 +789,10 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
       }
 
       if (selectedCountryId != null) {
-        map.setFeatureState({ source: SOURCE_ID, id: selectedCountryId }, { selected: true })
+        map.setFeatureState(
+          { source: SOURCE_ID, id: selectedCountryId },
+          { selected: true }
+        )
       }
 
       previousSelectedRef.current = selectedCountryId
@@ -727,13 +809,17 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
   }, [countries, selectedCountryId])
 
   const activeCountry = useMemo(
-    () => countries.find((country) => country.countryId === activeCountryId) ?? null,
+    () =>
+      countries.find((country) => country.countryId === activeCountryId) ??
+      null,
     [countries, activeCountryId]
   )
 
   useEffect(() => {
     if (activeCountryId == null) return
-    const stillExists = countries.some((country) => country.countryId === activeCountryId)
+    const stillExists = countries.some(
+      (country) => country.countryId === activeCountryId
+    )
     if (!stillExists) {
       setActiveCountryId(null)
     }
@@ -741,7 +827,9 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
 
   useEffect(() => {
     if (selectedCountryId == null) return
-    const stillExists = countries.some((country) => country.countryId === selectedCountryId)
+    const stillExists = countries.some(
+      (country) => country.countryId === selectedCountryId
+    )
     if (!stillExists) {
       setSelectedCountryId(null)
     }
@@ -762,27 +850,40 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
   if (isUnsupported) {
     return (
       <div className="flex h-full w-full items-center justify-center bg-slate-900/60 text-center text-sm text-slate-200/80">
-        {unsupportedMessage ?? 'Map rendering is not supported in this browser.'}
+        {unsupportedMessage ??
+          'Map rendering is not supported in this browser.'}
       </div>
     )
   }
 
   return (
     <div className="relative h-full w-full">
-      <div ref={containerRef} className="h-full w-full" role="presentation" aria-hidden />
+      <div
+        ref={containerRef}
+        className="h-full w-full"
+        role="presentation"
+        aria-hidden
+      />
 
       {activeCountry != null ? (
         <aside className="pointer-events-auto absolute right-16 top-1/2 h-[90%] w-[400px] max-w-full -translate-y-1/2 overflow-hidden rounded-3xl border border-stone-700/40 bg-stone-950/60 p-5 text-stone-100 shadow-2xl backdrop-blur-lg">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-stone-300/70">Country</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-stone-300/70">
+                Country
+              </p>
               <h3 className="text-lg font-semibold leading-tight">
                 {activeCountryFlag != null ? (
-                  <span className="mr-2 inline-block align-middle text-xl" aria-hidden>
+                  <span
+                    className="mr-2 inline-block align-middle text-xl"
+                    aria-hidden
+                  >
                     {activeCountryFlag}
                   </span>
                 ) : null}
-                <span className="align-middle">{activeCountry.countryName}</span>
+                <span className="align-middle">
+                  {activeCountry.countryName}
+                </span>
               </h3>
               <p className="mt-1 text-sm text-stone-300/80">
                 {activeCountry.languages.length} language
@@ -802,16 +903,29 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
           <div className="mt-5 h-[calc(100%-4.5rem)] overflow-y-auto pr-1">
             <ul className="space-y-3 text-sm text-stone-200/90">
               {activeCountry.languages.map((language) => (
-                <li key={language.id} className="rounded-xl border border-stone-800/60 bg-stone-900/60 p-3">
+                <li
+                  key={language.id}
+                  className="rounded-xl border border-stone-800/60 bg-stone-900/60 p-3"
+                >
                   <div className="flex items-center justify-between">
-                    <p className="font-medium text-stone-100">{language.languageName}</p>
-                    <span className="text-xs text-stone-300/70">{language.speakers.toLocaleString()} speakers</span>
+                    <p className="font-medium text-stone-100">
+                      {language.languageName}
+                    </p>
+                    <span className="text-xs text-stone-300/70">
+                      {language.speakers.toLocaleString()} speakers
+                    </span>
                   </div>
-                  {language.nativeName && language.nativeName !== language.languageName ? (
-                    <p className="text-xs text-stone-300/80">{language.nativeName}</p>
+                  {language.nativeName &&
+                  language.nativeName !== language.languageName ? (
+                    <p className="text-xs text-stone-300/80">
+                      {language.nativeName}
+                    </p>
                   ) : null}
-                  {language.englishName && language.englishName !== language.languageName ? (
-                    <p className="text-xs text-stone-400/70">{language.englishName}</p>
+                  {language.englishName &&
+                  language.englishName !== language.languageName ? (
+                    <p className="text-xs text-stone-400/70">
+                      {language.englishName}
+                    </p>
                   ) : null}
                 </li>
               ))}
@@ -822,4 +936,3 @@ export function LanguageMap({ points, unsupportedMessage }: LanguageMapProps): J
     </div>
   )
 }
-

@@ -15,7 +15,7 @@ export function SectionLanguageMap(): ReactElement {
 
   const hasData = points.length > 0
   const uniqueLanguagesCount = useMemo(() => {
-    const uniqueLanguageIds = new Set(points.map(point => point.languageId))
+    const uniqueLanguageIds = new Set(points.map((point) => point.languageId))
     return uniqueLanguageIds.size
   }, [points])
 
@@ -59,12 +59,16 @@ export function SectionLanguageMap(): ReactElement {
           {hasData ? (
             <LanguageMap
               points={points}
-              unsupportedMessage={t('Interactive map is not supported on this device.')}
+              unsupportedMessage={t(
+                'Interactive map is not supported on this device.'
+              )}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center px-6 text-center text-sm text-white/70">
               {error != null && !isLoading
-                ? t('We had trouble loading the language map. Please try again later.')
+                ? t(
+                    'We had trouble loading the language map. Please try again later.'
+                  )
                 : t('Loading language coverage…')}
             </div>
           )}
