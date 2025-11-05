@@ -76,14 +76,21 @@ function parseDateInTimeZoneToUtc(
     return asUtcMs - instant.getTime()
   }
 
-  const offset1 = getTimeZoneOffsetMs(initial, timeZone)
-  let utcMs = initial.getTime() - offset1
-  // Recompute once to handle DST transitions precisely
-  const offset2 = getTimeZoneOffsetMs(new Date(utcMs), timeZone)
-  if (offset2 !== offset1) {
-    utcMs = initial.getTime() - offset2
+  try {
+    const offset1 = getTimeZoneOffsetMs(initial, timeZone)
+    let utcMs = initial.getTime() - offset1
+    // Recompute once to handle DST transitions precisely
+    const offset2 = getTimeZoneOffsetMs(new Date(utcMs), timeZone)
+    if (offset2 !== offset1) {
+      utcMs = initial.getTime() - offset2
+    }
+    return new Date(utcMs)
+  } catch (err) {
+    if (err instanceof RangeError) {
+      return initial
+    }
+    throw err
   }
-  return new Date(utcMs)
 }
 
 // Format a Date as YYYY-MM-DD for a specific IANA timezone
@@ -98,6 +105,28 @@ function formatDateYmdInTimeZone(date: Date, timeZone: string): string {
   } catch {
     return date.toISOString().slice(0, 10)
   }
+}
+
+const journeyBlockSelect = {
+  id: true,
+  typename: true,
+  parentBlockId: true,
+  parentOrder: true,
+  nextBlockId: true,
+  action: true,
+  content: true,
+  x: true,
+  y: true,
+  deletedAt: true
+} as const
+type JourneyBlock = Prisma.BlockGetPayload<{
+  select: typeof journeyBlockSelect
+}>
+
+function getActionBlockId(block: JourneyBlock): string | undefined {
+  const action = (block as unknown as { action?: { blockId?: unknown } }).action
+  const blockId = action?.blockId
+  return typeof blockId === 'string' ? blockId : undefined
 }
 
 export const JourneyVisitorRef = builder.prismaObject('JourneyVisitor', {
@@ -298,18 +327,7 @@ builder.queryField('journeyVisitorExport', (t) => {
             team: { include: { userTeams: true } },
             userJourneys: true,
             blocks: {
-              select: {
-                id: true,
-                typename: true,
-                parentBlockId: true,
-                parentOrder: true,
-                nextBlockId: true,
-                action: true,
-                content: true,
-                x: true,
-                y: true,
-                deletedAt: true
-              }
+              select: journeyBlockSelect
             }
           }
         })
@@ -327,9 +345,7 @@ builder.queryField('journeyVisitorExport', (t) => {
         }
         // Build a map of blocks and connectivity info for filtering
         // Consider only non-deleted blocks for connectivity and headers
-        const journeyBlocks = journey.blocks.filter(
-          (b: any) => b.deletedAt == null
-        )
+        const journeyBlocks = journey.blocks.filter((b) => b.deletedAt == null)
         const idToBlock = new Map(journeyBlocks.map((b) => [b.id, b]))
 
         // Determine connected steps by following nextBlockId chains from start steps
@@ -339,7 +355,7 @@ builder.queryField('journeyVisitorExport', (t) => {
         }
         const stepsForConnectivity: StepBlockConn[] = journeyBlocks
           .filter((b) => b.typename === 'StepBlock')
-          .map((b: any) => ({ id: b.id, nextBlockId: b.nextBlockId }))
+          .map((b) => ({ id: b.id, nextBlockId: b.nextBlockId }))
 
         // Build incoming edges considering both nextBlockId and button navigate actions
         const hasIncomingLinkConn = new Set<string>()
@@ -363,20 +379,17 @@ builder.queryField('journeyVisitorExport', (t) => {
         function chooseEntryStepId(): string | null {
           const topLevelSteps = journeyBlocks
             .filter(
-              (b: any) => b.typename === 'StepBlock' && b.parentBlockId == null
+              (b) => b.typename === 'StepBlock' && b.parentBlockId == null
             )
-            .sort(
-              (a: any, b: any) =>
-                (a.parentOrder ?? 9999) - (b.parentOrder ?? 9999)
-            )
+            .sort((a, b) => (a.parentOrder ?? 9999) - (b.parentOrder ?? 9999))
           return topLevelSteps[0]?.id ?? null
         }
 
         // getStepAncestorId removed (no longer needed)
 
         // Build children map for DFS traversal
-        const childrenByParent = new Map<string, any[]>()
-        journeyBlocks.forEach((b: any) => {
+        const childrenByParent = new Map<string, JourneyBlock[]>()
+        journeyBlocks.forEach((b) => {
           if (b.parentBlockId != null) {
             const arr = childrenByParent.get(b.parentBlockId) ?? []
             arr.push(b)
@@ -385,19 +398,24 @@ builder.queryField('journeyVisitorExport', (t) => {
         })
 
         // Determine the primary CardBlock for each step (first by parentOrder)
-        function getPrimaryCardForStep(stepId: string): any | undefined {
+        function getPrimaryCardForStep(
+          stepId: string
+        ): JourneyBlock | undefined {
           const children = childrenByParent.get(stepId) ?? []
           const cards = children.filter((c) => c.typename === 'CardBlock')
           if (cards.length === 0) return undefined
-          return cards.reduce((min: any, cur: any) => {
+          return cards.reduce<JourneyBlock>((min, cur) => {
             const minOrder = min.parentOrder ?? Number.MAX_SAFE_INTEGER
             const curOrder = cur.parentOrder ?? Number.MAX_SAFE_INTEGER
             return curOrder < minOrder ? cur : min
-          })
+          }, cards[0])
         }
 
         // Add button navigation edges from ANY descendants under the step
-        function collectDescendants(rootId: string, acc: any[] = []): any[] {
+        function collectDescendants(
+          rootId: string,
+          acc: JourneyBlock[] = []
+        ): JourneyBlock[] {
           const kids = childrenByParent.get(rootId) ?? []
           for (const child of kids) {
             acc.push(child)
@@ -409,7 +427,7 @@ builder.queryField('journeyVisitorExport', (t) => {
         stepsForConnectivity.forEach((s) => {
           const descendants = collectDescendants(s.id, [])
           descendants.forEach((node) => {
-            const targetBlockId: string | undefined = node?.action?.blockId
+            const targetBlockId: string | undefined = getActionBlockId(node)
             if (targetBlockId != null) {
               const targetStep = idToBlock.get(targetBlockId)
               if (targetStep?.typename === 'StepBlock') {
@@ -518,7 +536,7 @@ builder.queryField('journeyVisitorExport', (t) => {
         }
         const steps: StepBlock[] = journeyBlocks
           .filter((b) => b.typename === 'StepBlock')
-          .map((b: any) => ({
+          .map((b) => ({
             id: b.id,
             nextBlockId: b.nextBlockId,
             parentOrder: b.parentOrder
@@ -591,33 +609,23 @@ builder.queryField('journeyVisitorExport', (t) => {
         function getAncestorByType(
           blockId: string | null | undefined,
           type: string
-        ):
-          | {
-              id: string
-              typename: string
-              parentBlockId: string | null
-              parentOrder: number | null
-            }
-          | undefined {
-          let current = blockId != null ? idToBlock.get(blockId) : undefined
+        ): JourneyBlock | undefined {
+          let current: JourneyBlock | undefined =
+            blockId != null ? idToBlock.get(blockId) : undefined
           while (current != null && current.typename !== type) {
             current =
               current.parentBlockId != null
                 ? idToBlock.get(current.parentBlockId)
                 : undefined
           }
-          return current as any
+          return current
         }
-        function getTopLevelChildUnderCard(blockId: string | null | undefined):
-          | {
-              id: string
-              typename: string
-              parentBlockId: string | null
-              parentOrder: number | null
-            }
-          | undefined {
-          let current = blockId != null ? idToBlock.get(blockId) : undefined
-          let parent =
+        function getTopLevelChildUnderCard(
+          blockId: string | null | undefined
+        ): JourneyBlock | undefined {
+          let current: JourneyBlock | undefined =
+            blockId != null ? idToBlock.get(blockId) : undefined
+          let parent: JourneyBlock | undefined =
             current?.parentBlockId != null
               ? idToBlock.get(current.parentBlockId)
               : undefined
@@ -633,7 +641,7 @@ builder.queryField('journeyVisitorExport', (t) => {
                 ? idToBlock.get(current.parentBlockId)
                 : undefined
           }
-          return current as any
+          return current
         }
         function getCardHeading(blockId: string | null | undefined): string {
           const cardBlock = getAncestorByType(blockId, 'CardBlock')
@@ -641,26 +649,27 @@ builder.queryField('journeyVisitorExport', (t) => {
           // Find all TypographyBlock children of this card
           const typographyBlocks = journeyBlocks
             .filter(
-              (b: any) =>
+              (b) =>
                 b.typename === 'TypographyBlock' &&
                 b.parentBlockId === cardBlock.id
             )
-            .sort(
-              (a: any, b: any) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0)
-            )
+            .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
           // Get the first (highest order) typography block's content
           if (typographyBlocks.length > 0) {
-            const firstTypography = typographyBlocks[0] as any
+            const firstTypography = typographyBlocks[0]
             if (firstTypography.content != null) {
               // Content is typically a string or JSON with text
-              if (typeof firstTypography.content === 'string') {
-                return firstTypography.content
+              const c = firstTypography.content as unknown
+              if (typeof c === 'string') {
+                return c
               }
               if (
-                typeof firstTypography.content === 'object' &&
-                firstTypography.content.text
+                c != null &&
+                typeof c === 'object' &&
+                'text' in (c as Record<string, unknown>) &&
+                typeof (c as Record<string, unknown>).text === 'string'
               ) {
-                return firstTypography.content.text
+                return (c as Record<string, unknown>).text as string
               }
             }
           }
@@ -726,8 +735,7 @@ builder.queryField('journeyVisitorExport', (t) => {
             label: item.label!,
             blockId: item.blockId!,
             typename:
-              journeyBlocks.find((b: any) => b.id === item.blockId)?.typename ??
-              ''
+              journeyBlocks.find((b) => b.id === item.blockId)?.typename ?? ''
           }))
         const columns = [
           { key: 'date', label: 'Date', blockId: null, typename: '' },

@@ -1,7 +1,20 @@
+import type { Prisma } from '@core/prisma/journeys/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
+
+type SelectedJourneyBlock = Prisma.BlockGetPayload<{
+  select: {
+    id: true
+    typename: true
+    parentBlockId: true
+    parentOrder: true
+    nextBlockId: true
+    action: true
+    content: true
+  }
+}>
 
 const JOURNEY_VISITOR_EXPORT_QUERY = graphql(`
   query JourneyVisitorExport(
@@ -76,13 +89,13 @@ describe('journeyVisitorExport', () => {
           action: null,
           content: null
         }
-      ]
-    } as any)
+      ] as unknown as SelectedJourneyBlock[]
+    })
     evFM.mockResolvedValueOnce([
       {
         blockId: 'blockFirst',
         label: 'Button Click'
-      } as any
+      }
     ])
     jvFM.mockResolvedValueOnce([
       {
@@ -94,9 +107,9 @@ describe('journeyVisitorExport', () => {
             label: 'Button Click',
             value: 'Submit',
             typename: 'ButtonClickEvent'
-          } as any
+          }
         ]
-      } as any
+      }
     ])
 
     const result = await authClient({
@@ -132,13 +145,13 @@ describe('journeyVisitorExport', () => {
           action: null,
           content: null
         }
-      ]
-    } as any)
+      ] as unknown as SelectedJourneyBlock[]
+    })
     evFM.mockResolvedValueOnce([
       {
         blockId: 'block1',
         label: 'Button Click'
-      } as any
+      }
     ])
 
     jvFM.mockResolvedValue([])
@@ -191,13 +204,13 @@ describe('journeyVisitorExport', () => {
           action: null,
           content: null
         }
-      ]
-    } as any)
+      ] as unknown as SelectedJourneyBlock[]
+    })
     evFM.mockResolvedValueOnce([
       {
         blockId: 'block1',
         label: 'Button Click'
-      } as any
+      }
     ])
     jvFM.mockResolvedValue([
       {
@@ -251,8 +264,8 @@ describe('journeyVisitorExport', () => {
         userTeams: [{ userId: mockUser.id, role: 'manager' }]
       },
       userJourneys: [],
-      blocks: []
-    } as any)
+      blocks: [] as unknown as SelectedJourneyBlock[]
+    })
     evFM.mockResolvedValueOnce([])
     jvFM.mockResolvedValue([])
 
@@ -308,8 +321,8 @@ describe('journeyVisitorExport', () => {
           action: null,
           content: null
         }
-      ]
-    } as any)
+      ] as unknown as SelectedJourneyBlock[]
+    })
     evFM.mockResolvedValueOnce([
       {
         blockId: 'block1',
@@ -327,15 +340,15 @@ describe('journeyVisitorExport', () => {
             label: 'Button Click',
             value: 'Submit',
             typename: 'ButtonClickEvent'
-          } as any,
+          },
           {
             blockId: 'block1',
             label: 'Button Click',
             value: 'Cancel',
             typename: 'ButtonClickEvent'
-          } as any
+          }
         ]
-      } as any
+      }
     ])
 
     const result = await authClient({
@@ -374,11 +387,11 @@ describe('journeyVisitorExport', () => {
       {
         blockId: 'block1',
         label: 'Button Click'
-      } as any,
+      },
       {
         blockId: 'block1',
         label: 'Button Click New Label'
-      } as any
+      }
     ])
 
     jvFM.mockResolvedValue([
@@ -391,15 +404,15 @@ describe('journeyVisitorExport', () => {
             label: 'Button Click',
             value: 'Submit',
             typename: 'ButtonClickEvent'
-          } as any,
+          },
           {
             blockId: 'block1',
             label: 'Button Click New Label',
             value: 'Cancel',
             typename: 'ButtonClickEvent'
-          } as any
+          }
         ]
-      } as any
+      }
     ])
 
     const result = await authClient({
@@ -422,8 +435,8 @@ describe('journeyVisitorExport', () => {
         userTeams: [{ userId: mockUser.id, role: 'manager' }]
       },
       userJourneys: [],
-      blocks: []
-    } as any)
+      blocks: [] as unknown as SelectedJourneyBlock[]
+    })
     evFM.mockResolvedValueOnce([])
     jvFM.mockResolvedValue([])
 
@@ -447,8 +460,8 @@ describe('journeyVisitorExport', () => {
         userTeams: [{ userId: mockUser.id, role: 'manager' }]
       },
       userJourneys: [],
-      blocks: []
-    } as any)
+      blocks: [] as unknown as SelectedJourneyBlock[]
+    })
     evFM.mockResolvedValueOnce([])
     jvFM.mockResolvedValue([])
 
@@ -573,18 +586,18 @@ describe('journeyVisitorExport', () => {
           action: null,
           content: null
         }
-      ]
-    } as any)
+      ] as unknown as SelectedJourneyBlock[]
+    })
 
     evFM.mockResolvedValueOnce([
       {
         blockId: 'block1',
         label: 'What is your name?'
-      } as any,
+      },
       {
         blockId: 'block2',
         label: 'Select an option'
-      } as any
+      }
     ])
     jvFM.mockResolvedValueOnce([
       {
@@ -596,15 +609,15 @@ describe('journeyVisitorExport', () => {
             label: 'What is your name?',
             value: 'John Doe',
             typename: 'TextResponseSubmissionEvent'
-          } as any,
+          },
           {
             blockId: 'block2',
             label: 'Select an option',
             value: 'Option A',
             typename: 'RadioQuestionSubmissionEvent'
-          } as any
+          }
         ]
-      } as any
+      }
     ])
 
     const result = await authClient({
@@ -662,14 +675,14 @@ describe('journeyVisitorExport', () => {
           action: null,
           content: null
         }
-      ]
-    } as any)
+      ] as unknown as SelectedJourneyBlock[]
+    })
 
     evFM.mockResolvedValueOnce([
       {
         blockId: 'block1',
         label: 'Select multiple options'
-      } as any
+      }
     ])
     jvFM.mockResolvedValueOnce([
       {
@@ -681,15 +694,15 @@ describe('journeyVisitorExport', () => {
             label: 'Select multiple options',
             value: 'Option 1',
             typename: 'MultiselectSubmissionEvent'
-          } as any,
+          },
           {
             blockId: 'block1',
             label: 'Select multiple options',
             value: 'Option 2',
             typename: 'MultiselectSubmissionEvent'
-          } as any
+          }
         ]
-      } as any
+      }
     ])
 
     const result = await authClient({
