@@ -6,6 +6,8 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 
+import { getGoogleOAuthUrl } from '../../../libs/googleOAuthUrl'
+
 export const INTEGRATION_GOOGLE_CREATE = gql`
   mutation IntegrationGoogleCreate($input: IntegrationGoogleCreateInput!) {
     integrationGoogleCreate(input: $input) {
@@ -32,23 +34,14 @@ export function GoogleCreateIntegration(): ReactElement {
     return `${origin}/api/integrations/google/callback`
   }, [])
 
+  const returnTo = useMemo(() => {
+    return router.query.returnTo as string | undefined
+  }, [router.query.returnTo])
+
   const oauthUrl = useMemo(() => {
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
-    if (clientId == null || staticRedirectUri == null) return undefined
-    const state = JSON.stringify({ teamId, returnTo: window.location.pathname })
-    const params = new URLSearchParams({
-      client_id: clientId,
-      redirect_uri: staticRedirectUri,
-      response_type: 'code',
-      scope:
-        'openid email profile https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets',
-      access_type: 'offline',
-      include_granted_scopes: 'true',
-      prompt: 'consent',
-      state
-    })
-    return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
-  }, [staticRedirectUri, teamId])
+    if (teamId == null) return undefined
+    return getGoogleOAuthUrl(teamId, returnTo)
+  }, [teamId, returnTo])
 
   useEffect(() => {
     const authCode = router.query.code as string | undefined
@@ -80,7 +73,19 @@ export function GoogleCreateIntegration(): ReactElement {
       })
 
       if (data?.integrationGoogleCreate?.id != null) {
-        await router.push(`/teams/${teamId}/integrations`)
+        let redirectPath =
+          returnTo != null && returnTo !== ''
+            ? returnTo
+            : `/teams/${teamId}/integrations`
+
+        // If returnTo includes openSyncDialog parameter, add integrationCreated parameter
+        if (returnTo != null && returnTo.includes('openSyncDialog=true')) {
+          const url = new URL(redirectPath, window.location.origin)
+          url.searchParams.set('integrationCreated', 'true')
+          redirectPath = url.pathname + url.search
+        }
+
+        await router.push(redirectPath)
         enqueueSnackbar(t('Google settings saved'), {
           variant: 'success',
           preventDuplicate: true

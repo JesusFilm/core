@@ -18,6 +18,7 @@ import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { format } from 'date-fns'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { KeyboardEvent, ReactElement, useEffect, useState } from 'react'
@@ -25,9 +26,11 @@ import { object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
+import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
+import { getGoogleOAuthUrl } from '../../../../libs/googleOAuthUrl'
 import { useIntegrationQuery } from '../../../../libs/useIntegrationQuery/useIntegrationQuery'
 
 const GET_JOURNEY_CREATED_AT = gql`
@@ -137,6 +140,7 @@ export function GoogleSheetsSyncDialog({
 }: GoogleSheetsSyncDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
+  const router = useRouter()
 
   const { data: journeyData } = useQuery(GET_JOURNEY_CREATED_AT, {
     variables: { id: journeyId }
@@ -167,7 +171,32 @@ export function GoogleSheetsSyncDialog({
       variables: { filter: { journeyId } },
       fetchPolicy: 'network-only'
     })
-  }, [open, journeyId, loadSyncs])
+
+    // Check if returning from Google integration creation
+    const integrationCreated = router.query.integrationCreated === 'true'
+    const openSyncDialog = router.query.openSyncDialog === 'true'
+
+    if (integrationCreated && openSyncDialog) {
+      // Remove query parameters from URL
+      const newQuery = { ...router.query }
+      delete newQuery.integrationCreated
+      delete newQuery.openSyncDialog
+      void router.replace(
+        {
+          pathname: router.pathname,
+          query: newQuery
+        },
+        undefined,
+        { shallow: true }
+      )
+
+      // Open the "Add Google Sheets Sync" dialog
+      setGoogleDialogOpen(true)
+      enqueueSnackbar(t('Google integration created successfully'), {
+        variant: 'success'
+      })
+    }
+  }, [open, journeyId, loadSyncs, router, enqueueSnackbar, t])
 
   useEffect(() => {
     if (open) return
@@ -860,8 +889,25 @@ export function GoogleSheetsSyncDialog({
                     )}
                   <Button
                     variant="text"
-                    href={`/teams/${journeyData?.journey?.team?.id}/integrations/new/google`}
+                    startIcon={<GoogleIcon sizePx={16} />}
+                    href={(() => {
+                      const teamId = journeyData?.journey?.team?.id
+                      if (teamId == null) return undefined
+
+                      // Create returnTo URL that will redirect back to current page with sync dialog open
+                      const currentPath = router.asPath.split('?')[0]
+                      const returnTo = `${currentPath}?openSyncDialog=true`
+
+                      // Generate OAuth URL that will redirect to GoogleCreateIntegration page,
+                      // which will then redirect back to returnTo after integration is created
+                      const googleCreateIntegrationPath = `/teams/${teamId}/integrations/new/google?returnTo=${encodeURIComponent(returnTo)}`
+                      return getGoogleOAuthUrl(
+                        teamId,
+                        googleCreateIntegrationPath
+                      )
+                    })()}
                     sx={{ alignSelf: 'flex-start', mt: 1 }}
+                    disabled={journeyData?.journey?.team?.id == null}
                   >
                     {t('Add new Google integration')}
                   </Button>

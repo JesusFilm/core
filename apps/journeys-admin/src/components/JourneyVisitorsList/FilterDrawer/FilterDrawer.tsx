@@ -10,8 +10,9 @@ import RadioGroup from '@mui/material/RadioGroup'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import X2Icon from '@core/shared/ui/icons/X2'
@@ -50,8 +51,18 @@ export function FilterDrawer({
   disableExportButton = false
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
   const [showExportDialog, setShowExportDialog] = useState(false)
   const [showSyncsDialog, setShowSyncsDialog] = useState(false)
+
+  // Check for query parameter to open sync dialog after integration creation
+  useEffect(() => {
+    if (journeyId == null) return
+    const openSyncDialog = router.query.openSyncDialog === 'true'
+    if (openSyncDialog) {
+      setShowSyncsDialog(true)
+    }
+  }, [journeyId, router])
 
   return (
     <Stack sx={{ height: '100vh' }} data-testid="FilterDrawer">
