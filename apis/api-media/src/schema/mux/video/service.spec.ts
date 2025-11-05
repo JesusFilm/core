@@ -11,7 +11,8 @@ import {
   getStaticRenditions,
   getUpload,
   getVideo,
-  isValidMaxResolutionTier
+  isValidMaxResolutionTier,
+  isValidMuxGeneratedSubtitleLanguageCode
 } from './service'
 
 const mockMux = mockDeep<Mux>()
@@ -41,7 +42,7 @@ describe('MuxVideoService', () => {
 
   describe('createVideoByDirectUpload', () => {
     it('should create direct upload for publisher (non-user generated)', async () => {
-      mockMux.video.uploads.create.mockResolvedValueOnce({
+      ;(mockMux.video.uploads.create as jest.Mock).mockResolvedValueOnce({
         id: 'upload-id',
         url: 'https://upload.mux.com/video'
       } as any)
@@ -58,7 +59,8 @@ describe('MuxVideoService', () => {
           encoding_tier: 'smart',
           playback_policy: ['public'],
           max_resolution_tier: undefined,
-          static_renditions: []
+          static_renditions: [],
+          inputs: []
         }
       })
       expect(result).toEqual({
@@ -68,7 +70,7 @@ describe('MuxVideoService', () => {
     })
 
     it('should create direct upload for user generated content', async () => {
-      mockMux.video.uploads.create.mockResolvedValueOnce({
+      ;(mockMux.video.uploads.create as jest.Mock).mockResolvedValueOnce({
         id: 'ugc-upload-id',
         url: 'https://upload.mux.com/ugc-video'
       } as any)
@@ -86,7 +88,7 @@ describe('MuxVideoService', () => {
     })
 
     it('should create downloadable video when downloadable=true', async () => {
-      mockMux.video.uploads.create.mockResolvedValueOnce({
+      ;(mockMux.video.uploads.create as jest.Mock).mockResolvedValueOnce({
         id: 'upload-id',
         url: 'https://upload.mux.com/video'
       } as any)
@@ -107,7 +109,8 @@ describe('MuxVideoService', () => {
             { resolution: '1080p' },
             { resolution: '1440p' },
             { resolution: '2160p' }
-          ]
+          ],
+          inputs: []
         }
       })
     })
@@ -148,7 +151,7 @@ describe('MuxVideoService', () => {
     })
 
     it('should throw error when Mux response is missing id', async () => {
-      mockMux.video.uploads.create.mockResolvedValueOnce({
+      ;(mockMux.video.uploads.create as jest.Mock).mockResolvedValueOnce({
         url: 'https://upload.mux.com/video'
       } as any)
 
@@ -158,7 +161,7 @@ describe('MuxVideoService', () => {
     })
 
     it('should throw error when Mux response is missing url', async () => {
-      mockMux.video.uploads.create.mockResolvedValueOnce({
+      ;(mockMux.video.uploads.create as jest.Mock).mockResolvedValueOnce({
         id: 'upload-id'
       } as any)
 
@@ -166,12 +169,102 @@ describe('MuxVideoService', () => {
         "Couldn't get upload information from cloudflare"
       )
     })
+
+    it('should create direct upload with generated subtitles when userGenerated is true', async () => {
+      ;(mockMux.video.uploads.create as jest.Mock).mockResolvedValueOnce({
+        id: 'ugc-upload-id',
+        url: 'https://upload.mux.com/ugc-video'
+      } as any)
+
+      const result = await createVideoByDirectUpload(true, undefined, false, {
+        languageCode: 'en',
+        languageName: 'English'
+      })
+
+      expect(mockMux.video.uploads.create).toHaveBeenCalledWith({
+        cors_origin: 'https://example.com',
+        new_asset_settings: {
+          encoding_tier: 'premium',
+          playback_policy: ['public'],
+          max_resolution_tier: '1080p',
+          static_renditions: [],
+          inputs: [
+            {
+              generated_subtitles: [
+                {
+                  language_code: 'en',
+                  name: 'English'
+                }
+              ]
+            }
+          ]
+        }
+      })
+      expect(result).toEqual({
+        id: 'ugc-upload-id',
+        uploadUrl: 'https://upload.mux.com/ugc-video'
+      })
+    })
+
+    it('should not generate subtitles when generateSubtitlesInput is provided but userGenerated is false', async () => {
+      ;(mockMux.video.uploads.create as jest.Mock).mockResolvedValueOnce({
+        id: 'upload-id',
+        url: 'https://upload.mux.com/video'
+      } as any)
+
+      await createVideoByDirectUpload(false, undefined, false, {
+        languageCode: 'en',
+        languageName: 'English'
+      })
+
+      expect(mockMux.video.uploads.create).toHaveBeenCalledWith({
+        cors_origin: 'https://example.com',
+        new_asset_settings: {
+          encoding_tier: 'smart',
+          playback_policy: ['public'],
+          max_resolution_tier: undefined,
+          static_renditions: [],
+          inputs: []
+        }
+      })
+    })
+
+    it('should throw error when invalid language code is provided', async () => {
+      await expect(
+        createVideoByDirectUpload(true, undefined, false, {
+          languageCode: 'invalid',
+          languageName: 'Invalid'
+        })
+      ).rejects.toThrow('Invalid language code: invalid')
+    })
+
+    it('should accept null language code without error', async () => {
+      ;(mockMux.video.uploads.create as jest.Mock).mockResolvedValueOnce({
+        id: 'upload-id',
+        url: 'https://upload.mux.com/video'
+      } as any)
+
+      await createVideoByDirectUpload(true, undefined, false, null)
+
+      expect(mockMux.video.uploads.create).toHaveBeenCalledWith({
+        cors_origin: 'https://example.com',
+        new_asset_settings: {
+          encoding_tier: 'smart',
+          playback_policy: ['public'],
+          max_resolution_tier: '1080p',
+          static_renditions: [],
+          inputs: []
+        }
+      })
+    })
   })
 
   describe('createVideoFromUrl', () => {
     it('should create video asset from URL for publisher', async () => {
       const mockAsset = { id: 'asset-id', status: 'ready' } as any
-      mockMux.video.assets.create.mockResolvedValueOnce(mockAsset)
+      ;(mockMux.video.assets.create as jest.Mock).mockResolvedValueOnce(
+        mockAsset
+      )
 
       const result = await createVideoFromUrl(
         'https://example.com/video.mp4',
@@ -194,7 +287,9 @@ describe('MuxVideoService', () => {
 
     it('should create video asset from URL for UGC', async () => {
       const mockAsset = { id: 'ugc-asset-id', status: 'ready' } as any
-      mockMux.video.assets.create.mockResolvedValueOnce(mockAsset)
+      ;(mockMux.video.assets.create as jest.Mock).mockResolvedValueOnce(
+        mockAsset
+      )
 
       await createVideoFromUrl(
         'https://example.com/video.mp4',
@@ -228,7 +323,9 @@ describe('MuxVideoService', () => {
   describe('getVideo', () => {
     it('should retrieve video asset for publisher', async () => {
       const mockAsset = { id: 'asset-id', status: 'ready' } as any
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
+        mockAsset
+      )
 
       const result = await getVideo('asset-id', false)
 
@@ -242,7 +339,9 @@ describe('MuxVideoService', () => {
 
     it('should retrieve video asset for UGC', async () => {
       const mockAsset = { id: 'ugc-asset-id', status: 'ready' } as any
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
+        mockAsset
+      )
 
       const result = await getVideo('ugc-asset-id', true)
 
@@ -257,7 +356,9 @@ describe('MuxVideoService', () => {
   describe('getUpload', () => {
     it('should retrieve upload for publisher', async () => {
       const mockUpload = { id: 'upload-id', asset_id: 'asset-id' } as any
-      mockMux.video.uploads.retrieve.mockResolvedValueOnce(mockUpload)
+      ;(mockMux.video.uploads.retrieve as jest.Mock).mockResolvedValueOnce(
+        mockUpload
+      )
 
       const result = await getUpload('upload-id', false)
 
@@ -270,7 +371,9 @@ describe('MuxVideoService', () => {
         id: 'ugc-upload-id',
         asset_id: 'ugc-asset-id'
       } as any
-      mockMux.video.uploads.retrieve.mockResolvedValueOnce(mockUpload)
+      ;(mockMux.video.uploads.retrieve as jest.Mock).mockResolvedValueOnce(
+        mockUpload
+      )
 
       const result = await getUpload('ugc-upload-id', true)
 
@@ -280,7 +383,9 @@ describe('MuxVideoService', () => {
 
   describe('deleteVideo', () => {
     it('should delete video asset for publisher', async () => {
-      mockMux.video.assets.delete.mockResolvedValueOnce(undefined as any)
+      ;(mockMux.video.assets.delete as jest.Mock).mockResolvedValueOnce(
+        undefined as any
+      )
 
       await deleteVideo('asset-id', false)
 
@@ -288,7 +393,9 @@ describe('MuxVideoService', () => {
     })
 
     it('should delete video asset for UGC', async () => {
-      mockMux.video.assets.delete.mockResolvedValueOnce(undefined as any)
+      ;(mockMux.video.assets.delete as jest.Mock).mockResolvedValueOnce(
+        undefined as any
+      )
 
       await deleteVideo('ugc-asset-id', true)
 
@@ -309,8 +416,10 @@ describe('MuxVideoService', () => {
         }
       } as any
 
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
-      mockMux.post.mockResolvedValueOnce({} as any)
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
+        mockAsset
+      )
+      ;(mockMux.post as jest.Mock).mockResolvedValueOnce({} as any)
 
       await enableDownload('asset-id', false, '1080p')
 
@@ -331,7 +440,9 @@ describe('MuxVideoService', () => {
         }
       } as any
 
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
+        mockAsset
+      )
 
       await enableDownload('asset-id', false, '1080p')
 
@@ -345,8 +456,10 @@ describe('MuxVideoService', () => {
         static_renditions: null
       } as any
 
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
-      mockMux.post.mockResolvedValueOnce({} as any)
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
+        mockAsset
+      )
+      ;(mockMux.post as jest.Mock).mockResolvedValueOnce({} as any)
 
       await enableDownload('asset-id', false, '1080p')
 
@@ -366,8 +479,10 @@ describe('MuxVideoService', () => {
         }
       } as any
 
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
-      mockMux.post.mockResolvedValueOnce({} as any)
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
+        mockAsset
+      )
+      ;(mockMux.post as jest.Mock).mockResolvedValueOnce({} as any)
 
       await enableDownload('asset-id', false, '1080p')
 
@@ -401,7 +516,9 @@ describe('MuxVideoService', () => {
         static_renditions: mockStaticRenditions
       } as any
 
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
+        mockAsset
+      )
 
       const result = await getStaticRenditions('asset-id', false)
 
@@ -427,7 +544,9 @@ describe('MuxVideoService', () => {
         static_renditions: mockStaticRenditions
       } as any
 
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
+        mockAsset
+      )
 
       const result = await getStaticRenditions('ugc-asset-id', true)
 
@@ -444,7 +563,9 @@ describe('MuxVideoService', () => {
         static_renditions: null
       } as any
 
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
+        mockAsset
+      )
 
       const result = await getStaticRenditions('asset-id', false)
 
@@ -456,7 +577,9 @@ describe('MuxVideoService', () => {
         id: 'asset-id'
       } as any
 
-      mockMux.video.assets.retrieve.mockResolvedValueOnce(mockAsset)
+      ;(mockMux.video.assets.retrieve as jest.Mock).mockResolvedValueOnce(
+        mockAsset
+      )
 
       const result = await getStaticRenditions('asset-id', false)
 
@@ -476,6 +599,47 @@ describe('MuxVideoService', () => {
       expect(isValidMaxResolutionTier('1080p')).toBe(false)
       expect(isValidMaxResolutionTier('')).toBe(false)
       expect(isValidMaxResolutionTier('HD')).toBe(false)
+    })
+  })
+
+  describe('isValidMuxGeneratedSubtitleLanguageCode', () => {
+    it('should return true for valid language codes', () => {
+      expect(isValidMuxGeneratedSubtitleLanguageCode('en')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('es')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('it')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('pt')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('de')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('fr')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('pl')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('ru')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('nl')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('ca')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('tr')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('sv')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('uk')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('no')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('fi')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('sk')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('el')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('cs')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('hr')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('da')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('ro')).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('bg')).toBe(true)
+    })
+
+    it('should return true for null or undefined values to account for not wanting to generate subtitles', () => {
+      expect(isValidMuxGeneratedSubtitleLanguageCode(null)).toBe(true)
+      expect(isValidMuxGeneratedSubtitleLanguageCode(undefined)).toBe(true)
+    })
+
+    it('should return false for invalid language codes', () => {
+      expect(isValidMuxGeneratedSubtitleLanguageCode('invalid')).toBe(false)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('xyz')).toBe(false)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('EN')).toBe(false) // case sensitive
+      expect(isValidMuxGeneratedSubtitleLanguageCode('en-US')).toBe(false) // only accepts base codes
+      expect(isValidMuxGeneratedSubtitleLanguageCode('')).toBe(false)
+      expect(isValidMuxGeneratedSubtitleLanguageCode('ja')).toBe(false) // not in the union
     })
   })
 

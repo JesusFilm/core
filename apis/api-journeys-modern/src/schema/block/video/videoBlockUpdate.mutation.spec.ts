@@ -46,6 +46,7 @@ describe('videoBlockUpdate', () => {
         videoVariantLanguageId
         posterBlockId
         parentBlockId
+        showGeneratedSubtitles
         subtitleLanguage {
           id
         }

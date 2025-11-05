@@ -1,2 +1,1 @@
-import './video'
 import './subtitle'

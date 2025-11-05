@@ -9,6 +9,7 @@ import { builder } from '../../builder'
 import { VideoSource, VideoSourceShape } from '../../videoSource/videoSource'
 
 import { MaxResolutionTier } from './enums'
+import { GenerateSubtitlesInput } from './inputs/generateSubtitlesInput'
 import {
   createVideoByDirectUpload,
   createVideoFromUrl,
@@ -337,12 +338,22 @@ builder.mutationFields((t) => ({
           type: MaxResolutionTier,
           required: false,
           defaultValue: 'fhd'
+        }),
+        generateSubtitlesInput: t.arg({
+          type: GenerateSubtitlesInput,
+          required: false
         })
       },
       resolve: async (
         query,
         _root,
-        { name, userGenerated, downloadable, maxResolution },
+        {
+          name,
+          userGenerated,
+          downloadable,
+          maxResolution,
+          generateSubtitlesInput
+        },
         { user, currentRoles }
       ) => {
         if (user == null)
@@ -354,22 +365,30 @@ builder.mutationFields((t) => ({
           ? true
           : (userGenerated ?? true)
         const maxResolutionValue = getMaxResolutionValue(maxResolution)
-        const { id, uploadUrl } = await createVideoByDirectUpload(
-          isUserGenerated,
-          maxResolutionValue,
-          downloadable ?? false
-        )
 
-        return await prisma.muxVideo.create({
-          ...query,
-          data: {
-            uploadId: id,
-            uploadUrl,
-            userId: user.id,
-            name,
-            downloadable: downloadable ?? false
-          }
-        })
+        try {
+          const { id, uploadUrl } = await createVideoByDirectUpload(
+            isUserGenerated,
+            maxResolutionValue,
+            downloadable ?? false,
+            generateSubtitlesInput
+          )
+
+          return await prisma.muxVideo.create({
+            ...query,
+            data: {
+              uploadId: id,
+              uploadUrl,
+              userId: user.id,
+              name,
+              downloadable: downloadable ?? false
+            }
+          })
+        } catch (error) {
+          throw new GraphQLError((error as Error).message, {
+            extensions: { code: 'BAD_REQUEST' }
+          })
+        }
       }
     }),
   createMuxVideoUploadByUrl: t.withAuth({ isAuthenticated: true }).prismaField({
