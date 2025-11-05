@@ -1462,12 +1462,20 @@ export class CardLevelActionPage {
       if (thumbPositionAfterSlide != null && sliderThumbPosition != null) {
         // Use toBeGreaterThanOrEqual to handle cases where position might be equal (especially in CI)
         // If the position is the same, verify it's at least not less than the original
-        expect(thumbPositionAfterSlide).toBeGreaterThanOrEqual(sliderThumbPosition)
+        expect(thumbPositionAfterSlide).toBeGreaterThanOrEqual(
+          sliderThumbPosition
+        )
         // If positions are equal, it means the slider was already at or past the target position
         // In that case, verify the slider moved to at least 50% of width
-        if (thumbPositionAfterSlide === sliderThumbPosition && sliderBoundingBox != null) {
-          const expectedMinPosition = sliderBoundingBox.x + sliderBoundingBox.width * 0.45 // Allow 5% tolerance
-          expect(thumbPositionAfterSlide).toBeGreaterThanOrEqual(expectedMinPosition)
+        if (
+          thumbPositionAfterSlide === sliderThumbPosition &&
+          sliderBoundingBox != null
+        ) {
+          const expectedMinPosition =
+            sliderBoundingBox.x + sliderBoundingBox.width * 0.45 // Allow 5% tolerance
+          expect(thumbPositionAfterSlide).toBeGreaterThanOrEqual(
+            expectedMinPosition
+          )
         }
       } else {
         expect(false, {
@@ -1619,10 +1627,10 @@ export class CardLevelActionPage {
       'div[role="listbox"] li',
       'ul[role="listbox"] li'
     ]
-    
+
     let imageListItems: ReturnType<typeof this.page.locator> | null = null
     let count = 0
-    
+
     // Try each selector with increasing wait times
     for (const selector of imageSelectors) {
       await this.page.waitForTimeout(2000) // Wait for images to load
@@ -1638,22 +1646,31 @@ export class CardLevelActionPage {
         break
       }
     }
-    
+
     if (count === 0 || imageListItems === null) {
       // Try to find any image element as fallback
       const anyImage = this.page.locator('img').first()
       const imageCount = await anyImage.count()
       if (imageCount > 0) {
-        await anyImage.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+        await anyImage.waitFor({
+          state: 'visible',
+          timeout: sixtySecondsTimeout
+        })
         await anyImage.scrollIntoViewIfNeeded()
         await anyImage.click({ timeout: sixtySecondsTimeout })
         return
       }
       throw new Error('No images found in gallery after waiting')
     }
-    
-    const imageLocator = imageListItems.first().locator('img').or(imageListItems.first())
-    await imageLocator.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+
+    const imageLocator = imageListItems
+      .first()
+      .locator('img')
+      .or(imageListItems.first())
+    await imageLocator.waitFor({
+      state: 'visible',
+      timeout: sixtySecondsTimeout
+    })
     await imageLocator.scrollIntoViewIfNeeded()
     await imageLocator.click({ timeout: sixtySecondsTimeout })
   }
