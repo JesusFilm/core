@@ -16,6 +16,8 @@ import { ReactElement, useState } from 'react'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import X2Icon from '@core/shared/ui/icons/X2'
 
+import { Tooltip } from '../../Tooltip/Tooltip'
+
 import { ClearAllButton } from './ClearAllButton'
 import { ExportDialog } from './ExportDialog'
 
@@ -147,15 +149,33 @@ export function FilterDrawer({
       {journeyId != null && (
         <>
           <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
-            <Button
-              variant="contained"
-              color="secondary"
-              sx={{ width: '100%' }}
-              onClick={() => setShowExportDialog(true)}
-              disabled={disableExportButton}
-            >
-              {t('Export Data')}
-            </Button>
+            {disableExportButton ? (
+              <Tooltip
+                title={t("Only members of this journey's team can export data.")}
+                placement="top"
+              >
+                <span>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    sx={{ width: '100%' }}
+                    onClick={() => setShowExportDialog(true)}
+                    disabled
+                  >
+                    {t('Export Data')}
+                  </Button>
+                </span>
+              </Tooltip>
+            ) : (
+              <Button
+                variant="contained"
+                color="secondary"
+                sx={{ width: '100%' }}
+                onClick={() => setShowExportDialog(true)}
+              >
+                {t('Export Data')}
+              </Button>
+            )}
             <Button
               size="small"
               component={Link}
