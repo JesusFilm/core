@@ -15,32 +15,26 @@ interface PageWrapperProps {
   hero?: ReactNode
   children?: ReactNode
   hideHeader?: boolean
-  hideHeaderSpacer?: boolean
   testId?: string
   headerThemeMode?: ThemeMode
   hideFooter?: boolean
   isFullscreen?: boolean
-  showLanguageSwitcher?: boolean
 }
 
 export function PageWrapper({
   hero,
   children,
   hideHeader,
-  hideHeaderSpacer,
   testId,
   headerThemeMode,
   hideFooter = false,
-  isFullscreen = false,
-  showLanguageSwitcher = false
+  isFullscreen = false
 }: PageWrapperProps): ReactElement {
   return (
     <Div100vh>
       {hideHeader !== true && (
         <Header
           themeMode={headerThemeMode}
-          hideSpacer={hideHeaderSpacer}
-          showLanguageSwitcher={showLanguageSwitcher}
         />
       )}
       <Stack

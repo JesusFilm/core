@@ -1,127 +1,127 @@
-import Box from '@mui/material/Box'
-import { useTheme } from '@mui/material/styles'
-import { ComponentProps, ReactElement, useRef } from 'react'
-import { A11y, Navigation } from 'swiper/modules'
+import { ReactElement, useCallback } from 'react'
+import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { SwiperOptions } from 'swiper/types'
 
-import { VideoChildFields } from '../../../__generated__/VideoChildFields'
-import { VideoCard } from '../VideoCard'
+import { VideoCarouselSlide, isMuxSlide, transformMuxSlide, transformVideoChild, UnifiedCardData, CarouselVideoLike } from '../../../src/types/inserts'
+import { VideoCard as CarouselVideoCard } from '../CarouselVideoCard/VideoCard'
 
-import { NavButton } from './NavButton'
+import { cn } from '../../libs/cn'
 
-interface VideoCarouselProps {
-  activeVideoId?: string
-  videos?: VideoChildFields[]
-  loading?: boolean
-  containerSlug?: string
-  variant?: ComponentProps<typeof VideoCard>['variant']
+export interface VideoCarouselProps {
+  slides: VideoCarouselSlide[]
+  containerSlug: string
+  activeVideoId: string
+  loading: boolean
+  onVideoSelect: (videoId: string) => void
+  onSlideChange?: (activeIndex: number) => void
 }
 
 export function VideoCarousel({
+  slides,
+  containerSlug,
   activeVideoId,
   loading,
-  videos,
-  containerSlug,
-  variant = 'expanded'
-}: VideoCarouselProps): ReactElement {
-  const { breakpoints } = useTheme()
-  const nextRef = useRef<HTMLDivElement>(null)
-  const prevRef = useRef<HTMLDivElement>(null)
-  const swiperBreakpoints: SwiperOptions['breakpoints'] = {
-    [breakpoints.values.xs]: {
-      slidesPerGroup: 2,
-      slidesPerView: 2.4
-    },
-    [breakpoints.values.sm]: {
-      slidesPerGroup: 3,
-      slidesPerView: 3.4
-    },
-    [breakpoints.values.md]: {
-      slidesPerGroup: 4,
-      slidesPerView: 4.4
-    },
-    [breakpoints.values.lg]: {
-      slidesPerGroup: 5,
-      slidesPerView: 5.4
-    },
-    [breakpoints.values.xl]: {
-      slidesPerGroup: 6,
-      slidesPerView: 6.4
-    },
-    [breakpoints.values.xxl]: {
-      slidesPerGroup: 7,
-      slidesPerView: 7.4
+  onVideoSelect,
+  onSlideChange
+}: VideoCarouselProps): ReactElement | null {
+  const handleSlideChange = useCallback((swiper: any) => {
+    const activeIndex = swiper.activeIndex
+    if (onSlideChange != null) {
+      onSlideChange(activeIndex)
     }
-  }
+    if (slides[activeIndex] != null) {
+      onVideoSelect(slides[activeIndex].id)
+    }
+  }, [slides, onVideoSelect, onSlideChange])
+
+  const transformCarouselVideoToUnifiedData = useCallback((video: CarouselVideoLike): UnifiedCardData => {
+    // Handle CarouselVideo (which has title: {value: string}[])
+    const title = Array.isArray(video.title) && video.title.length > 0
+      ? video.title.map(t => t.value)
+      : [video.id] // fallback
+
+    const images = Array.isArray(video.images) && video.images.length > 0
+      ? video.images.map(img => ({ mobileCinematicHigh: img.mobileCinematicHigh || '' }))
+      : []
+
+    const imageAlt = Array.isArray(video.imageAlt) && video.imageAlt.length > 0
+      ? video.imageAlt.map(alt => ({ value: alt.value }))
+      : []
+
+    return {
+      id: video.id,
+      title,
+      images,
+      imageAlt,
+      label: (video as any).label || 'video',
+      slug: video.slug,
+      variant: video.variant ? { slug: video.variant.slug } : undefined,
+      isMuxInsert: false
+    }
+  }, [])
+
+  const transformSlideToUnifiedData = useCallback((slide: VideoCarouselSlide): UnifiedCardData => {
+    if (isMuxSlide(slide)) {
+      return transformMuxSlide(slide)
+    } else {
+      // Check if it's VideoChildFields (has __typename) or CarouselVideo
+      if ('__typename' in slide.video) {
+        return transformVideoChild(slide.video)
+      } else {
+        return transformCarouselVideoToUnifiedData(slide.video)
+      }
+    }
+  }, [transformCarouselVideoToUnifiedData])
+
+  if (!loading && slides.length === 0) return null
 
   return (
-    <Box sx={{ position: 'relative' }} data-testid="VideoCarousel">
-      {loading === true && (
-        <Swiper
-          modules={[Navigation, A11y]}
-          spaceBetween={12}
-          slidesOffsetBefore={24}
-          slidesOffsetAfter={24}
-          breakpoints={swiperBreakpoints}
-          onClick={() => false}
-        >
-          <SwiperSlide>
-            <VideoCard variant={variant} />
-          </SwiperSlide>
-          <SwiperSlide>
-            <VideoCard variant={variant} />
-          </SwiperSlide>
-          <SwiperSlide>
-            <VideoCard variant={variant} />
-          </SwiperSlide>
-          <SwiperSlide>
-            <VideoCard variant={variant} />
-          </SwiperSlide>
-          <SwiperSlide>
-            <VideoCard variant={variant} />
-          </SwiperSlide>
-          <SwiperSlide>
-            <VideoCard variant={variant} />
-          </SwiperSlide>
-          <SwiperSlide>
-            <VideoCard variant={variant} />
-          </SwiperSlide>
-          <SwiperSlide>
-            <VideoCard variant={variant} />
-          </SwiperSlide>
-        </Swiper>
-      )}
-      {loading !== true && (
-        <Swiper
-          modules={[Navigation, A11y]}
-          autoHeight
-          speed={850}
-          watchOverflow
-          allowTouchMove
-          spaceBetween={12}
-          slidesOffsetBefore={24}
-          slidesOffsetAfter={24}
-          breakpoints={swiperBreakpoints}
-          navigation={{
-            nextEl: nextRef.current,
-            prevEl: prevRef.current
-          }}
-        >
-          {videos?.map((video) => (
-            <SwiperSlide key={video.id}>
-              <VideoCard
-                video={video}
-                containerSlug={containerSlug}
-                variant={variant}
-                active={activeVideoId === video.id}
-              />
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      )}
-      <NavButton variant="prev" ref={prevRef} disabled={loading} />
-      <NavButton variant="next" ref={nextRef} disabled={loading} />
-    </Box>
+    <div className="w-full">
+      <Swiper
+        modules={[Mousewheel, FreeMode, A11y]}
+        mousewheel={{ forceToAxis: true }}
+        observeParents
+        slidesPerView="auto"
+        spaceBetween={16}
+        slidesOffsetAfter={32}
+        onSlideChange={handleSlideChange}
+        className="w-full"
+        data-testid="VideoCarousel"
+      >
+        {loading
+          ? Array.from({ length: 4 }).map((_, index) => (
+              <SwiperSlide
+                key={`skeleton-${index}`}
+                className="max-w-[200px] py-1"
+              >
+                <div className="h-[330px] w-[220px] rounded-lg bg-white/10 animate-pulse" />
+              </SwiperSlide>
+            ))
+          : slides.map((slide, index) => {
+              const unifiedData = transformSlideToUnifiedData(slide)
+              return (
+                <SwiperSlide
+                  key={slide.id}
+                  className="max-w-[200px] py-1"
+                  data-testid={`VideoCarouselSlide-${slide.id}`}
+                >
+                  <div
+                    className={cn(
+                      'transition-opacity duration-200',
+                      slide.id === activeVideoId ? 'opacity-100' : 'opacity-60 hover:opacity-80'
+                    )}
+                  >
+                    <CarouselVideoCard
+                      data={unifiedData}
+                      containerSlug={containerSlug}
+                      active={slide.id === activeVideoId}
+                      onVideoSelect={onVideoSelect}
+                    />
+                  </div>
+                </SwiperSlide>
+              )
+            })}
+      </Swiper>
+    </div>
   )
 }

@@ -18,8 +18,6 @@ export const BLOCK_ACTION_LINK_UPDATE = gql`
       parentBlockId
       gtmEventName
       url
-      customizable
-      parentStepId
     }
   }
 `
@@ -33,8 +31,6 @@ export function useBlockActionLinkUpdateMutation(
   (
     block: Pick<BlockFields, 'id' | '__typename'>,
     url: string,
-    customizable: boolean | null,
-    parentStepId: string | null,
     options?: MutationFunctionOptions<
       BlockActionLinkUpdate,
       BlockActionLinkUpdateVariables
@@ -50,8 +46,6 @@ export function useBlockActionLinkUpdateMutation(
   async function wrappedBlockActionLinkUpdate(
     block: Pick<BlockFields, 'id' | '__typename'>,
     url: string,
-    customizable: boolean | null,
-    parentStepId: string | null,
     options?: MutationFunctionOptions<
       BlockActionLinkUpdate,
       BlockActionLinkUpdateVariables
@@ -61,16 +55,14 @@ export function useBlockActionLinkUpdateMutation(
       ...options,
       variables: {
         id: block.id,
-        input: { url, customizable, parentStepId }
+        input: { url }
       },
       optimisticResponse: {
         blockUpdateLinkAction: {
           __typename: 'LinkAction',
           parentBlockId: block.id,
           gtmEventName: '',
-          url,
-          customizable,
-          parentStepId
+          url
         }
       },
       update(cache, { data }) {

@@ -21,8 +21,6 @@ export interface VideoTriggerFields_triggerAction_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface VideoTriggerFields_triggerAction_EmailAction {
@@ -30,8 +28,6 @@ export interface VideoTriggerFields_triggerAction_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface VideoTriggerFields_triggerAction_ChatAction {

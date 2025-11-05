@@ -80,8 +80,6 @@ export interface CardCtaCreate_button1_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardCtaCreate_button1_action_EmailAction {
@@ -89,8 +87,6 @@ export interface CardCtaCreate_button1_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardCtaCreate_button1_action_ChatAction {
@@ -169,8 +165,6 @@ export interface CardCtaCreate_button1Update_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardCtaCreate_button1Update_action_EmailAction {
@@ -178,8 +172,6 @@ export interface CardCtaCreate_button1Update_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardCtaCreate_button1Update_action_ChatAction {
@@ -238,8 +230,6 @@ export interface CardCtaCreate_button2_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardCtaCreate_button2_action_EmailAction {
@@ -247,8 +237,6 @@ export interface CardCtaCreate_button2_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardCtaCreate_button2_action_ChatAction {
@@ -327,8 +315,6 @@ export interface CardCtaCreate_button2Update_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardCtaCreate_button2Update_action_EmailAction {
@@ -336,8 +322,6 @@ export interface CardCtaCreate_button2Update_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardCtaCreate_button2Update_action_ChatAction {
@@ -396,8 +380,6 @@ export interface CardCtaCreate_button3_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardCtaCreate_button3_action_EmailAction {
@@ -405,8 +387,6 @@ export interface CardCtaCreate_button3_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardCtaCreate_button3_action_ChatAction {
@@ -485,8 +465,6 @@ export interface CardCtaCreate_button3Update_action_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardCtaCreate_button3Update_action_EmailAction {
@@ -494,8 +472,6 @@ export interface CardCtaCreate_button3Update_action_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface CardCtaCreate_button3Update_action_ChatAction {

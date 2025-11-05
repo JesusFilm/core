@@ -28,8 +28,6 @@ export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_Link
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_EmailAction {
@@ -37,8 +35,6 @@ export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_Emai
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_ButtonBlock_action_ChatAction {
@@ -180,8 +176,6 @@ export interface StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action_EmailAction {
@@ -189,8 +183,6 @@ export interface StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_RadioOptionBlock_action_ChatAction {
@@ -248,8 +240,6 @@ export interface StepBlockRestoreFromAction_blockRestore_SignUpBlock_action_Link
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_SignUpBlock_action_EmailAction {
@@ -257,8 +247,6 @@ export interface StepBlockRestoreFromAction_blockRestore_SignUpBlock_action_Emai
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_SignUpBlock_action_ChatAction {
@@ -439,8 +427,6 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_action_LinkA
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_action_EmailAction {
@@ -448,8 +434,6 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_action_Email
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_action_ChatAction {
@@ -560,8 +544,6 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_trigg
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction_EmailAction {
@@ -569,8 +551,6 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_trigg
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
-  customizable: boolean | null;
-  parentStepId: string | null;
 }
 
 export interface StepBlockRestoreFromAction_blockRestore_VideoTriggerBlock_triggerAction_ChatAction {

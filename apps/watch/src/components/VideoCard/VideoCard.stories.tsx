@@ -5,7 +5,7 @@ import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearc
 
 import { watchConfig } from '../../libs/storybook'
 import { videos } from '../Videos/__generated__/testData'
-import { getAlgoliaVideosHandlers } from '../VideosPage/VideosPage.handlers'
+import { getAlgoliaVideosHandlers } from '../PageVideos/PageVideos.handlers'
 
 import { VideoCard } from '.'
 

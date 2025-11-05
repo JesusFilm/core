@@ -16,9 +16,7 @@ export const blockActionEmailUpdateMock: MockedResponse<
     variables: {
       id: 'button2.id',
       input: {
-        email: 'edmondwashere@gmail.com',
-        customizable: false,
-        parentStepId: 'step.id'
+        email: 'edmondwashere@gmail.com'
       }
     }
   },
@@ -28,9 +26,7 @@ export const blockActionEmailUpdateMock: MockedResponse<
         __typename: 'EmailAction',
         parentBlockId: 'button2.id',
         gtmEventName: null,
-        email: 'edmondwashere@gmail.com',
-        customizable: false,
-        parentStepId: 'step.id'
+        email: 'edmondwashere@gmail.com'
       }
     }
   }

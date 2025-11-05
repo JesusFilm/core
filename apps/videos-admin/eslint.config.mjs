@@ -22,8 +22,7 @@ export default [
   {
     files: ['**/*.ts', '**/*.tsx'],
     rules: {
-      '@typescript-eslint/no-misused-promises': 'off',
-      '@typescript-eslint/no-unnecessary-type-assertion': 'warn'
+      '@typescript-eslint/no-misused-promises': 'off'
     }
   }
 ]
