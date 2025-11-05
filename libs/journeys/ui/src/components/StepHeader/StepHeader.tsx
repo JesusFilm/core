@@ -22,6 +22,9 @@ export function StepHeader({
 }: StepHeaderProps): ReactElement {
   const { journey } = useJourney()
   const { rtl } = getJourneyRTL(journey)
+  const { menuButtonIcon } = journey ?? {}
+  const hasMenuButtonIcon = menuButtonIcon != null
+  const isWebsite = journey?.website === true
 
   return (
     <Stack
@@ -44,7 +47,7 @@ export function StepHeader({
         }
       }}
     >
-      {journey?.website === true ? (
+      {isWebsite ? (
         <Stack
           justifyContent="space-between"
           spacing={2}
@@ -87,7 +90,11 @@ export function StepHeader({
                 {journey?.displayTitle ?? journey?.seoTitle}
               </Typography>
             </Stack>
-            <StepHeaderMenu />
+            {hasMenuButtonIcon ? (
+              <StepHeaderMenu />
+            ) : (
+              <InformationButton sx={{ p: 0 }} />
+            )}
           </Stack>
         </Stack>
       ) : (

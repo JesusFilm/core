@@ -1,5 +1,5 @@
-import { Meta, StoryObj } from '@storybook/react'
-import { screen, userEvent } from '@storybook/test'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { screen, userEvent } from 'storybook/test'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 import { ThemeMode } from '@core/shared/ui/themes'
