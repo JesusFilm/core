@@ -47,6 +47,6 @@ describe('ContentPageBlurFilter', () => {
 
     const contentContainer = screen.getByTestId('ContentPageContainer')
     expect(contentContainer).toHaveClass('relative', 'z-10')
-    expect(contentContainer).toHaveStyle('margin-top: -100vh')
+    expect(contentContainer).toHaveStyle('margin-top: -100svh')
   })
 })

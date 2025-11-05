@@ -94,6 +94,32 @@
 - Consider moving category metadata to CMS-driven config if design requires frequent updates.
 - Evaluate migrating remaining MUI layout primitives to Tailwind equivalents in a future iteration.
 
+# Watch Home Mobile Viewport Fixes
+
+## Goals
+
+- [x] Replace `100vh` viewport locks with `svh` units so the Watch hero and drawers size correctly on mobile browsers.
+- [x] Allow local development to boot `/watch` without Algolia credentials to unblock responsive testing.
+
+## Obstacles
+
+- The dev container cannot download Google fonts, producing repeated warnings while hitting the page.
+- `InstantSearch` throws when Algolia credentials are missing, preventing `/watch` from rendering at all.
+
+## Resolutions
+
+- Converted sticky wrappers in `ContentPageBlurFilter`, the collections shell, language modal, and menu drawer to use `100svh` heights and offsets.
+- Added guarded fallbacks inside `InstantSearchProvider` so non-production environments use stub Algolia keys instead of crashing.
+
+## Test Coverage
+
+- `pnpm dlx nx test watch --testFile=apps/watch/src/components/NewVideoContentPage/ContentPageBlurFilter/ContentPageBlurFilter.spec.tsx`
+
+## Follow-up Ideas
+
+- Consider stubbing Algolia results in dev builds so `getServerState` does not fail when credentials are unavailable.
+- Replace Google Fonts usage during development to avoid noisy build logs in offline environments.
+
 # Featured Hero Skip Control
 
 ## Goals

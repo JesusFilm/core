@@ -52,7 +52,7 @@ export function LanguageModal({
         }
       }}
     >
-      <div className="w-full h-[100vh] flex justify-center items-center px-1 sm:px-2 overflow-hidden bg-black/80 backdrop-blur-lg">
+      <div className="w-full h-[100svh] flex justify-center items-center px-1 sm:px-2 overflow-hidden bg-black/80 backdrop-blur-lg">
         <div className="w-full max-w-md rounded-lg p-6">
           <div className="grid grid-cols-1 gap-4 font-sans">
             {languages.map((language) => (

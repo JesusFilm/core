@@ -14,14 +14,17 @@ export function ContentPageBlurFilter({
       style={{ minHeight: '100svh' }}
     >
       <div
-        className="max-w-[1920px] z-[1] mx-auto sticky h-screen top-0 bg-black/10"
+        className="max-w-[1920px] z-[1] mx-auto sticky top-0 bg-black/10"
         data-testid="ContentPageBlurFilter"
-        style={{ backdropFilter: 'brightness(.6) blur(40px)' }}
+        style={{
+          backdropFilter: 'brightness(.6) blur(40px)',
+          height: '100svh'
+        }}
       />
       <div
         className="max-w-[1920px] mx-auto overflow-hidden relative z-10"
         data-testid="ContentPageContainer"
-        style={{ marginTop: '-100vh' }}
+        style={{ marginTop: '-100svh' }}
       >
         {children}
       </div>
