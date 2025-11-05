@@ -1,3 +1,4 @@
+import { Agent, Team, TeamMember } from '@core/prisma/lumina/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
@@ -10,8 +11,6 @@ describe('agent mutations', () => {
     }
   })
 
-  const client = getClient()
-
   const CREATE_AGENT_MUTATION = graphql(`
     mutation CreateAgent($input: LuminaAgentCreateInput!) {
       luminaAgentCreate(input: $input) {
@@ -23,6 +22,13 @@ describe('agent mutations', () => {
             description
             model
             temperature
+            maxTokens
+            topP
+            frequencyPenalty
+            presencePenalty
+            systemPrompt
+            createdAt
+            updatedAt
           }
         }
         ... on ForbiddenError {
@@ -31,6 +37,9 @@ describe('agent mutations', () => {
             path
             value
           }
+        }
+        ... on ZodError {
+          message
         }
       }
     }
@@ -45,12 +54,22 @@ describe('agent mutations', () => {
             name
             model
             temperature
+            maxTokens
+            topP
+            frequencyPenalty
+            presencePenalty
+            systemPrompt
+            createdAt
+            updatedAt
           }
         }
         ... on ForbiddenError {
           message
         }
         ... on NotFoundError {
+          message
+        }
+        ... on ZodError {
           message
         }
       }
@@ -88,7 +107,7 @@ describe('agent mutations', () => {
 
       prismaMock.agent.create.mockResolvedValue({
         id: 'newAgentId',
-        teamId: 'teamId',
+        teamId: '0acf531f-620a-470b-a15a-004616285138',
         name: 'New Agent',
         description: 'New Description',
         model: 'gpt-4',
@@ -106,7 +125,7 @@ describe('agent mutations', () => {
         document: CREATE_AGENT_MUTATION,
         variables: {
           input: {
-            teamId: 'teamId',
+            teamId: '0acf531f-620a-470b-a15a-004616285138',
             name: 'New Agent',
             description: 'New Description',
             model: 'gpt-4',
@@ -116,16 +135,28 @@ describe('agent mutations', () => {
       })
 
       expect(prismaMock.teamMember.findUnique).toHaveBeenCalledWith({
-        where: { teamId_userId: { teamId: 'teamId', userId: 'testUserId' } }
+        where: {
+          teamId_userId: {
+            teamId: '0acf531f-620a-470b-a15a-004616285138',
+            userId: 'testUserId'
+          }
+        }
       })
       expect(prismaMock.agent.create).toHaveBeenCalled()
       expect(data).toHaveProperty('data.luminaAgentCreate.data', {
         id: 'newAgentId',
-        teamId: 'teamId',
+        teamId: '0acf531f-620a-470b-a15a-004616285138',
         name: 'New Agent',
         description: 'New Description',
         model: 'gpt-4',
-        temperature: 0.7
+        temperature: 0.7,
+        maxTokens: null,
+        topP: null,
+        frequencyPenalty: null,
+        presencePenalty: null,
+        systemPrompt: null,
+        createdAt: new Date('2024-01-01').toISOString(),
+        updatedAt: new Date('2024-01-01').toISOString()
       })
     })
 
@@ -136,7 +167,7 @@ describe('agent mutations', () => {
         document: CREATE_AGENT_MUTATION,
         variables: {
           input: {
-            teamId: 'teamId',
+            teamId: '0acf531f-620a-470b-a15a-004616285138',
             name: 'New Agent',
             model: 'gpt-4',
             temperature: 0.7
@@ -144,13 +175,16 @@ describe('agent mutations', () => {
         }
       })
 
-      expect(data).toHaveProperty('data.luminaAgentCreate.message', 'Access denied')
+      expect(data).toHaveProperty(
+        'data.luminaAgentCreate.message',
+        'Access denied'
+      )
     })
   })
 
   describe('luminaAgentUpdate', () => {
     it('should update agent', async () => {
-      prismaMock.agent.findUnique.mockResolvedValue({
+      const agent: Agent & { team: Team & { members: TeamMember[] } } = {
         id: 'agentId',
         teamId: 'teamId',
         name: 'Test Agent',
@@ -180,7 +214,8 @@ describe('agent mutations', () => {
             }
           ]
         }
-      })
+      }
+      prismaMock.agent.findUnique.mockResolvedValue(agent)
 
       prismaMock.agent.update.mockResolvedValue({
         id: 'agentId',
@@ -215,48 +250,19 @@ describe('agent mutations', () => {
         id: 'agentId',
         name: 'Updated Agent',
         model: 'gpt-3.5-turbo',
-        temperature: 0.8
+        temperature: 0.8,
+        maxTokens: null,
+        topP: null,
+        frequencyPenalty: null,
+        presencePenalty: null,
+        systemPrompt: null,
+        createdAt: new Date('2024-01-01').toISOString(),
+        updatedAt: new Date('2024-01-01').toISOString()
       })
     })
 
-    it('should reject if agent not found', async () => {
-      prismaMock.agent.findUnique.mockResolvedValue(null)
-
-      const data = await authClient({
-        document: UPDATE_AGENT_MUTATION,
-        variables: {
-          id: 'nonExistentId',
-          input: { name: 'Updated Agent' }
-        }
-      })
-
-      expect(data).toHaveProperty('data.luminaAgentUpdate.message', 'Agent not found')
-    })
-
-    it('should reject if user is not team member', async () => {
-      prismaMock.agent.findUnique.mockResolvedValue({
-        id: 'agentId',
-        team: {
-          id: 'teamId',
-          members: []
-        }
-      })
-
-      const data = await authClient({
-        document: UPDATE_AGENT_MUTATION,
-        variables: {
-          id: 'agentId',
-          input: { name: 'Updated Agent' }
-        }
-      })
-
-      expect(data).toHaveProperty('data.luminaAgentUpdate.message', 'Access denied')
-    })
-  })
-
-  describe('luminaAgentDelete', () => {
-    it('should delete agent', async () => {
-      prismaMock.agent.findUnique.mockResolvedValue({
+    it('should update agent with undefined values', async () => {
+      const agent: Agent & { team: Team & { members: TeamMember[] } } = {
         id: 'agentId',
         teamId: 'teamId',
         name: 'Test Agent',
@@ -286,7 +292,139 @@ describe('agent mutations', () => {
             }
           ]
         }
+      }
+      prismaMock.agent.findUnique.mockResolvedValue(agent)
+
+      prismaMock.agent.update.mockResolvedValue({
+        id: 'agentId',
+        teamId: 'teamId',
+        name: 'Updated Agent',
+        description: null,
+        model: 'gpt-4',
+        temperature: 1.0,
+        maxTokens: null,
+        topP: null,
+        frequencyPenalty: null,
+        presencePenalty: null,
+        systemPrompt: null,
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01')
       })
+
+      const data = await authClient({
+        document: UPDATE_AGENT_MUTATION,
+        variables: {
+          id: 'agentId',
+          input: {}
+        }
+      })
+
+      expect(data).toHaveProperty('data.luminaAgentUpdate.data', {
+        id: 'agentId',
+        name: 'Updated Agent',
+        model: 'gpt-4',
+        temperature: 1.0,
+        maxTokens: null,
+        topP: null,
+        frequencyPenalty: null,
+        presencePenalty: null,
+        systemPrompt: null,
+        createdAt: new Date('2024-01-01').toISOString(),
+        updatedAt: new Date('2024-01-01').toISOString()
+      })
+    })
+
+    it('should reject if agent not found', async () => {
+      prismaMock.agent.findUnique.mockResolvedValue(null)
+
+      const data = await authClient({
+        document: UPDATE_AGENT_MUTATION,
+        variables: {
+          id: 'nonExistentId',
+          input: { name: 'Updated Agent' }
+        }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaAgentUpdate.message',
+        'Agent not found'
+      )
+    })
+
+    it('should reject if user is not team member', async () => {
+      const agent: Agent & { team: Team & { members: TeamMember[] } } = {
+        id: 'agentId',
+        teamId: 'teamId',
+        name: 'Test Agent',
+        description: null,
+        model: 'gpt-4',
+        systemPrompt: null,
+        temperature: 1.0,
+        maxTokens: null,
+        topP: null,
+        frequencyPenalty: null,
+        presencePenalty: null,
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        team: {
+          id: 'teamId',
+          name: 'Test Team',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+          members: []
+        }
+      }
+      prismaMock.agent.findUnique.mockResolvedValue(agent)
+
+      const data = await authClient({
+        document: UPDATE_AGENT_MUTATION,
+        variables: {
+          id: 'agentId',
+          input: { name: 'Updated Agent' }
+        }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaAgentUpdate.message',
+        'Access denied'
+      )
+    })
+  })
+
+  describe('luminaAgentDelete', () => {
+    it('should delete agent', async () => {
+      const agent: Agent & { team: Team & { members: TeamMember[] } } = {
+        id: 'agentId',
+        teamId: 'teamId',
+        name: 'Test Agent',
+        description: null,
+        model: 'gpt-4',
+        systemPrompt: null,
+        temperature: 1.0,
+        maxTokens: null,
+        topP: null,
+        frequencyPenalty: null,
+        presencePenalty: null,
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        team: {
+          id: 'teamId',
+          name: 'Test Team',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+          members: [
+            {
+              id: 'memberId',
+              teamId: 'teamId',
+              userId: 'testUserId',
+              role: 'OWNER',
+              createdAt: new Date('2024-01-01'),
+              updatedAt: new Date('2024-01-01')
+            }
+          ]
+        }
+      }
+      prismaMock.agent.findUnique.mockResolvedValue(agent)
 
       prismaMock.agent.delete.mockResolvedValue({
         id: 'agentId',
@@ -325,25 +463,46 @@ describe('agent mutations', () => {
         variables: { id: 'nonExistentId' }
       })
 
-      expect(data).toHaveProperty('data.luminaAgentDelete.message', 'Agent not found')
+      expect(data).toHaveProperty(
+        'data.luminaAgentDelete.message',
+        'Agent not found'
+      )
     })
 
     it('should reject if user is not team member', async () => {
-      prismaMock.agent.findUnique.mockResolvedValue({
+      const agent: Agent & { team: Team & { members: TeamMember[] } } = {
         id: 'agentId',
+        teamId: 'teamId',
+        name: 'Test Agent',
+        description: null,
+        model: 'gpt-4',
+        systemPrompt: null,
+        temperature: 1.0,
+        maxTokens: null,
+        topP: null,
+        frequencyPenalty: null,
+        presencePenalty: null,
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
         team: {
           id: 'teamId',
+          name: 'Test Team',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
           members: []
         }
-      })
+      }
+      prismaMock.agent.findUnique.mockResolvedValue(agent)
 
       const data = await authClient({
         document: DELETE_AGENT_MUTATION,
         variables: { id: 'agentId' }
       })
 
-      expect(data).toHaveProperty('data.luminaAgentDelete.message', 'Access denied')
+      expect(data).toHaveProperty(
+        'data.luminaAgentDelete.message',
+        'Access denied'
+      )
     })
   })
 })
-

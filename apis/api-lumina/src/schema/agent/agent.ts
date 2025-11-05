@@ -4,7 +4,7 @@ builder.prismaObject('Agent', {
   name: 'LuminaAgent',
   fields: (t) => ({
     id: t.exposeID('id'),
-    teamId: t.exposeString('teamId'),
+    teamId: t.exposeID('teamId'),
     name: t.exposeString('name'),
     description: t.exposeString('description', { nullable: true }),
     model: t.exposeString('model'),

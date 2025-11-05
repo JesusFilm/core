@@ -92,8 +92,8 @@ describe('agent queries', () => {
         topP: 1.0,
         frequencyPenalty: 0.0,
         presencePenalty: 0.0,
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date)
+        createdAt: new Date('2024-01-01').toISOString(),
+        updatedAt: new Date('2024-01-01').toISOString()
       }
     ])
   })
@@ -149,4 +149,3 @@ describe('agent queries', () => {
     ])
   })
 })
-

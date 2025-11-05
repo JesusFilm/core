@@ -13,7 +13,7 @@ builder.mutationField('luminaAgentCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     type: 'Agent',
     errors: {
-      types: [ForbiddenError]
+      types: [ForbiddenError, ZodError]
     },
     args: {
       input: t.arg({ type: AgentCreateInput, required: true })
