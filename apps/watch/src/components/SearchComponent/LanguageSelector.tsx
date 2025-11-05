@@ -24,8 +24,26 @@ interface LanguageOption {
   count?: number
 }
 
+interface LanguageSelectorProps {
+  /**
+   * Optional class name applied to the outer container. Useful for constraining width
+   * or adjusting layout when reusing the selector in different contexts (e.g. header).
+   */
+  containerClassName?: string
+  /**
+   * Optional class name applied to the trigger button. Allows downstream components
+   * to tweak spacing, font sizing, or height without duplicating component logic.
+   */
+  triggerClassName?: string
+}
+
+const defaultTriggerClassName = 'w-full justify-between cursor-pointer h-12'
+
 // Single-select language filter component
-export function LanguageSelector(): JSX.Element {
+export function LanguageSelector({
+  containerClassName,
+  triggerClassName
+}: LanguageSelectorProps = {}): JSX.Element {
   const { t } = useTranslation('apps-watch')
   const { items, refine } = useRefinementList(languageRefinementProps)
   const { languages, isLoading: languagesLoading } = useLanguages()
@@ -129,13 +147,17 @@ export function LanguageSelector(): JSX.Element {
 
   if (languagesLoading) {
     return (
-      <div className="relative">
-      <Button
-        variant="outline"
-        role="combobox"
-        disabled
-        className="w-full justify-between opacity-50 h-12 px-4"
-      >
+      <div className={cn('relative', containerClassName)}>
+        <Button
+          variant="outline"
+          role="combobox"
+          disabled
+          className={cn(
+            defaultTriggerClassName,
+            'opacity-50 px-4',
+            triggerClassName
+          )}
+        >
           <div className="flex items-center">
             <Globe className="mr-2 h-4 w-4 text-muted-foreground" />
             <span>{t('Loading languages...')}</span>
@@ -147,13 +169,16 @@ export function LanguageSelector(): JSX.Element {
   }
 
   return (
-    <div className="relative" ref={containerRef}>
+    <div
+      className={cn('relative', containerClassName)}
+      ref={containerRef}
+    >
       <Button
         variant="outline"
         role="combobox"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
-        className="w-full justify-between cursor-pointer h-12"
+        className={cn(defaultTriggerClassName, triggerClassName)}
       >
         <div className="flex items-center">
           <Globe className="mr-2 h-5 w-5 text-muted-foreground" />
