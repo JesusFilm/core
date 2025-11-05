@@ -17,7 +17,14 @@ describe('agent widget queries', () => {
         agentId
         name
         enabled
+        position
+        theme
+        buttonText
+        buttonIcon
+        primaryColor
         allowedDomains
+        createdAt
+        updatedAt
       }
     }
   `)
@@ -31,6 +38,14 @@ describe('agent widget queries', () => {
             agentId
             name
             enabled
+            position
+            theme
+            buttonText
+            buttonIcon
+            primaryColor
+            allowedDomains
+            createdAt
+            updatedAt
           }
         }
         ... on NotFoundError {
@@ -48,7 +63,14 @@ describe('agent widget queries', () => {
           agentId: 'agentId',
           name: 'Test Widget',
           enabled: true,
-          allowedDomains: null
+          allowedDomains: [],
+          position: null,
+          theme: null,
+          buttonText: null,
+          buttonIcon: null,
+          primaryColor: null,
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01')
         }
       ])
 
@@ -63,7 +85,14 @@ describe('agent widget queries', () => {
           agentId: 'agentId',
           name: 'Test Widget',
           enabled: true,
-          allowedDomains: null
+          position: null,
+          theme: null,
+          buttonText: null,
+          buttonIcon: null,
+          primaryColor: null,
+          allowedDomains: [],
+          createdAt: new Date('2024-01-01').toISOString(),
+          updatedAt: new Date('2024-01-01').toISOString()
         }
       ])
     })
@@ -75,7 +104,15 @@ describe('agent widget queries', () => {
         id: 'widgetId',
         agentId: 'agentId',
         name: 'Test Widget',
-        enabled: true
+        enabled: true,
+        position: null,
+        theme: null,
+        buttonText: null,
+        buttonIcon: null,
+        primaryColor: null,
+        allowedDomains: [],
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01')
       })
 
       const data = await authClient({
@@ -87,7 +124,15 @@ describe('agent widget queries', () => {
         id: 'widgetId',
         agentId: 'agentId',
         name: 'Test Widget',
-        enabled: true
+        enabled: true,
+        position: null,
+        theme: null,
+        buttonText: null,
+        buttonIcon: null,
+        primaryColor: null,
+        allowedDomains: [],
+        createdAt: new Date('2024-01-01').toISOString(),
+        updatedAt: new Date('2024-01-01').toISOString()
       })
     })
 
@@ -99,8 +144,10 @@ describe('agent widget queries', () => {
         variables: { id: 'nonExistentId' }
       })
 
-      expect(data).toHaveProperty('data.luminaAgentWidget.message', 'Widget not found')
+      expect(data).toHaveProperty(
+        'data.luminaAgentWidget.message',
+        'Widget not found'
+      )
     })
   })
 })
-

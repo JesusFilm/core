@@ -1,3 +1,4 @@
+import { Agent, Team, TeamMember, Widget } from '@core/prisma/lumina/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../../test/client'
@@ -19,12 +20,23 @@ describe('agent widget mutations', () => {
             agentId
             name
             enabled
+            position
+            theme
+            buttonText
+            buttonIcon
+            primaryColor
+            allowedDomains
+            createdAt
+            updatedAt
           }
         }
         ... on ForbiddenError {
           message
         }
         ... on NotFoundError {
+          message
+        }
+        ... on ZodError {
           message
         }
       }
@@ -39,12 +51,23 @@ describe('agent widget mutations', () => {
             id
             name
             enabled
+            position
+            theme
+            buttonText
+            buttonIcon
+            primaryColor
+            allowedDomains
+            createdAt
+            updatedAt
           }
         }
         ... on ForbiddenError {
           message
         }
         ... on NotFoundError {
+          message
+        }
+        ... on ZodError {
           message
         }
       }
@@ -71,31 +94,50 @@ describe('agent widget mutations', () => {
 
   describe('luminaAgentWidgetCreate', () => {
     it('should create widget', async () => {
-      prismaMock.agent.findUnique.mockResolvedValue({
-        id: 'agentId',
+      const agent: Agent & { team: Team & { members: TeamMember[] } } = {
+        id: '0acf531f-620a-470b-a15a-004616285138',
+        teamId: 'teamId',
+        name: 'Test Agent',
+        description: null,
+        model: 'gpt-4',
+        systemPrompt: null,
+        temperature: 1.0,
+        maxTokens: null,
+        topP: null,
+        frequencyPenalty: null,
+        presencePenalty: null,
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
         team: {
           id: 'teamId',
+          name: 'Test Team',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
           members: [
             {
               id: 'memberId',
+              teamId: 'teamId',
               userId: 'testUserId',
-              role: 'OWNER'
+              role: 'OWNER',
+              createdAt: new Date('2024-01-01'),
+              updatedAt: new Date('2024-01-01')
             }
           ]
         }
-      })
+      }
+      prismaMock.agent.findUnique.mockResolvedValue(agent)
 
       prismaMock.widget.create.mockResolvedValue({
         id: 'newWidgetId',
-        agentId: 'agentId',
+        agentId: '0acf531f-620a-470b-a15a-004616285138',
         name: 'New Widget',
         enabled: true,
-        position: null,
-        theme: null,
-        buttonText: null,
-        buttonIcon: null,
-        primaryColor: null,
-        allowedDomains: [],
+        position: 'bottom-right',
+        theme: 'light',
+        buttonText: 'Chat',
+        buttonIcon: 'chat',
+        primaryColor: '#000000',
+        allowedDomains: ['example.com'],
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date('2024-01-01')
       })
@@ -104,51 +146,207 @@ describe('agent widget mutations', () => {
         document: CREATE_WIDGET_MUTATION,
         variables: {
           input: {
-            agentId: 'agentId',
-            name: 'New Widget'
+            agentId: '0acf531f-620a-470b-a15a-004616285138',
+            name: 'New Widget',
+            enabled: true,
+            position: 'bottom-right',
+            theme: 'light',
+            buttonText: 'Chat',
+            buttonIcon: 'chat',
+            primaryColor: '#000000',
+            allowedDomains: ['example.com']
           }
         }
       })
 
       expect(data).toHaveProperty('data.luminaAgentWidgetCreate.data', {
         id: 'newWidgetId',
-        agentId: 'agentId',
+        agentId: '0acf531f-620a-470b-a15a-004616285138',
         name: 'New Widget',
-        enabled: true
+        enabled: true,
+        position: 'bottom-right',
+        theme: 'light',
+        buttonText: 'Chat',
+        buttonIcon: 'chat',
+        primaryColor: '#000000',
+        allowedDomains: ['example.com'],
+        createdAt: new Date('2024-01-01').toISOString(),
+        updatedAt: new Date('2024-01-01').toISOString()
       })
+    })
+
+    it('should reject if agent not found', async () => {
+      prismaMock.agent.findUnique.mockResolvedValue(null)
+
+      const data = await authClient({
+        document: CREATE_WIDGET_MUTATION,
+        variables: {
+          input: {
+            agentId: '0acf531f-620a-470b-a15a-004616285138',
+            name: 'New Widget',
+            enabled: true,
+            position: 'bottom-right',
+            theme: 'light',
+            buttonText: 'Chat',
+            buttonIcon: 'chat',
+            primaryColor: '#000000',
+            allowedDomains: ['example.com']
+          }
+        }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaAgentWidgetCreate.message',
+        'Agent not found'
+      )
+    })
+
+    it('should reject if user is not agent member', async () => {
+      const agent: Agent & { team: Team & { members: TeamMember[] } } = {
+        id: '0acf531f-620a-470b-a15a-004616285138',
+        teamId: 'teamId',
+        name: 'Test Agent',
+        description: null,
+        model: 'gpt-4',
+        systemPrompt: null,
+        temperature: 1.0,
+        maxTokens: null,
+        topP: null,
+        frequencyPenalty: null,
+        presencePenalty: null,
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        team: {
+          id: 'teamId',
+          name: 'Test Team',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+          members: []
+        }
+      }
+      prismaMock.agent.findUnique.mockResolvedValue(agent)
+
+      const data = await authClient({
+        document: CREATE_WIDGET_MUTATION,
+        variables: {
+          input: {
+            agentId: '0acf531f-620a-470b-a15a-004616285138',
+            name: 'New Widget',
+            enabled: true,
+            position: 'bottom-right',
+            theme: 'light',
+            buttonText: 'Chat',
+            buttonIcon: 'chat',
+            primaryColor: '#000000',
+            allowedDomains: ['example.com']
+          }
+        }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaAgentWidgetCreate.message',
+        'User is not a member of the team'
+      )
+    })
+
+    it('should reject if input is invalid', async () => {
+      const data = await authClient({
+        document: CREATE_WIDGET_MUTATION,
+        variables: {
+          input: {
+            agentId: 'zzz',
+            name: 'New Widget',
+            enabled: true,
+            position: 'bottom-right',
+            theme: 'light',
+            buttonText: 'Chat',
+            buttonIcon: 'chat',
+            primaryColor: '#000000',
+            allowedDomains: ['example.com']
+          }
+        }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaAgentWidgetCreate.message',
+        JSON.stringify(
+          [
+            {
+              validation: 'uuid',
+              code: 'invalid_string',
+              message: 'Agent ID must be a valid UUID',
+              path: ['input', 'agentId']
+            }
+          ],
+          null,
+          2
+        )
+      )
     })
   })
 
   describe('luminaAgentWidgetUpdate', () => {
     it('should update widget', async () => {
-      prismaMock.widget.findUnique.mockResolvedValue({
-        id: 'widgetId',
-        agent: {
-          id: 'agentId',
-          team: {
-            id: 'teamId',
-            members: [
-              {
-                id: 'memberId',
-                userId: 'testUserId',
-                role: 'OWNER'
-              }
-            ]
-          }
-        }
-      })
-
-      prismaMock.widget.update.mockResolvedValue({
+      const widget: Widget & {
+        agent: Agent & { team: Team & { members: TeamMember[] } }
+      } = {
         id: 'widgetId',
         agentId: 'agentId',
-        name: 'Updated Widget',
-        enabled: false,
+        name: 'Test Widget',
+        enabled: true,
         position: null,
         theme: null,
         buttonText: null,
         buttonIcon: null,
         primaryColor: null,
         allowedDomains: [],
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        agent: {
+          id: 'agentId',
+          teamId: 'teamId',
+          name: 'Test Agent',
+          description: null,
+          model: 'gpt-4',
+          systemPrompt: null,
+          temperature: 1.0,
+          maxTokens: null,
+          topP: null,
+          frequencyPenalty: null,
+          presencePenalty: null,
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+          team: {
+            id: 'teamId',
+            name: 'Test Team',
+            createdAt: new Date('2024-01-01'),
+            updatedAt: new Date('2024-01-01'),
+            members: [
+              {
+                id: 'memberId',
+                teamId: 'teamId',
+                userId: 'testUserId',
+                role: 'OWNER',
+                createdAt: new Date('2024-01-01'),
+                updatedAt: new Date('2024-01-01')
+              }
+            ]
+          }
+        }
+      }
+      prismaMock.widget.findUnique.mockResolvedValue(widget)
+
+      prismaMock.widget.update.mockResolvedValue({
+        id: 'widgetId',
+        agentId: 'agentId',
+        name: 'Updated Widget',
+        enabled: false,
+        position: 'bottom-right',
+        theme: 'light',
+        buttonText: 'Chat',
+        buttonIcon: 'chat',
+        primaryColor: '#000000',
+        allowedDomains: ['example.com'],
         createdAt: new Date('2024-01-01'),
         updatedAt: new Date('2024-01-01')
       })
@@ -159,7 +357,13 @@ describe('agent widget mutations', () => {
           id: 'widgetId',
           input: {
             name: 'Updated Widget',
-            enabled: false
+            enabled: false,
+            position: 'bottom-right',
+            theme: 'light',
+            buttonText: 'Chat',
+            buttonIcon: 'chat',
+            primaryColor: '#000000',
+            allowedDomains: ['example.com']
           }
         }
       })
@@ -167,29 +371,284 @@ describe('agent widget mutations', () => {
       expect(data).toHaveProperty('data.luminaAgentWidgetUpdate.data', {
         id: 'widgetId',
         name: 'Updated Widget',
-        enabled: false
+        enabled: false,
+        position: 'bottom-right',
+        theme: 'light',
+        buttonText: 'Chat',
+        buttonIcon: 'chat',
+        primaryColor: '#000000',
+        allowedDomains: ['example.com'],
+        createdAt: new Date('2024-01-01').toISOString(),
+        updatedAt: new Date('2024-01-01').toISOString()
       })
+    })
+
+    it('should keep existing values if not provided', async () => {
+      const widget: Widget & {
+        agent: Agent & { team: Team & { members: TeamMember[] } }
+      } = {
+        id: 'widgetId',
+        agentId: 'agentId',
+        name: 'Test Widget',
+        enabled: true,
+        position: 'top-left',
+        theme: 'dark',
+        buttonText: 'Chat with AI',
+        buttonIcon: 'chat-bubble-left-right',
+        primaryColor: '#000000',
+        allowedDomains: ['example.com'],
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        agent: {
+          id: 'agentId',
+          teamId: 'teamId',
+          name: 'Test Agent',
+          description: null,
+          model: 'gpt-4',
+          systemPrompt: null,
+          temperature: 1.0,
+          maxTokens: null,
+          topP: null,
+          frequencyPenalty: null,
+          presencePenalty: null,
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+          team: {
+            id: 'teamId',
+            name: 'Test Team',
+            createdAt: new Date('2024-01-01'),
+            updatedAt: new Date('2024-01-01'),
+            members: [
+              {
+                id: 'memberId',
+                teamId: 'teamId',
+                userId: 'testUserId',
+                role: 'OWNER',
+                createdAt: new Date('2024-01-01'),
+                updatedAt: new Date('2024-01-01')
+              }
+            ]
+          }
+        }
+      }
+      prismaMock.widget.findUnique.mockResolvedValue(widget)
+
+      prismaMock.widget.update.mockResolvedValue({
+        id: 'widgetId',
+        agentId: 'agentId',
+        name: 'Updated Widget',
+        enabled: false,
+        position: 'bottom-right',
+        theme: 'light',
+        buttonText: 'Chat',
+        buttonIcon: 'chat',
+        primaryColor: '#000000',
+        allowedDomains: ['example.com'],
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01')
+      })
+
+      const data = await authClient({
+        document: UPDATE_WIDGET_MUTATION,
+        variables: {
+          id: 'widgetId',
+          input: {
+            position: 'bottom-right',
+            theme: 'light',
+            buttonText: 'Chat',
+            buttonIcon: 'chat',
+            primaryColor: '#000000'
+          }
+        }
+      })
+
+      expect(data).toHaveProperty('data.luminaAgentWidgetUpdate.data', {
+        id: 'widgetId',
+        name: 'Updated Widget',
+        enabled: false,
+        position: 'bottom-right',
+        theme: 'light',
+        buttonText: 'Chat',
+        buttonIcon: 'chat',
+        primaryColor: '#000000',
+        allowedDomains: ['example.com'],
+        createdAt: new Date('2024-01-01').toISOString(),
+        updatedAt: new Date('2024-01-01').toISOString()
+      })
+    })
+
+    it('should reject if widget not found', async () => {
+      prismaMock.widget.findUnique.mockResolvedValue(null)
+
+      const data = await authClient({
+        document: UPDATE_WIDGET_MUTATION,
+        variables: {
+          id: 'widgetId',
+          input: {
+            name: 'Updated Widget',
+            enabled: false,
+            position: 'bottom-right',
+            theme: 'light',
+            buttonText: 'Chat',
+            buttonIcon: 'chat',
+            primaryColor: '#000000',
+            allowedDomains: ['example.com']
+          }
+        }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaAgentWidgetUpdate.message',
+        'Widget not found'
+      )
+    })
+
+    it('should reject if user is not widget member', async () => {
+      const widget: Widget & {
+        agent: Agent & { team: Team & { members: TeamMember[] } }
+      } = {
+        id: 'widgetId',
+        agentId: 'agentId',
+        name: 'Test Widget',
+        enabled: true,
+        position: null,
+        theme: null,
+        buttonText: null,
+        buttonIcon: null,
+        primaryColor: null,
+        allowedDomains: [],
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        agent: {
+          id: 'agentId',
+          teamId: 'teamId',
+          name: 'Test Agent',
+          description: null,
+          model: 'gpt-4',
+          systemPrompt: null,
+          temperature: 1.0,
+          maxTokens: null,
+          topP: null,
+          frequencyPenalty: null,
+          presencePenalty: null,
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+          team: {
+            id: 'teamId',
+            name: 'Test Team',
+            createdAt: new Date('2024-01-01'),
+            updatedAt: new Date('2024-01-01'),
+            members: []
+          }
+        }
+      }
+      prismaMock.widget.findUnique.mockResolvedValue(widget)
+
+      const data = await authClient({
+        document: UPDATE_WIDGET_MUTATION,
+        variables: {
+          id: 'widgetId',
+          input: {
+            name: 'Updated Widget',
+            enabled: false,
+            position: 'bottom-right',
+            theme: 'light',
+            buttonText: 'Chat',
+            buttonIcon: 'chat',
+            primaryColor: '#000000',
+            allowedDomains: ['example.com']
+          }
+        }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaAgentWidgetUpdate.message',
+        'User is not a member of the team'
+      )
+    })
+
+    it('should reject if input is invalid', async () => {
+      const data = await authClient({
+        document: UPDATE_WIDGET_MUTATION,
+        variables: {
+          id: 'widgetId',
+          input: {
+            name: ''
+          }
+        }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaAgentWidgetUpdate.message',
+        JSON.stringify(
+          [
+            {
+              code: 'too_small',
+              minimum: 1,
+              type: 'string',
+              inclusive: true,
+              exact: false,
+              message: 'Name is required',
+              path: ['input', 'name']
+            }
+          ],
+          null,
+          2
+        )
+      )
     })
   })
 
   describe('luminaAgentWidgetDelete', () => {
     it('should delete widget', async () => {
-      prismaMock.widget.findUnique.mockResolvedValue({
+      const widget: Widget & {
+        agent: Agent & { team: Team & { members: TeamMember[] } }
+      } = {
         id: 'widgetId',
+        agentId: 'agentId',
+        name: 'Test Widget',
+        enabled: true,
+        position: null,
+        theme: null,
+        buttonText: null,
+        buttonIcon: null,
+        primaryColor: null,
+        allowedDomains: [],
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
         agent: {
           id: 'agentId',
+          teamId: 'teamId',
+          name: 'Test Agent',
+          description: null,
+          model: 'gpt-4',
+          systemPrompt: null,
+          temperature: 1.0,
+          maxTokens: null,
+          topP: null,
+          frequencyPenalty: null,
+          presencePenalty: null,
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
           team: {
             id: 'teamId',
+            name: 'Test Team',
+            createdAt: new Date('2024-01-01'),
+            updatedAt: new Date('2024-01-01'),
             members: [
               {
                 id: 'memberId',
+                teamId: 'teamId',
                 userId: 'testUserId',
-                role: 'OWNER'
+                role: 'OWNER',
+                createdAt: new Date('2024-01-01'),
+                updatedAt: new Date('2024-01-01')
               }
             ]
           }
         }
-      })
+      }
+      prismaMock.widget.findUnique.mockResolvedValue(widget)
 
       prismaMock.widget.delete.mockResolvedValue({
         id: 'widgetId',
@@ -215,6 +674,71 @@ describe('agent widget mutations', () => {
         id: 'widgetId'
       })
     })
+
+    it('should reject if widget not found', async () => {
+      prismaMock.widget.findUnique.mockResolvedValue(null)
+
+      const data = await authClient({
+        document: DELETE_WIDGET_MUTATION,
+        variables: { id: 'widgetId' }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaAgentWidgetDelete.message',
+        'Widget not found'
+      )
+    })
+
+    it('should reject if user is not widget member', async () => {
+      const widget: Widget & {
+        agent: Agent & { team: Team & { members: TeamMember[] } }
+      } = {
+        id: 'widgetId',
+        agentId: 'agentId',
+        name: 'Test Widget',
+        enabled: true,
+        position: null,
+        theme: null,
+        buttonText: null,
+        buttonIcon: null,
+        primaryColor: null,
+        allowedDomains: [],
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        agent: {
+          id: 'agentId',
+          teamId: 'teamId',
+          name: 'Test Agent',
+          description: null,
+          model: 'gpt-4',
+          systemPrompt: null,
+          temperature: 1.0,
+          maxTokens: null,
+          topP: null,
+          frequencyPenalty: null,
+          presencePenalty: null,
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01'),
+          team: {
+            id: 'teamId',
+            name: 'Test Team',
+            createdAt: new Date('2024-01-01'),
+            updatedAt: new Date('2024-01-01'),
+            members: []
+          }
+        }
+      }
+      prismaMock.widget.findUnique.mockResolvedValue(widget)
+
+      const data = await authClient({
+        document: DELETE_WIDGET_MUTATION,
+        variables: { id: 'widgetId' }
+      })
+
+      expect(data).toHaveProperty(
+        'data.luminaAgentWidgetDelete.message',
+        'User is not a member of the team'
+      )
+    })
   })
 })
-

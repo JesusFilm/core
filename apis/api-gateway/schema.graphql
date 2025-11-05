@@ -410,6 +410,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewDelete(languageId: ID!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
+  luminaAgentWidgetCreate(input: LuminaAgentWidgetCreateInput!) : MutationLuminaAgentWidgetCreateResult @join__field(graph: API_LUMINA) 
+  luminaAgentWidgetUpdate(id: ID!, input: LuminaAgentWidgetUpdateInput!) : MutationLuminaAgentWidgetUpdateResult @join__field(graph: API_LUMINA) 
+  luminaAgentWidgetDelete(id: ID!) : MutationLuminaAgentWidgetDeleteResult @join__field(graph: API_LUMINA) 
   luminaAgentWebsiteCreate(input: LuminaAgentWebsiteCreateInput!) : MutationLuminaAgentWebsiteCreateResult @join__field(graph: API_LUMINA) 
   luminaAgentWebsiteUpdate(id: ID!, input: LuminaAgentWebsiteUpdateInput!) : MutationLuminaAgentWebsiteUpdateResult @join__field(graph: API_LUMINA) 
   luminaAgentWebsiteDelete(id: ID!) : MutationLuminaAgentWebsiteDeleteResult @join__field(graph: API_LUMINA) 
@@ -2590,7 +2593,7 @@ type ForeignKeyConstraintErrorLocation @join__type(graph: API_LUMINA)  @join__ty
 
 type LuminaAgent @join__type(graph: API_LUMINA)  {
   id: ID
-  teamId: String
+  teamId: ID
   name: String
   description: String
   model: String
@@ -2775,6 +2778,18 @@ type MutationLuminaAgentWebsiteDeleteSuccess @join__type(graph: API_LUMINA)  {
 
 type MutationLuminaAgentWebsiteUpdateSuccess @join__type(graph: API_LUMINA)  {
   data: LuminaAgentWebsite!
+}
+
+type MutationLuminaAgentWidgetCreateSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaAgentWidget!
+}
+
+type MutationLuminaAgentWidgetDeleteSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaAgentWidget!
+}
+
+type MutationLuminaAgentWidgetUpdateSuccess @join__type(graph: API_LUMINA)  {
+  data: LuminaAgentWidget!
 }
 
 type MutationLuminaTeamCreateSuccess @join__type(graph: API_LUMINA)  {
@@ -3429,7 +3444,7 @@ union MutationLuminaAgentApiKeyDeleteResult @join__type(graph: API_LUMINA)  @joi
 
 union MutationLuminaAgentApiKeyUpdateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentApiKeyUpdateSuccess")  = ForbiddenError | NotFoundError | ZodError | MutationLuminaAgentApiKeyUpdateSuccess
 
-union MutationLuminaAgentCreateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentCreateSuccess")  = ForbiddenError | MutationLuminaAgentCreateSuccess
+union MutationLuminaAgentCreateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentCreateSuccess")  = ForbiddenError | ZodError | MutationLuminaAgentCreateSuccess
 
 union MutationLuminaAgentDeleteResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentDeleteSuccess")  = ForbiddenError | NotFoundError | MutationLuminaAgentDeleteSuccess
 
@@ -3440,6 +3455,12 @@ union MutationLuminaAgentWebsiteCreateResult @join__type(graph: API_LUMINA)  @jo
 union MutationLuminaAgentWebsiteDeleteResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentWebsiteDeleteSuccess")  = ForbiddenError | NotFoundError | MutationLuminaAgentWebsiteDeleteSuccess
 
 union MutationLuminaAgentWebsiteUpdateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentWebsiteUpdateSuccess")  = ForbiddenError | NotFoundError | ZodError | MutationLuminaAgentWebsiteUpdateSuccess
+
+union MutationLuminaAgentWidgetCreateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentWidgetCreateSuccess")  = ForbiddenError | NotFoundError | ZodError | MutationLuminaAgentWidgetCreateSuccess
+
+union MutationLuminaAgentWidgetDeleteResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentWidgetDeleteSuccess")  = ForbiddenError | NotFoundError | MutationLuminaAgentWidgetDeleteSuccess
+
+union MutationLuminaAgentWidgetUpdateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ForbiddenError")  @join__unionMember(graph: API_LUMINA, member: "NotFoundError")  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaAgentWidgetUpdateSuccess")  = ForbiddenError | NotFoundError | ZodError | MutationLuminaAgentWidgetUpdateSuccess
 
 union MutationLuminaTeamCreateResult @join__type(graph: API_LUMINA)  @join__unionMember(graph: API_LUMINA, member: "ZodError")  @join__unionMember(graph: API_LUMINA, member: "MutationLuminaTeamCreateSuccess")  = ZodError | MutationLuminaTeamCreateSuccess
 
@@ -5196,6 +5217,29 @@ input LuminaAgentWebsiteUpdateInput @join__type(graph: API_LUMINA)  {
   customDomain: String
   metaTitle: String
   metaDescription: String
+}
+
+input LuminaAgentWidgetCreateInput @join__type(graph: API_LUMINA)  {
+  agentId: String!
+  name: String!
+  enabled: Boolean!
+  position: String
+  theme: String
+  buttonText: String
+  buttonIcon: String
+  primaryColor: String
+  allowedDomains: [String!]!
+}
+
+input LuminaAgentWidgetUpdateInput @join__type(graph: API_LUMINA)  {
+  name: String
+  enabled: Boolean
+  position: String
+  theme: String
+  buttonText: String
+  buttonIcon: String
+  primaryColor: String
+  allowedDomains: [String!]
 }
 
 input LuminaTeamCreateInput @join__type(graph: API_LUMINA)  {

@@ -1,4 +1,19 @@
+import { z } from 'zod'
+
 import { builder } from '../../builder'
+
+const schema = z.object({
+  teamId: z.string().uuid('Team ID must be a valid UUID'),
+  name: z.string().min(1, 'Name is required'),
+  description: z.string().optional().nullable(),
+  model: z.string().min(1, 'Model is required'),
+  systemPrompt: z.string().optional().nullable(),
+  temperature: z.number().min(0).max(2),
+  maxTokens: z.number().int().optional().nullable(),
+  topP: z.number().min(0).max(1).optional().nullable(),
+  frequencyPenalty: z.number().min(0).max(2).optional().nullable(),
+  presencePenalty: z.number().min(0).max(2).optional().nullable()
+})
 
 export const AgentCreateInput = builder.inputType('LuminaAgentCreateInput', {
   fields: (t) => ({
@@ -11,6 +26,9 @@ export const AgentCreateInput = builder.inputType('LuminaAgentCreateInput', {
     maxTokens: t.int({ required: false }),
     topP: t.float({ required: false }),
     frequencyPenalty: t.float({ required: false }),
-    presencePenalty: t.float({ required: false }),
-  })
+    presencePenalty: t.float({ required: false })
+  }),
+  validate: {
+    schema
+  }
 })

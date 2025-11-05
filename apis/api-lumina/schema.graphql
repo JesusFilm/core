@@ -71,7 +71,7 @@ scalar Json
 
 type LuminaAgent {
   id: ID
-  teamId: String
+  teamId: ID
   name: String
   description: String
   model: String
@@ -201,6 +201,29 @@ type LuminaAgentWidget {
   usage: [LuminaUsage!]
 }
 
+input LuminaAgentWidgetCreateInput {
+  agentId: String!
+  name: String!
+  enabled: Boolean!
+  position: String
+  theme: String
+  buttonText: String
+  buttonIcon: String
+  primaryColor: String
+  allowedDomains: [String!]!
+}
+
+input LuminaAgentWidgetUpdateInput {
+  name: String
+  enabled: Boolean
+  position: String
+  theme: String
+  buttonText: String
+  buttonIcon: String
+  primaryColor: String
+  allowedDomains: [String!]
+}
+
 type LuminaTeam {
   id: ID
   name: String
@@ -325,6 +348,9 @@ type LuminaUsage {
 }
 
 type Mutation {
+  luminaAgentWidgetCreate(input: LuminaAgentWidgetCreateInput!): MutationLuminaAgentWidgetCreateResult
+  luminaAgentWidgetUpdate(id: ID!, input: LuminaAgentWidgetUpdateInput!): MutationLuminaAgentWidgetUpdateResult
+  luminaAgentWidgetDelete(id: ID!): MutationLuminaAgentWidgetDeleteResult
   luminaAgentWebsiteCreate(input: LuminaAgentWebsiteCreateInput!): MutationLuminaAgentWebsiteCreateResult
   luminaAgentWebsiteUpdate(id: ID!, input: LuminaAgentWebsiteUpdateInput!): MutationLuminaAgentWebsiteUpdateResult
   luminaAgentWebsiteDelete(id: ID!): MutationLuminaAgentWebsiteDeleteResult
@@ -365,7 +391,7 @@ type MutationLuminaAgentApiKeyUpdateSuccess {
   data: LuminaAgentApiKey!
 }
 
-union MutationLuminaAgentCreateResult = ForbiddenError | MutationLuminaAgentCreateSuccess
+union MutationLuminaAgentCreateResult = ForbiddenError | ZodError | MutationLuminaAgentCreateSuccess
 
 type MutationLuminaAgentCreateSuccess {
   data: LuminaAgent!
@@ -399,6 +425,24 @@ union MutationLuminaAgentWebsiteUpdateResult = ForbiddenError | NotFoundError | 
 
 type MutationLuminaAgentWebsiteUpdateSuccess {
   data: LuminaAgentWebsite!
+}
+
+union MutationLuminaAgentWidgetCreateResult = ForbiddenError | NotFoundError | ZodError | MutationLuminaAgentWidgetCreateSuccess
+
+type MutationLuminaAgentWidgetCreateSuccess {
+  data: LuminaAgentWidget!
+}
+
+union MutationLuminaAgentWidgetDeleteResult = ForbiddenError | NotFoundError | MutationLuminaAgentWidgetDeleteSuccess
+
+type MutationLuminaAgentWidgetDeleteSuccess {
+  data: LuminaAgentWidget!
+}
+
+union MutationLuminaAgentWidgetUpdateResult = ForbiddenError | NotFoundError | ZodError | MutationLuminaAgentWidgetUpdateSuccess
+
+type MutationLuminaAgentWidgetUpdateSuccess {
+  data: LuminaAgentWidget!
 }
 
 union MutationLuminaTeamCreateResult = ZodError | MutationLuminaTeamCreateSuccess
