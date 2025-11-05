@@ -15,6 +15,7 @@ import { ReactElement, useEffect, useRef } from 'react'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import {
   type YouTubeLanguage,
   useYouTubeClosedCaptions
@@ -63,6 +64,8 @@ export function VideoBlockEditorSettings({
   onChange
 }: VideoBlockEditorSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
+  const isWebsite = journey?.website === true
   const { enqueueSnackbar } = useSnackbar()
 
   // Fetch closed captions using custom hook
@@ -229,22 +232,26 @@ export function VideoBlockEditorSettings({
               variant="subtitle2"
               sx={{
                 color:
-                  selectedBlock?.source === VideoBlockSource.youTube
+                  selectedBlock?.source === VideoBlockSource.youTube ||
+                  isWebsite
                     ? 'action.disabled'
                     : undefined
               }}
             >
               {t('Aspect ratio')}
             </Typography>
-            {selectedBlock?.source === VideoBlockSource.youTube && (
+            {(selectedBlock?.source === VideoBlockSource.youTube ||
+              isWebsite) && (
               <Typography variant="caption" color="action.disabled">
-                {t('This option is not available for YouTube videos')}
+                {isWebsite
+                  ? t('This option is not available for microwebsites')
+                  : t('This option is not available for YouTube videos')}
               </Typography>
             )}
           </Stack>
           <ToggleButtonGroup
             value={
-              selectedBlock?.source === VideoBlockSource.youTube
+              selectedBlock?.source === VideoBlockSource.youTube || isWebsite
                 ? ObjectFit.fit
                 : values.objectFit
             }
@@ -254,7 +261,9 @@ export function VideoBlockEditorSettings({
               if (value != null) await setFieldValue('objectFit', value)
             }}
             aria-label="Object Fit"
-            disabled={selectedBlock?.source === VideoBlockSource.youTube}
+            disabled={
+              selectedBlock?.source === VideoBlockSource.youTube || isWebsite
+            }
           >
             <ToggleButton
               sx={{
