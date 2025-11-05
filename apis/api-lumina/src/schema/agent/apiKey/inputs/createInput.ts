@@ -4,7 +4,8 @@ import { builder } from '../../../builder'
 
 const schema = z.object({
   agentId: z.string().uuid('Agent ID must be a valid UUID'),
-  name: z.string().min(1, 'Name is required')
+  name: z.string().min(1, 'Name is required'),
+  enabled: z.boolean()
 })
 
 export const AgentApiKeyCreateInput = builder.inputType(
@@ -12,7 +13,8 @@ export const AgentApiKeyCreateInput = builder.inputType(
   {
     fields: (t) => ({
       agentId: t.id({ required: true }),
-      name: t.string({ required: true })
+      name: t.string({ required: true }),
+      enabled: t.boolean({ required: true })
     }),
     validate: {
       schema

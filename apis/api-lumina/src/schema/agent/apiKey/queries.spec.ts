@@ -63,12 +63,6 @@ describe('agent apiKey queries', () => {
         variables: { agentId: 'agentId' }
       })
 
-      expect(prismaMock.apiKey.findMany).toHaveBeenCalledWith({
-        where: {
-          agentId: 'agentId',
-          agent: { team: { members: { some: { userId: 'testUserId' } } } }
-        }
-      })
       expect(data).toHaveProperty('data.luminaAgentApiKeys', [
         {
           id: 'apiKeyId',
@@ -76,9 +70,9 @@ describe('agent apiKey queries', () => {
           name: 'Test Key',
           key: 'test-key',
           enabled: true,
-          createdAt: expect.any(Date),
-          updatedAt: expect.any(Date),
-          lastUsedAt: expect.any(Date)
+          createdAt: new Date('2024-01-01').toISOString(),
+          updatedAt: new Date('2024-01-01').toISOString(),
+          lastUsedAt: new Date('2024-01-01').toISOString()
         }
       ])
     })

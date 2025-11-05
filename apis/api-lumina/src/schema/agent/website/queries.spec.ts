@@ -54,7 +54,9 @@ describe('agent website queries', () => {
           subdomain: 'test',
           customDomain: null,
           metaTitle: null,
-          metaDescription: null
+          metaDescription: null,
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-01')
         }
       ])
 
@@ -84,7 +86,13 @@ describe('agent website queries', () => {
         id: 'websiteId',
         agentId: 'agentId',
         name: 'Test Website',
-        enabled: true
+        enabled: true,
+        subdomain: null,
+        customDomain: null,
+        metaTitle: null,
+        metaDescription: null,
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01')
       })
 
       const data = await authClient({
@@ -108,8 +116,10 @@ describe('agent website queries', () => {
         variables: { id: 'nonExistentId' }
       })
 
-      expect(data).toHaveProperty('data.luminaAgentWebsite.message', 'Website not found')
+      expect(data).toHaveProperty(
+        'data.luminaAgentWebsite.message',
+        'Website not found'
+      )
     })
   })
 })
-

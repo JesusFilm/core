@@ -6,8 +6,20 @@ const schema = z.object({
   agentId: z.string().uuid('Agent ID must be a valid UUID'),
   name: z.string().min(1, 'Name is required'),
   enabled: z.boolean(),
-  subdomain: z.string().optional(),
-  customDomain: z.string().optional(),
+  subdomain: z
+    .string()
+    .regex(
+      /^(?!-)[a-z0-9-]{1,63}(?<!-)$/i,
+      'Invalid subdomain (letters, numbers, and hyphens only)'
+    )
+    .optional(),
+  customDomain: z
+    .string()
+    .regex(
+      /^(?=.{1,253}$)(?!-)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i,
+      'Invalid custom domain (e.g., example.com)'
+    )
+    .optional(),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional()
 })
