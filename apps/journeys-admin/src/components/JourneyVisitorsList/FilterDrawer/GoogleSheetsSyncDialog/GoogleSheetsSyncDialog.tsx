@@ -210,6 +210,26 @@ export function GoogleSheetsSyncDialog({
     (sync) => sync.deletedAt != null
   )
 
+  // Auto-open "Add Google Sheets Sync" dialog if there are no syncs
+  useEffect(() => {
+    if (!open) return
+    if (syncsLoading) return
+    // Skip if we're already handling integration creation return flow
+    const integrationCreated = router.query.integrationCreated === 'true'
+    if (integrationCreated) return
+
+    // If there are no active or history syncs, open the add dialog directly
+    if (activeSyncs.length === 0 && historySyncs.length === 0) {
+      setGoogleDialogOpen(true)
+    }
+  }, [
+    open,
+    syncsLoading,
+    activeSyncs.length,
+    historySyncs.length,
+    router.query.integrationCreated
+  ])
+
   function getStartedByLabel(sync: GoogleSheetsSyncItem): string {
     if (sync.integration?.__typename === 'IntegrationGoogle') {
       return sync.integration.accountEmail ?? sync.email ?? 'N/A'
