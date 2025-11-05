@@ -11,7 +11,7 @@ import { FormikValues, useFormik } from 'formik'
 import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useRef } from 'react'
+import { ReactElement } from 'react'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -174,7 +174,6 @@ export function VideoBlockEditorSettings({
                     : null
                 }
                 journeyLanguageCode={journey?.language.bcp47}
-                disabled={selectedBlock == null}
               />
             )}
             <Divider />

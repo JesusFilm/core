@@ -51,14 +51,12 @@ interface MuxSubtitleEnablementToggleProps {
   videoBlockId: string | null
   muxVideoId: string | null
   journeyLanguageCode: string | null | undefined
-  disabled?: boolean
 }
 
 export function MuxSubtitleEnablementToggle({
   videoBlockId,
   muxVideoId,
-  journeyLanguageCode,
-  disabled = false
+  journeyLanguageCode
 }: MuxSubtitleEnablementToggleProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const isValidLanguage = useValidateMuxLanguage(journeyLanguageCode)
@@ -89,10 +87,11 @@ export function MuxSubtitleEnablementToggle({
       ? subtitleTrackData.getMyGeneratedMuxSubtitleTrack.data
       : null
 
-  // Poll for subtitle track status changes when processing
+
+  // Mux subtitle generation typically takes longer to complete than the video upload does
+  // Poll to check when completed.
   useEffect(() => {
     if (subtitleTrack?.status === 'processing') {
-      console.log('poll for sub gen status')
       startPolling(3000)
     } else {
       stopPolling()
@@ -103,7 +102,6 @@ export function MuxSubtitleEnablementToggle({
     }
   }, [subtitleTrack?.status, startPolling, stopPolling])
 
-  // Query VideoBlock for current subtitle setting
   const { data: videoBlockData } = useQuery<{ block: VideoFields }>(
     GET_VIDEO_BLOCK,
     {
@@ -115,11 +113,9 @@ export function MuxSubtitleEnablementToggle({
     }
   )
 
-  // Update mutation
   const [updateSubtitleSettings, { loading: updating }] =
     useMutation<VideoBlockUpdateSubtitle>(VIDEO_BLOCK_UPDATE_SUBTITLE)
 
-  // Sync toggle state with fetched data
   useEffect(() => {
     if (
       videoBlockData?.block?.showGeneratedSubtitles != null &&
@@ -154,17 +150,19 @@ export function MuxSubtitleEnablementToggle({
 
   // Determine toggle state and label
   const subtitleStatus = subtitleTrack?.status
+  const isProcessing = subtitleStatus === 'processing'
+  const isErrored = subtitleStatus === 'errored'
+
   const isToggleDisabled =
-    disabled ||
     !isValidLanguage ||
     subtitleTrackError != null ||
     subtitleStatus == null ||
-    subtitleStatus === 'processing' ||
-    subtitleStatus === 'errored' ||
+    isProcessing ||
+    isErrored ||
     updating
 
-  let labelText = t('Subtitles not available for this video')
-  if (isValidLanguage && subtitleStatus === 'processing') {
+  let labelText = !isValidLanguage ? t('Subtitles not available for this video') : ''
+  if (isValidLanguage && isProcessing) {
     labelText = t(
       'Auto subtitle generation in progress, please try again later'
     )
@@ -182,7 +180,7 @@ export function MuxSubtitleEnablementToggle({
           }}
         />
       </Stack>
-      {(isToggleDisabled || subtitleStatus === 'processing') && (
+      {(
         <Typography variant="caption" color="text.secondary">
           {labelText}
         </Typography>
