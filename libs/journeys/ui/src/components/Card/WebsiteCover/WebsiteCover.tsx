@@ -10,10 +10,10 @@ import { VideoFields } from '../../Video/__generated__/VideoFields'
 import { OverlayContent } from '../OverlayContent'
 import { stripAlphaFromHex } from '../utils/colorOpacityUtils'
 
-import { BackgroundVideo } from './BackgroundVideo'
+import { BackgroundVideo } from '../ContainedCover/BackgroundVideo'
 
 interface WebsiteCoverProps {
-  children: ReactNode
+  children: ReactNode[]
   backgroundColor: string
   backgroundBlur?: string
   videoBlock?: TreeBlock<VideoFields>
@@ -44,11 +44,73 @@ export function WebsiteCover({
               (block) =>
                 block.id === videoBlock.posterBlockId &&
                 block.__typename === 'ImageBlock'
-            ) as TreeBlock<ImageFields>
-          ).src
+            ) as TreeBlock<ImageFields> | undefined
+          )?.src
         : videoBlock?.mediaVideo?.images[0]?.mobileCinematicHigh
       : // Use Youtube or mux set poster image
         videoBlock?.image
+
+  const VideoSection =
+    videoBlock != null ? (
+      <Box
+        data-testid="website-cover-video"
+        sx={{
+          position: 'relative',
+          width: '100%',
+          height: MEDIA_HEIGHT,
+          overflow: 'hidden'
+        }}
+      >
+        <BackgroundVideo
+          {...videoBlock}
+          setLoading={setLoading}
+          cardColor={backgroundColor}
+        />
+        {posterImage != null && loading && (
+          <NextImage
+            data-testid="video-poster-image"
+            className="vjs-poster"
+            src={posterImage}
+            aria-details={posterImage}
+            alt="card video image"
+            layout="fill"
+            objectFit="cover"
+            sx={{
+              transform:
+                videoBlock.source === VideoBlockSource.youTube
+                  ? 'scale(2)'
+                  : 'unset'
+            }}
+          />
+        )}
+      </Box>
+    ) : null
+
+  const ImageSection =
+    imageBlock != null && backgroundBlur != null ? (
+      <Box
+        data-testid="website-cover-image"
+        sx={{
+          position: 'relative',
+          width: '100%',
+          height: MEDIA_HEIGHT
+        }}
+      >
+        <NextImage
+          src={imageBlock.src ?? backgroundBlur}
+          alt={imageBlock.alt}
+          placeholder="blur"
+          blurDataURL={backgroundBlur}
+          layout="fill"
+          objectFit="cover"
+          objectPosition={`${imageBlock.focalLeft}% ${imageBlock.focalTop}%`}
+          sx={{
+            transform: `scale(${(imageBlock.scale ?? 100) / 100})`,
+            transformOrigin: `${imageBlock.focalLeft}% ${imageBlock.focalTop}%`
+          }}
+        />
+      </Box>
+    ) : null
 
   return (
     <Box
@@ -60,64 +122,8 @@ export function WebsiteCover({
         backgroundColor: baseBackgroundColor
       }}
     >
-      {videoBlock != null && (
-        <Box
-          data-testid="website-cover-video"
-          sx={{
-            position: 'relative',
-            width: '100%',
-            height: MEDIA_HEIGHT,
-            overflow: 'hidden'
-          }}
-        >
-          <BackgroundVideo
-            {...videoBlock}
-            setLoading={setLoading}
-            cardColor={backgroundColor}
-          />
-          {posterImage != null && loading && (
-            <NextImage
-              data-testid="video-poster-image"
-              className="vjs-poster"
-              src={posterImage}
-              aria-details={posterImage}
-              alt="card video image"
-              layout="fill"
-              objectFit="cover"
-              sx={{
-                transform:
-                  videoBlock?.source === VideoBlockSource.youTube
-                    ? 'scale(3)'
-                    : 'unset'
-              }}
-            />
-          )}
-        </Box>
-      )}
-      {imageBlock != null && backgroundBlur != null && (
-        <Box
-          data-testid="website-cover-image"
-          sx={{
-            position: 'relative',
-            width: '100%',
-            height: MEDIA_HEIGHT
-          }}
-        >
-          <NextImage
-            src={imageBlock.src ?? backgroundBlur}
-            alt={imageBlock.alt}
-            placeholder="blur"
-            blurDataURL={backgroundBlur}
-            layout="fill"
-            objectFit="cover"
-            objectPosition={`${imageBlock.focalLeft}% ${imageBlock.focalTop}%`}
-            sx={{
-              transform: `scale(${(imageBlock.scale ?? 100) / 100})`,
-              transformOrigin: `${imageBlock.focalLeft}% ${imageBlock.focalTop}%`
-            }}
-          />
-        </Box>
-      )}
+      {VideoSection}
+      {ImageSection}
 
       <Box data-testid="website-cover-content">
         <OverlayContent
