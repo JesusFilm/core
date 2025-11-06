@@ -68,7 +68,7 @@ describe('agent apiKey queries', () => {
           id: 'apiKeyId',
           agentId: 'agentId',
           name: 'Test Key',
-          key: 'test-key',
+          key: '***-key',
           enabled: true,
           createdAt: new Date('2024-01-01').toISOString(),
           updatedAt: new Date('2024-01-01').toISOString(),

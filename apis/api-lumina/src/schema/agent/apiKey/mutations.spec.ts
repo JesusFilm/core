@@ -342,7 +342,7 @@ describe('agent apiKey mutations', () => {
       expect(data).toHaveProperty('data.luminaAgentApiKeyUpdate.data', {
         id: 'apiKeyId',
         agentId: 'agentId',
-        key: 'test-key-123',
+        key: '***-123',
         name: 'Updated Key',
         enabled: false,
         createdAt: new Date('2024-01-01').toISOString(),
@@ -419,7 +419,7 @@ describe('agent apiKey mutations', () => {
       expect(data).toHaveProperty('data.luminaAgentApiKeyUpdate.data', {
         id: 'apiKeyId',
         agentId: 'agentId',
-        key: 'test-key',
+        key: '***-key',
         name: 'Test Key',
         enabled: true,
         createdAt: new Date('2024-01-01').toISOString(),

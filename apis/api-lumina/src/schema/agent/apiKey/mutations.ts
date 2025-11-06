@@ -49,13 +49,15 @@ builder.mutationField('luminaAgentApiKeyCreate', (t) =>
           }
         ])
 
-      return await prisma.apiKey.create({
+      const apiKey = await prisma.apiKey.create({
         ...query,
         data: {
           ...input,
           key: randomBytes(32).toString('hex')
         }
       })
+
+      return Object.assign(apiKey, { _showFullKey: true })
     }
   })
 )
