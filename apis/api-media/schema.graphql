@@ -131,6 +131,11 @@ type ForeignKeyConstraintErrorLocation {
   value: String
 }
 
+input GenerateSubtitlesInput {
+  languageCode: String!
+  languageName: String!
+}
+
 enum IdType {
   databaseId
   slug
@@ -198,7 +203,7 @@ type Mutation {
   bibleCitationDelete(id: ID!): Boolean
   createKeyword(value: String!, languageId: String!): Keyword!
   createMuxVideoAndQueueUpload(videoId: ID!, edition: String!, languageId: ID!, version: Int!, r2PublicUrl: String!, originalFilename: String!, durationMs: Int!, duration: Int!, width: Int!, height: Int!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = fhd): MuxVideo!
-  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
+  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd, generateSubtitlesInput: GenerateSubtitlesInput): MuxVideo!
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
@@ -326,7 +331,7 @@ type MutationPlaylistItemsReorderSuccess {
   data: [PlaylistItem!]!
 }
 
-union MutationPlaylistUpdateResult = ZodError | NotFoundError | MutationPlaylistUpdateSuccess
+union MutationPlaylistUpdateResult = NotFoundError | ZodError | MutationPlaylistUpdateSuccess
 
 type MutationPlaylistUpdateSuccess {
   data: Playlist!
@@ -431,7 +436,7 @@ input MutationShortLinkUpdateInput {
   bitrate: Int
 }
 
-union MutationShortLinkUpdateResult = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
+union MutationShortLinkUpdateResult = NotFoundError | ZodError | MutationShortLinkUpdateSuccess
 
 type MutationShortLinkUpdateSuccess {
   data: ShortLink!
@@ -446,6 +451,15 @@ input MutationVideoOriginUpdateInput {
   id: ID!
   name: String
   description: String
+}
+
+type MuxSubtitleTrack {
+  id: ID!
+  trackId: String!
+  source: String!
+  status: String!
+  bcp47: String!
+  muxVideoId: ID!
 }
 
 type MuxVideo
@@ -578,6 +592,7 @@ type Query {
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
   getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
+  getMyGeneratedMuxSubtitleTrack(muxVideoId: ID!, bcp47: String!, userGenerated: Boolean): QueryGetMyGeneratedMuxSubtitleTrackResult!
   playlists: [Playlist!]
   playlist(id: ID!, idType: IdType! = databaseId): QueryPlaylistResult
 
@@ -633,6 +648,12 @@ type Query {
   arclightApiKeyByKey(key: String!): ArclightApiKey
 }
 
+union QueryGetMyGeneratedMuxSubtitleTrackResult = Error | QueryGetMyGeneratedMuxSubtitleTrackSuccess
+
+type QueryGetMyGeneratedMuxSubtitleTrackSuccess {
+  data: MuxSubtitleTrack!
+}
+
 union QueryPlaylistResult = NotFoundError | QueryPlaylistSuccess
 
 type QueryPlaylistSuccess {
@@ -679,7 +700,7 @@ type QueryShortLinksConnectionEdge {
   cursor: String!
 }
 
-union QueryYoutubeClosedCaptionLanguagesResult = ZodError | Error | QueryYoutubeClosedCaptionLanguagesSuccess
+union QueryYoutubeClosedCaptionLanguagesResult = Error | ZodError | QueryYoutubeClosedCaptionLanguagesSuccess
 
 type QueryYoutubeClosedCaptionLanguagesSuccess {
   data: [Language!]!
