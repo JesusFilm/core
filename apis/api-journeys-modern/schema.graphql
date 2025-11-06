@@ -304,6 +304,14 @@ enum ContactActionType {
   text
 }
 
+input CreateGoogleSheetsSyncInput {
+  journeyId: String!
+  integrationId: String!
+  spreadsheetId: String!
+  sheetName: String!
+  folderId: String
+}
+
 type CustomDomain
   @shareable
 {
@@ -404,6 +412,32 @@ enum EventType {
   VideoExpandEvent
   VideoCollapseEvent
   VideoProgressEvent
+}
+
+enum GoogleSheetExportMode {
+  create
+  existing
+}
+
+type GoogleSheetsSync {
+  id: ID
+  teamId: String
+  journeyId: String
+  integrationId: String
+  spreadsheetId: String
+  sheetName: String
+  folderId: String
+  email: String
+  deletedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  integration: Integration
+  journey: Journey!
+}
+
+input GoogleSheetsSyncsFilter {
+  journeyId: ID
+  integrationId: ID
 }
 
 enum GridAlignItems {
@@ -625,7 +659,60 @@ interface Integration {
   team: Team!
 }
 
+type IntegrationGoogle implements Integration
+  @shareable
+{
+  id: ID!
+  type: IntegrationType!
+  team: Team!
+  accessId: String
+  accessSecretPart: String
+  accountEmail: String
+  user: User
+}
+
+input IntegrationGoogleCreateInput {
+  teamId: String!
+  code: String!
+  redirectUri: String!
+}
+
+input IntegrationGoogleUpdateInput {
+  code: String!
+  redirectUri: String!
+}
+
+type IntegrationGrowthSpaces implements Integration
+  @shareable
+{
+  id: ID!
+  type: IntegrationType!
+  team: Team!
+  accessId: String
+  accessSecretPart: String
+  routes: [IntegrationGrowthSpacesRoute!]
+}
+
+input IntegrationGrowthSpacesCreateInput {
+  accessId: String!
+  accessSecret: String!
+  teamId: String!
+}
+
+type IntegrationGrowthSpacesRoute
+  @shareable
+{
+  id: String
+  name: String
+}
+
+input IntegrationGrowthSpacesUpdateInput {
+  accessId: String!
+  accessSecret: String!
+}
+
 enum IntegrationType {
+  google
   growthSpaces
 }
 
@@ -978,6 +1065,20 @@ input JourneyVisitorFilter {
   countryCode: String
 }
 
+input JourneyVisitorGoogleSheetDestinationInput {
+  mode: GoogleSheetExportMode!
+  spreadsheetTitle: String
+  folderId: String
+  spreadsheetId: String
+  sheetName: String
+}
+
+type JourneyVisitorGoogleSheetExportResult {
+  spreadsheetId: String
+  spreadsheetUrl: String
+  sheetName: String
+}
+
 enum JourneyVisitorSort {
   date
   duration
@@ -1201,9 +1302,14 @@ type Mutation {
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @override(from: "api-journeys")
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent! @override(from: "api-journeys")
   journeySimpleUpdate(id: ID!, journey: Json!): Json
+  googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!): GoogleSheetsSync!
+  googleSheetsSyncDelete(id: ID!): GoogleSheetsSync!
+  integrationGoogleCreate(input: IntegrationGoogleCreateInput!): IntegrationGoogle!
+  integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!): IntegrationGoogle!
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
+  journeyVisitorExportToGoogleSheet(journeyId: ID!, filter: JourneyEventsFilter, select: JourneyVisitorExportSelect, destination: JourneyVisitorGoogleSheetDestinationInput!, integrationId: ID!): JourneyVisitorGoogleSheetExportResult!
 }
 
 input MutationJourneyLanguageAiDetectInput {
@@ -1360,6 +1466,8 @@ type Query {
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
   journeySimpleGet(id: ID!): Json
+  googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!): [GoogleSheetsSync!]!
+  integrationGooglePickerToken(teamId: ID!, integrationId: ID): String!
 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information

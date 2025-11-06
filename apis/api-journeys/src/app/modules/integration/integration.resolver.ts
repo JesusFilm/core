@@ -1,10 +1,17 @@
 import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql'
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver
+} from '@nestjs/graphql'
 import { GraphQLError } from 'graphql'
 
 import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { Integration, Prisma } from '@core/prisma/journeys/client'
+import { Integration, Prisma, Team } from '@core/prisma/journeys/client'
 
 import { IntegrationType } from '../../__generated__/graphql'
 import { Action, AppAbility } from '../../lib/casl/caslFactory'
@@ -18,6 +25,8 @@ export class IntegrationResolver {
   @ResolveField()
   __resolveType(obj: { type: IntegrationType }): string {
     switch (obj.type) {
+      case 'google':
+        return 'IntegrationGoogle'
       case 'growthSpaces':
         return 'IntegrationGrowthSpaces'
       default:
@@ -35,7 +44,8 @@ export class IntegrationResolver {
     return await this.prismaService.integration.findMany({
       where: {
         AND: [accessibleIntegrations, { teamId }]
-      }
+      },
+      include: { team: true }
     })
   }
 
@@ -62,5 +72,15 @@ export class IntegrationResolver {
     return await this.prismaService.integration.delete({
       where: { id }
     })
+  }
+
+  @ResolveField()
+  async team(@Parent() integration: Integration): Promise<Team> {
+    console.log('hit')
+    const result = await this.prismaService.team.findUnique({
+      where: { id: integration.teamId }
+    })
+    // team is required by schema and foreign key constraint ensures presence
+    return result!
   }
 }

@@ -200,6 +200,7 @@ export enum MessagePlatform {
 }
 
 export enum IntegrationType {
+    google = "google",
     growthSpaces = "growthSpaces"
 }
 
@@ -1718,6 +1719,17 @@ export class Host {
     location?: Nullable<string>;
     src1?: Nullable<string>;
     src2?: Nullable<string>;
+}
+
+export class IntegrationGoogle implements Integration {
+    __typename?: 'IntegrationGoogle';
+    id: string;
+    team: Team;
+    type: IntegrationType;
+    accessId: string;
+    accessSecretPart: string;
+    user?: Nullable<User>;
+    accountEmail?: Nullable<string>;
 }
 
 export class IntegrationGrowthSpaces implements Integration {

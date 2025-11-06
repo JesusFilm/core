@@ -3,7 +3,11 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { sendEventsEmail, validateBlockEvent } from '../utils'
+import {
+  appendEventToGoogleSheets,
+  sendEventsEmail,
+  validateBlockEvent
+} from '../utils'
 
 import { ChatOpenEventRef } from './chatOpenEvent'
 import { ChatOpenEventCreateInput } from './inputs'
@@ -70,6 +74,27 @@ builder.mutationField('chatOpenEventCreate', (t) =>
       ])
 
       await sendEventsEmail(journeyId, visitor.id)
+
+      // live sync to Google Sheets (fire and forget)
+      void appendEventToGoogleSheets({
+        journeyId,
+        teamId:
+          (
+            await prisma.journey.findUnique({
+              where: { id: journeyId },
+              select: { teamId: true }
+            })
+          )?.teamId ?? '',
+        row: [
+          visitor.id,
+          event.createdAt.toISOString(),
+          '',
+          '',
+          '',
+          input.blockId ?? '',
+          input.value ?? ''
+        ]
+      })
 
       return event
     }

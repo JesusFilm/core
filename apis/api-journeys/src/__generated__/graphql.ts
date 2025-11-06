@@ -481,6 +481,14 @@ export type CountryName = {
   value: Scalars['String']['output'];
 };
 
+export type CreateGoogleSheetsSyncInput = {
+  folderId?: InputMaybe<Scalars['String']['input']>;
+  integrationId: Scalars['String']['input'];
+  journeyId: Scalars['String']['input'];
+  sheetName: Scalars['String']['input'];
+  spreadsheetId: Scalars['String']['input'];
+};
+
 export type CreateVerificationRequestInput = {
   redirect?: InputMaybe<Scalars['String']['input']>;
 };
@@ -625,6 +633,33 @@ export type ForeignKeyConstraintErrorLocation = {
   path?: Maybe<Array<Scalars['String']['output']>>;
   /** The value that was provided at the path */
   value?: Maybe<Scalars['String']['output']>;
+};
+
+export enum GoogleSheetExportMode {
+  Create = 'create',
+  Existing = 'existing'
+}
+
+export type GoogleSheetsSync = {
+  __typename?: 'GoogleSheetsSync';
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  folderId?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  integration?: Maybe<Integration>;
+  integrationId?: Maybe<Scalars['String']['output']>;
+  journey: Journey;
+  journeyId?: Maybe<Scalars['String']['output']>;
+  sheetName?: Maybe<Scalars['String']['output']>;
+  spreadsheetId?: Maybe<Scalars['String']['output']>;
+  teamId?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type GoogleSheetsSyncsFilter = {
+  integrationId?: InputMaybe<Scalars['ID']['input']>;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export enum GridAlignItems {
@@ -834,12 +869,34 @@ export type Integration = {
   type: IntegrationType;
 };
 
+export type IntegrationGoogle = Integration & {
+  __typename?: 'IntegrationGoogle';
+  accessId?: Maybe<Scalars['String']['output']>;
+  accessSecretPart?: Maybe<Scalars['String']['output']>;
+  accountEmail?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  team: Team;
+  type: IntegrationType;
+  user?: Maybe<User>;
+};
+
+export type IntegrationGoogleCreateInput = {
+  code: Scalars['String']['input'];
+  redirectUri: Scalars['String']['input'];
+  teamId: Scalars['String']['input'];
+};
+
+export type IntegrationGoogleUpdateInput = {
+  code: Scalars['String']['input'];
+  redirectUri: Scalars['String']['input'];
+};
+
 export type IntegrationGrowthSpaces = Integration & {
   __typename?: 'IntegrationGrowthSpaces';
-  accessId: Scalars['String']['output'];
-  accessSecretPart: Scalars['String']['output'];
+  accessId?: Maybe<Scalars['String']['output']>;
+  accessSecretPart?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  routes: Array<IntegrationGrowthSpacesRoute>;
+  routes?: Maybe<Array<IntegrationGrowthSpacesRoute>>;
   team: Team;
   type: IntegrationType;
 };
@@ -852,8 +909,8 @@ export type IntegrationGrowthSpacesCreateInput = {
 
 export type IntegrationGrowthSpacesRoute = {
   __typename?: 'IntegrationGrowthSpacesRoute';
-  id: Scalars['String']['output'];
-  name: Scalars['String']['output'];
+  id?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
 };
 
 export type IntegrationGrowthSpacesUpdateInput = {
@@ -862,6 +919,7 @@ export type IntegrationGrowthSpacesUpdateInput = {
 };
 
 export enum IntegrationType {
+  Google = 'google',
   GrowthSpaces = 'growthSpaces'
 }
 
@@ -1304,6 +1362,21 @@ export type JourneyVisitorFilter = {
   journeyId: Scalars['String']['input'];
 };
 
+export type JourneyVisitorGoogleSheetDestinationInput = {
+  folderId?: InputMaybe<Scalars['String']['input']>;
+  mode: GoogleSheetExportMode;
+  sheetName?: InputMaybe<Scalars['String']['input']>;
+  spreadsheetId?: InputMaybe<Scalars['String']['input']>;
+  spreadsheetTitle?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type JourneyVisitorGoogleSheetExportResult = {
+  __typename?: 'JourneyVisitorGoogleSheetExportResult';
+  sheetName?: Maybe<Scalars['String']['output']>;
+  spreadsheetId?: Maybe<Scalars['String']['output']>;
+  spreadsheetUrl?: Maybe<Scalars['String']['output']>;
+};
+
 export enum JourneyVisitorSort {
   Activity = 'activity',
   Date = 'date',
@@ -1611,6 +1684,8 @@ export type Mutation = {
   deleteMuxVideo: Scalars['Boolean']['output'];
   enableMuxDownload?: Maybe<MuxVideo>;
   fixVideoLanguages: Scalars['Boolean']['output'];
+  googleSheetsSyncCreate: GoogleSheetsSync;
+  googleSheetsSyncDelete: GoogleSheetsSync;
   hostCreate: Host;
   hostDelete: Host;
   hostUpdate: Host;
@@ -1619,6 +1694,8 @@ export type Mutation = {
   imageBlockCreate: ImageBlock;
   imageBlockUpdate: ImageBlock;
   integrationDelete: Integration;
+  integrationGoogleCreate: IntegrationGoogle;
+  integrationGoogleUpdate: IntegrationGoogle;
   integrationGrowthSpacesCreate: IntegrationGrowthSpaces;
   integrationGrowthSpacesUpdate: IntegrationGrowthSpaces;
   journeyAiTranslateCreate: Journey;
@@ -1650,6 +1727,7 @@ export type Mutation = {
    * period of the previous JourneyViewEvent
    */
   journeyViewEventCreate?: Maybe<JourneyViewEvent>;
+  journeyVisitorExportToGoogleSheet: JourneyVisitorGoogleSheetExportResult;
   /** Sets journeys statuses to archived */
   journeysArchive?: Maybe<Array<Maybe<Journey>>>;
   /** Sets journeys statuses to deleted */
@@ -2064,6 +2142,16 @@ export type MutationFixVideoLanguagesArgs = {
 };
 
 
+export type MutationGoogleSheetsSyncCreateArgs = {
+  input: CreateGoogleSheetsSyncInput;
+};
+
+
+export type MutationGoogleSheetsSyncDeleteArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationHostCreateArgs = {
   input: HostCreateInput;
   teamId: Scalars['ID']['input'];
@@ -2109,6 +2197,17 @@ export type MutationImageBlockUpdateArgs = {
 
 export type MutationIntegrationDeleteArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationIntegrationGoogleCreateArgs = {
+  input: IntegrationGoogleCreateInput;
+};
+
+
+export type MutationIntegrationGoogleUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: IntegrationGoogleUpdateInput;
 };
 
 
@@ -2230,6 +2329,15 @@ export type MutationJourneyUpdateArgs = {
 
 export type MutationJourneyViewEventCreateArgs = {
   input: JourneyViewEventCreateInput;
+};
+
+
+export type MutationJourneyVisitorExportToGoogleSheetArgs = {
+  destination: JourneyVisitorGoogleSheetDestinationInput;
+  filter?: InputMaybe<JourneyEventsFilter>;
+  integrationId: Scalars['ID']['input'];
+  journeyId: Scalars['ID']['input'];
+  select?: InputMaybe<JourneyVisitorExportSelect>;
 };
 
 
@@ -3418,7 +3526,9 @@ export type Query = {
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
   getUserRole?: Maybe<UserRole>;
+  googleSheetsSyncs: Array<GoogleSheetsSync>;
   hosts: Array<Host>;
+  integrationGooglePickerToken: Scalars['String']['output'];
   integrations: Array<Integration>;
   journey: Journey;
   journeyCollection: JourneyCollection;
@@ -3623,7 +3733,18 @@ export type QueryGetMyMuxVideosArgs = {
 };
 
 
+export type QueryGoogleSheetsSyncsArgs = {
+  filter: GoogleSheetsSyncsFilter;
+};
+
+
 export type QueryHostsArgs = {
+  teamId: Scalars['ID']['input'];
+};
+
+
+export type QueryIntegrationGooglePickerTokenArgs = {
+  integrationId?: InputMaybe<Scalars['ID']['input']>;
   teamId: Scalars['ID']['input'];
 };
 
