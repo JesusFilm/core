@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentProps } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -357,6 +357,57 @@ const steps: Array<TreeBlock<StepBlock>> = [
     id: 'step3.id',
     __typename: 'StepBlock',
     parentBlockId: null,
+    parentOrder: 2,
+    locked: false,
+    nextBlockId: 'step4.id',
+    slug: null,
+    children: [
+      {
+        id: 'multiselectCard.id',
+        __typename: 'CardBlock',
+        parentBlockId: 'step2.id',
+        coverBlockId: null,
+        parentOrder: 1,
+        backgroundColor: null,
+        themeMode: null,
+        themeName: null,
+        fullscreen: false,
+        backdropBlur: null,
+        children: [
+          {
+            id: 'multiselectQuestion1.id',
+            __typename: 'MultiselectBlock',
+            parentBlockId: 'multiselectCard.id',
+            parentOrder: 0,
+            min: null,
+            max: 2,
+            children: [
+              {
+                id: 'multiselectOption1.id',
+                __typename: 'MultiselectOptionBlock',
+                parentBlockId: 'multiselectQuestion1.id',
+                parentOrder: 0,
+                label: 'Option 1',
+                children: []
+              },
+              {
+                id: 'multiselectOption2.id',
+                __typename: 'MultiselectOptionBlock',
+                parentBlockId: 'multiselectQuestion1.id',
+                parentOrder: 1,
+                label: 'Option 2',
+                children: []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'step3.id',
+    __typename: 'StepBlock',
+    parentBlockId: null,
     parentOrder: 3,
     locked: false,
     nextBlockId: 'step4.id',
@@ -483,6 +534,7 @@ const steps: Array<TreeBlock<StepBlock>> = [
             duration: null,
             image: null,
             objectFit: null,
+            subtitleLanguage: null,
             mediaVideo: {
               __typename: 'Video',
               id: '2_0-FallingPlates',

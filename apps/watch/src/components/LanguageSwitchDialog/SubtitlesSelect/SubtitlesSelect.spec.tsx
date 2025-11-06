@@ -36,28 +36,43 @@ describe('SubtitlesSelect', () => {
     nativeName: { id: '496', value: 'Français', primary: true }
   }
 
+  const spanish = {
+    id: '21028',
+    slug: 'spanish',
+    displayName: 'Spanish',
+    name: { id: '21028', value: 'Spanish', primary: false },
+    englishName: { id: '21028', value: 'Spanish', primary: false },
+    nativeName: { id: '21028', value: 'Español', primary: true }
+  }
+
+  const english = {
+    id: '529',
+    slug: 'english',
+    displayName: 'English',
+    name: { id: '529', value: 'English', primary: true },
+    englishName: { id: '529', value: 'English', primary: true },
+    nativeName: { id: '529', value: 'English', primary: true }
+  }
+
+  const nonSubtitleLanguage = {
+    id: '987654',
+    slug: 'non-subtitle-language',
+    displayName: 'Non Subtitle Language',
+    name: { id: '987654', value: 'Non Subtitle Language', primary: false },
+    englishName: {
+      id: '987654',
+      value: 'Non Subtitle Language',
+      primary: false
+    },
+    nativeName: { id: '987654', value: 'Non Subtitle Language', primary: true }
+  }
+
+  const languages = [english, french, spanish, nonSubtitleLanguage]
+
   beforeEach(() => {
     jest.clearAllMocks()
     useLanguagesMock.mockReturnValue({
-      languages: [
-        {
-          id: '529',
-          slug: 'english',
-          displayName: 'English',
-          name: { id: '529', value: 'English', primary: true },
-          englishName: { id: '529', value: 'English', primary: true },
-          nativeName: { id: '529', value: 'English', primary: true }
-        },
-        french,
-        {
-          id: '21028',
-          slug: 'spanish',
-          displayName: 'Spanish',
-          name: { id: '21028', value: 'Spanish', primary: false },
-          englishName: { id: '21028', value: 'Spanish', primary: false },
-          nativeName: { id: '21028', value: 'Español', primary: true }
-        }
-      ],
+      languages,
       isLoading: false
     })
   })
@@ -208,21 +223,17 @@ describe('SubtitlesSelect', () => {
 
       await userEvent.click(screen.getByRole('combobox'))
 
-      await waitFor(() => {
-        expect(screen.getByText('Available Languages')).toBeInTheDocument()
-        expect(screen.getByText('Other Languages')).toBeInTheDocument()
-      })
       // available languages
-      expect(screen.getAllByRole('list')[0].children[0]).toHaveTextContent(
-        'English'
-      )
-      expect(screen.getAllByRole('list')[0].children[1]).toHaveTextContent(
-        'FrenchFrançais'
-      )
+      expect(
+        screen.getByRole('option', { name: 'English' })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('option', { name: 'French Français' })
+      ).toBeInTheDocument()
       // other languages
-      expect(screen.getAllByRole('list')[1].children[0]).toHaveTextContent(
-        'SpanishEspañol'
-      )
+      expect(
+        screen.queryByRole('option', { name: 'Spanish Español' })
+      ).not.toBeInTheDocument()
     })
 
     it('should call updateSubtitleLanguage when a language is selected', async () => {

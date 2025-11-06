@@ -21,6 +21,7 @@ interface CheckboxState {
   ChatOpenEvent: boolean
   TextResponseSubmissionEvent: boolean
   RadioQuestionSubmissionEvent: boolean
+  MultiselectSubmissionEvent: boolean
   ButtonClickEvent: boolean
   SignUpSubmissionEvent: boolean
   VideoStartEvent: boolean
@@ -55,6 +56,7 @@ export function FilterForm({
     ChatOpenEvent: true,
     TextResponseSubmissionEvent: true,
     RadioQuestionSubmissionEvent: true,
+    MultiselectSubmissionEvent: true,
     ButtonClickEvent: true,
     SignUpSubmissionEvent: true,
     VideoStartEvent: true,
@@ -90,6 +92,8 @@ export function FilterForm({
         return t('Text Submission')
       case 'RadioQuestionSubmissionEvent':
         return t('Poll Selection')
+      case 'MultiselectSubmissionEvent':
+        return t('Multiselect Submission')
       case 'ButtonClickEvent':
         return t('Button Click')
       case 'SignUpSubmissionEvent':
@@ -126,6 +130,7 @@ export function FilterForm({
       ChatOpenEvent: checked,
       TextResponseSubmissionEvent: checked,
       RadioQuestionSubmissionEvent: checked,
+      MultiselectSubmissionEvent: checked,
       ButtonClickEvent: checked,
       SignUpSubmissionEvent: checked,
       VideoStartEvent: checked,

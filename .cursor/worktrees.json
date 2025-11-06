@@ -1,0 +1,7 @@
+{
+  "setup-worktree": [
+    "pnpm install",
+    "nx run-many -t prisma-generate",
+    "DOPPLER_CONFIG=dev nx run-many -t fetch-secrets"
+  ]
+}

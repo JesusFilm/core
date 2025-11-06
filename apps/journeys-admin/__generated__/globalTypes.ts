@@ -622,6 +622,38 @@ export interface MeInput {
   redirect?: string | null;
 }
 
+export interface MultiselectBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+}
+
+export interface MultiselectBlockUpdateInput {
+  parentBlockId?: string | null;
+  min?: number | null;
+  max?: number | null;
+}
+
+export interface MultiselectOptionBlockCreateInput {
+  id?: string | null;
+  journeyId: string;
+  parentBlockId: string;
+  label: string;
+}
+
+export interface MultiselectOptionBlockUpdateInput {
+  parentBlockId?: string | null;
+  label?: string | null;
+}
+
+export interface MultiselectSubmissionEventCreateInput {
+  id?: string | null;
+  blockId: string;
+  stepId?: string | null;
+  label?: string | null;
+  values: string[];
+}
+
 export interface PhoneActionInput {
   gtmEventName?: string | null;
   phone: string;
@@ -838,6 +870,7 @@ export interface VideoBlockCreateInput {
   fullsize?: boolean | null;
   posterBlockId?: string | null;
   subtitleLanguageId?: string | null;
+  showGeneratedSubtitles?: boolean | null;
 }
 
 export interface VideoBlockUpdateInput {
@@ -857,6 +890,7 @@ export interface VideoBlockUpdateInput {
   fullsize?: boolean | null;
   subtitleLanguageId?: string | null;
   source?: VideoBlockSource | null;
+  showGeneratedSubtitles?: boolean | null;
 }
 
 export interface VideoCollapseEventCreateInput {

@@ -18,6 +18,8 @@ export const cache = (): InMemoryCache =>
         'GridItemBlock',
         'IconBlock',
         'ImageBlock',
+        'MultiselectBlock',
+        'MultiselectOptionBlock',
         'RadioQuestionBlock',
         'RadioOptionBlock',
         'SignUpBlock',
