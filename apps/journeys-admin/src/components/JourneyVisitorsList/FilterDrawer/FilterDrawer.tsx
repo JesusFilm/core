@@ -152,7 +152,7 @@ export function FilterDrawer({
             {disableExportButton ? (
               <Tooltip
                 title={t(
-                  "Only members of this journey's team can export data."
+                  "Only team members and journey owners can export data."
                 )}
                 placement="top"
               >
