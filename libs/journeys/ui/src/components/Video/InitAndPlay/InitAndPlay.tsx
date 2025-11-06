@@ -21,11 +21,11 @@ import {
   VideoFields_subtitleLanguage
 } from '../__generated__/VideoFields'
 import { extractYouTubeCaptionsAndAddTextTracks } from '../utils/extractYouTubeCaptionsAndAddTextTracks'
+import { getCaptionsAndSubtitleTracks } from '../utils/getCaptionsAndSubtitleTracks'
 import { getMuxMetadata } from '../utils/getMuxMetadata'
 import VideoJsPlayer from '../utils/videoJsTypes'
 
 import 'videojs-mux'
-import { getCaptionsAndSubtitleTracks } from '../utils/getCaptionsAndSubtitleTracks'
 
 interface InitAndPlayProps {
   videoRef: RefObject<HTMLVideoElement | null>

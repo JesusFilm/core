@@ -195,7 +195,7 @@ const videoBlock: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   subtitleLanguage: null,
-      showGeneratedSubtitles: null,
+  showGeneratedSubtitles: null,
   mediaVideo: null,
   posterBlockId: 'imageBlockId',
   objectFit: null,
