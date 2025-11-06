@@ -592,7 +592,7 @@ importers:
         version: 1.0.41
       unsplash-js:
         specifier: ^7.0.19
-        version: 7.0.19
+        version: 7.0.20
       util:
         specifier: ^0.12.4
         version: 0.12.5
@@ -21592,8 +21592,8 @@ packages:
   unrs-resolver@1.11.1:
     resolution: {integrity: sha512-bSjt9pjaEBnNiGgc9rUiHGKv5l4/TGzDmYw3RhnkJGtLhbnnA/5qJj7x3dNDCRx/PJxu774LlH8lCOlB4hEfKg==}
 
-  unsplash-js@7.0.19:
-    resolution: {integrity: sha512-j6qT2floy5Q2g2d939FJpwey1yw/GpQecFiSouyJtsHQPj3oqmqq3K4rI+GF8vU1zwGCT7ZwIGQd2dtCQLjYJw==}
+  unsplash-js@7.0.20:
+    resolution: {integrity: sha512-0IzJGKbD6qHm0wg5sNndcCjhNDrtAr08/mySr9TGJ6biD7N03ZldidqXopkOvhAABaeFtRGYBrX1YkgMhKrFOQ==}
     engines: {node: '>=10'}
 
   upath@2.0.1:
@@ -48942,7 +48942,7 @@ snapshots:
       '@unrs/resolver-binding-win32-ia32-msvc': 1.11.1
       '@unrs/resolver-binding-win32-x64-msvc': 1.11.1
 
-  unsplash-js@7.0.19: {}
+  unsplash-js@7.0.20: {}
 
   upath@2.0.1: {}
 
