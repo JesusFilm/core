@@ -1662,16 +1662,22 @@ export class CardLevelActionPage {
       }
       throw new Error('No images found in gallery after waiting')
     }
-    
+
     // Click on the list item itself, not the img to avoid strict mode violations
     const imageListItem = imageListItems.first()
-    await imageListItem.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+    await imageListItem.waitFor({
+      state: 'visible',
+      timeout: sixtySecondsTimeout
+    })
     await imageListItem.scrollIntoViewIfNeeded()
     // Try clicking the img first, if that fails, click the li element
     const imgInItem = imageListItem.locator('img').first()
     const imgCount = await imgInItem.count()
     if (imgCount > 0) {
-      await imgInItem.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+      await imgInItem.waitFor({
+        state: 'visible',
+        timeout: sixtySecondsTimeout
+      })
       await imgInItem.click({ timeout: sixtySecondsTimeout })
     } else {
       await imageListItem.click({ timeout: sixtySecondsTimeout })
@@ -1684,7 +1690,9 @@ export class CardLevelActionPage {
     const deleteIconLocator = this.page.locator(
       'div[data-testid="ImageBlockHeader"]:has(img) button:has(svg[data-testid="imageBlockHeaderDelete"])'
     )
-    await expect(deleteIconLocator).toBeVisible({ timeout: sixtySecondsTimeout })
+    await expect(deleteIconLocator).toBeVisible({
+      timeout: sixtySecondsTimeout
+    })
   }
   async closeToolDrawerForFooterImage() {
     await this.page
