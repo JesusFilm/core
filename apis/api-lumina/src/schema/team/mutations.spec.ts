@@ -21,7 +21,10 @@ describe('team mutations', () => {
           }
         }
         ... on ZodError {
-          message
+          fieldErrors {
+            message
+            path
+          }
         }
       }
     }
@@ -43,7 +46,10 @@ describe('team mutations', () => {
           message
         }
         ... on ZodError {
-          message
+          fieldErrors {
+            message
+            path
+          }
         }
       }
     }
@@ -89,6 +95,16 @@ describe('team mutations', () => {
         id: 'newTeamId',
         name: 'New Team'
       })
+    })
+
+    it('should reject if input is invalid', async () => {
+      const data = await authClient({
+        document: CREATE_TEAM_MUTATION,
+        variables: { input: { name: '' } }
+      })
+      expect(data).toHaveProperty('data.luminaTeamCreate.fieldErrors', [
+        { message: 'Name is required', path: ['input', 'name'] }
+      ])
     })
   })
 
@@ -205,6 +221,16 @@ describe('team mutations', () => {
         'data.luminaTeamUpdate.message',
         'Only team owner or manager can update team'
       )
+    })
+
+    it('should reject if input is invalid', async () => {
+      const data = await authClient({
+        document: UPDATE_TEAM_MUTATION,
+        variables: { id: 'teamId', input: { name: '' } }
+      })
+      expect(data).toHaveProperty('data.luminaTeamUpdate.fieldErrors', [
+        { message: 'Name is required', path: ['input', 'name'] }
+      ])
     })
   })
 })

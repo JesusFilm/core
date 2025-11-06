@@ -37,7 +37,10 @@ describe('agent widget mutations', () => {
           message
         }
         ... on ZodError {
-          message
+          fieldErrors {
+            message
+            path
+          }
         }
       }
     }
@@ -68,7 +71,10 @@ describe('agent widget mutations', () => {
           message
         }
         ... on ZodError {
-          message
+          fieldErrors {
+            message
+            path
+          }
         }
       }
     }
@@ -255,33 +261,32 @@ describe('agent widget mutations', () => {
         variables: {
           input: {
             agentId: 'zzz',
-            name: 'New Widget',
+            name: '',
             enabled: true,
             position: 'bottom-right',
             theme: 'light',
             buttonText: 'Chat',
             buttonIcon: 'chat',
             primaryColor: '#000000',
-            allowedDomains: ['example.com']
+            allowedDomains: ['']
           }
         }
       })
 
-      expect(data).toHaveProperty(
-        'data.luminaAgentWidgetCreate.message',
-        JSON.stringify(
-          [
-            {
-              validation: 'uuid',
-              code: 'invalid_string',
-              message: 'Agent ID must be a valid UUID',
-              path: ['input', 'agentId']
-            }
-          ],
-          null,
-          2
-        )
-      )
+      expect(data).toHaveProperty('data.luminaAgentWidgetCreate.fieldErrors', [
+        {
+          message: 'Agent ID must be a valid UUID',
+          path: ['input', 'agentId']
+        },
+        {
+          message: 'Name is required',
+          path: ['input', 'name']
+        },
+        {
+          message: 'Allowed domain is required',
+          path: ['input', 'allowedDomains', '0']
+        }
+      ])
     })
   })
 
@@ -573,29 +578,22 @@ describe('agent widget mutations', () => {
         variables: {
           id: 'widgetId',
           input: {
-            name: ''
+            name: '',
+            allowedDomains: []
           }
         }
       })
 
-      expect(data).toHaveProperty(
-        'data.luminaAgentWidgetUpdate.message',
-        JSON.stringify(
-          [
-            {
-              code: 'too_small',
-              minimum: 1,
-              type: 'string',
-              inclusive: true,
-              exact: false,
-              message: 'Name is required',
-              path: ['input', 'name']
-            }
-          ],
-          null,
-          2
-        )
-      )
+      expect(data).toHaveProperty('data.luminaAgentWidgetUpdate.fieldErrors', [
+        {
+          message: 'Name is required',
+          path: ['input', 'name']
+        },
+        {
+          message: 'Allowed domains are required',
+          path: ['input', 'allowedDomains']
+        }
+      ])
     })
   })
 

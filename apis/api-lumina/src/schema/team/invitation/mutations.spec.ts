@@ -52,7 +52,10 @@ describe('team invitation mutations', () => {
           message
         }
         ... on ZodError {
-          message
+          fieldErrors {
+            message
+            path
+          }
         }
       }
     }
@@ -194,12 +197,12 @@ describe('team invitation mutations', () => {
       )
     })
 
-    it('should reject if email is not valid', async () => {
+    it('should reject if input is not valid', async () => {
       const data = await authClient({
         document: CREATE_INVITATION_MUTATION,
         variables: {
           input: {
-            teamId: '9f2c2d38-5c91-47b3-8a9b-63a472a6ffb1',
+            teamId: 'invalid-team-id',
             email: 'invalid-email',
             role: 'MEMBER'
           }
@@ -207,48 +210,17 @@ describe('team invitation mutations', () => {
       })
 
       expect(data).toHaveProperty(
-        'data.luminaTeamInvitationCreate.message',
-        JSON.stringify(
-          [
-            {
-              validation: 'email',
-              code: 'invalid_string',
-              message: 'Invalid email',
-              path: ['input', 'email']
-            }
-          ],
-          null,
-          2
-        )
-      )
-    })
-
-    it('should reject if team id is not uuid', async () => {
-      const data = await authClient({
-        document: CREATE_INVITATION_MUTATION,
-        variables: {
-          input: {
-            teamId: 'invalid-team-id',
-            email: 'test@example.com',
-            role: 'MEMBER'
+        'data.luminaTeamInvitationCreate.fieldErrors',
+        [
+          {
+            message: 'Team ID must be a valid UUID',
+            path: ['input', 'teamId']
+          },
+          {
+            message: 'Invalid email',
+            path: ['input', 'email']
           }
-        }
-      })
-
-      expect(data).toHaveProperty(
-        'data.luminaTeamInvitationCreate.message',
-        JSON.stringify(
-          [
-            {
-              validation: 'uuid',
-              code: 'invalid_string',
-              message: 'Team ID must be a valid UUID',
-              path: ['input', 'teamId']
-            }
-          ],
-          null,
-          2
-        )
+        ]
       )
     })
   })

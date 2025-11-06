@@ -5,14 +5,14 @@ import { builder } from '../../builder'
 const schema = z.object({
   teamId: z.string().uuid('Team ID must be a valid UUID'),
   name: z.string().min(1, 'Name is required'),
-  description: z.string().optional().nullable(),
+  description: z.string().optional(),
   model: z.string().min(1, 'Model is required'),
-  systemPrompt: z.string().optional().nullable(),
+  systemPrompt: z.string().optional(),
   temperature: z.number().min(0).max(2),
-  maxTokens: z.number().int().optional().nullable(),
-  topP: z.number().min(0).max(1).optional().nullable(),
-  frequencyPenalty: z.number().min(0).max(2).optional().nullable(),
-  presencePenalty: z.number().min(0).max(2).optional().nullable()
+  maxTokens: z.number().int().optional(),
+  topP: z.number().min(0).max(1).optional(),
+  frequencyPenalty: z.number().min(0).max(2).optional(),
+  presencePenalty: z.number().min(0).max(2).optional()
 })
 
 export const AgentCreateInput = builder.inputType('LuminaAgentCreateInput', {

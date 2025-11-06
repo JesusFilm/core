@@ -12,6 +12,7 @@ const schema = z.object({
   primaryColor: z.string().optional(),
   allowedDomains: z
     .string()
+    .min(1, 'Allowed domain is required')
     .array()
     .min(1, 'Allowed domains are required')
     .optional()

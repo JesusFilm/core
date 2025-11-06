@@ -11,7 +11,11 @@ const schema = z.object({
   buttonText: z.string().optional(),
   buttonIcon: z.string().optional(),
   primaryColor: z.string().optional(),
-  allowedDomains: z.string().array().min(1, 'Allowed domains are required')
+  allowedDomains: z
+    .string()
+    .min(1, 'Allowed domain is required')
+    .array()
+    .min(1, 'Allowed domains are required')
 })
 
 export const AgentWidgetCreateInput = builder.inputType(

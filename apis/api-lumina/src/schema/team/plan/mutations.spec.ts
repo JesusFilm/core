@@ -4,7 +4,6 @@ import { graphql } from '@core/shared/gql'
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { stripeMock } from '../../../../test/stripeMock'
-import { TWO_CHAR_COUNTRY_CODES } from '../../../lib/twoCharCountryCodes'
 
 jest.mock('crypto', () => ({
   ...jest.requireActual('crypto'),
@@ -47,7 +46,10 @@ describe('team plan mutations', () => {
           message
         }
         ... on ZodError {
-          message
+          fieldErrors {
+            message
+            path
+          }
         }
       }
     }
@@ -81,7 +83,10 @@ describe('team plan mutations', () => {
           message
         }
         ... on ZodError {
-          message
+          fieldErrors {
+            message
+            path
+          }
         }
       }
     }
@@ -302,126 +307,38 @@ describe('team plan mutations', () => {
       )
     })
 
-    it('should reject if team id is not uuid', async () => {
+    it('should reject if input is not valid', async () => {
       const data = await authClient({
         document: CREATE_PLAN_MUTATION,
         variables: {
           input: {
             teamId: 'invalid-team-id',
-            billingEmail: 'billing@example.com',
-            billingName: 'Test Company'
-          }
-        }
-      })
-
-      expect(data).toHaveProperty(
-        'data.luminaTeamPlanCreate.message',
-        JSON.stringify(
-          [
-            {
-              validation: 'uuid',
-              code: 'invalid_string',
-              message: 'Team ID must be a valid UUID',
-              path: ['input', 'teamId']
-            }
-          ],
-          null,
-          2
-        )
-      )
-    })
-
-    it('should reject if email is not valid', async () => {
-      const data = await authClient({
-        document: CREATE_PLAN_MUTATION,
-        variables: {
-          input: {
-            teamId: '9f2c2d38-5c91-47b3-8a9b-63a472a6ffb1',
-            billingEmail: 'invalid-email',
-            billingName: 'Test Company'
-          }
-        }
-      })
-
-      expect(data).toHaveProperty(
-        'data.luminaTeamPlanCreate.message',
-        JSON.stringify(
-          [
-            {
-              validation: 'email',
-              code: 'invalid_string',
-              message: 'Invalid email',
-              path: ['input', 'billingEmail']
-            }
-          ],
-          null,
-          2
-        )
-      )
-    })
-
-    it('should reject if billing name is not provided', async () => {
-      const data = await authClient({
-        document: CREATE_PLAN_MUTATION,
-        variables: {
-          input: {
-            teamId: '9f2c2d38-5c91-47b3-8a9b-63a472a6ffb1',
-            billingEmail: 'billing@example.com',
-            billingName: ''
-          }
-        }
-      })
-
-      expect(data).toHaveProperty(
-        'data.luminaTeamPlanCreate.message',
-        JSON.stringify(
-          [
-            {
-              code: 'too_small',
-              minimum: 1,
-              type: 'string',
-              inclusive: true,
-              exact: false,
-              message: 'Billing name is required',
-              path: ['input', 'billingName']
-            }
-          ],
-          null,
-          2
-        )
-      )
-    })
-
-    it('should reject if billing address country is not valid', async () => {
-      const data = await authClient({
-        document: CREATE_PLAN_MUTATION,
-        variables: {
-          input: {
-            teamId: '9f2c2d38-5c91-47b3-8a9b-63a472a6ffb1',
-            billingEmail: 'billing@example.com',
-            billingName: 'Test Company',
+            billingEmail: 'not-an-email',
+            billingName: '',
             billingAddressCountry: 'invalid-country'
           }
         }
       })
 
-      expect(data).toHaveProperty(
-        'data.luminaTeamPlanCreate.message',
-        JSON.stringify(
-          [
-            {
-              received: 'invalid-country',
-              code: 'invalid_enum_value',
-              options: TWO_CHAR_COUNTRY_CODES,
-              path: ['input', 'billingAddressCountry'],
-              message:
-                'Billing address country must be a valid ISO 3166-1 alpha-2 code'
-            }
-          ],
-          null,
-          2
-        )
-      )
+      expect(data).toHaveProperty('data.luminaTeamPlanCreate.fieldErrors', [
+        {
+          message: 'Team ID must be a valid UUID',
+          path: ['input', 'teamId']
+        },
+        {
+          message: 'Invalid email',
+          path: ['input', 'billingEmail']
+        },
+        {
+          message: 'Billing name is required',
+          path: ['input', 'billingName']
+        },
+        {
+          message:
+            'Billing address country must be a valid ISO 3166-1 alpha-2 code',
+          path: ['input', 'billingAddressCountry']
+        }
+      ])
     })
   })
 
@@ -766,6 +683,40 @@ describe('team plan mutations', () => {
         'data.luminaTeamPlanUpdate.message',
         'You are not an owner or manager of the team'
       )
+    })
+
+    it('should reject if input is not valid', async () => {
+      const data = await authClient({
+        document: UPDATE_PLAN_MUTATION,
+        variables: {
+          input: {
+            teamId: 'invalid-team-id',
+            billingEmail: 'not-an-email',
+            billingName: '',
+            billingAddressCountry: 'invalid-country'
+          }
+        }
+      })
+
+      expect(data).toHaveProperty('data.luminaTeamPlanUpdate.fieldErrors', [
+        {
+          message: 'Team ID must be a valid UUID',
+          path: ['input', 'teamId']
+        },
+        {
+          message: 'Invalid email',
+          path: ['input', 'billingEmail']
+        },
+        {
+          message: 'Billing name is required',
+          path: ['input', 'billingName']
+        },
+        {
+          message:
+            'Billing address country must be a valid ISO 3166-1 alpha-2 code',
+          path: ['input', 'billingAddressCountry']
+        }
+      ])
     })
   })
 })

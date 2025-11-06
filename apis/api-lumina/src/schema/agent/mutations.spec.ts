@@ -39,7 +39,10 @@ describe('agent mutations', () => {
           }
         }
         ... on ZodError {
-          message
+          fieldErrors {
+            message
+            path
+          }
         }
       }
     }
@@ -70,7 +73,10 @@ describe('agent mutations', () => {
           message
         }
         ... on ZodError {
-          message
+          fieldErrors {
+            message
+            path
+          }
         }
       }
     }
@@ -179,6 +185,44 @@ describe('agent mutations', () => {
         'data.luminaAgentCreate.message',
         'Access denied'
       )
+    })
+
+    it('should reject if input is not valid', async () => {
+      const data = await authClient({
+        document: CREATE_AGENT_MUTATION,
+        variables: {
+          input: {
+            teamId: 'invalid-team-id',
+            name: '',
+            model: '',
+            temperature: 3,
+            topP: 1.1,
+            frequencyPenalty: 3,
+            presencePenalty: 3
+          }
+        }
+      })
+      expect(data).toHaveProperty('data.luminaAgentCreate.fieldErrors', [
+        { message: 'Team ID must be a valid UUID', path: ['input', 'teamId'] },
+        { message: 'Name is required', path: ['input', 'name'] },
+        { message: 'Model is required', path: ['input', 'model'] },
+        {
+          message: 'Number must be less than or equal to 2',
+          path: ['input', 'temperature']
+        },
+        {
+          message: 'Number must be less than or equal to 1',
+          path: ['input', 'topP']
+        },
+        {
+          message: 'Number must be less than or equal to 2',
+          path: ['input', 'frequencyPenalty']
+        },
+        {
+          message: 'Number must be less than or equal to 2',
+          path: ['input', 'presencePenalty']
+        }
+      ])
     })
   })
 
