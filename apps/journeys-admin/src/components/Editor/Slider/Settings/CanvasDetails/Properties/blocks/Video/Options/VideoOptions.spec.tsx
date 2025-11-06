@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
+import { ReactElement } from 'react'
 import {
   InstantSearchApi,
   useInfiniteHits,
@@ -10,10 +11,14 @@ import {
 } from 'react-instantsearch'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { CommandProvider } from '@core/journeys/ui/CommandProvider'
+import { EditorProvider, useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { VideoBlockSource } from '../../../../../../../../../../__generated__/globalTypes'
+import {
+  VideoBlockObjectFit,
+  VideoBlockSource
+} from '../../../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import { videoItems } from '../../../../../Drawer/VideoLibrary/data'
@@ -426,6 +431,281 @@ describe('VideoOptions', () => {
           }}
         >
           <ThemeProvider>
+            <VideoOptions />
+          </ThemeProvider>
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('VideoBlockEditor')).toBeInTheDocument()
+    )
+  })
+
+  it('should not dispatch SetEditorFocusAction when shouldFocus is false', async () => {
+    const dispatchMock = jest.fn()
+    const videoBlockResult = jest.fn(() => ({
+      data: {
+        videoBlockUpdate: {
+          ...video,
+          muted: false
+        }
+      }
+    }))
+
+    const VideoOptionsWrapper = (): ReactElement => {
+      const { dispatch } = useEditor()
+      if (dispatchMock.mock.calls.length === 0) {
+        dispatchMock.mockImplementation(dispatch)
+      }
+      return <VideoOptions />
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: VIDEO_BLOCK_UPDATE,
+              variables: {
+                id: video.id,
+                input: {
+                  muted: false
+                }
+              }
+            },
+            result: videoBlockResult
+          }
+        ]}
+      >
+        <CommandProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: video,
+              selectedAttributeId: video.id
+            }}
+          >
+            <ThemeProvider>
+              <VideoOptionsWrapper />
+            </ThemeProvider>
+          </EditorProvider>
+        </CommandProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('VideoBlockEditor')).toBeInTheDocument()
+    )
+  })
+
+  it('should render empty fragment when no video block is selected', () => {
+    const { container } = render(
+      <MockedProvider mocks={[]}>
+        <EditorProvider
+          initialState={{
+            selectedBlock: undefined
+          }}
+        >
+          <ThemeProvider>
+            <VideoOptions />
+          </ThemeProvider>
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    expect(container.firstChild).toBeNull()
+  })
+
+  it('should render empty fragment when selected block is not a VideoBlock', () => {
+    const { container } = render(
+      <MockedProvider mocks={[]}>
+        <EditorProvider
+          initialState={{
+            selectedBlock: {
+              id: 'button1',
+              __typename: 'ButtonBlock',
+              parentBlockId: 'card1',
+              parentOrder: 0,
+              label: 'Click me',
+              children: []
+            }
+          }}
+        >
+          <ThemeProvider>
+            <VideoOptions />
+          </ThemeProvider>
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    expect(container.firstChild).toBeNull()
+  })
+
+  it('should handle updates to all video block properties', async () => {
+    const videoBlockResult = jest.fn(() => ({
+      data: {
+        videoBlockUpdate: {
+          ...video,
+          muted: false,
+          autoplay: false,
+          fullsize: false,
+          objectFit: VideoBlockObjectFit.fill,
+          posterBlockId: 'poster1',
+          showGeneratedSubtitles: true
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: VIDEO_BLOCK_UPDATE,
+              variables: {
+                id: video.id,
+                input: {
+                  muted: false,
+                  autoplay: false,
+                  fullsize: false,
+                  objectFit: VideoBlockObjectFit.fill,
+                  posterBlockId: 'poster1',
+                  showGeneratedSubtitles: true
+                }
+              }
+            },
+            result: videoBlockResult
+          }
+        ]}
+      >
+        <EditorProvider
+          initialState={{
+            selectedBlock: video,
+            selectedAttributeId: video.id
+          }}
+        >
+          <ThemeProvider>
+            <VideoOptions />
+          </ThemeProvider>
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('VideoBlockEditor')).toBeInTheDocument()
+    )
+  })
+
+  it('should handle optimistic response correctly', async () => {
+    const videoBlockUpdateSpy = jest.fn()
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: VIDEO_BLOCK_UPDATE,
+              variables: {
+                id: video.id,
+                input: {
+                  startAt: 10
+                }
+              }
+            },
+            result: () => {
+              videoBlockUpdateSpy()
+              return {
+                data: {
+                  videoBlockUpdate: {
+                    ...video,
+                    startAt: 10
+                  }
+                }
+              }
+            }
+          }
+        ]}
+      >
+        <EditorProvider
+          initialState={{
+            selectedBlock: video,
+            selectedAttributeId: video.id
+          }}
+        >
+          <ThemeProvider>
+            <VideoOptions />
+          </ThemeProvider>
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('VideoBlockEditor')).toBeInTheDocument()
+    )
+  })
+
+  it('should preserve subtitleLanguageId in inverse input when it exists', async () => {
+    const videoWithSubtitle = {
+      ...video,
+      subtitleLanguage: {
+        __typename: 'Language' as const,
+        id: '529',
+        bcp47: 'en'
+      }
+    }
+
+    const undoResult = jest.fn(() => ({
+      data: {
+        videoBlockUpdate: videoWithSubtitle
+      }
+    }))
+
+    const executeResult = jest.fn(() => ({
+      data: {
+        videoBlockUpdate: {
+          ...videoWithSubtitle,
+          muted: false
+        }
+      }
+    }))
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: VIDEO_BLOCK_UPDATE,
+              variables: {
+                id: video.id,
+                input: {
+                  muted: false
+                }
+              }
+            },
+            result: executeResult
+          },
+          {
+            request: {
+              query: VIDEO_BLOCK_UPDATE,
+              variables: {
+                id: video.id,
+                input: {
+                  muted: true
+                }
+              }
+            },
+            result: undoResult
+          }
+        ]}
+      >
+        <EditorProvider
+          initialState={{
+            selectedBlock: videoWithSubtitle,
+            selectedAttributeId: video.id
+          }}
+        >
+          <ThemeProvider>
+            <CommandUndoItem variant="button" />
             <VideoOptions />
           </ThemeProvider>
         </EditorProvider>

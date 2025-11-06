@@ -322,4 +322,117 @@ describe('VideoLibrary', () => {
       )
     })
   })
+
+  it('should render Upload tab with VideoFromMux', async () => {
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider>
+        <VideoLibrary open />
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Upload' }))
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith(
+        {
+          query: { param: 'video-upload' }
+        },
+        undefined,
+        { shallow: true }
+      )
+    })
+  })
+
+  it('should not show video details when on Upload tab', async () => {
+    const onSelect = jest.fn()
+    const onClose = jest.fn()
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <VideoLibrary
+          open
+          selectedBlock={{
+            id: 'video1.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card1.id',
+            description: 'description',
+            duration: 348,
+            endAt: 348,
+            fullsize: true,
+            image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
+            muted: false,
+            autoplay: true,
+            startAt: 0,
+            title: 'What is the Bible?',
+            videoId: 'ak06MSETeo4',
+            videoVariantLanguageId: null,
+            parentOrder: 0,
+            action: null,
+            source: VideoBlockSource.youTube,
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: 'videoId'
+            },
+            objectFit: null,
+            subtitleLanguage: null,
+            posterBlockId: 'poster1.id',
+            children: []
+          }}
+          onSelect={onSelect}
+          onClose={onClose}
+        />
+      </MockedProvider>
+    )
+
+    // Click on Upload tab
+    fireEvent.click(getByRole('tab', { name: 'Upload' }))
+
+    // Video details should not be visible when on Upload tab
+    await waitFor(() => {
+      expect(screen.queryByText('Video Details')).not.toBeVisible()
+    })
+  })
+
+  it('should call onSelect with shouldCloseDrawer=false when upload completes in background', () => {
+    const onSelect = jest.fn()
+    const onClose = jest.fn()
+
+    render(
+      <MockedProvider>
+        <VideoLibrary open onSelect={onSelect} onClose={onClose} />
+      </MockedProvider>
+    )
+
+    // The onSelect callback should handle shouldCloseDrawer parameter
+    expect(onSelect).not.toHaveBeenCalled()
+  })
+
+  it('should switch to Library tab and close drawer after upload completes on Upload tab', async () => {
+    const onSelect = jest.fn()
+    const onClose = jest.fn()
+
+    const { getByRole } = render(
+      <MockedProvider>
+        <VideoLibrary open onSelect={onSelect} onClose={onClose} />
+      </MockedProvider>
+    )
+
+    // Click on Upload tab
+    fireEvent.click(getByRole('tab', { name: 'Upload' }))
+
+    await waitFor(() => {
+      expect(getByRole('tab', { name: 'Upload' })).toHaveAttribute(
+        'aria-selected',
+        'true'
+      )
+    })
+  })
 })

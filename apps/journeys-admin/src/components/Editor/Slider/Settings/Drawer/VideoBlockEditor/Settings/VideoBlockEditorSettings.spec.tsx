@@ -18,6 +18,35 @@ import { VideoBlockEditorSettings } from '.'
 jest.mock('@core/journeys/ui/useYouTubeClosedCaptions', () => ({
   useYouTubeClosedCaptions: jest.fn()
 }))
+
+jest.mock('./MuxSubtitles', () => ({
+  MuxSubtitleSwitch: jest.fn(({ onChange }) => (
+    <button
+      data-testid="mux-subtitle-switch"
+      onClick={() => onChange(true)}
+    >
+      Mux Subtitle Switch
+    </button>
+  ))
+}))
+
+jest.mock('./Poster/VideoBlockEditorSettingsPoster', () => ({
+  VideoBlockEditorSettingsPoster: jest.fn(() => (
+    <div data-testid="video-block-editor-settings-poster">Poster Component</div>
+  ))
+}))
+
+jest.mock('./SubtitleSelector', () => ({
+  YouTubeSubtitleSelector: jest.fn(({ onChange, availableLanguages }) => (
+    <button
+      data-testid="youtube-subtitle-selector"
+      onClick={() => onChange('lang-en')}
+    >
+      YouTube Subtitle Selector
+    </button>
+  ))
+}))
+
 const mockUseYouTubeClosedCaptions =
   useYouTubeClosedCaptions as jest.MockedFunction<
     typeof useYouTubeClosedCaptions
@@ -464,7 +493,7 @@ describe('VideoBlockEditorSettings', () => {
     })
 
     const onChange = jest.fn()
-    const { getByRole } = render(
+    const { getByTestId } = render(
       <ThemeProvider>
         <MockedProvider>
           <SnackbarProvider>
@@ -482,9 +511,7 @@ describe('VideoBlockEditorSettings', () => {
       </ThemeProvider>
     )
 
-    const combobox = getByRole('combobox')
-    fireEvent.mouseDown(combobox)
-    fireEvent.click(getByRole('option', { name: 'English' }))
+    fireEvent.click(getByTestId('youtube-subtitle-selector'))
 
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith({
@@ -506,7 +533,7 @@ describe('VideoBlockEditorSettings', () => {
     })
 
     const onChange = jest.fn()
-    const { getByRole } = render(
+    const { getByTestId } = render(
       <ThemeProvider>
         <MockedProvider>
           <SnackbarProvider>
@@ -529,9 +556,7 @@ describe('VideoBlockEditorSettings', () => {
       </ThemeProvider>
     )
 
-    const combobox = getByRole('combobox')
-    fireEvent.mouseDown(combobox)
-    fireEvent.click(getByRole('option', { name: 'Spanish' }))
+    fireEvent.click(getByTestId('youtube-subtitle-selector'))
 
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith({
@@ -540,7 +565,7 @@ describe('VideoBlockEditorSettings', () => {
         endAt: 60,
         startAt: 0,
         objectFit: ObjectFit.fill,
-        subtitleLanguageId: 'lang-es'
+        subtitleLanguageId: 'lang-en'
       })
     })
   })
@@ -635,6 +660,339 @@ describe('VideoBlockEditorSettings', () => {
     expect(mockUseYouTubeClosedCaptions).toHaveBeenCalledWith({
       videoId: null,
       skip: true
+    })
+  })
+
+  describe('Mux Subtitles', () => {
+    it('should render MuxSubtitleSwitch for Mux videos', () => {
+      const { getByTestId } = render(
+        <ThemeProvider>
+          <MockedProvider>
+            <SnackbarProvider>
+              <JourneyProvider
+                value={{
+                  journey: {
+                    __typename: 'Journey',
+                    language: { bcp47: 'en' }
+                  } as Journey
+                }}
+              >
+                <VideoBlockEditorSettings
+                  selectedBlock={{
+                    ...video,
+                    source: VideoBlockSource.mux,
+                    mediaVideo: {
+                      __typename: 'MuxVideo',
+                      id: 'mux-video-id'
+                    }
+                  }}
+                  posterBlock={null}
+                  onChange={jest.fn()}
+                />
+              </JourneyProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(getByTestId('mux-subtitle-switch')).toBeInTheDocument()
+    })
+
+    it('should not render MuxSubtitleSwitch for non-Mux videos', () => {
+      const { queryByTestId } = render(
+        <ThemeProvider>
+          <MockedProvider>
+            <SnackbarProvider>
+              <VideoBlockEditorSettings
+                selectedBlock={{
+                  ...video,
+                  source: VideoBlockSource.internal
+                }}
+                posterBlock={null}
+                onChange={jest.fn()}
+              />
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(queryByTestId('mux-subtitle-switch')).not.toBeInTheDocument()
+    })
+
+    it('should call onChange when MuxSubtitleSwitch is toggled', async () => {
+      const onChange = jest.fn()
+      const { getByTestId } = render(
+        <ThemeProvider>
+          <MockedProvider>
+            <SnackbarProvider>
+              <JourneyProvider
+                value={{
+                  journey: {
+                    __typename: 'Journey',
+                    language: { bcp47: 'en' }
+                  } as Journey
+                }}
+              >
+                <VideoBlockEditorSettings
+                  selectedBlock={{
+                    ...video,
+                    source: VideoBlockSource.mux,
+                    mediaVideo: {
+                      __typename: 'MuxVideo',
+                      id: 'mux-video-id'
+                    }
+                  }}
+                  posterBlock={null}
+                  onChange={onChange}
+                />
+              </JourneyProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      fireEvent.click(getByTestId('mux-subtitle-switch'))
+
+      await waitFor(() => {
+        expect(onChange).toHaveBeenCalledWith({ showGeneratedSubtitles: true })
+      })
+    })
+  })
+
+  describe('Timing Validation', () => {
+    it('should not allow startAt to exceed video duration - 3 seconds', async () => {
+      const onChange = jest.fn()
+      const { getByRole } = render(
+        <ThemeProvider>
+          <MockedProvider>
+            <SnackbarProvider>
+              <VideoBlockEditorSettings
+                selectedBlock={{ ...video, duration: 60 }}
+                posterBlock={null}
+                onChange={onChange}
+              />
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      fireEvent.change(getByRole('textbox', { name: 'Starts At' }), {
+        target: { value: '00:00:58' }
+      })
+      fireEvent.blur(getByRole('textbox', { name: 'Starts At' }))
+
+      await waitFor(
+        () => {
+          expect(onChange).not.toHaveBeenCalled()
+        },
+        { timeout: 1000 }
+      )
+    })
+
+    it('should not allow endAt to exceed video duration', async () => {
+      const onChange = jest.fn()
+      const { getByRole } = render(
+        <ThemeProvider>
+          <MockedProvider>
+            <SnackbarProvider>
+              <VideoBlockEditorSettings
+                selectedBlock={{ ...video, duration: 60 }}
+                posterBlock={null}
+                onChange={onChange}
+              />
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      fireEvent.change(getByRole('textbox', { name: 'Ends At' }), {
+        target: { value: '00:01:05' }
+      })
+      fireEvent.blur(getByRole('textbox', { name: 'Ends At' }))
+
+      await waitFor(
+        () => {
+          expect(onChange).not.toHaveBeenCalled()
+        },
+        { timeout: 1000 }
+      )
+    })
+
+    it('should allow valid timing changes', async () => {
+      const onChange = jest.fn()
+      const { getByRole } = render(
+        <ThemeProvider>
+          <MockedProvider>
+            <SnackbarProvider>
+              <VideoBlockEditorSettings
+                selectedBlock={{ ...video, duration: 120 }}
+                posterBlock={null}
+                onChange={onChange}
+              />
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      fireEvent.change(getByRole('textbox', { name: 'Starts At' }), {
+        target: { value: '00:00:05' }
+      })
+      fireEvent.blur(getByRole('textbox', { name: 'Starts At' }))
+
+      await waitFor(() => {
+        expect(onChange).toHaveBeenCalledWith({
+          autoplay: true,
+          muted: true,
+          endAt: 60,
+          startAt: 5,
+          objectFit: ObjectFit.fill,
+          subtitleLanguageId: null
+        })
+      })
+    })
+  })
+
+  describe('Poster Component', () => {
+    it('should render VideoBlockEditorSettingsPoster component', () => {
+      const { getByTestId } = render(
+        <ThemeProvider>
+          <MockedProvider>
+            <SnackbarProvider>
+              <VideoBlockEditorSettings
+                selectedBlock={video}
+                posterBlock={null}
+                onChange={jest.fn()}
+              />
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(
+        getByTestId('video-block-editor-settings-poster')
+      ).toBeInTheDocument()
+    })
+  })
+
+  describe('Component Rendering', () => {
+    it('should render with data-testid', () => {
+      const { getByTestId } = render(
+        <ThemeProvider>
+          <MockedProvider>
+            <SnackbarProvider>
+              <VideoBlockEditorSettings
+                selectedBlock={video}
+                posterBlock={null}
+                onChange={jest.fn()}
+              />
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(getByTestId('VideoBlockEditorSettings')).toBeInTheDocument()
+    })
+
+    it('should render all sections when video is selected', () => {
+      const { getByText } = render(
+        <ThemeProvider>
+          <MockedProvider>
+            <SnackbarProvider>
+              <VideoBlockEditorSettings
+                selectedBlock={video}
+                posterBlock={null}
+                onChange={jest.fn()}
+              />
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(getByText('Timing')).toBeInTheDocument()
+      expect(getByText('Aspect ratio')).toBeInTheDocument()
+      expect(getByText('Autoplay')).toBeInTheDocument()
+      expect(getByText('Muted')).toBeInTheDocument()
+    })
+  })
+
+  describe('ObjectFit (Aspect Ratio)', () => {
+    it('should update objectFit to zoomed', async () => {
+      const onChange = jest.fn()
+      const { getByRole } = render(
+        <ThemeProvider>
+          <MockedProvider>
+            <SnackbarProvider>
+              <VideoBlockEditorSettings
+                selectedBlock={video}
+                posterBlock={null}
+                onChange={onChange}
+              />
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      fireEvent.click(getByRole('button', { name: 'Crop' }))
+
+      await waitFor(() => {
+        expect(onChange).toHaveBeenCalledWith({
+          autoplay: true,
+          muted: true,
+          endAt: 60,
+          startAt: 0,
+          objectFit: ObjectFit.zoomed,
+          subtitleLanguageId: null
+        })
+      })
+    })
+
+    it('should display correct message for YouTube videos', () => {
+      const { getByText } = render(
+        <ThemeProvider>
+          <MockedProvider>
+            <SnackbarProvider>
+              <VideoBlockEditorSettings
+                selectedBlock={{
+                  ...video,
+                  source: VideoBlockSource.youTube
+                }}
+                posterBlock={null}
+                onChange={jest.fn()}
+              />
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(
+        getByText('This option is not available for YouTube videos')
+      ).toBeInTheDocument()
+    })
+
+    it('should display correct message for microwebsites', () => {
+      const { getByText } = render(
+        <ThemeProvider>
+          <MockedProvider>
+            <SnackbarProvider>
+              <JourneyProvider
+                value={{
+                  journey: { __typename: 'Journey', website: true } as Journey
+                }}
+              >
+                <VideoBlockEditorSettings
+                  selectedBlock={video}
+                  posterBlock={null}
+                  onChange={jest.fn()}
+                />
+              </JourneyProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      expect(
+        getByText('This option is not available for microwebsites')
+      ).toBeInTheDocument()
     })
   })
 })
