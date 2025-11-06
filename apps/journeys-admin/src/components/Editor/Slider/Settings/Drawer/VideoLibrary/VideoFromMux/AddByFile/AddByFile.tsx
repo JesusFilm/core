@@ -1,37 +1,19 @@
-import { gql, useMutation } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import LinearProgress from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { UpChunk } from '@mux/upchunk'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { FileRejection, useDropzone } from 'react-dropzone'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
-import { CreateMuxVideoUploadByFileMutation } from '../../../../../../../../../__generated__/CreateMuxVideoUploadByFileMutation'
 import { useValidateMuxLanguage } from '../../../../../../../../libs/useValidateMuxLanguage'
-import { useMuxVideoPolling } from '../../../../../../../MuxVideoPollingProvider'
-
-import { fileToMuxUpload } from './utils/addByFileUtils'
-export const CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
-  mutation CreateMuxVideoUploadByFileMutation(
-    $name: String!
-    $generateSubtitlesInput: GenerateSubtitlesInput
-  ) {
-    createMuxVideoUploadByFile(
-      name: $name
-      generateSubtitlesInput: $generateSubtitlesInput
-    ) {
-      uploadUrl
-      id
-    }
-  }
-`
+import { useMuxVideoUpload } from '../../../../../../../MuxVideoUploadProvider'
 
 interface AddByFileProps {
   onChange: (id: string, shouldCloseDrawer?: boolean) => void
@@ -40,6 +22,9 @@ interface AddByFileProps {
 export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
+  const {
+    state: { selectedBlock }
+  } = useEditor()
   const rawLanguageCode = journey?.language.bcp47
   const isValidLanguage = useValidateMuxLanguage(rawLanguageCode)
   const languageCode =
@@ -47,98 +32,68 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const languageName = journey?.language.name.find(
     (name) => name.primary
   )?.value
-  const { startPolling, stopPolling } = useMuxVideoPolling()
 
-  const [uploading, setUploading] = useState(false)
-  const [processing, setProcessing] = useState(false)
-  const [fileRejected, setfileRejected] = useState(false)
-  const [fileTooLarge, setfileTooLarge] = useState(false)
-  const [tooManyFiles, settooManyFiles] = useState(false)
-  const [fileInvalidType, setfileInvalidType] = useState(false)
-  const [error, setError] = useState<Error>()
-  const [progress, setProgress] = useState(0)
-  const currentVideoIdRef = useRef<string | null>(null)
+  const { getUploadStatus, addUploadToQueue } = useMuxVideoUpload()
 
-  function resetUploadStatus(): void {
-    setUploading(false)
-    setProcessing(false)
-    setProgress(0)
-    currentVideoIdRef.current = null
-  }
+  const videoBlockId = selectedBlock?.id ?? null
+  const uploadTask = videoBlockId != null ? getUploadStatus(videoBlockId) : null
 
-  const [createMuxVideoUploadByFile] =
-    useMutation<CreateMuxVideoUploadByFileMutation>(
-      CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION
-    )
+  const [fileRejected, setFileRejected] = useState(false)
+  const [fileTooLarge, setFileTooLarge] = useState(false)
+  const [tooManyFiles, setTooManyFiles] = useState(false)
+  const [fileInvalidType, setFileInvalidType] = useState(false)
+
+  const uploading = uploadTask?.status === 'uploading'
+  const processing = uploadTask?.status === 'processing'
+  const waiting = uploadTask?.status === 'waiting'
+  const error = uploadTask?.error
+  const progress = uploadTask?.progress ?? 0
 
   const onDrop = async (): Promise<void> => {
-    setfileTooLarge(false)
-    settooManyFiles(false)
-    setfileInvalidType(false)
-    setfileRejected(false)
-    setError(undefined)
-  }
-
-  function uploadVideo(
-    file: File,
-    data: CreateMuxVideoUploadByFileMutation,
-    videoId: string
-  ): void {
-    setUploading(true)
-    currentVideoIdRef.current = videoId
-    const upload = UpChunk.createUpload({
-      file,
-      endpoint: data.createMuxVideoUploadByFile.uploadUrl ?? '',
-      chunkSize: 5120
-    })
-    upload.on('success', (): void => {
-      setUploading(false)
-      setProcessing(true)
-      startPolling(videoId, languageCode, () => {
-        // Always call onChange to persist the mutation
-        // Don't close drawer, user may have navigated to different block during upload
-        // and closing drawer would interrupt their workflow.
-        const shouldCloseDrawer = false
-        onChange(videoId, shouldCloseDrawer)
-        resetUploadStatus()
-      })
-    })
-    upload.on('error', (err): void => {
-      setError(err.detail)
-      if (currentVideoIdRef.current != null) {
-        stopPolling(currentVideoIdRef.current)
-      }
-      resetUploadStatus()
-    })
-    upload.on('progress', (progress): void => {
-      setProgress(progress.detail)
-    })
+    setFileRejected(false)
+    setFileTooLarge(false)
+    setTooManyFiles(false)
+    setFileInvalidType(false)
   }
 
   const onDropAccepted = async (files: File[]): Promise<void> => {
-    if (files.length > 0) {
-      const { data } = await createMuxVideoUploadByFile(
-        fileToMuxUpload(files[0], languageCode, languageName)
-      )
-
-      if (
-        data?.createMuxVideoUploadByFile?.uploadUrl != null &&
-        data?.createMuxVideoUploadByFile?.id != null
-      ) {
-        uploadVideo(files[0], data, data.createMuxVideoUploadByFile.id)
+    if (files.length > 0 && videoBlockId != null) {
+      // Check if task already exists
+      if (uploadTask != null) {
+        // Task already exists, don't add another
+        return
       }
+
+      // Add to queue
+      addUploadToQueue(
+        videoBlockId,
+        files[0],
+        languageCode,
+        languageName,
+        (videoId) => {
+          // Always call onChange to persist the mutation
+          // Don't close drawer, user may have navigated to different block during upload
+          // and closing drawer would interrupt their workflow.
+          const shouldCloseDrawer = false
+          onChange(videoId, shouldCloseDrawer)
+        }
+      )
     }
   }
 
   const onDropRejected = async (
     fileRejections: FileRejection[]
   ): Promise<void> => {
-    setfileRejected(true)
-    fileRejections.forEach(({ file, errors }) => {
+    setFileRejected(true)
+    setFileTooLarge(false)
+    setTooManyFiles(false)
+    setFileInvalidType(false)
+
+    fileRejections.forEach(({ errors }) => {
       errors.forEach((e) => {
-        if (e.code === 'file-invalid-type') setfileInvalidType(true)
-        if (e.code === 'file-too-large') setfileTooLarge(true)
-        if (e.code === 'too-many-files') settooManyFiles(true)
+        if (e.code === 'file-invalid-type') setFileInvalidType(true)
+        if (e.code === 'file-too-large') setFileTooLarge(true)
+        if (e.code === 'too-many-files') setTooManyFiles(true)
       })
     })
   }
@@ -152,7 +107,8 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     maxSize: 1000000000,
     accept: {
       'video/*': []
-    }
+    },
+    disabled: videoBlockId == null || uploadTask != null
   })
 
   const noBorder = error != null || uploading || fileRejected
@@ -202,10 +158,12 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           }
           sx={{ pb: 4 }}
         >
+          {waiting && t('Waiting in queue...')}
           {uploading && t('Uploading...')}
           {processing && t('Processing...')}
           {(error != null || fileRejected) && t('Upload Failed!')}
-          {!uploading &&
+          {!waiting &&
+            !uploading &&
             !processing &&
             !fileRejected &&
             error == null &&
@@ -239,10 +197,10 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
         )}
       </Stack>
 
-      {uploading || processing ? (
+      {waiting || uploading || processing ? (
         <Box sx={{ width: '100%', mt: 4 }}>
           <LinearProgress
-            variant={processing ? 'indeterminate' : 'determinate'}
+            variant={processing || waiting ? 'indeterminate' : 'determinate'}
             value={progress}
             sx={{ height: 32, borderRadius: 2 }}
           />
@@ -253,6 +211,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           color="secondary"
           variant="outlined"
           onClick={open}
+          disabled={videoBlockId == null || uploadTask != null}
           sx={{
             mt: 4,
             height: 32,
@@ -265,7 +224,9 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
             fontSize={14}
             sx={{ color: 'secondary.main' }}
           >
-            {t('Upload file')}
+            {videoBlockId == null
+              ? t('Select a video block first')
+              : t('Upload file')}
           </Typography>
         </Button>
       )}
