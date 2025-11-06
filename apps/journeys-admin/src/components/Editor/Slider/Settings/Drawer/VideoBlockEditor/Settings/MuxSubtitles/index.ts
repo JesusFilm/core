@@ -1,1 +1,1 @@
-export { MuxSubtitleEnablementToggle } from './MuxSubtitleEnablementToggle'
+export { MuxSubtitleSwitch } from './MuxSubtitleSwitch'

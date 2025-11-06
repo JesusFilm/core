@@ -50,6 +50,10 @@ interface VideoLibraryProps {
   onSelect?: (block: VideoBlockUpdateInput, shouldFocus?: boolean) => void
 }
 
+const LIBRARY_TAB = 0
+const YOUTUBE_TAB = 1
+const UPLOAD_TAB = 2
+
 export function VideoLibrary({
   open,
   onClose,
@@ -60,17 +64,19 @@ export function VideoLibrary({
   const [openVideoDetails, setOpenVideoDetails] = useState(
     selectedBlock?.videoId != null && open
   )
-  const [activeTab, setActiveTab] = useState(0)
+  const [activeTab, setActiveTab] = useState(LIBRARY_TAB)
   const router = useRouter()
 
   useEffect(() => {
-    setOpenVideoDetails(selectedBlock?.videoId != null && open)
-  }, [open, selectedBlock?.videoId])
+    setOpenVideoDetails(
+      selectedBlock?.videoId != null && open && activeTab !== UPLOAD_TAB
+    )
+  }, [open, selectedBlock?.videoId, activeTab])
 
   const TabParams = {
-    0: 'video-library',
-    1: 'video-youtube',
-    2: 'video-upload'
+    [LIBRARY_TAB]: 'video-library',
+    [YOUTUBE_TAB]: 'video-youtube',
+    [UPLOAD_TAB]: 'video-upload'
   }
 
   function setRoute(param: string): void {
@@ -96,13 +102,16 @@ export function VideoLibrary({
     block: VideoBlockUpdateInput,
     shouldCloseDrawer = true
   ): void => {
-    // Always persist the mutation to update the video block
-    // Pass shouldCloseDrawer as shouldFocus to prevent navigation on background uploads
-    if (handleSelect != null) handleSelect(block, shouldCloseDrawer)
+    const shouldFocus = shouldCloseDrawer
+    if (handleSelect != null) handleSelect(block, shouldFocus)
     setOpenVideoDetails(false)
-    // Only close drawer if requested
-    // Background upload completions pass false to avoid closing wrong drawer
-    if (shouldCloseDrawer) {
+
+    // Close drawer unless background upload is still processing
+    // Exception: close if user is still on upload tab to show editor settings
+    if (shouldCloseDrawer || (!shouldCloseDrawer && activeTab === UPLOAD_TAB)) {
+      if (!shouldCloseDrawer && activeTab === UPLOAD_TAB) {
+        setActiveTab(LIBRARY_TAB)
+      }
       onClose?.()
     }
   }
@@ -133,19 +142,19 @@ export function VideoLibrary({
             <Tab
               icon={<MediaStrip1Icon />}
               label={t('Library')}
-              {...tabA11yProps('video-from-local', 0)}
+              {...tabA11yProps('video-from-local', LIBRARY_TAB)}
               sx={{ flexGrow: 1 }}
             />
             <Tab
               icon={<YoutubeIcon />}
               label={t('YouTube')}
-              {...tabA11yProps('video-from-youtube', 1)}
+              {...tabA11yProps('video-from-youtube', YOUTUBE_TAB)}
               sx={{ flexGrow: 1 }}
             />
             <Tab
               icon={<Upload1Icon />}
               label={t('Upload')}
-              {...tabA11yProps('video-from-mux', 2)}
+              {...tabA11yProps('video-from-mux', UPLOAD_TAB)}
               sx={{ flexGrow: 1 }}
             />
           </Tabs>
@@ -164,7 +173,7 @@ export function VideoLibrary({
           <TabPanel
             name="video-from-local"
             value={activeTab}
-            index={0}
+            index={LIBRARY_TAB}
             sx={{ flexGrow: 1, overflow: 'auto' }}
           >
             <VideoFromLocal onSelect={onSelect} />
@@ -172,7 +181,7 @@ export function VideoLibrary({
           <TabPanel
             name="video-from-youtube"
             value={activeTab}
-            index={1}
+            index={YOUTUBE_TAB}
             sx={{ flexGrow: 1, overflow: 'auto' }}
             unmountUntilVisible
           >
@@ -181,7 +190,7 @@ export function VideoLibrary({
           <TabPanel
             name="video-from-mux"
             value={activeTab}
-            index={2}
+            index={UPLOAD_TAB}
             sx={{ flexGrow: 1, overflow: 'auto' }}
             unmountUntilVisible
           >

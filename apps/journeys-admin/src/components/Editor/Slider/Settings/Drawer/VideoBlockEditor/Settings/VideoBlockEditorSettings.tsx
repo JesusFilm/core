@@ -11,7 +11,7 @@ import { FormikValues, useFormik } from 'formik'
 import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useRef } from 'react'
+import { ReactElement } from 'react'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -38,7 +38,7 @@ import {
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
 
-import { MuxSubtitleEnablementToggle } from './MuxSubtitles'
+import { MuxSubtitleSwitch } from './MuxSubtitles'
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 import { YouTubeSubtitleSelector } from './SubtitleSelector'
 
@@ -65,8 +65,9 @@ export function VideoBlockEditorSettings({
   onChange
 }: VideoBlockEditorSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { enqueueSnackbar } = useSnackbar()
   const { journey } = useJourney()
+  const isWebsite = journey?.website === true
+  const { enqueueSnackbar } = useSnackbar()
 
   // Fetch closed captions using custom hook
   const { languages: availableSubtitles } = useYouTubeClosedCaptions({
@@ -166,7 +167,7 @@ export function VideoBlockEditorSettings({
               />
             )}
             {selectedBlock?.source === VideoBlockSource.mux && (
-              <MuxSubtitleEnablementToggle
+              <MuxSubtitleSwitch
                 videoBlockId={selectedBlock?.id ?? null}
                 muxVideoId={
                   selectedBlock?.mediaVideo?.__typename === 'MuxVideo'
@@ -174,7 +175,6 @@ export function VideoBlockEditorSettings({
                     : null
                 }
                 journeyLanguageCode={journey?.language.bcp47}
-                disabled={selectedBlock == null}
               />
             )}
             <Divider />
@@ -246,22 +246,26 @@ export function VideoBlockEditorSettings({
               variant="subtitle2"
               sx={{
                 color:
-                  selectedBlock?.source === VideoBlockSource.youTube
+                  selectedBlock?.source === VideoBlockSource.youTube ||
+                  isWebsite
                     ? 'action.disabled'
                     : undefined
               }}
             >
               {t('Aspect ratio')}
             </Typography>
-            {selectedBlock?.source === VideoBlockSource.youTube && (
+            {(selectedBlock?.source === VideoBlockSource.youTube ||
+              isWebsite) && (
               <Typography variant="caption" color="action.disabled">
-                {t('This option is not available for YouTube videos')}
+                {isWebsite
+                  ? t('This option is not available for microwebsites')
+                  : t('This option is not available for YouTube videos')}
               </Typography>
             )}
           </Stack>
           <ToggleButtonGroup
             value={
-              selectedBlock?.source === VideoBlockSource.youTube
+              selectedBlock?.source === VideoBlockSource.youTube || isWebsite
                 ? ObjectFit.fit
                 : values.objectFit
             }
@@ -271,7 +275,9 @@ export function VideoBlockEditorSettings({
               if (value != null) await setFieldValue('objectFit', value)
             }}
             aria-label="Object Fit"
-            disabled={selectedBlock?.source === VideoBlockSource.youTube}
+            disabled={
+              selectedBlock?.source === VideoBlockSource.youTube || isWebsite
+            }
           >
             <ToggleButton
               sx={{

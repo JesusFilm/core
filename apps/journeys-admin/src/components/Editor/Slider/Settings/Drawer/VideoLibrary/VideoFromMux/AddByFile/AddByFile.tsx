@@ -41,7 +41,6 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const rawLanguageCode = journey?.language.bcp47
-  // Validate language code - only pass valid Mux-supported languages
   const isValidLanguage = useValidateMuxLanguage(rawLanguageCode)
   const languageCode =
     isValidLanguage && rawLanguageCode != null ? rawLanguageCode : undefined
@@ -95,11 +94,12 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     upload.on('success', (): void => {
       setUploading(false)
       setProcessing(true)
-      // Start polling with completion callback
       startPolling(videoId, languageCode, () => {
         // Always call onChange to persist the mutation
-        // Never close drawer on upload completion - user may have navigated to different block
-        onChange(videoId, false)
+        // Don't close drawer, user may have navigated to different block during upload
+        // and closing drawer would interrupt their workflow.
+        const shouldCloseDrawer = false
+        onChange(videoId, shouldCloseDrawer)
         resetUploadStatus()
       })
     })
