@@ -151,11 +151,9 @@ export function MuxSubtitleSwitch({
           }}
         />
       </Stack>
-      {
-        <Typography variant="caption" color="text.secondary">
-          {labelText}
-        </Typography>
-      }
+      <Typography variant="caption" color="text.secondary">
+        {labelText}
+      </Typography>
     </Stack>
   )
 }
