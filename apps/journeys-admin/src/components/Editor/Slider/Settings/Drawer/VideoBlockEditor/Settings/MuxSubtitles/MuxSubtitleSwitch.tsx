@@ -1,15 +1,12 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
-
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { GetMyGeneratedMuxSubtitleTrack } from '../../../../../../../../../__generated__/GetMyGeneratedMuxSubtitleTrack'
-import { VideoBlockUpdateSubtitle } from '../../../../../../../../../__generated__/VideoBlockUpdateSubtitle'
 import { useValidateMuxLanguage } from '../../../../../../../../libs/useValidateMuxLanguage'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
@@ -30,25 +27,18 @@ export const GET_MY_GENERATED_MUX_SUBTITLE_TRACK = gql`
   }
 `
 
-export const VIDEO_BLOCK_UPDATE_SUBTITLE = gql`
-  ${VIDEO_FIELDS}
-  mutation VideoBlockUpdateSubtitle($id: ID!, $input: VideoBlockUpdateInput!) {
-    videoBlockUpdate(id: $id, input: $input) {
-      ...VideoFields
-    }
-  }
-`
-
 interface MuxSubtitleSwitchProps {
   videoBlockId: string | null
   muxVideoId: string | null
   journeyLanguageCode: string | null | undefined
+  onChange: (showGeneratedSubtitles: boolean) => Promise<void>
 }
 
 export function MuxSubtitleSwitch({
   videoBlockId,
   muxVideoId,
-  journeyLanguageCode
+  journeyLanguageCode,
+  onChange
 }: MuxSubtitleSwitchProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
@@ -56,6 +46,7 @@ export function MuxSubtitleSwitch({
   } = useEditor()
   const isValidLanguage = useValidateMuxLanguage(journeyLanguageCode)
   const [toggleChecked, setToggleChecked] = useState(false)
+  const [updating, setUpdating] = useState(false)
 
   // Query subtitle track status
   const {
@@ -96,9 +87,6 @@ export function MuxSubtitleSwitch({
     }
   }, [subtitleTrack?.status, startPolling, stopPolling])
 
-  const [updateSubtitleSettings, { loading: updating }] =
-    useMutation<VideoBlockUpdateSubtitle>(VIDEO_BLOCK_UPDATE_SUBTITLE)
-
   const videoBlock = selectedBlock as VideoBlock | undefined
 
   useEffect(() => {
@@ -117,19 +105,15 @@ export function MuxSubtitleSwitch({
 
     const newValue = event.target.checked
     setToggleChecked(newValue)
+    setUpdating(true)
 
     try {
-      await updateSubtitleSettings({
-        variables: {
-          id: videoBlockId,
-          input: {
-            showGeneratedSubtitles: newValue
-          }
-        }
-      })
+      await onChange(newValue)
     } catch (error) {
       // Revert on error
       setToggleChecked(!newValue)
+    } finally {
+      setUpdating(false)
     }
   }
 

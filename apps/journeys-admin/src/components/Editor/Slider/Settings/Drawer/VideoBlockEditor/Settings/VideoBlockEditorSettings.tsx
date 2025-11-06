@@ -175,6 +175,9 @@ export function VideoBlockEditorSettings({
                     : null
                 }
                 journeyLanguageCode={journey?.language.bcp47}
+                onChange={async (showGeneratedSubtitles) => {
+                  await onChange({ showGeneratedSubtitles })
+                }}
               />
             )}
             <Divider />
