@@ -11,6 +11,7 @@ interface SubtitleMenuProps {
   tracks: TextTrack[]
   activeTrack: TextTrack | undefined
   onChange: (trackId: string | null) => void
+  fullscreen?: boolean
 }
 
 export function SubtitleMenu({
@@ -19,7 +20,8 @@ export function SubtitleMenu({
   onClose,
   tracks,
   activeTrack,
-  onChange
+  onChange,
+  fullscreen = false
 }: SubtitleMenuProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
 
@@ -35,6 +37,7 @@ export function SubtitleMenu({
       anchorEl={anchorEl}
       open={open}
       onClose={onClose}
+      disablePortal={fullscreen}
       anchorOrigin={{
         vertical: 'top',
         horizontal: 'right'
