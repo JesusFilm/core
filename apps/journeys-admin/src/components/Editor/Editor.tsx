@@ -53,19 +53,21 @@ export function Editor({
           ...initialState
         }}
       >
-        <HotkeysProvider>
-          <FontLoader
-            fonts={[
-              journey?.journeyTheme?.headerFont ?? '',
-              journey?.journeyTheme?.bodyFont ?? '',
-              journey?.journeyTheme?.labelFont ?? ''
-            ]}
-          />
-          <Hotkeys />
-          <Toolbar user={user} />
-          <Slider />
-          <Fab variant="mobile" />
-        </HotkeysProvider>
+        <MuxVideoUploadProvider>
+          <HotkeysProvider>
+            <FontLoader
+              fonts={[
+                journey?.journeyTheme?.headerFont ?? '',
+                journey?.journeyTheme?.bodyFont ?? '',
+                journey?.journeyTheme?.labelFont ?? ''
+              ]}
+            />
+            <Hotkeys />
+            <Toolbar user={user} />
+            <Slider />
+            <Fab variant="mobile" />
+          </HotkeysProvider>
+        </MuxVideoUploadProvider>
       </EditorProvider>
     </JourneyProvider>
   )

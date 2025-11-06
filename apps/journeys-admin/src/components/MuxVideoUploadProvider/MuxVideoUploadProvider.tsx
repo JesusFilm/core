@@ -305,4 +305,3 @@ export function useMuxVideoUpload(): MuxVideoUploadContextType {
   }
   return context
 }
-
