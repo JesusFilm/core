@@ -20,11 +20,15 @@ test.describe('GET /v2/metadata-language-tags/[metadataLanguageTag]', () => {
         nameNative: expect.any(String),
         _links: expect.objectContaining({
           self: expect.objectContaining({
-            href: expect.stringMatching(/\/v2\/metadata-language-tags\/en\?apiKey=.+/)
+            href: expect.stringMatching(
+              /\/v2\/metadata-language-tags\/en\?apiKey=.+/
+            )
           }),
           metadataLanguageTags: expect.objectContaining({
             // Allow optional trailing slash before query
-            href: expect.stringMatching(/\/v2\/metadata-language-tags\/?\?apiKey=.+/)
+            href: expect.stringMatching(
+              /\/v2\/metadata-language-tags\/?\?apiKey=.+/
+            )
           })
         })
       })
