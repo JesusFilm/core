@@ -1662,6 +1662,7 @@ export class CardLevelActionPage {
       }
       throw new Error('No images found in gallery after waiting')
     }
+<<<<<<< HEAD
 
     const imageLocator = imageListItems
       .first()
@@ -1673,13 +1674,31 @@ export class CardLevelActionPage {
     })
     await imageLocator.scrollIntoViewIfNeeded()
     await imageLocator.click({ timeout: sixtySecondsTimeout })
+=======
+    
+    // Click on the list item itself, not the img to avoid strict mode violations
+    const imageListItem = imageListItems.first()
+    await imageListItem.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+    await imageListItem.scrollIntoViewIfNeeded()
+    // Try clicking the img first, if that fails, click the li element
+    const imgInItem = imageListItem.locator('img').first()
+    const imgCount = await imgInItem.count()
+    if (imgCount > 0) {
+      await imgInItem.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+      await imgInItem.click({ timeout: sixtySecondsTimeout })
+    } else {
+      await imageListItem.click({ timeout: sixtySecondsTimeout })
+    }
+    // Wait a bit for the selection to process
+    await this.page.waitForTimeout(1000)
+>>>>>>> 0b3f896d72 (fix(journeys-admin-e2e): fix Footer properties WebSite test flakiness)
   }
   async valdiateSelectedImageWithDeleteIcon() {
-    await expect(
-      this.page.locator(
-        'div[data-testid="ImageBlockHeader"]:has(img) button:has(svg[data-testid="imageBlockHeaderDelete"])'
-      )
-    ).toBeVisible()
+    // Wait for the image to be selected and the delete icon to appear
+    const deleteIconLocator = this.page.locator(
+      'div[data-testid="ImageBlockHeader"]:has(img) button:has(svg[data-testid="imageBlockHeaderDelete"])'
+    )
+    await expect(deleteIconLocator).toBeVisible({ timeout: sixtySecondsTimeout })
   }
   async closeToolDrawerForFooterImage() {
     await this.page
