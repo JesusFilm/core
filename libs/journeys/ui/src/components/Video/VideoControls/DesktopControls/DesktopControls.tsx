@@ -10,7 +10,7 @@ import IconButton from '@mui/material/IconButton'
 import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
-import { JSX, MouseEvent } from 'react'
+import { Dispatch, JSX, MouseEvent, SetStateAction } from 'react'
 
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import VideoJsPlayer from '../../utils/videoJsTypes'
@@ -39,6 +39,7 @@ interface DesktopControlsProps {
   player: VideoJsPlayer
   source: VideoBlockSource
   visible: boolean
+  setActive: Dispatch<SetStateAction<boolean>>
 }
 
 export function DesktopControls({
@@ -62,7 +63,8 @@ export function DesktopControls({
   handleToggleStats,
   player,
   source,
-  visible
+  visible,
+  setActive
 }: DesktopControlsProps): JSX.Element {
   return (
     <Stack
@@ -179,7 +181,12 @@ export function DesktopControls({
           )}
         </IconButton>
       </Stack>
-      <SubtitleButton player={player} source={source} visible={visible} />
+      <SubtitleButton
+        player={player}
+        source={source}
+        visible={visible}
+        setActive={setActive}
+      />
       <VideoSettings player={player} onToggleStats={handleToggleStats} />
       {showFullscreenButton && (
         <IconButton
