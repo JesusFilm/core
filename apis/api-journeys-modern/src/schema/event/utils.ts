@@ -264,7 +264,7 @@ export async function appendEventToGoogleSheets({
 
   // Ensure base headers
   const baseHeaders = ['visitorId', 'createdAt', 'name', 'email', 'phone']
-  let headers: string[] = existingHeader.length > 0 ? existingHeader : []
+  let headers: string[] = existingHeader.length > 0 ? [...existingHeader] : []
   if (headers.length === 0) headers = [...baseHeaders]
 
   // Ensure base headers are present (prepend if missing)
