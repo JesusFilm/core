@@ -42,7 +42,7 @@ const emptyVideo: Omit<ComponentProps<typeof Video>, 'source'> = {
   action: null,
   objectFit: null,
   subtitleLanguage: null,
-      showGeneratedSubtitles: null,
+  showGeneratedSubtitles: null,
   children: []
 }
 

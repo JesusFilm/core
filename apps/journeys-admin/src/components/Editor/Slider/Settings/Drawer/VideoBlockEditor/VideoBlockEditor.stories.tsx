@@ -69,7 +69,7 @@ const videoInternal: TreeBlock<VideoBlock> = {
   image: null,
   objectFit: null,
   subtitleLanguage: null,
-      showGeneratedSubtitles: null,
+  showGeneratedSubtitles: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -138,7 +138,7 @@ const videoYouTube: TreeBlock<VideoBlock> = {
   },
   objectFit: null,
   subtitleLanguage: null,
-      showGeneratedSubtitles: null,
+  showGeneratedSubtitles: null,
   posterBlockId: 'poster1.id',
   children: []
 }
