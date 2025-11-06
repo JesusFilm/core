@@ -31,7 +31,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
-      - name: Install dependencies # Not frozen so that we attempt tofix broken lockfile
+      - name: Install dependencies
         run: pnpm install
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
