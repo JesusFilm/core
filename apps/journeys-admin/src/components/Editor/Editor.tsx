@@ -15,6 +15,7 @@ import { FontLoader } from './FontLoader/FontLoader'
 import { Hotkeys } from './Hotkeys'
 import { Slider } from './Slider'
 import { Toolbar } from './Toolbar'
+import { MuxVideoPollingProvider } from '../MuxVideoPollingProvider'
 
 interface EditorProps {
   journey?: Journey
@@ -52,19 +53,21 @@ export function Editor({
           ...initialState
         }}
       >
-        <HotkeysProvider>
-          <FontLoader
-            fonts={[
-              journey?.journeyTheme?.headerFont ?? '',
-              journey?.journeyTheme?.bodyFont ?? '',
-              journey?.journeyTheme?.labelFont ?? ''
-            ]}
-          />
-          <Hotkeys />
-          <Toolbar user={user} />
-          <Slider />
-          <Fab variant="mobile" />
-        </HotkeysProvider>
+        <MuxVideoPollingProvider>
+          <HotkeysProvider>
+            <FontLoader
+              fonts={[
+                journey?.journeyTheme?.headerFont ?? '',
+                journey?.journeyTheme?.bodyFont ?? '',
+                journey?.journeyTheme?.labelFont ?? ''
+              ]}
+            />
+            <Hotkeys />
+            <Toolbar user={user} />
+            <Slider />
+            <Fab variant="mobile" />
+          </HotkeysProvider>
+        </MuxVideoPollingProvider>
       </EditorProvider>
     </JourneyProvider>
   )
