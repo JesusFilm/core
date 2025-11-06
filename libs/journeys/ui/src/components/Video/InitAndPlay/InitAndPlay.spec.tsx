@@ -10,6 +10,8 @@ import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__genera
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { getMuxMetadata } from '../utils/getMuxMetadata'
+import { getCaptionsAndSubtitleTracks } from '../utils/getCaptionsAndSubtitleTracks'
+import { extractYouTubeCaptionsAndAddTextTracks } from '../utils/extractYouTubeCaptionsAndAddTextTracks'
 import VideoJsPlayer from '../utils/videoJsTypes'
 
 import { InitAndPlay } from '.'
@@ -18,7 +20,21 @@ jest.mock('../utils/getMuxMetadata', () => ({
   getMuxMetadata: jest.fn()
 }))
 
+jest.mock('../utils/getCaptionsAndSubtitleTracks', () => ({
+  getCaptionsAndSubtitleTracks: jest.fn()
+}))
+
+jest.mock('../utils/extractYouTubeCaptionsAndAddTextTracks', () => ({
+  extractYouTubeCaptionsAndAddTextTracks: jest.fn()
+}))
+
 const mockGetMuxMetadata = getMuxMetadata
+const { getCaptionsAndSubtitleTracks: mockGetCaptionsAndSubtitleTracks } =
+  jest.requireMock('../utils/getCaptionsAndSubtitleTracks')
+const {
+  extractYouTubeCaptionsAndAddTextTracks:
+    mockExtractYouTubeCaptionsAndAddTextTracks
+} = jest.requireMock('../utils/extractYouTubeCaptionsAndAddTextTracks')
 
 describe('InitAndPlay', () => {
   let defaultProps: ComponentProps<typeof InitAndPlay>
@@ -244,5 +260,299 @@ describe('InitAndPlay', () => {
 
     render(<InitAndPlay {...props} />)
     expect(player.paused()).toBe(true)
+  })
+
+  describe('Mux subtitles', () => {
+    let mockSubtitleTrack: TextTrack
+    let mockCaptionTrack: TextTrack
+
+    beforeEach(() => {
+      mockSubtitleTrack = {
+        kind: 'subtitles',
+        mode: 'hidden',
+        label: 'English',
+        language: 'en',
+        id: 'sub-en'
+      } as TextTrack
+
+      mockCaptionTrack = {
+        kind: 'captions',
+        mode: 'hidden',
+        label: 'English CC',
+        language: 'en',
+        id: 'cap-en'
+      } as TextTrack
+
+      jest.spyOn(player, 'readyState').mockReturnValue(4)
+    })
+
+    it('should show Mux subtitles when showGeneratedSubtitles is true', () => {
+      mockGetCaptionsAndSubtitleTracks.mockReturnValue([
+        mockSubtitleTrack,
+        mockCaptionTrack
+      ])
+
+      const props = {
+        ...defaultProps,
+        source: VideoBlockSource.mux,
+        showGeneratedSubtitles: true
+      }
+
+      blockHistoryVar([defaultStepBlock])
+      render(<InitAndPlay {...props} />)
+
+      expect(mockGetCaptionsAndSubtitleTracks).toHaveBeenCalledWith(player)
+      expect(mockSubtitleTrack.mode).toBe('showing')
+      expect(mockCaptionTrack.mode).toBe('hidden')
+    })
+
+    it('should hide Mux subtitles when showGeneratedSubtitles is false', () => {
+      const subtitleTrack = {
+        ...mockSubtitleTrack,
+        mode: 'showing' as TextTrackMode
+      }
+      mockGetCaptionsAndSubtitleTracks.mockReturnValue([
+        subtitleTrack,
+        mockCaptionTrack
+      ])
+
+      const props = {
+        ...defaultProps,
+        source: VideoBlockSource.mux,
+        showGeneratedSubtitles: false
+      }
+
+      blockHistoryVar([defaultStepBlock])
+      render(<InitAndPlay {...props} />)
+
+      expect(mockGetCaptionsAndSubtitleTracks).toHaveBeenCalledWith(player)
+      expect(subtitleTrack.mode).toBe('hidden')
+    })
+
+    it('should hide Mux subtitles when showGeneratedSubtitles is null', () => {
+      const subtitleTrack = {
+        ...mockSubtitleTrack,
+        mode: 'showing' as TextTrackMode
+      }
+      mockGetCaptionsAndSubtitleTracks.mockReturnValue([
+        subtitleTrack,
+        mockCaptionTrack
+      ])
+
+      const props = {
+        ...defaultProps,
+        source: VideoBlockSource.mux,
+        showGeneratedSubtitles: null
+      }
+
+      blockHistoryVar([defaultStepBlock])
+      render(<InitAndPlay {...props} />)
+
+      expect(mockGetCaptionsAndSubtitleTracks).toHaveBeenCalledWith(player)
+      expect(subtitleTrack.mode).toBe('hidden')
+    })
+
+    it('should not affect subtitles when source is not mux', () => {
+      const subtitleTrack = {
+        ...mockSubtitleTrack,
+        mode: 'hidden' as TextTrackMode
+      }
+      mockGetCaptionsAndSubtitleTracks.mockReturnValue([
+        subtitleTrack,
+        mockCaptionTrack
+      ])
+
+      const props = {
+        ...defaultProps,
+        source: VideoBlockSource.youTube,
+        showGeneratedSubtitles: true
+      }
+
+      blockHistoryVar([defaultStepBlock])
+      render(<InitAndPlay {...props} />)
+
+      expect(subtitleTrack.mode).toBe('hidden')
+    })
+
+    it('should only affect subtitle tracks, not caption tracks', () => {
+      const subtitleTrack = {
+        ...mockSubtitleTrack,
+        mode: 'hidden' as TextTrackMode
+      }
+      const captionTrack = {
+        ...mockCaptionTrack,
+        mode: 'hidden' as TextTrackMode
+      }
+      mockGetCaptionsAndSubtitleTracks.mockReturnValue([
+        subtitleTrack,
+        captionTrack
+      ])
+
+      const props = {
+        ...defaultProps,
+        source: VideoBlockSource.mux,
+        showGeneratedSubtitles: true
+      }
+
+      blockHistoryVar([defaultStepBlock])
+      render(<InitAndPlay {...props} />)
+
+      expect(subtitleTrack.mode).toBe('showing')
+      expect(captionTrack.mode).toBe('hidden')
+    })
+
+    it('should not process subtitles when player readyState is not 4', () => {
+      mockGetCaptionsAndSubtitleTracks.mockClear()
+      jest.spyOn(player, 'readyState').mockReturnValue(0)
+
+      mockGetCaptionsAndSubtitleTracks.mockReturnValue([
+        mockSubtitleTrack,
+        mockCaptionTrack
+      ])
+
+      const props = {
+        ...defaultProps,
+        source: VideoBlockSource.mux,
+        showGeneratedSubtitles: true
+      }
+
+      blockHistoryVar([defaultStepBlock])
+      render(<InitAndPlay {...props} />)
+
+      expect(mockGetCaptionsAndSubtitleTracks).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('YouTube subtitles', () => {
+    beforeEach(() => {
+      jest.spyOn(player, 'readyState').mockReturnValue(4)
+    })
+
+    it('should call extractYouTubeCaptionsAndAddTextTracks when source is YouTube', () => {
+      const props = {
+        ...defaultProps,
+        source: VideoBlockSource.youTube,
+        subtitleLanguage: null
+      }
+
+      blockHistoryVar([defaultStepBlock])
+      render(<InitAndPlay {...props} />)
+
+      expect(mockExtractYouTubeCaptionsAndAddTextTracks).toHaveBeenCalledWith({
+        player,
+        subtitleLanguage: null
+      })
+    })
+
+    it('should call extractYouTubeCaptionsAndAddTextTracks with subtitleLanguage', () => {
+      const subtitleLanguage = {
+        __typename: 'Language' as const,
+        id: 'en-id',
+        bcp47: 'en'
+      }
+
+      const props = {
+        ...defaultProps,
+        source: VideoBlockSource.youTube,
+        subtitleLanguage
+      }
+
+      blockHistoryVar([defaultStepBlock])
+      render(<InitAndPlay {...props} />)
+
+      expect(mockExtractYouTubeCaptionsAndAddTextTracks).toHaveBeenCalledWith({
+        player,
+        subtitleLanguage
+      })
+    })
+
+    it('should not call extractYouTubeCaptionsAndAddTextTracks when source is not YouTube', () => {
+      mockExtractYouTubeCaptionsAndAddTextTracks.mockClear()
+      mockGetCaptionsAndSubtitleTracks.mockReturnValue([])
+
+      const props = {
+        ...defaultProps,
+        source: VideoBlockSource.mux,
+        subtitleLanguage: null
+      }
+
+      blockHistoryVar([defaultStepBlock])
+      render(<InitAndPlay {...props} />)
+
+      expect(mockExtractYouTubeCaptionsAndAddTextTracks).not.toHaveBeenCalled()
+    })
+
+    it('should not call extractYouTubeCaptionsAndAddTextTracks when player readyState is not 4', () => {
+      mockExtractYouTubeCaptionsAndAddTextTracks.mockClear()
+      jest.spyOn(player, 'readyState').mockReturnValue(0)
+
+      const props = {
+        ...defaultProps,
+        source: VideoBlockSource.youTube,
+        subtitleLanguage: null
+      }
+
+      blockHistoryVar([defaultStepBlock])
+      render(<InitAndPlay {...props} />)
+
+      expect(mockExtractYouTubeCaptionsAndAddTextTracks).not.toHaveBeenCalled()
+    })
+
+    it('should call extractYouTubeCaptionsAndAddTextTracks when readyState changes to 4', () => {
+      jest.spyOn(player, 'readyState').mockReturnValue(0)
+
+      const props = {
+        ...defaultProps,
+        source: VideoBlockSource.youTube,
+        subtitleLanguage: null
+      }
+
+      blockHistoryVar([defaultStepBlock])
+      render(<InitAndPlay {...props} />)
+
+      expect(mockExtractYouTubeCaptionsAndAddTextTracks).not.toHaveBeenCalled()
+
+      jest.spyOn(player, 'readyState').mockReturnValue(4)
+
+      const { rerender } = render(<InitAndPlay {...props} />)
+      rerender(<InitAndPlay {...props} />)
+
+      expect(mockExtractYouTubeCaptionsAndAddTextTracks).toHaveBeenCalledWith({
+        player,
+        subtitleLanguage: null
+      })
+    })
+
+    it('should call extractYouTubeCaptionsAndAddTextTracks when subtitleLanguage changes', () => {
+      const props = {
+        ...defaultProps,
+        source: VideoBlockSource.youTube,
+        subtitleLanguage: null
+      }
+
+      blockHistoryVar([defaultStepBlock])
+      const { rerender } = render(<InitAndPlay {...props} />)
+
+      expect(mockExtractYouTubeCaptionsAndAddTextTracks).toHaveBeenCalledWith({
+        player,
+        subtitleLanguage: null
+      })
+
+      const newSubtitleLanguage = {
+        __typename: 'Language' as const,
+        id: 'en-id',
+        bcp47: 'en'
+      }
+
+      mockExtractYouTubeCaptionsAndAddTextTracks.mockClear()
+      rerender(
+        <InitAndPlay {...props} subtitleLanguage={newSubtitleLanguage} />
+      )
+
+      expect(mockExtractYouTubeCaptionsAndAddTextTracks).toHaveBeenCalledWith({
+        player,
+        subtitleLanguage: newSubtitleLanguage
+      })
+    })
   })
 })

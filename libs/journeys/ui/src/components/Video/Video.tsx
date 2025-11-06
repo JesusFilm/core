@@ -61,7 +61,8 @@ export function Video({
   action,
   objectFit,
   videoVariantLanguageId,
-  subtitleLanguage
+  subtitleLanguage,
+  showGeneratedSubtitles
 }: TreeBlock<VideoFields>): ReactElement {
   const theme = useTheme()
   const hundredVh = use100vh()
@@ -197,6 +198,7 @@ export function Video({
         mediaVideo={mediaVideo}
         videoVariantLanguageId={videoVariantLanguageId}
         subtitleLanguage={subtitleLanguage}
+        showGeneratedSubtitles={showGeneratedSubtitles}
       />
       {activeStep &&
         player != null &&

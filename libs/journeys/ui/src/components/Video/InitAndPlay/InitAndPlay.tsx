@@ -25,6 +25,7 @@ import { getMuxMetadata } from '../utils/getMuxMetadata'
 import VideoJsPlayer from '../utils/videoJsTypes'
 
 import 'videojs-mux'
+import { getCaptionsAndSubtitleTracks } from '../utils/getCaptionsAndSubtitleTracks'
 
 interface InitAndPlayProps {
   videoRef: RefObject<HTMLVideoElement | null>
@@ -48,6 +49,7 @@ interface InitAndPlayProps {
   mediaVideo: VideoFields_mediaVideo | null
   videoVariantLanguageId: string | null
   subtitleLanguage: VideoFields_subtitleLanguage | null
+  showGeneratedSubtitles?: boolean | null
 }
 
 export function InitAndPlay({
@@ -71,7 +73,8 @@ export function InitAndPlay({
   title,
   mediaVideo,
   videoVariantLanguageId,
-  subtitleLanguage
+  subtitleLanguage,
+  showGeneratedSubtitles
 }: InitAndPlayProps): ReactElement {
   const { journey, variant } = useJourney()
   const { blockHistory } = useBlocks()
@@ -271,6 +274,19 @@ export function InitAndPlay({
       extractYouTubeCaptionsAndAddTextTracks({
         player,
         subtitleLanguage
+      })
+    }
+    if (source === VideoBlockSource.mux) {
+      const tracks = getCaptionsAndSubtitleTracks(player)
+      tracks.forEach((track) => {
+        if (
+          track.kind === 'subtitles'
+          // add this check in once subtitleLanguage gets mutated
+          //  &&
+          // track.language === subtitleLanguage?.bcp47
+        ) {
+          track.mode = showGeneratedSubtitles ? 'showing' : 'hidden'
+        }
       })
     }
     // player ready state is needed in deps array to ensure useEffect is fired at correct time

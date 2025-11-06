@@ -47,8 +47,8 @@ describe('SubtitleMenu', () => {
     anchorEl: mockAnchorEl,
     open: true,
     onClose: mockOnClose,
-    youtubeCaptionTracks: mockCaptionTracks,
-    activeYoutubeTrack: mockActiveTrack,
+    tracks: mockCaptionTracks,
+    activeTrack: mockActiveTrack,
     onChange: mockOnChange
   })
 
@@ -56,8 +56,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={mockCaptionTracks}
-        activeYoutubeTrack={mockActiveTrack}
+        tracks={mockCaptionTracks}
+        activeTrack={mockActiveTrack}
       />
     )
 
@@ -77,8 +77,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={[]}
-        activeYoutubeTrack={undefined}
+        tracks={[]}
+        activeTrack={undefined}
       />
     )
 
@@ -93,8 +93,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={[]}
-        activeYoutubeTrack={undefined}
+        tracks={[]}
+        activeTrack={undefined}
       />
     )
 
@@ -114,8 +114,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={mockCaptionTracks}
-        activeYoutubeTrack={activeTrack}
+        tracks={mockCaptionTracks}
+        activeTrack={activeTrack}
       />
     )
 
@@ -137,8 +137,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={mockCaptionTracks}
-        activeYoutubeTrack={activeTrack}
+        tracks={mockCaptionTracks}
+        activeTrack={activeTrack}
       />
     )
 
@@ -156,8 +156,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={mockCaptionTracks}
-        activeYoutubeTrack={undefined}
+        tracks={mockCaptionTracks}
+        activeTrack={undefined}
       />
     )
 
@@ -172,8 +172,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={mockCaptionTracks}
-        activeYoutubeTrack={undefined}
+        tracks={mockCaptionTracks}
+        activeTrack={undefined}
       />
     )
 
@@ -188,8 +188,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={mockCaptionTracks}
-        activeYoutubeTrack={undefined}
+        tracks={mockCaptionTracks}
+        activeTrack={undefined}
       />
     )
 
@@ -210,8 +210,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={tracksWithoutLabels}
-        activeYoutubeTrack={undefined}
+        tracks={tracksWithoutLabels}
+        activeTrack={undefined}
       />
     )
 
@@ -231,8 +231,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={tracksWithoutLabelsOrLanguage}
-        activeYoutubeTrack={undefined}
+        tracks={tracksWithoutLabelsOrLanguage}
+        activeTrack={undefined}
       />
     )
 
@@ -243,8 +243,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={[]}
-        activeYoutubeTrack={undefined}
+        tracks={[]}
+        activeTrack={undefined}
       />
     )
 
@@ -256,8 +256,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={[]}
-        activeYoutubeTrack={undefined}
+        tracks={[]}
+        activeTrack={undefined}
       />
     )
 
