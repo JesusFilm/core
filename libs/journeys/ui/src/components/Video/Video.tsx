@@ -73,7 +73,7 @@ export function Video({
   const [activeStep, setActiveStep] = useState(false)
 
   const { blockHistory } = useBlocks()
-  const { variant } = useJourney()
+  const { variant, journey } = useJourney()
   const {
     state: { selectedBlock }
   } = useEditor()
@@ -108,9 +108,11 @@ export function Video({
     Math.min(...triggerTimes, endAt ?? 10000)
   )
 
+  const isWebsite = journey?.website === true
+
   // Set video layout
   let videoFit: CSSProperties['objectFit']
-  if (source === VideoBlockSource.youTube) {
+  if (source === VideoBlockSource.youTube || isWebsite) {
     videoFit = 'contain'
   } else {
     switch (objectFit) {
@@ -238,7 +240,7 @@ export function Video({
                 '> .vjs-tech': {
                   objectFit: videoFit,
                   transform:
-                    objectFit === VideoBlockObjectFit.zoomed
+                    objectFit === VideoBlockObjectFit.zoomed && !isWebsite
                       ? 'scale(1.33)'
                       : undefined
                 },

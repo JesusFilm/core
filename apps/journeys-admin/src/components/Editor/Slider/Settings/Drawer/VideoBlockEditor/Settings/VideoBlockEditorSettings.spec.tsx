@@ -3,6 +3,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { useYouTubeClosedCaptions } from '@core/journeys/ui/useYouTubeClosedCaptions'
 
 import {
@@ -320,6 +322,40 @@ describe('VideoBlockEditorSettings', () => {
               posterBlock={null}
               onChange={onChange}
             />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+    expect(getByRole('button', { name: 'Fill' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Fit' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Fit' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
+    expect(getByRole('button', { name: 'Crop' })).toBeDisabled()
+  })
+
+  it('should disable aspect ratio buttons for microwebsites', async () => {
+    const onChange = jest.fn()
+    const { getByRole } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: { __typename: 'Journey', website: true } as Journey
+              }}
+            >
+              <VideoBlockEditorSettings
+                selectedBlock={{
+                  ...video,
+                  source: VideoBlockSource.internal,
+                  objectFit: ObjectFit.fill
+                }}
+                posterBlock={null}
+                onChange={onChange}
+              />
+            </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
       </ThemeProvider>
