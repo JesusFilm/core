@@ -16,7 +16,6 @@ if (isBrowser) {
  * @type {Record<string, string>}
  */
 const fallbackLng = {
-  default: [], // left blank so english isn't sent to the client
   es: 'es-ES',
   fr: 'fr-FR',
   id: 'id-ID',
@@ -52,7 +51,7 @@ const i18nConfig = {
   },
   ns: ['apps-watch'],
   fallbackLng: {
-    default: []
+    default: [] // left blank so english isn't sent to the client
   },
   localePath: (lng, ns) =>
     `${localePath}/${fallbackLng[lng] ?? lng}/${ns}.json`,
