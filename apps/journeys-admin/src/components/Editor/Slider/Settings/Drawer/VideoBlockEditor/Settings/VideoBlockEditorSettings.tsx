@@ -144,9 +144,8 @@ export function VideoBlockEditorSettings({
       data-testid="VideoBlockEditorSettings"
     >
       <Stack direction="column" spacing={6}>
-        {/* Subtitles */}
-        {(selectedBlock?.source === VideoBlockSource.youTube ||
-          selectedBlock?.source === VideoBlockSource.mux) && (
+        {/* Youtube Subtitles */}
+        {selectedBlock?.source === VideoBlockSource.youTube && (
           <Stack direction="column" spacing={4}>
             <Typography
               variant="subtitle2"
@@ -156,30 +155,33 @@ export function VideoBlockEditorSettings({
             >
               {t('Subtitles')}
             </Typography>
-            {selectedBlock?.source === VideoBlockSource.youTube && (
-              <YouTubeSubtitleSelector
-                selectedSubtitleId={values.subtitleLanguageId}
-                availableLanguages={availableSubtitles}
-                onChange={async (subtitleLanguageId) => {
-                  await setFieldValue('subtitleLanguageId', subtitleLanguageId)
-                }}
-                disabled={selectedBlock == null}
-              />
-            )}
-            {selectedBlock?.source === VideoBlockSource.mux && (
-              <MuxSubtitleSwitch
-                videoBlockId={selectedBlock?.id ?? null}
-                muxVideoId={
-                  selectedBlock?.mediaVideo?.__typename === 'MuxVideo'
-                    ? selectedBlock.mediaVideo.id
-                    : null
-                }
-                journeyLanguageCode={journey?.language.bcp47}
-                onChange={async (showGeneratedSubtitles) => {
-                  await onChange({ showGeneratedSubtitles })
-                }}
-              />
-            )}
+            <YouTubeSubtitleSelector
+              selectedSubtitleId={values.subtitleLanguageId}
+              availableLanguages={availableSubtitles}
+              onChange={async (subtitleLanguageId) => {
+                await setFieldValue('subtitleLanguageId', subtitleLanguageId)
+              }}
+              disabled={selectedBlock == null}
+            />
+            <Divider />
+          </Stack>
+        )}
+
+        {/* Mux Subtitles */}
+        {selectedBlock?.source === VideoBlockSource.mux && (
+          <Stack direction="column" spacing={4}>
+            <MuxSubtitleSwitch
+              videoBlockId={selectedBlock?.id ?? null}
+              muxVideoId={
+                selectedBlock?.mediaVideo?.__typename === 'MuxVideo'
+                  ? selectedBlock.mediaVideo.id
+                  : null
+              }
+              journeyLanguageCode={journey?.language.bcp47}
+              onChange={async (showGeneratedSubtitles) => {
+                await onChange({ showGeneratedSubtitles })
+              }}
+            />
             <Divider />
           </Stack>
         )}

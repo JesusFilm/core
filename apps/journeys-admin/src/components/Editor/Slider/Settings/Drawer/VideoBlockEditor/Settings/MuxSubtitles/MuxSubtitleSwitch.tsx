@@ -98,6 +98,19 @@ export function MuxSubtitleSwitch({
     }
   }, [videoBlock, subtitleTrack])
 
+  // Programmatically turn off switch when language becomes invalid
+  useEffect(() => {
+    if (!isValidLanguage && toggleChecked && !updating) {
+      setToggleChecked(false)
+      if (videoBlockId != null) {
+        onChange(false).catch(() => {
+          // Revert on error
+          setToggleChecked(true)
+        })
+      }
+    }
+  }, [isValidLanguage, toggleChecked, updating, videoBlockId, onChange])
+
   const handleToggleChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ): Promise<void> => {
@@ -141,7 +154,8 @@ export function MuxSubtitleSwitch({
 
   return (
     <Stack direction="column" spacing={2}>
-      <Stack direction="row" justifyContent="space-between">
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Typography variant="subtitle2">{t('Subtitles')}</Typography>
         <Switch
           checked={toggleChecked}
           onChange={handleToggleChange}
@@ -151,9 +165,11 @@ export function MuxSubtitleSwitch({
           }}
         />
       </Stack>
-      <Typography variant="caption" color="text.secondary">
-        {labelText}
-      </Typography>
+      {labelText && (
+        <Typography variant="caption" color="text.secondary">
+          {labelText}
+        </Typography>
+      )}
     </Stack>
   )
 }
