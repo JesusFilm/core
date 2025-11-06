@@ -1,2 +1,1 @@
 export { WebsiteCover } from './WebsiteCover'
-

@@ -9,6 +9,7 @@ import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
 import { OverlayContent } from '../OverlayContent'
 import { stripAlphaFromHex } from '../utils/colorOpacityUtils'
+
 import { BackgroundVideo } from './BackgroundVideo'
 
 interface WebsiteCoverProps {

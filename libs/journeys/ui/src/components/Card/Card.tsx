@@ -25,10 +25,10 @@ import { CardFields } from './__generated__/CardFields'
 import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
 import { ParallaxCover } from './ParallaxCover'
-import { WebsiteCover } from './WebsiteCover'
 import { getFormInitialValues } from './utils/getFormInitialValues'
 import { getTextResponseBlocks } from './utils/getTextResponseBlocks'
 import { getValidationSchema } from './utils/getValidationSchema/getValidationSchema'
+import { WebsiteCover } from './WebsiteCover'
 
 export const STEP_NEXT_EVENT_CREATE = gql`
   mutation StepNextEventCreate($input: StepNextEventCreateInput!) {
