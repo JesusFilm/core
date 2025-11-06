@@ -139,13 +139,13 @@ export function LanguageSelector(): JSX.Element {
           variant="outline"
           role="combobox"
           disabled
-          className="w-full justify-between opacity-50 h-12 px-4"
+          className="w-full flex items-center justify-between opacity-50 h-12 px-4 bg-stone-800/50 border-stone-700/50 text-white rounded-md"
         >
-          <div className="flex items-center">
-            <Globe className="mr-2 h-4 w-4 text-muted-foreground" />
-            <span>{t('Loading languages...')}</span>
+          <div className="flex items-center flex-1 min-w-0">
+            <Globe className="mr-2 h-4 w-4 text-stone-400 shrink-0" />
+            <span className="text-white">{t('Loading languages...')}</span>
           </div>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50 text-stone-400" />
         </Button>
       </div>
     )
@@ -158,25 +158,26 @@ export function LanguageSelector(): JSX.Element {
         role="combobox"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
-        className="w-full justify-between cursor-pointer h-12"
+        className="w-full flex items-center justify-between cursor-pointer h-12 px-4 bg-stone-800/50 border-stone-700/50 hover:bg-stone-800/70 text-white rounded-md"
       >
-        <div className="flex items-center">
-          <Globe className="mr-2 h-5 w-5 text-muted-foreground" />
-          <span className="truncate text-base font-medium">
+        <div className="flex items-center flex-1 min-w-0">
+          <Globe className="mr-2 h-5 w-5 text-stone-400 shrink-0" />
+          <span className="truncate text-base font-medium text-white">
             {getDisplayValue()}
           </span>
         </div>
-        <ChevronsUpDown className="ml-2 h-5 w-5 shrink-0 opacity-50" />
+        <ChevronsUpDown className="ml-2 h-5 w-5 shrink-0 opacity-50 text-stone-400" />
       </Button>
 
       {open && (
-        <div className="absolute top-full left-0 right-0 z-[200] mt-1 bg-popover border border-border rounded-md shadow-md">
+        <div className="absolute top-full left-0 right-0 z-[200] mt-1 px-3 bg-popover border border-border rounded-md shadow-md">
           <Command>
             <CommandInput
               ref={searchInputRef}
               placeholder={t('Search languages...')}
+              className="focus:outline-none focus-visible:outline-none"
             />
-            <CommandList className="max-h-[60svh]">
+            <CommandList className="max-h-[60svh] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               <CommandEmpty>{t('No languages found.')}</CommandEmpty>
               <CommandGroup>
                 {languageOptions.map((option) => (

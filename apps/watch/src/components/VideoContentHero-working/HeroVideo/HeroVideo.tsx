@@ -10,12 +10,12 @@ import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
 
 import 'videojs-mux'
 
-import { usePlayer } from '../../../libs/playerContext'
-import { useVideo } from '../../../libs/videoContext'
-import { useWatch } from '../../../libs/watchContext'
-import { useSubtitleUpdate } from '../../../libs/watchContext/useSubtitleUpdate'
-import type { CarouselMuxSlide } from '../../../types/inserts'
-import { MuxInsertLogoOverlay, VideoControls } from '../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
+import { usePlayer } from '../../../../libs/playerContext/PlayerContext'
+import { useVideo } from '../../../../libs/videoContext'
+import { useWatch } from '../../../../libs/watchContext'
+import { useSubtitleUpdate } from '../../../../libs/watchContext/useSubtitleUpdate'
+import type { CarouselMuxSlide } from '../../../../types/inserts'
+import { MuxInsertLogoOverlay, VideoControls } from '../../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
 
 import { HeroSubtitleOverlay } from './HeroSubtitleOverlay'
 

@@ -1,22 +1,20 @@
 import clsx from 'clsx'
 import { ReactElement, useCallback, useState } from 'react'
 
-import { usePlayer } from '../../libs/playerContext/PlayerContext'
-import { useVideo } from '../../libs/videoContext/VideoContext'
-import type { CarouselMuxSlide } from '../../types/inserts'
+import { usePlayer } from '../../../libs/playerContext'
+import { useVideo } from '../../../libs/videoContext'
+import type { CarouselMuxSlide } from '../../../types/inserts'
 
-import { ContentHeader } from '../ContentHeader'
+import { ContentHeader } from './ContentHeader'
 import { HeroVideo } from './HeroVideo'
 
 export function VideoContentHero({
   isPreview = false,
-  placement,
   currentMuxInsert,
   onMuxInsertComplete,
   onSkipActiveVideo
 }: {
   isPreview?: boolean
-  placement?: 'carouselItem' | 'singleVideo'
   currentMuxInsert?: CarouselMuxSlide | null
   onMuxInsertComplete?: () => void
   onSkipActiveVideo?: () => void
@@ -29,22 +27,17 @@ export function VideoContentHero({
 
   const languageSlug = variant?.slug?.split('/')[1]
 
-  const handleMuteToggle = useCallback(
-    (isMuted: boolean): void => {
-      setCollapsed(isMuted)
-    },
-    []
-  )
+  const handleMuteToggle = useCallback((isMuted: boolean): void => {
+    setCollapsed(isMuted)
+  }, [collapsed])
 
   return (
     <div
       className={clsx(
         'w-full flex items-end relative bg-[#000] z-[1] transition-all duration-300 ease-out overflow-hidden',
         {
-          'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]':
-            isPreview && collapsed,
-          'aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)]':
-            !isPreview || !collapsed
+          'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]': isPreview && collapsed,
+          'aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)] max-h-max': !isPreview || !collapsed
         }
       )}
       data-testid="ContentHero"
@@ -56,7 +49,6 @@ export function VideoContentHero({
       <HeroVideo
         isPreview={isPreview}
         collapsed={collapsed}
-        placement={placement ?? 'singleVideo'}
         onMuteToggle={handleMuteToggle}
         currentMuxInsert={currentMuxInsert}
         onMuxInsertComplete={onMuxInsertComplete}

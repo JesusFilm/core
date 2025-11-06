@@ -216,7 +216,7 @@ describe('MyComponent', () => {
 - UI flows are expected to sit inside `VideoProvider`, `WatchProvider`, and `PlayerProvider` (see `apps/watch/src/libs/videoContext`, `watchContext`, and `playerContext`). Mirror that wiring when composing features and when writing tests.
 - `useWatch` dispatches should target only the keys you intend to change (audio language, subtitle language, or `subtitleOn`) so user preferences are preserved across renders.
 - `usePlayer` handles playback state (mute, fullscreen, current time). Keep reducer updates idempotent and avoid mixing DOM mutations with state—hero playback relies on these flags.
-- Components like `VideoContentHero` depend on the full provider stack plus video.js and mux metadata; preserve the existing contracts so autoplay, subtitles, and analytics remain intact.
+- Components like `VideoBlock` depend on the full provider stack plus video.js and mux metadata; preserve the existing contracts so autoplay, subtitles, and analytics remain intact.
 
 ## Data fetching & codegen
 

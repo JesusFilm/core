@@ -65,10 +65,10 @@ export function SimpleSearchBar({
                 placeholder={t('Search videos by keyword...')}
                 autoComplete="off"
                 className={`
-                  w-full pl-12 pr-12 py-6 text-lg rounded-[35px] border-none outline-1 outline-white/20 shadow-xl shadow-stone-800/10 
+                  w-full pl-12 pr-12 py-3 text-lg rounded-[35px] border-none outline-1 outline-white/20 shadow-xl shadow-stone-800/10 
                   bg-white/10 backdrop-blur-[10px] transition-all duration-200
                   text-white placeholder:text-white/70 cursor-text hover:cursor-text focus:cursor-text
-                  focus:bg-white/80 focus:text-black focus:placeholder:text-black/60
+                  focus:bg-white/80 focus:text-black focus:placeholder:text-black/60 focus:outline-none focus-visible:outline-none
                   ${values.title.trim().length > 0 ? 'pr-12' : 'pr-4'}
                 `}
                 onChange={(event) => {

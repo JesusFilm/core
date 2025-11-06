@@ -8,7 +8,7 @@ import type { CarouselMuxSlide } from '../../types/inserts'
 import { ContentHeader } from '../ContentHeader'
 import { HeroVideo } from './HeroVideo'
 
-export function VideoContentHero({
+export function VideoBlock({
   isPreview = false,
   placement,
   currentMuxInsert,
@@ -31,10 +31,23 @@ export function VideoContentHero({
 
   const handleMuteToggle = useCallback(
     (isMuted: boolean): void => {
+      console.log('[dpm] Step 3: VideoBlock updating collapsed state', { isMuted, willBeCollapsed: isMuted })
       setCollapsed(isMuted)
     },
     []
   )
+
+  const isExpanded = placement == 'singleVideo' || !collapsed
+  const aspectRatioClass = isExpanded
+    ? 'aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)]'
+    : 'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]'
+  
+  console.log('[dpm] Step 4: CSS classes updating', { 
+    collapsed, 
+    placement, 
+    isExpanded, 
+    aspectRatioClass 
+  })
 
   return (
     <div
@@ -42,19 +55,19 @@ export function VideoContentHero({
         'w-full flex items-end relative bg-[#000] z-[1] transition-all duration-300 ease-out overflow-hidden',
         {
           'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]':
-            isPreview && collapsed,
+          placement == 'carouselItem' && collapsed,
           'aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)]':
-            !isPreview || !collapsed
+          placement == 'singleVideo' || !collapsed
         }
       )}
       data-testid="ContentHero"
     >
       <ContentHeader
         languageSlug={languageSlug?.replace('.html', '')}
-        isPersistent={isPreview}
+        isPersistent={placement == 'carouselItem'}
       />
       <HeroVideo
-        isPreview={isPreview}
+        isPreview={placement == 'carouselItem'}
         collapsed={collapsed}
         placement={placement ?? 'singleVideo'}
         onMuteToggle={handleMuteToggle}

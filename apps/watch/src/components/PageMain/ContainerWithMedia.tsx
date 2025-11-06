@@ -8,7 +8,7 @@ import {
 } from '../../types/inserts'
 import { ContentPageBlurFilter } from '../ContentPageBlurFilter'
 import { VideoCarousel } from '../VideoCarousel/VideoCarousel'
-import { VideoContentHero } from '../VideoContentHero/VideoContentHero'
+import { VideoBlock } from '../VideoBlock/VideoBlock'
 
 interface ContainerWithMediaProps {
   slides: VideoCarouselSlide[]
@@ -39,7 +39,7 @@ export function ContainerWithMedia({
     <>
       {activeVideo != null && (
         <VideoProvider value={{ content: activeVideo }}>
-          <VideoContentHero
+          <VideoBlock
             isPreview
             placement="carouselItem"
             currentMuxInsert={currentMuxInsert}

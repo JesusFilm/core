@@ -24,7 +24,7 @@ import { ContentPageBlurFilter } from '../ContentPageBlurFilter'
 import { DiscussionQuestions } from './DiscussionQuestions'
 import { NewVideoContentHeader } from './NewVideoContentHeader'
 import { VideoCarousel } from '../VideoCarousel'
-import { VideoContentHero } from '../VideoContentHero'
+import { VideoBlock } from '../VideoBlock'
 
 export function PageSingleVideo(): ReactElement {
   const { t } = useTranslation('apps-watch')
@@ -207,7 +207,7 @@ export function PageSingleVideo(): ReactElement {
       />
       <PageWrapper
         hero={
-          <VideoContentHero
+          <VideoBlock
             currentMuxInsert={currentMuxInsert}
             onMuxInsertComplete={handleMuxInsertComplete}
           />

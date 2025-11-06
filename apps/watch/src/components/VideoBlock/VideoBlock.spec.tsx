@@ -6,7 +6,7 @@ import { VideoProvider } from '../../libs/videoContext/VideoContext'
 import { WatchProvider } from '../../libs/watchContext/WatchContext'
 import { videos } from '../Videos/__generated__/testData'
 
-import { VideoContentHero } from './VideoContentHero'
+import { VideoBlock } from './VideoBlock'
 
 jest.mock('fscreen')
 
@@ -20,7 +20,7 @@ const mockedFscreen = fscreen
 
 const originalScrollTo = window.scrollTo
 
-describe('VideoContentHero', () => {
+describe('VideoBlock', () => {
   const setIsFullscreen = jest.fn()
 
   beforeEach(() => {
@@ -44,7 +44,7 @@ describe('VideoContentHero', () => {
               subtitleOn: false
             }}
           >
-            <VideoContentHero />
+            <VideoBlock />
           </WatchProvider>
         </VideoProvider>
       </MockedProvider>
@@ -76,7 +76,7 @@ describe('VideoContentHero', () => {
                 subtitleOn: false
               }}
             >
-              <VideoContentHero isPreview />
+              <VideoBlock isPreview />
             </WatchProvider>
           </VideoProvider>
         </MockedProvider>
@@ -106,7 +106,7 @@ describe('VideoContentHero', () => {
                 subtitleOn: false
               }}
             >
-              <VideoContentHero isPreview />
+              <VideoBlock isPreview />
             </WatchProvider>
           </VideoProvider>
         </MockedProvider>
@@ -136,7 +136,7 @@ describe('VideoContentHero', () => {
                 subtitleOn: false
               }}
             >
-              <VideoContentHero isPreview />
+              <VideoBlock isPreview />
             </WatchProvider>
           </VideoProvider>
         </MockedProvider>

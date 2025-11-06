@@ -23,6 +23,7 @@ interface HeroVideoProps {
   isPreview?: boolean
   collapsed?: boolean
   onMuteToggle?: (isMuted: boolean) => void
+  placement?: 'carouselItem' | 'singleVideo'
   currentMuxInsert?: CarouselMuxSlide | null
   onMuxInsertComplete?: () => void
   onSkip?: () => void
@@ -32,6 +33,7 @@ export function HeroVideo({
   isPreview = false,
   collapsed = true,
   onMuteToggle,
+  placement = 'singleVideo',
   currentMuxInsert,
   onMuxInsertComplete,
   onSkip
@@ -217,7 +219,7 @@ export function HeroVideo({
         ...defaultVideoJsOptions,
         autoplay: true,
         controls: false,
-        loop: !isPreview && !currentMuxInsert, // Don't loop Mux inserts
+        loop: placement == 'singleVideo' && !currentMuxInsert, // Don't loop Mux inserts
         muted: true, // Don't start unmuted, browser will not autoplay unmuted videos!
         fluid: false,
         fill: true,
@@ -346,7 +348,7 @@ export function HeroVideo({
 
     // Execute the async setup
     setupPlayer()
-  }, [currentMuxInsert?.id, variant?.hls, title, variant?.id, currentMuxInsert, isPreview])
+  }, [currentMuxInsert?.id, variant?.hls, title, variant?.id, currentMuxInsert, placement == 'carouselItem'])
 
   // Handle mute state changes dynamically without recreating the player
   useEffect(() => {
@@ -398,7 +400,9 @@ export function HeroVideo({
   const handlePreviewClick = useCallback(
     (e: React.MouseEvent<HTMLVideoElement>) => {
       e.stopPropagation()
+      console.log('[dpm] Step 1: User clicked video in carousel')
       const newMuteState = !mute
+      console.log('[dpm] Step 2: Mute state toggling', { from: mute, to: newMuteState })
       playerRef.current?.muted(newMuteState)
       dispatchPlayer({ type: 'SetMute', mute: newMuteState })
       onMuteToggle?.(newMuteState)
@@ -429,14 +433,23 @@ export function HeroVideo({
 
   const shouldShowOverlay = playerReady && (mute || (subtitleOn ?? false))
 
+  const isVideoExpanded = placement == 'singleVideo' || !collapsed
+  const objectFitClass = isVideoExpanded ? 'object-contain' : 'object-cover'
+  console.log('[dpm] Step 5: Video object-fit updating', { 
+    collapsed, 
+    placement, 
+    isVideoExpanded, 
+    objectFitClass 
+  })
+
   return (
     <>
     <div
       className={clsx(
         "fixed top-0  left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners [body[style*='padding-right']_&]:right-[15px]",
         {
-          'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]': isPreview && collapsed,
-          'aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)]  max-w-[1920px]': !isPreview || !collapsed
+          'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]': placement == 'carouselItem' && collapsed,
+          'aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)]  max-w-[1920px]': placement == 'singleVideo' || !collapsed
         }
       )}
       data-testid="ContentHeroVideoContainer"
@@ -454,9 +467,9 @@ export function HeroVideo({
             className={clsx(
               'vjs hero-hide-native-subtitles md:[&_.vjs-tech]:object-cover',
               {
-                '[&_.vjs-tech]:object-cover': isPreview && collapsed,
-                '[&_.vjs-tech]:object-contain': !isPreview || !collapsed,
-                'cursor-pointer': isPreview,
+                '[&_.vjs-tech]:object-cover': placement == 'carouselItem' && collapsed,
+                '[&_.vjs-tech]:object-contain': placement == 'singleVideo' || !collapsed,
+                'cursor-pointer': placement == 'carouselItem',
               }
             )}
             style={{
@@ -467,7 +480,7 @@ export function HeroVideo({
               height: '100%'
             }}
             playsInline
-            onClick={isPreview ? handlePreviewClick : undefined}
+            onClick={placement == 'carouselItem' ? handlePreviewClick : undefined}
           />
         )}
 
@@ -498,6 +511,7 @@ export function HeroVideo({
             }}
           />
         )}
+        {/* Subtitles */}
         <HeroSubtitleOverlay
           player={playerRef.current}
           subtitleLanguageId={effectiveSubtitleLanguageId}
@@ -518,6 +532,7 @@ export function HeroVideo({
               isMuxInsert={currentMuxInsert != null}
               muxOverlay={currentMuxInsert?.overlay}
               onSkip={onSkip}
+              placement={placement}
             />
           </>
         )}
