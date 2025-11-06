@@ -21,7 +21,7 @@ interface WebsiteCoverProps {
 }
 
 // Layout constants
-const IMAGE_HEIGHT = '30vh'
+const MEDIA_HEIGHT = { xs: '320px', md: '480px' }
 
 export function WebsiteCover({
   children,
@@ -65,7 +65,7 @@ export function WebsiteCover({
           sx={{
             position: 'relative',
             width: '100%',
-            height: IMAGE_HEIGHT,
+            height: MEDIA_HEIGHT,
             overflow: 'hidden'
           }}
         >
@@ -99,7 +99,7 @@ export function WebsiteCover({
           sx={{
             position: 'relative',
             width: '100%',
-            height: IMAGE_HEIGHT
+            height: MEDIA_HEIGHT
           }}
         >
           <NextImage
@@ -109,6 +109,11 @@ export function WebsiteCover({
             blurDataURL={backgroundBlur}
             layout="fill"
             objectFit="cover"
+            objectPosition={`${imageBlock.focalLeft}% ${imageBlock.focalTop}%`}
+            sx={{
+              transform: `scale(${(imageBlock.scale ?? 100) / 100})`,
+              transformOrigin: `${imageBlock.focalLeft}% ${imageBlock.focalTop}%`
+            }}
           />
         </Box>
       )}
@@ -121,7 +126,8 @@ export function WebsiteCover({
             width: {
               xs: 'calc(100% - 32px - env(safe-area-inset-left) - env(safe-area-inset-right))',
               sm: 360,
-              md: 500
+              md: 500,
+              lg: 767
             }
           }}
         >
@@ -131,4 +137,3 @@ export function WebsiteCover({
     </Box>
   )
 }
-

@@ -134,7 +134,7 @@ export function BackgroundVideo({
         sx={{
           '&.video-js.vjs-fill:not(.vjs-audio-only-mode)': {
             height: '100%',
-            transform: isYouTube ? 'scale(3)' : 'unset',
+            transform: isYouTube ? 'scale(1.5)' : 'unset',
             bottom: 0
           },
           '> .vjs-tech': {
@@ -170,4 +170,3 @@ export function BackgroundVideo({
     </Box>
   )
 }
-
