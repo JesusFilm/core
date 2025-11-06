@@ -7,10 +7,11 @@ import { ReactElement, useEffect, useState } from 'react'
 
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 
+import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { GetMyGeneratedMuxSubtitleTrack } from '../../../../../../../../../__generated__/GetMyGeneratedMuxSubtitleTrack'
 import { VideoBlockUpdateSubtitle } from '../../../../../../../../../__generated__/VideoBlockUpdateSubtitle'
-import { VideoFields } from '../../../../../../../../../__generated__/VideoFields'
 import { useValidateMuxLanguage } from '../../../../../../../../libs/useValidateMuxLanguage'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 export const GET_MY_GENERATED_MUX_SUBTITLE_TRACK = gql`
   query GetMyGeneratedMuxSubtitleTrack($muxVideoId: ID!, $bcp47: String!) {
@@ -25,15 +26,6 @@ export const GET_MY_GENERATED_MUX_SUBTITLE_TRACK = gql`
       ... on Error {
         message
       }
-    }
-  }
-`
-
-export const GET_VIDEO_BLOCK = gql`
-  ${VIDEO_FIELDS}
-  query GetVideoBlock($id: ID!) {
-    block(id: $id) {
-      ...VideoFields
     }
   }
 `
@@ -59,6 +51,9 @@ export function MuxSubtitleSwitch({
   journeyLanguageCode
 }: MuxSubtitleSwitchProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const {
+    state: { selectedBlock }
+  } = useEditor()
   const isValidLanguage = useValidateMuxLanguage(journeyLanguageCode)
   const [toggleChecked, setToggleChecked] = useState(false)
 
@@ -101,28 +96,19 @@ export function MuxSubtitleSwitch({
     }
   }, [subtitleTrack?.status, startPolling, stopPolling])
 
-  const { data: videoBlockData } = useQuery<{ block: VideoFields }>(
-    GET_VIDEO_BLOCK,
-    {
-      variables: { id: videoBlockId ?? '' },
-      skip:
-        !isValidLanguage ||
-        videoBlockId == null ||
-        subtitleTrack?.status !== 'ready'
-    }
-  )
-
   const [updateSubtitleSettings, { loading: updating }] =
     useMutation<VideoBlockUpdateSubtitle>(VIDEO_BLOCK_UPDATE_SUBTITLE)
 
+  const videoBlock = selectedBlock as VideoBlock | undefined
+
   useEffect(() => {
     if (
-      videoBlockData?.block?.showGeneratedSubtitles != null &&
+      videoBlock?.showGeneratedSubtitles != null &&
       subtitleTrack?.status === 'ready'
     ) {
-      setToggleChecked(videoBlockData.block.showGeneratedSubtitles)
+      setToggleChecked(videoBlock.showGeneratedSubtitles)
     }
-  }, [videoBlockData, subtitleTrack])
+  }, [videoBlock, subtitleTrack])
 
   const handleToggleChange = async (
     event: React.ChangeEvent<HTMLInputElement>
