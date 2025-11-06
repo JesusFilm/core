@@ -68,6 +68,8 @@ export function VideoOptions(): ReactElement {
       inverseInput.objectFit = selectedBlock.objectFit
     if (input.subtitleLanguageId !== undefined)
       inverseInput.subtitleLanguageId = selectedBlock.subtitleLanguage?.id
+    if (input.showGeneratedSubtitles !== undefined)
+      inverseInput.showGeneratedSubtitles = selectedBlock.showGeneratedSubtitles
 
     add({
       parameters: {

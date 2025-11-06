@@ -4,7 +4,7 @@ import LinearProgress from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import React, { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { FileRejection, useDropzone } from 'react-dropzone'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -38,10 +38,10 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const videoBlockId = selectedBlock?.id ?? null
   const uploadTask = videoBlockId != null ? getUploadStatus(videoBlockId) : null
 
-  const [fileRejected, setFileRejected] = React.useState(false)
-  const [fileTooLarge, setFileTooLarge] = React.useState(false)
-  const [tooManyFiles, setTooManyFiles] = React.useState(false)
-  const [fileInvalidType, setFileInvalidType] = React.useState(false)
+  const [fileRejected, setFileRejected] = useState(false)
+  const [fileTooLarge, setFileTooLarge] = useState(false)
+  const [tooManyFiles, setTooManyFiles] = useState(false)
+  const [fileInvalidType, setFileInvalidType] = useState(false)
 
   const uploading = uploadTask?.status === 'uploading'
   const processing = uploadTask?.status === 'processing'
