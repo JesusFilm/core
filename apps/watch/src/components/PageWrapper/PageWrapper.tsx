@@ -9,7 +9,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { Footer } from '../Footer'
-import { Header } from '../Header'
+import { Header } from '../LegacyHeader'
 
 interface PageWrapperProps {
   hero?: ReactNode

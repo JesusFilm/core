@@ -40,9 +40,13 @@
         "libs/shared/ui/src/components/*",
         "libs/shared/ui/src/libs/*"
       ],
+      "@core/shared/uimodern": ["libs/shared/uimodern/src/index"],
       "@core/shared/uimodern/*": [
         "libs/shared/uimodern/src/*"
       ],
+      "@shadcn": ["libs/shared/uimodern/src/index.ts"],
+      "@shadcn/*": ["libs/shared/uimodern/src/*"],
+      "@/lib/utils": ["libs/shared/uimodern/src/utils"],
       "@core/yoga/*": ["libs/yoga/src/*"]
     }
   },

@@ -8,7 +8,7 @@ import { ReactElement, useMemo, useState } from 'react'
 import { useLanguages } from '../../../libs/useLanguages'
 import { useVideo } from '../../../libs/videoContext'
 import { useWatch } from '../../../libs/watchContext'
-import { Select, SelectTrigger, SelectValue } from '../../Select'
+import { Select, SelectTrigger, SelectValue } from '@core/shared/uimodern'
 
 const DynamicAudioLanguageSelectContent = dynamic(
   async () =>

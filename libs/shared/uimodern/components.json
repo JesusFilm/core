@@ -11,10 +11,11 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@ui/components",
-    "utils": "@ui/lib/utils",
-    "hooks": "@ui/hooks",
-    "lib": "@ui/lib",
-    "ui": "@ui/components"
-  }
+    "components": "src/components",
+    "utils": "src/utils",
+    "hooks": "src/hooks",
+    "lib": "src/lib",
+    "ui": "src/components"
+  },
+  "_comment": "For monorepo: Install dependencies manually at root first, then run: npx shadcn@latest add <component> --cwd libs/shared/uimodern --yes"
 }

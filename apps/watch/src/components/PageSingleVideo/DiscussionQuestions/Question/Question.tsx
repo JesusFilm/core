@@ -5,14 +5,14 @@ import HelpSquareContained from '@core/shared/ui/icons/HelpSquareContained'
 import Mail1 from '@core/shared/ui/icons/Mail1'
 import MessageCircle from '@core/shared/ui/icons/MessageCircle'
 
-import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../../../__generated__/VideoContentFields'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger
-} from '../../../Accordion'
-import { Button } from '../../../Button'
+} from '@core/shared/uimodern/components/accordion'
+import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../../../__generated__/VideoContentFields'
+import { ExtendedButton as Button } from '@core/shared/uimodern/components'
 
 interface QuestionProps {
   questions: StudyQuestions[]

@@ -125,7 +125,14 @@ echo "✅ Page renders cleanly after $max_retries attempts"
 
 ## Shadcn & Monorepo
 
-1. Since it's a monorepo, shadcn components live in the root of the repo in /core/libs/ui/. When adding new shadcn components add it to the root.
+1. **REQUIRED**: Use the automated script `libs/shared/uimodern/add-shadcn-component.sh` for adding new shadcn components:
+   ```bash
+   cd libs/shared/uimodern
+   ./add-shadcn-component.sh <component-name>
+   ```
+   This ensures dependencies are installed at the monorepo root level, not in individual library packages.
+
+2. Shadcn components live in `/core/libs/shared/uimodern/src/components/`. When adding new shadcn components, always add them to this shared library.
 
 ### UI Component Hierarchy (order of preference)
 
@@ -195,7 +202,6 @@ describe('MyComponent', () => {
 - Extend Playwright scenarios when UI behavior shifts, and capture console logs/screenshots for regressions.
 - Document the executed test suite, notable scenarios, and any skipped checks in `/prds/watch/`.
 - Reuse the shared Jest setup in `apps/watch/setupTests.tsx`; it already boots MSW, the Next router mock, and a longer async timeout.
-- Wrap component specs with `MockedProvider`, `VideoProvider`, and `WatchProvider` when the unit touches those contexts—`NewVideoContentPage.spec.tsx` shows the expected harness.
 - Enclose SWR-based hooks in `TestSWRConfig` (`apps/watch/test/TestSWRConfig.tsx`) to isolate cache state between assertions.
 
 ## Manual user validation

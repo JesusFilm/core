@@ -1,4 +1,4 @@
-import { Button } from '@core/shared/uimodern/components/button'
+import { ExtendedButton as Button } from '@core/shared/uimodern/components'
 import { Input } from '@core/shared/uimodern/components/input'
 import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'

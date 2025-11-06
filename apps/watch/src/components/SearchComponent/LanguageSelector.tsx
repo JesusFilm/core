@@ -1,3 +1,5 @@
+import { languageRefinementProps } from '@core/journeys/ui/algolia/SearchBarProvider'
+import { ExtendedButton as Button } from '@core/shared/uimodern/components'
 import {
   Command,
   CommandEmpty,
@@ -6,15 +8,13 @@ import {
   CommandItem,
   CommandList
 } from '@core/shared/uimodern/components/command'
+import { cn } from '@core/shared/uimodern/utils'
 import { Check, ChevronsUpDown, Globe } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRefinementList } from 'react-instantsearch'
 
-import { languageRefinementProps } from '@core/journeys/ui/algolia/SearchBarProvider'
-import { cn } from '@core/shared/uimodern/utils'
 import { useLanguages } from '../../libs/useLanguages'
-import { Button } from '../ui/button'
 
 interface LanguageOption {
   englishName: string

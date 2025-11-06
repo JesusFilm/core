@@ -1,8 +1,10 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { ReactElement } from 'react'
+import { Share } from 'lucide-react'
+import { useTranslation } from 'next-i18next'
 
-import { ButtonShare } from '../../ButtonShare'
+import { ExtendedButton } from '@core/shared/uimodern'
 import { TextFormatter } from '../../TextFormatter'
 
 export interface ContainerDescriptionProps {
@@ -14,6 +16,8 @@ export function ContainerDescription({
   value,
   openDialog
 }: ContainerDescriptionProps): ReactElement {
+  const { t } = useTranslation('apps-watch')
+
   return (
     <Stack
       direction="row"
@@ -35,7 +39,14 @@ export function ContainerDescription({
         </TextFormatter>
       </Box>
       <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-        <ButtonShare onClick={openDialog} variant="button" />
+        <ExtendedButton
+          variant="outline"
+          onClick={openDialog}
+          className="min-w-[200px]"
+        >
+          <Share className="w-4 h-4" />
+          {t('Share')}
+        </ExtendedButton>
       </Box>
     </Stack>
   )

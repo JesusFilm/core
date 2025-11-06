@@ -5,7 +5,7 @@ import { usePlayer } from '../../libs/playerContext/PlayerContext'
 import { useVideo } from '../../libs/videoContext/VideoContext'
 import type { CarouselMuxSlide } from '../../types/inserts'
 
-import { ContentHeader } from './ContentHeader'
+import { ContentHeader } from '../ContentHeader'
 import { HeroVideo } from './HeroVideo'
 
 export function VideoContentHero({

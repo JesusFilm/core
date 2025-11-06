@@ -8,7 +8,7 @@ import {
   useState
 } from 'react'
 
-import { Button } from '../Button'
+import { ExtendedButton as Button } from '@core/shared/uimodern/components'
 
 type AudienceOption = 'missionary' | 'organization' | 'private'
 

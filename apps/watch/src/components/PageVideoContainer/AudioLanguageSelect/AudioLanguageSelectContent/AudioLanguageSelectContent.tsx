@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 import { Language, useLanguages } from '../../../../libs/useLanguages'
 import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
-import { SelectContent } from '../../../Select'
+import { SelectContent } from '@core/shared/uimodern'
 
 export function AudioLanguageSelectContent() {
   const { variant } = useVideo()

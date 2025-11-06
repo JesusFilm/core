@@ -156,14 +156,16 @@ describe('DialogLangSwitch', () => {
     const subtitlesSelect = screen.getAllByRole('combobox')[1]
     await userEvent.click(subtitlesSelect)
     // available languages
-    expect(screen.getByRole('option', { name: 'English' })).toBeInTheDocument()
-    expect(
-      screen.getByRole('option', { name: 'French Français' })
-    ).toBeInTheDocument()
+    expect(screen.getAllByRole('list')[0].children[0]).toHaveTextContent(
+      'English'
+    )
+    expect(screen.getAllByRole('list')[0].children[1]).toHaveTextContent(
+      'FrenchFrançais'
+    )
     // other languages
-    expect(
-      screen.queryByRole('option', { name: 'Spanish Español' })
-    ).not.toBeInTheDocument()
+    expect(screen.getAllByRole('list')[1].children[0]).toHaveTextContent(
+      'SpanishEspañol'
+    )
   })
 
   it('should render subtitle checkbox checked if subtitleOn is true', async () => {

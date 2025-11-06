@@ -7,7 +7,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
 import { PlayerProvider } from '../../libs/playerContext'
 import { WatchProvider } from '../../libs/watchContext'
-import { Header } from '../Header'
+import { Header } from '../LegacyHeader'
 import { SearchComponent } from '../SearchComponent'
 
 import { AboutProjectSection } from './AboutProjectSection'
