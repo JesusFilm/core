@@ -1662,19 +1662,6 @@ export class CardLevelActionPage {
       }
       throw new Error('No images found in gallery after waiting')
     }
-<<<<<<< HEAD
-
-    const imageLocator = imageListItems
-      .first()
-      .locator('img')
-      .or(imageListItems.first())
-    await imageLocator.waitFor({
-      state: 'visible',
-      timeout: sixtySecondsTimeout
-    })
-    await imageLocator.scrollIntoViewIfNeeded()
-    await imageLocator.click({ timeout: sixtySecondsTimeout })
-=======
     
     // Click on the list item itself, not the img to avoid strict mode violations
     const imageListItem = imageListItems.first()
@@ -1691,7 +1678,6 @@ export class CardLevelActionPage {
     }
     // Wait a bit for the selection to process
     await this.page.waitForTimeout(1000)
->>>>>>> 0b3f896d72 (fix(journeys-admin-e2e): fix Footer properties WebSite test flakiness)
   }
   async valdiateSelectedImageWithDeleteIcon() {
     // Wait for the image to be selected and the delete icon to appear
