@@ -13,6 +13,23 @@ if (isBrowser) {
 }
 
 /**
+ * @type {Record<string, string>}
+ */
+const fallbackLng = {
+  default: [], // left blank so english isn't sent to the client
+  es: 'es-ES',
+  fr: 'fr-FR',
+  id: 'id-ID',
+  th: 'th-TH',
+  ja: 'ja-JP',
+  ko: 'ko-KR',
+  ru: 'ru-RU',
+  tl: 'tl-PH',
+  tr: 'tr-TR',
+  zh: 'zh-Hans-CN'
+}
+
+/**
  * @type {import('next-i18next').UserConfig}
  **/
 const i18nConfig = {
@@ -33,20 +50,13 @@ const i18nConfig = {
       'zh-Hans-CN' // Chinese, Simplified
     ]
   },
-  localePath,
+  ns: ['apps-watch'],
   fallbackLng: {
-    default: ['en'],
-    es: ['es-ES'],
-    fr: ['fr-FR'],
-    id: ['id-ID'],
-    th: ['th-TH'],
-    ja: ['ja-JP'],
-    ko: ['ko-KR'],
-    ru: ['ru-RU'],
-    tl: ['tl-PH'],
-    tr: ['tr-TR'],
-    zh: ['zh-Hans-CN']
+    default: []
   },
+  localePath: (lng, ns) =>
+    `${localePath}/${fallbackLng[lng] ?? lng}/${ns}.json`,
+  serializeConfig: false,
   react: { useSuspense: false }
 }
 
