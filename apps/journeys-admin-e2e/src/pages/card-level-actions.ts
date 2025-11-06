@@ -1670,32 +1670,40 @@ export class CardLevelActionPage {
       timeout: sixtySecondsTimeout
     })
     await imageListItem.scrollIntoViewIfNeeded()
-    
+
     // Try to find and click a button inside the list item first (common pattern for image galleries)
     const buttonInItem = imageListItem.locator('button').first()
     const buttonCount = await buttonInItem.count()
     if (buttonCount > 0) {
-      await buttonInItem.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+      await buttonInItem.waitFor({
+        state: 'visible',
+        timeout: sixtySecondsTimeout
+      })
       await buttonInItem.click({ timeout: sixtySecondsTimeout })
     } else {
       // Try clicking the img first, if that fails, click the li element
       const imgInItem = imageListItem.locator('img').first()
       const imgCount = await imgInItem.count()
       if (imgCount > 0) {
-        await imgInItem.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+        await imgInItem.waitFor({
+          state: 'visible',
+          timeout: sixtySecondsTimeout
+        })
         await imgInItem.click({ timeout: sixtySecondsTimeout })
       } else {
         await imageListItem.click({ timeout: sixtySecondsTimeout })
       }
     }
-    
+
     // Wait for image to be processed and selected
     await this.page.waitForTimeout(2000)
-    
+
     // Wait for any loading indicators to disappear (similar to clickImgFromFeatureOfGalleryTab)
     try {
       await this.page
-        .locator('div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]')
+        .locator(
+          'div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]'
+        )
         .waitFor({ state: 'hidden', timeout: 30000 })
     } catch (error) {
       // Progress bar might not exist, that's okay
@@ -1711,7 +1719,7 @@ export class CardLevelActionPage {
       'div[data-testid="ImageBlockHeader"] svg[data-testid="imageBlockHeaderDelete"]',
       'button:has(svg[data-testid="imageBlockHeaderDelete"])'
     ]
-    
+
     let found = false
     for (const selector of deleteIconSelectors) {
       try {
@@ -1724,19 +1732,26 @@ export class CardLevelActionPage {
         continue
       }
     }
-    
+
     if (!found) {
       // If none of the selectors work, check if image was selected at all
-      const imageHeader = this.page.locator('div[data-testid="ImageBlockHeader"]')
+      const imageHeader = this.page.locator(
+        'div[data-testid="ImageBlockHeader"]'
+      )
       const headerCount = await imageHeader.count()
       if (headerCount > 0) {
         // Image header exists, check what's actually there
-        const headerHTML = await imageHeader.first().innerHTML().catch(() => '')
+        const headerHTML = await imageHeader
+          .first()
+          .innerHTML()
+          .catch(() => '')
         throw new Error(
           `Delete icon not found. ImageBlockHeader exists but delete icon not visible. Header content: ${headerHTML.substring(0, 200)}`
         )
       } else {
-        throw new Error('ImageBlockHeader not found - image may not have been selected')
+        throw new Error(
+          'ImageBlockHeader not found - image may not have been selected'
+        )
       }
     }
   }
