@@ -186,7 +186,7 @@ describe('MuxSubtitleSwitch', () => {
       expect(screen.getByRole('checkbox')).toBeDisabled()
     })
     expect(
-      screen.getByText('Subtitles not available for this video')
+      screen.getByText('Subtitles not available for this video language')
     ).toBeInTheDocument()
   })
 

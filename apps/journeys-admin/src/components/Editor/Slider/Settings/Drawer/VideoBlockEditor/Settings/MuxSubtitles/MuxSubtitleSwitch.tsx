@@ -144,7 +144,7 @@ export function MuxSubtitleSwitch({
     updating
 
   let labelText = !isValidLanguage
-    ? t('Subtitles not available for this video')
+    ? t('Subtitles not available for this video language')
     : ''
   if (isValidLanguage && isProcessing) {
     labelText = t(
