@@ -9,7 +9,7 @@ import {
   ContentItem
 } from '../../CollectionNavigationCarousel'
 import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
-import { CollectionsPageContent } from '../../CollectionsPageContent'
+import { PageCollectionsContent } from '../../PageCollectionsContent/CollectionsPageContent'
 import { CollectionsVideoContent } from '../../CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCarousel'
 import { ContainerHero } from '../../ContainerHero'
@@ -85,7 +85,7 @@ export function PageCollections(): ReactElement {
       hideHeader
       hideFooter
     >
-      <CollectionsPageContent>
+      <PageCollectionsContent>
         <CollectionNavigationCarousel contentItems={navigationContentItems} />
         <CollectionIntroText
           title="A verdadeira história da Páscoa"
@@ -930,7 +930,7 @@ Porque a maior celebração na história da humanidade vai muito além das tradi
             buttonText: 'Participe do Nosso Estudo Bíblico'
           }}
         />
-      </CollectionsPageContent>
+      </PageCollectionsContent>
     </PageWrapper>
   )
 }

@@ -5,7 +5,7 @@ import { PageWrapper } from '../../../PageWrapper'
 import { SectionVideoCarousel } from '../../../SectionVideoCarousel'
 import { CollectionIntroText } from '../../CollectionIntroText'
 import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
-import { CollectionsPageContent } from '../../CollectionsPageContent'
+import { PageCollectionsContent } from '../../PageCollectionsContent/CollectionsPageContent'
 import { CollectionsVideoContent } from '../../CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCarousel'
 import { ContainerHero } from '../../ContainerHero'
@@ -29,7 +29,7 @@ export function PageCollections(): ReactElement {
       hideHeader
       hideFooter
     >
-      <CollectionsPageContent>
+      <PageCollectionsContent>
         {/* <CollectionNavigationCarousel contentItems={navigationContentItems} /> */}
         <CollectionIntroText
           title="Настоящая история Пасхи"
@@ -1246,7 +1246,7 @@ export function PageCollections(): ReactElement {
             buttonText: 'Присоединиться к изучению Библии'
           }}
         />
-      </CollectionsPageContent>
+      </PageCollectionsContent>
     </PageWrapper>
   )
 }

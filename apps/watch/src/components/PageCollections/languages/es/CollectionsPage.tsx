@@ -9,7 +9,7 @@ import {
   ContentItem
 } from '../../CollectionNavigationCarousel'
 import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
-import { CollectionsPageContent } from '../../CollectionsPageContent'
+import { PageCollectionsContent } from '../../PageCollectionsContent/CollectionsPageContent'
 import { CollectionsVideoContent } from '../../CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCarousel'
 import { ContainerHero } from '../../ContainerHero'
@@ -86,7 +86,7 @@ export function PageCollections(): ReactElement {
       hideHeader
       hideFooter
     >
-      <CollectionsPageContent>
+      <PageCollectionsContent>
         <CollectionNavigationCarousel contentItems={navigationContentItems} />
         <CollectionIntroText
           title="La verdadera historia de la Pascua"
@@ -1417,7 +1417,7 @@ Porque la celebración más grande en la historia de la humanidad va mucho más 
             buttonText: 'Únete a nuestro estudio bíblico'
           }}
         />
-      </CollectionsPageContent>
+      </PageCollectionsContent>
     </PageWrapper>
   )
 }

@@ -9,7 +9,7 @@ import {
   ContentItem
 } from '../../CollectionNavigationCarousel'
 import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
-import { PageCollectionsContent } from '../PageCollectionsContent/CollectionsPageContent'
+import { PageCollectionsContent } from '../../PageCollectionsContent/CollectionsPageContent'
 import { CollectionsVideoContent } from '../../CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCarousel'
 import { ContainerHero } from '../../ContainerHero'
