@@ -15,7 +15,7 @@ jobs:
         node-version: [22]
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-      NODE_OPTIONS: "--max-old-space-size=8192"
+      NODE_OPTIONS: '--max-old-space-size=8192'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,7 +30,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
+          cache: 'pnpm'
       - name: Install dependencies # Not frozen so that we attempt tofix broken lockfile
         run: pnpm install
       - name: generate prisma imports
@@ -80,4 +80,4 @@ jobs:
         run: pnpm exec validate-branch-name -t $GITHUB_HEAD_REF
       - uses: autofix-ci/action@635ffb0c9798bd160680f18fd73371e355b85f27
         with:
-          commit-message: "fix: lint issues"
+          commit-message: 'fix: lint issues'
