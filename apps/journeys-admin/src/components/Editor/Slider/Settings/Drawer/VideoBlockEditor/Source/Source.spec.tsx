@@ -187,6 +187,7 @@ describe('Source', () => {
             mediaVideo: null,
             objectFit: null,
             subtitleLanguage: null,
+      showGeneratedSubtitles: null,
             posterBlockId: 'poster1.id',
             children: []
           }}
@@ -246,6 +247,7 @@ describe('Source', () => {
             },
             objectFit: null,
             subtitleLanguage: null,
+      showGeneratedSubtitles: null,
             posterBlockId: 'poster1.id',
             children: []
           }}

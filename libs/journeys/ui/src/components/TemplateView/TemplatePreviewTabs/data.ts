@@ -34,6 +34,7 @@ export const journeyVideoBlocks: Blocks[] = [
     duration: 118,
     objectFit: null,
     subtitleLanguage: null,
+      showGeneratedSubtitles: null,
     mediaVideo: {
       __typename: 'Video',
       id: '1_0-TrainV_1Install',
@@ -79,6 +80,7 @@ export const journeyVideoBlocks: Blocks[] = [
     duration: null,
     objectFit: null,
     subtitleLanguage: null,
+      showGeneratedSubtitles: null,
     mediaVideo: {
       __typename: 'Video',
       id: '1_0-TrainV_5Ministry',
@@ -124,6 +126,7 @@ export const journeyVideoBlocks: Blocks[] = [
     duration: null,
     objectFit: null,
     subtitleLanguage: null,
+      showGeneratedSubtitles: null,
     mediaVideo: {
       __typename: 'Video',
       id: '1_cl1302-0-0',
@@ -170,6 +173,7 @@ export const journeyVideoBlocks: Blocks[] = [
     duration: 120,
     objectFit: null,
     subtitleLanguage: null,
+      showGeneratedSubtitles: null,
     mediaVideo: null,
     action: null
   },
@@ -215,6 +219,7 @@ export const journeyVideoBlocks: Blocks[] = [
     duration: 147,
     objectFit: null,
     subtitleLanguage: null,
+      showGeneratedSubtitles: null,
     mediaVideo: {
       __typename: 'Video',
       id: '1_cl1305-0-0',
@@ -335,6 +340,7 @@ export const videoBlocksFiltered = [
     duration: 218,
     objectFit: null,
     subtitleLanguage: null,
+      showGeneratedSubtitles: null,
     mediaVideo: {
       __typename: 'YouTube',
       id: 'ghTiJv0oVck'
@@ -413,6 +419,7 @@ export const videoBlocksFiltered = [
     duration: 188,
     objectFit: null,
     subtitleLanguage: null,
+      showGeneratedSubtitles: null,
     mediaVideo: {
       __typename: 'YouTube',
       id: '90XbaaQerz8'
@@ -443,6 +450,7 @@ export const videoBlocksFiltered = [
     duration: null,
     objectFit: null,
     subtitleLanguage: null,
+      showGeneratedSubtitles: null,
     mediaVideo: {
       __typename: 'Video',
       id: '1_jf-0-0',
@@ -491,6 +499,7 @@ export const videoBlocksFiltered = [
     duration: 112,
     objectFit: null,
     subtitleLanguage: null,
+      showGeneratedSubtitles: null,
     mediaVideo: {
       __typename: 'Video',
       id: '1_cl1303-0-0',
@@ -539,6 +548,7 @@ export const videoBlocksFiltered = [
     duration: 0,
     objectFit: null,
     subtitleLanguage: null,
+      showGeneratedSubtitles: null,
     mediaVideo: {
       __typename: 'Video',
       id: '1_jf6125-0-0',
