@@ -34,7 +34,8 @@ export function BackgroundVideo({
 
   // Initiate Video
   useEffect(() => {
-    if (videoRef.current != null) {
+    // Don't initialize video player if there's no videoId (e.g., in admin mode)
+    if (videoRef.current != null && (videoId != null || mediaVideo != null)) {
       playerRef.current = videojs(videoRef.current, {
         ...defaultBackgroundVideoJsOptions,
         autoplay: true,
@@ -54,12 +55,12 @@ export function BackgroundVideo({
         // Don't use poster prop as image isn't optimised
       })
     }
-  }, [])
+  }, [videoId, mediaVideo])
 
   // Set up video listeners
   useEffect(() => {
     const player = playerRef.current
-    if (player != null) {
+    if (player != null && (videoId != null || mediaVideo != null)) {
       // Video jumps to new time and finishes loading
       player.on('ready', () => {
         player.currentTime(startAt ?? 0)
@@ -123,7 +124,7 @@ export function BackgroundVideo({
       minHeight="-webkit-fill-available"
       overflow="hidden"
       position="absolute"
-      data-testid="SimpleParallaxBackgroundVideo"
+      data-testid="WebsiteCoverBackgroundVideo"
     >
       <StyledVideo
         ref={videoRef}

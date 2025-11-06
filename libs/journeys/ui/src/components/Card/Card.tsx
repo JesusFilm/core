@@ -25,7 +25,7 @@ import { CardFields } from './__generated__/CardFields'
 import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
 import { ParallaxCover } from './ParallaxCover'
-import { SimpleParallax } from './ParallaxCover/SimpleParallax'
+import { WebsiteCover } from './WebsiteCover'
 import { getFormInitialValues } from './utils/getFormInitialValues'
 import { getTextResponseBlocks } from './utils/getTextResponseBlocks'
 import { getValidationSchema } from './utils/getValidationSchema/getValidationSchema'
@@ -258,16 +258,7 @@ export function Card({
             elevation={3}
           >
             {isParallax ? (
-              // <ParallaxCover
-              //   backgroundColor={cardColor}
-              //   backgroundBlur={blurUrl}
-              //   videoBlock={videoBlock}
-              //   imageBlock={imageBlock}
-              //   hasFullscreenVideo={hasFullscreenVideo}
-              // >
-              //   {renderedChildren}
-              // </ParallaxCover>
-              <SimpleParallax
+              <WebsiteCover
                 backgroundColor={cardColor}
                 backgroundBlur={blurUrl}
                 videoBlock={videoBlock}
@@ -275,7 +266,7 @@ export function Card({
                 hasFullscreenVideo={hasFullscreenVideo}
               >
                 {renderedChildren}
-              </SimpleParallax>
+              </WebsiteCover>
             ) : isContained ? (
               <ContainedCover
                 backgroundColor={cardColor}

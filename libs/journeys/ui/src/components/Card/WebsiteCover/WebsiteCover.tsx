@@ -11,7 +11,7 @@ import { OverlayContent } from '../OverlayContent'
 import { stripAlphaFromHex } from '../utils/colorOpacityUtils'
 import { BackgroundVideo } from './BackgroundVideo'
 
-interface SimpleParallaxProps {
+interface WebsiteCoverProps {
   children: ReactNode
   backgroundColor: string
   backgroundBlur?: string
@@ -23,14 +23,14 @@ interface SimpleParallaxProps {
 // Layout constants
 const IMAGE_HEIGHT = '30vh'
 
-export function SimpleParallax({
+export function WebsiteCover({
   children,
   backgroundColor,
   backgroundBlur,
   videoBlock,
   imageBlock,
   hasFullscreenVideo = false
-}: SimpleParallaxProps): ReactElement {
+}: WebsiteCoverProps): ReactElement {
   const [loading, setLoading] = useState(true)
   const baseBackgroundColor = stripAlphaFromHex(backgroundColor)
 
@@ -51,7 +51,7 @@ export function SimpleParallax({
 
   return (
     <Box
-      data-testid="simple-parallax"
+      data-testid="website-cover"
       sx={{
         height: '100vh',
         overflowY: 'auto',
@@ -59,9 +59,9 @@ export function SimpleParallax({
         backgroundColor: baseBackgroundColor
       }}
     >
-      {videoBlock?.videoId != null && (
+      {videoBlock != null && (
         <Box
-          data-testid="simple-parallax-video"
+          data-testid="website-cover-video"
           sx={{
             position: 'relative',
             width: '100%',
@@ -95,7 +95,7 @@ export function SimpleParallax({
       )}
       {imageBlock != null && backgroundBlur != null && (
         <Box
-          data-testid="simple-parallax-image"
+          data-testid="website-cover-image"
           sx={{
             position: 'relative',
             width: '100%',
@@ -113,7 +113,7 @@ export function SimpleParallax({
         </Box>
       )}
 
-      <Box data-testid="simple-parallax-content">
+      <Box data-testid="website-cover-content">
         <OverlayContent
           hasFullscreenVideo={hasFullscreenVideo}
           sx={{
@@ -131,3 +131,4 @@ export function SimpleParallax({
     </Box>
   )
 }
+
