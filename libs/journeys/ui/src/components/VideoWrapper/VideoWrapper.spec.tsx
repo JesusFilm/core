@@ -98,7 +98,8 @@ describe('VideoWrapper', () => {
         mediaVideo: null,
         videoId: null,
         videoVariantLanguageId: '529',
-        subtitleLanguage: null
+        subtitleLanguage: null,
+        showGeneratedSubtitles: null
       },
       undefined
     )
@@ -190,7 +191,8 @@ describe('VideoWrapper', () => {
         mediaVideo: null,
         videoId: null,
         videoVariantLanguageId: '529',
-        subtitleLanguage: null
+        subtitleLanguage: null,
+        showGeneratedSubtitles: null
       },
       undefined
     )

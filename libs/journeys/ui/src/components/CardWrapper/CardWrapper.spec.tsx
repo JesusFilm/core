@@ -120,7 +120,8 @@ describe('CardWrapper', () => {
             mediaVideo: null,
             videoId: null,
             videoVariantLanguageId: '529',
-            subtitleLanguage: null
+            subtitleLanguage: null,
+            showGeneratedSubtitles: null
           }
         ],
         coverBlockId: 'video5.id',
@@ -244,7 +245,8 @@ describe('CardWrapper', () => {
             mediaVideo: null,
             videoId: null,
             videoVariantLanguageId: '529',
-            subtitleLanguage: null
+            subtitleLanguage: null,
+            showGeneratedSubtitles: null
           }
         ],
         coverBlockId: 'video5.id',
