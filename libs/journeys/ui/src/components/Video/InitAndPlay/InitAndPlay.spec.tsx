@@ -265,6 +265,7 @@ describe('InitAndPlay', () => {
   describe('Mux subtitles', () => {
     let mockSubtitleTrack: TextTrack
     let mockCaptionTrack: TextTrack
+    let readyStateSpy: jest.SpyInstance
 
     beforeEach(() => {
       mockSubtitleTrack = {
@@ -283,7 +284,11 @@ describe('InitAndPlay', () => {
         id: 'cap-en'
       } as TextTrack
 
-      jest.spyOn(player, 'readyState').mockReturnValue(4)
+      readyStateSpy = jest.spyOn(player, 'readyState').mockReturnValue(4)
+    })
+
+    afterEach(() => {
+      readyStateSpy.mockRestore()
     })
 
     it('should show Mux subtitles when showGeneratedSubtitles is true', () => {
@@ -403,7 +408,7 @@ describe('InitAndPlay', () => {
 
     it('should not process subtitles when player readyState is not 4', () => {
       mockGetCaptionsAndSubtitleTracks.mockClear()
-      jest.spyOn(player, 'readyState').mockReturnValue(0)
+      readyStateSpy.mockReturnValue(0)
 
       mockGetCaptionsAndSubtitleTracks.mockReturnValue([
         mockSubtitleTrack,
@@ -424,8 +429,14 @@ describe('InitAndPlay', () => {
   })
 
   describe('YouTube subtitles', () => {
+    let readyStateSpy: jest.SpyInstance
+
     beforeEach(() => {
-      jest.spyOn(player, 'readyState').mockReturnValue(4)
+      readyStateSpy = jest.spyOn(player, 'readyState').mockReturnValue(4)
+    })
+
+    afterEach(() => {
+      readyStateSpy.mockRestore()
     })
 
     it('should call extractYouTubeCaptionsAndAddTextTracks when source is YouTube', () => {
@@ -484,7 +495,7 @@ describe('InitAndPlay', () => {
 
     it('should not call extractYouTubeCaptionsAndAddTextTracks when player readyState is not 4', () => {
       mockExtractYouTubeCaptionsAndAddTextTracks.mockClear()
-      jest.spyOn(player, 'readyState').mockReturnValue(0)
+      readyStateSpy.mockReturnValue(0)
 
       const props = {
         ...defaultProps,
@@ -499,7 +510,7 @@ describe('InitAndPlay', () => {
     })
 
     it('should call extractYouTubeCaptionsAndAddTextTracks when readyState changes to 4', () => {
-      jest.spyOn(player, 'readyState').mockReturnValue(0)
+      readyStateSpy.mockReturnValue(0)
 
       const props = {
         ...defaultProps,
@@ -512,7 +523,7 @@ describe('InitAndPlay', () => {
 
       expect(mockExtractYouTubeCaptionsAndAddTextTracks).not.toHaveBeenCalled()
 
-      jest.spyOn(player, 'readyState').mockReturnValue(4)
+      readyStateSpy.mockReturnValue(4)
 
       const { rerender } = render(<InitAndPlay {...props} />)
       rerender(<InitAndPlay {...props} />)
