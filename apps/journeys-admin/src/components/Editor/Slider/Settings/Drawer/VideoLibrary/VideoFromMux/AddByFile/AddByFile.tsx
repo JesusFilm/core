@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { UpChunk } from '@mux/upchunk'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { FileRejection, useDropzone } from 'react-dropzone'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -57,13 +57,11 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const [fileInvalidType, setfileInvalidType] = useState(false)
   const [error, setError] = useState<Error>()
   const [progress, setProgress] = useState(0)
-  const currentVideoIdRef = useRef<string | null>(null)
 
   function resetUploadStatus(): void {
     setUploading(false)
     setProcessing(false)
     setProgress(0)
-    currentVideoIdRef.current = null
   }
 
   const [createMuxVideoUploadByFile] =
@@ -85,7 +83,6 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     videoId: string
   ): void {
     setUploading(true)
-    currentVideoIdRef.current = videoId
     const upload = UpChunk.createUpload({
       file,
       endpoint: data.createMuxVideoUploadByFile.uploadUrl ?? '',
@@ -105,9 +102,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     })
     upload.on('error', (err): void => {
       setError(err.detail)
-      if (currentVideoIdRef.current != null) {
-        stopPolling(currentVideoIdRef.current)
-      }
+      stopPolling(videoId)
       resetUploadStatus()
     })
     upload.on('progress', (progress): void => {
