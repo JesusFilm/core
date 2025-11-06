@@ -1,1 +1,0 @@
-export { ParallaxCover } from './ParallaxCover'
