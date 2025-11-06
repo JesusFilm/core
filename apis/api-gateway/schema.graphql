@@ -3798,17 +3798,6 @@ union MutationPlaylistUpdateResult
   | NotFoundError
   | ZodError
   | MutationPlaylistUpdateSuccess
-union MutationPlaylistUpdateResult
-  @join__type(graph: API_MEDIA)
-  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")
-  @join__unionMember(graph: API_MEDIA, member: "ZodError")
-  @join__unionMember(
-    graph: API_MEDIA
-    member: "MutationPlaylistUpdateSuccess"
-  ) =
-  | NotFoundError
-  | ZodError
-  | MutationPlaylistUpdateSuccess
 
 union MutationShortLinkCreateResult
   @join__type(graph: API_MEDIA)
@@ -3916,17 +3905,6 @@ union QueryShortLinkResult
   | NotFoundError
   | QueryShortLinkSuccess
 
-union QueryYoutubeClosedCaptionLanguagesResult
-  @join__type(graph: API_MEDIA)
-  @join__unionMember(graph: API_MEDIA, member: "Error")
-  @join__unionMember(graph: API_MEDIA, member: "ZodError")
-  @join__unionMember(
-    graph: API_MEDIA
-    member: "QueryYoutubeClosedCaptionLanguagesSuccess"
-  ) =
-  | Error
-  | ZodError
-  | QueryYoutubeClosedCaptionLanguagesSuccess
 union QueryYoutubeClosedCaptionLanguagesResult
   @join__type(graph: API_MEDIA)
   @join__unionMember(graph: API_MEDIA, member: "Error")
