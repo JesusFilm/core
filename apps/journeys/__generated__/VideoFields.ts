@@ -179,8 +179,8 @@ export interface VideoFields {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: VideoFields_subtitleLanguage | null;
   showGeneratedSubtitles: boolean | null;
+  subtitleLanguage: VideoFields_subtitleLanguage | null;
   mediaVideo: VideoFields_mediaVideo | null;
   /**
    * action that should be performed when the video ends

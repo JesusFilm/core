@@ -3,77 +3,81 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./globalTypes";
+import { VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: VideoBlockCreate
+// GraphQL query operation: GetVideoBlock
 // ====================================================
 
-export interface VideoBlockCreate_videoBlockCreate_subtitleLanguage {
+export interface GetVideoBlock_block_ImageBlock {
+  __typename: "ImageBlock" | "StepBlock" | "ButtonBlock" | "CardBlock" | "IconBlock" | "RadioOptionBlock" | "RadioQuestionBlock" | "SignUpBlock" | "SpacerBlock" | "TextResponseBlock" | "TypographyBlock" | "MultiselectBlock" | "MultiselectOptionBlock" | "GridContainerBlock" | "GridItemBlock" | "VideoTriggerBlock";
+}
+
+export interface GetVideoBlock_block_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
   bcp47: string | null;
 }
 
-export interface VideoBlockCreate_videoBlockCreate_mediaVideo_Video_title {
+export interface GetVideoBlock_block_VideoBlock_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
 }
 
-export interface VideoBlockCreate_videoBlockCreate_mediaVideo_Video_images {
+export interface GetVideoBlock_block_VideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
 }
 
-export interface VideoBlockCreate_videoBlockCreate_mediaVideo_Video_variant {
+export interface GetVideoBlock_block_VideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
   hls: string | null;
 }
 
-export interface VideoBlockCreate_videoBlockCreate_mediaVideo_Video_variantLanguages_name {
+export interface GetVideoBlock_block_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
   primary: boolean;
 }
 
-export interface VideoBlockCreate_videoBlockCreate_mediaVideo_Video_variantLanguages {
+export interface GetVideoBlock_block_VideoBlock_mediaVideo_Video_variantLanguages {
   __typename: "Language";
   id: string;
-  name: VideoBlockCreate_videoBlockCreate_mediaVideo_Video_variantLanguages_name[];
+  name: GetVideoBlock_block_VideoBlock_mediaVideo_Video_variantLanguages_name[];
 }
 
-export interface VideoBlockCreate_videoBlockCreate_mediaVideo_Video {
+export interface GetVideoBlock_block_VideoBlock_mediaVideo_Video {
   __typename: "Video";
   id: string;
-  title: VideoBlockCreate_videoBlockCreate_mediaVideo_Video_title[];
-  images: VideoBlockCreate_videoBlockCreate_mediaVideo_Video_images[];
-  variant: VideoBlockCreate_videoBlockCreate_mediaVideo_Video_variant | null;
-  variantLanguages: VideoBlockCreate_videoBlockCreate_mediaVideo_Video_variantLanguages[];
+  title: GetVideoBlock_block_VideoBlock_mediaVideo_Video_title[];
+  images: GetVideoBlock_block_VideoBlock_mediaVideo_Video_images[];
+  variant: GetVideoBlock_block_VideoBlock_mediaVideo_Video_variant | null;
+  variantLanguages: GetVideoBlock_block_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
-export interface VideoBlockCreate_videoBlockCreate_mediaVideo_MuxVideo {
+export interface GetVideoBlock_block_VideoBlock_mediaVideo_MuxVideo {
   __typename: "MuxVideo";
   id: string;
   assetId: string | null;
   playbackId: string | null;
 }
 
-export interface VideoBlockCreate_videoBlockCreate_mediaVideo_YouTube {
+export interface GetVideoBlock_block_VideoBlock_mediaVideo_YouTube {
   __typename: "YouTube";
   id: string;
 }
 
-export type VideoBlockCreate_videoBlockCreate_mediaVideo = VideoBlockCreate_videoBlockCreate_mediaVideo_Video | VideoBlockCreate_videoBlockCreate_mediaVideo_MuxVideo | VideoBlockCreate_videoBlockCreate_mediaVideo_YouTube;
+export type GetVideoBlock_block_VideoBlock_mediaVideo = GetVideoBlock_block_VideoBlock_mediaVideo_Video | GetVideoBlock_block_VideoBlock_mediaVideo_MuxVideo | GetVideoBlock_block_VideoBlock_mediaVideo_YouTube;
 
-export interface VideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction {
+export interface GetVideoBlock_block_VideoBlock_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
   gtmEventName: string | null;
   blockId: string;
 }
 
-export interface VideoBlockCreate_videoBlockCreate_action_LinkAction {
+export interface GetVideoBlock_block_VideoBlock_action_LinkAction {
   __typename: "LinkAction";
   parentBlockId: string;
   gtmEventName: string | null;
@@ -82,7 +86,7 @@ export interface VideoBlockCreate_videoBlockCreate_action_LinkAction {
   parentStepId: string | null;
 }
 
-export interface VideoBlockCreate_videoBlockCreate_action_EmailAction {
+export interface GetVideoBlock_block_VideoBlock_action_EmailAction {
   __typename: "EmailAction";
   parentBlockId: string;
   gtmEventName: string | null;
@@ -91,7 +95,7 @@ export interface VideoBlockCreate_videoBlockCreate_action_EmailAction {
   parentStepId: string | null;
 }
 
-export interface VideoBlockCreate_videoBlockCreate_action_ChatAction {
+export interface GetVideoBlock_block_VideoBlock_action_ChatAction {
   __typename: "ChatAction";
   parentBlockId: string;
   gtmEventName: string | null;
@@ -100,7 +104,7 @@ export interface VideoBlockCreate_videoBlockCreate_action_ChatAction {
   parentStepId: string | null;
 }
 
-export interface VideoBlockCreate_videoBlockCreate_action_PhoneAction {
+export interface GetVideoBlock_block_VideoBlock_action_PhoneAction {
   __typename: "PhoneAction";
   parentBlockId: string;
   gtmEventName: string | null;
@@ -109,9 +113,9 @@ export interface VideoBlockCreate_videoBlockCreate_action_PhoneAction {
   contactAction: ContactActionType;
 }
 
-export type VideoBlockCreate_videoBlockCreate_action = VideoBlockCreate_videoBlockCreate_action_NavigateToBlockAction | VideoBlockCreate_videoBlockCreate_action_LinkAction | VideoBlockCreate_videoBlockCreate_action_EmailAction | VideoBlockCreate_videoBlockCreate_action_ChatAction | VideoBlockCreate_videoBlockCreate_action_PhoneAction;
+export type GetVideoBlock_block_VideoBlock_action = GetVideoBlock_block_VideoBlock_action_NavigateToBlockAction | GetVideoBlock_block_VideoBlock_action_LinkAction | GetVideoBlock_block_VideoBlock_action_EmailAction | GetVideoBlock_block_VideoBlock_action_ChatAction | GetVideoBlock_block_VideoBlock_action_PhoneAction;
 
-export interface VideoBlockCreate_videoBlockCreate {
+export interface GetVideoBlock_block_VideoBlock {
   __typename: "VideoBlock";
   id: string;
   parentBlockId: string | null;
@@ -180,18 +184,20 @@ export interface VideoBlockCreate_videoBlockCreate {
    */
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
-  subtitleLanguage: VideoBlockCreate_videoBlockCreate_subtitleLanguage | null;
-  mediaVideo: VideoBlockCreate_videoBlockCreate_mediaVideo | null;
+  subtitleLanguage: GetVideoBlock_block_VideoBlock_subtitleLanguage | null;
+  mediaVideo: GetVideoBlock_block_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
    */
-  action: VideoBlockCreate_videoBlockCreate_action | null;
+  action: GetVideoBlock_block_VideoBlock_action | null;
 }
 
-export interface VideoBlockCreate {
-  videoBlockCreate: VideoBlockCreate_videoBlockCreate;
+export type GetVideoBlock_block = GetVideoBlock_block_ImageBlock | GetVideoBlock_block_VideoBlock;
+
+export interface GetVideoBlock {
+  block: GetVideoBlock_block;
 }
 
-export interface VideoBlockCreateVariables {
-  input: VideoBlockCreateInput;
+export interface GetVideoBlockVariables {
+  id: string;
 }
