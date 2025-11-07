@@ -1,6 +1,12 @@
 import Subtitles from '@mui/icons-material/Subtitles'
 import IconButton from '@mui/material/IconButton'
-import { ReactElement, useState } from 'react'
+import {
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  useEffect,
+  useState
+} from 'react'
 
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import { getCaptionsAndSubtitleTracks } from '../../utils/getCaptionsAndSubtitleTracks'
@@ -16,12 +22,16 @@ interface SubtitleButtonProps {
   player: VideoJsPlayer
   source: VideoBlockSource
   visible: boolean
+  setActive: Dispatch<SetStateAction<boolean>>
+  fullscreen?: boolean
 }
 
 export function SubtitleButton({
   player,
   source,
-  visible
+  visible,
+  setActive,
+  fullscreen = false
 }: SubtitleButtonProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
@@ -31,6 +41,7 @@ export function SubtitleButton({
 
   function handleClose(): void {
     setAnchorEl(null)
+    setActive(false)
   }
 
   function handleSubtitleChange(trackId: string | null): void {
@@ -70,15 +81,20 @@ export function SubtitleButton({
 
   const open = Boolean(anchorEl)
 
+  // keep controls visible when menu is open
+  useEffect(() => {
+    if (open) {
+      setActive(true)
+    }
+  }, [open, setActive, visible])
+
   // Get caption tracks and determine button state
-  const youtubeCaptionTracks = getCaptionsAndSubtitleTracks(player)
-  const activeYoutubeTrack = youtubeCaptionTracks.find(
-    (track) => track.mode === 'showing'
-  )
+  const tracks = getCaptionsAndSubtitleTracks(player)
+  const activeTrack = tracks.find((track) => track.mode === 'showing')
 
   // Determine button state based on available tracks and active track
-  const hasAvailableTracks = youtubeCaptionTracks.length > 0
-  const isTrackSelected = activeYoutubeTrack != null
+  const hasAvailableTracks = tracks.length > 0
+  const isTrackSelected = activeTrack != null
   const isDisabled = !hasAvailableTracks
 
   return (
@@ -116,9 +132,10 @@ export function SubtitleButton({
         anchorEl={anchorEl}
         open={open && visible}
         onClose={handleClose}
-        youtubeCaptionTracks={youtubeCaptionTracks}
-        activeYoutubeTrack={activeYoutubeTrack}
+        tracks={tracks}
+        activeTrack={activeTrack}
         onChange={handleSubtitleChange}
+        fullscreen={fullscreen}
       />
     </>
   )

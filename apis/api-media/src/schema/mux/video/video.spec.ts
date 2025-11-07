@@ -8,40 +8,42 @@ import { enableDownload } from './service'
 
 // Mock the processVideoDownloads queue
 
-jest.mock('./service', () => ({
-  createVideoByDirectUpload: jest.fn().mockResolvedValue({
-    id: 'uploadId',
-    uploadUrl: 'https://example.com/video.mp4'
-  }),
-  createVideoFromUrl: jest.fn().mockResolvedValue({
-    id: 'assetId'
-  }),
-  getVideo: jest.fn().mockResolvedValue({
-    id: 'assetId',
-    status: 'ready',
-    playback_ids: [{ id: 'playbackId' }],
-    duration: 10
-  }),
-  deleteVideo: jest.fn().mockResolvedValue({
-    id: 'assetId'
-  }),
-  enableDownload: jest.fn().mockResolvedValue(undefined),
-  getUpload: jest.fn().mockResolvedValue({
-    asset_id: 'assetId'
-  }),
-  getMaxResolutionValue: jest
-    .fn()
-    .mockImplementation((maxResolution: string | null | undefined) => {
-      if (!maxResolution) return undefined
-      if (maxResolution === 'fhd') return '1080p'
-      if (maxResolution === 'qhd') return '1440p'
-      if (maxResolution === 'uhd') return '2160p'
-      return '1080p' // fallback
+jest.mock('./service', () => {
+  return {
+    createVideoByDirectUpload: jest.fn().mockResolvedValue({
+      id: 'uploadId',
+      uploadUrl: 'https://example.com/video.mp4'
     }),
-  isValidMaxResolutionTier: jest.fn().mockImplementation((value: string) => {
-    return ['fhd', 'qhd', 'uhd'].includes(value)
-  })
-}))
+    createVideoFromUrl: jest.fn().mockResolvedValue({
+      id: 'assetId'
+    }),
+    getVideo: jest.fn().mockResolvedValue({
+      id: 'assetId',
+      status: 'ready',
+      playback_ids: [{ id: 'playbackId' }],
+      duration: 10
+    }),
+    deleteVideo: jest.fn().mockResolvedValue({
+      id: 'assetId'
+    }),
+    enableDownload: jest.fn().mockResolvedValue(undefined),
+    getUpload: jest.fn().mockResolvedValue({
+      asset_id: 'assetId'
+    }),
+    getMaxResolutionValue: jest
+      .fn()
+      .mockImplementation((maxResolution: string | null | undefined) => {
+        if (!maxResolution) return undefined
+        if (maxResolution === 'fhd') return '1080p'
+        if (maxResolution === 'qhd') return '1440p'
+        if (maxResolution === 'uhd') return '2160p'
+        return '1080p' // fallback
+      }),
+    isValidMaxResolutionTier: jest.fn().mockImplementation((value: string) => {
+      return ['fhd', 'qhd', 'uhd'].includes(value)
+    })
+  }
+})
 
 jest.mock('../../../workers/processVideoDownloads/queue', () => ({
   queue: {
@@ -99,12 +101,12 @@ describe('mux/video', () => {
       `)
 
       it('should return video', async () => {
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        prismaMock.muxVideo.findMany.mockResolvedValue([
+        ;(prismaMock.muxVideo.findMany as jest.Mock).mockResolvedValue([
           {
             id: 'videoId',
             playbackId: 'playbackId',
@@ -166,12 +168,12 @@ describe('mux/video', () => {
       `)
 
       it('should return video', async () => {
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        prismaMock.muxVideo.findFirstOrThrow.mockResolvedValue({
+        ;(prismaMock.muxVideo.findFirstOrThrow as jest.Mock).mockResolvedValue({
           id: 'videoId',
           playbackId: 'playbackId',
           uploadId: 'uploadId',
@@ -215,14 +217,14 @@ describe('mux/video', () => {
       it('should queue download processing when video is downloadable and ready', async () => {
         const { getVideo } = jest.requireMock('./service')
 
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
 
         // First call returns video without playbackId to trigger getVideo call
-        prismaMock.muxVideo.findFirstOrThrow.mockResolvedValue({
+        ;(prismaMock.muxVideo.findFirstOrThrow as jest.Mock).mockResolvedValue({
           id: 'videoId',
           playbackId: null,
           uploadId: 'uploadId',
@@ -238,7 +240,7 @@ describe('mux/video', () => {
         })
 
         // Mock the updated video after getVideo call
-        prismaMock.muxVideo.update.mockResolvedValue({
+        ;(prismaMock.muxVideo.update as jest.Mock).mockResolvedValue({
           id: 'videoId',
           playbackId: 'playbackId',
           uploadId: 'uploadId',
@@ -294,13 +296,12 @@ describe('mux/video', () => {
       it('should not queue download processing when video is not downloadable', async () => {
         const { getVideo } = jest.requireMock('./service')
 
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-
-        prismaMock.muxVideo.findFirstOrThrow.mockResolvedValue({
+        ;(prismaMock.muxVideo.findFirstOrThrow as jest.Mock).mockResolvedValue({
           id: 'videoId',
           playbackId: null,
           uploadId: 'uploadId',
@@ -314,8 +315,7 @@ describe('mux/video', () => {
           downloadable: false, // Not downloadable
           updatedAt: new Date()
         })
-
-        prismaMock.muxVideo.update.mockResolvedValue({
+        ;(prismaMock.muxVideo.update as jest.Mock).mockResolvedValue({
           id: 'videoId',
           playbackId: 'playbackId',
           uploadId: 'uploadId',
@@ -349,13 +349,12 @@ describe('mux/video', () => {
       it('should handle queue errors gracefully', async () => {
         const consoleSpy = jest.spyOn(console, 'error').mockImplementation()
 
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-
-        prismaMock.muxVideo.findFirstOrThrow.mockResolvedValue({
+        ;(prismaMock.muxVideo.findFirstOrThrow as jest.Mock).mockResolvedValue({
           id: 'videoId',
           playbackId: null,
           uploadId: 'uploadId',
@@ -369,8 +368,7 @@ describe('mux/video', () => {
           downloadable: true,
           updatedAt: new Date()
         })
-
-        prismaMock.muxVideo.update.mockResolvedValue({
+        ;(prismaMock.muxVideo.update as jest.Mock).mockResolvedValue({
           id: 'videoId',
           playbackId: 'playbackId',
           uploadId: 'uploadId',
@@ -439,12 +437,12 @@ describe('mux/video', () => {
       `)
 
       it('should return video', async () => {
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        prismaMock.muxVideo.findFirstOrThrow.mockResolvedValue({
+        ;(prismaMock.muxVideo.findFirstOrThrow as jest.Mock).mockResolvedValue({
           id: 'videoId',
           playbackId: 'playbackId',
           uploadId: 'uploadId',
@@ -483,11 +481,13 @@ describe('mux/video', () => {
           $name: String!
           $userGenerated: Boolean
           $maxResolution: MaxResolutionTier
+          $generateSubtitlesInput: GenerateSubtitlesInput
         ) {
           createMuxVideoUploadByFile(
             name: $name
             userGenerated: $userGenerated
             maxResolution: $maxResolution
+            generateSubtitlesInput: $generateSubtitlesInput
           ) {
             id
             playbackId
@@ -499,12 +499,12 @@ describe('mux/video', () => {
       `)
 
       it('should create a new video', async () => {
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        prismaMock.muxVideo.create.mockResolvedValue({
+        ;(prismaMock.muxVideo.create as jest.Mock).mockResolvedValue({
           id: 'videoId',
           playbackId: 'playbackId',
           uploadId: 'uploadId',
@@ -555,6 +555,89 @@ describe('mux/video', () => {
         })
         expect(result).toHaveProperty('data', null)
       })
+
+      it('should create video with generated subtitles when generateSubtitlesInput is provided', async () => {
+        const { createVideoByDirectUpload } = jest.requireMock('./service')
+
+        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+        ;(prismaMock.muxVideo.create as jest.Mock).mockResolvedValue({
+          id: 'videoId',
+          playbackId: 'playbackId',
+          uploadId: 'uploadId',
+          assetId: 'assetId',
+          duration: 10,
+          name: 'videoName',
+          uploadUrl: 'https://example.com/video.mp4',
+          userId: 'testUserId',
+          createdAt: new Date(),
+          readyToStream: true,
+          downloadable: false,
+          updatedAt: new Date()
+        })
+        const result = await authClient({
+          document: CREATE_MUX_VIDEO_UPLOAD_BY_FILE,
+          variables: {
+            name: 'videoName',
+            userGenerated: true,
+            maxResolution: 'fhd',
+            generateSubtitlesInput: {
+              languageCode: 'en',
+              languageName: 'English'
+            }
+          }
+        })
+        expect(createVideoByDirectUpload).toHaveBeenCalledWith(
+          true,
+          '1080p',
+          false,
+          { languageCode: 'en', languageName: 'English' }
+        )
+        expect(result).toHaveProperty('data.createMuxVideoUploadByFile', {
+          id: 'videoId',
+          playbackId: 'playbackId',
+          uploadUrl: 'https://example.com/video.mp4',
+          userId: 'testUserId',
+          readyToStream: true
+        })
+      })
+
+      it('should throw error when invalid language code is provided', async () => {
+        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher']
+        })
+
+        const { createVideoByDirectUpload } = jest.requireMock('./service')
+        ;(createVideoByDirectUpload as jest.Mock).mockRejectedValue(
+          new Error('Invalid language code: invalid')
+        )
+
+        const result = (await authClient({
+          document: CREATE_MUX_VIDEO_UPLOAD_BY_FILE,
+          variables: {
+            name: 'videoName',
+            userGenerated: true,
+            maxResolution: 'fhd',
+            generateSubtitlesInput: {
+              languageCode: 'invalid',
+              languageName: 'Invalid'
+            } as any
+          }
+        })) as {
+          data: any
+          errors?: { message: string }[]
+        }
+
+        expect(result).toHaveProperty('data', null)
+        expect(result.errors?.[0]?.message).toContain(
+          'Invalid language code: invalid'
+        )
+      })
     })
 
     describe('createMuxVideoUploadByUrl', () => {
@@ -579,12 +662,12 @@ describe('mux/video', () => {
       `)
 
       it('should return video', async () => {
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        prismaMock.muxVideo.create.mockResolvedValue({
+        ;(prismaMock.muxVideo.create as jest.Mock).mockResolvedValue({
           id: 'videoId',
           playbackId: 'playbackId',
           uploadId: 'uploadId',
@@ -643,12 +726,12 @@ describe('mux/video', () => {
       `)
 
       it('should return true IF publisher', async () => {
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        prismaMock.muxVideo.delete.mockResolvedValue({
+        ;(prismaMock.muxVideo.delete as jest.Mock).mockResolvedValue({
           id: 'videoId',
           playbackId: 'playbackId',
           uploadId: 'uploadId',
@@ -679,12 +762,12 @@ describe('mux/video', () => {
       })
 
       it('should return true if not publisher', async () => {
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
           id: 'testUserId',
           userId: 'userId',
           roles: []
         })
-        prismaMock.muxVideo.delete.mockResolvedValue({
+        ;(prismaMock.muxVideo.delete as jest.Mock).mockResolvedValue({
           id: 'videoId',
           name: 'videoName',
           uploadUrl: null,
@@ -726,26 +809,28 @@ describe('mux/video', () => {
       `)
 
       it('should enable download for a video with default resolution', async () => {
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        prismaMock.muxVideo.findUniqueOrThrow.mockResolvedValue({
-          id: 'videoId',
-          playbackId: 'playbackId',
-          uploadId: 'uploadId',
-          assetId: 'assetId',
-          duration: 10,
-          name: 'videoName',
-          uploadUrl: null,
-          userId: 'testUserId',
-          createdAt: new Date(),
-          readyToStream: true,
-          downloadable: false,
-          updatedAt: new Date()
-        })
-        prismaMock.muxVideo.update.mockResolvedValue({
+        ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+          {
+            id: 'videoId',
+            playbackId: 'playbackId',
+            uploadId: 'uploadId',
+            assetId: 'assetId',
+            duration: 10,
+            name: 'videoName',
+            uploadUrl: null,
+            userId: 'testUserId',
+            createdAt: new Date(),
+            readyToStream: true,
+            downloadable: false,
+            updatedAt: new Date()
+          }
+        )
+        ;(prismaMock.muxVideo.update as jest.Mock).mockResolvedValue({
           id: 'videoId',
           playbackId: 'playbackId',
           uploadId: 'uploadId',
@@ -784,26 +869,28 @@ describe('mux/video', () => {
       })
 
       it('should enable download for a video with custom resolution', async () => {
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        prismaMock.muxVideo.findUniqueOrThrow.mockResolvedValue({
-          id: 'videoId',
-          playbackId: 'playbackId',
-          uploadId: 'uploadId',
-          assetId: 'assetId',
-          duration: 10,
-          name: 'videoName',
-          uploadUrl: null,
-          userId: 'testUserId',
-          createdAt: new Date(),
-          readyToStream: true,
-          downloadable: false,
-          updatedAt: new Date()
-        })
-        prismaMock.muxVideo.update.mockResolvedValue({
+        ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+          {
+            id: 'videoId',
+            playbackId: 'playbackId',
+            uploadId: 'uploadId',
+            assetId: 'assetId',
+            duration: 10,
+            name: 'videoName',
+            uploadUrl: null,
+            userId: 'testUserId',
+            createdAt: new Date(),
+            readyToStream: true,
+            downloadable: false,
+            updatedAt: new Date()
+          }
+        )
+        ;(prismaMock.muxVideo.update as jest.Mock).mockResolvedValue({
           id: 'videoId',
           playbackId: 'playbackId',
           uploadId: 'uploadId',
@@ -843,25 +930,27 @@ describe('mux/video', () => {
       })
 
       it('should throw an error for invalid resolution', async () => {
-        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        ;(prismaMock.userMediaRole.findUnique as jest.Mock).mockResolvedValue({
           id: 'userId',
           userId: 'userId',
           roles: ['publisher']
         })
-        prismaMock.muxVideo.findUniqueOrThrow.mockResolvedValue({
-          id: 'videoId',
-          playbackId: 'playbackId',
-          uploadId: 'uploadId',
-          assetId: 'assetId',
-          duration: 10,
-          name: 'videoName',
-          uploadUrl: null,
-          userId: 'testUserId',
-          createdAt: new Date(),
-          readyToStream: true,
-          downloadable: false,
-          updatedAt: new Date()
-        })
+        ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+          {
+            id: 'videoId',
+            playbackId: 'playbackId',
+            uploadId: 'uploadId',
+            assetId: 'assetId',
+            duration: 10,
+            name: 'videoName',
+            uploadUrl: null,
+            userId: 'testUserId',
+            createdAt: new Date(),
+            readyToStream: true,
+            downloadable: false,
+            updatedAt: new Date()
+          }
+        )
 
         const result = (await publisherClient({
           document: ENABLE_MUX_DOWNLOAD,
@@ -907,7 +996,7 @@ describe('mux/video', () => {
     `)
 
     it('should return mux video', async () => {
-      prismaMock.muxVideo.findUniqueOrThrow.mockResolvedValue({
+      ;(prismaMock.muxVideo.findUniqueOrThrow as jest.Mock).mockResolvedValue({
         id: 'testId',
         assetId: 'testAssetId',
         playbackId: 'testPlaybackId',

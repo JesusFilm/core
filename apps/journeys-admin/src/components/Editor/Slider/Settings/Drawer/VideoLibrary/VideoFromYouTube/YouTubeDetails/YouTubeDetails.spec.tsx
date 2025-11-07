@@ -229,6 +229,7 @@ describe('YouTubeDetails', () => {
         id: '529',
         bcp47: 'en'
       },
+      showGeneratedSubtitles: null,
       mediaVideo: null,
       action: null,
       children: []
@@ -377,6 +378,7 @@ describe('YouTubeDetails', () => {
         id: '529',
         bcp47: 'en'
       },
+      showGeneratedSubtitles: null,
       mediaVideo: null,
       action: null,
       children: []
@@ -584,6 +586,7 @@ describe('YouTubeDetails', () => {
         id: '529',
         bcp47: 'en'
       },
+      showGeneratedSubtitles: null,
       mediaVideo: null,
       action: null,
       children: []
@@ -687,6 +690,7 @@ describe('YouTubeDetails', () => {
         id: '529',
         bcp47: 'en'
       },
+      showGeneratedSubtitles: null,
       mediaVideo: null,
       action: null,
       children: []
@@ -743,6 +747,7 @@ describe('YouTubeDetails', () => {
       duration: null,
       objectFit: null,
       subtitleLanguage: null,
+      showGeneratedSubtitles: null,
       mediaVideo: null,
       action: null,
       children: []
@@ -815,6 +820,7 @@ describe('YouTubeDetails', () => {
         id: '529',
         bcp47: 'en'
       },
+      showGeneratedSubtitles: null,
       mediaVideo: null,
       action: null,
       children: []

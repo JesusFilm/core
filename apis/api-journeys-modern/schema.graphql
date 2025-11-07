@@ -2080,6 +2080,7 @@ type VideoBlock implements Block
   fullsize: Boolean
   subtitleLanguage: Language
   action: Action
+  showGeneratedSubtitles: Boolean
   mediaVideo: MediaVideo
 }
 
@@ -2107,6 +2108,7 @@ input VideoBlockCreateInput {
   fullsize: Boolean
   posterBlockId: ID
   subtitleLanguageId: ID
+  showGeneratedSubtitles: Boolean
 }
 
 enum VideoBlockObjectFit {
@@ -2144,6 +2146,7 @@ input VideoBlockUpdateInput {
     youTube source: videoId required
   """
   source: VideoBlockSource
+  showGeneratedSubtitles: Boolean
 }
 
 type VideoCollapseEvent implements Event

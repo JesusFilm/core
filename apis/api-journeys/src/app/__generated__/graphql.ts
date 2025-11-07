@@ -1486,6 +1486,7 @@ export class VideoBlock implements Block {
     action?: Nullable<Action>;
     objectFit?: Nullable<VideoBlockObjectFit>;
     subtitleLanguage?: Nullable<Language>;
+    showGeneratedSubtitles?: Nullable<boolean>;
 }
 
 export class VideoTriggerBlock implements Block {

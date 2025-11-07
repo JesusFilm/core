@@ -455,6 +455,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     userGenerated: Boolean
     downloadable: Boolean = false
     maxResolution: MaxResolutionTier = fhd
+    generateSubtitlesInput: GenerateSubtitlesInput
   ): MuxVideo! @join__field(graph: API_MEDIA) 
   createMuxVideoUploadByUrl(
     url: String!
@@ -831,6 +832,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
   getMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo @join__field(graph: API_MEDIA) 
+  getMyGeneratedMuxSubtitleTrack(muxVideoId: ID!, bcp47: String!, userGenerated: Boolean) : QueryGetMyGeneratedMuxSubtitleTrackResult! @join__field(graph: API_MEDIA) 
   playlists: [Playlist!] @join__field(graph: API_MEDIA) 
   playlist(id: ID!, idType: IdType! = databaseId) : QueryPlaylistResult @join__field(graph: API_MEDIA) 
   """
@@ -1262,6 +1264,7 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   """
   objectFit: VideoBlockObjectFit
   subtitleLanguage: Language
+  showGeneratedSubtitles: Boolean @join__field(graph: API_JOURNEYS_MODERN) 
   mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
@@ -2704,6 +2707,15 @@ type MutationShortLinkUpdateSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLink!
 }
 
+type MuxSubtitleTrack @join__type(graph: API_MEDIA)  {
+  id: ID!
+  trackId: String!
+  source: String!
+  status: String!
+  bcp47: String!
+  muxVideoId: ID!
+}
+
 type NotFoundError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
   message: String
   """
@@ -2763,6 +2775,10 @@ type PlaylistItem @join__type(graph: API_MEDIA)  {
   updatedAt: DateTime!
   videoVariant: VideoVariant!
   playlist: Playlist!
+}
+
+type QueryGetMyGeneratedMuxSubtitleTrackSuccess @join__type(graph: API_MEDIA)  {
+  data: MuxSubtitleTrack!
 }
 
 type QueryPlaylistSuccess @join__type(graph: API_MEDIA)  {
@@ -3168,6 +3184,8 @@ union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__
 union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = NotFoundError | MutationShortLinkDomainUpdateSuccess
 
 union MutationShortLinkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkUpdateSuccess")  = NotFoundError | ZodError | MutationShortLinkUpdateSuccess
+
+union QueryGetMyGeneratedMuxSubtitleTrackResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "Error")  @join__unionMember(graph: API_MEDIA, member: "QueryGetMyGeneratedMuxSubtitleTrackSuccess")  = Error | QueryGetMyGeneratedMuxSubtitleTrackSuccess
 
 union QueryPlaylistResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryPlaylistSuccess")  = NotFoundError | QueryPlaylistSuccess
 
@@ -4798,6 +4816,7 @@ input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   fullsize: Boolean
   posterBlockId: ID
   subtitleLanguageId: ID
+  showGeneratedSubtitles: Boolean
 }
 
 input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4821,6 +4840,7 @@ input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
     youTube source: videoId required
   """
   source: VideoBlockSource
+  showGeneratedSubtitles: Boolean
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
@@ -4869,6 +4889,11 @@ input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   the id of the Video object this file relates to in the database
   """
   videoId: String!
+}
+
+input GenerateSubtitlesInput @join__type(graph: API_MEDIA)  {
+  languageCode: String!
+  languageName: String!
 }
 
 input ImageInput @join__type(graph: API_MEDIA)  {
