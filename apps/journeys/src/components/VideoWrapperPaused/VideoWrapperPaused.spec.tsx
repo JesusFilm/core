@@ -35,6 +35,7 @@ describe('VideoWrapper', () => {
       fullsize: null,
       action: null,
       objectFit: null,
+      showGeneratedSubtitles: null,
       subtitleLanguage: null,
       children: [
         {
@@ -126,6 +127,7 @@ describe('VideoWrapper', () => {
       fullsize: null,
       action: null,
       objectFit: null,
+      showGeneratedSubtitles: null,
       subtitleLanguage: null,
       children: [
         {
