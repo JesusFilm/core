@@ -375,6 +375,14 @@ describe('VideoLibrary', () => {
     const onSelect = jest.fn()
     const onClose = jest.fn()
 
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
     const { getByRole } = renderVideoLibraryComponent({
       selectedBlock: {
         id: 'video1.id',
