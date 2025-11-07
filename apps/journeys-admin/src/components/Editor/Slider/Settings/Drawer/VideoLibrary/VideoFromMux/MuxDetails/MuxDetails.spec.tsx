@@ -47,7 +47,7 @@ jest.mock('video.js', () => {
     }
   )
 
-  videojs.getPlayers = jest.fn(() => ({}))
+  ;(videojs as any).getPlayers = jest.fn(() => ({}))
   return videojs
 })
 
