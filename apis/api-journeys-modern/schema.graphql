@@ -305,9 +305,9 @@ enum ContactActionType {
 }
 
 input CreateGoogleSheetsSyncInput {
-  journeyId: String!
-  integrationId: String!
-  spreadsheetId: String!
+  journeyId: ID!
+  integrationId: ID!
+  spreadsheetId: ID!
   sheetName: String!
   folderId: String
 }
@@ -420,11 +420,11 @@ enum GoogleSheetExportMode {
 }
 
 type GoogleSheetsSync {
-  id: ID
+  id: ID!
   teamId: String
-  journeyId: String
-  integrationId: String
-  spreadsheetId: String
+  journeyId: String!
+  integrationId: ID
+  spreadsheetId: ID!
   sheetName: String
   folderId: String
   email: String
@@ -665,8 +665,6 @@ type IntegrationGoogle implements Integration
   id: ID!
   type: IntegrationType!
   team: Team!
-  accessId: String
-  accessSecretPart: String
   accountEmail: String
   user: User
 }
@@ -1067,16 +1065,30 @@ input JourneyVisitorFilter {
 
 input JourneyVisitorGoogleSheetDestinationInput {
   mode: GoogleSheetExportMode!
+
+  """Required when mode is "create". The title for the new spreadsheet."""
   spreadsheetTitle: String
+
+  """
+  Required when mode is "create". The ID of the folder where the spreadsheet should be created.
+  """
   folderId: String
+
+  """
+  Required when mode is "existing". The ID of the existing spreadsheet to export to.
+  """
   spreadsheetId: String
+
+  """
+  Required when mode is "existing". The name of the sheet within the existing spreadsheet.
+  """
   sheetName: String
 }
 
 type JourneyVisitorGoogleSheetExportResult {
-  spreadsheetId: String
-  spreadsheetUrl: String
-  sheetName: String
+  spreadsheetId: ID!
+  spreadsheetUrl: String!
+  sheetName: String!
 }
 
 enum JourneyVisitorSort {

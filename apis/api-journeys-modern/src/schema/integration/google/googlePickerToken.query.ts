@@ -46,7 +46,19 @@ builder.queryField('integrationGooglePickerToken', (t) =>
 
       // If a specific integrationId is provided, use that; else any team integration
       if (integrationId != null) {
-        const token = await getIntegrationGoogleAccessToken(integrationId)
+        // Find the integration from already-loaded team.integrations
+        const integration = team.integrations.find(
+          (i) => i.id === integrationId
+        )
+        if (integration == null)
+          throw new GraphQLError('Integration not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+        if (integration.type !== 'google')
+          throw new GraphQLError('Integration is not a Google integration', {
+            extensions: { code: 'BAD_REQUEST' }
+          })
+        const token = await getIntegrationGoogleAccessToken(integration.id)
         return token.accessToken
       }
       const { accessToken } = await getTeamGoogleAccessToken(teamId)

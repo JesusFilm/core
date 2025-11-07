@@ -26,24 +26,27 @@ export const IntegrationDelete = builder.mutationField(
           })
 
         const isOwner = integration.userId === context.user?.id
-        const isTeamManager = integration.team.userTeams.some(
-          (ut) => ut.userId === context.user?.id && ut.role === 'manager'
-        )
+        const isTeamManager =
+          integration.team?.userTeams?.some(
+            (ut) => ut.userId === context.user?.id && ut.role === 'manager'
+          ) ?? false
         if (!isOwner && !isTeamManager) {
           throw new GraphQLError('user is not allowed to delete integration', {
             extensions: { code: 'FORBIDDEN' }
           })
         }
 
-        await prisma.googleSheetsSync.updateMany({
-          where: { integrationId: id },
-          data: {
-            deletedAt: new Date(),
-            integrationId: null
-          }
-        })
+        return await prisma.$transaction(async (tx) => {
+          await tx.googleSheetsSync.updateMany({
+            where: { integrationId: id },
+            data: {
+              deletedAt: new Date(),
+              integrationId: null
+            }
+          })
 
-        return await prisma.integration.delete({ where: { id } })
+          return await tx.integration.delete({ where: { id } })
+        })
       }
     })
 )

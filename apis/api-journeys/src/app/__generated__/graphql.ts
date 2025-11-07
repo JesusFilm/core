@@ -1726,8 +1726,6 @@ export class IntegrationGoogle implements Integration {
     id: string;
     team: Team;
     type: IntegrationType;
-    accessId: string;
-    accessSecretPart: string;
     user?: Nullable<User>;
     accountEmail?: Nullable<string>;
 }
@@ -1737,8 +1735,8 @@ export class IntegrationGrowthSpaces implements Integration {
     id: string;
     team: Team;
     type: IntegrationType;
-    accessId: string;
-    accessSecretPart: string;
+    accessId?: Nullable<string>;
+    accessSecretPart?: Nullable<string>;
     routes: IntegrationGrowthSpacesRoute[];
 }
 

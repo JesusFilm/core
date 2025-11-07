@@ -55,9 +55,13 @@ builder.mutationField('integrationGoogleUpdate', (t) =>
       const clientId = process.env.GOOGLE_CLIENT_ID
       const clientSecret = process.env.GOOGLE_CLIENT_SECRET
       if (clientId == null)
-        throw new GraphQLError('GOOGLE_CLIENT_ID not configured')
+        throw new GraphQLError('GOOGLE_CLIENT_ID not configured', {
+          extensions: { code: 'INTERNAL_SERVER_ERROR' }
+        })
       if (clientSecret == null)
-        throw new GraphQLError('GOOGLE_CLIENT_SECRET not configured')
+        throw new GraphQLError('GOOGLE_CLIENT_SECRET not configured', {
+          extensions: { code: 'INTERNAL_SERVER_ERROR' }
+        })
 
       let accessToken: string
       let refreshToken: string | undefined
@@ -73,13 +77,19 @@ builder.mutationField('integrationGoogleUpdate', (t) =>
         const res = await axios.post<GoogleTokenResponse>(
           'https://oauth2.googleapis.com/token',
           params,
-          { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+          {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            timeout: 5000
+          }
         )
         accessToken = res.data.access_token
         refreshToken = res.data.refresh_token
         const userInfo = await axios.get<GoogleUserInfoResponse>(
           'https://openidconnect.googleapis.com/v1/userinfo',
-          { headers: { Authorization: `Bearer ${accessToken}` } }
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+            timeout: 5000
+          }
         )
         accountEmail = userInfo.data.email
       } catch (e) {
@@ -91,15 +101,25 @@ builder.mutationField('integrationGoogleUpdate', (t) =>
 
       const secretToStore = refreshToken ?? accessToken
 
+      const encryptionSecret =
+        process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
+      if (encryptionSecret == null) {
+        throw new GraphQLError(
+          'INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET not configured',
+          {
+            extensions: { code: 'INTERNAL_SERVER_ERROR' }
+          }
+        )
+      }
+
       const { ciphertext, iv, tag } = await encryptSymmetric(
         secretToStore,
-        process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
+        encryptionSecret
       )
 
       return await prisma.integration.update({
         where: { id },
         data: {
-          userId,
           accessId: 'oauth2',
           accessSecretPart: secretToStore.slice(0, 6),
           accessSecretCipherText: ciphertext,

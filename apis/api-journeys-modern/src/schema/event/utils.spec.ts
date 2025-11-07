@@ -69,7 +69,7 @@ describe('event utils', () => {
   })
 
   describe('validateBlockEvent', () => {
-    it('should return visitor, journeyVisitor, journeyId, and block when valid', async () => {
+    it('should return visitor, journeyVisitor, journeyId, teamId, and block when valid', async () => {
       const mockBlock = {
         id: 'block-id',
         journeyId: 'journey-id'
@@ -82,8 +82,12 @@ describe('event utils', () => {
         journeyId: 'journey-id',
         visitorId: 'visitor-id'
       }
+      const mockJourney = {
+        teamId: 'team-id'
+      }
 
       prismaMock.block.findUnique.mockResolvedValue(mockBlock as any)
+      prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
       prismaMock.visitor.findFirst.mockResolvedValue(mockVisitor as any)
       prismaMock.journeyVisitor.findUnique.mockResolvedValue(
         mockJourneyVisitor as any
@@ -100,6 +104,7 @@ describe('event utils', () => {
         visitor: mockVisitor,
         journeyVisitor: mockJourneyVisitor,
         journeyId: 'journey-id',
+        teamId: 'team-id',
         block: mockBlock
       })
     })
@@ -117,8 +122,12 @@ describe('event utils', () => {
         journeyId: 'journey-id',
         visitorId: 'visitor-id'
       }
+      const mockJourney = {
+        teamId: 'team-id'
+      }
 
       prismaMock.block.findUnique.mockResolvedValue(mockBlock as any)
+      prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
       prismaMock.visitor.findFirst.mockResolvedValue(mockVisitor as any)
       prismaMock.journeyVisitor.findUnique.mockResolvedValue(null)
       prismaMock.journeyVisitor.create.mockResolvedValue(
@@ -140,6 +149,7 @@ describe('event utils', () => {
       })
 
       expect(result.journeyVisitor).toEqual(mockJourneyVisitor)
+      expect(result.teamId).toEqual('team-id')
     })
 
     it('should throw error when block does not exist', async () => {
@@ -150,10 +160,25 @@ describe('event utils', () => {
       )
     })
 
+    it('should throw error when journey does not exist', async () => {
+      prismaMock.block.findUnique.mockResolvedValue({
+        id: 'block-id',
+        journeyId: 'journey-id'
+      } as any)
+      prismaMock.journey.findUnique.mockResolvedValue(null)
+
+      await expect(validateBlockEvent('user-id', 'block-id')).rejects.toThrow(
+        'Journey does not exist'
+      )
+    })
+
     it('should throw error when visitor does not exist', async () => {
       prismaMock.block.findUnique.mockResolvedValue({
         id: 'block-id',
         journeyId: 'journey-id'
+      } as any)
+      prismaMock.journey.findUnique.mockResolvedValue({
+        teamId: 'team-id'
       } as any)
       prismaMock.visitor.findFirst.mockResolvedValue(null)
 
@@ -166,6 +191,9 @@ describe('event utils', () => {
       prismaMock.block.findUnique.mockResolvedValue({
         id: 'block-id',
         journeyId: 'journey-id'
+      } as any)
+      prismaMock.journey.findUnique.mockResolvedValue({
+        teamId: 'team-id'
       } as any)
       prismaMock.visitor.findFirst.mockResolvedValue({
         id: 'visitor-id'

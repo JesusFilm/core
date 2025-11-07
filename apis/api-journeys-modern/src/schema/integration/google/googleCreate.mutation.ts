@@ -1,10 +1,11 @@
-import axios from 'axios'
+import axios, { type AxiosResponse } from 'axios'
 import { GraphQLError } from 'graphql'
 
 import { encryptSymmetric } from '@core/nest/common/crypto'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
+import { logger } from '../../logger'
 
 import { IntegrationGoogleRef } from './google'
 import { IntegrationGoogleCreateInput } from './inputs/integrationGoogleCreateInput'
@@ -19,6 +20,8 @@ interface GoogleTokenResponse {
 interface GoogleUserInfoResponse {
   email?: string
   email_verified?: boolean
+  error?: string
+  error_description?: string
 }
 
 builder.mutationField('integrationGoogleCreate', (t) =>
@@ -37,16 +40,40 @@ builder.mutationField('integrationGoogleCreate', (t) =>
         })
       }
 
+      const team = await prisma.team.findFirst({
+        where: {
+          id: teamId,
+          userTeams: {
+            some: {
+              userId: userId
+            }
+          }
+        }
+      })
+
+      if (team == null) {
+        throw new GraphQLError('Unauthorized: User does not belong to team', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      }
+
       const clientId = process.env.GOOGLE_CLIENT_ID
       const clientSecret = process.env.GOOGLE_CLIENT_SECRET
+      const encryptionSecret =
+        process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
       if (clientId == null)
         throw new GraphQLError('GOOGLE_CLIENT_ID not configured')
       if (clientSecret == null)
         throw new GraphQLError('GOOGLE_CLIENT_SECRET not configured')
+      if (encryptionSecret == null)
+        throw new GraphQLError(
+          'INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET not configured'
+        )
 
       let accessToken: string
       let refreshToken: string | undefined
-      let accountEmail: string | undefined
+      let userInfo: AxiosResponse<GoogleUserInfoResponse> | undefined
+      let tokenResponse: AxiosResponse<GoogleTokenResponse> | undefined
       try {
         const params = new URLSearchParams({
           code,
@@ -58,28 +85,73 @@ builder.mutationField('integrationGoogleCreate', (t) =>
         const res = await axios.post<GoogleTokenResponse>(
           'https://oauth2.googleapis.com/token',
           params,
-          { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+          {
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            timeout: 5000
+          }
         )
+        tokenResponse = res
         accessToken = res.data.access_token
         refreshToken = res.data.refresh_token
         // fetch userinfo to get account email
-        const userInfo = await axios.get<GoogleUserInfoResponse>(
+        userInfo = await axios.get<GoogleUserInfoResponse>(
           'https://openidconnect.googleapis.com/v1/userinfo',
-          { headers: { Authorization: `Bearer ${accessToken}` } }
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+            timeout: 5000
+          }
         )
-        accountEmail = userInfo.data.email
       } catch (e) {
-        const message = e instanceof Error ? e.message : 'OAuth exchange failed'
-        throw new GraphQLError(message, {
+        // If it's already a GraphQLError, rethrow it
+        if (e instanceof GraphQLError) {
+          throw e
+        }
+        // Otherwise, wrap unexpected errors
+        const error = e instanceof Error ? e : new Error(String(e))
+        logger.error(
+          {
+            error: {
+              message: error.message,
+              stack: error.stack
+            }
+          },
+          'OAuth exchange failed'
+        )
+        throw new GraphQLError('OAuth exchange failed', {
           extensions: { code: 'BAD_USER_INPUT' }
         })
       }
+
+      // validate email presence - required for integration
+      if (userInfo?.data.email == null || userInfo.data.email === '') {
+        logger.error(
+          {
+            status: userInfo?.status,
+            error: userInfo?.data.error,
+            error_description: userInfo?.data.error_description,
+            scopes: tokenResponse?.data.scope,
+            emailPresent: userInfo?.data?.email != null
+          },
+          'Google userInfo response missing email - email scope not granted'
+        )
+        throw new GraphQLError(
+          'Email scope not granted. Please grant the email scope when authorizing with Google.',
+          {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              suggestion:
+                'Ensure the Google OAuth consent screen requests the email scope (https://www.googleapis.com/auth/userinfo.email)'
+            }
+          }
+        )
+      }
+      const accountEmail = userInfo.data.email
 
       const secretToStore = refreshToken ?? accessToken
 
       const { ciphertext, iv, tag } = await encryptSymmetric(
         secretToStore,
-        process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
+        encryptionSecret
       )
 
       return await prisma.integration.create({

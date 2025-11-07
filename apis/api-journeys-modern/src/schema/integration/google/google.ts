@@ -8,8 +8,6 @@ export const IntegrationGoogleRef = builder.prismaObject('Integration', {
   variant: 'IntegrationGoogle',
   shareable: true,
   fields: (t) => ({
-    accessId: t.exposeString('accessId'),
-    accessSecretPart: t.exposeString('accessSecretPart'),
     accountEmail: t.exposeString('accountEmail', { nullable: true }),
     team: t.relation('team', { nullable: false }),
     user: t.field({
@@ -17,7 +15,7 @@ export const IntegrationGoogleRef = builder.prismaObject('Integration', {
       nullable: true,
       resolve: async (integration) => {
         if (integration.userId == null) return null
-        return { __typename: 'User', id: integration.userId } as any
+        return { id: integration.userId }
       }
     })
   })

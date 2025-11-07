@@ -352,7 +352,8 @@ describe('journeyVisitorExportToGoogleSheet', () => {
         integrationId: 'integration-id',
         destination: {
           mode: 'create',
-          spreadsheetTitle: 'Test Journey Visitors'
+          spreadsheetTitle: 'Test Journey Visitors',
+          folderId: 'folder-id'
         }
       }
     })
@@ -463,7 +464,144 @@ describe('journeyVisitorExportToGoogleSheet', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'spreadsheetId is required for existing mode'
+          message: 'spreadsheetId is required when mode is "existing"'
+        })
+      ]
+    })
+  })
+
+  it('should throw error when sheetName is missing in existing mode', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.integration.findUnique.mockResolvedValue(mockIntegration as any)
+
+    const result = await authClient({
+      document: JOURNEY_VISITOR_EXPORT_TO_GOOGLE_SHEET_MUTATION,
+      variables: {
+        journeyId: 'journey-id',
+        integrationId: 'integration-id',
+        destination: {
+          mode: 'existing',
+          spreadsheetId: 'spreadsheet-id'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'sheetName is required when mode is "existing"'
+        })
+      ]
+    })
+  })
+
+  it('should throw error when spreadsheetTitle is missing in create mode', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.integration.findUnique.mockResolvedValue(mockIntegration as any)
+
+    const result = await authClient({
+      document: JOURNEY_VISITOR_EXPORT_TO_GOOGLE_SHEET_MUTATION,
+      variables: {
+        journeyId: 'journey-id',
+        integrationId: 'integration-id',
+        destination: {
+          mode: 'create',
+          folderId: 'folder-id'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'spreadsheetTitle is required when mode is "create"'
+        })
+      ]
+    })
+  })
+
+  it('should throw error when folderId is missing in create mode', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.integration.findUnique.mockResolvedValue(mockIntegration as any)
+
+    const result = await authClient({
+      document: JOURNEY_VISITOR_EXPORT_TO_GOOGLE_SHEET_MUTATION,
+      variables: {
+        journeyId: 'journey-id',
+        integrationId: 'integration-id',
+        destination: {
+          mode: 'create',
+          spreadsheetTitle: 'Test Journey Visitors'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'folderId is required when mode is "create"'
+        })
+      ]
+    })
+  })
+
+  it('should throw error when spreadsheetTitle is empty string in create mode', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.integration.findUnique.mockResolvedValue(mockIntegration as any)
+
+    const result = await authClient({
+      document: JOURNEY_VISITOR_EXPORT_TO_GOOGLE_SHEET_MUTATION,
+      variables: {
+        journeyId: 'journey-id',
+        integrationId: 'integration-id',
+        destination: {
+          mode: 'create',
+          spreadsheetTitle: '   ',
+          folderId: 'folder-id'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'spreadsheetTitle is required when mode is "create"'
+        })
+      ]
+    })
+  })
+
+  it('should throw error when sheetName is empty string in existing mode', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.integration.findUnique.mockResolvedValue(mockIntegration as any)
+
+    const result = await authClient({
+      document: JOURNEY_VISITOR_EXPORT_TO_GOOGLE_SHEET_MUTATION,
+      variables: {
+        journeyId: 'journey-id',
+        integrationId: 'integration-id',
+        destination: {
+          mode: 'existing',
+          spreadsheetId: 'spreadsheet-id',
+          sheetName: '   '
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'sheetName is required when mode is "existing"'
         })
       ]
     })
@@ -491,7 +629,8 @@ describe('journeyVisitorExportToGoogleSheet', () => {
         destination: {
           mode: 'create',
           spreadsheetTitle: 'Test',
-          sheetName: 'Sheet1'
+          sheetName: 'Sheet1',
+          folderId: 'folder-id'
         }
       }
     })
