@@ -1,3 +1,4 @@
+import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
@@ -13,6 +14,7 @@ import Link from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
+import { graphql } from '@core/shared/gql'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import X2Icon from '@core/shared/ui/icons/X2'
 
@@ -53,6 +55,20 @@ export function FilterDrawer({
   const { t } = useTranslation('apps-journeys-admin')
   const [showExportDialog, setShowExportDialog] = useState(false)
 
+  const GET_JOURNEY_BLOCK_TYPENAMES = graphql(`
+    query GetJourneyBlockTypes($id: ID!) {
+      journey: adminJourney(id: $id, idType: databaseId) {
+        id
+        blockTypenames
+      }
+    }
+  `)
+  const { data: blockTypesData } = useQuery(GET_JOURNEY_BLOCK_TYPENAMES, {
+    skip: journeyId == null,
+    variables: { id: journeyId! }
+  })
+  const availableBlockTypes: string[] = blockTypesData?.journey?.blockTypenames ?? []
+
   return (
     <Stack sx={{ height: '100vh' }} data-testid="FilterDrawer">
       <Box sx={{ display: { sm: 'block', md: 'none' } }}>
@@ -82,34 +98,42 @@ export function FilterDrawer({
             onChange={handleChange}
             checked={chatStarted}
           />
-          <FormControlLabel
-            control={<Checkbox />}
-            label={t('Poll Answers')}
-            value="Poll Answers"
-            onChange={handleChange}
-            checked={withPollAnswers}
-          />
-          <FormControlLabel
-            control={<Checkbox />}
-            label={t('Multiselect Answers')}
-            value="Multiselect Answers"
-            onChange={handleChange}
-            checked={withMultiselectAnswers ?? false}
-          />
-          <FormControlLabel
-            control={<Checkbox />}
-            label={t('Submitted Text')}
-            value="Submitted Text"
-            onChange={handleChange}
-            checked={withSubmittedText}
-          />
-          <FormControlLabel
-            control={<Checkbox />}
-            label={t('Icon')}
-            value="Icon"
-            onChange={handleChange}
-            checked={withIcon}
-          />
+          {availableBlockTypes.includes('RadioQuestionBlock') && (
+            <FormControlLabel
+              control={<Checkbox />}
+              label={t('Poll Answers')}
+              value="Poll Answers"
+              onChange={handleChange}
+              checked={withPollAnswers}
+            />
+          )}
+          {availableBlockTypes.includes('MultiselectBlock') && (
+            <FormControlLabel
+              control={<Checkbox />}
+              label={t('Multiselect Answers')}
+              value="Multiselect Answers"
+              onChange={handleChange}
+              checked={withMultiselectAnswers ?? false}
+            />
+          )}
+          {availableBlockTypes.includes('TextResponseBlock') && (
+            <FormControlLabel
+              control={<Checkbox />}
+              label={t('Submitted Text')}
+              value="Submitted Text"
+              onChange={handleChange}
+              checked={withSubmittedText}
+            />
+          )}
+          {availableBlockTypes.includes('IconBlock') && (
+            <FormControlLabel
+              control={<Checkbox />}
+              label={t('Icon')}
+              value="Icon"
+              onChange={handleChange}
+              checked={withIcon}
+            />
+          )}
           <FormControlLabel
             control={<Checkbox />}
             label={t('Hide Inactive')}
