@@ -131,6 +131,11 @@ type ForeignKeyConstraintErrorLocation {
   value: String
 }
 
+input GenerateSubtitlesInput {
+  languageCode: String!
+  languageName: String!
+}
+
 enum IdType {
   databaseId
   slug
@@ -198,7 +203,7 @@ type Mutation {
   bibleCitationDelete(id: ID!): Boolean
   createKeyword(value: String!, languageId: String!): Keyword!
   createMuxVideoAndQueueUpload(videoId: ID!, edition: String!, languageId: ID!, version: Int!, r2PublicUrl: String!, originalFilename: String!, durationMs: Int!, duration: Int!, width: Int!, height: Int!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = fhd): MuxVideo!
-  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
+  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd, generateSubtitlesInput: GenerateSubtitlesInput): MuxVideo!
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
@@ -448,6 +453,15 @@ input MutationVideoOriginUpdateInput {
   description: String
 }
 
+type MuxSubtitleTrack {
+  id: ID!
+  trackId: String!
+  source: String!
+  status: String!
+  bcp47: String!
+  muxVideoId: ID!
+}
+
 type MuxVideo
   @key(fields: "id primaryLanguageId")
 {
@@ -578,6 +592,7 @@ type Query {
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
   getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
+  getMyGeneratedMuxSubtitleTrack(muxVideoId: ID!, bcp47: String!, userGenerated: Boolean): QueryGetMyGeneratedMuxSubtitleTrackResult!
   playlists: [Playlist!]
   playlist(id: ID!, idType: IdType! = databaseId): QueryPlaylistResult
 
@@ -631,6 +646,12 @@ type Query {
   youtubeClosedCaptionLanguages(videoId: ID!): QueryYoutubeClosedCaptionLanguagesResult!
   arclightApiKeys: [ArclightApiKey!]!
   arclightApiKeyByKey(key: String!): ArclightApiKey
+}
+
+union QueryGetMyGeneratedMuxSubtitleTrackResult = Error | QueryGetMyGeneratedMuxSubtitleTrackSuccess
+
+type QueryGetMyGeneratedMuxSubtitleTrackSuccess {
+  data: MuxSubtitleTrack!
 }
 
 union QueryPlaylistResult = NotFoundError | QueryPlaylistSuccess
