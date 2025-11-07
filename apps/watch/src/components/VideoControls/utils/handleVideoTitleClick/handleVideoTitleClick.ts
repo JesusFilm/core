@@ -8,6 +8,7 @@ interface HandleVideoTitleClickProps {
   mute: boolean
   volume: number
   play: boolean
+  onMuteToggle?: (isMuted: boolean) => void
 }
 
 export function handleVideoTitleClick({
@@ -15,15 +16,19 @@ export function handleVideoTitleClick({
   dispatch,
   mute,
   volume,
-  play
+  play,
+  onMuteToggle
 }: HandleVideoTitleClickProps): void {
   if (player == null) return
+  
   if (mute) {
     player.muted(false)
     dispatch({
       type: 'SetMute',
       mute: false
     })
+    // Notify parent component that video was unmuted
+    onMuteToggle?.(false)
   }
   if (volume === 0) {
     dispatch({

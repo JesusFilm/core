@@ -64,6 +64,7 @@ interface VideoControlProps {
   muxOverlay?: InsertOverlay
   onSkip?: () => void
   placement?: 'carouselItem' | 'singleVideo'
+  wasUnmuted?: boolean
 }
 
 function evtToDataLayer(
@@ -98,7 +99,8 @@ export function VideoControls({
   isMuxInsert = false,
   muxOverlay,
   onSkip,
-  placement
+  placement,
+  wasUnmuted = false
 }: VideoControlProps): ReactElement {
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
   const {
@@ -655,7 +657,8 @@ export function VideoControls({
       onMouseMove={() => player?.userActive(true)}
       data-testid="VideoControls"
     >
-      {!loading || placement == 'carouselItem' ? (
+      {/* Show title overlay only once on a single page */}
+      {!loading && mute && !wasUnmuted || placement == 'carouselItem'  ? (
         <div className="responsive-container">
           <VideoTitle
             videoTitle={videoTitle}
@@ -677,7 +680,8 @@ export function VideoControls({
                 dispatch: dispatchPlayer,
                 mute,
                 volume,
-                play
+                play,
+                onMuteToggle
               })
             }}
           />
@@ -720,7 +724,8 @@ export function VideoControls({
                   dispatch: dispatchPlayer,
                   mute,
                   volume,
-                  play
+                  play,
+                  onMuteToggle
                 })
               }}
             />
@@ -740,7 +745,7 @@ export function VideoControls({
         </>
       )}
       {/* Video Controls */}
-      {placement == 'singleVideo' && (
+      {placement == 'singleVideo' && wasUnmuted && (
         <Fade
           in={visible}
           style={{

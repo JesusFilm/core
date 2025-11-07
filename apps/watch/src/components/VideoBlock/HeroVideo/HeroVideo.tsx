@@ -27,6 +27,7 @@ interface HeroVideoProps {
   currentMuxInsert?: CarouselMuxSlide | null
   onMuxInsertComplete?: () => void
   onSkip?: () => void
+  wasUnmuted?: boolean
 }
 
 export function HeroVideo({
@@ -36,7 +37,8 @@ export function HeroVideo({
   placement = 'singleVideo',
   currentMuxInsert,
   onMuxInsertComplete,
-  onSkip
+  onSkip,
+  wasUnmuted = false
 }: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
@@ -48,6 +50,11 @@ export function HeroVideo({
   } = useWatch()
   const [playerReady, setPlayerReady] = useState(false)
   const [mediaError, setMediaError] = useState<Error | null>(null)
+
+  // Log placement and wasUnmuted for debugging
+  useEffect(() => {
+    console.log('HeroVideo - placement:', placement, 'wasUnmuted:', wasUnmuted)
+  }, [placement, wasUnmuted])
 
   // Use Mux insert title if available, otherwise use regular video title
   const title = currentMuxInsert ? currentMuxInsert.overlay.title : (last(video.title)?.value ?? '')
@@ -400,9 +407,7 @@ export function HeroVideo({
   const handlePreviewClick = useCallback(
     (e: React.MouseEvent<HTMLVideoElement>) => {
       e.stopPropagation()
-      console.log('[dpm] Step 1: User clicked video in carousel')
       const newMuteState = !mute
-      console.log('[dpm] Step 2: Mute state toggling', { from: mute, to: newMuteState })
       playerRef.current?.muted(newMuteState)
       dispatchPlayer({ type: 'SetMute', mute: newMuteState })
       onMuteToggle?.(newMuteState)
@@ -431,16 +436,10 @@ export function HeroVideo({
     playerReady
   ])
 
-  const shouldShowOverlay = playerReady && (mute || (subtitleOn ?? false))
+  const shouldShowOverlay = playerReady && (mute || (subtitleOn ?? false)) && !(placement === 'singleVideo' && wasUnmuted)
 
   const isVideoExpanded = placement == 'singleVideo' || !collapsed
   const objectFitClass = isVideoExpanded ? 'object-contain' : 'object-cover'
-  console.log('[dpm] Step 5: Video object-fit updating', { 
-    collapsed, 
-    placement, 
-    isVideoExpanded, 
-    objectFitClass 
-  })
 
   return (
     <>
@@ -501,7 +500,7 @@ export function HeroVideo({
             </div>
           </div>
         )}
-        {collapsed && (
+        {collapsed && !(placement === 'singleVideo' && wasUnmuted) && (
           <div
             className="absolute inset-0 z-1 pointer-events-none opacity-70"
             style={{
@@ -533,6 +532,7 @@ export function HeroVideo({
               muxOverlay={currentMuxInsert?.overlay}
               onSkip={onSkip}
               placement={placement}
+              wasUnmuted={wasUnmuted}
             />
           </>
         )}
