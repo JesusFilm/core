@@ -80,6 +80,9 @@ export function MuxDetails({
   return (
     <Stack spacing={4} sx={{ p: 6 }} data-testid="MuxDetails">
       <Box
+        role="region"
+        aria-label="Video Player"
+        tabIndex={0}
         sx={{
           borderRadius: 3,
           position: 'relative',
@@ -88,7 +91,7 @@ export function MuxDetails({
       >
         <video
           ref={videoRef}
-          className="video-js vjs-big-play-centered"
+          className="video-js vjs-tech vjs-big-play-centered"
           playsInline
         >
           {activeVideoBlock?.mediaVideo?.__typename === 'MuxVideo' &&

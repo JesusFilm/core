@@ -7,17 +7,46 @@ import {
 
 import { MuxDetails } from './MuxDetails'
 
+const mockDocument = globalThis.document
+
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
 
 jest.mock('video.js', () => {
-  const mockPlayer = {
-    on: jest.fn(),
-    off: jest.fn()
-  }
-  const videojs = jest.fn(() => mockPlayer)
+  const videojs = jest.fn(
+    (
+      element?: HTMLVideoElement | null,
+      options?: { poster?: string | null }
+    ) => {
+      if (element != null) {
+        element.classList.add('vjs-tech')
+        const posterParent = element.parentElement
+        if (posterParent != null) {
+          posterParent.querySelector('.vjs-poster')?.remove()
+          if (options?.poster != null) {
+            const posterContainer = mockDocument.createElement('div')
+            posterContainer.className = 'vjs-poster'
+            const pictureElement = mockDocument.createElement('picture')
+            const imageElement = mockDocument.createElement('img')
+            imageElement.setAttribute('src', options.poster)
+            pictureElement.appendChild(imageElement)
+            posterContainer.appendChild(pictureElement)
+            posterParent.appendChild(posterContainer)
+          }
+        }
+      }
+
+      return {
+        on: jest.fn(),
+        off: jest.fn(),
+        poster: jest.fn(),
+        src: jest.fn()
+      }
+    }
+  )
+
   videojs.getPlayers = jest.fn(() => ({}))
   return videojs
 })
