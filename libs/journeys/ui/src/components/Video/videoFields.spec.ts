@@ -1,4 +1,4 @@
-import { gql, DocumentNode } from '@apollo/client'
+import { gql } from '@apollo/client'
 
 import { VIDEO_FIELDS } from './videoFields'
 
@@ -10,17 +10,18 @@ describe('VIDEO_FIELDS', () => {
 
   it('should include VideoFields fragment definition', () => {
     const definitions = VIDEO_FIELDS.definitions
-    const fragmentDefinition = definitions.find(
-      (def) => def.kind === 'FragmentDefinition'
+    const videoFieldsFragment = definitions.find(
+      (definition) =>
+        definition.kind === 'FragmentDefinition' &&
+        definition.name.value === 'VideoFields'
     )
 
-    expect(fragmentDefinition).toBeDefined()
+    expect(videoFieldsFragment).toBeDefined()
     if (
-      fragmentDefinition &&
-      fragmentDefinition.kind === 'FragmentDefinition'
+      videoFieldsFragment &&
+      videoFieldsFragment.kind === 'FragmentDefinition'
     ) {
-      expect(fragmentDefinition.name.value).toBe('VideoFields')
-      expect(fragmentDefinition.typeCondition.name.value).toBe('VideoBlock')
+      expect(videoFieldsFragment.typeCondition.name.value).toBe('VideoBlock')
     }
   })
 

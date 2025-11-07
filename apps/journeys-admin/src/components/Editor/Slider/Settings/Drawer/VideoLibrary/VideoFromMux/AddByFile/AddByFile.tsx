@@ -25,11 +25,11 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
   const {
     state: { selectedBlock }
   } = useEditor()
-  const rawLanguageCode = journey?.language.bcp47
+  const rawLanguageCode = journey?.language?.bcp47
   const isValidLanguage = useValidateMuxLanguage(rawLanguageCode)
   const languageCode =
     isValidLanguage && rawLanguageCode != null ? rawLanguageCode : undefined
-  const languageName = journey?.language.name.find(
+  const languageName = journey?.language?.name?.find(
     (name) => name.primary
   )?.value
 
@@ -141,7 +141,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
           flexDirection: 'column',
           alignItems: 'center'
         }}
-        {...getRootProps({ isDragAccept })}
+        {...getRootProps()}
       >
         <input {...getInputProps()} />
         {error != null || fileRejected ? (

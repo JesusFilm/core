@@ -66,15 +66,20 @@ const mockJourney: Journey = {
 }
 
 async function dropTestVideo(): Promise<void> {
-  const input = screen.getByTestId('drop zone')
+  const dropZone = screen.getByTestId('drop zone')
   const file = new File(['file'], 'testFile.mp4', {
     type: 'video/mp4'
   })
-  Object.defineProperty(input, 'files', {
-    value: [file]
-  })
+  setFilesOnElement(dropZone, [file])
   await act(async () => {
-    fireEvent.drop(input)
+    fireEvent.drop(dropZone)
+  })
+}
+
+function setFilesOnElement(element: HTMLElement, files: File[]): void {
+  Object.defineProperty(element, 'files', {
+    value: files,
+    configurable: true
   })
 }
 
@@ -139,7 +144,7 @@ describe('AddByFile', () => {
       </TestWrapper>
     )
 
-    const input = screen.getByTestId('drop zone')
+    const dropZone = screen.getByTestId('drop zone')
 
     // First, trigger an error state by dropping invalid files
     const invalidFile1 = new File(['file'], 'testFile.mp4', {
@@ -148,12 +153,10 @@ describe('AddByFile', () => {
     const invalidFile2 = new File(['file'], 'testFile.png', {
       type: 'video/png'
     })
-    Object.defineProperty(input, 'files', {
-      value: [invalidFile1, invalidFile2]
-    })
+    setFilesOnElement(dropZone, [invalidFile1, invalidFile2])
 
     await act(async () => {
-      fireEvent.drop(input)
+      fireEvent.drop(dropZone)
     })
 
     // Should show error
@@ -163,12 +166,10 @@ describe('AddByFile', () => {
     const validFile = new File(['file'], 'testFile.mp4', {
       type: 'video/mp4'
     })
-    Object.defineProperty(input, 'files', {
-      value: [validFile]
-    })
+    setFilesOnElement(dropZone, [validFile])
 
     await act(async () => {
-      fireEvent.drop(input)
+      fireEvent.drop(dropZone)
     })
 
     // Error should be cleared (Upload Failed! should not be present)
@@ -184,19 +185,17 @@ describe('AddByFile', () => {
       </TestWrapper>
     )
 
-    const input = screen.getByTestId('drop zone')
+    const dropZone = screen.getByTestId('drop zone')
     const file1 = new File(['file'], 'testFile1.mp4', {
       type: 'video/mp4'
     })
     const file2 = new File(['file'], 'testFile2.mp4', {
       type: 'video/mp4'
     })
-    Object.defineProperty(input, 'files', {
-      value: [file1, file2]
-    })
+    setFilesOnElement(dropZone, [file1, file2])
 
     await act(async () => {
-      fireEvent.drop(input)
+      fireEvent.drop(dropZone)
     })
 
     await waitFor(() => {
@@ -212,21 +211,28 @@ describe('AddByFile', () => {
       </TestWrapper>
     )
 
-    const input = screen.getByTestId('drop zone')
+    const dropZone = screen.getByTestId('drop zone')
     // Create a file larger than 1GB (mocked)
-    const largeFile = new File(['x'.repeat(1000000001)], 'large.mp4', {
+    const largeFile = new File(['file'], 'large.mp4', {
       type: 'video/mp4'
     })
-
-    Object.defineProperty(input, 'files', {
-      value: [largeFile]
+    Object.defineProperty(largeFile, 'size', {
+      value: 1000000001,
+      configurable: true
     })
+
+    setFilesOnElement(dropZone, [largeFile])
 
     await act(async () => {
-      fireEvent.drop(input)
+      fireEvent.drop(dropZone)
     })
 
-    // The rejection happens in the dropzone library based on maxSize prop
+    await waitFor(() => {
+      expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
+      expect(
+        screen.getByText('File is too large. Max size is 1 GB.')
+      ).toBeInTheDocument()
+    })
   })
 
   it('should disable button when no video block is selected', () => {
