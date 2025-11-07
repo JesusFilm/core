@@ -22,10 +22,7 @@ jest.mock('@core/journeys/ui/useYouTubeClosedCaptions', () => ({
 
 jest.mock('./MuxSubtitles', () => ({
   MuxSubtitleSwitch: jest.fn(({ onChange }) => (
-    <button
-      data-testid="mux-subtitle-switch"
-      onClick={() => onChange(true)}
-    >
+    <button data-testid="mux-subtitle-switch" onClick={() => onChange(true)}>
       Mux Subtitle Switch
     </button>
   ))
@@ -685,7 +682,9 @@ describe('VideoBlockEditorSettings', () => {
                     source: VideoBlockSource.mux,
                     mediaVideo: {
                       __typename: 'MuxVideo',
-                      id: 'mux-video-id'
+                      id: 'mux-video-id',
+                      assetId: 'asset-id',
+                      playbackId: 'playback-id'
                     }
                   }}
                   posterBlock={null}
@@ -741,7 +740,9 @@ describe('VideoBlockEditorSettings', () => {
                     source: VideoBlockSource.mux,
                     mediaVideo: {
                       __typename: 'MuxVideo',
-                      id: 'mux-video-id'
+                      id: 'mux-video-id',
+                      assetId: 'asset-id',
+                      playbackId: 'playback-id'
                     }
                   }}
                   posterBlock={null}

@@ -2,10 +2,19 @@ import { MockedProvider } from '@apollo/client/testing'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName,
+  VideoBlockSource
+} from '../../../../../../../../../__generated__/globalTypes'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
+import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
+import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
 import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 
 import { AddByFile } from '.'
@@ -30,6 +39,7 @@ const mockJourney: Journey = {
     __typename: 'Language',
     id: '529',
     bcp47: 'en',
+    iso3: null,
     name: [
       {
         __typename: 'LanguageName',
@@ -40,18 +50,24 @@ const mockJourney: Journey = {
   },
   slug: 'journey-slug',
   description: 'Journey description',
-  status: null,
+  status: JourneyStatus.published,
   createdAt: '2021-01-01',
+  updatedAt: '2021-01-01',
   publishedAt: null,
   featuredAt: null,
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light,
   seoTitle: null,
   seoDescription: null,
   template: null,
   strategySlug: null,
+  blocks: null,
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
+  userJourneys: null,
   host: null,
   team: null,
-  userJourneys: [],
   tags: [],
   website: null,
   menuStepBlock: null,
@@ -62,7 +78,12 @@ const mockJourney: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   chatButtons: [],
-  trashedAt: null
+  socialNodeX: null,
+  socialNodeY: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null
 }
 
 async function dropTestVideo(): Promise<void> {
@@ -88,17 +109,40 @@ const TestWrapper = ({
   journey = mockJourney
 }: {
   children: React.ReactNode
-  journey?: Journey | null
+  journey?: JourneyFields | undefined
 }): React.ReactElement => (
   <MockedProvider>
     <SnackbarProvider>
-      <JourneyProvider value={{ journey }}>
+      <JourneyProvider
+        value={{ journey: journey as JourneyFields | undefined }}
+      >
         <EditorProvider
           initialState={{
             selectedBlock: {
               id: 'videoBlockId',
-              __typename: 'VideoBlock'
-            }
+              __typename: 'VideoBlock',
+              parentBlockId: null,
+              parentOrder: null,
+              muted: null,
+              autoplay: null,
+              startAt: null,
+              endAt: null,
+              posterBlockId: null,
+              fullsize: null,
+              action: null,
+              videoId: null,
+              videoVariantLanguageId: null,
+              source: VideoBlockSource.mux,
+              title: null,
+              description: null,
+              duration: null,
+              image: null,
+              objectFit: null,
+              subtitleLanguage: null,
+              showGeneratedSubtitles: false,
+              mediaVideo: null,
+              children: []
+            } as TreeBlock<VideoBlock>
           }}
         >
           <MuxVideoUploadProvider>{children}</MuxVideoUploadProvider>
@@ -242,7 +286,7 @@ describe('AddByFile', () => {
           <JourneyProvider value={{ journey: mockJourney }}>
             <EditorProvider
               initialState={{
-                selectedBlock: null
+                selectedBlock: undefined
               }}
             >
               <MuxVideoUploadProvider>
@@ -281,6 +325,7 @@ describe('AddByFile', () => {
         __typename: 'Language' as const,
         id: '999',
         bcp47: 'jp',
+        iso3: null,
         name: [
           {
             __typename: 'LanguageName' as const,

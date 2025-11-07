@@ -532,7 +532,6 @@ export interface CardFormRestore_image_VideoBlock {
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardFormRestore_image_VideoBlock_subtitleLanguage | null;
-  showGeneratedSubtitles: boolean | null;
   mediaVideo: CardFormRestore_image_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -1123,7 +1122,6 @@ export interface CardFormRestore_subtitle_VideoBlock {
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardFormRestore_subtitle_VideoBlock_subtitleLanguage | null;
-  showGeneratedSubtitles: boolean | null;
   mediaVideo: CardFormRestore_subtitle_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -1714,7 +1712,6 @@ export interface CardFormRestore_title_VideoBlock {
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardFormRestore_title_VideoBlock_subtitleLanguage | null;
-  showGeneratedSubtitles: boolean | null;
   mediaVideo: CardFormRestore_title_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -2305,7 +2302,6 @@ export interface CardFormRestore_textResponse_VideoBlock {
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardFormRestore_textResponse_VideoBlock_subtitleLanguage | null;
-  showGeneratedSubtitles: boolean | null;
   mediaVideo: CardFormRestore_textResponse_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -2896,7 +2892,6 @@ export interface CardFormRestore_button_VideoBlock {
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardFormRestore_button_VideoBlock_subtitleLanguage | null;
-  showGeneratedSubtitles: boolean | null;
   mediaVideo: CardFormRestore_button_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -3487,7 +3482,6 @@ export interface CardFormRestore_startIcon_VideoBlock {
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardFormRestore_startIcon_VideoBlock_subtitleLanguage | null;
-  showGeneratedSubtitles: boolean | null;
   mediaVideo: CardFormRestore_startIcon_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -4078,7 +4072,6 @@ export interface CardFormRestore_endIcon_VideoBlock {
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardFormRestore_endIcon_VideoBlock_subtitleLanguage | null;
-  showGeneratedSubtitles: boolean | null;
   mediaVideo: CardFormRestore_endIcon_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends
@@ -4669,7 +4662,6 @@ export interface CardFormRestore_body_VideoBlock {
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardFormRestore_body_VideoBlock_subtitleLanguage | null;
-  showGeneratedSubtitles: boolean | null;
   mediaVideo: CardFormRestore_body_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

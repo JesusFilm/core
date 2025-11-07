@@ -183,8 +183,8 @@ export interface GetVideoBlock_block_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: GetVideoBlock_block_VideoBlock_subtitleLanguage | null;
   showGeneratedSubtitles: boolean | null;
+  subtitleLanguage: GetVideoBlock_block_VideoBlock_subtitleLanguage | null;
   mediaVideo: GetVideoBlock_block_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

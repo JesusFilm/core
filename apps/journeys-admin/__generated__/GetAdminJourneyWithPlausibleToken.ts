@@ -546,7 +546,6 @@ export interface GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock {
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_subtitleLanguage | null;
-  showGeneratedSubtitles: boolean | null;
   mediaVideo: GetAdminJourneyWithPlausibleToken_journey_blocks_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

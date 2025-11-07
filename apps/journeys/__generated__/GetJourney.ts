@@ -544,8 +544,8 @@ export interface GetJourney_journey_blocks_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
-  subtitleLanguage: GetJourney_journey_blocks_VideoBlock_subtitleLanguage | null;
   showGeneratedSubtitles: boolean | null;
+  subtitleLanguage: GetJourney_journey_blocks_VideoBlock_subtitleLanguage | null;
   mediaVideo: GetJourney_journey_blocks_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

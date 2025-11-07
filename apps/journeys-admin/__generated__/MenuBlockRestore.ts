@@ -542,7 +542,6 @@ export interface MenuBlockRestore_stepRestore_VideoBlock {
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: MenuBlockRestore_stepRestore_VideoBlock_subtitleLanguage | null;
-  showGeneratedSubtitles: boolean | null;
   mediaVideo: MenuBlockRestore_stepRestore_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

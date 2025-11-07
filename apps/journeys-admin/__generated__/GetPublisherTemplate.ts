@@ -546,7 +546,6 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock {
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_subtitleLanguage | null;
-  showGeneratedSubtitles: boolean | null;
   mediaVideo: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo | null;
   /**
    * action that should be performed when the video ends

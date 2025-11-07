@@ -1,9 +1,11 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
+import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { useValidateMuxLanguage } from '../../../../../../../libs/useValidateMuxLanguage'
@@ -39,6 +41,33 @@ jest.mock('./AddByFile', () => {
 })
 
 const mockUseValidateMuxLanguage = jest.mocked(useValidateMuxLanguage)
+
+const selectedVideoBlock: TreeBlock<VideoBlock> = {
+  id: 'videoBlockId',
+  __typename: 'VideoBlock',
+  parentBlockId: null,
+  parentOrder: null,
+  muted: null,
+  autoplay: null,
+  startAt: null,
+  endAt: null,
+  posterBlockId: null,
+  fullsize: null,
+  action: null,
+  videoId: null,
+  videoVariantLanguageId: null,
+  source: VideoBlockSource.mux,
+  title: null,
+  description: null,
+  duration: null,
+  image: null,
+  objectFit: null,
+  video: null,
+  subtitleLanguage: null,
+  showGeneratedSubtitles: false,
+  muxVideo: null,
+  children: []
+}
 
 const mockJourneyWithValidLanguage: Journey = {
   __typename: 'Journey',
@@ -113,10 +142,7 @@ describe('VideoFromMux', () => {
         <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
           <EditorProvider
             initialState={{
-              selectedBlock: {
-                id: 'videoBlockId',
-                __typename: 'VideoBlock'
-              }
+              selectedBlock: selectedVideoBlock
             }}
           >
             <VideoFromMux onSelect={onSelect} />
@@ -137,10 +163,7 @@ describe('VideoFromMux', () => {
         <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
           <EditorProvider
             initialState={{
-              selectedBlock: {
-                id: 'videoBlockId',
-                __typename: 'VideoBlock'
-              }
+              selectedBlock: selectedVideoBlock
             }}
           >
             <VideoFromMux onSelect={onSelect} />
@@ -172,10 +195,7 @@ describe('VideoFromMux', () => {
         <JourneyProvider value={{ journey: mockJourneyWithInvalidLanguage }}>
           <EditorProvider
             initialState={{
-              selectedBlock: {
-                id: 'videoBlockId',
-                __typename: 'VideoBlock'
-              }
+              selectedBlock: selectedVideoBlock
             }}
           >
             <VideoFromMux onSelect={onSelect} />
@@ -202,13 +222,10 @@ describe('VideoFromMux', () => {
 
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: null }}>
+        <JourneyProvider value={{ journey: undefined }}>
           <EditorProvider
             initialState={{
-              selectedBlock: {
-                id: 'videoBlockId',
-                __typename: 'VideoBlock'
-              }
+              selectedBlock: selectedVideoBlock
             }}
           >
             <VideoFromMux onSelect={onSelect} />

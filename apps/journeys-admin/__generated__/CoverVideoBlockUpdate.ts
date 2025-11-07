@@ -181,7 +181,6 @@ export interface CoverVideoBlockUpdate_videoBlockUpdate {
   objectFit: VideoBlockObjectFit | null;
   showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CoverVideoBlockUpdate_videoBlockUpdate_subtitleLanguage | null;
-  showGeneratedSubtitles: boolean | null;
   mediaVideo: CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo | null;
   /**
    * action that should be performed when the video ends
