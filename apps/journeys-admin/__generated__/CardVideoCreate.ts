@@ -179,6 +179,7 @@ export interface CardVideoCreate_video {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardVideoCreate_video_subtitleLanguage | null;
   showGeneratedSubtitles: boolean | null;
   mediaVideo: CardVideoCreate_video_mediaVideo | null;

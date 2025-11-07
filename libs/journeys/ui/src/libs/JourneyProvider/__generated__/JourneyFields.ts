@@ -544,6 +544,7 @@ export interface JourneyFields_blocks_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: JourneyFields_blocks_VideoBlock_subtitleLanguage | null;
   showGeneratedSubtitles: boolean | null;
   mediaVideo: JourneyFields_blocks_VideoBlock_mediaVideo | null;

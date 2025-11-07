@@ -530,6 +530,7 @@ export interface BlockFields_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: BlockFields_VideoBlock_subtitleLanguage | null;
   showGeneratedSubtitles: boolean | null;
   mediaVideo: BlockFields_VideoBlock_mediaVideo | null;

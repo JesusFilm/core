@@ -183,6 +183,7 @@ export interface CardVideoDelete_video_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardVideoDelete_video_VideoBlock_subtitleLanguage | null;
   showGeneratedSubtitles: boolean | null;
   mediaVideo: CardVideoDelete_video_VideoBlock_mediaVideo | null;

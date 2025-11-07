@@ -7,6 +7,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { useYouTubeClosedCaptions } from '@core/journeys/ui/useYouTubeClosedCaptions'
 
+import type { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
   VideoBlockObjectFit as ObjectFit,
   VideoBlockSource
@@ -79,7 +80,7 @@ const mockYouTubeLanguages = [
   }
 ]
 
-const video: TreeBlock = {
+const video: TreeBlock<VideoBlock> = {
   id: 'video1.id',
   __typename: 'VideoBlock',
   parentBlockId: 'card1.id',
@@ -123,7 +124,8 @@ const video: TreeBlock = {
   posterBlockId: null,
   children: [],
   objectFit: null,
-  subtitleLanguage: null
+  subtitleLanguage: null,
+  showGeneratedSubtitles: null
 }
 
 describe('VideoBlockEditorSettings', () => {

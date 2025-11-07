@@ -8,8 +8,8 @@ interface SubtitleMenuProps {
   anchorEl: HTMLElement | null
   open: boolean
   onClose: () => void
-  youtubeCaptionTracks: TextTrack[]
-  activeYoutubeTrack: TextTrack | undefined
+  tracks: TextTrack[]
+  activeTrack: TextTrack | undefined
   onChange: (trackId: string | null) => void
 }
 
@@ -17,8 +17,8 @@ export function SubtitleMenu({
   anchorEl,
   open,
   onClose,
-  youtubeCaptionTracks,
-  activeYoutubeTrack,
+  tracks,
+  activeTrack,
   onChange
 }: SubtitleMenuProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
@@ -28,7 +28,7 @@ export function SubtitleMenu({
     onClose()
   }
 
-  const hasSubtitles = youtubeCaptionTracks.length > 0
+  const hasSubtitles = tracks.length > 0
 
   return (
     <Menu
@@ -54,13 +54,13 @@ export function SubtitleMenu({
         }}
       >
         {t('Off')}
-        {!activeYoutubeTrack && <CheckIcon fontSize="small" sx={{ ml: 1 }} />}
+        {!activeTrack && <CheckIcon fontSize="small" sx={{ ml: 1 }} />}
       </MenuItem>
       {!hasSubtitles && (
         <MenuItem disabled>{t('No subtitles available')}</MenuItem>
       )}
-      {youtubeCaptionTracks.length > 0 &&
-        youtubeCaptionTracks.map(
+      {tracks.length > 0 &&
+        tracks.map(
           (track) =>
             track.label != null && (
               <MenuItem
@@ -74,7 +74,7 @@ export function SubtitleMenu({
                 }}
               >
                 {track.label}
-                {activeYoutubeTrack?.id === track.id && (
+                {activeTrack?.id === track.id && (
                   <CheckIcon fontSize="small" sx={{ ml: 1 }} />
                 )}
               </MenuItem>
