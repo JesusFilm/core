@@ -57,7 +57,8 @@ export function WebsiteCover({
         sx={{
           position: 'relative',
           width: '100%',
-          height: MEDIA_HEIGHT,
+          flex: 1,
+          minHeight: MEDIA_HEIGHT,
           overflow: 'hidden'
         }}
       >
@@ -93,7 +94,8 @@ export function WebsiteCover({
         sx={{
           position: 'relative',
           width: '100%',
-          height: MEDIA_HEIGHT
+          flex: 1,
+          minHeight: MEDIA_HEIGHT
         }}
       >
         <NextImage
@@ -117,6 +119,8 @@ export function WebsiteCover({
       data-testid="website-cover"
       sx={{
         height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
         overflowY: 'auto',
         overflowX: 'hidden',
         backgroundColor: baseBackgroundColor
