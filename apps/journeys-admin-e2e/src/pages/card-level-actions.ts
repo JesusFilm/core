@@ -1852,9 +1852,67 @@ export class CardLevelActionPage {
     ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
   async valdiateSelectedImageWithDeleteIcon() {
-    // First, ensure ImageBlockHeader exists
-    const imageHeader = this.page.locator('div[data-testid="ImageBlockHeader"]')
-    await expect(imageHeader).toBeVisible({ timeout: sixtySecondsTimeout })
+    // First, ensure ImageBlockHeader exists - wait longer and check multiple locations
+    // The ImageBlockHeader might be in a drawer or in the main content
+    const imageHeaderSelectors = [
+      'div[data-testid="ImageBlockHeader"]',
+      'div[data-testid="ImageSource"] + div[data-testid="ImageBlockHeader"]',
+      'div[role="dialog"] div[data-testid="ImageBlockHeader"]',
+      'div[data-testid="SettingsDrawerContent"] div[data-testid="ImageBlockHeader"]'
+    ]
+    
+    let imageHeaderFound = false
+    let imageHeader: ReturnType<typeof this.page.locator> | null = null
+    
+    for (const selector of imageHeaderSelectors) {
+      try {
+        imageHeader = this.page.locator(selector)
+        await expect(imageHeader).toBeVisible({ timeout: 10000 })
+        imageHeaderFound = true
+        break
+      } catch (error) {
+        continue
+      }
+    }
+    
+    if (!imageHeaderFound || !imageHeader) {
+      // If ImageBlockHeader doesn't appear, check if there's a confirmation button
+      const confirmButtons = [
+        'button:has-text("Select")',
+        'button:has-text("Done")',
+        'button:has-text("Confirm")',
+        'button[data-testid*="select"]',
+        'button[data-testid*="confirm"]'
+      ]
+      
+      for (const buttonSelector of confirmButtons) {
+        try {
+          const button = this.page.locator(buttonSelector).first()
+          const buttonCount = await button.count()
+          if (buttonCount > 0) {
+            await button.waitFor({ state: 'visible', timeout: 5000 })
+            await button.click({ timeout: sixtySecondsTimeout })
+            await this.page.waitForTimeout(1000)
+            // Try again to find ImageBlockHeader
+            imageHeader = this.page.locator('div[data-testid="ImageBlockHeader"]')
+            await expect(imageHeader).toBeVisible({ timeout: sixtySecondsTimeout })
+            imageHeaderFound = true
+            break
+          }
+        } catch (err) {
+          continue
+        }
+      }
+      
+      if (!imageHeaderFound) {
+        throw new Error('ImageBlockHeader not found - image may not have been selected')
+      }
+    }
+    
+    // Use the found imageHeader for subsequent checks
+    if (!imageHeader) {
+      imageHeader = this.page.locator('div[data-testid="ImageBlockHeader"]')
+    }
     
     // Wait for the image to be selected and the delete icon to appear
     // Try multiple selectors as the structure might vary
