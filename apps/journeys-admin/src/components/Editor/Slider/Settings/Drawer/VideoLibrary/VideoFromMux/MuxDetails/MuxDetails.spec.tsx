@@ -12,6 +12,20 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
+jest.mock('video.js', () => {
+  const mockPlayer = {
+    on: jest.fn(),
+    off: jest.fn()
+  }
+  const videojs = jest.fn(() => mockPlayer)
+  videojs.getPlayers = jest.fn(() => ({}))
+  return videojs
+})
+
+jest.mock('@core/journeys/ui/Video/utils/getCaptionsAndSubtitleTracks', () => ({
+  getCaptionsAndSubtitleTracks: jest.fn(() => [])
+}))
+
 const mockVideoBlock = {
   __typename: 'VideoBlock' as const,
   id: 'videoId',
