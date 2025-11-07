@@ -102,6 +102,7 @@ describe('CardVideo', () => {
             duration: null,
             objectFit: null,
             subtitleLanguage: null,
+            showGeneratedSubtitles: null,
             mediaVideo: null,
             action: null
           }
@@ -153,6 +154,7 @@ describe('CardVideo', () => {
           duration: null,
           objectFit: null,
           subtitleLanguage: null,
+          showGeneratedSubtitles: null,
           mediaVideo: null,
           action: null
         }
@@ -193,6 +195,7 @@ describe('CardVideo', () => {
             duration: null,
             objectFit: null,
             subtitleLanguage: null,
+            showGeneratedSubtitles: null,
             mediaVideo: null,
             action: null
           }
