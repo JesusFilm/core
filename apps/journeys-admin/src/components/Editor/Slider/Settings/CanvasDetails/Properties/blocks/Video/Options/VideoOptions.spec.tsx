@@ -528,6 +528,14 @@ describe('VideoOptions', () => {
               parentBlockId: 'card1',
               parentOrder: 0,
               label: 'Click me',
+              buttonVariant: null,
+              buttonColor: null,
+              size: null,
+              startIconId: null,
+              endIconId: null,
+              submitEnabled: null,
+              action: null,
+              settings: null,
               children: []
             }
           }}

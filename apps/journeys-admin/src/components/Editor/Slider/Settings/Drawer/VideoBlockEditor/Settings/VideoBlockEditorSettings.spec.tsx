@@ -1,8 +1,9 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { useYouTubeClosedCaptions } from '@core/journeys/ui/useYouTubeClosedCaptions'
@@ -13,42 +14,54 @@ import {
   VideoBlockSource
 } from '../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
+import { GET_MY_GENERATED_MUX_SUBTITLE_TRACK } from './MuxSubtitles/MuxSubtitleSwitch'
 
 import { VideoBlockEditorSettings } from '.'
+import userEvent from '@testing-library/user-event'
 
 jest.mock('@core/journeys/ui/useYouTubeClosedCaptions', () => ({
   useYouTubeClosedCaptions: jest.fn()
 }))
 
-jest.mock('./MuxSubtitles', () => ({
-  MuxSubtitleSwitch: jest.fn(({ onChange }) => (
-    <button data-testid="mux-subtitle-switch" onClick={() => onChange(true)}>
-      Mux Subtitle Switch
-    </button>
-  ))
+jest.mock('../../../../../../../libs/useValidateMuxLanguage', () => ({
+  useValidateMuxLanguage: jest.fn()
 }))
 
-jest.mock('./Poster/VideoBlockEditorSettingsPoster', () => ({
-  VideoBlockEditorSettingsPoster: jest.fn(() => (
-    <div data-testid="video-block-editor-settings-poster">Poster Component</div>
-  ))
-}))
-
-jest.mock('./SubtitleSelector', () => ({
-  YouTubeSubtitleSelector: jest.fn(({ onChange, availableLanguages }) => (
-    <button
-      data-testid="youtube-subtitle-selector"
-      onClick={() => onChange('lang-en')}
-    >
-      YouTube Subtitle Selector
-    </button>
-  ))
+jest.mock('next-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key
+  })
 }))
 
 const mockUseYouTubeClosedCaptions =
   useYouTubeClosedCaptions as jest.MockedFunction<
     typeof useYouTubeClosedCaptions
   >
+
+const { useValidateMuxLanguage } = jest.requireMock(
+  '../../../../../../../libs/useValidateMuxLanguage'
+)
+
+const mockSubtitleTrackReady: MockedResponse = {
+  request: {
+    query: GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
+    variables: {
+      muxVideoId: 'mux-video-id',
+      bcp47: 'en'
+    }
+  },
+  result: {
+    data: {
+      getMyGeneratedMuxSubtitleTrack: {
+        __typename: 'QueryGetMyGeneratedMuxSubtitleTrackSuccess',
+        data: {
+          id: 'subtitle-track-1',
+          status: 'ready'
+        }
+      }
+    }
+  }
+}
 
 const mockYouTubeLanguages = [
   {
@@ -132,6 +145,7 @@ describe('VideoBlockEditorSettings', () => {
       loading: false,
       error: undefined
     })
+    useValidateMuxLanguage.mockReturnValue(true)
   })
 
   afterEach(() => {
@@ -492,7 +506,7 @@ describe('VideoBlockEditorSettings', () => {
     })
 
     const onChange = jest.fn()
-    const { getByTestId } = render(
+    const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
           <SnackbarProvider>
@@ -510,7 +524,11 @@ describe('VideoBlockEditorSettings', () => {
       </ThemeProvider>
     )
 
-    fireEvent.click(getByTestId('youtube-subtitle-selector'))
+    const select = getByRole('combobox')
+    fireEvent.mouseDown(select)
+    const listbox = screen.getByRole('listbox')
+    const option = screen.getByText('English')
+    fireEvent.click(option)
 
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith({
@@ -532,7 +550,7 @@ describe('VideoBlockEditorSettings', () => {
     })
 
     const onChange = jest.fn()
-    const { getByTestId } = render(
+    const { getByRole } = render(
       <ThemeProvider>
         <MockedProvider>
           <SnackbarProvider>
@@ -555,7 +573,11 @@ describe('VideoBlockEditorSettings', () => {
       </ThemeProvider>
     )
 
-    fireEvent.click(getByTestId('youtube-subtitle-selector'))
+    const select = getByRole('combobox')
+    fireEvent.mouseDown(select)
+    const listbox = screen.getByRole('listbox')
+    const option = screen.getByText('English')
+    fireEvent.click(option)
 
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith({
@@ -663,40 +685,57 @@ describe('VideoBlockEditorSettings', () => {
   })
 
   describe('Mux Subtitles', () => {
-    it('should render MuxSubtitleSwitch for Mux videos', () => {
+    it('should render MuxSubtitleSwitch for Mux videos', async () => {
       const { getByTestId } = render(
         <ThemeProvider>
-          <MockedProvider>
+          <MockedProvider mocks={[mockSubtitleTrackReady]}>
             <SnackbarProvider>
               <JourneyProvider
                 value={{
                   journey: {
                     __typename: 'Journey',
-                    language: { bcp47: 'en' }
+                    language: { bcp47: 'en', id: '529' }
                   } as Journey
                 }}
               >
-                <VideoBlockEditorSettings
-                  selectedBlock={{
-                    ...video,
-                    source: VideoBlockSource.mux,
-                    mediaVideo: {
-                      __typename: 'MuxVideo',
-                      id: 'mux-video-id',
-                      assetId: 'asset-id',
-                      playbackId: 'playback-id'
+                <EditorProvider
+                  initialState={{
+                    selectedBlock: {
+                      ...video,
+                      source: VideoBlockSource.mux,
+                      mediaVideo: {
+                        __typename: 'MuxVideo',
+                        id: 'mux-video-id',
+                        assetId: 'asset-id',
+                        playbackId: 'playback-id'
+                      }
                     }
                   }}
-                  posterBlock={null}
-                  onChange={jest.fn()}
-                />
+                >
+                  <VideoBlockEditorSettings
+                    selectedBlock={{
+                      ...video,
+                      source: VideoBlockSource.mux,
+                      mediaVideo: {
+                        __typename: 'MuxVideo',
+                        id: 'mux-video-id',
+                        assetId: 'asset-id',
+                        playbackId: 'playback-id'
+                      }
+                    }}
+                    posterBlock={null}
+                    onChange={jest.fn()}
+                  />
+                </EditorProvider>
               </JourneyProvider>
             </SnackbarProvider>
           </MockedProvider>
         </ThemeProvider>
       )
 
-      expect(getByTestId('mux-subtitle-switch')).toBeInTheDocument()
+      await waitFor(() => {
+        expect(getByTestId('MuxSubtitleSwitch')).toBeInTheDocument()
+      })
     })
 
     it('should not render MuxSubtitleSwitch for non-Mux videos', () => {
@@ -717,48 +756,225 @@ describe('VideoBlockEditorSettings', () => {
         </ThemeProvider>
       )
 
-      expect(queryByTestId('mux-subtitle-switch')).not.toBeInTheDocument()
+      expect(queryByTestId('MuxSubtitleSwitch')).not.toBeInTheDocument()
     })
 
-    it('should call onChange when MuxSubtitleSwitch is toggled', async () => {
+    it('should call onChange with showGeneratedSubtitles and subtitleLanguageId when MuxSubtitleSwitch is toggled on', async () => {
       const onChange = jest.fn()
+      const mockJourney: Journey = {
+        __typename: 'Journey',
+        language: { bcp47: 'en', id: '529' }
+      } as Journey
+
+      const muxVideoBlock = {
+        ...video,
+        source: VideoBlockSource.mux,
+        mediaVideo: {
+          __typename: 'MuxVideo' as const,
+          id: 'mux-video-id',
+          assetId: 'asset-id',
+          playbackId: 'playback-id'
+        }
+      }
+
       const { getByTestId } = render(
         <ThemeProvider>
-          <MockedProvider>
+          <MockedProvider mocks={[mockSubtitleTrackReady]}>
             <SnackbarProvider>
               <JourneyProvider
                 value={{
-                  journey: {
-                    __typename: 'Journey',
-                    language: { bcp47: 'en' }
-                  } as Journey
+                  journey: mockJourney
                 }}
               >
-                <VideoBlockEditorSettings
-                  selectedBlock={{
-                    ...video,
-                    source: VideoBlockSource.mux,
-                    mediaVideo: {
-                      __typename: 'MuxVideo',
-                      id: 'mux-video-id',
-                      assetId: 'asset-id',
-                      playbackId: 'playback-id'
-                    }
+                <EditorProvider
+                  initialState={{
+                    selectedBlock: muxVideoBlock
                   }}
-                  posterBlock={null}
-                  onChange={onChange}
-                />
+                >
+                  <VideoBlockEditorSettings
+                    selectedBlock={muxVideoBlock}
+                    posterBlock={null}
+                    onChange={onChange}
+                  />
+                </EditorProvider>
               </JourneyProvider>
             </SnackbarProvider>
           </MockedProvider>
         </ThemeProvider>
       )
 
-      fireEvent.click(getByTestId('mux-subtitle-switch'))
+      // Wait for the switch to be enabled (after GraphQL query completes)
+      let switchElement: HTMLElement
+      await waitFor(
+        () => {
+          switchElement = getByTestId('MuxSubtitleSwitch')
+          expect(switchElement).toBeInTheDocument()
+          // Check if the input inside is not disabled
+          const input = switchElement.querySelector('input[type="checkbox"]') as HTMLInputElement
+          expect(input).toBeInTheDocument()
+          expect(input).not.toBeDisabled()
+        },
+        { timeout: 3000 }
+      )
+
+      // Click on the actual input element inside the switch
+      const input = switchElement!.querySelector('input[type="checkbox"]') as HTMLInputElement
+      await userEvent.click(input)
 
       await waitFor(() => {
-        expect(onChange).toHaveBeenCalledWith({ showGeneratedSubtitles: true })
+        expect(onChange).toHaveBeenCalledWith({
+          autoplay: true,
+          muted: true,
+          endAt: 60,
+          startAt: 0,
+          objectFit: ObjectFit.fill,
+          showGeneratedSubtitles: true,
+          subtitleLanguageId: '529'
+        })
       })
+    })
+
+    it('should call onChange with showGeneratedSubtitles false and subtitleLanguageId null when MuxSubtitleSwitch is toggled off', async () => {
+      const onChange = jest.fn()
+      const mockJourney: Journey = {
+        __typename: 'Journey',
+        language: { bcp47: 'en', id: '529' }
+      } as Journey
+
+      const muxVideoBlock = {
+        ...video,
+        source: VideoBlockSource.mux,
+        showGeneratedSubtitles: true,
+        mediaVideo: {
+          __typename: 'MuxVideo' as const,
+          id: 'mux-video-id',
+          assetId: 'asset-id',
+          playbackId: 'playback-id'
+        }
+      }
+
+      const { getByTestId } = render(
+        <ThemeProvider>
+          <MockedProvider mocks={[mockSubtitleTrackReady]}>
+            <SnackbarProvider>
+              <JourneyProvider
+                value={{
+                  journey: mockJourney
+                }}
+              >
+                <EditorProvider
+                  initialState={{
+                    selectedBlock: muxVideoBlock
+                  }}
+                >
+                  <VideoBlockEditorSettings
+                    selectedBlock={muxVideoBlock}
+                    posterBlock={null}
+                    onChange={onChange}
+                  />
+                </EditorProvider>
+              </JourneyProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      // Wait for the switch to be enabled (after GraphQL query completes)
+      let switchElement: HTMLElement
+      await waitFor(
+        () => {
+          switchElement = getByTestId('MuxSubtitleSwitch')
+          expect(switchElement).toBeInTheDocument()
+          // Check if the input inside is not disabled
+          const input = switchElement.querySelector('input[type="checkbox"]') as HTMLInputElement
+          expect(input).toBeInTheDocument()
+          expect(input).not.toBeDisabled()
+        },
+        { timeout: 3000 }
+      )
+
+      // Switch should be checked initially (because showGeneratedSubtitles: true)
+      const input = switchElement!.querySelector('input[type="checkbox"]') as HTMLInputElement
+      await waitFor(() => {
+        expect(input).toBeChecked()
+      })
+
+      // Click on the actual input element to toggle off
+      await userEvent.click(input)
+
+      await waitFor(() => {
+        expect(onChange).toHaveBeenCalledWith({
+          autoplay: true,
+          muted: true,
+          endAt: 60,
+          startAt: 0,
+          objectFit: ObjectFit.fill,
+          showGeneratedSubtitles: false,
+          subtitleLanguageId: null
+        })
+      })
+    })
+
+    it('should handle missing journey when MuxSubtitleSwitch is toggled', async () => {
+      const onChange = jest.fn()
+      // When journey is missing, journeyLanguageCode is undefined
+      // This causes the GraphQL query to be skipped (because journeyLanguageCode == null)
+      // So subtitleStatus is null, which means the switch will be disabled
+      // This is the expected behavior - the switch should be disabled when there's no journey
+
+      const muxVideoBlock = {
+        ...video,
+        source: VideoBlockSource.mux,
+        mediaVideo: {
+          __typename: 'MuxVideo' as const,
+          id: 'mux-video-id',
+          assetId: 'asset-id',
+          playbackId: 'playback-id'
+        }
+      }
+
+      const { getByTestId } = render(
+        <ThemeProvider>
+          <MockedProvider>
+            <SnackbarProvider>
+              <JourneyProvider
+                value={{
+                  journey: undefined
+                }}
+              >
+                <EditorProvider
+                  initialState={{
+                    selectedBlock: muxVideoBlock
+                  }}
+                >
+                  <VideoBlockEditorSettings
+                    selectedBlock={muxVideoBlock}
+                    posterBlock={null}
+                    onChange={onChange}
+                  />
+                </EditorProvider>
+              </JourneyProvider>
+            </SnackbarProvider>
+          </MockedProvider>
+        </ThemeProvider>
+      )
+
+      // Wait for the switch to render
+      await waitFor(() => {
+        const switchElement = getByTestId('MuxSubtitleSwitch')
+        expect(switchElement).toBeInTheDocument()
+      })
+
+      const switchElement = getByTestId('MuxSubtitleSwitch')
+      const input = switchElement.querySelector('input[type="checkbox"]') as HTMLInputElement
+
+      // When journey is missing, the switch should be disabled
+      // because the GraphQL query is skipped (journeyLanguageCode == null)
+      // and subtitleStatus is null
+      expect(input).toBeDisabled()
+
+      // Verify that onChange is never called when the switch is disabled
+      expect(onChange).not.toHaveBeenCalled()
     })
   })
 
@@ -871,9 +1087,7 @@ describe('VideoBlockEditorSettings', () => {
         </ThemeProvider>
       )
 
-      expect(
-        getByTestId('video-block-editor-settings-poster')
-      ).toBeInTheDocument()
+      expect(getByTestId('VideoBlockEditorSettingsPoster')).toBeInTheDocument()
     })
   })
 

@@ -85,58 +85,59 @@ export function VideoBlockEditorSettings({
     objectFit: selectedBlock?.objectFit ?? ObjectFit.fill,
     subtitleLanguageId: selectedBlock?.subtitleLanguage?.id ?? null
   }
-  const { values, errors, handleChange, setFieldValue } = useFormik<Values>({
-    initialValues,
-    enableReinitialize: true,
-    validate: async (values) => {
-      const convertedStartAt = timeFormatToSeconds(values.startAt)
-      const convertedEndAt = timeFormatToSeconds(values.endAt)
-      if (convertedStartAt > convertedEndAt - 3) {
-        const message = t(
-          'Start time has to be at least 3 seconds less than end time'
-        )
-        errors.startAt = message
-        enqueueSnackbar(message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      } else if (
-        selectedBlock?.duration != null &&
-        convertedStartAt > selectedBlock?.duration - 3
-      ) {
-        const message = t(
-          'Start time has to be at least 3 seconds less than video duration {{ time }}',
-          { time: secondsToTimeFormat(selectedBlock?.duration) }
-        )
-        errors.startAt = message
-        enqueueSnackbar(message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      } else if (
-        selectedBlock?.duration != null &&
-        convertedEndAt > selectedBlock?.duration
-      ) {
-        const message = t(
-          'End time has to be no more than video duration {{ time }}',
-          { time: secondsToTimeFormat(selectedBlock?.duration) }
-        )
-        errors.endAt = message
-        enqueueSnackbar(message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      } else {
-        await onChange({
-          ...values,
-          startAt: convertedStartAt,
-          endAt: convertedEndAt
-        })
-      }
-      return errors
-    },
-    onSubmit: noop
-  })
+  const { values, errors, handleChange, setFieldValue, setValues } =
+    useFormik<Values>({
+      initialValues,
+      enableReinitialize: true,
+      validate: async (values) => {
+        const convertedStartAt = timeFormatToSeconds(values.startAt)
+        const convertedEndAt = timeFormatToSeconds(values.endAt)
+        if (convertedStartAt > convertedEndAt - 3) {
+          const message = t(
+            'Start time has to be at least 3 seconds less than end time'
+          )
+          errors.startAt = message
+          enqueueSnackbar(message, {
+            variant: 'error',
+            preventDuplicate: true
+          })
+        } else if (
+          selectedBlock?.duration != null &&
+          convertedStartAt > selectedBlock?.duration - 3
+        ) {
+          const message = t(
+            'Start time has to be at least 3 seconds less than video duration {{ time }}',
+            { time: secondsToTimeFormat(selectedBlock?.duration) }
+          )
+          errors.startAt = message
+          enqueueSnackbar(message, {
+            variant: 'error',
+            preventDuplicate: true
+          })
+        } else if (
+          selectedBlock?.duration != null &&
+          convertedEndAt > selectedBlock?.duration
+        ) {
+          const message = t(
+            'End time has to be no more than video duration {{ time }}',
+            { time: secondsToTimeFormat(selectedBlock?.duration) }
+          )
+          errors.endAt = message
+          enqueueSnackbar(message, {
+            variant: 'error',
+            preventDuplicate: true
+          })
+        } else {
+          await onChange({
+            ...values,
+            startAt: convertedStartAt,
+            endAt: convertedEndAt
+          })
+        }
+        return errors
+      },
+      onSubmit: noop
+    })
 
   return (
     <Box
@@ -179,7 +180,16 @@ export function VideoBlockEditorSettings({
               }
               journeyLanguageCode={journey?.language.bcp47}
               onChange={async (showGeneratedSubtitles) => {
-                await onChange({ showGeneratedSubtitles })
+                await setValues(
+                  {
+                    ...values,
+                    showGeneratedSubtitles,
+                    subtitleLanguageId: showGeneratedSubtitles
+                      ? (journey?.language.id ?? null)
+                      : null
+                  },
+                  true
+                )
               }}
             />
             <Divider />

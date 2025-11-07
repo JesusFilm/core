@@ -44,8 +44,14 @@ export function MuxSubtitleSwitch({
   const {
     state: { selectedBlock }
   } = useEditor()
+
+  const videoBlock =
+    selectedBlock?.__typename === 'VideoBlock' ? selectedBlock : undefined
+
   const isValidLanguage = useValidateMuxLanguage(journeyLanguageCode)
-  const [toggleChecked, setToggleChecked] = useState(false)
+  const [toggleChecked, setToggleChecked] = useState(
+    videoBlock?.showGeneratedSubtitles ?? false
+  )
   const [updating, setUpdating] = useState(false)
 
   // Query subtitle track status
@@ -86,8 +92,6 @@ export function MuxSubtitleSwitch({
       stopPolling()
     }
   }, [subtitleTrack?.status, startPolling, stopPolling])
-
-  const videoBlock = selectedBlock as VideoBlock | undefined
 
   useEffect(() => {
     if (
@@ -157,6 +161,7 @@ export function MuxSubtitleSwitch({
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Typography variant="subtitle2">{t('Subtitles')}</Typography>
         <Switch
+          data-testid="MuxSubtitleSwitch"
           checked={toggleChecked}
           onChange={handleToggleChange}
           disabled={isToggleDisabled}

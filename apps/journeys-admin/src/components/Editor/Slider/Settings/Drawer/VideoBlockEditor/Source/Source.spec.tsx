@@ -348,10 +348,15 @@ describe('Source', () => {
                     mobileCinematicHigh: 'https://example.com/thumbnail.jpg'
                   }
                 ],
-                title: [{ value: 'Local Video Title', primary: true }]
+                title: [
+                  { __typename: 'VideoTitle', value: 'Local Video Title' }
+                ],
+                variant: null,
+                variantLanguages: []
               },
               objectFit: null,
               subtitleLanguage: null,
+              showGeneratedSubtitles: false,
               posterBlockId: null,
               children: []
             }}
@@ -400,6 +405,7 @@ describe('Source', () => {
               mediaVideo: null,
               objectFit: null,
               subtitleLanguage: null,
+              showGeneratedSubtitles: false,
               posterBlockId: null,
               children: []
             }}
@@ -471,6 +477,7 @@ describe('Source', () => {
               mediaVideo: null,
               objectFit: null,
               subtitleLanguage: null,
+              showGeneratedSubtitles: false,
               posterBlockId: null,
               children: []
             }}

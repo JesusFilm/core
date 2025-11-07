@@ -5,8 +5,13 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
-import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
+import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/BlockFields'
+import {
+  JourneyStatus,
+  ThemeMode,
+  ThemeName,
+  VideoBlockSource
+} from '../../../../../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { useValidateMuxLanguage } from '../../../../../../../libs/useValidateMuxLanguage'
 
@@ -62,10 +67,9 @@ const selectedVideoBlock: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
-  video: null,
   subtitleLanguage: null,
   showGeneratedSubtitles: false,
-  muxVideo: null,
+  mediaVideo: null,
   children: []
 }
 
@@ -77,6 +81,7 @@ const mockJourneyWithValidLanguage: Journey = {
     __typename: 'Language',
     id: '529',
     bcp47: 'en',
+    iso3: null,
     name: [
       {
         __typename: 'LanguageName',
@@ -87,18 +92,24 @@ const mockJourneyWithValidLanguage: Journey = {
   },
   slug: 'journey-slug',
   description: 'Journey description',
-  status: null,
+  status: JourneyStatus.draft,
   createdAt: '2021-01-01',
+  updatedAt: '2021-01-01',
   publishedAt: null,
   featuredAt: null,
+  themeName: ThemeName.base,
+  themeMode: ThemeMode.light,
   seoTitle: null,
   seoDescription: null,
   template: null,
   strategySlug: null,
+  blocks: null,
   primaryImageBlock: null,
+  creatorDescription: null,
+  creatorImageBlock: null,
+  userJourneys: null,
   host: null,
   team: null,
-  userJourneys: [],
   tags: [],
   website: null,
   menuStepBlock: null,
@@ -109,7 +120,12 @@ const mockJourneyWithValidLanguage: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   chatButtons: [],
-  trashedAt: null
+  socialNodeX: null,
+  socialNodeY: null,
+  journeyTheme: null,
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  fromTemplateId: null
 }
 
 const mockJourneyWithInvalidLanguage: Journey = {
@@ -118,6 +134,7 @@ const mockJourneyWithInvalidLanguage: Journey = {
     __typename: 'Language',
     id: '999',
     bcp47: 'jp',
+    iso3: null,
     name: [
       {
         __typename: 'LanguageName',
@@ -245,5 +262,175 @@ describe('VideoFromMux', () => {
       true
     )
     expect(mockUseValidateMuxLanguage).toHaveBeenCalledWith(undefined)
+  })
+
+  it('should call onSelect with correct block data when valid language', () => {
+    const onSelect = jest.fn()
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: selectedVideoBlock
+            }}
+          >
+            <VideoFromMux onSelect={onSelect} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByTestId('mock-add-by-file'))
+
+    expect(onSelect).toHaveBeenCalledWith(
+      {
+        videoId: 'mock-video-id',
+        source: VideoBlockSource.mux,
+        startAt: 0,
+        subtitleLanguageId: '529'
+      },
+      true
+    )
+    expect(mockUseValidateMuxLanguage).toHaveBeenCalledWith('en')
+  })
+
+  it('should handle invalid language by not including subtitleLanguageId', () => {
+    mockUseValidateMuxLanguage.mockReturnValue(false)
+    const onSelect = jest.fn()
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: mockJourneyWithInvalidLanguage }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: selectedVideoBlock
+            }}
+          >
+            <VideoFromMux onSelect={onSelect} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByTestId('mock-add-by-file'))
+
+    expect(onSelect).toHaveBeenCalledWith(
+      {
+        videoId: 'mock-video-id',
+        source: VideoBlockSource.mux,
+        startAt: 0
+      },
+      true
+    )
+    expect(mockUseValidateMuxLanguage).toHaveBeenCalledWith('jp')
+  })
+
+  it('should handle missing journey', () => {
+    const onSelect = jest.fn()
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: undefined }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: selectedVideoBlock
+            }}
+          >
+            <VideoFromMux onSelect={onSelect} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('VideoFromMux')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId('mock-add-by-file'))
+
+    expect(onSelect).toHaveBeenCalledWith(
+      {
+        videoId: 'mock-video-id',
+        source: VideoBlockSource.mux,
+        startAt: 0
+      },
+      true
+    )
+  })
+
+  it('should create correct block update input with valid language', () => {
+    mockUseValidateMuxLanguage.mockReturnValue(true)
+    const onSelect = jest.fn()
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: mockJourneyWithValidLanguage }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: selectedVideoBlock
+            }}
+          >
+            <VideoFromMux onSelect={onSelect} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    // The component should be rendered correctly
+    expect(screen.getByTestId('VideoFromMux')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId('mock-add-by-file'))
+
+    // Verify the expected block structure includes subtitleLanguageId
+    expect(onSelect).toHaveBeenCalledWith(
+      {
+        videoId: 'mock-video-id',
+        source: VideoBlockSource.mux,
+        startAt: 0,
+        subtitleLanguageId: '529'
+      },
+      true
+    )
+
+    // Verify the block structure has all required fields
+    const callArgs = onSelect.mock.calls[0][0]
+    expect(callArgs).toHaveProperty('videoId')
+    expect(callArgs).toHaveProperty('source', VideoBlockSource.mux)
+    expect(callArgs).toHaveProperty('startAt', 0)
+    expect(callArgs).toHaveProperty('subtitleLanguageId', '529')
+  })
+
+  it('should create correct block update input without subtitleLanguageId for invalid language', () => {
+    mockUseValidateMuxLanguage.mockReturnValue(false)
+    const onSelect = jest.fn()
+
+    render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: mockJourneyWithInvalidLanguage }}>
+          <EditorProvider
+            initialState={{
+              selectedBlock: selectedVideoBlock
+            }}
+          >
+            <VideoFromMux onSelect={onSelect} />
+          </EditorProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('VideoFromMux')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId('mock-add-by-file'))
+
+    expect(onSelect).toHaveBeenCalledWith(
+      {
+        videoId: 'mock-video-id',
+        source: VideoBlockSource.mux,
+        startAt: 0
+      },
+      true
+    )
+
+    const callArgs = onSelect.mock.calls[0][0]
+    expect(callArgs).not.toHaveProperty('subtitleLanguageId')
   })
 })
