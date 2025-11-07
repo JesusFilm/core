@@ -103,7 +103,7 @@ export function VideoCarousel({
         mousewheel={{ forceToAxis: true }}
         observeParents
         slidesPerView="auto"
-        spaceBetween={16}
+        spaceBetween={0}
         slidesOffsetAfter={32}
         onSlideChange={handleSlideChange}
         className="w-full"
@@ -113,7 +113,8 @@ export function VideoCarousel({
           ? Array.from({ length: 4 }).map((_, index) => (
               <SwiperSlide
                 key={`skeleton-${index}`}
-                className="max-w-[200px] py-1"
+                className={`max-w-[140px] md:max-w-[200px] mr-2 md:mr-6 ${index === 0 ? 'padded-l' : ''}`}
+                  
               >
                 <div className="h-[330px] w-[220px] rounded-lg bg-white/10 animate-pulse" />
               </SwiperSlide>
@@ -123,7 +124,8 @@ export function VideoCarousel({
               return (
                 <SwiperSlide
                   key={slide.id}
-                  className="max-w-[200px] py-1"
+                  className={`max-w-[140px] md:max-w-[200px] mr-2 md:mr-6 ${index === 0 ? 'padded-l' : ''}`}
+                  
                   data-testid={`VideoCarouselSlide-${slide.id}`}
                 >
                   <div

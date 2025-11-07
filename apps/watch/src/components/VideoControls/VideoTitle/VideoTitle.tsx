@@ -45,7 +45,7 @@ export function VideoTitle({
   onSkip
 }: VideoTitleProps): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const { label, variant: videoVariant } = useVideo()
+  const { label, variant: videoVariant, slug } = useVideo()
   const {
     state: { play, active, loading, mute, volume }
   } = usePlayer()
@@ -61,7 +61,12 @@ export function VideoTitle({
         // console.log('mute', mute)
         // console.log('volume', volume)
 
-  const watchNowHref = getWatchUrl(containerSlug, label, videoVariant?.slug)
+  // For carousel preview, use undefined containerSlug if it's the default 'watch' value
+  // This ensures getWatchUrl uses the variant slug format instead
+  const effectiveContainerSlug = 
+    isPreview && containerSlug === 'watch' ? undefined : containerSlug
+  
+  const watchNowHref = getWatchUrl(effectiveContainerSlug, label, videoVariant?.slug)
 
   return (
     <div
@@ -88,7 +93,7 @@ export function VideoTitle({
             "bg-[#CB333B] text-lg font-medium text-stone-100",
             "rounded-full shadow-md transition-colors duration-200",
             "hover:bg-[#A4343A] font-sans cursor-pointer no-underline",
-            "animate-fade-in-up animation-delay-500",
+            "animate-fade-in-up animation-delay-500 z-100",
 
           )}
         >
@@ -185,7 +190,7 @@ export function VideoTitle({
             "bg-[#CB333B] text-lg font-medium text-stone-100",
             "rounded-full shadow-md transition-colors duration-200",
             "hover:bg-[#A4343A] font-sans cursor-pointer self-start no-underline",
-            "animate-fade-in-up animation-delay-500"
+            "animate-fade-in-up animation-delay-500  z-100"
 
           )}
         >
