@@ -22,10 +22,7 @@ jest.mock('@core/journeys/ui/useYouTubeClosedCaptions', () => ({
 
 jest.mock('./MuxSubtitles', () => ({
   MuxSubtitleSwitch: jest.fn(({ onChange }) => (
-    <button
-      data-testid="mux-subtitle-switch"
-      onClick={() => onChange(true)}
-    >
+    <button data-testid="mux-subtitle-switch" onClick={() => onChange(true)}>
       Mux Subtitle Switch
     </button>
   ))
