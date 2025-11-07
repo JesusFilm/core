@@ -810,7 +810,9 @@ describe('VideoBlockEditorSettings', () => {
           switchElement = getByTestId('MuxSubtitleSwitch')
           expect(switchElement).toBeInTheDocument()
           // Check if the input inside is not disabled
-          const input = switchElement.querySelector('input[type="checkbox"]') as HTMLInputElement
+          const input = switchElement.querySelector(
+            'input[type="checkbox"]'
+          ) as HTMLInputElement
           expect(input).toBeInTheDocument()
           expect(input).not.toBeDisabled()
         },
@@ -818,7 +820,9 @@ describe('VideoBlockEditorSettings', () => {
       )
 
       // Click on the actual input element inside the switch
-      const input = switchElement!.querySelector('input[type="checkbox"]') as HTMLInputElement
+      const input = switchElement!.querySelector(
+        'input[type="checkbox"]'
+      ) as HTMLInputElement
       await userEvent.click(input)
 
       await waitFor(() => {
@@ -886,7 +890,9 @@ describe('VideoBlockEditorSettings', () => {
           switchElement = getByTestId('MuxSubtitleSwitch')
           expect(switchElement).toBeInTheDocument()
           // Check if the input inside is not disabled
-          const input = switchElement.querySelector('input[type="checkbox"]') as HTMLInputElement
+          const input = switchElement.querySelector(
+            'input[type="checkbox"]'
+          ) as HTMLInputElement
           expect(input).toBeInTheDocument()
           expect(input).not.toBeDisabled()
         },
@@ -894,7 +900,9 @@ describe('VideoBlockEditorSettings', () => {
       )
 
       // Switch should be checked initially (because showGeneratedSubtitles: true)
-      const input = switchElement!.querySelector('input[type="checkbox"]') as HTMLInputElement
+      const input = switchElement!.querySelector(
+        'input[type="checkbox"]'
+      ) as HTMLInputElement
       await waitFor(() => {
         expect(input).toBeChecked()
       })
@@ -966,7 +974,9 @@ describe('VideoBlockEditorSettings', () => {
       })
 
       const switchElement = getByTestId('MuxSubtitleSwitch')
-      const input = switchElement.querySelector('input[type="checkbox"]') as HTMLInputElement
+      const input = switchElement.querySelector(
+        'input[type="checkbox"]'
+      ) as HTMLInputElement
 
       // When journey is missing, the switch should be disabled
       // because the GraphQL query is skipped (journeyLanguageCode == null)
