@@ -308,7 +308,7 @@ describe('WebsiteCover', () => {
     const posterImage = getByTestId('video-poster-image')
 
     expect(posterImage).toHaveStyle({
-      transform: 'scale(3)'
+      transform: 'scale(2)'
     })
   })
 
