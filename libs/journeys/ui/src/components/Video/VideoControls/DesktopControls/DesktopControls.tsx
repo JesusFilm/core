@@ -186,6 +186,7 @@ export function DesktopControls({
         source={source}
         visible={visible}
         setActive={setActive}
+        fullscreen={fullscreen}
       />
       <VideoSettings player={player} onToggleStats={handleToggleStats} />
       {showFullscreenButton && (
