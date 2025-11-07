@@ -1,13 +1,11 @@
-import { ApolloClient } from '@apollo/client'
 import { Dispatch, SetStateAction } from 'react'
 
-import type { PollingTask } from '../types'
 import { TASK_CLEANUP_DELAY } from '../constants'
+import type { PollingTask } from '../types'
 
 interface HandlePollingCompleteDependencies {
   pollingTasks: Map<string, PollingTask>
   setPollingTasks: Dispatch<SetStateAction<Map<string, PollingTask>>>
-  apolloClient: ApolloClient<unknown>
   showSnackbar: (
     message: string,
     variant: 'success' | 'error' | 'info' | 'warning',
@@ -20,8 +18,7 @@ export async function handlePollingComplete(
   videoId: string,
   dependencies: HandlePollingCompleteDependencies
 ): Promise<void> {
-  const { pollingTasks, setPollingTasks, apolloClient, showSnackbar, t } =
-    dependencies
+  const { pollingTasks, setPollingTasks, showSnackbar, t } = dependencies
 
   const task = pollingTasks.get(videoId)
   if (task == null) return
@@ -32,11 +29,6 @@ export async function handlePollingComplete(
     const next = new Map(prev)
     next.set(videoId, { ...task, status: 'completed' })
     return next
-  })
-
-  // Wait for refetch to complete to ensure data is in cache
-  await apolloClient.refetchQueries({
-    include: 'active'
   })
 
   showSnackbar(t('Video upload completed'), 'success', true)

@@ -1,19 +1,12 @@
-import { ApolloClient } from '@apollo/client'
-
 import { TASK_CLEANUP_DELAY } from '../constants'
 import type { PollingTask } from '../types'
 
 import { handlePollingComplete } from './handlePollingComplete'
 
 describe('handlePollingComplete', () => {
-  let mockApolloClient: ApolloClient<unknown>
-
   beforeEach(() => {
     jest.useFakeTimers()
     jest.clearAllMocks()
-    mockApolloClient = {
-      refetchQueries: jest.fn().mockResolvedValue(undefined)
-    } as unknown as ApolloClient<unknown>
   })
 
   afterEach(() => {
@@ -38,7 +31,6 @@ describe('handlePollingComplete', () => {
     await handlePollingComplete(videoId, {
       pollingTasks,
       setPollingTasks,
-      apolloClient: mockApolloClient,
       showSnackbar,
       t
     })
@@ -68,38 +60,11 @@ describe('handlePollingComplete', () => {
     await handlePollingComplete(videoId, {
       pollingTasks,
       setPollingTasks,
-      apolloClient: mockApolloClient,
       showSnackbar,
       t
     })
 
     expect(stopPollingFn).toHaveBeenCalled()
-  })
-
-  it('should refetch queries', async () => {
-    const setPollingTasks = jest.fn()
-    const showSnackbar = jest.fn()
-    const t = jest.fn((key: string) => key)
-    const videoId = 'video-1'
-    const task: PollingTask = {
-      videoId,
-      status: 'processing',
-      startTime: Date.now(),
-      stopPolling: jest.fn()
-    }
-    const pollingTasks = new Map([['video-1', task]])
-
-    await handlePollingComplete(videoId, {
-      pollingTasks,
-      setPollingTasks,
-      apolloClient: mockApolloClient,
-      showSnackbar,
-      t
-    })
-
-    expect(mockApolloClient.refetchQueries).toHaveBeenCalledWith({
-      include: 'active'
-    })
   })
 
   it('should show success snackbar', async () => {
@@ -118,7 +83,6 @@ describe('handlePollingComplete', () => {
     await handlePollingComplete(videoId, {
       pollingTasks,
       setPollingTasks,
-      apolloClient: mockApolloClient,
       showSnackbar,
       t
     })
@@ -148,7 +112,6 @@ describe('handlePollingComplete', () => {
     await handlePollingComplete(videoId, {
       pollingTasks,
       setPollingTasks,
-      apolloClient: mockApolloClient,
       showSnackbar,
       t
     })
@@ -172,7 +135,6 @@ describe('handlePollingComplete', () => {
     await handlePollingComplete(videoId, {
       pollingTasks,
       setPollingTasks,
-      apolloClient: mockApolloClient,
       showSnackbar,
       t
     })
@@ -197,7 +159,6 @@ describe('handlePollingComplete', () => {
     await handlePollingComplete(videoId, {
       pollingTasks,
       setPollingTasks,
-      apolloClient: mockApolloClient,
       showSnackbar,
       t
     })
@@ -228,13 +189,11 @@ describe('handlePollingComplete', () => {
     await handlePollingComplete(videoId, {
       pollingTasks,
       setPollingTasks,
-      apolloClient: mockApolloClient,
       showSnackbar,
       t
     })
 
     expect(setPollingTasks).not.toHaveBeenCalled()
     expect(showSnackbar).not.toHaveBeenCalled()
-    expect(mockApolloClient.refetchQueries).not.toHaveBeenCalled()
   })
 })

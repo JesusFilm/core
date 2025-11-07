@@ -1,4 +1,4 @@
-import { gql, useApolloClient, useLazyQuery, useMutation } from '@apollo/client'
+import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import { useSnackbar } from 'notistack'
 import {
   ReactElement,
@@ -89,7 +89,6 @@ export function MuxVideoUploadProvider({
   )
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
-  const apolloClient = useApolloClient()
   const hasShownStartNotification = useRef<Set<string>>(new Set())
   const stopQueryRefs = useRef<Map<string, () => void>>(new Map())
   const uploadInstanceRef = useRef<{
@@ -136,12 +135,11 @@ export function MuxVideoUploadProvider({
       await handlePollingComplete(videoId, {
         pollingTasks,
         setPollingTasks,
-        apolloClient,
         showSnackbar,
         t
       })
     },
-    [showSnackbar, apolloClient, t, pollingTasks]
+    [showSnackbar, t, pollingTasks]
   )
 
   const handlePollingErrorCallback = useCallback(
