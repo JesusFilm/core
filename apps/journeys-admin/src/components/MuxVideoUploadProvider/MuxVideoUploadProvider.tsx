@@ -242,8 +242,7 @@ export function MuxVideoUploadProvider({
             handlePollingErrorCallback(videoId, t('Video processing timed out'))
           }
         },
-        onError: (error) => {
-          // Log securely (error)
+        onError: () => {
           handlePollingErrorCallback(
             videoId,
             t('Something went wrong, try again')

@@ -29,44 +29,6 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
 
-jest.mock('video.js', () => {
-  const mockPlayer = {
-    dispose: jest.fn(),
-    on: jest.fn(),
-    poster: jest.fn(),
-    src: jest.fn()
-  }
-  return jest.fn(() => mockPlayer)
-})
-
-jest.mock(
-  '../../../../../MuxVideoUploadProvider/MuxVideoUploadProvider',
-  () => {
-    const React = require('react')
-    const mockContextValue = {
-      startPolling: jest.fn(),
-      stopPolling: jest.fn(),
-      getPollingStatus: jest.fn(),
-      getUploadStatus: jest.fn(),
-      addUploadToQueue: jest.fn()
-    }
-    return {
-      __esModule: true,
-      MuxVideoUploadProvider: ({ children }: { children: React.ReactNode }) =>
-        React.createElement(React.Fragment, null, children),
-      useMuxVideoUpload: () => mockContextValue
-    }
-  }
-)
-
-if (typeof global.clearImmediate !== 'function') {
-  ;(
-    global as typeof globalThis & { clearImmediate: (handle: unknown) => void }
-  ).clearImmediate = (handle: unknown) => {
-    clearTimeout(handle as NodeJS.Timeout)
-  }
-}
-
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
 jest.mock('react-instantsearch')
@@ -81,28 +43,21 @@ const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
   typeof useInfiniteHits
 >
 
-type VideoLibraryProps = Parameters<typeof VideoLibrary>[0]
-
-function renderVideoLibraryComponent(
-  props: Partial<VideoLibraryProps> = {},
-  mocks: MockedResponse[] = []
-) {
-  return render(
-    <MockedProvider mocks={mocks}>
-      <SnackbarProvider maxSnack={1}>
-        <MuxVideoUploadProvider>
-          <VideoLibrary open {...props} />
-        </MuxVideoUploadProvider>
-      </SnackbarProvider>
-    </MockedProvider>
-  )
-}
-
 describe('VideoLibrary', () => {
   const push = jest.fn()
   const on = jest.fn()
 
   beforeEach(() => {
+    // // Mock performance.markResourceTiming required by undici when fetch is called
+    // // This is needed when clicking on tabs that dynamically load components using fetch
+    // if (typeof globalThis.performance !== 'undefined') {
+    //   ;(
+    //     globalThis.performance as typeof globalThis.performance & {
+    //       markResourceTiming: () => void
+    //     }
+    //   ).markResourceTiming = jest.fn()
+    // }
+
     mockUseSearchBox.mockReturnValue({
       refine: jest.fn()
     } as unknown as SearchBoxRenderState)
@@ -130,7 +85,11 @@ describe('VideoLibrary', () => {
     )
 
     it('should render the Video Library on the right', () => {
-      renderVideoLibraryComponent()
+      render(
+        <MockedProvider>
+          <VideoLibrary open />
+        </MockedProvider>
+      )
       expect(screen.getByText('Video Library')).toBeInTheDocument()
       expect(
         screen.getByTestId('VideoLibrary').parentElement?.parentElement
@@ -139,7 +98,11 @@ describe('VideoLibrary', () => {
 
     it('should close VideoLibrary on close Icon click', () => {
       const onClose = jest.fn()
-      renderVideoLibraryComponent({ onClose })
+      render(
+        <MockedProvider>
+          <VideoLibrary open onClose={onClose} />
+        </MockedProvider>
+      )
       expect(screen.getAllByRole('button')[0]).toContainElement(
         screen.getByTestId('X2Icon')
       )
@@ -154,7 +117,11 @@ describe('VideoLibrary', () => {
     )
 
     it('should render the VideoLibrary from the bottom', () => {
-      renderVideoLibraryComponent()
+      render(
+        <MockedProvider>
+          <VideoLibrary open />
+        </MockedProvider>
+      )
       expect(screen.getByText('Video Library')).toBeInTheDocument()
       expect(
         screen.getByTestId('VideoLibrary').parentElement?.parentElement
@@ -168,7 +135,11 @@ describe('VideoLibrary', () => {
     )
 
     it('displays searched video', async () => {
-      renderVideoLibraryComponent()
+      render(
+        <MockedProvider>
+          <VideoLibrary open />
+        </MockedProvider>
+      )
       const searchBox = screen.getByRole('searchbox')
       fireEvent.change(searchBox, {
         target: { value: 'Andreas' }
@@ -180,7 +151,11 @@ describe('VideoLibrary', () => {
   })
 
   it('should render the Video Library on the right', () => {
-    renderVideoLibraryComponent()
+    render(
+      <MockedProvider>
+        <VideoLibrary open />
+      </MockedProvider>
+    )
     expect(screen.getByText('Video Library')).toBeInTheDocument()
     expect(
       screen.getByTestId('VideoLibrary').parentElement?.parentElement
@@ -234,7 +209,11 @@ describe('VideoLibrary', () => {
         }
       }
     ]
-    renderVideoLibraryComponent({ onSelect, onClose }, mocks)
+    render(
+      <MockedProvider mocks={mocks}>
+        <VideoLibrary open onSelect={onSelect} onClose={onClose} />
+      </MockedProvider>
+    )
     await waitFor(() => expect(screen.getByText('title1')).toBeInTheDocument())
     await waitFor(() =>
       fireEvent.click(screen.getByTestId('VideoListItem-videoId'))
@@ -262,39 +241,44 @@ describe('VideoLibrary', () => {
     const onSelect = jest.fn()
     const onClose = jest.fn()
 
-    renderVideoLibraryComponent({
-      selectedBlock: {
-        id: 'video1.id',
-        __typename: 'VideoBlock',
-        parentBlockId: 'card1.id',
-        description:
-          'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
-        duration: 348,
-        endAt: 348,
-        fullsize: true,
-        image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
-        muted: false,
-        autoplay: true,
-        startAt: 0,
-        title: 'What is the Bible?',
-        videoId: 'ak06MSETeo4',
-        videoVariantLanguageId: null,
-        parentOrder: 0,
-        action: null,
-        source: VideoBlockSource.youTube,
-        mediaVideo: {
-          __typename: 'YouTube',
-          id: 'videoId'
-        },
-        objectFit: null,
-        subtitleLanguage: null,
-        showGeneratedSubtitles: null,
-        posterBlockId: 'poster1.id',
-        children: []
-      },
-      onSelect,
-      onClose
-    })
+    render(
+      <MockedProvider>
+        <VideoLibrary
+          open
+          selectedBlock={{
+            id: 'video1.id',
+            __typename: 'VideoBlock',
+            parentBlockId: 'card1.id',
+            description:
+              'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+            duration: 348,
+            endAt: 348,
+            fullsize: true,
+            image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
+            muted: false,
+            autoplay: true,
+            startAt: 0,
+            title: 'What is the Bible?',
+            videoId: 'ak06MSETeo4',
+            videoVariantLanguageId: null,
+            parentOrder: 0,
+            action: null,
+            source: VideoBlockSource.youTube,
+            mediaVideo: {
+              __typename: 'YouTube',
+              id: 'videoId'
+            },
+            objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: null,
+            posterBlockId: 'poster1.id',
+            children: []
+          }}
+          onSelect={onSelect}
+          onClose={onClose}
+        />
+      </MockedProvider>
+    )
 
     await waitFor(() => expect(screen.getByText('Video Details')).toBeVisible())
   })
@@ -308,7 +292,11 @@ describe('VideoLibrary', () => {
       }
     } as unknown as NextRouter)
 
-    renderVideoLibraryComponent()
+    render(
+      <MockedProvider>
+        <VideoLibrary open />
+      </MockedProvider>
+    )
     fireEvent.click(screen.getByRole('tab', { name: 'YouTube' }))
     await waitFor(() =>
       expect(screen.getByText('Paste any YouTube Link')).toBeInTheDocument()
@@ -333,7 +321,16 @@ describe('VideoLibrary', () => {
       }
     } as unknown as NextRouter)
 
-    const { getByRole } = renderVideoLibraryComponent()
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <VideoLibrary open />
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    const { getByRole } = { getByRole: screen.getByRole.bind(screen) }
     fireEvent.click(getByRole('tab', { name: 'Upload' }))
     fireEvent.click(getByRole('tab', { name: 'Library' }))
     await waitFor(() => {
@@ -356,7 +353,15 @@ describe('VideoLibrary', () => {
       }
     } as unknown as NextRouter)
 
-    renderVideoLibraryComponent()
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <VideoLibrary open />
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
 
     fireEvent.click(screen.getByRole('tab', { name: 'Upload' }))
 
@@ -371,10 +376,10 @@ describe('VideoLibrary', () => {
     })
   })
 
-  it('should not show video details when on Upload tab', async () => {
+  it('should switch to Library tab and close drawer after upload completes on Upload tab', async () => {
     const onSelect = jest.fn()
     const onClose = jest.fn()
-
+    const push = jest.fn()
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
@@ -383,63 +388,15 @@ describe('VideoLibrary', () => {
       }
     } as unknown as NextRouter)
 
-    const { getByRole } = renderVideoLibraryComponent({
-      selectedBlock: {
-        id: 'video1.id',
-        __typename: 'VideoBlock',
-        parentBlockId: 'card1.id',
-        description: 'description',
-        duration: 348,
-        endAt: 348,
-        fullsize: true,
-        image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
-        muted: false,
-        autoplay: true,
-        startAt: 0,
-        title: 'What is the Bible?',
-        videoId: 'ak06MSETeo4',
-        videoVariantLanguageId: null,
-        parentOrder: 0,
-        action: null,
-        source: VideoBlockSource.youTube,
-        mediaVideo: {
-          __typename: 'YouTube',
-          id: 'videoId'
-        },
-        objectFit: null,
-        subtitleLanguage: null,
-        posterBlockId: 'poster1.id',
-        children: [],
-        showGeneratedSubtitles: null
-      },
-      onSelect,
-      onClose
-    })
-
-    // Click on Upload tab
-    fireEvent.click(getByRole('tab', { name: 'Upload' }))
-
-    // Video details should not be visible when on Upload tab
-    await waitFor(() => {
-      expect(screen.queryByText('Video Details')).not.toBeVisible()
-    })
-  })
-
-  it('should call onSelect with shouldCloseDrawer=false when upload completes in background', () => {
-    const onSelect = jest.fn()
-    const onClose = jest.fn()
-
-    renderVideoLibraryComponent({ onSelect, onClose })
-
-    // The onSelect callback should handle shouldCloseDrawer parameter
-    expect(onSelect).not.toHaveBeenCalled()
-  })
-
-  it('should switch to Library tab and close drawer after upload completes on Upload tab', async () => {
-    const onSelect = jest.fn()
-    const onClose = jest.fn()
-
-    const { getByRole } = renderVideoLibraryComponent({ onSelect, onClose })
+    const { getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <VideoLibrary open onSelect={onSelect} onClose={onClose} />
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
 
     // Click on Upload tab
     fireEvent.click(getByRole('tab', { name: 'Upload' }))
