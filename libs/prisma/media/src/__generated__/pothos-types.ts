@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, CloudflareImage, MuxVideo, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain, VideoOrigin, Playlist, PlaylistItem, ArclightApiKey } from ".prisma/api-media-client/index.js";
+import type { Prisma, CloudflareImage, MuxVideo, MuxSubtitleTrack, CloudflareR2, Video, VideoTitle, VideoVariantDownload, VideoVariant, VideoEdition, VideoSubtitle, VideoSnippet, VideoDescription, VideoImageAlt, VideoStudyQuestion, ImportTimes, BibleCitation, BibleBook, BibleBookName, Keyword, TagName, Tag, Tagging, Taxonomy, TaxonomyName, UserMediaRole, ShortLinkDomain, ShortLink, ShortLinkBlocklistDomain, VideoOrigin, Playlist, PlaylistItem, ArclightApiKey } from ".prisma/api-media-client/index.js";
 export default interface PrismaTypes {
     CloudflareImage: {
         Name: "CloudflareImage";
@@ -31,12 +31,37 @@ export default interface PrismaTypes {
         Where: Prisma.MuxVideoWhereInput;
         Create: {};
         Update: {};
-        RelationName: "videoVariants";
-        ListRelations: "videoVariants";
+        RelationName: "videoVariants" | "subtitles";
+        ListRelations: "videoVariants" | "subtitles";
         Relations: {
             videoVariants: {
                 Shape: VideoVariant[];
                 Name: "VideoVariant";
+                Nullable: false;
+            };
+            subtitles: {
+                Shape: MuxSubtitleTrack[];
+                Name: "MuxSubtitleTrack";
+                Nullable: false;
+            };
+        };
+    };
+    MuxSubtitleTrack: {
+        Name: "MuxSubtitleTrack";
+        Shape: MuxSubtitleTrack;
+        Include: Prisma.MuxSubtitleTrackInclude;
+        Select: Prisma.MuxSubtitleTrackSelect;
+        OrderBy: Prisma.MuxSubtitleTrackOrderByWithRelationInput;
+        WhereUnique: Prisma.MuxSubtitleTrackWhereUniqueInput;
+        Where: Prisma.MuxSubtitleTrackWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "muxVideo";
+        ListRelations: never;
+        Relations: {
+            muxVideo: {
+                Shape: MuxVideo;
+                Name: "MuxVideo";
                 Nullable: false;
             };
         };
