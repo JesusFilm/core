@@ -140,9 +140,9 @@ export class CardLevelActionPage {
       createdOrRenamed === 'created' ? this.journeyName : this.renameJourmeyName
     const frame = await this.getFirstJourneyCardFrame()
     const textElement = frame.locator(
-      'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]',
-      { hasText: text }
-    )
+        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]',
+        { hasText: text }
+      )
     await textElement.waitFor({
       state: 'visible',
       timeout: sixtySecondsTimeout
@@ -703,8 +703,8 @@ export class CardLevelActionPage {
     const frame = await this.getFirstJourneyCardFrame()
     await expect(
       frame.locator(
-        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestionList"]'
-      )
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestionList"]'
+        )
     ).toBeHidden()
   }
 
@@ -754,7 +754,7 @@ export class CardLevelActionPage {
     await labelInput.pressSequentially(testData.cardLevelAction.feedBackLabel, {
       timeout: sixtySecondsTimeout,
       delay: 100
-    })
+      })
     // Added 2 sec timeout as a workaround to slow down the action
     await this.page.waitForTimeout(2000)
   }
@@ -934,8 +934,8 @@ export class CardLevelActionPage {
 
   async clicSelectHostBtn() {
     const hostButton = this.page.locator(
-      'div[data-testid="HostSelection"] div[data-testid="JourneysAdminContainedIconButton"] button'
-    )
+        'div[data-testid="HostSelection"] div[data-testid="JourneysAdminContainedIconButton"] button'
+      )
     await hostButton.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
     await hostButton.scrollIntoViewIfNeeded()
     await this.page.waitForTimeout(500) // Wait for element to stabilize
@@ -984,11 +984,22 @@ export class CardLevelActionPage {
   }
 
   async expandJourneyAppearance(tabName: string) {
-    await this.page
-      .locator('[data-testid="AccordionSummary"][aria-expanded="false"]', {
+    // Check if accordion is already expanded
+    const expandedAccordion = this.page.locator('[data-testid="AccordionSummary"][aria-expanded="true"]', {
         hasText: tabName
       })
-      .click()
+    const isExpanded = await expandedAccordion.count()
+    if (isExpanded > 0) {
+      // Already expanded, no need to click
+      return
+    }
+    
+    // Try to find and click the accordion to expand it
+    const accordion = this.page.locator('[data-testid="AccordionSummary"]', {
+      hasText: tabName
+    })
+    await accordion.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+    await accordion.click({ timeout: sixtySecondsTimeout })
   }
 
   async clickMessangerDropDown(messangerTitle: string) {
@@ -1618,7 +1629,80 @@ export class CardLevelActionPage {
       .click()
   }
   async selectFirstImageFromGalleryForFooter() {
-    // Wait for gallery to load images - try multiple selectors and wait longer
+    // Wait for image dialog to open
+    await this.page.waitForTimeout(2000)
+    
+    // Check if we need to switch to Gallery tab (similar to Image test)
+    const galleryTabButton = this.page.locator('div[aria-label="image selection tabs"] button', {
+      hasText: 'Gallery'
+    })
+    const galleryTabCount = await galleryTabButton.count()
+    if (galleryTabCount > 0) {
+      // Switch to Gallery tab first
+      await galleryTabButton.click({ timeout: sixtySecondsTimeout })
+      await this.page.waitForTimeout(1000) // Wait for gallery to load
+    }
+    
+    // Try to find images using the same pattern as clickImgFromFeatureOfGalleryTab
+    // First try UnsplashList (Gallery tab pattern)
+    const unsplashList = this.page.locator('ul[data-testid="UnsplashList"]')
+    const unsplashCount = await unsplashList.count()
+    
+    if (unsplashCount > 0) {
+      // Use the same pattern as clickImgFromFeatureOfGalleryTab
+      const imageButton = this.page.locator('ul[data-testid="UnsplashList"] li button').first()
+      await imageButton.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+      await imageButton.click({ timeout: sixtySecondsTimeout })
+      
+      // Wait a bit for the click to register
+      await this.page.waitForTimeout(1000)
+      
+      // Check if there's a confirmation button (Select/Done) that needs to be clicked
+      const confirmButtonSelectors = [
+        'button:has-text("Select")',
+        'button:has-text("Done")',
+        'button:has-text("Confirm")',
+        'button[data-testid*="select"]',
+        'button[data-testid*="confirm"]',
+        'button[aria-label*="Select"]',
+        'button[aria-label*="Confirm"]'
+      ]
+      
+      for (const buttonSelector of confirmButtonSelectors) {
+        try {
+          const confirmButton = this.page.locator(buttonSelector).first()
+          const buttonCount = await confirmButton.count()
+          if (buttonCount > 0) {
+            await confirmButton.waitFor({ state: 'visible', timeout: 5000 })
+            await confirmButton.click({ timeout: sixtySecondsTimeout })
+            await this.page.waitForTimeout(1000)
+            break
+          }
+        } catch (err) {
+          // Button might not exist, continue
+          continue
+        }
+      }
+      
+      // Wait for progress bar to disappear (image is being processed)
+      try {
+    await expect(
+      this.page.locator(
+            'div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]'
+          )
+        ).toBeHidden({ timeout: sixtySecondsTimeout })
+      } catch (error) {
+        // Progress bar might not exist, that's okay
+      }
+      
+      // ImageBlockHeader should now be visible
+      await expect(
+        this.page.locator('div[data-testid="ImageBlockHeader"]')
+      ).toBeVisible({ timeout: sixtySecondsTimeout })
+      return
+    }
+    
+    // Fallback: Try other gallery selectors
     const imageSelectors = [
       'li[data-testid *="image"]',
       'li[data-testid*="image"]',
@@ -1648,7 +1732,39 @@ export class CardLevelActionPage {
     }
 
     if (count === 0 || imageListItems === null) {
-      // Try to find any image element as fallback
+      // Try to find any image element as fallback - but look for buttons first
+      const anyImageButton = this.page.locator('button:has(img)').or(this.page.locator('li button')).first()
+      const buttonCount = await anyImageButton.count()
+      if (buttonCount > 0) {
+        await anyImageButton.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+        await anyImageButton.scrollIntoViewIfNeeded()
+        await anyImageButton.click({ timeout: sixtySecondsTimeout })
+        // Wait for click to register
+        await this.page.waitForTimeout(1000)
+        
+        // Check for confirmation button
+        const confirmButtons = [
+          'button:has-text("Select")',
+          'button:has-text("Done")',
+          'button:has-text("Confirm")'
+        ]
+        for (const btnSelector of confirmButtons) {
+          const btn = this.page.locator(btnSelector).first()
+          if (await btn.count() > 0) {
+            await btn.click({ timeout: 10000 })
+            await this.page.waitForTimeout(1000)
+            break
+          }
+        }
+        
+        // Wait for ImageBlockHeader
+        await expect(
+          this.page.locator('div[data-testid="ImageBlockHeader"]')
+        ).toBeVisible({ timeout: sixtySecondsTimeout })
+        return
+      }
+      
+      // Last resort: try clicking any image
       const anyImage = this.page.locator('img').first()
       const imageCount = await anyImage.count()
       if (imageCount > 0) {
@@ -1658,6 +1774,27 @@ export class CardLevelActionPage {
         })
         await anyImage.scrollIntoViewIfNeeded()
         await anyImage.click({ timeout: sixtySecondsTimeout })
+        // Wait for ImageBlockHeader
+        await this.page.waitForTimeout(2000)
+        
+        // Check for confirmation button
+        const confirmButtons = [
+          'button:has-text("Select")',
+          'button:has-text("Done")',
+          'button:has-text("Confirm")'
+        ]
+        for (const btnSelector of confirmButtons) {
+          const btn = this.page.locator(btnSelector).first()
+          if (await btn.count() > 0) {
+            await btn.click({ timeout: 10000 })
+            await this.page.waitForTimeout(1000)
+            break
+          }
+        }
+        
+        await expect(
+          this.page.locator('div[data-testid="ImageBlockHeader"]')
+        ).toBeVisible({ timeout: sixtySecondsTimeout })
         return
       }
       throw new Error('No images found in gallery after waiting')
@@ -1708,8 +1845,17 @@ export class CardLevelActionPage {
     } catch (error) {
       // Progress bar might not exist, that's okay
     }
+    
+    // Wait for ImageBlockHeader to appear after image selection
+    await expect(
+      this.page.locator('div[data-testid="ImageBlockHeader"]')
+    ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
   async valdiateSelectedImageWithDeleteIcon() {
+    // First, ensure ImageBlockHeader exists
+    const imageHeader = this.page.locator('div[data-testid="ImageBlockHeader"]')
+    await expect(imageHeader).toBeVisible({ timeout: sixtySecondsTimeout })
+    
     // Wait for the image to be selected and the delete icon to appear
     // Try multiple selectors as the structure might vary
     const deleteIconSelectors = [
@@ -1735,13 +1881,13 @@ export class CardLevelActionPage {
 
     if (!found) {
       // If none of the selectors work, check if image was selected at all
-      const imageHeader = this.page.locator(
+      const imageHeaderCheck = this.page.locator(
         'div[data-testid="ImageBlockHeader"]'
       )
-      const headerCount = await imageHeader.count()
+      const headerCount = await imageHeaderCheck.count()
       if (headerCount > 0) {
         // Image header exists, check what's actually there
-        const headerHTML = await imageHeader
+        const headerHTML = await imageHeaderCheck
           .first()
           .innerHTML()
           .catch(() => '')
