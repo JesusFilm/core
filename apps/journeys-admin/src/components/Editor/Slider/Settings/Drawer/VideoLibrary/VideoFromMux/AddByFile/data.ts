@@ -6,7 +6,7 @@ import { GetMyMuxVideoQuery } from '../../../../../../../../../__generated__/Get
 import {
   CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
   GET_MY_MUX_VIDEO_QUERY
-} from './AddByFile'
+} from '../../../../../../../../MuxVideoUploadProvider'
 
 export const createMuxVideoMock: MockedResponse<CreateMuxVideoUploadByFileMutation> =
   {

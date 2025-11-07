@@ -1,7 +1,9 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import {
@@ -23,7 +25,7 @@ const { useValidateMuxLanguage } = jest.requireMock(
   '../../../../../../../../libs/useValidateMuxLanguage'
 )
 
-const mockVideoBlock: VideoBlock = {
+const mockVideoBlock: TreeBlock<VideoBlock> = {
   __typename: 'VideoBlock',
   id: 'video-1',
   parentBlockId: 'card-1',
@@ -37,24 +39,16 @@ const mockVideoBlock: VideoBlock = {
   action: null,
   videoId: 'mux-video-id',
   videoVariantLanguageId: '529',
-  source: 1,
+  source: VideoBlockSource.mux,
   title: null,
   description: null,
   duration: null,
   image: null,
   objectFit: null,
-  video: null,
   children: [],
   subtitleLanguage: null,
   showGeneratedSubtitles: false,
-  muxVideo: {
-    __typename: 'MuxVideo',
-    id: 'mux-video-id',
-    uploadId: 'upload-id',
-    assetId: 'asset-id',
-    playbackId: 'playback-id',
-    duration: 100
-  }
+  mediaVideo: null
 }
 
 const mockSubtitleTrackReady: MockedResponse = {
@@ -253,7 +247,7 @@ describe('MuxSubtitleSwitch', () => {
   })
 
   it('sets switch checked when video block has showGeneratedSubtitles true', async () => {
-    const videoBlockWithSubtitles = {
+    const videoBlockWithSubtitles: TreeBlock<VideoBlock> = {
       ...mockVideoBlock,
       showGeneratedSubtitles: true
     }
@@ -308,7 +302,7 @@ describe('MuxSubtitleSwitch', () => {
 
   it('calls onChange with false when switch is toggled off', async () => {
     mockOnChange.mockResolvedValue(undefined)
-    const videoBlockWithSubtitles = {
+    const videoBlockWithSubtitles: TreeBlock<VideoBlock> = {
       ...mockVideoBlock,
       showGeneratedSubtitles: true
     }
@@ -401,7 +395,7 @@ describe('MuxSubtitleSwitch', () => {
 
   it('automatically turns off switch when language becomes invalid', async () => {
     mockOnChange.mockResolvedValue(undefined)
-    const videoBlockWithSubtitles = {
+    const videoBlockWithSubtitles: TreeBlock<VideoBlock> = {
       ...mockVideoBlock,
       showGeneratedSubtitles: true
     }
@@ -450,7 +444,7 @@ describe('MuxSubtitleSwitch', () => {
 
   it('reverts switch when automatic turn off fails', async () => {
     mockOnChange.mockRejectedValue(new Error('Failed to update'))
-    const videoBlockWithSubtitles = {
+    const videoBlockWithSubtitles: TreeBlock<VideoBlock> = {
       ...mockVideoBlock,
       showGeneratedSubtitles: true
     }

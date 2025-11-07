@@ -4,6 +4,8 @@ import { render, screen } from '@testing-library/react'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 import { GetJourney_journey as Journey } from '../../../../../../../__generated__/GetJourney'
 
@@ -83,8 +85,30 @@ describe('VideoFromMux', () => {
             initialState={{
               selectedBlock: {
                 id: 'videoBlockId',
-                __typename: 'VideoBlock'
-              }
+                __typename: 'VideoBlock',
+                parentBlockId: null,
+                parentOrder: null,
+                muted: null,
+                autoplay: null,
+                startAt: null,
+                endAt: null,
+                posterBlockId: null,
+                fullsize: null,
+                action: null,
+                videoId: null,
+                videoVariantLanguageId: null,
+                source: VideoBlockSource.mux,
+                title: null,
+                description: null,
+                duration: null,
+                image: null,
+                objectFit: null,
+                video: null,
+                subtitleLanguage: null,
+                showGeneratedSubtitles: false,
+                muxVideo: null,
+                children: []
+              } as TreeBlock<VideoBlock>
             }}
           >
             <VideoFromMux onSelect={onSelect} />
@@ -107,8 +131,30 @@ describe('VideoFromMux', () => {
             initialState={{
               selectedBlock: {
                 id: 'videoBlockId',
-                __typename: 'VideoBlock'
-              }
+                __typename: 'VideoBlock',
+                parentBlockId: null,
+                parentOrder: null,
+                muted: null,
+                autoplay: null,
+                startAt: null,
+                endAt: null,
+                posterBlockId: null,
+                fullsize: null,
+                action: null,
+                videoId: null,
+                videoVariantLanguageId: null,
+                source: VideoBlockSource.mux,
+                title: null,
+                description: null,
+                duration: null,
+                image: null,
+                objectFit: null,
+                video: null,
+                subtitleLanguage: null,
+                showGeneratedSubtitles: false,
+                muxVideo: null,
+                children: []
+              } as TreeBlock<VideoBlock>
             }}
           >
             <VideoFromMux onSelect={onSelect} />
@@ -133,8 +179,30 @@ describe('VideoFromMux', () => {
             initialState={{
               selectedBlock: {
                 id: 'videoBlockId',
-                __typename: 'VideoBlock'
-              }
+                __typename: 'VideoBlock',
+                parentBlockId: null,
+                parentOrder: null,
+                muted: null,
+                autoplay: null,
+                startAt: null,
+                endAt: null,
+                posterBlockId: null,
+                fullsize: null,
+                action: null,
+                videoId: null,
+                videoVariantLanguageId: null,
+                source: VideoBlockSource.mux,
+                title: null,
+                description: null,
+                duration: null,
+                image: null,
+                objectFit: null,
+                video: null,
+                subtitleLanguage: null,
+                showGeneratedSubtitles: false,
+                muxVideo: null,
+                children: []
+              } as TreeBlock<VideoBlock>
             }}
           >
             <VideoFromMux onSelect={onSelect} />
@@ -159,8 +227,30 @@ describe('VideoFromMux', () => {
             initialState={{
               selectedBlock: {
                 id: 'videoBlockId',
-                __typename: 'VideoBlock'
-              }
+                __typename: 'VideoBlock',
+                parentBlockId: null,
+                parentOrder: null,
+                muted: null,
+                autoplay: null,
+                startAt: null,
+                endAt: null,
+                posterBlockId: null,
+                fullsize: null,
+                action: null,
+                videoId: null,
+                videoVariantLanguageId: null,
+                source: VideoBlockSource.mux,
+                title: null,
+                description: null,
+                duration: null,
+                image: null,
+                objectFit: null,
+                video: null,
+                subtitleLanguage: null,
+                showGeneratedSubtitles: false,
+                muxVideo: null,
+                children: []
+              } as TreeBlock<VideoBlock>
             }}
           >
             <VideoFromMux onSelect={onSelect} />
@@ -177,13 +267,35 @@ describe('VideoFromMux', () => {
 
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey: null }}>
+        <JourneyProvider value={{ journey: undefined }}>
           <EditorProvider
             initialState={{
               selectedBlock: {
                 id: 'videoBlockId',
-                __typename: 'VideoBlock'
-              }
+                __typename: 'VideoBlock',
+                parentBlockId: null,
+                parentOrder: null,
+                muted: null,
+                autoplay: null,
+                startAt: null,
+                endAt: null,
+                posterBlockId: null,
+                fullsize: null,
+                action: null,
+                videoId: null,
+                videoVariantLanguageId: null,
+                source: VideoBlockSource.mux,
+                title: null,
+                description: null,
+                duration: null,
+                image: null,
+                objectFit: null,
+                video: null,
+                subtitleLanguage: null,
+                showGeneratedSubtitles: false,
+                muxVideo: null,
+                children: []
+              } as TreeBlock<VideoBlock>
             }}
           >
             <VideoFromMux onSelect={onSelect} />
@@ -211,8 +323,30 @@ describe('VideoFromMux', () => {
             initialState={{
               selectedBlock: {
                 id: 'videoBlockId',
-                __typename: 'VideoBlock'
-              }
+                __typename: 'VideoBlock',
+                parentBlockId: null,
+                parentOrder: null,
+                muted: null,
+                autoplay: null,
+                startAt: null,
+                endAt: null,
+                posterBlockId: null,
+                fullsize: null,
+                action: null,
+                videoId: null,
+                videoVariantLanguageId: null,
+                source: VideoBlockSource.mux,
+                title: null,
+                description: null,
+                duration: null,
+                image: null,
+                objectFit: null,
+                video: null,
+                subtitleLanguage: null,
+                showGeneratedSubtitles: false,
+                muxVideo: null,
+                children: []
+              } as TreeBlock<VideoBlock>
             }}
           >
             <VideoFromMux onSelect={onSelect} />
@@ -248,8 +382,30 @@ describe('VideoFromMux', () => {
             initialState={{
               selectedBlock: {
                 id: 'videoBlockId',
-                __typename: 'VideoBlock'
-              }
+                __typename: 'VideoBlock',
+                parentBlockId: null,
+                parentOrder: null,
+                muted: null,
+                autoplay: null,
+                startAt: null,
+                endAt: null,
+                posterBlockId: null,
+                fullsize: null,
+                action: null,
+                videoId: null,
+                videoVariantLanguageId: null,
+                source: VideoBlockSource.mux,
+                title: null,
+                description: null,
+                duration: null,
+                image: null,
+                objectFit: null,
+                video: null,
+                subtitleLanguage: null,
+                showGeneratedSubtitles: false,
+                muxVideo: null,
+                children: []
+              } as TreeBlock<VideoBlock>
             }}
           >
             <VideoFromMux onSelect={onSelect} />

@@ -39,22 +39,25 @@ jest.mock('video.js', () => {
   return jest.fn(() => mockPlayer)
 })
 
-jest.mock('../../../../../MuxVideoUploadProvider/MuxVideoUploadProvider', () => {
-  const React = require('react')
-  const mockContextValue = {
-    startPolling: jest.fn(),
-    stopPolling: jest.fn(),
-    getPollingStatus: jest.fn(),
-    getUploadStatus: jest.fn(),
-    addUploadToQueue: jest.fn()
+jest.mock(
+  '../../../../../MuxVideoUploadProvider/MuxVideoUploadProvider',
+  () => {
+    const React = require('react')
+    const mockContextValue = {
+      startPolling: jest.fn(),
+      stopPolling: jest.fn(),
+      getPollingStatus: jest.fn(),
+      getUploadStatus: jest.fn(),
+      addUploadToQueue: jest.fn()
+    }
+    return {
+      __esModule: true,
+      MuxVideoUploadProvider: ({ children }: { children: React.ReactNode }) =>
+        React.createElement(React.Fragment, null, children),
+      useMuxVideoUpload: () => mockContextValue
+    }
   }
-  return {
-    __esModule: true,
-    MuxVideoUploadProvider: ({ children }: { children: React.ReactNode }) =>
-      React.createElement(React.Fragment, null, children),
-    useMuxVideoUpload: () => mockContextValue
-  }
-})
+)
 
 if (typeof global.clearImmediate !== 'function') {
   ;(
@@ -398,7 +401,8 @@ describe('VideoLibrary', () => {
         objectFit: null,
         subtitleLanguage: null,
         posterBlockId: 'poster1.id',
-        children: []
+        children: [],
+        showGeneratedSubtitles: null
       },
       onSelect,
       onClose

@@ -685,7 +685,9 @@ describe('VideoBlockEditorSettings', () => {
                     source: VideoBlockSource.mux,
                     mediaVideo: {
                       __typename: 'MuxVideo',
-                      id: 'mux-video-id'
+                      id: 'mux-video-id',
+                      assetId: 'asset-id',
+                      playbackId: 'playback-id'
                     }
                   }}
                   posterBlock={null}
@@ -741,7 +743,9 @@ describe('VideoBlockEditorSettings', () => {
                     source: VideoBlockSource.mux,
                     mediaVideo: {
                       __typename: 'MuxVideo',
-                      id: 'mux-video-id'
+                      id: 'mux-video-id',
+                      assetId: 'asset-id',
+                      playbackId: 'playback-id'
                     }
                   }}
                   posterBlock={null}
