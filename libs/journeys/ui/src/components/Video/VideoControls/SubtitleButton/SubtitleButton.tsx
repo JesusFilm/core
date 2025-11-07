@@ -23,13 +23,15 @@ interface SubtitleButtonProps {
   source: VideoBlockSource
   visible: boolean
   setActive: Dispatch<SetStateAction<boolean>>
+  fullscreen?: boolean
 }
 
 export function SubtitleButton({
   player,
   source,
   visible,
-  setActive
+  setActive,
+  fullscreen = false
 }: SubtitleButtonProps): ReactElement {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
@@ -133,6 +135,7 @@ export function SubtitleButton({
         tracks={tracks}
         activeTrack={activeTrack}
         onChange={handleSubtitleChange}
+        fullscreen={fullscreen}
       />
     </>
   )
