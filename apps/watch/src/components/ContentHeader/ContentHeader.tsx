@@ -64,7 +64,7 @@ export function ContentHeader({
           tabIndex={0}
           className="text-white hover:bg-white/10"
         >
-          <Globe className="h-5 w-5" />
+          <Globe className="h-5 w-5 drop-shadow-xs" />
         </Button>
         <DialogLangSwitch open={isDialogOpen} handleClose={handleCloseDialog} />
       </>

@@ -49,7 +49,7 @@ export function ContainerWithMedia({
         </VideoProvider>
       )}
       <ContentPageBlurFilter>
-        <div className="py-5 ">
+        <div>
           <VideoCarousel
             slides={slides}
             containerSlug={containerSlug}

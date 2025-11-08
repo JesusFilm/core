@@ -447,10 +447,6 @@ export function HeroVideo({
             key={currentMuxInsert ? currentMuxInsert.id : variant?.hls}
             data-testid="ContentHeroVideo"
             ref={videoRef}
-            // className={clsx(
-            //   'vjs [&_.vjs-tech]:object-cover [&_.vjs-tech]:md:object-cover hero-hide-native-subtitles',
-            //   { 'cursor-pointer': isPreview }
-            // )}
             className={clsx(
               'vjs hero-hide-native-subtitles md:[&_.vjs-tech]:object-cover',
               {
@@ -464,7 +460,7 @@ export function HeroVideo({
               top: 0,
               left: 0,
               width: '100%',
-              height: '100%'
+              height: collapsed ? '120%' : '100%'
             }}
             playsInline
             onClick={isPreview ? handlePreviewClick : undefined}

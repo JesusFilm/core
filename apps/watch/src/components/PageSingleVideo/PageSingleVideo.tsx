@@ -13,10 +13,9 @@ import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../__
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
-import type { CarouselMuxSlide, VideoCarouselSlide } from '../../types/inserts'
+import type { VideoCarouselSlide } from '../../types/inserts'
 import { PageWrapper } from '../PageWrapper'
 import { DialogShare } from '../DialogShare'
-import { mergeMuxInserts } from '../VideoHero/libs/useCarouselVideos/insertMux'
 
 import { BibleCitations } from './BibleCitations'
 import { ContentMetadata } from './ContentMetadata'
@@ -58,11 +57,38 @@ export function PageSingleVideo(): ReactElement {
     variant?.language.bcp47 ?? 'en'
   )
 
-  // Merge Mux inserts with video children to create carousel slides
-  const carouselSlides = useMemo<VideoCarouselSlide[]>(() => {
+  // Create slides from children only (no Mux inserts on single video page)
+  const childrenSlides = useMemo<VideoCarouselSlide[]>(() => {
     if (loading || children.length === 0) return []
-    return mergeMuxInserts(children)
+    return children.map((child) => ({
+      source: 'video' as const,
+      id: child.id,
+      video: child
+    }))
   }, [children, loading])
+
+  // Determine the active video ID for the carousel
+  // If current video is a container (not in children), select first child
+  const activeVideoIdForCarousel = useMemo(() => {
+    if (childrenSlides.length === 0) return id
+    const currentVideoInChildren = childrenSlides.find((slide) => slide.id === id)
+    // If current video is not in children (it's a container), select first child
+    return currentVideoInChildren?.id ?? childrenSlides[0]?.id ?? id
+  }, [childrenSlides, id])
+
+  // Sync currentPlayingId with the current video when carousel loads or video changes
+  useEffect(() => {
+    setCurrentPlayingId(id)
+    if (childrenSlides.length > 0) {
+      const currentVideoIndex = childrenSlides.findIndex((slide) => slide.id === id)
+      if (currentVideoIndex >= 0) {
+        setCurrentSlideIndex(currentVideoIndex)
+      } else {
+        // If current video is not in children (container), select first child
+        setCurrentSlideIndex(0)
+      }
+    }
+  }, [childrenSlides, id])
 
   const makeDefaultQuestion = (value: string): StudyQuestions => ({
     __typename: 'VideoStudyQuestion',
@@ -115,46 +141,22 @@ export function PageSingleVideo(): ReactElement {
     ]
   }, [studyQuestions, t])
 
-  // Handle video/insert selection from carousel
-  const handleVideoSelect = useCallback(
-    (videoId: string) => {
-      setCurrentPlayingId(videoId)
-      const slideIndex = carouselSlides.findIndex(
-        (slide) => slide.id === videoId
-      )
-      if (slideIndex >= 0) {
-        setCurrentSlideIndex(slideIndex)
-      }
-    },
-    [carouselSlides]
-  )
-
-  // Handle slide change for duration tracking
-  const handleSlideChange = useCallback(
-    (activeIndex: number) => {
-      setCurrentSlideIndex(activeIndex)
-      if (carouselSlides[activeIndex]) {
-        setCurrentPlayingId(carouselSlides[activeIndex].id)
-      }
-    },
-    [carouselSlides]
-  )
-
   // Handle Mux insert completion - automatically progress to next item
+  // Note: Mux inserts are not used on single video page, but callback is kept for VideoBlock compatibility
   const handleMuxInsertComplete = useCallback(() => {
     const nextIndex = currentSlideIndex + 1
-    if (nextIndex < carouselSlides.length) {
+    if (nextIndex < childrenSlides.length) {
       setCurrentSlideIndex(nextIndex)
-      setCurrentPlayingId(carouselSlides[nextIndex].id)
+      setCurrentPlayingId(childrenSlides[nextIndex].id)
     } else {
       setCurrentSlideIndex(0)
-      setCurrentPlayingId(carouselSlides[0]?.id || id)
+      setCurrentPlayingId(childrenSlides[0]?.id || id)
     }
-  }, [currentSlideIndex, carouselSlides, id])
+  }, [currentSlideIndex, childrenSlides, id])
 
-  // Get current playing content
-  const currentSlide = carouselSlides[currentSlideIndex]
-  const currentMuxInsert = currentSlide?.source === 'mux' ? currentSlide : null
+  // Get current playing content (no Mux inserts on single video page)
+  const currentSlide = childrenSlides[currentSlideIndex]
+  const currentMuxInsert = null // Always null on single video page since we don't use Mux inserts
 
   const handleFreeResourceClick = () => {
     sendGTMEvent({
@@ -218,21 +220,22 @@ export function PageSingleVideo(): ReactElement {
         isFullscreen={isFullscreen}
       >
         <ContentPageBlurFilter>
-          <NewVideoContentHeader loading={loading} videos={children} />
-          {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&
-            (carouselSlides.length > 0 || loading) && (
+          {(children.length > 0 ||
+            (loading &&
+              ((container?.childrenCount ?? 0) > 0 || childrenCount > 0))) && (
+            <>
+              <NewVideoContentHeader loading={loading} videos={children} />
               <VideoCarousel
-                slides={carouselSlides}
+                slides={childrenSlides}
                 containerSlug={container?.slug ?? videoSlug}
-                activeVideoId={currentPlayingId}
+                activeVideoId={activeVideoIdForCarousel}
                 loading={loading}
-                onVideoSelect={handleVideoSelect}
-                onSlideChange={handleSlideChange}
               />
-            )}
+            </>
+          )}
           <div
             data-testid="ContentPageContent"
-            className="flex flex-col gap-20 py-20 z-10 responsive-container"
+            className="flex flex-col gap-20 py-14 z-10 responsive-container"
           >
             <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] z-10 gap-20">
               <ContentMetadata

@@ -107,4 +107,38 @@ describe('VideoCard', () => {
     const playButton = screen.getByTestId('ActiveLayer')
     expect(playButton).toHaveClass('shadow-[inset_0_0_0_4px_#fff]')
   })
+
+  it('applies correct CSS classes for layout (flex-grow, h-full, min-h-full, w-full)', () => {
+    const { container } = render(<VideoCard data={mockVideoData} active={false} />)
+
+    const cardElement = container.querySelector('.flex.flex-col')
+    expect(cardElement).toHaveClass('flex-grow')
+    expect(cardElement).toHaveClass('h-full')
+    expect(cardElement).toHaveClass('min-h-full')
+    expect(cardElement).toHaveClass('w-full')
+  })
+
+  it('applies h-full and w-full classes to container element', () => {
+    const { container } = render(<VideoCard data={mockVideoData} active={false} />)
+
+    const containerElement = container.querySelector('.beveled.rounded-lg')
+    expect(containerElement).toHaveClass('h-full')
+    expect(containerElement).toHaveClass('w-full')
+  })
+
+  it('applies h-full class to content element', () => {
+    const { container } = render(<VideoCard data={mockVideoData} active={false} />)
+
+    const contentElement = container.querySelector('.relative.h-full')
+    expect(contentElement).toHaveClass('h-full')
+  })
+
+  it('applies h-full min-h-full w-full classes to link/wrapper element', () => {
+    const { container } = render(<VideoCard data={mockVideoData} active={false} />)
+
+    const linkElement = screen.getByRole('link')
+    expect(linkElement).toHaveClass('h-full')
+    expect(linkElement).toHaveClass('min-h-full')
+    expect(linkElement).toHaveClass('w-full')
+  })
 })

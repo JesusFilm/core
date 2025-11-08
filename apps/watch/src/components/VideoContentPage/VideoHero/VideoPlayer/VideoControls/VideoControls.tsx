@@ -1,5 +1,6 @@
 import {
   Globe,
+  Loader2,
   Maximize,
   Minimize,
   Pause,
@@ -99,6 +100,8 @@ export function VideoControls({
   wasUnmuted = false
 }: VideoControlProps): ReactElement {
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
+  const isSeekingRef = useRef(false)
+  const [isSeekLoading, setIsSeekLoading] = useState(false)
   const {
     state: {
       play,
@@ -422,11 +425,18 @@ export function VideoControls({
       active: false
     }), [dispatchPlayer])
 
-  const handleWaiting = useCallback(() =>
-    dispatchPlayer({
-      type: 'SetLoading',
-      loading: true
-    }), [dispatchPlayer])
+  const handleWaiting = useCallback(() => {
+    // Don't show loading state during user-initiated seeks
+    if (!isSeekingRef.current) {
+      dispatchPlayer({
+        type: 'SetLoading',
+        loading: true
+      })
+    } else {
+      // Show seek loading spinner in play/pause button
+      setIsSeekLoading(true)
+    }
+  }, [dispatchPlayer])
 
   const handlePlaying = useCallback(() => {
     setInitialLoadComplete(true)
@@ -434,6 +444,9 @@ export function VideoControls({
       type: 'SetLoading',
       loading: false
     })
+    // Clear seeking flag when video starts playing
+    isSeekingRef.current = false
+    setIsSeekLoading(false)
   }, [dispatchPlayer])
 
   const handleEnded = useCallback(() => {
@@ -451,17 +464,35 @@ export function VideoControls({
       )
   }, [player, id, variant, title, durationSeconds])
 
-  const handleCanPlay = useCallback(() =>
+  const handleCanPlay = useCallback(() => {
     dispatchPlayer({
       type: 'SetLoading',
       loading: false
-    }), [dispatchPlayer])
+    })
+    // Clear seeking flag when video can play
+    isSeekingRef.current = false
+    setIsSeekLoading(false)
+  }, [dispatchPlayer])
 
-  const handleCanPlayThrough = useCallback(() =>
+  const handleCanPlayThrough = useCallback(() => {
     dispatchPlayer({
       type: 'SetLoading',
       loading: false
-    }), [dispatchPlayer])
+    })
+    // Clear seeking flag when video can play through
+    isSeekingRef.current = false
+    setIsSeekLoading(false)
+  }, [dispatchPlayer])
+
+  const handleSeeked = useCallback(() => {
+    // Clear seeking flag when seek completes
+    isSeekingRef.current = false
+    setIsSeekLoading(false)
+    dispatchPlayer({
+      type: 'SetLoading',
+      loading: false
+    })
+  }, [dispatchPlayer])
 
   useEffect(() => {
     dispatchPlayer({
@@ -482,6 +513,7 @@ export function VideoControls({
     player?.on('ended', handleEnded)
     player?.on('canplay', handleCanPlay)
     player?.on('canplaythrough', handleCanPlayThrough)
+    player?.on('seeked', handleSeeked)
 
     const fscreenHandler = () => {
       if (fscreen.fullscreenElement != null) {
@@ -533,6 +565,7 @@ export function VideoControls({
       player?.off('ended', handleEnded)
       player?.off('canplay', handleCanPlay)
       player?.off('canplaythrough', handleCanPlayThrough)
+      player?.off('seeked', handleSeeked)
 
       // Clean up fscreen handler
       fscreen.removeEventListener('fullscreenchange', fscreenHandler)
@@ -558,7 +591,8 @@ export function VideoControls({
     handlePlaying,
     handleEnded,
     handleCanPlay,
-    handleCanPlayThrough
+    handleCanPlayThrough,
+    handleSeeked
   ])
 
   async function handleFullscreen(): Promise<void> {
@@ -587,11 +621,22 @@ export function VideoControls({
 
   function handleSeek(_event: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
+      // Value is in seconds (from slider with min=0, max=durationSeconds)
+      const timeInSeconds = value
+      const progressPercent = durationSeconds > 0 
+        ? Math.round((timeInSeconds / durationSeconds) * 100) 
+        : 0
+      
+      // Mark that we're performing a user-initiated seek
+      isSeekingRef.current = true
+      // Reset seek loading state for new seek
+      setIsSeekLoading(false)
+      
       dispatchPlayer({
         type: 'SetProgress',
-        progress: value
+        progress: progressPercent
       })
-      player?.currentTime(value)
+      player?.currentTime(timeInSeconds)
     }
   }
 
@@ -748,7 +793,7 @@ export function VideoControls({
         >
           <div>
             <div
-              className="bg-gradient-to-b from-transparent via-stone-900/10 via-[30%] to-stone-900/80  pt-5"
+              className="mix-blend-multiply bg-gradient-to-b from-transparent via-stone-900/10 via-[30%] to-stone-900/80  pt-5"
               onClick={(event) => event.stopPropagation()}
             >
               <div
@@ -763,7 +808,7 @@ export function VideoControls({
                   aria-label="mobile-progress-control"
                   min={0}
                   max={durationSeconds}
-                  value={[progress]}
+                  value={[durationSeconds > 0 ? (progress / 100) * durationSeconds : 0]}
                   onValueChange={handleSeekValueChange}
                   className="h-[8.4px] flex md:hidden [&>button]:h-[13px] [&>button]:w-[13px] [&>span]:h-[8.4px] [&>span>span]:h-[8.4px]"
                 />
@@ -773,17 +818,19 @@ export function VideoControls({
                     onClick={play ? handlePause : handlePlay}
                     variant="ghost"
                   >
-                    {!play ? (
-                      <Play className="h-6 w-6" />
+                    {isSeekLoading ? (
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                    ) : !play ? (
+                      <Play className="h-6 w-6" fill="currentColor" />
                     ) : (
-                      <Pause className="h-6 w-6" />
+                      <Pause className="h-6 w-6" fill="currentColor" />
                     )}
                   </Button>
                   <VideoSlider
                     aria-label="desktop-progress-control"
                     min={0}
                     max={durationSeconds}
-                    value={[progress]}
+                    value={[durationSeconds > 0 ? (progress / 100) * durationSeconds : 0]}
                     onValueChange={handleSeekValueChange}
                     className="h-[8.4px] hidden md:flex [&>button]:h-[13px] [&>button]:w-[13px] [&>span]:h-[8.4px] [&>span>span]:h-[8.4px]"
                   />

@@ -114,4 +114,16 @@ describe('ContentHeader', () => {
     )
     expect(screen.getByRole('link')).toHaveAttribute('href', '/watch')
   })
+
+  it('should apply drop-shadow-xs class to Globe icon', () => {
+    const { container } = render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <ContentHeader />
+      </VideoProvider>
+    )
+
+    const globeIcon = container.querySelector('.drop-shadow-xs')
+    expect(globeIcon).toBeInTheDocument()
+    expect(globeIcon).toHaveClass('drop-shadow-xs')
+  })
 })

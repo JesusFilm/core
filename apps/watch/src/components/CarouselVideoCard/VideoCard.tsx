@@ -48,7 +48,7 @@ function CardContent({
   const ContentElement = interactive ? 'div' : 'div'
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col flex-grow h-full min-h-full w-full">
       <ContainerElement
         data-testid={`VideoCardButton-${data.slug}`}
         {...(interactive && {
@@ -58,10 +58,10 @@ function CardContent({
               : last(data.title)?.value,
           disabled: data == null
         })}
-        className="beveled rounded-lg w-full relative text-left border-none bg-transparent p-0 cursor-pointer disabled:cursor-default"
+        className="beveled rounded-lg w-full h-full relative text-left border-none bg-transparent p-0 cursor-pointer disabled:cursor-default"
       >
         <ContentElement
-          className="relative h-48 md:h-60 flex flex-col justify-end w-full rounded-xl cursor-pointer bg-black"
+          className="relative h-full flex flex-col justify-end w-full rounded-xl cursor-pointer bg-black"
           {...(interactive && {
             tabIndex: 0,
             role: 'button',
@@ -180,7 +180,7 @@ export function VideoCard({
   )
 
   const commonProps = {
-    className: `block beveled no-underline text-inherit ${
+    className: `block beveled h-full min-h-full w-full no-underline text-inherit ${
       transparent ? 'opacity-70' : ''
     } cursor-pointer`,
     'aria-label':

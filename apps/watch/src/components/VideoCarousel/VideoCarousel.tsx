@@ -19,8 +19,7 @@ export interface VideoCarouselProps {
   containerSlug: string
   activeVideoId: string
   loading: boolean
-  onVideoSelect: (videoId: string) => void
-  onSlideChange?: (activeIndex: number) => void
+  onVideoSelect?: (videoId: string) => void
 }
 
 export function VideoCarousel({
@@ -28,22 +27,8 @@ export function VideoCarousel({
   containerSlug,
   activeVideoId,
   loading,
-  onVideoSelect,
-  onSlideChange
+  onVideoSelect
 }: VideoCarouselProps): ReactElement | null {
-  const handleSlideChange = useCallback(
-    (swiper: any) => {
-      const activeIndex = swiper.activeIndex
-      if (onSlideChange != null) {
-        onSlideChange(activeIndex)
-      }
-      if (slides[activeIndex] != null) {
-        onVideoSelect(slides[activeIndex].id)
-      }
-    },
-    [slides, onVideoSelect, onSlideChange]
-  )
-
   const transformCarouselVideoToUnifiedData = useCallback(
     (video: CarouselVideoLike): UnifiedCardData => {
       // Handle CarouselVideo (which has title: {value: string}[])
@@ -105,15 +90,14 @@ export function VideoCarousel({
         slidesPerView="auto"
         spaceBetween={0}
         slidesOffsetAfter={32}
-        onSlideChange={handleSlideChange}
-        className="w-full"
+        className="w-full h-auto [&>div]:py-4"
         data-testid="VideoCarousel"
       >
         {loading
           ? Array.from({ length: 4 }).map((_, index) => (
               <SwiperSlide
                 key={`skeleton-${index}`}
-                className={`max-w-[140px] md:max-w-[200px] mr-2 md:mr-6 ${index === 0 ? 'padded-l' : ''}`}
+                className={`max-w-[140px] md:max-w-[200px] mr-2 md:mr-3 ${index === 0 ? 'padded-l' : ''}`}
                   
               >
                 <div className="h-[330px] w-[220px] rounded-lg bg-white/10 animate-pulse" />
@@ -124,13 +108,13 @@ export function VideoCarousel({
               return (
                 <SwiperSlide
                   key={slide.id}
-                  className={`max-w-[140px] md:max-w-[200px] mr-2 md:mr-6 ${index === 0 ? 'padded-l' : ''}`}
+                  className={`max-w-[140px] md:max-w-[260px] !h-34 mr-2 md:mr-3 flex flex-col ${index === 0 ? 'padded-l' : ''}`}
                   
                   data-testid={`VideoCarouselSlide-${slide.id}`}
                 >
                   <div
                     className={cn(
-                      'transition-opacity duration-200',
+                      'transition-opacity duration-200 flex flex-col flex-1 h-full min-h-full w-full',
                       slide.id === activeVideoId
                         ? 'opacity-100'
                         : 'opacity-60 hover:opacity-80'
