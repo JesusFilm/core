@@ -2,15 +2,14 @@ import Stack from '@mui/material/Stack'
 import Box from '@mui/system/Box'
 import { ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
 
+import { getCaptionsAndSubtitleTracks } from '@core/journeys/ui/Video/utils/getCaptionsAndSubtitleTracks'
+import VideoJsPlayer from '@core/journeys/ui/Video/utils/videoJsTypes'
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
 
 import 'video.js/dist/video-js.css'
-import { getCaptionsAndSubtitleTracks } from '@core/journeys/ui/Video/utils/getCaptionsAndSubtitleTracks'
-import VideoJsPlayer from '@core/journeys/ui/Video/utils/videoJsTypes'
 
 export function MuxDetails({
   open,
