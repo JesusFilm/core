@@ -13,7 +13,7 @@ import {
 
 import { GetMyMuxVideoQuery } from '../../../__generated__/GetMyMuxVideoQuery'
 import { CreateMuxVideoUploadByFileMutation } from '../../../__generated__/CreateMuxVideoUploadByFileMutation'
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from 'next-i18next'
 
 import type { PollingTask, UploadTask } from './utils/types'
 import { POLL_INTERVAL, MAX_POLL_TIME } from './utils/constants'
