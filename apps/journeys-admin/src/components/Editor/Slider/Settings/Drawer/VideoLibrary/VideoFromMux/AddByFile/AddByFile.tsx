@@ -7,8 +7,8 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 import { FileRejection, useDropzone } from 'react-dropzone'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 

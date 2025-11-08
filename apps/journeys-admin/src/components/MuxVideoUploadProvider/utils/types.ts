@@ -18,4 +18,3 @@ export interface UploadTask {
   videoId?: string
   onComplete?: (videoId: string) => void
 }
-

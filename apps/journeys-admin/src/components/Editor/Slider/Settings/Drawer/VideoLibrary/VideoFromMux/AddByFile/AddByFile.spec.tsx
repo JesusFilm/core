@@ -3,17 +3,17 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName,
   VideoBlockSource
 } from '../../../../../../../../../__generated__/globalTypes'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
-
-import { GetJourney_journey as Journey } from '../../../../../../../../../__generated__/GetJourney'
 import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
 import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 
@@ -114,7 +114,7 @@ const TestWrapper = ({
   <MockedProvider>
     <SnackbarProvider>
       <JourneyProvider
-        value={{ journey: journey as JourneyFields | undefined }}
+        value={{ journey: journey }}
       >
         <EditorProvider
           initialState={{

@@ -2,8 +2,8 @@ import { UpChunk } from '@mux/upchunk'
 import { Dispatch, MutableRefObject, SetStateAction } from 'react'
 
 import { CreateMuxVideoUploadByFileMutation } from '../../../../../__generated__/CreateMuxVideoUploadByFileMutation'
-import type { UploadTask } from '../types'
 import { TASK_CLEANUP_DELAY } from '../constants'
+import type { UploadTask } from '../types'
 
 interface ProcessUploadDependencies {
   setUploadTasks: Dispatch<SetStateAction<Map<string, UploadTask>>>
@@ -195,4 +195,3 @@ export async function processUpload(
     }, TASK_CLEANUP_DELAY)
   }
 }
-

@@ -15,6 +15,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import { videoItems } from '../../VideoLibrary/data'
 import { GET_VIDEO } from '../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+
 import { GET_VIDEO_VARIANT_LANGUAGES } from './SourceFromLocal/SourceFromLocal'
 
 import { Source } from '.'

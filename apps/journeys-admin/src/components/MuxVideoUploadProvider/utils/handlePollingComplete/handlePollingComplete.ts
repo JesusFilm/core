@@ -47,4 +47,3 @@ export async function handlePollingComplete(
     })
   }, TASK_CLEANUP_DELAY)
 }
-

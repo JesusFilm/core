@@ -1,13 +1,14 @@
-import { render, renderHook, act } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+import { act, render, renderHook } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, ReactNode } from 'react'
 
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
+
 import {
   MuxVideoUploadProvider,
   useMuxVideoUpload
 } from './MuxVideoUploadProvider'
-import { MockedProvider } from '@apollo/client/testing'
 
 const wrapper = ({ children }: { children: ReactNode }): ReactElement => (
   <MockedProvider mocks={[]}>

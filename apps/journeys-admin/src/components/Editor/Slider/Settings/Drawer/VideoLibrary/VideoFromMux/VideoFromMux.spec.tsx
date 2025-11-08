@@ -2,17 +2,17 @@ import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, screen } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/BlockFields'
+import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import {
   JourneyStatus,
   ThemeMode,
   ThemeName,
   VideoBlockSource
 } from '../../../../../../../../__generated__/globalTypes'
-import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { useValidateMuxLanguage } from '../../../../../../../libs/useValidateMuxLanguage'
 
 import { VideoFromMux } from './VideoFromMux'

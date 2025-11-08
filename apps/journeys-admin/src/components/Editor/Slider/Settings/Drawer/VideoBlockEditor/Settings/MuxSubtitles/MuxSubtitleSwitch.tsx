@@ -5,10 +5,11 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { GetMyGeneratedMuxSubtitleTrack } from '../../../../../../../../../__generated__/GetMyGeneratedMuxSubtitleTrack'
 import { useValidateMuxLanguage } from '../../../../../../../../libs/useValidateMuxLanguage'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 export const GET_MY_GENERATED_MUX_SUBTITLE_TRACK = gql`
   query GetMyGeneratedMuxSubtitleTrack($muxVideoId: ID!, $bcp47: String!) {

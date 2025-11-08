@@ -1,2 +1,1 @@
 export { startPolling } from './startPolling'
-

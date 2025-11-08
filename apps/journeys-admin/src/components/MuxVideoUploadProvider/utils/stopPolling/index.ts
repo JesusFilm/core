@@ -1,2 +1,1 @@
 export { stopPolling } from './stopPolling'
-

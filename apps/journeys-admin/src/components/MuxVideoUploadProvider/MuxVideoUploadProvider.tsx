@@ -1,4 +1,5 @@
 import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import {
   ReactElement,
@@ -11,19 +12,18 @@ import {
   useState
 } from 'react'
 
-import { GetMyMuxVideoQuery } from '../../../__generated__/GetMyMuxVideoQuery'
 import { CreateMuxVideoUploadByFileMutation } from '../../../__generated__/CreateMuxVideoUploadByFileMutation'
-import { useTranslation } from 'next-i18next'
+import { GetMyMuxVideoQuery } from '../../../__generated__/GetMyMuxVideoQuery'
 
-import type { PollingTask, UploadTask } from './utils/types'
-import { POLL_INTERVAL, MAX_POLL_TIME } from './utils/constants'
-import { createShowSnackbar } from './utils/showSnackbar'
-import { processUpload } from './utils/processUpload'
+import { addUploadToQueue as addUploadToQueueUtil } from './utils/addUploadToQueue'
+import { MAX_POLL_TIME, POLL_INTERVAL } from './utils/constants'
 import { handlePollingComplete } from './utils/handlePollingComplete'
 import { handlePollingError } from './utils/handlePollingError'
+import { processUpload } from './utils/processUpload'
+import { createShowSnackbar } from './utils/showSnackbar'
 import { startPolling as startPollingUtil } from './utils/startPolling'
 import { stopPolling as stopPollingUtil } from './utils/stopPolling'
-import { addUploadToQueue as addUploadToQueueUtil } from './utils/addUploadToQueue'
+import type { PollingTask, UploadTask } from './utils/types'
 
 export const GET_MY_MUX_VIDEO_QUERY = gql`
   query GetMyMuxVideoQuery($id: ID!) {

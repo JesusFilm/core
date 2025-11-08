@@ -1,5 +1,6 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -14,10 +15,10 @@ import {
   VideoBlockSource
 } from '../../../../../../../../__generated__/globalTypes'
 import { ThemeProvider } from '../../../../../../ThemeProvider'
+
 import { GET_MY_GENERATED_MUX_SUBTITLE_TRACK } from './MuxSubtitles/MuxSubtitleSwitch'
 
 import { VideoBlockEditorSettings } from '.'
-import userEvent from '@testing-library/user-event'
 
 jest.mock('@core/journeys/ui/useYouTubeClosedCaptions', () => ({
   useYouTubeClosedCaptions: jest.fn()

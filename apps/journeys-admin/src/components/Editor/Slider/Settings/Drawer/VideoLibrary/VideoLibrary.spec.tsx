@@ -14,6 +14,7 @@ import {
 
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
 import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider/MuxVideoUploadProvider'
+
 import { videoItems } from './data'
 import { GET_VIDEO } from './VideoFromLocal/LocalDetails/LocalDetails'
 
