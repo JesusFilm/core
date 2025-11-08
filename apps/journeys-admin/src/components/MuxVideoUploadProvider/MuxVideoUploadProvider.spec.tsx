@@ -1,5 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
-import { render, renderHook, waitFor, act } from '@testing-library/react'
+import { render, renderHook, act } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, ReactNode } from 'react'
 
@@ -8,13 +7,16 @@ import {
   MuxVideoUploadProvider,
   useMuxVideoUpload
 } from './MuxVideoUploadProvider'
+import { MockedProvider } from '@apollo/client/testing'
 
 const wrapper = ({ children }: { children: ReactNode }): ReactElement => (
-  <ApolloLoadingProvider>
-    <SnackbarProvider>
-      <MuxVideoUploadProvider>{children}</MuxVideoUploadProvider>
-    </SnackbarProvider>
-  </ApolloLoadingProvider>
+  <MockedProvider mocks={[]}>
+    <ApolloLoadingProvider>
+      <SnackbarProvider>
+        <MuxVideoUploadProvider>{children}</MuxVideoUploadProvider>
+      </SnackbarProvider>
+    </ApolloLoadingProvider>
+  </MockedProvider>
 )
 
 describe('MuxVideoUploadProvider', () => {
@@ -24,13 +26,15 @@ describe('MuxVideoUploadProvider', () => {
 
   it('should render children', () => {
     const { getByText } = render(
-      <ApolloLoadingProvider>
-        <SnackbarProvider>
-          <MuxVideoUploadProvider>
-            <div>Test Content</div>
-          </MuxVideoUploadProvider>
-        </SnackbarProvider>
-      </ApolloLoadingProvider>
+      <MockedProvider mocks={[]}>
+        <ApolloLoadingProvider>
+          <SnackbarProvider>
+            <MuxVideoUploadProvider>
+              <div>Test Content</div>
+            </MuxVideoUploadProvider>
+          </SnackbarProvider>
+        </ApolloLoadingProvider>
+      </MockedProvider>
     )
 
     expect(getByText('Test Content')).toBeInTheDocument()
@@ -52,7 +56,7 @@ describe('MuxVideoUploadProvider', () => {
     // Suppress console.error for this test
     const consoleError = jest
       .spyOn(console, 'error')
-      .mockImplementation(() => {})
+      .mockImplementation(jest.fn())
 
     expect(() => {
       renderHook(() => useMuxVideoUpload())
