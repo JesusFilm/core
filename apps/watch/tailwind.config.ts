@@ -5,7 +5,7 @@ const config: Config = {
     content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/**/*.{js,ts,jsx,tsx,mdx}',
-    '../../libs/**/*.{js,ts,jsx,tsx,mdx}'
+    '../../../libs/**/*.{js,ts,jsx,tsx,mdx}'
   ],
   theme: {
   	container: {
@@ -16,6 +16,9 @@ const config: Config = {
   		}
   	},
   	extend: {
+  		dropShadow: {
+  			xs: '0 1px 1px rgba(0, 0, 0, 0.15)'
+  		},
   		colors: {
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',

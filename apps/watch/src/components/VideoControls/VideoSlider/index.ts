@@ -1,0 +1,2 @@
+export { VideoSlider } from './VideoSlider'
+

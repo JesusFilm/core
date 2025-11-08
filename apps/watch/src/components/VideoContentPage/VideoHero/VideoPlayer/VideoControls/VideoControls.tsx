@@ -1,21 +1,15 @@
-import FullscreenExitOutlined from '@mui/icons-material/FullscreenExitOutlined'
-import FullscreenOutlined from '@mui/icons-material/FullscreenOutlined'
-import PauseRounded from '@mui/icons-material/PauseRounded'
-import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
-import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
-import VolumeDownOutlined from '@mui/icons-material/VolumeDownOutlined'
-import VolumeMuteOutlined from '@mui/icons-material/VolumeMuteOutlined'
-import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
-import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined'
-import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
-import Container from '@mui/material/Container'
-import Fade from '@mui/material/Fade'
-import IconButton from '@mui/material/IconButton'
-import Skeleton from '@mui/material/Skeleton'
-import Slider from '@mui/material/Slider'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import {
+  Globe,
+  Maximize,
+  Minimize,
+  Pause,
+  Play,
+  Subtitles,
+  Volume,
+  Volume1,
+  Volume2,
+  VolumeX
+} from 'lucide-react'
 import { sendGTMEvent } from '@next/third-parties/google'
 import fscreen from 'fscreen'
 import debounce from 'lodash/debounce'
@@ -25,15 +19,17 @@ import Image from 'next/image'
 import { MouseEventHandler, ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
+import { Button, Skeleton } from '@core/shared/uimodern'
 import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
+import { cn } from '../../../../../libs/cn'
+import { VideoSlider } from '../../../../VideoControls/VideoSlider'
 import { usePlayer } from '../../../../../libs/playerContext'
 import { useVideo } from '../../../../../libs/videoContext'
 import { useLanguageActions } from '../../../../../libs/watchContext'
 import type { InsertAction, InsertOverlay } from '../../../../../types/inserts'
 import { HeroOverlay } from '../../../../HeroOverlay/HeroOverlay'
-import { AudioLanguageButton } from '../../../../ContentHeader/AudioLanguageButton/AudioLanguageButton'
 import { VideoTitle } from '../../../../VideoControls/VideoTitle/VideoTitle'
 
 import { handleVideoTitleClick } from '../../../../VideoControls/utils/handleVideoTitleClick/handleVideoTitleClick'
@@ -49,7 +45,7 @@ const DynamicLanguageSwitchDialog = dynamic<{
     ).then((mod) => mod.DialogLangSwitch),
   {
     ssr: false,
-    loading: () => <Box role="dialog" aria-label="Language Settings" />
+    loading: () => <div role="dialog" aria-label="Language Settings" />
   }
 )
 
@@ -292,6 +288,7 @@ export function VideoControls({
         ) : 0
       )
     }
+    void player?.play()
     dispatchPlayer({
       type: 'SetPlay',
       play: true
@@ -313,15 +310,21 @@ export function VideoControls({
         ) : 0
       )
     }
+    player?.pause()
     dispatchPlayer({
       type: 'SetPlay',
       play: false
     })
   }, [player, id, variant, title, durationSeconds, dispatchPlayer])
 
-  // Separate handlers for player events that don't update global state
+  // Separate handlers for player events - sync state with actual player state
   const handlePlayerEventPlay = useCallback(() => {
-    // Just analytics for player events, don't update global state
+    // Sync global state with actual player state
+    dispatchPlayer({
+      type: 'SetPlay',
+      play: true
+    })
+    // Analytics for player events
     if ((player?.currentTime() ?? 0) < 0.02) {
       eventToDataLayer(
         'video_start',
@@ -349,10 +352,15 @@ export function VideoControls({
         ) : 0
       )
     }
-  }, [player, id, variant, title, durationSeconds])
+  }, [player, id, variant, title, durationSeconds, dispatchPlayer])
 
   const handlePlayerEventPause = useCallback(() => {
-    // Just analytics for player events, don't update global state
+    // Sync global state with actual player state
+    dispatchPlayer({
+      type: 'SetPlay',
+      play: false
+    })
+    // Analytics for player events
     if ((player?.currentTime() ?? 0) > 0.02) {
       eventToDataLayer(
         'video_pause',
@@ -367,7 +375,7 @@ export function VideoControls({
         ) : 0
       )
     }
-  }, [player, id, variant, title, durationSeconds])
+  }, [player, id, variant, title, durationSeconds, dispatchPlayer])
 
   const handleTimeUpdate = useCallback(() => {
     dispatchPlayer({
@@ -587,6 +595,12 @@ export function VideoControls({
     }
   }
 
+  function handleSeekValueChange(value: number[]): void {
+    if (value.length > 0) {
+      handleSeek({} as Event, value[0])
+    }
+  }
+
   function handleMute(): void {
     const newMuteState = !mute
     player?.muted(newMuteState)
@@ -607,6 +621,12 @@ export function VideoControls({
         volume: value
       })
       player?.volume(value / 100)
+    }
+  }
+
+  function handleVolumeValueChange(value: number[]): void {
+    if (value.length > 0) {
+      handleVolume({} as Event, value[0])
     }
   }
 
@@ -638,19 +658,11 @@ export function VideoControls({
   }
 
   return (
-    <Box
-      sx={{
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        cursor: visible ? undefined : 'none',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-end',
-        zIndex: 2
-      }}
+    <div
+      className={cn(
+        'absolute top-0 right-0 bottom-0 left-0 flex flex-col justify-end z-[2]',
+        visible ? 'cursor-default' : 'cursor-none'
+      )}
       onClick={getClickHandler(handlePlay, () => {
         void handleFullscreen()
       })}
@@ -690,18 +702,9 @@ export function VideoControls({
       {/* Loading State */}
       {loading && placement == 'singleVideo' && (
         <>
-          <Box
-            sx={{
-              display: 'flex',
-              flexGrow: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingTop: '104px',
-              zIndex: 2
-            }}
-          >
-            <CircularProgress size={65} />
-          </Box>
+          <div className="flex flex-grow items-center justify-center pt-[104px] z-[2]">
+            <div className="h-[65px] w-[65px] border-4 border-secondary border-t-primary rounded-full animate-spin" />
+          </div>
           {images[0]?.mobileCinematicHigh != null && (
             <Image
               src={images[0].mobileCinematicHigh}
@@ -713,7 +716,7 @@ export function VideoControls({
               }}
             />
           )}
-          <Container maxWidth="xxl" sx={{ zIndex: 2 }}>
+          <div className="max-w-7xl mx-auto z-[2] responsive-container">
             <VideoTitle
               showButton={!initialLoadComplete}
               videoTitle={videoTitle}
@@ -729,233 +732,154 @@ export function VideoControls({
                 })
               }}
             />
-          </Container>
-          <Box
-            sx={{
-              zIndex: 0,
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0
-            }}
-          >
+          </div>
+          <div className="z-0 absolute top-0 left-0 right-0 bottom-0">
             <HeroOverlay />
-          </Box>
+          </div>
         </>
       )}
       {/* Video Controls */}
       {placement == 'singleVideo' && wasUnmuted && (
-        <Fade
-          in={visible}
-          style={{
-            transitionDelay: visible ? undefined : '2s',
-            transitionDuration: '225ms'
-          }}
-          timeout={{ exit: 2225 }}
+        <div
+          className={cn(
+            'transition-opacity duration-[225ms]',
+            visible ? 'opacity-100 delay-0' : 'opacity-0 delay-[2000ms]'
+          )}
         >
-          <Box>
-            <Box
-              sx={{
-                background:
-                  'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%)'
-              }}
+          <div>
+            <div
+              className="bg-gradient-to-b from-transparent via-stone-900/10 via-[30%] to-stone-900/80  pt-5"
               onClick={(event) => event.stopPropagation()}
             >
-              <Container
+              <div
                 data-testid="vjs-jfp-custom-controls"
-                maxWidth="xxl"
-                sx={{
-                  zIndex: 5,
-                  pb: 4,
-                  transitionDelay: visible ? undefined : '0.5s'
-                }}
+                className={cn(
+                  'max-w-7xl padded pb-4 z-[5]',
+                  visible ? 'delay-0' : 'delay-[500ms]'
+                )}
+                style={{ transitionDelay: visible ? undefined : '0.5s' }}
               >
-                <Slider
+                <VideoSlider
                   aria-label="mobile-progress-control"
                   min={0}
                   max={durationSeconds}
-                  value={progress}
-                  valueLabelFormat={(value) => {
-                    return secondsToTimeFormat(value, { trimZeroes: true })
-                  }}
-                  valueLabelDisplay="auto"
-                  onChange={handleSeek}
-                  sx={{
-                    height: 8.4,
-                    display: { xs: 'flex', md: 'none' },
-                    '& .MuiSlider-thumb': {
-                      width: 13,
-                      height: 13
-                    },
-                    '& .MuiSlider-rail': {
-                      backgroundColor: 'secondary.main'
-                    }
-                  }}
+                  value={[progress]}
+                  onValueChange={handleSeekValueChange}
+                  className="h-[8.4px] flex md:hidden [&>button]:h-[13px] [&>button]:w-[13px] [&>span]:h-[8.4px] [&>span>span]:h-[8.4px]"
                 />
-                <Stack
-                  direction="row"
-                  gap={5}
-                  justifyContent={{ xs: 'space-between', md: 'none' }}
-                  alignItems="center"
-                  className="responsive-container"
-                >
-                  <IconButton
+                <div className="flex flex-row gap-5 justify-between md:justify-start items-center">
+                  <Button
                     id={play ? 'pause-button' : 'play-button'}
-                    onClick={handlePlay}
-                    sx={{ display: { xs: 'none', md: 'flex' } }}
+                    onClick={play ? handlePause : handlePlay}
+                    variant="ghost"
                   >
                     {!play ? (
-                      <PlayArrowRounded fontSize="large" />
+                      <Play className="h-6 w-6" />
                     ) : (
-                      <PauseRounded fontSize="large" />
+                      <Pause className="h-6 w-6" />
                     )}
-                  </IconButton>
-                  <Slider
+                  </Button>
+                  <VideoSlider
                     aria-label="desktop-progress-control"
                     min={0}
                     max={durationSeconds}
-                    value={progress}
-                    valueLabelFormat={(value) => {
-                      return secondsToTimeFormat(value, { trimZeroes: true })
-                    }}
-                    valueLabelDisplay="auto"
-                    onChange={handleSeek}
-                    sx={{
-                      height: 8.4,
-                      display: { xs: 'none', md: 'flex' },
-                      '& .MuiSlider-thumb': {
-                        width: 13,
-                        height: 13
-                      },
-                      '& .MuiSlider-rail': {
-                        backgroundColor: 'secondary.main'
-                      }
-                    }}
+                    value={[progress]}
+                    onValueChange={handleSeekValueChange}
+                    className="h-[8.4px] hidden md:flex [&>button]:h-[13px] [&>button]:w-[13px] [&>span]:h-[8.4px] [&>span>span]:h-[8.4px]"
                   />
                   {player != null && (
-                    <Typography
-                      variant="body2"
-                      color="secondary.contrastText"
-                      sx={{ display: 'flex', gap: 1, zIndex: 2 }}
-                    >
+                    <div className="flex gap-1 z-[2] text-sm text-secondary-foreground">
                       <span className="font-sans">{currentTime ?? '0:00'}</span>
                       <span>/</span>
                       {duration === '0:00' ? (
-                        <Skeleton width={27} sx={{ bgcolor: 'grey.800' }} />
+                        <Skeleton className="w-[27px] bg-muted" />
                       ) : (
                         <span className="font-sans">{duration}</span>
                       )}
-                    </Typography>
+                    </div>
                   )}
-                  <Stack direction="row" spacing={2}>
-                    <Stack
-                      alignItems="center"
-                      spacing={2}
-                      direction="row"
-                      sx={{
-                        display: { xs: 'flex', md: 'none' }
-                      }}
-                    >
-                      <IconButton onClick={handleMute}>
+                  <div className="flex flex-row gap-2">
+                    <div className="flex flex-row items-center gap-2 md:hidden">
+                      <Button onClick={handleMute} variant="ghost" size="icon">
                         {mute || volume === 0 ? (
-                          <VolumeOffOutlined />
+                          <VolumeX className="h-5 w-5" />
                         ) : volume > 60 ? (
-                          <VolumeUpOutlined />
+                          <Volume2 className="h-5 w-5" />
                         ) : volume > 30 ? (
-                          <VolumeDownOutlined />
+                          <Volume1 className="h-5 w-5" />
                         ) : (
-                          <VolumeMuteOutlined />
+                          <Volume className="h-5 w-5" />
                         )}
-                      </IconButton>
-                    </Stack>
-                    <Stack
-                      alignItems="center"
-                      spacing={2}
-                      direction="row"
-                      sx={{
-                        display: { xs: 'none', md: 'flex' },
-                        '> .MuiSlider-root': {
-                          width: 0,
-                          opacity: 0,
-                          transition: 'all 0.2s ease-out'
-                        },
-                        '&:hover': {
-                          '> .MuiSlider-root': {
-                            width: 70,
-                            opacity: 1
-                          }
-                        }
-                      }}
-                    >
-                      <IconButton onClick={handleMute}>
-                        {mute || volume === 0 ? (
-                          <VolumeOffOutlined />
-                        ) : volume > 60 ? (
-                          <VolumeUpOutlined />
-                        ) : volume > 30 ? (
-                          <VolumeDownOutlined />
-                        ) : (
-                          <VolumeMuteOutlined />
-                        )}
-                      </IconButton>
-                      <Slider
+                      </Button>
+                    </div>
+                    <div className="hidden md:flex flex-row items-center gap-2 group">
+                      <VideoSlider
                         aria-label="volume-control"
                         min={0}
                         max={100}
-                        value={mute ? 0 : volume}
-                        valueLabelFormat={(value) => {
-                          return `${value}%`
-                        }}
-                        valueLabelDisplay="auto"
-                        onChange={handleVolume}
-                        sx={{
-                          width: 70,
-                          '& .MuiSlider-thumb': {
-                            width: 10,
-                            height: 10
-                          },
-                          '& .MuiSlider-rail': {
-                            backgroundColor: 'secondary.main'
-                          }
-                        }}
+                        value={[mute ? 0 : volume]}
+                        onValueChange={handleVolumeValueChange}
+                        className="w-0 opacity-0 transition-all duration-200 ease-out group-hover:w-[70px] group-hover:opacity-100 [&>button]:h-[10px] [&>button]:w-[10px] [&>span]:h-2 [&>span>span]:h-2"
                       />
-                    </Stack>
-                    <AudioLanguageButton componentVariant="icon" />
-                    <IconButton
+                      <Button onClick={handleMute} variant="ghost" size="icon">
+                        {mute || volume === 0 ? (
+                          <VolumeX className="h-5 w-5" />
+                        ) : volume > 60 ? (
+                          <Volume2 className="h-5 w-5" />
+                        ) : volume > 30 ? (
+                          <Volume1 className="h-5 w-5" />
+                        ) : (
+                          <Volume className="h-5 w-5" />
+                        )}
+                      </Button>
+                    </div>
+                    <Button
                       onClick={handleClick}
+                      variant="ghost"
+                      size="icon"
+                      aria-label="select audio language"
+                      data-testid="AudioLanguageButton"
+                    >
+                      <Globe className="h-5 w-5" />
+                    </Button>
+                    <Button
+                      onClick={handleClick}
+                      variant="ghost"
+                      size="icon"
                       disabled={
                         variant?.subtitleCount === undefined ||
                         variant?.subtitleCount < 1
                       }
                     >
-                      <SubtitlesOutlined />
-                    </IconButton>
-                    <IconButton
+                      <Subtitles className="h-5 w-5" />
+                    </Button>
+                    <Button
                       onClick={handleFullscreen}
                       data-testid="FullscreenButton"
                       aria-pressed={fullscreen}
+                      variant="ghost"
+                      size="icon"
                     >
                       {fullscreen ? (
-                        <FullscreenExitOutlined />
+                        <Minimize className="h-5 w-5" />
                       ) : (
-                        <FullscreenOutlined />
+                        <Maximize className="h-5 w-5" />
                       )}
-                    </IconButton>
-                  </Stack>
-                </Stack>
+                    </Button>
+                  </div>
+                </div>
                 {openLanguageSwitchDialog != null && (
                   <DynamicLanguageSwitchDialog
                     open={openLanguageSwitchDialog}
                     handleClose={() => setOpenLanguageSwitchDialog(false)}
                   />
                 )}
-              </Container>
-            </Box>
-          </Box>
-        </Fade>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
-    </Box>
+    </div>
   )
 }
 

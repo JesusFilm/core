@@ -1,10 +1,12 @@
+import { Button } from '@core/shared/uimodern/components'
+import { Globe } from 'lucide-react'
 import Image from 'next/image'
 import NextLink from 'next/link'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { usePlayer } from '../../libs/playerContext/PlayerContext'
 
-import { AudioLanguageButton } from './AudioLanguageButton'
+import { DialogLangSwitch } from '../DialogLangSwitch'
 
 interface ContentHeaderProps {
   languageSlug?: string
@@ -19,6 +21,16 @@ export function ContentHeader({
     state: { play, active, loading }
   } = usePlayer()
   const visible = isPersistent || !play || active || loading
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+  const handleOpenDialog = (): void => {
+    setIsDialogOpen(true)
+  }
+
+  const handleCloseDialog = (): void => {
+    setIsDialogOpen(false)
+  }
+
   return (
     <div
       data-testid="ContentHeader"
@@ -42,7 +54,20 @@ export function ContentHeader({
           className="max-w-[50px] lg:max-w-[70px]"
         />
       </NextLink>
-      <AudioLanguageButton componentVariant="icon" />
+      <>
+        <Button
+          onClick={handleOpenDialog}
+          variant="ghost"
+          size="icon"
+          data-testid="AudioLanguageButton"
+          aria-label="select audio language"
+          tabIndex={0}
+          className="text-white hover:bg-white/10"
+        >
+          <Globe className="h-5 w-5" />
+        </Button>
+        <DialogLangSwitch open={isDialogOpen} handleClose={handleCloseDialog} />
+      </>
     </div>
   )
 }
