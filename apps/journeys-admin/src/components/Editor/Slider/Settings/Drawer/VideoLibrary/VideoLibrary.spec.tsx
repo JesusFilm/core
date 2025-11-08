@@ -48,16 +48,6 @@ describe('VideoLibrary', () => {
   const on = jest.fn()
 
   beforeEach(() => {
-    // // Mock performance.markResourceTiming required by undici when fetch is called
-    // // This is needed when clicking on tabs that dynamically load components using fetch
-    // if (typeof globalThis.performance !== 'undefined') {
-    //   ;(
-    //     globalThis.performance as typeof globalThis.performance & {
-    //       markResourceTiming: () => void
-    //     }
-    //   ).markResourceTiming = jest.fn()
-    // }
-
     mockUseSearchBox.mockReturnValue({
       refine: jest.fn()
     } as unknown as SearchBoxRenderState)
