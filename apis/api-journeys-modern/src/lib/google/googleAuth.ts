@@ -3,6 +3,7 @@ import axios, { isAxiosError } from 'axios'
 import { decryptSymmetric } from '@core/nest/common/crypto'
 import { prisma } from '@core/prisma/journeys/client'
 
+import { env } from '../../env'
 import { logger } from '../../logger'
 
 export interface GoogleAuthResult {
@@ -36,7 +37,7 @@ async function refreshGoogleToken(
     throw new Error(errorMessage)
   }
 
-  const encryptionSecret = process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
+  const encryptionSecret = env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
   if (encryptionSecret == null || encryptionSecret.trim() === '') {
     throw new Error(
       'INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET environment variable is not configured. This variable is required to decrypt integration access keys for Google OAuth tokens.'
@@ -50,12 +51,8 @@ async function refreshGoogleToken(
     encryptionSecret
   )
 
-  const clientId = process.env.GOOGLE_CLIENT_ID
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET
-
-  if (clientId == null || clientSecret == null) {
-    throw new Error('Google OAuth client is not configured')
-  }
+  const clientId = env.GOOGLE_CLIENT_ID
+  const clientSecret = env.GOOGLE_CLIENT_SECRET
 
   // Try to use secret as refresh_token first
   try {
