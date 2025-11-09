@@ -1,9 +1,9 @@
-import { Dispatch, MutableRefObject, SetStateAction } from 'react'
+import { Dispatch, RefObject, SetStateAction } from 'react'
 
 import type { PollingTask } from '../types'
 
-interface StartPollingDependencies {
-  hasShownStartNotification: MutableRefObject<Set<string>>
+interface StartPollingServices {
+  hasShownStartNotification: RefObject<Set<string>>
   showSnackbar: (
     message: string,
     variant: 'success' | 'error' | 'info' | 'warning',
@@ -11,14 +11,14 @@ interface StartPollingDependencies {
   ) => void
   t: (key: string) => string
   setPollingTasks: Dispatch<SetStateAction<Map<string, PollingTask>>>
-  stopQueryRefs: MutableRefObject<Map<string, () => void>>
+  stopQueryRefs: RefObject<Map<string, () => void>>
 }
 
 export function startPolling(
   videoId: string,
   languageCode: string | undefined,
   onComplete: (() => void) | undefined,
-  dependencies: StartPollingDependencies
+  services: StartPollingServices
 ): void {
   const {
     hasShownStartNotification,
@@ -26,7 +26,7 @@ export function startPolling(
     t,
     setPollingTasks,
     stopQueryRefs
-  } = dependencies
+  } = services
 
   // Show start notification only once per video
   if (!hasShownStartNotification.current.has(videoId)) {

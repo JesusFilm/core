@@ -224,16 +224,16 @@ export function MuxVideoUploadProvider({
         pollInterval: POLL_INTERVAL,
         notifyOnNetworkStatusChange: true,
         fetchPolicy: 'network-only',
-        onCompleted: (data) => {
+        onCompleted: async (data) => {
           const video = data?.getMyMuxVideo
 
-          // Check if video is ready to stream
-          if (
+          const isVideoRady =
             video?.readyToStream === true &&
             video?.assetId != null &&
             video?.playbackId != null
-          ) {
-            handlePollingCompleteCallback(videoId)
+
+          if (isVideoRady) {
+            await handlePollingCompleteCallback(videoId)
           }
 
           // Check timeout

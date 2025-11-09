@@ -3,7 +3,7 @@ import type { PollingTask } from '../types'
 import { startPolling } from './startPolling'
 
 describe('startPolling', () => {
-  const mockDependencies = {
+  const mockServices = {
     hasShownStartNotification: { current: new Set<string>() },
     showSnackbar: jest.fn(),
     t: jest.fn((key: string) => key),
@@ -13,8 +13,8 @@ describe('startPolling', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    mockDependencies.hasShownStartNotification.current.clear()
-    mockDependencies.stopQueryRefs.current.clear()
+    mockServices.hasShownStartNotification.current.clear()
+    mockServices.stopQueryRefs.current.clear()
   })
 
   it('should create polling task with correct properties', () => {
@@ -22,10 +22,10 @@ describe('startPolling', () => {
     const languageCode = 'en'
     const onComplete = jest.fn()
 
-    startPolling(videoId, languageCode, onComplete, mockDependencies)
+    startPolling(videoId, languageCode, onComplete, mockServices)
 
-    expect(mockDependencies.setPollingTasks).toHaveBeenCalledTimes(1)
-    const updateFn = mockDependencies.setPollingTasks.mock.calls[0][0]
+    expect(mockServices.setPollingTasks).toHaveBeenCalledTimes(1)
+    const updateFn = mockServices.setPollingTasks.mock.calls[0][0]
     const prev = new Map<string, PollingTask>()
     const result = updateFn(prev)
 
@@ -44,33 +44,33 @@ describe('startPolling', () => {
   it('should show notification on first call', () => {
     const videoId = 'video-1'
 
-    startPolling(videoId, undefined, undefined, mockDependencies)
+    startPolling(videoId, undefined, undefined, mockServices)
 
-    expect(mockDependencies.showSnackbar).toHaveBeenCalledWith(
+    expect(mockServices.showSnackbar).toHaveBeenCalledWith(
       'Video upload in progress',
       'success',
       true
     )
-    expect(
-      mockDependencies.hasShownStartNotification.current.has(videoId)
-    ).toBe(true)
+    expect(mockServices.hasShownStartNotification.current.has(videoId)).toBe(
+      true
+    )
   })
 
   it('should not show notification on subsequent calls for same video', () => {
     const videoId = 'video-1'
-    mockDependencies.hasShownStartNotification.current.add(videoId)
+    mockServices.hasShownStartNotification.current.add(videoId)
 
-    startPolling(videoId, undefined, undefined, mockDependencies)
+    startPolling(videoId, undefined, undefined, mockServices)
 
-    expect(mockDependencies.showSnackbar).not.toHaveBeenCalled()
+    expect(mockServices.showSnackbar).not.toHaveBeenCalled()
   })
 
   it('should handle undefined language code', () => {
     const videoId = 'video-1'
 
-    startPolling(videoId, undefined, undefined, mockDependencies)
+    startPolling(videoId, undefined, undefined, mockServices)
 
-    const updateFn = mockDependencies.setPollingTasks.mock.calls[0][0]
+    const updateFn = mockServices.setPollingTasks.mock.calls[0][0]
     const prev = new Map<string, PollingTask>()
     const result = updateFn(prev)
 
@@ -81,9 +81,9 @@ describe('startPolling', () => {
   it('should handle undefined onComplete callback', () => {
     const videoId = 'video-1'
 
-    startPolling(videoId, 'en', undefined, mockDependencies)
+    startPolling(videoId, 'en', undefined, mockServices)
 
-    const updateFn = mockDependencies.setPollingTasks.mock.calls[0][0]
+    const updateFn = mockServices.setPollingTasks.mock.calls[0][0]
     const prev = new Map<string, PollingTask>()
     const result = updateFn(prev)
 
@@ -94,11 +94,11 @@ describe('startPolling', () => {
   it('should create stopPolling function that calls stopQueryRefs', () => {
     const videoId = 'video-1'
     const stopQuery = jest.fn()
-    mockDependencies.stopQueryRefs.current.set(videoId, stopQuery)
+    mockServices.stopQueryRefs.current.set(videoId, stopQuery)
 
-    startPolling(videoId, undefined, undefined, mockDependencies)
+    startPolling(videoId, undefined, undefined, mockServices)
 
-    const updateFn = mockDependencies.setPollingTasks.mock.calls[0][0]
+    const updateFn = mockServices.setPollingTasks.mock.calls[0][0]
     const prev = new Map<string, PollingTask>()
     const result = updateFn(prev)
 
@@ -112,9 +112,9 @@ describe('startPolling', () => {
   it('should handle stopPolling when stopQueryRefs does not have videoId', () => {
     const videoId = 'video-1'
 
-    startPolling(videoId, undefined, undefined, mockDependencies)
+    startPolling(videoId, undefined, undefined, mockServices)
 
-    const updateFn = mockDependencies.setPollingTasks.mock.calls[0][0]
+    const updateFn = mockServices.setPollingTasks.mock.calls[0][0]
     const prev = new Map<string, PollingTask>()
     const result = updateFn(prev)
 

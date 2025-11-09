@@ -54,16 +54,9 @@ describe('MuxVideoUploadProvider', () => {
   })
 
   it('should throw error when hook is used outside provider', () => {
-    // Suppress console.error for this test
-    const consoleError = jest
-      .spyOn(console, 'error')
-      .mockImplementation(jest.fn())
-
     expect(() => {
       renderHook(() => useMuxVideoUpload())
     }).toThrow('useMuxVideoUpload must be used within a MuxVideoUploadProvider')
-
-    consoleError.mockRestore()
   })
 
   describe('getUploadStatus', () => {
