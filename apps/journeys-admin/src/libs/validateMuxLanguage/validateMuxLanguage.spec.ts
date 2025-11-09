@@ -1,12 +1,12 @@
-import { useValidateMuxLanguage } from './useValidateMuxLanguage'
+import { validateMuxLanguage } from './validateMuxLanguage'
 
-describe('useValidateMuxLanguage', () => {
+describe('validateMuxLanguage', () => {
   it('should return false for null language code', () => {
-    expect(useValidateMuxLanguage(null)).toBe(false)
+    expect(validateMuxLanguage(null)).toBe(false)
   })
 
   it('should return false for undefined language code', () => {
-    expect(useValidateMuxLanguage(undefined)).toBe(false)
+    expect(validateMuxLanguage(undefined)).toBe(false)
   })
 
   it('should return true for valid Mux language codes', () => {
@@ -36,20 +36,20 @@ describe('useValidateMuxLanguage', () => {
     ]
 
     validCodes.forEach((code) => {
-      expect(useValidateMuxLanguage(code)).toBe(true)
+      expect(validateMuxLanguage(code)).toBe(true)
     })
   })
 
   it('should return true for uppercase valid language codes', () => {
-    expect(useValidateMuxLanguage('EN')).toBe(true)
-    expect(useValidateMuxLanguage('ES')).toBe(true)
-    expect(useValidateMuxLanguage('FR')).toBe(true)
+    expect(validateMuxLanguage('EN')).toBe(true)
+    expect(validateMuxLanguage('ES')).toBe(true)
+    expect(validateMuxLanguage('FR')).toBe(true)
   })
 
   it('should return true for mixed case valid language codes', () => {
-    expect(useValidateMuxLanguage('En')).toBe(true)
-    expect(useValidateMuxLanguage('Es')).toBe(true)
-    expect(useValidateMuxLanguage('Fr')).toBe(true)
+    expect(validateMuxLanguage('En')).toBe(true)
+    expect(validateMuxLanguage('Es')).toBe(true)
+    expect(validateMuxLanguage('Fr')).toBe(true)
   })
 
   it('should return false for invalid language codes', () => {
@@ -65,18 +65,18 @@ describe('useValidateMuxLanguage', () => {
     ]
 
     invalidCodes.forEach((code) => {
-      expect(useValidateMuxLanguage(code)).toBe(false)
+      expect(validateMuxLanguage(code)).toBe(false)
     })
   })
 
   it('should return false for empty string', () => {
-    expect(useValidateMuxLanguage('')).toBe(false)
+    expect(validateMuxLanguage('')).toBe(false)
   })
 
   it('should handle BCP47 codes correctly', () => {
     // Should validate base language code only (first 2 characters)
-    expect(useValidateMuxLanguage('en')).toBe(true)
-    expect(useValidateMuxLanguage('es')).toBe(true)
-    expect(useValidateMuxLanguage('fr')).toBe(true)
+    expect(validateMuxLanguage('en')).toBe(true)
+    expect(validateMuxLanguage('es')).toBe(true)
+    expect(validateMuxLanguage('fr')).toBe(true)
   })
 })

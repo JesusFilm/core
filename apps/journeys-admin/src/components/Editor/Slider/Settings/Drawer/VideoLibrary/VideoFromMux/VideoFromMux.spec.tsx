@@ -13,13 +13,13 @@ import {
   ThemeName,
   VideoBlockSource
 } from '../../../../../../../../__generated__/globalTypes'
-import { useValidateMuxLanguage } from '../../../../../../../libs/useValidateMuxLanguage'
+import { validateMuxLanguage } from '../../../../../../../libs/validateMuxLanguage'
 
 import { VideoFromMux } from './VideoFromMux'
 
-jest.mock('../../../../../../../libs/useValidateMuxLanguage', () => ({
+jest.mock('../../../../../../../libs/validateMuxLanguage', () => ({
   __esModule: true,
-  useValidateMuxLanguage: jest.fn()
+  validateMuxLanguage: jest.fn()
 }))
 
 jest.mock('./AddByFile', () => {
@@ -45,7 +45,7 @@ jest.mock('./AddByFile', () => {
   }
 })
 
-const mockUseValidateMuxLanguage = jest.mocked(useValidateMuxLanguage)
+const mockValidateMuxLanguage = jest.mocked(validateMuxLanguage)
 
 const selectedVideoBlock: TreeBlock<VideoBlock> = {
   id: 'videoBlockId',
@@ -148,7 +148,7 @@ const mockJourneyWithInvalidLanguage: Journey = {
 describe('VideoFromMux', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockUseValidateMuxLanguage.mockReturnValue(true)
+    mockValidateMuxLanguage.mockReturnValue(true)
   })
 
   it('renders AddByFile trigger', () => {
@@ -200,11 +200,11 @@ describe('VideoFromMux', () => {
       },
       true
     )
-    expect(mockUseValidateMuxLanguage).toHaveBeenCalledWith('en')
+    expect(mockValidateMuxLanguage).toHaveBeenCalledWith('en')
   })
 
   it('omits subtitle language when validation fails', () => {
-    mockUseValidateMuxLanguage.mockReturnValue(false)
+    mockValidateMuxLanguage.mockReturnValue(false)
     const onSelect = jest.fn()
 
     render(
@@ -231,7 +231,7 @@ describe('VideoFromMux', () => {
       },
       true
     )
-    expect(mockUseValidateMuxLanguage).toHaveBeenCalledWith('jp')
+    expect(mockValidateMuxLanguage).toHaveBeenCalledWith('jp')
   })
 
   it('omits subtitle language when journey is missing', () => {
@@ -261,7 +261,7 @@ describe('VideoFromMux', () => {
       },
       true
     )
-    expect(mockUseValidateMuxLanguage).toHaveBeenCalledWith(undefined)
+    expect(mockValidateMuxLanguage).toHaveBeenCalledWith(undefined)
   })
 
   it('should call onSelect with correct block data when valid language', () => {
@@ -292,11 +292,11 @@ describe('VideoFromMux', () => {
       },
       true
     )
-    expect(mockUseValidateMuxLanguage).toHaveBeenCalledWith('en')
+    expect(mockValidateMuxLanguage).toHaveBeenCalledWith('en')
   })
 
   it('should handle invalid language by not including subtitleLanguageId', () => {
-    mockUseValidateMuxLanguage.mockReturnValue(false)
+    mockValidateMuxLanguage.mockReturnValue(false)
     const onSelect = jest.fn()
 
     render(
@@ -323,7 +323,7 @@ describe('VideoFromMux', () => {
       },
       true
     )
-    expect(mockUseValidateMuxLanguage).toHaveBeenCalledWith('jp')
+    expect(mockValidateMuxLanguage).toHaveBeenCalledWith('jp')
   })
 
   it('should handle missing journey', () => {
@@ -358,7 +358,7 @@ describe('VideoFromMux', () => {
   })
 
   it('should create correct block update input with valid language', () => {
-    mockUseValidateMuxLanguage.mockReturnValue(true)
+    mockValidateMuxLanguage.mockReturnValue(true)
     const onSelect = jest.fn()
 
     render(
@@ -400,7 +400,7 @@ describe('VideoFromMux', () => {
   })
 
   it('should create correct block update input without subtitleLanguageId for invalid language', () => {
-    mockUseValidateMuxLanguage.mockReturnValue(false)
+    mockValidateMuxLanguage.mockReturnValue(false)
     const onSelect = jest.fn()
 
     render(

@@ -9,7 +9,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { GetMyGeneratedMuxSubtitleTrack } from '../../../../../../../../../__generated__/GetMyGeneratedMuxSubtitleTrack'
-import { useValidateMuxLanguage } from '../../../../../../../../libs/useValidateMuxLanguage'
+import { validateMuxLanguage } from '../../../../../../../../libs/validateMuxLanguage'
 
 export const GET_MY_GENERATED_MUX_SUBTITLE_TRACK = gql`
   query GetMyGeneratedMuxSubtitleTrack($muxVideoId: ID!, $bcp47: String!) {
@@ -49,7 +49,7 @@ export function MuxSubtitleSwitch({
   const videoBlock =
     selectedBlock?.__typename === 'VideoBlock' ? selectedBlock : undefined
 
-  const isValidLanguage = useValidateMuxLanguage(journeyLanguageCode)
+  const isValidLanguage = validateMuxLanguage(journeyLanguageCode)
   const [toggleChecked, setToggleChecked] = useState(
     videoBlock?.showGeneratedSubtitles ?? false
   )

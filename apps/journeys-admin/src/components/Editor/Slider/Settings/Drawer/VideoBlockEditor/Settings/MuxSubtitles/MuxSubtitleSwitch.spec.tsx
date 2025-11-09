@@ -18,12 +18,12 @@ jest.mock('next-i18next', () => ({
   })
 }))
 
-jest.mock('../../../../../../../../libs/useValidateMuxLanguage', () => ({
-  useValidateMuxLanguage: jest.fn()
+jest.mock('../../../../../../../../libs/validateMuxLanguage', () => ({
+  validateMuxLanguage: jest.fn()
 }))
 
-const { useValidateMuxLanguage } = jest.requireMock(
-  '../../../../../../../../libs/useValidateMuxLanguage'
+const { validateMuxLanguage } = jest.requireMock(
+  '../../../../../../../../libs/validateMuxLanguage'
 )
 
 const mockVideoBlock: TreeBlock<VideoBlock> = {
@@ -138,7 +138,7 @@ describe('MuxSubtitleSwitch', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    useValidateMuxLanguage.mockReturnValue(true)
+    validateMuxLanguage.mockReturnValue(true)
   })
 
   it('renders the subtitles switch with label', () => {
@@ -162,7 +162,7 @@ describe('MuxSubtitleSwitch', () => {
   })
 
   it('disables switch when language is invalid', async () => {
-    useValidateMuxLanguage.mockReturnValue(false)
+    validateMuxLanguage.mockReturnValue(false)
 
     render(
       <MockedProvider mocks={[mockSubtitleTrackReady]}>
@@ -421,7 +421,7 @@ describe('MuxSubtitleSwitch', () => {
     })
 
     // Change to invalid language
-    useValidateMuxLanguage.mockReturnValue(false)
+    validateMuxLanguage.mockReturnValue(false)
 
     rerender(
       <MockedProvider mocks={[mockSubtitleTrackReady]}>
@@ -470,7 +470,7 @@ describe('MuxSubtitleSwitch', () => {
     })
 
     // Change to invalid language
-    useValidateMuxLanguage.mockReturnValue(false)
+    validateMuxLanguage.mockReturnValue(false)
 
     rerender(
       <MockedProvider mocks={[mockSubtitleTrackReady]}>
@@ -534,7 +534,7 @@ describe('MuxSubtitleSwitch', () => {
   })
 
   it('skips query when language is invalid', () => {
-    useValidateMuxLanguage.mockReturnValue(false)
+    validateMuxLanguage.mockReturnValue(false)
 
     render(
       <MockedProvider mocks={[]}>

@@ -24,8 +24,8 @@ jest.mock('@core/journeys/ui/useYouTubeClosedCaptions', () => ({
   useYouTubeClosedCaptions: jest.fn()
 }))
 
-jest.mock('../../../../../../../libs/useValidateMuxLanguage', () => ({
-  useValidateMuxLanguage: jest.fn()
+jest.mock('../../../../../../../libs/validateMuxLanguage', () => ({
+  validateMuxLanguage: jest.fn()
 }))
 
 jest.mock('next-i18next', () => ({
@@ -39,8 +39,8 @@ const mockUseYouTubeClosedCaptions =
     typeof useYouTubeClosedCaptions
   >
 
-const { useValidateMuxLanguage } = jest.requireMock(
-  '../../../../../../../libs/useValidateMuxLanguage'
+const { validateMuxLanguage } = jest.requireMock(
+  '../../../../../../../libs/validateMuxLanguage'
 )
 
 const mockSubtitleTrackReady: MockedResponse = {
@@ -146,7 +146,7 @@ describe('VideoBlockEditorSettings', () => {
       loading: false,
       error: undefined
     })
-    useValidateMuxLanguage.mockReturnValue(true)
+    validateMuxLanguage.mockReturnValue(true)
   })
 
   afterEach(() => {

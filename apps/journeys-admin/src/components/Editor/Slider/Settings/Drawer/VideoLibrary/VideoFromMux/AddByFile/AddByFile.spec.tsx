@@ -27,8 +27,8 @@ jest.mock('@mux/upchunk', () => ({
   }
 }))
 
-jest.mock('../../../../../../../../libs/useValidateMuxLanguage', () => ({
-  useValidateMuxLanguage: jest.fn().mockReturnValue(true)
+jest.mock('../../../../../../../../libs/validateMuxLanguage', () => ({
+  validateMuxLanguage: jest.fn().mockReturnValue(true)
 }))
 
 const mockJourney: Journey = {
@@ -313,9 +313,9 @@ describe('AddByFile', () => {
 
   it('should handle journey with invalid Mux language', () => {
     const {
-      useValidateMuxLanguage
-    } = require('../../../../../../../../libs/useValidateMuxLanguage')
-    useValidateMuxLanguage.mockReturnValue(false)
+      validateMuxLanguage
+    } = require('../../../../../../../../libs/validateMuxLanguage')
+    validateMuxLanguage.mockReturnValue(false)
 
     const journeyWithInvalidLanguage = {
       ...mockJourney,
