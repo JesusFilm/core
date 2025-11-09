@@ -113,9 +113,7 @@ const TestWrapper = ({
 }): React.ReactElement => (
   <MockedProvider>
     <SnackbarProvider>
-      <JourneyProvider
-        value={{ journey: journey }}
-      >
+      <JourneyProvider value={{ journey: journey }}>
         <EditorProvider
           initialState={{
             selectedBlock: {
