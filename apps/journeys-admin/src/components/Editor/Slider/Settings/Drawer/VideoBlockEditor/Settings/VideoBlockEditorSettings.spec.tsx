@@ -3,8 +3,11 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { useYouTubeClosedCaptions } from '@core/journeys/ui/useYouTubeClosedCaptions'
 
+import type { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../__generated__/BlockFields'
 import {
   VideoBlockObjectFit as ObjectFit,
   VideoBlockSource
@@ -48,7 +51,7 @@ const mockYouTubeLanguages = [
   }
 ]
 
-const video: TreeBlock = {
+const video: TreeBlock<VideoBlock> = {
   id: 'video1.id',
   __typename: 'VideoBlock',
   parentBlockId: 'card1.id',
@@ -92,7 +95,8 @@ const video: TreeBlock = {
   posterBlockId: null,
   children: [],
   objectFit: null,
-  subtitleLanguage: null
+  subtitleLanguage: null,
+  showGeneratedSubtitles: null
 }
 
 describe('VideoBlockEditorSettings', () => {
@@ -320,6 +324,40 @@ describe('VideoBlockEditorSettings', () => {
               posterBlock={null}
               onChange={onChange}
             />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+    expect(getByRole('button', { name: 'Fill' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Fit' })).toBeDisabled()
+    expect(getByRole('button', { name: 'Fit' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
+    expect(getByRole('button', { name: 'Crop' })).toBeDisabled()
+  })
+
+  it('should disable aspect ratio buttons for microwebsites', async () => {
+    const onChange = jest.fn()
+    const { getByRole } = render(
+      <ThemeProvider>
+        <MockedProvider>
+          <SnackbarProvider>
+            <JourneyProvider
+              value={{
+                journey: { __typename: 'Journey', website: true } as Journey
+              }}
+            >
+              <VideoBlockEditorSettings
+                selectedBlock={{
+                  ...video,
+                  source: VideoBlockSource.internal,
+                  objectFit: ObjectFit.fill
+                }}
+                posterBlock={null}
+                onChange={onChange}
+              />
+            </JourneyProvider>
           </SnackbarProvider>
         </MockedProvider>
       </ThemeProvider>

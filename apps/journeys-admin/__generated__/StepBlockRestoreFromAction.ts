@@ -540,6 +540,7 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: StepBlockRestoreFromAction_blockRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo | null;
   /**

@@ -872,6 +872,7 @@ export interface VideoBlockCreateInput {
   fullsize?: boolean | null;
   posterBlockId?: string | null;
   subtitleLanguageId?: string | null;
+  showGeneratedSubtitles?: boolean | null;
 }
 
 export interface VideoBlockUpdateInput {
@@ -891,6 +892,7 @@ export interface VideoBlockUpdateInput {
   fullsize?: boolean | null;
   subtitleLanguageId?: string | null;
   source?: VideoBlockSource | null;
+  showGeneratedSubtitles?: boolean | null;
 }
 
 export interface VideoCollapseEventCreateInput {

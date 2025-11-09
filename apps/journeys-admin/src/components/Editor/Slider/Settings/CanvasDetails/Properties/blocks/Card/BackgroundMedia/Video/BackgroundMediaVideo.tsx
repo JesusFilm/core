@@ -139,7 +139,8 @@ export function BackgroundMediaVideo({
               id: input.subtitleLanguageId,
               bcp47: ''
             }
-          : null
+          : null,
+      showGeneratedSubtitles: null
     }
 
     add({
