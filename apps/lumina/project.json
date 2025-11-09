@@ -1,0 +1,88 @@
+{
+  "name": "lumina",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/lumina",
+  "projectType": "application",
+  "tags": ["doppler_config:stg_dev"],
+  "implicitDependencies": ["locales"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["nx _build lumina"],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "rm -rf apps/lumina/src/i18n/locales",
+            "cp -r libs/locales apps/lumina/src/i18n",
+            "CI=true nx _build lumina --prod"
+          ]
+        }
+      }
+    },
+    "_build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/lumina"
+      },
+      "configurations": {
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/next:server",
+      "options": {
+        "buildTarget": "lumina:_build",
+        "dev": true,
+        "hostname": "0.0.0.0",
+        "port": 4900
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "lumina:_build:production",
+          "dev": false
+        },
+        "development": {
+          "buildTarget": "lumina:_build:development",
+          "dev": true
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/lumina"],
+      "options": {
+        "jestConfig": "apps/lumina/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "cache": true,
+        "cacheLocation": ".cache/lumina/eslint",
+        "cacheStrategy": "content"
+      }
+    },
+    "type-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec tsc -b apps/lumina/tsconfig.json"
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "DOPPLER_TOKEN=$DOPPLER_LUMINA_TOKEN doppler secrets download --no-file --format=env-no-quotes --project lumina > apps/lumina/.env"
+          }
+        ]
+      }
+    }
+  }
+}

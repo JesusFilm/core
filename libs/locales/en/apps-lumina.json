@@ -1,0 +1,18 @@
+{
+  "Metadata": {
+    "pageTitle": "{title} | Lumina"
+  },
+  "RootIndexPage": {
+    "pageTitle": "Lumina",
+    "title": "Welcome to <underline>Lumina</underline>",
+    "description": "AI agent management platform"
+  },
+  "DatadogErrorBoundary": {
+    "somethingWentWrong": "Something went wrong",
+    "anErrorOccurred": "An error occurred while loading this page. Please try refreshing.",
+    "errorDetails": "Error details",
+    "tryAgain": "Try again",
+    "unknownError": "Unknown error"
+  }
+}
+
