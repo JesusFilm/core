@@ -178,7 +178,7 @@ export function VideoBlockEditorSettings({
                   ? selectedBlock.mediaVideo.id
                   : null
               }
-              journeyLanguageCode={journey?.language.bcp47}
+              journeyLanguageBcp47={journey?.language.bcp47}
               onChange={async (showGeneratedSubtitles) => {
                 await setValues(
                   {

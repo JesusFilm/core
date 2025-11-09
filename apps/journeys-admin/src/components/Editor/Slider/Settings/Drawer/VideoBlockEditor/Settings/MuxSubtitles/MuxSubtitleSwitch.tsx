@@ -31,14 +31,14 @@ export const GET_MY_GENERATED_MUX_SUBTITLE_TRACK = gql`
 interface MuxSubtitleSwitchProps {
   videoBlockId: string | null
   muxVideoId: string | null
-  journeyLanguageCode: string | null | undefined
+  journeyLanguageBcp47: string | null | undefined
   onChange: (showGeneratedSubtitles: boolean) => Promise<void>
 }
 
 export function MuxSubtitleSwitch({
   videoBlockId,
   muxVideoId,
-  journeyLanguageCode,
+  journeyLanguageBcp47: journeyLanguageCode,
   onChange
 }: MuxSubtitleSwitchProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

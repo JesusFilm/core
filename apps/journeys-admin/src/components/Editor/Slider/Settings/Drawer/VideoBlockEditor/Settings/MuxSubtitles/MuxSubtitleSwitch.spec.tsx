@@ -148,7 +148,7 @@ describe('MuxSubtitleSwitch', () => {
           <MuxSubtitleSwitch
             videoBlockId="video-1"
             muxVideoId="mux-video-id"
-            journeyLanguageCode="en"
+            journeyLanguageBcp47="en"
             onChange={mockOnChange}
           />
         </EditorProvider>
@@ -170,7 +170,7 @@ describe('MuxSubtitleSwitch', () => {
           <MuxSubtitleSwitch
             videoBlockId="video-1"
             muxVideoId="mux-video-id"
-            journeyLanguageCode="ja"
+            journeyLanguageBcp47="ja"
             onChange={mockOnChange}
           />
         </EditorProvider>
@@ -192,7 +192,7 @@ describe('MuxSubtitleSwitch', () => {
           <MuxSubtitleSwitch
             videoBlockId="video-1"
             muxVideoId="mux-video-id"
-            journeyLanguageCode="en"
+            journeyLanguageBcp47="en"
             onChange={mockOnChange}
           />
         </EditorProvider>
@@ -216,7 +216,7 @@ describe('MuxSubtitleSwitch', () => {
           <MuxSubtitleSwitch
             videoBlockId="video-1"
             muxVideoId="mux-video-id"
-            journeyLanguageCode="en"
+            journeyLanguageBcp47="en"
             onChange={mockOnChange}
           />
         </EditorProvider>
@@ -235,7 +235,7 @@ describe('MuxSubtitleSwitch', () => {
           <MuxSubtitleSwitch
             videoBlockId="video-1"
             muxVideoId="mux-video-id"
-            journeyLanguageCode="en"
+            journeyLanguageBcp47="en"
             onChange={mockOnChange}
           />
         </EditorProvider>
@@ -261,7 +261,7 @@ describe('MuxSubtitleSwitch', () => {
           <MuxSubtitleSwitch
             videoBlockId="video-1"
             muxVideoId="mux-video-id"
-            journeyLanguageCode="en"
+            journeyLanguageBcp47="en"
             onChange={mockOnChange}
           />
         </EditorProvider>
@@ -282,7 +282,7 @@ describe('MuxSubtitleSwitch', () => {
           <MuxSubtitleSwitch
             videoBlockId="video-1"
             muxVideoId="mux-video-id"
-            journeyLanguageCode="en"
+            journeyLanguageBcp47="en"
             onChange={mockOnChange}
           />
         </EditorProvider>
@@ -316,7 +316,7 @@ describe('MuxSubtitleSwitch', () => {
           <MuxSubtitleSwitch
             videoBlockId="video-1"
             muxVideoId="mux-video-id"
-            journeyLanguageCode="en"
+            journeyLanguageBcp47="en"
             onChange={mockOnChange}
           />
         </EditorProvider>
@@ -344,7 +344,7 @@ describe('MuxSubtitleSwitch', () => {
           <MuxSubtitleSwitch
             videoBlockId="video-1"
             muxVideoId="mux-video-id"
-            journeyLanguageCode="en"
+            journeyLanguageBcp47="en"
             onChange={mockOnChange}
           />
         </EditorProvider>
@@ -375,7 +375,7 @@ describe('MuxSubtitleSwitch', () => {
           <MuxSubtitleSwitch
             videoBlockId={null}
             muxVideoId="mux-video-id"
-            journeyLanguageCode="en"
+            journeyLanguageBcp47="en"
             onChange={mockOnChange}
           />
         </EditorProvider>
@@ -409,7 +409,7 @@ describe('MuxSubtitleSwitch', () => {
           <MuxSubtitleSwitch
             videoBlockId="video-1"
             muxVideoId="mux-video-id"
-            journeyLanguageCode="en"
+            journeyLanguageBcp47="en"
             onChange={mockOnChange}
           />
         </EditorProvider>
@@ -431,7 +431,7 @@ describe('MuxSubtitleSwitch', () => {
           <MuxSubtitleSwitch
             videoBlockId="video-1"
             muxVideoId="mux-video-id"
-            journeyLanguageCode="ja"
+            journeyLanguageBcp47="ja"
             onChange={mockOnChange}
           />
         </EditorProvider>
@@ -458,7 +458,7 @@ describe('MuxSubtitleSwitch', () => {
           <MuxSubtitleSwitch
             videoBlockId="video-1"
             muxVideoId="mux-video-id"
-            journeyLanguageCode="en"
+            journeyLanguageBcp47="en"
             onChange={mockOnChange}
           />
         </EditorProvider>
@@ -480,7 +480,7 @@ describe('MuxSubtitleSwitch', () => {
           <MuxSubtitleSwitch
             videoBlockId="video-1"
             muxVideoId="mux-video-id"
-            journeyLanguageCode="ja"
+            journeyLanguageBcp47="ja"
             onChange={mockOnChange}
           />
         </EditorProvider>
@@ -504,7 +504,7 @@ describe('MuxSubtitleSwitch', () => {
           <MuxSubtitleSwitch
             videoBlockId="video-1"
             muxVideoId={null}
-            journeyLanguageCode="en"
+            journeyLanguageBcp47="en"
             onChange={mockOnChange}
           />
         </EditorProvider>
@@ -522,7 +522,7 @@ describe('MuxSubtitleSwitch', () => {
           <MuxSubtitleSwitch
             videoBlockId="video-1"
             muxVideoId="mux-video-id"
-            journeyLanguageCode={null}
+            journeyLanguageBcp47={null}
             onChange={mockOnChange}
           />
         </EditorProvider>
@@ -542,7 +542,7 @@ describe('MuxSubtitleSwitch', () => {
           <MuxSubtitleSwitch
             videoBlockId="video-1"
             muxVideoId="mux-video-id"
-            journeyLanguageCode="ja"
+            journeyLanguageBcp47="ja"
             onChange={mockOnChange}
           />
         </EditorProvider>
