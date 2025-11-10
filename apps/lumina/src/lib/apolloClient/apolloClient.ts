@@ -3,10 +3,10 @@ import { registerApolloClient } from '@apollo/client-integration-nextjs'
 import { cookies } from 'next/headers'
 import { getTokens } from 'next-firebase-auth-edge'
 
-import { env } from '@/env'
-import { authConfig } from '@/libs/auth/config'
-
 import { cache } from './cache'
+
+import { env } from '@/env'
+import { authConfig } from '@/libs/auth/server-config'
 
 export const {
   getClient: getApolloClient,
@@ -40,4 +40,3 @@ export const {
     }
   })
 })
-

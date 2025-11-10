@@ -4,6 +4,8 @@ import { getLangDir } from 'rtl-detect'
 
 import DatadogErrorBoundary from '@/components/Datadog/ErrorBoundary'
 import DatadogInit from '@/components/Datadog/Init'
+import { AuthProvider } from '@/components/Auth/AuthProvider'
+import { getUser } from '@/libs/auth/getUser'
 
 import '@/app/globals.css'
 
@@ -14,13 +16,16 @@ export default async function RootLayout({
 }) {
   const locale = await getLocale()
   const direction = getLangDir(locale)
+  const user = await getUser()
 
   return (
     <html lang={locale} dir={direction}>
       <body>
         <DatadogInit />
         <NextIntlClientProvider>
-          <DatadogErrorBoundary>{children}</DatadogErrorBoundary>
+          <AuthProvider initialUser={user}>
+            <DatadogErrorBoundary>{children}</DatadogErrorBoundary>
+          </AuthProvider>
         </NextIntlClientProvider>
       </body>
     </html>

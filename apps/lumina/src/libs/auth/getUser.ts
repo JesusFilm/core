@@ -3,7 +3,7 @@ import { Tokens, getTokens } from 'next-firebase-auth-edge'
 import { filterStandardClaims } from 'next-firebase-auth-edge/lib/auth/claims'
 
 import { User } from './authContext'
-import { authConfig } from './config'
+import { authConfig } from './server-config'
 
 const toUser = ({ decodedToken, token }: Tokens): User => {
   const {
@@ -35,4 +35,3 @@ export async function getUser(): Promise<User | null> {
   const tokens = await getTokens(await cookies(), authConfig)
   return tokens != null ? toUser(tokens) : null
 }
-

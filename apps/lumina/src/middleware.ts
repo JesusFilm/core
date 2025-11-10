@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { authMiddleware } from 'next-firebase-auth-edge'
 
-import { authConfig } from '@/libs/auth/config'
+import { authConfig } from '@/libs/auth/server-config'
 
 const testPathnameRegex = (pages: string[], pathName: string): boolean => {
   return RegExp(
@@ -11,7 +11,7 @@ const testPathnameRegex = (pages: string[], pathName: string): boolean => {
 }
 
 const authPage = '/users/sign-in'
-const publicPaths = [authPage]
+const publicPaths = [authPage, '/users/sign-up']
 
 export default async function middleware(
   req: NextRequest

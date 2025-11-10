@@ -5,7 +5,7 @@
   "RootIndexPage": {
     "pageTitle": "Lumina",
     "title": "Welcome to <underline>Lumina</underline>",
-    "description": "AI agent management platform"
+    "description": "The premier conversational AI platform for Christian evangelism, equipping, and discipleship."
   },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Something went wrong",
@@ -13,6 +13,68 @@
     "errorDetails": "Error details",
     "tryAgain": "Try again",
     "unknownError": "Unknown error"
+  },
+  "SignInPage": {
+    "title": "Welcome Back",
+    "description": "Enter your email and password to access your account.",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your@company.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "signInButton": "Log In",
+    "signInWithGoogle": "Google",
+    "signInWithFacebook": "Facebook",
+    "signingIn": "Signing in...",
+    "switchToSignUp": "Don't Have An Account?",
+    "switchToSignUpLink": "Register Now.",
+    "or": "Or Login With",
+    "promoTitle": "Empower your ministry with AI-powered conversations.",
+    "promoDescription": "Lumina helps you create meaningful connections and guide people on their faith journey through intelligent, compassionate AI conversations.",
+    "promoFeature1": "Evangelism",
+    "promoFeature1Desc": "Engage seekers with thoughtful, personalized conversations",
+    "promoFeature2": "Equipping",
+    "promoFeature2Desc": "Provide resources and guidance to strengthen faith",
+    "promoFeature3": "Discipleship",
+    "promoFeature3Desc": "Walk alongside believers in their spiritual growth"
+  },
+  "SignUpPage": {
+    "title": "Create an account",
+    "description": "Enter your email and password to create your account.",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your@company.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "signUpButton": "Sign Up",
+    "signUpWithGoogle": "Google",
+    "signUpWithFacebook": "Facebook",
+    "signingUp": "Creating account...",
+    "switchToSignIn": "Already Have An Account?",
+    "switchToSignInLink": "Log In Now.",
+    "or": "Or Sign Up With",
+    "promoTitle": "Empower your ministry with AI-powered conversations.",
+    "promoDescription": "Lumina helps you create meaningful connections and guide people on their faith journey through intelligent, compassionate AI conversations.",
+    "promoFeature1": "Evangelism",
+    "promoFeature1Desc": "Engage seekers with thoughtful, personalized conversations",
+    "promoFeature2": "Equipping",
+    "promoFeature2Desc": "Provide resources and guidance to strengthen faith",
+    "promoFeature3": "Discipleship",
+    "promoFeature3Desc": "Walk alongside believers in their spiritual growth"
+  },
+  "errors": {
+    "emailAlreadyInUse": "This email address is already registered. Please sign in instead.",
+    "invalidEmail": "Please enter a valid email address.",
+    "operationNotAllowed": "This sign-in method is not enabled. Please contact support.",
+    "weakPassword": "Password is too weak. Please choose a stronger password.",
+    "userDisabled": "This account has been disabled. Please contact support.",
+    "userNotFound": "No account found with this email address.",
+    "wrongPassword": "Incorrect password. Please try again.",
+    "invalidCredential": "Invalid email or password. Please check your credentials and try again.",
+    "tooManyRequests": "Too many failed attempts. Please try again later.",
+    "networkRequestFailed": "Network error. Please check your internet connection and try again.",
+    "popupClosedByUser": "Sign-in popup was closed. Please try again.",
+    "cancelledPopupRequest": "Only one popup request is allowed at a time. Please try again.",
+    "popupBlocked": "Popup was blocked by your browser. Please allow popups and try again.",
+    "accountExistsWithDifferentCredential": "An account already exists with the same email address but different sign-in credentials.",
+    "default": "An error occurred. Please try again."
   }
 }
-
