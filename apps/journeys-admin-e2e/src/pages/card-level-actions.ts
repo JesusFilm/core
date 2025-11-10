@@ -1656,6 +1656,7 @@ export class CardLevelActionPage {
 
     if (unsplashCount > 0) {
       // Use the same pattern as clickImgFromFeatureOfGalleryTab
+<<<<<<< HEAD
       const imageButton = this.page
         .locator('ul[data-testid="UnsplashList"] li button')
         .first()
@@ -1696,20 +1697,39 @@ export class CardLevelActionPage {
       }
 
       // Wait for progress bar to disappear (image is being processed)
+=======
+      const imageButton = this.page.locator('ul[data-testid="UnsplashList"] li button').first()
+      await imageButton.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+      await imageButton.scrollIntoViewIfNeeded()
+      await imageButton.click({ timeout: sixtySecondsTimeout })
+      
+      // Wait for the image to be selected - check for progress bar or ImageBlockHeader
+      // For footer images, clicking the image should automatically select it and close the dialog
+      // or show the ImageBlockHeader in the settings drawer
+      await this.page.waitForTimeout(2000)
+      
+      // Check if progress bar appears (image is being processed)
+>>>>>>> 421622d968 (fix(journeys-admin-e2e): further improve footer image selection logic)
       try {
     await expect(
       this.page.locator(
             'div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]'
           )
+        ).toBeVisible({ timeout: 5000 })
+        // Wait for progress bar to disappear
+        await expect(
+          this.page.locator(
+            'div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]'
+          )
         ).toBeHidden({ timeout: sixtySecondsTimeout })
       } catch (error) {
-        // Progress bar might not exist, that's okay
+        // Progress bar might not exist, that's okay - image might be selected immediately
       }
       
-      // For footer images, the ImageBlockHeader might appear in the settings drawer after selection
-      // Don't wait for it here - let valdiateSelectedImageWithDeleteIcon handle it
-      // Just wait a bit for the selection to process
-      await this.page.waitForTimeout(2000)
+      // For footer images, the ImageBlockHeader appears in the settings drawer
+      // The image selection dialog might close automatically, or we might need to close it
+      // Don't wait for ImageBlockHeader here - let valdiateSelectedImageWithDeleteIcon handle it
+      await this.page.waitForTimeout(1000)
       return
     }
 
@@ -1853,19 +1873,6 @@ export class CardLevelActionPage {
           'button[data-testid*="confirm"]:not([data-testid="card click area"])'
         ]
         for (const btnSelector of confirmButtons) {
-<<<<<<< HEAD
-          const btn = this.page.locator(btnSelector).first()
-          if ((await btn.count()) > 0) {
-            await btn.click({ timeout: 10000 })
-            await this.page.waitForTimeout(1000)
-            break
-          }
-        }
-
-        await expect(
-          this.page.locator('div[data-testid="ImageBlockHeader"]')
-        ).toBeVisible({ timeout: sixtySecondsTimeout })
-=======
           try {
             const btn = this.page.locator(btnSelector).first()
             const btnCount = await btn.count()
@@ -1897,7 +1904,6 @@ export class CardLevelActionPage {
         // Don't wait for it here - let valdiateSelectedImageWithDeleteIcon handle it
         // Just wait a bit for the selection to process
         await this.page.waitForTimeout(2000)
->>>>>>> eaa6fe2afb (fix(journeys-admin-e2e): improve footer image selection with better error handling)
         return
       }
       throw new Error('No images found in gallery after waiting')
@@ -1955,43 +1961,18 @@ export class CardLevelActionPage {
     ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
   async valdiateSelectedImageWithDeleteIcon() {
-    // First, check if image selection dialog is still open - if so, we might need to close it or confirm selection
-    const imageDialog = this.page.locator('div[role="dialog"]:has-text("Image"), div[role="dialog"]:has(div[data-testid*="Image"])')
-    const dialogCount = await imageDialog.count()
-    if (dialogCount > 0) {
-      // Dialog is still open - check for confirmation/select button
-      const confirmButtons = [
-        'button:has-text("Select"):not([data-testid="card click area"])',
-        'button:has-text("Done"):not([data-testid="card click area"])',
-        'button:has-text("Confirm"):not([data-testid="card click area"])',
-        'button[data-testid*="confirm"]:not([data-testid="card click area"])',
-        'button[aria-label*="Select"]:not([data-testid="card click area"])',
-        'button[aria-label*="Confirm"]:not([data-testid="card click area"])'
-      ]
-      
-      for (const buttonSelector of confirmButtons) {
-        try {
-          const button = this.page.locator(buttonSelector).first()
-          const buttonCount = await button.count()
-          if (buttonCount > 0) {
-            const isVisible = await button.isVisible().catch(() => false)
-            if (isVisible) {
-              await button.click({ timeout: sixtySecondsTimeout })
-              await this.page.waitForTimeout(2000)
-              break
-            }
-          }
-        } catch (err) {
-          continue
-        }
-      }
-    }
-    
-    // Wait a bit for the image to be processed and ImageBlockHeader to appear
+    // For footer images, the ImageBlockHeader appears in the settings drawer
+    // The image selection dialog might still be open, but the ImageBlockHeader should be in the drawer behind it
+    // First, wait for the image to be processed
     await this.page.waitForTimeout(2000)
     
-    // First, ensure ImageBlockHeader exists - wait longer and check multiple locations
-    // The ImageBlockHeader might be in a drawer or in the main content
+    // Check if image selection dialog is still open
+    const imageDialog = this.page.locator('div[role="dialog"]:has-text("Image"), div[role="dialog"]:has(div[data-testid*="Image"])')
+    const dialogCount = await imageDialog.count()
+    const dialogOpen = dialogCount > 0 && await imageDialog.first().isVisible().catch(() => false)
+    
+    // For footer images, ImageBlockHeader appears in SettingsDrawerContent, possibly behind the dialog
+    // Try to find it in the settings drawer first (most likely location)
     const imageHeaderSelectors = [
       'div[data-testid="SettingsDrawerContent"] div[data-testid="ImageBlockHeader"]',
       'div[data-testid="ImageBlockHeader"]',
@@ -2001,19 +1982,95 @@ export class CardLevelActionPage {
 
     let imageHeaderFound = false
     let imageHeader: ReturnType<typeof this.page.locator> | null = null
+<<<<<<< HEAD
 
+=======
+    
+    // Try to find ImageBlockHeader - it might be behind the dialog, so check with all() to find hidden ones too
+>>>>>>> 421622d968 (fix(journeys-admin-e2e): further improve footer image selection logic)
     for (const selector of imageHeaderSelectors) {
       try {
         imageHeader = this.page.locator(selector)
-        await expect(imageHeader).toBeVisible({ timeout: 15000 })
-        imageHeaderFound = true
-        break
+        // For footer images, the header might be in the drawer behind the dialog, so check if it exists (even if not visible)
+        const count = await imageHeader.count()
+        if (count > 0) {
+          // Check if it's visible or if we need to wait for dialog to close
+          const isVisible = await imageHeader.first().isVisible().catch(() => false)
+          if (isVisible) {
+            imageHeaderFound = true
+            break
+          } else if (selector.includes('SettingsDrawerContent')) {
+            // If it's in the settings drawer but not visible, the dialog might be covering it
+            // Wait a bit and check again, or try to close the dialog
+            await this.page.waitForTimeout(2000)
+            const visibleAfterWait = await imageHeader.first().isVisible().catch(() => false)
+            if (visibleAfterWait) {
+              imageHeaderFound = true
+              break
+            }
+          }
+        }
       } catch (error) {
         continue
       }
     }
     
-    // If still not found, wait a bit more and try again
+    // If dialog is still open and we haven't found the header, try closing it
+    // For footer images, the ImageBlockHeader might only appear after closing the image selection dialog
+    if (!imageHeaderFound && dialogOpen) {
+      // Try to find and click the close button for the image library
+      try {
+        const closeBtn = this.page.locator('div.MuiToolbar-root:has-text("Image") button[aria-label="close-image-library"]').first()
+        const closeBtnCount = await closeBtn.count()
+        if (closeBtnCount > 0) {
+          const isVisible = await closeBtn.isVisible().catch(() => false)
+          if (isVisible) {
+            await closeBtn.click({ timeout: 10000 })
+            await this.page.waitForTimeout(3000) // Wait for dialog to close and ImageBlockHeader to appear
+          }
+        }
+      } catch (err) {
+        // Try alternative close button selectors
+        const closeButtons = [
+          'button[aria-label="close-image-library"]',
+          'button:has-text("Done"):not([data-testid="card click area"])',
+          'button:has-text("Select"):not([data-testid="card click area"])'
+        ]
+        
+        for (const btnSelector of closeButtons) {
+          try {
+            const btn = this.page.locator(btnSelector).first()
+            const btnCount = await btn.count()
+            if (btnCount > 0) {
+              const isVisible = await btn.isVisible().catch(() => false)
+              if (isVisible) {
+                await btn.click({ timeout: 10000 })
+                await this.page.waitForTimeout(3000)
+                break
+              }
+            }
+          } catch (err2) {
+            continue
+          }
+        }
+      }
+    }
+    
+    // Now try to find ImageBlockHeader again after potential dialog close
+    if (!imageHeaderFound) {
+      for (const selector of imageHeaderSelectors) {
+        try {
+          imageHeader = this.page.locator(selector)
+          await expect(imageHeader).toBeVisible({ timeout: 15000 })
+          imageHeaderFound = true
+          break
+        } catch (error) {
+          continue
+        }
+      }
+    }
+    
+    // Final attempt with longer wait
     if (!imageHeaderFound) {
       await this.page.waitForTimeout(3000)
       for (const selector of imageHeaderSelectors) {
