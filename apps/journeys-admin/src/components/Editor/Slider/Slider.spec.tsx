@@ -277,9 +277,11 @@ describe('Slider', () => {
 
     render(
       <MockedProvider mocks={[mockGetJourneyFlowBackButtonClicked]}>
-        <EditorProvider initialState={contentState}>
-          <Slider />
-        </EditorProvider>
+        <MuxVideoUploadProvider>
+          <EditorProvider initialState={contentState}>
+            <Slider />
+          </EditorProvider>
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
 

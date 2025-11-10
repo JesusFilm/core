@@ -22,6 +22,7 @@ import { TypographyFields } from '../../../../../../../__generated__/TypographyF
 import { SelectableWrapper } from '../SelectableWrapper'
 
 import { InlineEditWrapper } from '.'
+import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -75,17 +76,19 @@ describe('InlineEditWrapper', () => {
     const { getByDisplayValue, getByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <EditorProvider
-            initialState={{
-              steps: [step(typographyBlock)]
-            }}
-          >
-            <SelectableWrapper block={typographyBlock}>
-              <InlineEditWrapper block={typographyBlock}>
-                <Typography {...typographyBlock} />
-              </InlineEditWrapper>
-            </SelectableWrapper>
-          </EditorProvider>
+          <MuxVideoUploadProvider>
+            <EditorProvider
+              initialState={{
+                steps: [step(typographyBlock)]
+              }}
+            >
+              <SelectableWrapper block={typographyBlock}>
+                <InlineEditWrapper block={typographyBlock}>
+                  <Typography {...typographyBlock} />
+                </InlineEditWrapper>
+              </SelectableWrapper>
+            </EditorProvider>
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
