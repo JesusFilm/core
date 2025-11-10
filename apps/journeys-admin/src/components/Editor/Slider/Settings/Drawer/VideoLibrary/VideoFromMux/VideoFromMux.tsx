@@ -7,7 +7,7 @@ import {
   VideoBlockSource,
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
-import { useValidateMuxLanguage } from '../../../../../../../libs/useValidateMuxLanguage'
+import { validateMuxLanguage } from '../../../../../../../libs/validateMuxLanguage'
 
 import { AddByFile } from './AddByFile'
 
@@ -17,7 +17,7 @@ interface VideoFromMuxProps {
 
 export function VideoFromMux({ onSelect }: VideoFromMuxProps): ReactElement {
   const { journey } = useJourney()
-  const isValidLanguage = useValidateMuxLanguage(journey?.language?.bcp47)
+  const isValidLanguage = validateMuxLanguage(journey?.language?.bcp47)
 
   const handleChange = (id: string, shouldCloseDrawer?: boolean): void => {
     const block: VideoBlockUpdateInput = {

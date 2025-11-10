@@ -12,7 +12,7 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
-import { useValidateMuxLanguage } from '../../../../../../../../libs/useValidateMuxLanguage'
+import { validateMuxLanguage } from '../../../../../../../../libs/validateMuxLanguage'
 import { useMuxVideoUpload } from '../../../../../../../MuxVideoUploadProvider'
 
 interface AddByFileProps {
@@ -26,7 +26,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     state: { selectedBlock }
   } = useEditor()
   const rawLanguageCode = journey?.language?.bcp47
-  const isValidLanguage = useValidateMuxLanguage(rawLanguageCode)
+  const isValidLanguage = validateMuxLanguage(rawLanguageCode)
   const languageCode =
     isValidLanguage && rawLanguageCode != null ? rawLanguageCode : undefined
   const languageName = journey?.language?.name?.find(

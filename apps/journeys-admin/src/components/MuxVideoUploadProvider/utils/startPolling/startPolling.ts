@@ -1,5 +1,6 @@
 import { Dispatch, RefObject, SetStateAction } from 'react'
 
+import type { ShowSnackbarOptions } from '../showSnackbar/showSnackbar'
 import type { PollingTask } from '../types'
 
 interface StartPollingServices {
@@ -7,7 +8,7 @@ interface StartPollingServices {
   showSnackbar: (
     message: string,
     variant: 'success' | 'error' | 'info' | 'warning',
-    persist?: boolean
+    options?: boolean | ShowSnackbarOptions
   ) => void
   t: (key: string) => string
   setPollingTasks: Dispatch<SetStateAction<Map<string, PollingTask>>>
@@ -24,7 +25,11 @@ export function startPolling(
 
   // Show start notification only once per video
   if (!hasShownStartNotification.current.has(videoId)) {
-    showSnackbar(t('Video upload in progress'), 'success', true)
+    showSnackbar(t('Video upload in progress'), 'success', {
+      autoHideDuration: 4000,
+      preventDuplicate: true,
+      persist: false
+    })
     hasShownStartNotification.current.add(videoId)
   }
 

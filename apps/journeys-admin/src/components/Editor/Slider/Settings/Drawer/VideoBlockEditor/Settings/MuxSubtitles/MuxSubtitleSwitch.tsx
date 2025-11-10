@@ -3,13 +3,13 @@ import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { GetMyGeneratedMuxSubtitleTrack } from '../../../../../../../../../__generated__/GetMyGeneratedMuxSubtitleTrack'
-import { useValidateMuxLanguage } from '../../../../../../../../libs/useValidateMuxLanguage'
+import { validateMuxLanguage } from '../../../../../../../../libs/validateMuxLanguage'
 
 export const GET_MY_GENERATED_MUX_SUBTITLE_TRACK = gql`
   query GetMyGeneratedMuxSubtitleTrack($muxVideoId: ID!, $bcp47: String!) {
@@ -31,14 +31,14 @@ export const GET_MY_GENERATED_MUX_SUBTITLE_TRACK = gql`
 interface MuxSubtitleSwitchProps {
   videoBlockId: string | null
   muxVideoId: string | null
-  journeyLanguageCode: string | null | undefined
+  journeyLanguageBcp47: string | null | undefined
   onChange: (showGeneratedSubtitles: boolean) => Promise<void>
 }
 
 export function MuxSubtitleSwitch({
   videoBlockId,
   muxVideoId,
-  journeyLanguageCode,
+  journeyLanguageBcp47: journeyLanguageCode,
   onChange
 }: MuxSubtitleSwitchProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -49,13 +49,15 @@ export function MuxSubtitleSwitch({
   const videoBlock =
     selectedBlock?.__typename === 'VideoBlock' ? selectedBlock : undefined
 
-  const isValidLanguage = useValidateMuxLanguage(journeyLanguageCode)
+  const isValidLanguage = validateMuxLanguage(journeyLanguageCode)
   const [toggleChecked, setToggleChecked] = useState(
     videoBlock?.showGeneratedSubtitles ?? false
   )
   const [updating, setUpdating] = useState(false)
+  const previousSubtitleStatusRef = useRef<string | null>(null)
 
-  // Query subtitle track status
+  // Query subtitle track status only when showGeneratedSubtitles is null (still waiting for generation)
+  // If showGeneratedSubtitles is already set, we don't need to query as subtitles are ready
   const {
     data: subtitleTrackData,
     error: subtitleTrackError,
@@ -69,7 +71,10 @@ export function MuxSubtitleSwitch({
         bcp47: journeyLanguageCode ?? ''
       },
       skip:
-        !isValidLanguage || muxVideoId == null || journeyLanguageCode == null
+        !isValidLanguage ||
+        muxVideoId == null ||
+        journeyLanguageCode == null ||
+        videoBlock?.showGeneratedSubtitles != null
     }
   )
 
@@ -94,14 +99,42 @@ export function MuxSubtitleSwitch({
     }
   }, [subtitleTrack?.status, startPolling, stopPolling])
 
+  // Sync toggle state with videoBlock when showGeneratedSubtitles is set
   useEffect(() => {
-    if (
-      videoBlock?.showGeneratedSubtitles != null &&
-      subtitleTrack?.status === 'ready'
-    ) {
+    if (videoBlock?.showGeneratedSubtitles != null) {
       setToggleChecked(videoBlock.showGeneratedSubtitles)
     }
-  }, [videoBlock, subtitleTrack])
+  }, [videoBlock?.showGeneratedSubtitles])
+
+  // Programmatically persist showGeneratedSubtitles when subtitle track transitions from processing to ready
+  // This ensures that on subsequent page reloads, showGeneratedSubtitles is set (not null) and the query is skipped
+  useEffect(() => {
+    const currentStatus = subtitleTrack?.status ?? null
+    const previousStatus = previousSubtitleStatusRef.current
+
+    // Detect transition from "processing" to "ready"
+    if (
+      previousStatus === 'processing' &&
+      currentStatus === 'ready' &&
+      videoBlock?.showGeneratedSubtitles == null &&
+      videoBlockId != null &&
+      !updating
+    ) {
+      // Persist showGeneratedSubtitles = false to prevent repeated queries on reload
+      void onChange(false).catch(() => {
+        // Silently handle errors - the user can still toggle manually later
+      })
+    }
+
+    // Update ref for next comparison
+    previousSubtitleStatusRef.current = currentStatus
+  }, [
+    subtitleTrack?.status,
+    videoBlock?.showGeneratedSubtitles,
+    videoBlockId,
+    updating,
+    onChange
+  ])
 
   // Programmatically turn off switch when language becomes invalid
   useEffect(() => {
@@ -140,18 +173,23 @@ export function MuxSubtitleSwitch({
   const isProcessing = subtitleStatus === 'processing'
   const isErrored = subtitleStatus === 'errored'
 
+  // If showGeneratedSubtitles is already set, subtitles are ready and toggle should be enabled
+  const isSubtitlesReady = videoBlock?.showGeneratedSubtitles != null
+
   const isToggleDisabled =
     !isValidLanguage ||
-    subtitleTrackError != null ||
-    subtitleStatus == null ||
-    isProcessing ||
-    isErrored ||
-    updating
+    updating ||
+    (!isSubtitlesReady &&
+      (subtitleTrackError != null ||
+        subtitleStatus == null ||
+        isProcessing ||
+        isErrored))
 
   let labelText = !isValidLanguage
     ? t('Subtitles not available for this video language')
     : ''
-  if (isValidLanguage && isProcessing) {
+  // Only show processing message when showGeneratedSubtitles is null (still waiting)
+  if (isValidLanguage && !isSubtitlesReady && isProcessing) {
     labelText = t(
       'Auto subtitle generation in progress, please try again later'
     )

@@ -96,7 +96,11 @@ describe('handlePollingComplete', () => {
     expect(showSnackbar).toHaveBeenCalledWith(
       'translated:Video upload completed',
       'success',
-      true
+      {
+        autoHideDuration: 4000,
+        preventDuplicate: true,
+        persist: false
+      }
     )
   })
 

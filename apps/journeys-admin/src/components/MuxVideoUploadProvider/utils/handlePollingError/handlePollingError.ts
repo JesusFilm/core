@@ -2,6 +2,7 @@ import { Dispatch, RefObject, SetStateAction } from 'react'
 
 import { clearPollingInterval } from '../clearPollingInterval'
 import { TASK_CLEANUP_DELAY } from '../constants'
+import type { ShowSnackbarOptions } from '../showSnackbar/showSnackbar'
 import type { PollingTask } from '../types'
 
 interface HandlePollingErrorDependencies {
@@ -9,7 +10,7 @@ interface HandlePollingErrorDependencies {
   showSnackbar: (
     message: string,
     variant: 'success' | 'error' | 'info' | 'warning',
-    persist?: boolean
+    options?: boolean | ShowSnackbarOptions
   ) => void
   pollingIntervalsRef: RefObject<Map<string, NodeJS.Timeout>>
 }
@@ -31,7 +32,11 @@ export function handlePollingError(
     return next
   })
 
-  showSnackbar(error, 'error', true)
+  showSnackbar(error, 'error', {
+    autoHideDuration: 4000,
+    preventDuplicate: true,
+    persist: false
+  })
 
   // Remove from state after notification
   setTimeout(() => {

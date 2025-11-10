@@ -44,13 +44,11 @@ describe('handlePollingError', () => {
     const showSnackbar = jest.fn()
     const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
-    const mockInterval = setInterval(() => {}, 1000)
-    pollingIntervalsRef.current.set(videoId, mockInterval)
-    const task: PollingTask = {
-      videoId,
-      status: 'processing',
-      startTime: Date.now()
+    const noop = (): void => {
+      // No-op function for interval
     }
+    const mockInterval = setInterval(noop, 1000)
+    pollingIntervalsRef.current.set(videoId, mockInterval)
 
     handlePollingError(videoId, 'Test error', {
       setPollingTasks,
@@ -66,11 +64,6 @@ describe('handlePollingError', () => {
     const showSnackbar = jest.fn()
     const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
-    const task: PollingTask = {
-      videoId,
-      status: 'processing',
-      startTime: Date.now()
-    }
 
     handlePollingError(videoId, 'Test error message', {
       setPollingTasks,
@@ -78,11 +71,11 @@ describe('handlePollingError', () => {
       pollingIntervalsRef
     })
 
-    expect(showSnackbar).toHaveBeenCalledWith(
-      'Test error message',
-      'error',
-      true
-    )
+    expect(showSnackbar).toHaveBeenCalledWith('Test error message', 'error', {
+      autoHideDuration: 4000,
+      preventDuplicate: true,
+      persist: false
+    })
   })
 
   it('should remove task after cleanup delay', () => {
