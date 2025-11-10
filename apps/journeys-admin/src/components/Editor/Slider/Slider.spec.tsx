@@ -21,7 +21,7 @@ import {
 } from '../../../../__generated__/UpdateJourneyFlowBackButtonClicked'
 import { mockReactFlow } from '../../../../test/mockReactFlow'
 import { TestEditorState } from '../../../libs/TestEditorState'
-import { MuxVideoUploadProvider } from '../../../MuxVideoUploadProvider'
+import { MuxVideoUploadProvider } from '../../MuxVideoUploadProvider'
 
 import {
   GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED,

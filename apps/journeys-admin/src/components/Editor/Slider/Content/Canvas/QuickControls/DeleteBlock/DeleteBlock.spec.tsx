@@ -275,7 +275,9 @@ describe('DeleteBlock', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <DeleteBlock variant="button" disabled />
+          <MuxVideoUploadProvider>
+            <DeleteBlock variant="button" disabled />
+          </MuxVideoUploadProvider>
         </MockedProvider>
       </SnackbarProvider>
     )

@@ -6,9 +6,9 @@ import { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { GetAdminJourney_journey_blocks_VideoBlock as VideoBlock } from '../../../../../../../__generated__/GetAdminJourney'
-import { MuxVideoUploadProvider } from '../../../../../../MuxVideoUploadProvider'
 
 import { QuickControls } from '.'
+import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
 
 describe('QuickControls', () => {
   const videoBlock = {

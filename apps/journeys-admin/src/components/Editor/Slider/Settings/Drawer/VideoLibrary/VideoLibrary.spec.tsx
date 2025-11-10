@@ -152,7 +152,9 @@ describe('VideoLibrary', () => {
   it('should render the Video Library on the right', () => {
     render(
       <MockedProvider>
-        <VideoLibrary open />
+        <MuxVideoUploadProvider>
+          <VideoLibrary open />
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     expect(screen.getByText('Video Library')).toBeInTheDocument()
@@ -297,7 +299,9 @@ describe('VideoLibrary', () => {
 
     render(
       <MockedProvider>
-        <VideoLibrary open />
+        <MuxVideoUploadProvider>
+          <VideoLibrary open />
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getByRole('tab', { name: 'YouTube' }))
