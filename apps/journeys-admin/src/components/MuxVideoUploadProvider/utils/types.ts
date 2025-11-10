@@ -3,7 +3,6 @@ export interface PollingTask {
   languageCode?: string
   status: 'processing' | 'completed' | 'error'
   startTime: number
-  stopPolling: () => void
   onComplete?: () => void
 }
 

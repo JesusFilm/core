@@ -1,5 +1,6 @@
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, RefObject, SetStateAction } from 'react'
 
+import { clearPollingInterval } from '../clearPollingInterval'
 import { TASK_CLEANUP_DELAY } from '../constants'
 import type { PollingTask } from '../types'
 
@@ -12,18 +13,25 @@ interface HandlePollingCompleteDependencies {
     persist?: boolean
   ) => void
   t: (key: string) => string
+  pollingIntervalsRef: RefObject<Map<string, NodeJS.Timeout>>
 }
 
 export async function handlePollingComplete(
   videoId: string,
   dependencies: HandlePollingCompleteDependencies
 ): Promise<void> {
-  const { pollingTasks, setPollingTasks, showSnackbar, t } = dependencies
+  const {
+    pollingTasks,
+    setPollingTasks,
+    showSnackbar,
+    t,
+    pollingIntervalsRef
+  } = dependencies
 
   const task = pollingTasks.get(videoId)
   if (task == null) return
 
-  task.stopPolling()
+  clearPollingInterval(videoId, pollingIntervalsRef)
 
   setPollingTasks((prev) => {
     const next = new Map(prev)

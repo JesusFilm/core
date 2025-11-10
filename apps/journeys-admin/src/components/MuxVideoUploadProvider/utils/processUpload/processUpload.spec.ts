@@ -16,13 +16,13 @@ describe('processUpload', () => {
   let mockDependencies: {
     setUploadTasks: jest.Mock
     createMuxVideoUploadByFile: jest.Mock
-    setCurrentlyUploading: jest.Mock
     startPolling: jest.Mock
-    uploadInstanceRef: { current: { abort: () => void } | null }
+    uploadInstanceRefs: { current: Map<string, { abort: () => void }> }
   }
 
   let mockUpload: {
     on: jest.Mock
+    abort: jest.Mock
   }
 
   beforeEach(() => {
@@ -30,16 +30,16 @@ describe('processUpload', () => {
     jest.clearAllMocks()
 
     mockUpload = {
-      on: jest.fn()
+      on: jest.fn(),
+      abort: jest.fn()
     }
     ;(UpChunk.createUpload as jest.Mock).mockReturnValue(mockUpload)
 
     mockDependencies = {
       setUploadTasks: jest.fn(),
       createMuxVideoUploadByFile: jest.fn(),
-      setCurrentlyUploading: jest.fn(),
       startPolling: jest.fn(),
-      uploadInstanceRef: { current: null }
+      uploadInstanceRefs: { current: new Map() }
     }
   })
 
@@ -165,7 +165,7 @@ describe('processUpload', () => {
     })
   })
 
-  it('should set uploadInstanceRef', async () => {
+  it('should set uploadInstanceRefs', async () => {
     const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
     const task: UploadTask = {
       videoBlockId: 'block-1',
@@ -185,7 +185,9 @@ describe('processUpload', () => {
 
     await processUpload('block-1', task, mockDependencies)
 
-    expect(mockDependencies.uploadInstanceRef.current).toBe(mockUpload)
+    expect(mockDependencies.uploadInstanceRefs.current.get('block-1')).toBe(
+      mockUpload
+    )
   })
 
   it('should register success, error, and progress event handlers', async () => {
@@ -281,7 +283,9 @@ describe('processUpload', () => {
     if (successHandler != null) {
       successHandler()
 
-      expect(mockDependencies.setCurrentlyUploading).toHaveBeenCalledWith(null)
+      expect(mockDependencies.uploadInstanceRefs.current.has('block-1')).toBe(
+        false
+      )
       expect(mockDependencies.startPolling).toHaveBeenCalledWith(
         'video-1',
         'en',
@@ -456,7 +460,9 @@ describe('processUpload', () => {
       const error = { detail: new Error('Upload failed') }
       errorHandler(error)
 
-      expect(mockDependencies.setCurrentlyUploading).toHaveBeenCalledWith(null)
+      expect(mockDependencies.uploadInstanceRefs.current.has('block-1')).toBe(
+        false
+      )
 
       // Find the call that sets status to error
       const errorStatusCall = mockDependencies.setUploadTasks.mock.calls.find(
@@ -580,7 +586,9 @@ describe('processUpload', () => {
     )
 
     expect(errorCall).toBeDefined()
-    expect(mockDependencies.setCurrentlyUploading).toHaveBeenCalledWith(null)
+    expect(mockDependencies.uploadInstanceRefs.current.has('block-1')).toBe(
+      false
+    )
 
     // Advance timers to trigger cleanup
     jest.advanceTimersByTime(TASK_CLEANUP_DELAY)

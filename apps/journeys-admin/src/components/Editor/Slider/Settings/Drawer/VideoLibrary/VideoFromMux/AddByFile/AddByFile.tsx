@@ -33,7 +33,7 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
     (name) => name.primary
   )?.value
 
-  const { getUploadStatus, addUploadToQueue } = useMuxVideoUpload()
+  const { getUploadStatus, addUploadTask } = useMuxVideoUpload()
 
   const videoBlockId = selectedBlock?.id ?? null
   const uploadTask = videoBlockId != null ? getUploadStatus(videoBlockId) : null
@@ -64,8 +64,8 @@ export function AddByFile({ onChange }: AddByFileProps): ReactElement {
         return
       }
 
-      // Add to queue
-      addUploadToQueue(
+      // Add upload task
+      addUploadTask(
         videoBlockId,
         files[0],
         languageCode,

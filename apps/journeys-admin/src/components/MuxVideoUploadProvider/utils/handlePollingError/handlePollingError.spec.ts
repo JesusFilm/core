@@ -17,16 +17,19 @@ describe('handlePollingError', () => {
   it('should update task status to error', () => {
     const setPollingTasks = jest.fn()
     const showSnackbar = jest.fn()
+    const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
-    const stopPollingFn = jest.fn()
     const task: PollingTask = {
       videoId,
       status: 'processing',
-      startTime: Date.now(),
-      stopPolling: stopPollingFn
+      startTime: Date.now()
     }
 
-    handlePollingError(videoId, 'Test error', { setPollingTasks, showSnackbar })
+    handlePollingError(videoId, 'Test error', {
+      setPollingTasks,
+      showSnackbar,
+      pollingIntervalsRef
+    })
 
     expect(setPollingTasks).toHaveBeenCalledTimes(1)
     const updateFn = setPollingTasks.mock.calls[0][0]
@@ -36,42 +39,43 @@ describe('handlePollingError', () => {
     expect(result.get(videoId)?.status).toBe('error')
   })
 
-  it('should call stopPolling on task', () => {
+  it('should clear polling interval', () => {
     const setPollingTasks = jest.fn()
     const showSnackbar = jest.fn()
+    const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
-    const stopPollingFn = jest.fn()
+    const mockInterval = setInterval(() => {}, 1000)
+    pollingIntervalsRef.current.set(videoId, mockInterval)
     const task: PollingTask = {
       videoId,
       status: 'processing',
-      startTime: Date.now(),
-      stopPolling: stopPollingFn
+      startTime: Date.now()
     }
 
-    handlePollingError(videoId, 'Test error', { setPollingTasks, showSnackbar })
+    handlePollingError(videoId, 'Test error', {
+      setPollingTasks,
+      showSnackbar,
+      pollingIntervalsRef
+    })
 
-    const updateFn = setPollingTasks.mock.calls[0][0]
-    const prev = new Map([['video-1', task]])
-    updateFn(prev)
-
-    expect(stopPollingFn).toHaveBeenCalled()
+    expect(pollingIntervalsRef.current.has(videoId)).toBe(false)
   })
 
   it('should show error snackbar', () => {
     const setPollingTasks = jest.fn()
     const showSnackbar = jest.fn()
+    const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
-    const stopPollingFn = jest.fn()
     const task: PollingTask = {
       videoId,
       status: 'processing',
-      startTime: Date.now(),
-      stopPolling: stopPollingFn
+      startTime: Date.now()
     }
 
     handlePollingError(videoId, 'Test error message', {
       setPollingTasks,
-      showSnackbar
+      showSnackbar,
+      pollingIntervalsRef
     })
 
     expect(showSnackbar).toHaveBeenCalledWith(
@@ -79,26 +83,24 @@ describe('handlePollingError', () => {
       'error',
       true
     )
-
-    // Verify task.stopPolling is called
-    const updateFn = setPollingTasks.mock.calls[0][0]
-    const prev = new Map([['video-1', task]])
-    updateFn(prev)
-    expect(stopPollingFn).toHaveBeenCalled()
   })
 
   it('should remove task after cleanup delay', () => {
     const setPollingTasks = jest.fn()
     const showSnackbar = jest.fn()
+    const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
     const task: PollingTask = {
       videoId,
       status: 'processing',
-      startTime: Date.now(),
-      stopPolling: jest.fn()
+      startTime: Date.now()
     }
 
-    handlePollingError(videoId, 'Test error', { setPollingTasks, showSnackbar })
+    handlePollingError(videoId, 'Test error', {
+      setPollingTasks,
+      showSnackbar,
+      pollingIntervalsRef
+    })
 
     // First call sets status to error
     expect(setPollingTasks).toHaveBeenCalledTimes(1)
@@ -119,10 +121,15 @@ describe('handlePollingError', () => {
   it('should return previous map if task does not exist', () => {
     const setPollingTasks = jest.fn()
     const showSnackbar = jest.fn()
+    const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
     const prev = new Map<string, PollingTask>()
 
-    handlePollingError(videoId, 'Test error', { setPollingTasks, showSnackbar })
+    handlePollingError(videoId, 'Test error', {
+      setPollingTasks,
+      showSnackbar,
+      pollingIntervalsRef
+    })
 
     expect(setPollingTasks).toHaveBeenCalledTimes(1)
     const updateFn = setPollingTasks.mock.calls[0][0]

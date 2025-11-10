@@ -7,14 +7,12 @@ describe('startPolling', () => {
     hasShownStartNotification: { current: new Set<string>() },
     showSnackbar: jest.fn(),
     t: jest.fn((key: string) => key),
-    setPollingTasks: jest.fn(),
-    stopQueryRefs: { current: new Map<string, () => void>() }
+    setPollingTasks: jest.fn()
   }
 
   beforeEach(() => {
     jest.clearAllMocks()
     mockServices.hasShownStartNotification.current.clear()
-    mockServices.stopQueryRefs.current.clear()
   })
 
   it('should create polling task with correct properties', () => {
@@ -38,7 +36,6 @@ describe('startPolling', () => {
       onComplete
     })
     expect(task?.startTime).toBeGreaterThan(0)
-    expect(typeof task?.stopPolling).toBe('function')
   })
 
   it('should show notification on first call', () => {
@@ -89,38 +86,5 @@ describe('startPolling', () => {
 
     const task = result.get(videoId)
     expect(task?.onComplete).toBeUndefined()
-  })
-
-  it('should create stopPolling function that calls stopQueryRefs', () => {
-    const videoId = 'video-1'
-    const stopQuery = jest.fn()
-    mockServices.stopQueryRefs.current.set(videoId, stopQuery)
-
-    startPolling(videoId, undefined, undefined, mockServices)
-
-    const updateFn = mockServices.setPollingTasks.mock.calls[0][0]
-    const prev = new Map<string, PollingTask>()
-    const result = updateFn(prev)
-
-    const task = result.get(videoId)
-    if (task != null) {
-      task.stopPolling()
-      expect(stopQuery).toHaveBeenCalled()
-    }
-  })
-
-  it('should handle stopPolling when stopQueryRefs does not have videoId', () => {
-    const videoId = 'video-1'
-
-    startPolling(videoId, undefined, undefined, mockServices)
-
-    const updateFn = mockServices.setPollingTasks.mock.calls[0][0]
-    const prev = new Map<string, PollingTask>()
-    const result = updateFn(prev)
-
-    const task = result.get(videoId)
-    if (task != null) {
-      expect(() => task.stopPolling()).not.toThrow()
-    }
   })
 })

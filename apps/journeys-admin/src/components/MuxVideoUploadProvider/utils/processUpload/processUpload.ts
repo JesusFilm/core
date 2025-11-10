@@ -1,9 +1,10 @@
 import { UpChunk } from '@mux/upchunk'
-import { Dispatch, MutableRefObject, SetStateAction } from 'react'
+import { Dispatch, RefObject, SetStateAction } from 'react'
 
 import { CreateMuxVideoUploadByFileMutation } from '../../../../../__generated__/CreateMuxVideoUploadByFileMutation'
-import { TASK_CLEANUP_DELAY } from '../constants'
 import type { UploadTask } from '../types'
+
+import { cleanupUploadTask } from './cleanupUploadTask'
 
 interface ProcessUploadDependencies {
   setUploadTasks: Dispatch<SetStateAction<Map<string, UploadTask>>>
@@ -17,13 +18,12 @@ interface ProcessUploadDependencies {
   }) => Promise<{
     data?: CreateMuxVideoUploadByFileMutation | null
   }>
-  setCurrentlyUploading: Dispatch<SetStateAction<string | null>>
   startPolling: (
     videoId: string,
     languageCode?: string,
     onComplete?: () => void
   ) => void
-  uploadInstanceRef: MutableRefObject<{ abort: () => void } | null>
+  uploadInstanceRefs: RefObject<Map<string, { abort: () => void }>>
 }
 
 export async function processUpload(
@@ -34,9 +34,8 @@ export async function processUpload(
   const {
     setUploadTasks,
     createMuxVideoUploadByFile,
-    setCurrentlyUploading,
     startPolling,
-    uploadInstanceRef
+    uploadInstanceRefs
   } = dependencies
 
   try {
@@ -92,7 +91,8 @@ export async function processUpload(
       chunkSize: 5120
     })
 
-    uploadInstanceRef.current = upload
+    // Store upload instance in map for this videoBlockId
+    uploadInstanceRefs.current.set(videoBlockId, upload)
 
     upload.on('success', (): void => {
       // Update to processing state and start polling
@@ -106,7 +106,8 @@ export async function processUpload(
         return next
       })
 
-      setCurrentlyUploading(null)
+      // Remove upload instance from map
+      uploadInstanceRefs.current.delete(videoBlockId)
 
       startPolling(videoId, task.languageCode, () => {
         // Update task to completed
@@ -125,14 +126,7 @@ export async function processUpload(
           return next
         })
 
-        // Cleanup after delay
-        setTimeout(() => {
-          setUploadTasks((prev) => {
-            const next = new Map(prev)
-            next.delete(videoBlockId)
-            return next
-          })
-        }, TASK_CLEANUP_DELAY)
+        cleanupUploadTask(videoBlockId, { setUploadTasks, uploadInstanceRefs })
       })
     })
 
@@ -147,16 +141,7 @@ export async function processUpload(
         return next
       })
 
-      setCurrentlyUploading(null)
-
-      // Cleanup after delay
-      setTimeout(() => {
-        setUploadTasks((prev) => {
-          const next = new Map(prev)
-          next.delete(videoBlockId)
-          return next
-        })
-      }, TASK_CLEANUP_DELAY)
+      cleanupUploadTask(videoBlockId, { setUploadTasks, uploadInstanceRefs })
     })
 
     upload.on('progress', (progress): void => {
@@ -183,15 +168,6 @@ export async function processUpload(
       return next
     })
 
-    setCurrentlyUploading(null)
-
-    // Cleanup after delay
-    setTimeout(() => {
-      setUploadTasks((prev) => {
-        const next = new Map(prev)
-        next.delete(videoBlockId)
-        return next
-      })
-    }, TASK_CLEANUP_DELAY)
+    cleanupUploadTask(videoBlockId, { setUploadTasks, uploadInstanceRefs })
   }
 }

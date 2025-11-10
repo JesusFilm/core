@@ -11,7 +11,6 @@ interface StartPollingServices {
   ) => void
   t: (key: string) => string
   setPollingTasks: Dispatch<SetStateAction<Map<string, PollingTask>>>
-  stopQueryRefs: RefObject<Map<string, () => void>>
 }
 
 export function startPolling(
@@ -20,13 +19,8 @@ export function startPolling(
   onComplete: (() => void) | undefined,
   services: StartPollingServices
 ): void {
-  const {
-    hasShownStartNotification,
-    showSnackbar,
-    t,
-    setPollingTasks,
-    stopQueryRefs
-  } = services
+  const { hasShownStartNotification, showSnackbar, t, setPollingTasks } =
+    services
 
   // Show start notification only once per video
   if (!hasShownStartNotification.current.has(videoId)) {
@@ -36,7 +30,7 @@ export function startPolling(
 
   const startTime = Date.now()
 
-  // Create task entry immediately with callback
+  // Create task entry immediately
   setPollingTasks((prev) => {
     const next = new Map(prev)
     next.set(videoId, {
@@ -44,11 +38,7 @@ export function startPolling(
       languageCode,
       status: 'processing',
       startTime,
-      onComplete,
-      stopPolling: () => {
-        // Reference the stopQuery function from the ref map
-        stopQueryRefs.current.get(videoId)?.()
-      }
+      onComplete
     })
     return next
   })

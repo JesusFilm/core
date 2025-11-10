@@ -46,11 +46,9 @@ describe('MuxVideoUploadProvider', () => {
       wrapper
     })
 
-    expect(result.current).toHaveProperty('startPolling')
-    expect(result.current).toHaveProperty('stopPolling')
-    expect(result.current).toHaveProperty('getPollingStatus')
     expect(result.current).toHaveProperty('getUploadStatus')
-    expect(result.current).toHaveProperty('addUploadToQueue')
+    expect(result.current).toHaveProperty('addUploadTask')
+    expect(result.current).toHaveProperty('cancelUploadForBlock')
   })
 
   it('should throw error when hook is used outside provider', () => {
@@ -76,7 +74,7 @@ describe('MuxVideoUploadProvider', () => {
       const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
 
       await act(async () => {
-        result.current.addUploadToQueue('block-1', file)
+        result.current.addUploadTask('block-1', file)
       })
 
       const uploadStatus = result.current.getUploadStatus('block-1')
@@ -87,32 +85,7 @@ describe('MuxVideoUploadProvider', () => {
     })
   })
 
-  describe('getPollingStatus', () => {
-    it('should return null when no polling task exists', () => {
-      const { result } = renderHook(() => useMuxVideoUpload(), {
-        wrapper
-      })
-
-      expect(result.current.getPollingStatus('video-1')).toBeNull()
-    })
-
-    it('should return polling task when it exists', async () => {
-      const { result } = renderHook(() => useMuxVideoUpload(), {
-        wrapper
-      })
-
-      await act(async () => {
-        result.current.startPolling('video-1', 'en', jest.fn())
-      })
-
-      const pollingStatus = result.current.getPollingStatus('video-1')
-      expect(pollingStatus).not.toBeNull()
-      expect(pollingStatus?.videoId).toBe('video-1')
-      expect(pollingStatus?.status).toBe('processing')
-    })
-  })
-
-  describe('addUploadToQueue', () => {
+  describe('addUploadTask', () => {
     it('should add upload task to queue', async () => {
       const { result } = renderHook(() => useMuxVideoUpload(), {
         wrapper
@@ -122,7 +95,7 @@ describe('MuxVideoUploadProvider', () => {
       const onComplete = jest.fn()
 
       await act(async () => {
-        result.current.addUploadToQueue(
+        result.current.addUploadTask(
           'block-1',
           file,
           'en',
@@ -150,7 +123,7 @@ describe('MuxVideoUploadProvider', () => {
       const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
 
       await act(async () => {
-        result.current.addUploadToQueue('block-1', file)
+        result.current.addUploadTask('block-1', file)
       })
 
       const uploadStatus = result.current.getUploadStatus('block-1')
@@ -159,84 +132,7 @@ describe('MuxVideoUploadProvider', () => {
     })
   })
 
-  describe('startPolling', () => {
-    it('should create polling task', async () => {
-      const { result } = renderHook(() => useMuxVideoUpload(), {
-        wrapper
-      })
-
-      const onComplete = jest.fn()
-
-      await act(async () => {
-        result.current.startPolling('video-1', 'en', onComplete)
-      })
-
-      const pollingStatus = result.current.getPollingStatus('video-1')
-      expect(pollingStatus).not.toBeNull()
-      expect(pollingStatus?.videoId).toBe('video-1')
-      expect(pollingStatus?.languageCode).toBe('en')
-      expect(pollingStatus?.status).toBe('processing')
-      expect(pollingStatus?.onComplete).toBe(onComplete)
-    })
-
-    it('should handle undefined language code', async () => {
-      const { result } = renderHook(() => useMuxVideoUpload(), {
-        wrapper
-      })
-
-      await act(async () => {
-        result.current.startPolling('video-1')
-      })
-
-      const pollingStatus = result.current.getPollingStatus('video-1')
-      expect(pollingStatus?.languageCode).toBeUndefined()
-    })
-
-    it('should handle undefined onComplete', async () => {
-      const { result } = renderHook(() => useMuxVideoUpload(), {
-        wrapper
-      })
-
-      await act(async () => {
-        result.current.startPolling('video-1', 'en')
-      })
-
-      const pollingStatus = result.current.getPollingStatus('video-1')
-      expect(pollingStatus?.onComplete).toBeUndefined()
-    })
-  })
-
-  describe('stopPolling', () => {
-    it('should remove polling task', async () => {
-      const { result } = renderHook(() => useMuxVideoUpload(), {
-        wrapper
-      })
-
-      await act(async () => {
-        result.current.startPolling('video-1', 'en')
-      })
-      expect(result.current.getPollingStatus('video-1')).not.toBeNull()
-
-      await act(async () => {
-        result.current.stopPolling('video-1')
-      })
-      expect(result.current.getPollingStatus('video-1')).toBeNull()
-    })
-
-    it('should not throw when stopping non-existent task', async () => {
-      const { result } = renderHook(() => useMuxVideoUpload(), {
-        wrapper
-      })
-
-      await act(async () => {
-        expect(() => {
-          result.current.stopPolling('non-existent')
-        }).not.toThrow()
-      })
-    })
-  })
-
-  describe('upload queue processing', () => {
+  describe('upload task processing', () => {
     it('should add upload to queue with waiting status', async () => {
       const { result } = renderHook(() => useMuxVideoUpload(), {
         wrapper
@@ -245,7 +141,7 @@ describe('MuxVideoUploadProvider', () => {
       const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
 
       await act(async () => {
-        result.current.addUploadToQueue('block-1', file)
+        result.current.addUploadTask('block-1', file)
       })
 
       const uploadStatus = result.current.getUploadStatus('block-1')

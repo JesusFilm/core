@@ -15,14 +15,16 @@ import {
 import { CreateMuxVideoUploadByFileMutation } from '../../../__generated__/CreateMuxVideoUploadByFileMutation'
 import { GetMyMuxVideoQuery } from '../../../__generated__/GetMyMuxVideoQuery'
 
-import { addUploadToQueue as addUploadToQueueUtil } from './utils/addUploadToQueue'
+import { TreeBlock } from '@core/journeys/ui/block'
+
+import { addUploadToQueue as addUploadTaskUtil } from './utils/addUploadToQueue'
+import { cancelUploadForBlock as cancelUploadForBlockUtil } from './utils/cancelUploadForBlock'
 import { MAX_POLL_TIME, POLL_INTERVAL } from './utils/constants'
 import { handlePollingComplete } from './utils/handlePollingComplete'
 import { handlePollingError } from './utils/handlePollingError'
 import { processUpload } from './utils/processUpload'
 import { createShowSnackbar } from './utils/showSnackbar'
 import { startPolling as startPollingUtil } from './utils/startPolling'
-import { stopPolling as stopPollingUtil } from './utils/stopPolling'
 import type { PollingTask, UploadTask } from './utils/types'
 
 export const GET_MY_MUX_VIDEO_QUERY = gql`
@@ -52,21 +54,15 @@ export const CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
 `
 
 interface MuxVideoUploadContextType {
-  startPolling: (
-    videoId: string,
-    languageCode?: string,
-    onComplete?: () => void
-  ) => void
-  stopPolling: (videoId: string) => void
-  getPollingStatus: (videoId: string) => PollingTask | null
   getUploadStatus: (videoBlockId: string) => UploadTask | null
-  addUploadToQueue: (
+  addUploadTask: (
     videoBlockId: string,
     file: File,
     languageCode?: string,
     languageName?: string,
     onComplete?: (videoId: string) => void
   ) => void
+  cancelUploadForBlock: (block: TreeBlock) => void
 }
 
 const MuxVideoUploadContext = createContext<
@@ -84,16 +80,19 @@ export function MuxVideoUploadProvider({
   const [uploadTasks, setUploadTasks] = useState<Map<string, UploadTask>>(
     new Map()
   )
-  const [currentlyUploading, setCurrentlyUploading] = useState<string | null>(
-    null
-  )
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
+  const [getMyMuxVideo] = useLazyQuery<GetMyMuxVideoQuery>(
+    GET_MY_MUX_VIDEO_QUERY,
+    {
+      fetchPolicy: 'network-only'
+    }
+  )
   const hasShownStartNotification = useRef<Set<string>>(new Set())
-  const stopQueryRefs = useRef<Map<string, () => void>>(new Map())
-  const uploadInstanceRef = useRef<{
-    abort: () => void
-  } | null>(null)
+  const pollingIntervalsRef = useRef<Map<string, NodeJS.Timeout>>(new Map())
+  const uploadInstanceRefs = useRef<Map<string, { abort: () => void }>>(
+    new Map()
+  )
 
   const [createMuxVideoUploadByFile] =
     useMutation<CreateMuxVideoUploadByFileMutation>(
@@ -105,51 +104,28 @@ export function MuxVideoUploadProvider({
     [enqueueSnackbar, closeSnackbar]
   )
 
-  // Process upload queue - one at a time
-  useEffect(() => {
-    if (currentlyUploading != null) return
-
-    // Find next waiting task
-    const waitingTask = Array.from(uploadTasks.entries()).find(
-      ([, task]) => task.status === 'waiting'
-    )
-
-    if (waitingTask == null) return
-
-    const [videoBlockId, task] = waitingTask
-    setCurrentlyUploading(videoBlockId)
-    void processUpload(videoBlockId, task, {
-      setUploadTasks,
-      createMuxVideoUploadByFile,
-      setCurrentlyUploading,
-      startPolling: (videoId, languageCode, onComplete) => {
-        startPolling(videoId, languageCode, onComplete)
-      },
-      uploadInstanceRef
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uploadTasks, currentlyUploading])
-
   const handlePollingCompleteCallback = useCallback(
     async (videoId: string) => {
       await handlePollingComplete(videoId, {
         pollingTasks,
         setPollingTasks,
         showSnackbar,
-        t
+        t,
+        pollingIntervalsRef
       })
     },
-    [showSnackbar, t, pollingTasks]
+    [showSnackbar, t, pollingTasks, pollingIntervalsRef]
   )
 
   const handlePollingErrorCallback = useCallback(
     (videoId: string, error: string) => {
       handlePollingError(videoId, error, {
         setPollingTasks,
-        showSnackbar
+        showSnackbar,
+        pollingIntervalsRef
       })
     },
-    [showSnackbar]
+    [showSnackbar, pollingIntervalsRef]
   )
 
   const startPolling = useCallback(
@@ -158,20 +134,31 @@ export function MuxVideoUploadProvider({
         hasShownStartNotification,
         showSnackbar,
         t,
-        setPollingTasks,
-        stopQueryRefs
+        setPollingTasks
       })
     },
-    [showSnackbar, t]
+    [showSnackbar, t, hasShownStartNotification, setPollingTasks]
   )
 
-  const stopPolling = useCallback((videoId: string) => {
-    stopPollingUtil(videoId, {
-      setPollingTasks,
-      stopQueryRefs,
-      hasShownStartNotification
-    })
-  }, [])
+  // process all waiting upload tasks
+  useEffect(() => {
+    const waitingTasks = Array.from(uploadTasks.entries()).filter(
+      ([, task]) => task.status === 'waiting'
+    )
+
+    if (waitingTasks.length === 0) return
+
+    for (const [videoBlockId, task] of waitingTasks) {
+      void processUpload(videoBlockId, task, {
+        setUploadTasks,
+        createMuxVideoUploadByFile,
+        startPolling: (videoId, languageCode, onComplete) => {
+          startPolling(videoId, languageCode, onComplete)
+        },
+        uploadInstanceRefs
+      })
+    }
+  }, [uploadTasks, startPolling, createMuxVideoUploadByFile])
 
   const getUploadStatus = useCallback(
     (videoBlockId: string) => {
@@ -180,7 +167,7 @@ export function MuxVideoUploadProvider({
     [uploadTasks]
   )
 
-  const addUploadToQueue = useCallback(
+  const addUploadTask = useCallback(
     (
       videoBlockId: string,
       file: File,
@@ -188,7 +175,7 @@ export function MuxVideoUploadProvider({
       languageName?: string,
       onComplete?: (videoId: string) => void
     ) => {
-      addUploadToQueueUtil(
+      addUploadTaskUtil(
         videoBlockId,
         file,
         languageCode,
@@ -199,96 +186,93 @@ export function MuxVideoUploadProvider({
         }
       )
     },
-    []
+    [setUploadTasks]
   )
 
-  const getPollingStatus = useCallback(
-    (videoId: string) => {
-      return pollingTasks.get(videoId) ?? null
+  const cancelUploadForBlock = useCallback(
+    (block: TreeBlock) => {
+      cancelUploadForBlockUtil(block, {
+        uploadTasks,
+        setUploadTasks,
+        setPollingTasks,
+        uploadInstanceRefs,
+        pollingIntervalsRef,
+        hasShownStartNotification
+      })
     },
-    [pollingTasks]
+    [uploadTasks]
   )
 
-  // Component to handle polling for each task
-  function PollingTask({
-    videoId,
-    task
-  }: {
-    videoId: string
-    task: PollingTask
-  }): null {
-    const hasStartedPolling = useRef(false)
+  // handle polling for all processing tasks
+  useEffect(() => {
+    const processingTasks = Array.from(pollingTasks.entries()).filter(
+      ([, task]) => task.status === 'processing'
+    )
 
-    const [getMyMuxVideo, { stopPolling: stopQuery }] =
-      useLazyQuery<GetMyMuxVideoQuery>(GET_MY_MUX_VIDEO_QUERY, {
-        pollInterval: POLL_INTERVAL,
-        notifyOnNetworkStatusChange: true,
-        fetchPolicy: 'network-only',
-        onCompleted: async (data) => {
+    for (const [videoId, task] of processingTasks) {
+      if (pollingIntervalsRef.current.has(videoId)) continue
+
+      const poll = async () => {
+        try {
+          const { data } = await getMyMuxVideo({
+            variables: { id: videoId }
+          })
+
           const video = data?.getMyMuxVideo
 
-          const isVideoRady =
+          const isVideoReady =
             video?.readyToStream === true &&
             video?.assetId != null &&
             video?.playbackId != null
 
-          if (isVideoRady) {
+          if (isVideoReady) {
             await handlePollingCompleteCallback(videoId)
+            return
           }
 
-          // Check timeout
           if (Date.now() - task.startTime > MAX_POLL_TIME) {
-            stopQuery()
             handlePollingErrorCallback(videoId, t('Video processing timed out'))
           }
-        },
-        onError: () => {
+        } catch (error) {
           handlePollingErrorCallback(
             videoId,
             t('Something went wrong, try again')
           )
         }
-      })
-
-    useEffect(() => {
-      if (task.status !== 'processing') return
-      if (hasStartedPolling.current) return
-
-      hasStartedPolling.current = true
-
-      // Store the stopQuery function in the ref map
-      stopQueryRefs.current.set(videoId, stopQuery)
-
-      // Start polling
-      void getMyMuxVideo({
-        variables: {
-          id: videoId
-        }
-      })
-
-      return () => {
-        stopQuery()
-        stopQueryRefs.current.delete(videoId)
       }
-    }, [task.status])
 
-    return null
-  }
+      void poll()
+
+      const interval = setInterval(() => {
+        void poll()
+      }, POLL_INTERVAL)
+
+      pollingIntervalsRef.current.set(videoId, interval)
+    }
+
+    return () => {
+      for (const interval of pollingIntervalsRef.current.values()) {
+        clearInterval(interval)
+      }
+      pollingIntervalsRef.current.clear()
+    }
+  }, [
+    pollingTasks,
+    handlePollingCompleteCallback,
+    handlePollingErrorCallback,
+    getMyMuxVideo,
+    t
+  ])
 
   return (
     <MuxVideoUploadContext.Provider
       value={{
-        startPolling,
-        stopPolling,
-        getPollingStatus,
         getUploadStatus,
-        addUploadToQueue
+        addUploadTask,
+        cancelUploadForBlock
       }}
     >
       {children}
-      {Array.from(pollingTasks.entries()).map(([videoId, task]) => (
-        <PollingTask key={videoId} videoId={videoId} task={task} />
-      ))}
     </MuxVideoUploadContext.Provider>
   )
 }

@@ -18,13 +18,12 @@ describe('handlePollingComplete', () => {
     const setPollingTasks = jest.fn()
     const showSnackbar = jest.fn()
     const t = jest.fn((key: string) => key)
+    const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
-    const stopPollingFn = jest.fn()
     const task: PollingTask = {
       videoId,
       status: 'processing',
-      startTime: Date.now(),
-      stopPolling: stopPollingFn
+      startTime: Date.now()
     }
     const pollingTasks = new Map([['video-1', task]])
 
@@ -32,7 +31,8 @@ describe('handlePollingComplete', () => {
       pollingTasks,
       setPollingTasks,
       showSnackbar,
-      t
+      t,
+      pollingIntervalsRef
     })
 
     expect(setPollingTasks).toHaveBeenCalledTimes(1)
@@ -43,17 +43,21 @@ describe('handlePollingComplete', () => {
     expect(result.get(videoId)?.status).toBe('completed')
   })
 
-  it('should call stopPolling on task', async () => {
+  it('should clear polling interval', async () => {
     const setPollingTasks = jest.fn()
     const showSnackbar = jest.fn()
     const t = jest.fn((key: string) => key)
+    const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
-    const stopPollingFn = jest.fn()
+    const noop = (): void => {
+      // No-op function for interval
+    }
+    const mockInterval = setInterval(noop, 1000)
+    pollingIntervalsRef.current.set(videoId, mockInterval)
     const task: PollingTask = {
       videoId,
       status: 'processing',
-      startTime: Date.now(),
-      stopPolling: stopPollingFn
+      startTime: Date.now()
     }
     const pollingTasks = new Map([['video-1', task]])
 
@@ -61,22 +65,23 @@ describe('handlePollingComplete', () => {
       pollingTasks,
       setPollingTasks,
       showSnackbar,
-      t
+      t,
+      pollingIntervalsRef
     })
 
-    expect(stopPollingFn).toHaveBeenCalled()
+    expect(pollingIntervalsRef.current.has(videoId)).toBe(false)
   })
 
   it('should show success snackbar', async () => {
     const setPollingTasks = jest.fn()
     const showSnackbar = jest.fn()
     const t = jest.fn((key: string) => `translated:${key}`)
+    const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
     const task: PollingTask = {
       videoId,
       status: 'processing',
-      startTime: Date.now(),
-      stopPolling: jest.fn()
+      startTime: Date.now()
     }
     const pollingTasks = new Map([['video-1', task]])
 
@@ -84,7 +89,8 @@ describe('handlePollingComplete', () => {
       pollingTasks,
       setPollingTasks,
       showSnackbar,
-      t
+      t,
+      pollingIntervalsRef
     })
 
     expect(showSnackbar).toHaveBeenCalledWith(
@@ -98,13 +104,13 @@ describe('handlePollingComplete', () => {
     const setPollingTasks = jest.fn()
     const showSnackbar = jest.fn()
     const t = jest.fn((key: string) => key)
+    const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
     const onComplete = jest.fn()
     const task: PollingTask = {
       videoId,
       status: 'processing',
       startTime: Date.now(),
-      stopPolling: jest.fn(),
       onComplete
     }
     const pollingTasks = new Map([['video-1', task]])
@@ -113,7 +119,8 @@ describe('handlePollingComplete', () => {
       pollingTasks,
       setPollingTasks,
       showSnackbar,
-      t
+      t,
+      pollingIntervalsRef
     })
 
     expect(onComplete).toHaveBeenCalled()
@@ -123,12 +130,12 @@ describe('handlePollingComplete', () => {
     const setPollingTasks = jest.fn()
     const showSnackbar = jest.fn()
     const t = jest.fn((key: string) => key)
+    const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
     const task: PollingTask = {
       videoId,
       status: 'processing',
-      startTime: Date.now(),
-      stopPolling: jest.fn()
+      startTime: Date.now()
     }
     const pollingTasks = new Map([['video-1', task]])
 
@@ -136,7 +143,8 @@ describe('handlePollingComplete', () => {
       pollingTasks,
       setPollingTasks,
       showSnackbar,
-      t
+      t,
+      pollingIntervalsRef
     })
 
     // Should not throw
@@ -147,12 +155,12 @@ describe('handlePollingComplete', () => {
     const setPollingTasks = jest.fn()
     const showSnackbar = jest.fn()
     const t = jest.fn((key: string) => key)
+    const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
     const task: PollingTask = {
       videoId,
       status: 'processing',
-      startTime: Date.now(),
-      stopPolling: jest.fn()
+      startTime: Date.now()
     }
     const pollingTasks = new Map([['video-1', task]])
 
@@ -160,7 +168,8 @@ describe('handlePollingComplete', () => {
       pollingTasks,
       setPollingTasks,
       showSnackbar,
-      t
+      t,
+      pollingIntervalsRef
     })
 
     // First call sets status to completed
@@ -183,6 +192,7 @@ describe('handlePollingComplete', () => {
     const setPollingTasks = jest.fn()
     const showSnackbar = jest.fn()
     const t = jest.fn((key: string) => key)
+    const pollingIntervalsRef = { current: new Map<string, NodeJS.Timeout>() }
     const videoId = 'video-1'
     const pollingTasks = new Map<string, PollingTask>()
 
@@ -190,7 +200,8 @@ describe('handlePollingComplete', () => {
       pollingTasks,
       setPollingTasks,
       showSnackbar,
-      t
+      t,
+      pollingIntervalsRef
     })
 
     expect(setPollingTasks).not.toHaveBeenCalled()

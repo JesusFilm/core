@@ -1,5 +1,6 @@
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, RefObject, SetStateAction } from 'react'
 
+import { clearPollingInterval } from '../clearPollingInterval'
 import { TASK_CLEANUP_DELAY } from '../constants'
 import type { PollingTask } from '../types'
 
@@ -10,6 +11,7 @@ interface HandlePollingErrorDependencies {
     variant: 'success' | 'error' | 'info' | 'warning',
     persist?: boolean
   ) => void
+  pollingIntervalsRef: RefObject<Map<string, NodeJS.Timeout>>
 }
 
 export function handlePollingError(
@@ -17,13 +19,13 @@ export function handlePollingError(
   error: string,
   dependencies: HandlePollingErrorDependencies
 ): void {
-  const { setPollingTasks, showSnackbar } = dependencies
+  const { setPollingTasks, showSnackbar, pollingIntervalsRef } = dependencies
+
+  clearPollingInterval(videoId, pollingIntervalsRef)
 
   setPollingTasks((prev) => {
     const task = prev.get(videoId)
     if (task == null) return prev
-
-    task.stopPolling()
     const next = new Map(prev)
     next.set(videoId, { ...task, status: 'error' })
     return next
