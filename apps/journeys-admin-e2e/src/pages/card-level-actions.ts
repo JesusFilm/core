@@ -140,9 +140,9 @@ export class CardLevelActionPage {
       createdOrRenamed === 'created' ? this.journeyName : this.renameJourmeyName
     const frame = await this.getFirstJourneyCardFrame()
     const textElement = frame.locator(
-      'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]',
-      { hasText: text }
-    )
+        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]',
+        { hasText: text }
+      )
     await textElement.waitFor({
       state: 'visible',
       timeout: sixtySecondsTimeout
@@ -703,8 +703,8 @@ export class CardLevelActionPage {
     const frame = await this.getFirstJourneyCardFrame()
     await expect(
       frame.locator(
-        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestionList"]'
-      )
+          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestionList"]'
+        )
     ).toBeHidden()
   }
 
@@ -754,7 +754,7 @@ export class CardLevelActionPage {
     await labelInput.pressSequentially(testData.cardLevelAction.feedBackLabel, {
       timeout: sixtySecondsTimeout,
       delay: 100
-    })
+      })
     // Added 2 sec timeout as a workaround to slow down the action
     await this.page.waitForTimeout(2000)
   }
@@ -934,8 +934,8 @@ export class CardLevelActionPage {
 
   async clicSelectHostBtn() {
     const hostButton = this.page.locator(
-      'div[data-testid="HostSelection"] div[data-testid="JourneysAdminContainedIconButton"] button'
-    )
+        'div[data-testid="HostSelection"] div[data-testid="JourneysAdminContainedIconButton"] button'
+      )
     await hostButton.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
     await hostButton.scrollIntoViewIfNeeded()
     await this.page.waitForTimeout(500) // Wait for element to stabilize
@@ -999,8 +999,8 @@ export class CardLevelActionPage {
 
     // Try to find and click the accordion to expand it
     const accordion = this.page.locator('[data-testid="AccordionSummary"]', {
-      hasText: tabName
-    })
+        hasText: tabName
+      })
     await accordion.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
     await accordion.click({ timeout: sixtySecondsTimeout })
   }
@@ -1697,19 +1697,19 @@ export class CardLevelActionPage {
 
       // Wait for progress bar to disappear (image is being processed)
       try {
-        await expect(
-          this.page.locator(
+    await expect(
+      this.page.locator(
             'div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]'
           )
         ).toBeHidden({ timeout: sixtySecondsTimeout })
       } catch (error) {
         // Progress bar might not exist, that's okay
       }
-
-      // ImageBlockHeader should now be visible
-      await expect(
-        this.page.locator('div[data-testid="ImageBlockHeader"]')
-      ).toBeVisible({ timeout: sixtySecondsTimeout })
+      
+      // For footer images, the ImageBlockHeader might appear in the settings drawer after selection
+      // Don't wait for it here - let valdiateSelectedImageWithDeleteIcon handle it
+      // Just wait a bit for the selection to process
+      await this.page.waitForTimeout(2000)
       return
     }
 
@@ -1780,8 +1780,60 @@ export class CardLevelActionPage {
         ).toBeVisible({ timeout: sixtySecondsTimeout })
         return
       }
-
-      // Last resort: try clicking any image
+      
+      // Last resort: try clicking any image - but prefer clicking parent button/li
+      // First try to find a clickable container (button or li) that contains an image
+      const imageContainers = this.page.locator('li:has(img), button:has(img), div:has(img)').first()
+      const containerCount = await imageContainers.count()
+      if (containerCount > 0) {
+        await imageContainers.waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
+        await imageContainers.scrollIntoViewIfNeeded()
+        await imageContainers.click({ timeout: sixtySecondsTimeout })
+        await this.page.waitForTimeout(2000)
+        
+        // Check for confirmation button - but exclude the "Select Image" button we already clicked
+        const confirmButtons = [
+          'button:has-text("Done"):not([data-testid="card click area"])',
+          'button:has-text("Confirm"):not([data-testid="card click area"])',
+          'button[aria-label*="Confirm"]:not([data-testid="card click area"])',
+          'button[data-testid*="confirm"]:not([data-testid="card click area"])'
+        ]
+        for (const btnSelector of confirmButtons) {
+          try {
+            const btn = this.page.locator(btnSelector).first()
+            const btnCount = await btn.count()
+            if (btnCount > 0) {
+              // Check if button is visible
+              const isVisible = await btn.isVisible().catch(() => false)
+              if (isVisible) {
+                await btn.click({ timeout: 10000 })
+                await this.page.waitForTimeout(2000)
+                break
+              }
+            }
+          } catch (err) {
+            // Continue to next button
+            continue
+          }
+        }
+        
+        // Wait for progress bar to disappear if it exists
+        try {
+          await this.page
+            .locator('div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]')
+            .waitFor({ state: 'hidden', timeout: 30000 })
+        } catch (error) {
+          // Progress bar might not exist, that's okay
+        }
+        
+        // For footer images, the ImageBlockHeader might appear in the settings drawer after selection
+        // Don't wait for it here - let valdiateSelectedImageWithDeleteIcon handle it
+        // Just wait a bit for the selection to process
+        await this.page.waitForTimeout(2000)
+        return
+      }
+      
+      // Absolute last resort: try clicking any image directly
       const anyImage = this.page.locator('img').first()
       const imageCount = await anyImage.count()
       if (imageCount > 0) {
@@ -1791,16 +1843,17 @@ export class CardLevelActionPage {
         })
         await anyImage.scrollIntoViewIfNeeded()
         await anyImage.click({ timeout: sixtySecondsTimeout })
-        // Wait for ImageBlockHeader
         await this.page.waitForTimeout(2000)
-
-        // Check for confirmation button
+        
+        // Check for confirmation button - but exclude the "Select Image" button we already clicked
         const confirmButtons = [
-          'button:has-text("Select")',
-          'button:has-text("Done")',
-          'button:has-text("Confirm")'
+          'button:has-text("Done"):not([data-testid="card click area"])',
+          'button:has-text("Confirm"):not([data-testid="card click area"])',
+          'button[aria-label*="Confirm"]:not([data-testid="card click area"])',
+          'button[data-testid*="confirm"]:not([data-testid="card click area"])'
         ]
         for (const btnSelector of confirmButtons) {
+<<<<<<< HEAD
           const btn = this.page.locator(btnSelector).first()
           if ((await btn.count()) > 0) {
             await btn.click({ timeout: 10000 })
@@ -1812,6 +1865,39 @@ export class CardLevelActionPage {
         await expect(
           this.page.locator('div[data-testid="ImageBlockHeader"]')
         ).toBeVisible({ timeout: sixtySecondsTimeout })
+=======
+          try {
+            const btn = this.page.locator(btnSelector).first()
+            const btnCount = await btn.count()
+            if (btnCount > 0) {
+              // Check if button is visible
+              const isVisible = await btn.isVisible().catch(() => false)
+              if (isVisible) {
+                await btn.click({ timeout: 10000 })
+                await this.page.waitForTimeout(2000)
+                break
+              }
+            }
+          } catch (err) {
+            // Continue to next button
+            continue
+          }
+        }
+        
+        // Wait for progress bar to disappear if it exists
+        try {
+          await this.page
+            .locator('div[data-testid="ImageBlockHeader"] div[data-testid="ImageBlockThumbnail"] span[role="progressbar"]')
+            .waitFor({ state: 'hidden', timeout: 30000 })
+        } catch (error) {
+          // Progress bar might not exist, that's okay
+        }
+        
+        // For footer images, the ImageBlockHeader might appear in the settings drawer after selection
+        // Don't wait for it here - let valdiateSelectedImageWithDeleteIcon handle it
+        // Just wait a bit for the selection to process
+        await this.page.waitForTimeout(2000)
+>>>>>>> eaa6fe2afb (fix(journeys-admin-e2e): improve footer image selection with better error handling)
         return
       }
       throw new Error('No images found in gallery after waiting')
@@ -1869,13 +1955,48 @@ export class CardLevelActionPage {
     ).toBeVisible({ timeout: sixtySecondsTimeout })
   }
   async valdiateSelectedImageWithDeleteIcon() {
+    // First, check if image selection dialog is still open - if so, we might need to close it or confirm selection
+    const imageDialog = this.page.locator('div[role="dialog"]:has-text("Image"), div[role="dialog"]:has(div[data-testid*="Image"])')
+    const dialogCount = await imageDialog.count()
+    if (dialogCount > 0) {
+      // Dialog is still open - check for confirmation/select button
+      const confirmButtons = [
+        'button:has-text("Select"):not([data-testid="card click area"])',
+        'button:has-text("Done"):not([data-testid="card click area"])',
+        'button:has-text("Confirm"):not([data-testid="card click area"])',
+        'button[data-testid*="confirm"]:not([data-testid="card click area"])',
+        'button[aria-label*="Select"]:not([data-testid="card click area"])',
+        'button[aria-label*="Confirm"]:not([data-testid="card click area"])'
+      ]
+      
+      for (const buttonSelector of confirmButtons) {
+        try {
+          const button = this.page.locator(buttonSelector).first()
+          const buttonCount = await button.count()
+          if (buttonCount > 0) {
+            const isVisible = await button.isVisible().catch(() => false)
+            if (isVisible) {
+              await button.click({ timeout: sixtySecondsTimeout })
+              await this.page.waitForTimeout(2000)
+              break
+            }
+          }
+        } catch (err) {
+          continue
+        }
+      }
+    }
+    
+    // Wait a bit for the image to be processed and ImageBlockHeader to appear
+    await this.page.waitForTimeout(2000)
+    
     // First, ensure ImageBlockHeader exists - wait longer and check multiple locations
     // The ImageBlockHeader might be in a drawer or in the main content
     const imageHeaderSelectors = [
+      'div[data-testid="SettingsDrawerContent"] div[data-testid="ImageBlockHeader"]',
       'div[data-testid="ImageBlockHeader"]',
       'div[data-testid="ImageSource"] + div[data-testid="ImageBlockHeader"]',
-      'div[role="dialog"] div[data-testid="ImageBlockHeader"]',
-      'div[data-testid="SettingsDrawerContent"] div[data-testid="ImageBlockHeader"]'
+      'div[role="dialog"] div[data-testid="ImageBlockHeader"]'
     ]
 
     let imageHeaderFound = false
@@ -1884,52 +2005,31 @@ export class CardLevelActionPage {
     for (const selector of imageHeaderSelectors) {
       try {
         imageHeader = this.page.locator(selector)
-        await expect(imageHeader).toBeVisible({ timeout: 10000 })
+        await expect(imageHeader).toBeVisible({ timeout: 15000 })
         imageHeaderFound = true
         break
       } catch (error) {
         continue
       }
     }
-
-    if (!imageHeaderFound || !imageHeader) {
-      // If ImageBlockHeader doesn't appear, check if there's a confirmation button
-      const confirmButtons = [
-        'button:has-text("Select")',
-        'button:has-text("Done")',
-        'button:has-text("Confirm")',
-        'button[data-testid*="select"]',
-        'button[data-testid*="confirm"]'
-      ]
-
-      for (const buttonSelector of confirmButtons) {
+    
+    // If still not found, wait a bit more and try again
+    if (!imageHeaderFound) {
+      await this.page.waitForTimeout(3000)
+      for (const selector of imageHeaderSelectors) {
         try {
-          const button = this.page.locator(buttonSelector).first()
-          const buttonCount = await button.count()
-          if (buttonCount > 0) {
-            await button.waitFor({ state: 'visible', timeout: 5000 })
-            await button.click({ timeout: sixtySecondsTimeout })
-            await this.page.waitForTimeout(1000)
-            // Try again to find ImageBlockHeader
-            imageHeader = this.page.locator(
-              'div[data-testid="ImageBlockHeader"]'
-            )
-            await expect(imageHeader).toBeVisible({
-              timeout: sixtySecondsTimeout
-            })
-            imageHeaderFound = true
-            break
-          }
-        } catch (err) {
+          imageHeader = this.page.locator(selector)
+          await expect(imageHeader).toBeVisible({ timeout: 10000 })
+          imageHeaderFound = true
+          break
+        } catch (error) {
           continue
         }
       }
-
-      if (!imageHeaderFound) {
-        throw new Error(
-          'ImageBlockHeader not found - image may not have been selected'
-        )
-      }
+    }
+    
+    if (!imageHeaderFound || !imageHeader) {
+      throw new Error('ImageBlockHeader not found - image may not have been selected')
     }
 
     // Use the found imageHeader for subsequent checks
