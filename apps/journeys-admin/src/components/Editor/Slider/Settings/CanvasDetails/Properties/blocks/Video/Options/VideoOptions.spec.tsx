@@ -187,7 +187,8 @@ describe('VideoOptions', () => {
         startAt: 0,
         endAt: 144,
         duration: 144,
-        subtitleLanguageId: null
+        subtitleLanguageId: null,
+        showGeneratedSubtitles: null
       }
     }
     render(
@@ -258,7 +259,8 @@ describe('VideoOptions', () => {
                   startAt: 0,
                   endAt: 144,
                   duration: 144,
-                  subtitleLanguageId: null
+                  subtitleLanguageId: null,
+                  showGeneratedSubtitles: null
                 }
               }
             },
@@ -275,7 +277,8 @@ describe('VideoOptions', () => {
                   duration: null,
                   videoId: null,
                   videoVariantLanguageId: '529',
-                  source: VideoBlockSource.internal
+                  source: VideoBlockSource.internal,
+                  showGeneratedSubtitles: null
                 }
               }
             },
