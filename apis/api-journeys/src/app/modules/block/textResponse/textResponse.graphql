@@ -7,6 +7,7 @@ type TextResponseBlock implements Block @shareable {
   placeholder: String @shareable
   required: Boolean @shareable
   hint: String @shareable
+  hideLabel: Boolean @shareable
   minRows: Int @shareable
   type: TextResponseType @shareable
   routeId: String @shareable
@@ -33,6 +34,7 @@ input TextResponseBlockUpdateInput {
   placeholder: String
   required: Boolean
   hint: String
+  hideLabel: Boolean
   minRows: Int
   routeId: String
   type: TextResponseType

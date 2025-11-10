@@ -76,7 +76,7 @@ export function CollectionsPage(): ReactElement {
                       "Même en période de chaos et d'incertitude, nous pouvons faire confiance à la souveraineté de Dieu car :"
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Dieu reste aux commandes même quand les circonstances semblent échapper à tout contrôle'
@@ -106,7 +106,7 @@ export function CollectionsPage(): ReactElement {
               answer: (
                 <>
                   <p>{'Pâques est au cœur de la foi chrétienne car :'}</p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Elle marque la résurrection de Jésus, prouvant Sa victoire sur la mort'
@@ -138,7 +138,7 @@ export function CollectionsPage(): ReactElement {
               answer: (
                 <>
                   <p>{'La Bible nous raconte plusieurs événements clés :'}</p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Le corps de Jésus a été placé dans un tombeau et gardé par des soldats romains'
@@ -269,7 +269,7 @@ export function CollectionsPage(): ReactElement {
                       "Le pardon de Jésus est une démonstration de la grâce et de la miséricorde de Dieu. Le voleur sur la croix a reconnu l'innocence et la divinité de Jésus, demandant humblement d'être souvenu dans Son royaume. La réponse de Jésus montre que :"
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {'Le salut est basé sur la foi, non sur les œuvres'}
                     </li>
@@ -303,7 +303,7 @@ export function CollectionsPage(): ReactElement {
                       'Jésus a volontairement accepté la mort parce que cela faisait partie du plan de Dieu pour la rédemption. Son sacrifice était nécessaire pour accomplir la prophétie et apporter le salut. Les raisons principales incluent :'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         "Sa mort a accompli les prophéties de l'Ancien Testament (Ésaïe 53)"
@@ -338,7 +338,7 @@ export function CollectionsPage(): ReactElement {
                       'Être au paradis avec Jésus signifie la vie éternelle en présence de Dieu. Le voleur sur la croix a été assuré de sa place avec Jésus au ciel à cause de sa foi. Les aspects importants de cette promesse incluent :'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Cela signifie une présence immédiate avec Christ après la mort'
@@ -456,7 +456,7 @@ export function CollectionsPage(): ReactElement {
                       "La mort de Jésus était nécessaire pour accomplir le plan de rédemption de Dieu. À cause du péché, l'humanité était séparée de Dieu, mais le sacrifice de Jésus a fourni le moyen de réconciliation. Voici pourquoi Sa mort était essentielle :"
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Le péché crée une barrière entre nous et Dieu'}</li>
                     <li>
                       {'La justice de Dieu exige un paiement pour le péché'}
@@ -486,7 +486,7 @@ export function CollectionsPage(): ReactElement {
                       "L'amour et la justice de Dieu vont de pair. Bien qu'Il désire pardonner, Il maintient aussi la justice. Le sacrifice de Jésus était l'expression ultime des deux :"
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Le pardon a un coût, et Jésus a payé ce coût'}</li>
                     <li>
                       {
@@ -518,7 +518,7 @@ export function CollectionsPage(): ReactElement {
                       'La mort et la résurrection de Jésus ont ouvert la voie pour que nous soyons réconciliés avec Dieu. À travers Lui, nous pouvons :'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Expérimenter le pardon et la liberté du péché'}</li>
                     <li>{'Avoir un accès direct à Dieu par Christ'}</li>
                     <li>{'Recevoir le don de la vie éternelle'}</li>
@@ -706,7 +706,7 @@ export function CollectionsPage(): ReactElement {
                       "La Bible enseigne que tout a commencé avec Dieu, le Créateur de l'univers. Il a créé toutes choses par Sa parole avec un dessein et un plan. L'humanité a été créée à Son image pour vivre en harmonie avec Lui, les uns avec les autres, et avec la création."
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Dieu a créé le monde par amour et avec ordre'}</li>
                     <li>
                       {
@@ -733,7 +733,7 @@ export function CollectionsPage(): ReactElement {
                       "La souffrance existe parce que le péché est entré dans le monde lorsque l'humanité a choisi de se rebeller contre Dieu. Cette désobéissance a brisé la perfection originelle, introduisant la mort, la douleur et la séparation d'avec Dieu."
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Le péché a apporté la souffrance, la rupture et la mort'
@@ -760,7 +760,7 @@ export function CollectionsPage(): ReactElement {
                       'Oui ! Dieu a envoyé Jésus comme sauveur. Jésus a vécu une vie parfaite, est mort sur la croix pour payer pour le péché, et est ressuscité des morts pour vaincre la mort elle-même. À travers Lui, nous pouvons être restaurés à Dieu et expérimenter une nouvelle vie.'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Le sacrifice de Jésus rend le pardon possible'}</li>
                     <li>{'Sa résurrection prouve Son pouvoir sur la mort'}</li>
                     <li>
@@ -783,7 +783,7 @@ export function CollectionsPage(): ReactElement {
                       "Selon la Bible, Dieu a promis un avenir où Il restaurera toutes choses. Ceux qui font confiance à Jésus vivront éternellement avec Lui dans un monde parfait et renouvelé. Le péché, la souffrance et la mort n'existeront plus."
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {'Dieu créera de nouveaux cieux et une nouvelle terre'}
                     </li>
@@ -861,7 +861,7 @@ export function CollectionsPage(): ReactElement {
                       "L'histoire de Marie-Madeleine est celle d'une transformation et d'une rédemption. Comme beaucoup d'entre nous, elle portait un passé rempli de luttes, mais Jésus l'a libérée et lui a donné un nouveau but. Son histoire nous enseigne que :"
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {'Jésus offre la rédemption quelle que soit notre passé'}
                     </li>
@@ -885,7 +885,7 @@ export function CollectionsPage(): ReactElement {
                       "Les chefs religieux s'opposaient à Jésus parce que Ses enseignements remettaient en question leur autorité et leurs traditions. Les raisons principales incluent :"
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Il accueillait les pécheurs et les exclus, perturbant les normes sociales'
@@ -921,7 +921,7 @@ export function CollectionsPage(): ReactElement {
                       'La première apparition de Jésus à Marie-Madeleine était profondément significative. Elle a montré :'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Son attention pour ceux que le monde négligeait'}</li>
                     <li>
                       {
@@ -1198,7 +1198,7 @@ export function CollectionsPage(): ReactElement {
                       "Être 'né de nouveau' signifie vivre une renaissance spirituelle. Jésus a expliqué à Nicodème que cette renaissance n'est pas physique mais spirituelle—né d'eau et d'Esprit."
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{"C'est une œuvre du Saint-Esprit"}</li>
                     <li>{'Cela implique de croire en Jésus comme Sauveur'}</li>
                     <li>
@@ -1221,7 +1221,7 @@ export function CollectionsPage(): ReactElement {
                       'Jésus voulait que Nicodème comprenne que la connaissance religieuse et les bonnes œuvres ne suffisent pas. Pour entrer dans le royaume de Dieu, une transformation intérieure complète est nécessaire.'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {'Cela montre notre besoin de renouvellement spirituel'}
                     </li>
@@ -1243,7 +1243,7 @@ export function CollectionsPage(): ReactElement {
                       "Jésus a expliqué que naître de nouveau vient en croyant en Lui. C'est une démarche personnelle de foi qui aboutit à une nouvelle vie en Dieu."
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Croire en Jésus-Christ comme le Fils de Dieu'}</li>
                     <li>{'Accepter Son sacrifice pour vos péchés'}</li>
                     <li>

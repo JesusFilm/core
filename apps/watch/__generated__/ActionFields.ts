@@ -21,6 +21,8 @@ export interface ActionFields_LinkAction {
   parentBlockId: string;
   gtmEventName: string | null;
   url: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface ActionFields_EmailAction {
@@ -28,6 +30,8 @@ export interface ActionFields_EmailAction {
   parentBlockId: string;
   gtmEventName: string | null;
   email: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export interface ActionFields_ChatAction {

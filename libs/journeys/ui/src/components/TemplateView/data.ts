@@ -110,12 +110,12 @@ export const defaultJourney: Journey = {
   logoImageBlock: null,
   menuButtonIcon: null,
   menuStepBlock: null,
-  socialNodeX: null,
-  socialNodeY: null,
   journeyTheme: null,
   journeyCustomizationDescription: null,
   journeyCustomizationFields: [],
-  fromTemplateId: null
+  fromTemplateId: null,
+  socialNodeX: null,
+  socialNodeY: null
 }
 
 export const publishedJourney: Journey = {
@@ -323,6 +323,8 @@ export const blocks: Block[] = [
     duration: null,
     image: null,
     objectFit: null,
+    subtitleLanguage: null,
+    showGeneratedSubtitles: null,
     mediaVideo: {
       __typename: 'Video',
       id: '2_0-FallingPlates',
@@ -693,6 +695,8 @@ export const blocks: Block[] = [
     duration: null,
     image: null,
     objectFit: null,
+    subtitleLanguage: null,
+    showGeneratedSubtitles: null,
     mediaVideo: {
       __typename: 'Video',
       id: '2_0-FallingPlates',

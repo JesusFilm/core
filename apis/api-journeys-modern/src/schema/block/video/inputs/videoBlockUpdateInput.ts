@@ -20,12 +20,14 @@ export const VideoBlockUpdateInput = builder.inputType(
       muted: t.boolean({ required: false }),
       autoplay: t.boolean({ required: false }),
       fullsize: t.boolean({ required: false }),
+      subtitleLanguageId: t.id({ required: false }),
       source: t.field({
         type: VideoBlockSource,
         required: false,
         description: `internal source: videoId and videoVariantLanguageId required
   youTube source: videoId required`
-      })
+      }),
+      showGeneratedSubtitles: t.boolean({ required: false })
     })
   }
 )

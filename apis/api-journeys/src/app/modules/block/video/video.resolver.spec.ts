@@ -100,4 +100,24 @@ describe('VideoBlockResolver', () => {
       )
     })
   })
+
+  describe('subtitleLanguage', () => {
+    it('returns language reference when subtitleLanguageId is present', () => {
+      expect(
+        resolver.subtitleLanguage({
+          ...block,
+          subtitleLanguageId: '529'
+        })
+      ).toEqual({ id: '529' })
+    })
+
+    it('returns null when subtitleLanguageId is null', () => {
+      expect(
+        resolver.subtitleLanguage({
+          ...block,
+          subtitleLanguageId: null
+        })
+      ).toBeNull()
+    })
+  })
 })

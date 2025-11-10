@@ -24,7 +24,12 @@ export function SubtitlesSelect({
 }: SubtitlesSelectProps): ReactElement {
   const { t } = useTranslation()
   const { updateSubtitleLanguage, updateSubtitlesOn } = useLanguageActions()
-  const { languages, isLoading } = useLanguages()
+  const { languages: allLanguages, isLoading } = useLanguages()
+  const languages = useMemo(() => {
+    return allLanguages.filter((language) =>
+      SUBTITLE_LANGUAGE_IDS.includes(language.id)
+    )
+  }, [allLanguages])
 
   const selectedOption = useMemo(
     () =>
@@ -36,11 +41,6 @@ export function SubtitlesSelect({
     return [
       ...languages.filter((language) =>
         videoSubtitleLanguageIds.includes(language.id)
-      ),
-      ...languages.filter(
-        (language) =>
-          !videoSubtitleLanguageIds.includes(language.id) &&
-          SUBTITLE_LANGUAGE_IDS.includes(language.id)
       )
     ]
   }, [languages, videoSubtitleLanguageIds])
@@ -84,7 +84,7 @@ export function SubtitlesSelect({
       <div className="flex items-center justify-between">
         <label
           htmlFor="subtitles-select"
-          className="block text-xl font-medium text-gray-700 ml-7"
+          className="ml-7 block text-xl font-medium text-gray-700"
         >
           {t('Subtitles')}
         </label>
@@ -108,14 +108,6 @@ export function SubtitlesSelect({
             // this is a workaround to keep the autocomplete controlled
             value={selectedOption as unknown as Language | undefined}
             options={options}
-            groupBy={
-              videoSubtitleLanguageIds == null
-                ? undefined
-                : (option) =>
-                    videoSubtitleLanguageIds.includes(option.id)
-                      ? t('Available Languages')
-                      : t('Other Languages')
-            }
             filterOptions={filterOptions}
             onChange={handleSubtitleLanguageChange}
             loading={isLoading}
@@ -135,11 +127,12 @@ export function SubtitlesSelect({
                   }}
                 >
                   <Typography variant="body1">{option.displayName}</Typography>
-                  {option.nativeName && (
-                    <Typography variant="body2" color="text.secondary">
-                      {option.nativeName.value}
-                    </Typography>
-                  )}
+                  {option.nativeName &&
+                    option.nativeName.value !== option.displayName && (
+                      <Typography variant="body2" color="text.secondary">
+                        {option.nativeName.value}
+                      </Typography>
+                    )}
                 </Box>
               )
             }}
@@ -155,13 +148,13 @@ export function SubtitlesSelect({
           />
         </div>
       </div>
-      <div className="flex ml-8 my-4 items-center gap-2">
+      <div className="my-4 ml-8 flex items-center gap-2">
         <input
           id="no-subtitles"
           type="checkbox"
           checked={subtitleOn}
           onChange={handleSubtitlesOnChange}
-          className="accent-[#CB333B] h-4 w-4 rounded border-gray-300 focus:ring-0"
+          className="h-4 w-4 rounded border-gray-300 accent-[#CB333B] focus:ring-0"
         />
         <label htmlFor="no-subtitles" className="text-sm text-gray-500">
           {t('Show subtitles')}

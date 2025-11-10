@@ -131,6 +131,11 @@ type ForeignKeyConstraintErrorLocation {
   value: String
 }
 
+input GenerateSubtitlesInput {
+  languageCode: String!
+  languageName: String!
+}
+
 enum IdType {
   databaseId
   slug
@@ -182,8 +187,6 @@ enum MediaRole {
 }
 
 type Mutation {
-  """Transcode an asset. Returns the bullmq job ID."""
-  transcodeAsset(input: TranscodeVideoInput!): String
   createCloudflareUploadByFile(input: ImageInput): CloudflareImage!
   createCloudflareUploadByUrl(url: String!, input: ImageInput): CloudflareImage!
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput): CloudflareImage!
@@ -200,14 +203,15 @@ type Mutation {
   bibleCitationDelete(id: ID!): Boolean
   createKeyword(value: String!, languageId: String!): Keyword!
   createMuxVideoAndQueueUpload(videoId: ID!, edition: String!, languageId: ID!, version: Int!, r2PublicUrl: String!, originalFilename: String!, durationMs: Int!, duration: Int!, width: Int!, height: Int!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = fhd): MuxVideo!
-  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
+  createMuxVideoUploadByFile(name: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd, generateSubtitlesInput: GenerateSubtitlesInput): MuxVideo!
   createMuxVideoUploadByUrl(url: String!, userGenerated: Boolean, downloadable: Boolean = false, maxResolution: MaxResolutionTier = fhd): MuxVideo!
   enableMuxDownload(id: ID!, resolution: String): MuxVideo
   deleteMuxVideo(id: ID!, userGenerated: Boolean): Boolean!
   playlistCreate(input: PlaylistCreateInput!): MutationPlaylistCreateResult
   playlistUpdate(id: ID!, input: PlaylistUpdateInput!): MutationPlaylistUpdateResult
   playlistDelete(id: ID!): MutationPlaylistDeleteResult
-  playlistItemAdd(id: ID, playlistId: ID!, videoVariantId: ID!): MutationPlaylistItemAddResult
+  playlistItemAdd(playlistId: ID!, videoVariantIds: [ID!]!): MutationPlaylistItemAddResult
+  playlistItemAddWithVideoAndLanguageIds(playlistId: ID!, videos: [PlaylistItemVideoInput!]!): MutationPlaylistItemAddWithVideoAndLanguageIdsResult
   playlistItemRemove(playlistId: ID!, itemId: ID!): MutationPlaylistItemRemoveResult
   playlistItemsReorder(playlistId: ID!, itemIds: [ID!]!): MutationPlaylistItemsReorderResult
 
@@ -244,6 +248,7 @@ type Mutation {
   videoCreate(input: VideoCreateInput!): Video!
   videoUpdate(input: VideoUpdateInput!): Video!
   videoDelete(id: ID!): Video!
+  fixVideoLanguages(videoId: ID!): Boolean!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
   videoDescriptionUpdate(input: VideoTranslationUpdateInput!): VideoDescription!
   videoDescriptionDelete(id: ID!): VideoDescription!
@@ -305,7 +310,13 @@ type MutationPlaylistDeleteSuccess {
 union MutationPlaylistItemAddResult = NotFoundError | MutationPlaylistItemAddSuccess
 
 type MutationPlaylistItemAddSuccess {
-  data: PlaylistItem!
+  data: [PlaylistItem!]!
+}
+
+union MutationPlaylistItemAddWithVideoAndLanguageIdsResult = NotFoundError | MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess
+
+type MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess {
+  data: [PlaylistItem!]!
 }
 
 union MutationPlaylistItemRemoveResult = NotFoundError | MutationPlaylistItemRemoveSuccess
@@ -320,7 +331,7 @@ type MutationPlaylistItemsReorderSuccess {
   data: [PlaylistItem!]!
 }
 
-union MutationPlaylistUpdateResult = ZodError | NotFoundError | MutationPlaylistUpdateSuccess
+union MutationPlaylistUpdateResult = NotFoundError | ZodError | MutationPlaylistUpdateSuccess
 
 type MutationPlaylistUpdateSuccess {
   data: Playlist!
@@ -425,7 +436,7 @@ input MutationShortLinkUpdateInput {
   bitrate: Int
 }
 
-union MutationShortLinkUpdateResult = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
+union MutationShortLinkUpdateResult = NotFoundError | ZodError | MutationShortLinkUpdateSuccess
 
 type MutationShortLinkUpdateSuccess {
   data: ShortLink!
@@ -440,6 +451,15 @@ input MutationVideoOriginUpdateInput {
   id: ID!
   name: String
   description: String
+}
+
+type MuxSubtitleTrack {
+  id: ID!
+  trackId: String!
+  source: String!
+  status: String!
+  bcp47: String!
+  muxVideoId: ID!
 }
 
 type MuxVideo
@@ -542,6 +562,17 @@ type PlaylistItem {
   playlist: Playlist!
 }
 
+"""
+The video variant to add to the playlist. This is used instead of the videoVariantId as clients typically know the video id and language id of the video variant but not the videoVariantId.
+"""
+input PlaylistItemVideoInput {
+  """The video id of the video variant"""
+  videoId: String!
+
+  """The language id of the video variant"""
+  languageId: String!
+}
+
 input PlaylistUpdateInput {
   name: String
   note: String
@@ -550,7 +581,6 @@ input PlaylistUpdateInput {
 }
 
 type Query {
-  getTranscodeAssetProgress(jobId: String!): Int
   getMyCloudflareImages(offset: Int, limit: Int): [CloudflareImage!]!
   getMyCloudflareImage(id: ID!): CloudflareImage!
   listUnsplashCollectionPhotos(collectionId: String!, page: Int, perPage: Int, orientation: UnsplashPhotoOrientation): [UnsplashPhoto!]!
@@ -562,6 +592,7 @@ type Query {
   getMyMuxVideos(offset: Int, limit: Int): [MuxVideo!]!
   getMyMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo!
   getMuxVideo(id: ID!, userGenerated: Boolean): MuxVideo
+  getMyGeneratedMuxSubtitleTrack(muxVideoId: ID!, bcp47: String!, userGenerated: Boolean): QueryGetMyGeneratedMuxSubtitleTrackResult!
   playlists: [Playlist!]
   playlist(id: ID!, idType: IdType! = databaseId): QueryPlaylistResult
 
@@ -612,8 +643,15 @@ type Query {
   videoEdition(id: ID!): VideoEdition
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
+  youtubeClosedCaptionLanguages(videoId: ID!): QueryYoutubeClosedCaptionLanguagesResult!
   arclightApiKeys: [ArclightApiKey!]!
   arclightApiKeyByKey(key: String!): ArclightApiKey
+}
+
+union QueryGetMyGeneratedMuxSubtitleTrackResult = Error | QueryGetMyGeneratedMuxSubtitleTrackSuccess
+
+type QueryGetMyGeneratedMuxSubtitleTrackSuccess {
+  data: MuxSubtitleTrack!
 }
 
 union QueryPlaylistResult = NotFoundError | QueryPlaylistSuccess
@@ -660,6 +698,12 @@ type QueryShortLinksConnection {
 type QueryShortLinksConnectionEdge {
   node: ShortLink
   cursor: String!
+}
+
+union QueryYoutubeClosedCaptionLanguagesResult = Error | ZodError | QueryYoutubeClosedCaptionLanguagesSuccess
+
+type QueryYoutubeClosedCaptionLanguagesSuccess {
+  data: [Language!]!
 }
 
 enum RedirectType {
@@ -788,14 +832,6 @@ type TaxonomyName {
   label: String!
   language: Language!
   taxonomy: Taxonomy!
-}
-
-input TranscodeVideoInput {
-  r2AssetId: String!
-  resolution: String!
-  videoBitrate: String
-  outputFilename: String!
-  outputPath: String!
 }
 
 enum UnsplashColor {
@@ -1257,6 +1293,7 @@ input VideoVariantDownloadUpdateInput {
 
 input VideoVariantFilter {
   onlyPublished: Boolean = true
+  languageId: ID
 }
 
 input VideoVariantUpdateInput {
