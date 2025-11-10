@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from 'react'
 
 import { TASK_CLEANUP_DELAY } from '../constants'
+import type { ShowSnackbarOptions } from '../showSnackbar/showSnackbar'
 import type { PollingTask } from '../types'
 
 interface HandlePollingCompleteDependencies {
@@ -9,7 +10,7 @@ interface HandlePollingCompleteDependencies {
   showSnackbar: (
     message: string,
     variant: 'success' | 'error' | 'info' | 'warning',
-    persist?: boolean
+    options?: boolean | ShowSnackbarOptions
   ) => void
   t: (key: string) => string
 }
@@ -31,7 +32,11 @@ export async function handlePollingComplete(
     return next
   })
 
-  showSnackbar(t('Video upload completed'), 'success', true)
+  showSnackbar(t('Video upload completed'), 'success', {
+    autoHideDuration: 4000,
+    preventDuplicate: true,
+    persist: false
+  })
 
   // Call the completion callback after data is ready
   if (task.onComplete != null) {

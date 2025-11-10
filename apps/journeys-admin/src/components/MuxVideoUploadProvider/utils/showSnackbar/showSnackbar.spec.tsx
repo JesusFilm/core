@@ -13,6 +13,8 @@ describe('createShowSnackbar', () => {
 
     expect(enqueueSnackbar).toHaveBeenCalledWith('Test message', {
       variant: 'success',
+      preventDuplicate: true,
+      autoHideDuration: 4000,
       action: expect.any(Function)
     })
   })
@@ -26,6 +28,8 @@ describe('createShowSnackbar', () => {
 
     expect(enqueueSnackbar).toHaveBeenCalledWith('Test message', {
       variant: 'error',
+      preventDuplicate: true,
+      autoHideDuration: 4000,
       persist: true,
       action: expect.any(Function)
     })
@@ -40,6 +44,8 @@ describe('createShowSnackbar', () => {
 
     expect(enqueueSnackbar).toHaveBeenCalledWith('Test message', {
       variant: 'info',
+      preventDuplicate: true,
+      autoHideDuration: 4000,
       action: expect.any(Function)
     })
     expect(enqueueSnackbar.mock.calls[0][1]).not.toHaveProperty('persist')
@@ -83,8 +89,50 @@ describe('createShowSnackbar', () => {
       showSnackbar(`Test ${variant}`, variant)
       expect(enqueueSnackbar).toHaveBeenCalledWith(`Test ${variant}`, {
         variant,
+        preventDuplicate: true,
+        autoHideDuration: 4000,
         action: expect.any(Function)
       })
     })
+  })
+
+  it('should handle options object with autoHideDuration and preventDuplicate', () => {
+    const enqueueSnackbar = jest.fn()
+    const closeSnackbar = jest.fn()
+    const showSnackbar = createShowSnackbar(enqueueSnackbar, closeSnackbar)
+
+    showSnackbar('Test message', 'success', {
+      autoHideDuration: 5000,
+      preventDuplicate: false
+    })
+
+    expect(enqueueSnackbar).toHaveBeenCalledWith('Test message', {
+      variant: 'success',
+      preventDuplicate: false,
+      autoHideDuration: 5000,
+      action: expect.any(Function)
+    })
+    expect(enqueueSnackbar.mock.calls[0][1]).not.toHaveProperty('persist')
+  })
+
+  it('should handle options object with persist true and autoHideDuration null', () => {
+    const enqueueSnackbar = jest.fn()
+    const closeSnackbar = jest.fn()
+    const showSnackbar = createShowSnackbar(enqueueSnackbar, closeSnackbar)
+
+    showSnackbar('Test message', 'warning', {
+      persist: true,
+      autoHideDuration: null
+    })
+
+    expect(enqueueSnackbar).toHaveBeenCalledWith('Test message', {
+      variant: 'warning',
+      preventDuplicate: true,
+      persist: true,
+      action: expect.any(Function)
+    })
+    expect(enqueueSnackbar.mock.calls[0][1]).not.toHaveProperty(
+      'autoHideDuration'
+    )
   })
 })

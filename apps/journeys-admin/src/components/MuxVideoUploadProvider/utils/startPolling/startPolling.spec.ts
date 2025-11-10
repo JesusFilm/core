@@ -49,7 +49,11 @@ describe('startPolling', () => {
     expect(mockServices.showSnackbar).toHaveBeenCalledWith(
       'Video upload in progress',
       'success',
-      true
+      {
+        autoHideDuration: 4000,
+        preventDuplicate: true,
+        persist: false
+      }
     )
     expect(mockServices.hasShownStartNotification.current.has(videoId)).toBe(
       true

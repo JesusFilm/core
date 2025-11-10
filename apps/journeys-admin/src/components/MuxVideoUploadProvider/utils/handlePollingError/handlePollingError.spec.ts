@@ -74,11 +74,11 @@ describe('handlePollingError', () => {
       showSnackbar
     })
 
-    expect(showSnackbar).toHaveBeenCalledWith(
-      'Test error message',
-      'error',
-      true
-    )
+    expect(showSnackbar).toHaveBeenCalledWith('Test error message', 'error', {
+      autoHideDuration: 4000,
+      preventDuplicate: true,
+      persist: false
+    })
 
     // Verify task.stopPolling is called
     const updateFn = setPollingTasks.mock.calls[0][0]
