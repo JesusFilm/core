@@ -22,8 +22,8 @@ import {
   selectedStep
 } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 import { restoreStepMock } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
-import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 import { MuxVideoUploadProvider } from '../../../../../../MuxVideoUploadProvider'
+import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { DeleteBlock } from './DeleteBlock'
 

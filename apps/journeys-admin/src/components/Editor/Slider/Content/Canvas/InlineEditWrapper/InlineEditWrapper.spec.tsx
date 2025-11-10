@@ -19,10 +19,10 @@ import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQue
 import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
 import { StepFields } from '../../../../../../../__generated__/StepFields'
 import { TypographyFields } from '../../../../../../../__generated__/TypographyFields'
+import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
 import { SelectableWrapper } from '../SelectableWrapper'
 
 import { InlineEditWrapper } from '.'
-import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,

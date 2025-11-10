@@ -15,10 +15,10 @@ import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { BlockDelete } from '../../../../../../../__generated__/BlockDelete'
 import { StepFields as StepBlock } from '../../../../../../../__generated__/StepFields'
 import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
+import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
 import { useDeleteEdge } from '../useDeleteEdge'
 
 import { useDeleteOnKeyPress } from './useDeleteOnKeyPress'
-import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
 
 jest.mock('reactflow', () => {
   const originalModule = jest.requireActual('reactflow')

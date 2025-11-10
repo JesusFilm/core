@@ -27,6 +27,7 @@ import { StepFields as StepBlock } from '../../../../../__generated__/StepFields
 import { mockReactFlow } from '../../../../../test/mockReactFlow'
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
+import { MuxVideoUploadProvider } from '../../../MuxVideoUploadProvider'
 import { CommandRedoItem } from '../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 
@@ -38,7 +39,6 @@ import {
 } from './nodes/SocialPreviewNode/libs/positions'
 
 import { JourneyFlow } from '.'
-import { MuxVideoUploadProvider } from '../../../MuxVideoUploadProvider'
 
 const defaultJourney = {
   ...coreDefaultJourney,

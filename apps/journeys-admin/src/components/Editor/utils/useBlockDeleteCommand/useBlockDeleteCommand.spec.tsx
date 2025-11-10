@@ -24,8 +24,8 @@ import {
   restoreStepMock,
   useBlockRestoreMutationMock
 } from '../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
-import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 import { MuxVideoUploadProvider } from '../../../MuxVideoUploadProvider'
+import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 
 import {
   MULTISELECT_BLOCK_UPDATE as multiselectUpdateDoc,

@@ -5,9 +5,9 @@ import { SnackbarProvider } from 'notistack'
 import type { TreeBlock } from '@core/journeys/ui/block'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
+import { MuxVideoUploadProvider } from '../../../../../../MuxVideoUploadProvider'
 
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
-import { MuxVideoUploadProvider } from '../../../../../../MuxVideoUploadProvider'
 
 jest.mock('@core/shared/ui/deviceUtils', () => {
   return {

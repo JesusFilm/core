@@ -5,9 +5,9 @@ import { SnackbarProvider } from 'notistack'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
-import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
+import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 
 import {
   GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
