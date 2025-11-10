@@ -303,6 +303,7 @@ export function CardIntro(): ReactElement {
       duration: null,
       objectFit: null,
       subtitleLanguage: null,
+      showGeneratedSubtitles: null,
       mediaVideo: {
         id: '1_jf-0-0',
         __typename: 'Video',

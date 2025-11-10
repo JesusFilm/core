@@ -23,7 +23,7 @@ export async function getLaunchDarklyClient(user?: LDUser): Promise<LDClient> {
 
   try {
     await Promise.race([
-      launchDarklyClient.waitForInitialization({ timeout: 1000 }),
+      launchDarklyClient.waitForInitialization({ timeout: 1 }),
       new Promise((_, reject) =>
         setTimeout(
           () => reject(new Error('LaunchDarkly initialization timeout')),

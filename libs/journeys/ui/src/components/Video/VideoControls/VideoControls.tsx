@@ -460,6 +460,7 @@ export function VideoControls({
                 player={player}
                 source={source}
                 visible={visible}
+                setActive={setActive}
               />
               <DesktopControls
                 playing={state.playing}
@@ -483,6 +484,7 @@ export function VideoControls({
                 player={player}
                 source={source}
                 visible={visible}
+                setActive={setActive}
               />
             </Container>
           </Fade>

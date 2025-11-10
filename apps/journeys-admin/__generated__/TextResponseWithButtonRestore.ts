@@ -530,6 +530,7 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: TextResponseWithButtonRestore_textResponse_VideoBlock_subtitleLanguage | null;
   mediaVideo: TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo | null;
   /**
@@ -1119,6 +1120,7 @@ export interface TextResponseWithButtonRestore_button_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: TextResponseWithButtonRestore_button_VideoBlock_subtitleLanguage | null;
   mediaVideo: TextResponseWithButtonRestore_button_VideoBlock_mediaVideo | null;
   /**
@@ -1708,6 +1710,7 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: TextResponseWithButtonRestore_startIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo | null;
   /**
@@ -2297,6 +2300,7 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: TextResponseWithButtonRestore_endIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo | null;
   /**
