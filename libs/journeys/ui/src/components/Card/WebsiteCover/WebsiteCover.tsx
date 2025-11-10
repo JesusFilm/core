@@ -7,10 +7,9 @@ import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { TreeBlock } from '../../../libs/block'
 import { ImageFields } from '../../Image/__generated__/ImageFields'
 import { VideoFields } from '../../Video/__generated__/VideoFields'
+import { BackgroundVideo } from '../ContainedCover/BackgroundVideo'
 import { OverlayContent } from '../OverlayContent'
 import { stripAlphaFromHex } from '../utils/colorOpacityUtils'
-
-import { BackgroundVideo } from '../ContainedCover/BackgroundVideo'
 
 interface WebsiteCoverProps {
   children: ReactNode[]
@@ -42,7 +41,7 @@ export function WebsiteCover({
               (block) =>
                 block.id === videoBlock.posterBlockId &&
                 block.__typename === 'ImageBlock'
-            ) as TreeBlock<ImageFields> | undefined
+            )
           )?.src
         : videoBlock?.mediaVideo?.images[0]?.mobileCinematicHigh
       : videoBlock?.image
