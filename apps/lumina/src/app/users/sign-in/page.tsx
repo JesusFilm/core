@@ -123,7 +123,7 @@ export default function SignInPage() {
     <div className="flex min-h-screen">
       <div className="flex w-full flex-col lg:flex-row">
         <div className="flex w-full flex-col justify-center bg-white px-8 py-12 lg:w-2/5">
-          <div>
+          <div className="mx-auto w-full max-w-md">
             <div className="mb-12 flex items-center gap-2">
               <div className="bg-primary-500 flex h-10 w-10 items-center justify-center rounded-lg">
                 <svg
@@ -189,7 +189,7 @@ export default function SignInPage() {
                     href="#"
                     className="text-primary-500 hover:text-primary-600 text-sm"
                   >
-                    Forgot Your Password?
+                    {t('forgotPassword')}
                   </Link>
                 </div>
                 <input
@@ -215,7 +215,7 @@ export default function SignInPage() {
                     className="text-primary-500 focus:ring-primary-500 h-4 w-4 rounded border-gray-300"
                   />
                   <span className="ml-2 text-sm text-gray-700">
-                    Remember Me
+                    {t('rememberMe')}
                   </span>
                 </label>
               </div>
@@ -312,15 +312,18 @@ export default function SignInPage() {
                 {t('switchToSignUpLink')}
               </Link>
             </div>
-          </div>
 
-          <div className="mt-8 flex items-center justify-between text-xs text-gray-500">
-            <span>
-              Copyright © {new Date().getFullYear()} Jesus Film Project
-            </span>
-            <Link href="#" className="hover:text-gray-700">
-              Privacy Policy
-            </Link>
+            <div className="mt-8 flex items-center justify-between text-xs text-gray-500">
+              <span>{t('copyright', { year: new Date().getFullYear() })}</span>
+              <Link
+                href="https://www.jesusfilm.org/privacy/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-gray-700"
+              >
+                {t('privacyPolicy')}
+              </Link>
+            </div>
           </div>
         </div>
 
