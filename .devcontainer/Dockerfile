@@ -19,8 +19,7 @@ RUN sh -c 'echo "deb [signed-by=/usr/share/keyrings/postgresql-archive.keyring.g
 RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /usr/share/keyrings/postgresql-archive.keyring.gpg
 
 # doppler
-RUN curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | apt-key add -
-RUN echo "deb https://packages.doppler.com/public/cli/deb/debian any-version main" | tee /etc/apt/sources.list.d/doppler-cli.list
+RUN curl -Ls https://packages.doppler.com/public/cli/install.sh | sudo bash
 
 # solves "failed to fetch URL Hash Sum mismatch error"
 # see: https://github.com/docker/for-mac/issues/7025
