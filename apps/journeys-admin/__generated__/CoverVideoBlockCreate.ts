@@ -181,6 +181,7 @@ export interface CoverVideoBlockCreate_videoBlockCreate {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CoverVideoBlockCreate_videoBlockCreate_subtitleLanguage | null;
   mediaVideo: CoverVideoBlockCreate_videoBlockCreate_mediaVideo | null;
   /**

@@ -552,6 +552,7 @@ export interface GetAdminJourney_journey_blocks_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: GetAdminJourney_journey_blocks_VideoBlock_subtitleLanguage | null;
   mediaVideo: GetAdminJourney_journey_blocks_VideoBlock_mediaVideo | null;
   /**

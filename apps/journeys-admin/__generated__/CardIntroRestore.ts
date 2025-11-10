@@ -538,6 +538,7 @@ export interface CardIntroRestore_subtitle_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardIntroRestore_subtitle_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardIntroRestore_subtitle_VideoBlock_mediaVideo | null;
   /**
@@ -1137,6 +1138,7 @@ export interface CardIntroRestore_title_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardIntroRestore_title_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardIntroRestore_title_VideoBlock_mediaVideo | null;
   /**
@@ -1736,6 +1738,7 @@ export interface CardIntroRestore_body_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardIntroRestore_body_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardIntroRestore_body_VideoBlock_mediaVideo | null;
   /**
@@ -2335,6 +2338,7 @@ export interface CardIntroRestore_button_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardIntroRestore_button_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardIntroRestore_button_VideoBlock_mediaVideo | null;
   /**
@@ -2934,6 +2938,7 @@ export interface CardIntroRestore_startIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardIntroRestore_startIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardIntroRestore_startIcon_VideoBlock_mediaVideo | null;
   /**
@@ -3533,6 +3538,7 @@ export interface CardIntroRestore_endIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardIntroRestore_endIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardIntroRestore_endIcon_VideoBlock_mediaVideo | null;
   /**
@@ -4132,6 +4138,7 @@ export interface CardIntroRestore_video_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardIntroRestore_video_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardIntroRestore_video_VideoBlock_mediaVideo | null;
   /**

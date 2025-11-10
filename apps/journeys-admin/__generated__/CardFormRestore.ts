@@ -538,6 +538,7 @@ export interface CardFormRestore_image_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardFormRestore_image_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_image_VideoBlock_mediaVideo | null;
   /**
@@ -1137,6 +1138,7 @@ export interface CardFormRestore_subtitle_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardFormRestore_subtitle_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_subtitle_VideoBlock_mediaVideo | null;
   /**
@@ -1736,6 +1738,7 @@ export interface CardFormRestore_title_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardFormRestore_title_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_title_VideoBlock_mediaVideo | null;
   /**
@@ -2335,6 +2338,7 @@ export interface CardFormRestore_textResponse_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardFormRestore_textResponse_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_textResponse_VideoBlock_mediaVideo | null;
   /**
@@ -2934,6 +2938,7 @@ export interface CardFormRestore_button_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardFormRestore_button_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_button_VideoBlock_mediaVideo | null;
   /**
@@ -3533,6 +3538,7 @@ export interface CardFormRestore_startIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardFormRestore_startIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_startIcon_VideoBlock_mediaVideo | null;
   /**
@@ -4132,6 +4138,7 @@ export interface CardFormRestore_endIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardFormRestore_endIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_endIcon_VideoBlock_mediaVideo | null;
   /**
@@ -4731,6 +4738,7 @@ export interface CardFormRestore_body_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardFormRestore_body_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardFormRestore_body_VideoBlock_mediaVideo | null;
   /**

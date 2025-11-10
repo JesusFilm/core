@@ -538,6 +538,7 @@ export interface CardPollRestore_imageRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_imageRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_imageRestore_VideoBlock_mediaVideo | null;
   /**
@@ -1137,6 +1138,7 @@ export interface CardPollRestore_subtitleRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_subtitleRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_subtitleRestore_VideoBlock_mediaVideo | null;
   /**
@@ -1736,6 +1738,7 @@ export interface CardPollRestore_titleRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_titleRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_titleRestore_VideoBlock_mediaVideo | null;
   /**
@@ -2335,6 +2338,7 @@ export interface CardPollRestore_radioQuestionRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_radioQuestionRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_radioQuestionRestore_VideoBlock_mediaVideo | null;
   /**
@@ -2934,6 +2938,7 @@ export interface CardPollRestore_radioOption1Restore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_radioOption1Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_radioOption1Restore_VideoBlock_mediaVideo | null;
   /**
@@ -3533,6 +3538,7 @@ export interface CardPollRestore_radioOption2Restore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_radioOption2Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_radioOption2Restore_VideoBlock_mediaVideo | null;
   /**
@@ -4132,6 +4138,7 @@ export interface CardPollRestore_radioOption3Restore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_radioOption3Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_radioOption3Restore_VideoBlock_mediaVideo | null;
   /**
@@ -4731,6 +4738,7 @@ export interface CardPollRestore_radioOption4Restore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_radioOption4Restore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_radioOption4Restore_VideoBlock_mediaVideo | null;
   /**
@@ -5330,6 +5338,7 @@ export interface CardPollRestore_bodyRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardPollRestore_bodyRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: CardPollRestore_bodyRestore_VideoBlock_mediaVideo | null;
   /**

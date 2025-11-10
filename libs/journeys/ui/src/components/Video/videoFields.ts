@@ -22,6 +22,7 @@ export const VIDEO_FIELDS = gql`
     image
     duration
     objectFit
+    showGeneratedSubtitles
     subtitleLanguage {
       id
       bcp47
