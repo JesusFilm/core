@@ -13,7 +13,7 @@ import {
 } from 'react-instantsearch'
 
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
-import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider/MuxVideoUploadProvider'
+import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
 
 import { videoItems } from './data'
 import { GET_VIDEO } from './VideoFromLocal/LocalDetails/LocalDetails'
@@ -78,7 +78,9 @@ describe('VideoLibrary', () => {
     it('should render the Video Library on the right', () => {
       render(
         <MockedProvider>
-          <VideoLibrary open />
+          <MuxVideoUploadProvider>
+            <VideoLibrary open />
+          </MuxVideoUploadProvider>
         </MockedProvider>
       )
       expect(screen.getByText('Video Library')).toBeInTheDocument()
@@ -91,7 +93,9 @@ describe('VideoLibrary', () => {
       const onClose = jest.fn()
       render(
         <MockedProvider>
-          <VideoLibrary open onClose={onClose} />
+          <MuxVideoUploadProvider>
+            <VideoLibrary open onClose={onClose} />
+          </MuxVideoUploadProvider>
         </MockedProvider>
       )
       expect(screen.getAllByRole('button')[0]).toContainElement(
@@ -110,7 +114,9 @@ describe('VideoLibrary', () => {
     it('should render the VideoLibrary from the bottom', () => {
       render(
         <MockedProvider>
-          <VideoLibrary open />
+          <MuxVideoUploadProvider>
+            <VideoLibrary open />
+          </MuxVideoUploadProvider>
         </MockedProvider>
       )
       expect(screen.getByText('Video Library')).toBeInTheDocument()
@@ -128,7 +134,9 @@ describe('VideoLibrary', () => {
     it('displays searched video', async () => {
       render(
         <MockedProvider>
-          <VideoLibrary open />
+          <MuxVideoUploadProvider>
+            <VideoLibrary open />
+          </MuxVideoUploadProvider>
         </MockedProvider>
       )
       const searchBox = screen.getByRole('searchbox')
@@ -202,7 +210,9 @@ describe('VideoLibrary', () => {
     ]
     render(
       <MockedProvider mocks={mocks}>
-        <VideoLibrary open onSelect={onSelect} onClose={onClose} />
+        <MuxVideoUploadProvider>
+          <VideoLibrary open onSelect={onSelect} onClose={onClose} />
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     await waitFor(() => expect(screen.getByText('title1')).toBeInTheDocument())
@@ -234,9 +244,10 @@ describe('VideoLibrary', () => {
 
     render(
       <MockedProvider>
-        <VideoLibrary
-          open
-          selectedBlock={{
+        <MuxVideoUploadProvider>
+          <VideoLibrary
+            open
+            selectedBlock={{
             id: 'video1.id',
             __typename: 'VideoBlock',
             parentBlockId: 'card1.id',
@@ -268,6 +279,7 @@ describe('VideoLibrary', () => {
           onSelect={onSelect}
           onClose={onClose}
         />
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
 

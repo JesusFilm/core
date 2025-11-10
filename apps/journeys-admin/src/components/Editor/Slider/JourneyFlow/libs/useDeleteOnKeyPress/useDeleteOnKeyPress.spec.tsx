@@ -18,6 +18,7 @@ import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMut
 import { useDeleteEdge } from '../useDeleteEdge'
 
 import { useDeleteOnKeyPress } from './useDeleteOnKeyPress'
+import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
 
 jest.mock('reactflow', () => {
   const originalModule = jest.requireActual('reactflow')
@@ -74,7 +75,9 @@ describe('useDeleteOnKeyPress', () => {
     const { result } = renderHook(() => useDeleteOnKeyPress(), {
       wrapper: ({ children }) => (
         <EditorProvider initialState={initialState}>
-          <MockedProvider>{children}</MockedProvider>
+          <MockedProvider>
+            <MuxVideoUploadProvider>{children}</MuxVideoUploadProvider>
+          </MockedProvider>
         </EditorProvider>
       )
     })
@@ -102,7 +105,9 @@ describe('useDeleteOnKeyPress', () => {
       wrapper: ({ children }) => (
         <JourneyProvider value={{ journey: defaultJourney }}>
           <EditorProvider initialState={initialState}>
-            <MockedProvider>{children}</MockedProvider>
+            <MockedProvider>
+              <MuxVideoUploadProvider>{children}</MuxVideoUploadProvider>
+            </MockedProvider>
           </EditorProvider>
         </JourneyProvider>
       )

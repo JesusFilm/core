@@ -7,6 +7,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../../__generated__/BlockFields'
 
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
+import { MuxVideoUploadProvider } from '../../../../../../MuxVideoUploadProvider'
 
 jest.mock('@core/shared/ui/deviceUtils', () => {
   return {
@@ -32,7 +33,9 @@ describe('StepBlockNodeMenu', () => {
     const { getByTestId, getByRole, queryByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <StepBlockNodeMenu step={step} />
+          <MuxVideoUploadProvider>
+            <StepBlockNodeMenu step={step} />
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -59,7 +62,9 @@ describe('StepBlockNodeMenu', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <StepBlockNodeMenu step={step} />
+          <MuxVideoUploadProvider>
+            <StepBlockNodeMenu step={step} />
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -75,7 +80,9 @@ describe('StepBlockNodeMenu', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <StepBlockNodeMenu step={step} />
+          <MuxVideoUploadProvider>
+            <StepBlockNodeMenu step={step} />
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )

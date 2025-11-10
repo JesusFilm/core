@@ -4,6 +4,7 @@ import Box from '@mui/material/Box'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/compat/router'
 import { NextRouter } from 'next/router'
+import { SnackbarProvider } from 'notistack'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { ActiveSlide, EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -37,6 +38,7 @@ import {
 } from './nodes/SocialPreviewNode/libs/positions'
 
 import { JourneyFlow } from '.'
+import { MuxVideoUploadProvider } from '../../../MuxVideoUploadProvider'
 
 const defaultJourney = {
   ...coreDefaultJourney,
@@ -121,17 +123,21 @@ describe('JourneyFlow', () => {
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <FlagsProvider flags={{ editorAnalytics: true }}>
-          <JourneyProvider value={{ journey: defaultJourney }}>
-            <EditorProvider
-              initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
-            >
-              <Box sx={{ width: '100vw', height: '100vh' }}>
-                <JourneyFlow />
-              </Box>
-            </EditorProvider>
-          </JourneyProvider>
-        </FlagsProvider>
+        <SnackbarProvider>
+          <FlagsProvider flags={{ editorAnalytics: true }}>
+            <JourneyProvider value={{ journey: defaultJourney }}>
+              <EditorProvider
+                initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+              >
+                <MuxVideoUploadProvider>
+                  <Box sx={{ width: '100vw', height: '100vh' }}>
+                    <JourneyFlow />
+                  </Box>
+                </MuxVideoUploadProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -164,25 +170,29 @@ describe('JourneyFlow', () => {
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <JourneyProvider
-          value={{
-            journey: {
-              ...defaultJourney
-            }
-          }}
-        >
-          <EditorProvider
-            initialState={{
-              steps,
-              activeSlide: ActiveSlide.JourneyFlow
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                ...defaultJourney
+              }
             }}
           >
-            <Box sx={{ width: '100vw', height: '100vh' }}>
-              <CommandUndoItem variant="button" />
-              <JourneyFlow />
-            </Box>
-          </EditorProvider>
-        </JourneyProvider>
+            <EditorProvider
+              initialState={{
+                steps,
+                activeSlide: ActiveSlide.JourneyFlow
+              }}
+            >
+              <MuxVideoUploadProvider>
+                <Box sx={{ width: '100vw', height: '100vh' }}>
+                  <CommandUndoItem variant="button" />
+                  <JourneyFlow />
+                </Box>
+              </MuxVideoUploadProvider>
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -227,23 +237,27 @@ describe('JourneyFlow', () => {
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <JourneyProvider
-          value={{
-            journey: {
-              ...defaultJourney
-            }
-          }}
-        >
-          <EditorProvider
-            initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                ...defaultJourney
+              }
+            }}
           >
-            <Box sx={{ width: '100vw', height: '100vh' }}>
-              <CommandUndoItem variant="button" />
-              <CommandRedoItem variant="button" />
-              <JourneyFlow />
-            </Box>
-          </EditorProvider>
-        </JourneyProvider>
+            <EditorProvider
+              initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+            >
+              <MuxVideoUploadProvider>
+                <Box sx={{ width: '100vw', height: '100vh' }}>
+                  <CommandUndoItem variant="button" />
+                  <CommandRedoItem variant="button" />
+                  <JourneyFlow />
+                </Box>
+              </MuxVideoUploadProvider>
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -326,25 +340,29 @@ describe('JourneyFlow', () => {
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <JourneyProvider
-          value={{
-            journey: {
-              ...defaultJourney,
-              socialNodeX: initialSocialNodeX,
-              socialNodeY: initialSocialNodeY
-            }
-          }}
-        >
-          <EditorProvider
-            initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                ...defaultJourney,
+                socialNodeX: initialSocialNodeX,
+                socialNodeY: initialSocialNodeY
+              }
+            }}
           >
-            <Box sx={{ width: '100vw', height: '100vh' }}>
-              <CommandUndoItem variant="button" />
-              <CommandRedoItem variant="button" />
-              <JourneyFlow />
-            </Box>
-          </EditorProvider>
-        </JourneyProvider>
+            <EditorProvider
+              initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+            >
+              <MuxVideoUploadProvider>
+                <Box sx={{ width: '100vw', height: '100vh' }}>
+                  <CommandUndoItem variant="button" />
+                  <CommandRedoItem variant="button" />
+                  <JourneyFlow />
+                </Box>
+              </MuxVideoUploadProvider>
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -403,19 +421,23 @@ describe('JourneyFlow', () => {
 
     render(
       <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
-        <JourneyProvider value={{ journey: defaultJourney }}>
-          <EditorProvider
-            initialState={{
-              steps,
-              activeSlide: ActiveSlide.JourneyFlow,
-              showAnalytics: true
-            }}
-          >
-            <Box sx={{ width: '100vw', height: '100vh' }}>
-              <JourneyFlow />
-            </Box>
-          </EditorProvider>
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <EditorProvider
+              initialState={{
+                steps,
+                activeSlide: ActiveSlide.JourneyFlow,
+                showAnalytics: true
+              }}
+            >
+              <MuxVideoUploadProvider>
+                <Box sx={{ width: '100vw', height: '100vh' }}>
+                  <JourneyFlow />
+                </Box>
+              </MuxVideoUploadProvider>
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -429,19 +451,23 @@ describe('JourneyFlow', () => {
   it('should change background color when in analytics mode', () => {
     render(
       <MockedProvider mocks={[mockGetStepBlocksWithPosition]}>
-        <JourneyProvider value={{ journey: defaultJourney }}>
-          <EditorProvider
-            initialState={{
-              steps,
-              activeSlide: ActiveSlide.JourneyFlow,
-              showAnalytics: true
-            }}
-          >
-            <Box sx={{ width: '100vw', height: '100vh' }}>
-              <JourneyFlow />
-            </Box>
-          </EditorProvider>
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: defaultJourney }}>
+            <EditorProvider
+              initialState={{
+                steps,
+                activeSlide: ActiveSlide.JourneyFlow,
+                showAnalytics: true
+              }}
+            >
+              <MuxVideoUploadProvider>
+                <Box sx={{ width: '100vw', height: '100vh' }}>
+                  <JourneyFlow />
+                </Box>
+              </MuxVideoUploadProvider>
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
