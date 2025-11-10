@@ -11,10 +11,6 @@ export interface GetJourneyCreatedAt_journey {
   __typename: "Journey";
   id: string;
   createdAt: any;
-  /**
-   * Distinct block typenames present on this journey (non-deleted blocks only)
-   */
-  blockTypenames: string[];
 }
 
 export interface GetJourneyCreatedAt {

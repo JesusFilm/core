@@ -11,29 +11,36 @@ export function getAncestorByType(
   blockId: string | null | undefined,
   type: string
 ): BlockLike | undefined {
-  let current: BlockLike | undefined =
-    blockId != null ? idToBlock.get(blockId) : undefined
-  while (current != null && current.typename !== type) {
-    current =
-      current.parentBlockId != null
-        ? idToBlock.get(current.parentBlockId)
-        : undefined
+  const visited = new Set<string>()
+  let curId: string | null | undefined = blockId
+  let current: BlockLike | undefined
+  while (curId != null) {
+    if (visited.has(curId)) return undefined
+    visited.add(curId)
+    current = idToBlock.get(curId)
+    if (current == null) return undefined
+    if (current.typename === type) return current
+    curId = current.parentBlockId
   }
-  return current
+  return undefined
 }
 
 export function getTopLevelChildUnderCard(
   idToBlock: Map<string, BlockLike>,
   blockId: string | null | undefined
 ): BlockLike | undefined {
+  const visited = new Set<string>()
   let current: BlockLike | undefined =
     blockId != null ? idToBlock.get(blockId) : undefined
+  if (current?.id != null) visited.add(current.id)
   let parent: BlockLike | undefined =
     current?.parentBlockId != null
       ? idToBlock.get(current.parentBlockId)
       : undefined
   // Climb until parent is a CardBlock; return the child right under Card
   while (current != null && parent != null && parent.typename !== 'CardBlock') {
+    if (visited.has(parent.id)) break
+    visited.add(parent.id)
     current = parent
     parent =
       current.parentBlockId != null
@@ -72,5 +79,3 @@ export function getCardHeading(
   }
   return ''
 }
-
-
