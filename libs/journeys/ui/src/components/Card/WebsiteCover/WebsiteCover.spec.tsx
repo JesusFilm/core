@@ -50,6 +50,7 @@ describe('WebsiteCover', () => {
     duration: null,
     image: null,
     objectFit: null,
+    showGeneratedSubtitles: null,
     subtitleLanguage: null,
     mediaVideo: {
       __typename: 'Video',

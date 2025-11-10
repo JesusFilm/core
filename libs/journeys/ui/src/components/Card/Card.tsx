@@ -274,7 +274,7 @@ export function Card({
   }
 
   const isContained = (coverBlock != null && !fullscreen) || videoBlock != null
-  const isParallax = isContained && journey?.website === true
+  const isWebsite = isContained && journey?.website === true
 
   return (
     <Formik
@@ -314,7 +314,7 @@ export function Card({
             }}
             elevation={3}
           >
-            {isParallax ? (
+            {isWebsite ? (
               <WebsiteCover
                 backgroundColor={cardColor}
                 backgroundBlur={blurUrl}

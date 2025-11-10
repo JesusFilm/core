@@ -21,7 +21,6 @@ interface WebsiteCoverProps {
   hasFullscreenVideo?: boolean
 }
 
-// Layout constants
 const MEDIA_HEIGHT = { xs: '320px', md: '480px' }
 
 export function WebsiteCover({
@@ -37,7 +36,6 @@ export function WebsiteCover({
 
   const posterImage =
     videoBlock?.mediaVideo?.__typename === 'Video'
-      ? // Use posterBlockId image or default poster image on video
         videoBlock?.posterBlockId != null
         ? (
             videoBlock.children.find(
@@ -47,11 +45,10 @@ export function WebsiteCover({
             ) as TreeBlock<ImageFields> | undefined
           )?.src
         : videoBlock?.mediaVideo?.images[0]?.mobileCinematicHigh
-      : // Use Youtube or mux set poster image
-        videoBlock?.image
+      : videoBlock?.image
 
   const VideoSection =
-    videoBlock != null ? (
+    videoBlock ? (
       <Box
         data-testid="website-cover-video"
         sx={{
