@@ -7,6 +7,28 @@
     "title": "Welcome to <underline>Lumina</underline>",
     "description": "The premier conversational AI platform for Christian evangelism, equipping, and discipleship."
   },
+  "Dashboard": {
+    "analytics": {
+      "title": "Analytics",
+      "description": "View your analytics and insights"
+    },
+    "agents": {
+      "title": "Agents",
+      "description": "Manage your AI agents"
+    },
+    "websites": {
+      "title": "Websites",
+      "description": "Manage your websites"
+    },
+    "widgets": {
+      "title": "Widgets",
+      "description": "Manage your widgets"
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Manage your account settings"
+    }
+  },
   "DatadogErrorBoundary": {
     "somethingWentWrong": "Something went wrong",
     "anErrorOccurred": "An error occurred while loading this page. Please try refreshing.",
