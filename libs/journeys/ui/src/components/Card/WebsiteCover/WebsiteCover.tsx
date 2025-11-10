@@ -36,7 +36,7 @@ export function WebsiteCover({
 
   const posterImage =
     videoBlock?.mediaVideo?.__typename === 'Video'
-        videoBlock?.posterBlockId != null
+      ? videoBlock?.posterBlockId != null
         ? (
             videoBlock.children.find(
               (block) =>
@@ -47,42 +47,41 @@ export function WebsiteCover({
         : videoBlock?.mediaVideo?.images[0]?.mobileCinematicHigh
       : videoBlock?.image
 
-  const VideoSection =
-    videoBlock ? (
-      <Box
-        data-testid="website-cover-video"
-        sx={{
-          position: 'relative',
-          width: '100%',
-          flex: 1,
-          minHeight: MEDIA_HEIGHT,
-          overflow: 'hidden'
-        }}
-      >
-        <BackgroundVideo
-          {...videoBlock}
-          setLoading={setLoading}
-          cardColor={backgroundColor}
+  const VideoSection = videoBlock ? (
+    <Box
+      data-testid="website-cover-video"
+      sx={{
+        position: 'relative',
+        width: '100%',
+        flex: 1,
+        minHeight: MEDIA_HEIGHT,
+        overflow: 'hidden'
+      }}
+    >
+      <BackgroundVideo
+        {...videoBlock}
+        setLoading={setLoading}
+        cardColor={backgroundColor}
+      />
+      {posterImage != null && loading && (
+        <NextImage
+          data-testid="video-poster-image"
+          className="vjs-poster"
+          src={posterImage}
+          aria-details={posterImage}
+          alt="card video image"
+          layout="fill"
+          objectFit="cover"
+          sx={{
+            transform:
+              videoBlock.source === VideoBlockSource.youTube
+                ? 'scale(2)'
+                : 'unset'
+          }}
         />
-        {posterImage != null && loading && (
-          <NextImage
-            data-testid="video-poster-image"
-            className="vjs-poster"
-            src={posterImage}
-            aria-details={posterImage}
-            alt="card video image"
-            layout="fill"
-            objectFit="cover"
-            sx={{
-              transform:
-                videoBlock.source === VideoBlockSource.youTube
-                  ? 'scale(2)'
-                  : 'unset'
-            }}
-          />
-        )}
-      </Box>
-    ) : null
+      )}
+    </Box>
+  ) : null
 
   const ImageSection =
     imageBlock != null && backgroundBlur != null ? (
