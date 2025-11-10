@@ -11,9 +11,9 @@ import { JourneyEventsFilter, JourneyVisitorExportSelect, JourneyVisitorGoogleSh
 
 export interface JourneyVisitorExportToGoogleSheet_journeyVisitorExportToGoogleSheet {
   __typename: "JourneyVisitorGoogleSheetExportResult";
-  spreadsheetId: string | null;
-  spreadsheetUrl: string | null;
-  sheetName: string | null;
+  spreadsheetId: string;
+  spreadsheetUrl: string;
+  sheetName: string;
 }
 
 export interface JourneyVisitorExportToGoogleSheet {
@@ -25,5 +25,5 @@ export interface JourneyVisitorExportToGoogleSheetVariables {
   filter?: JourneyEventsFilter | null;
   select?: JourneyVisitorExportSelect | null;
   destination: JourneyVisitorGoogleSheetDestinationInput;
-  integrationId?: string | null;
+  integrationId: string;
 }

@@ -3,6 +3,8 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { GoogleSheetsSyncsFilter } from "./globalTypes";
+
 // ====================================================
 // GraphQL query operation: GoogleSheetsSyncs
 // ====================================================
@@ -22,8 +24,8 @@ export type GoogleSheetsSyncs_googleSheetsSyncs_integration = GoogleSheetsSyncs_
 
 export interface GoogleSheetsSyncs_googleSheetsSyncs {
   __typename: "GoogleSheetsSync";
-  id: string | null;
-  spreadsheetId: string | null;
+  id: string;
+  spreadsheetId: string;
   sheetName: string | null;
   email: string | null;
   deletedAt: any | null;
@@ -36,5 +38,5 @@ export interface GoogleSheetsSyncs {
 }
 
 export interface GoogleSheetsSyncsVariables {
-  journeyId: string;
+  filter: GoogleSheetsSyncsFilter;
 }

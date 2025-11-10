@@ -25,9 +25,7 @@ export const GET_INTEGRATION = gql`
       }
       ... on IntegrationGoogle {
         id
-        accessId
         type
-        accessSecretPart
         user {
           id
         }

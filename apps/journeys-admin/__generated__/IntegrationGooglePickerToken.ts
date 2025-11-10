@@ -12,6 +12,5 @@ export interface IntegrationGooglePickerToken {
 }
 
 export interface IntegrationGooglePickerTokenVariables {
-  teamId: string;
-  integrationId?: string | null;
+  integrationId: string;
 }

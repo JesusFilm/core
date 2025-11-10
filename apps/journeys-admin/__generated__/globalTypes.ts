@@ -422,6 +422,11 @@ export interface EmailActionInput {
   parentStepId?: string | null;
 }
 
+export interface GoogleSheetsSyncsFilter {
+  journeyId?: string | null;
+  integrationId?: string | null;
+}
+
 export interface HostCreateInput {
   title: string;
   location?: string | null;

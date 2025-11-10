@@ -9,7 +9,7 @@
 
 export interface GoogleIntegrationDetailsSyncDelete_googleSheetsSyncDelete {
   __typename: "GoogleSheetsSync";
-  id: string | null;
+  id: string;
 }
 
 export interface GoogleIntegrationDetailsSyncDelete {

@@ -3,11 +3,13 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { GoogleSheetsSyncsFilter } from "./globalTypes";
+
 // ====================================================
 // GraphQL query operation: GoogleSheetsSyncsByIntegration
 // ====================================================
 
-export interface GoogleSheetsSyncsByIntegration_googleSheetsSyncsByIntegration_journey {
+export interface GoogleSheetsSyncsByIntegration_googleSheetsSyncs_journey {
   __typename: "Journey";
   id: string;
   slug: string;
@@ -17,21 +19,21 @@ export interface GoogleSheetsSyncsByIntegration_googleSheetsSyncsByIntegration_j
   title: string;
 }
 
-export interface GoogleSheetsSyncsByIntegration_googleSheetsSyncsByIntegration {
+export interface GoogleSheetsSyncsByIntegration_googleSheetsSyncs {
   __typename: "GoogleSheetsSync";
-  id: string | null;
-  spreadsheetId: string | null;
+  id: string;
+  spreadsheetId: string;
   sheetName: string | null;
   email: string | null;
   deletedAt: any | null;
   createdAt: any;
-  journey: GoogleSheetsSyncsByIntegration_googleSheetsSyncsByIntegration_journey;
+  journey: GoogleSheetsSyncsByIntegration_googleSheetsSyncs_journey;
 }
 
 export interface GoogleSheetsSyncsByIntegration {
-  googleSheetsSyncsByIntegration: GoogleSheetsSyncsByIntegration_googleSheetsSyncsByIntegration[];
+  googleSheetsSyncs: GoogleSheetsSyncsByIntegration_googleSheetsSyncs[];
 }
 
 export interface GoogleSheetsSyncsByIntegrationVariables {
-  integrationId: string;
+  filter: GoogleSheetsSyncsFilter;
 }

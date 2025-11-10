@@ -47,8 +47,8 @@ const GET_JOURNEY_CREATED_AT = gql`
 `
 
 const GET_GOOGLE_PICKER_TOKEN = gql`
-  query IntegrationGooglePickerToken($teamId: ID!, $integrationId: ID) {
-    integrationGooglePickerToken(teamId: $teamId, integrationId: $integrationId)
+  query IntegrationGooglePickerToken($integrationId: ID!) {
+    integrationGooglePickerToken(integrationId: $integrationId)
   }
 `
 

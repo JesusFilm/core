@@ -9,7 +9,7 @@
 
 export interface GoogleSheetsSyncDialogDelete_googleSheetsSyncDelete {
   __typename: "GoogleSheetsSync";
-  id: string | null;
+  id: string;
 }
 
 export interface GoogleSheetsSyncDialogDelete {
