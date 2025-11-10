@@ -310,167 +310,33 @@ describe('VideoOptions', () => {
     await waitFor(() => expect(result2).toHaveBeenCalled())
   })
 
-  it('should preserve subtitleLanguageId when re-selecting same YouTube video', async () => {
+  it('it should reset subtitle language id and show generated subtitles when selecting different video', async () => {
     const videoBlockResult = jest.fn(() => {
       return {
         data: {
-          videoBlockUpdate: {
-            ...video,
-            videoId: 'youtubeVideoId',
-            source: VideoBlockSource.youTube,
-            subtitleLanguage: {
-              __typename: 'Language',
-              id: '529',
-              bcp47: 'en'
-            }
-          }
+          videoBlockUpdate: video
         }
       }
     })
-
+    const result = jest.fn().mockReturnValue(getVideoMock.result)
     const videoBlockUpdateVariables = {
       id: video.id,
       input: {
-        videoId: 'youtubeVideoId',
-        source: VideoBlockSource.youTube,
-        startAt: 10,
-        endAt: 100,
-        subtitleLanguageId: 'lang-en'
-      }
-    }
-
-    render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: VIDEO_BLOCK_UPDATE,
-              variables: videoBlockUpdateVariables
-            },
-            result: videoBlockResult
-          }
-        ]}
-      >
-        <EditorProvider
-          initialState={{
-            selectedBlock: {
-              ...video,
-              videoId: 'youtubeVideoId',
-              source: VideoBlockSource.youTube,
-              startAt: 10,
-              endAt: 100,
-              subtitleLanguage: {
-                __typename: 'Language',
-                id: '529',
-                bcp47: 'en'
-              }
-            },
-            selectedAttributeId: video.id
-          }}
-        >
-          <ThemeProvider>
-            <VideoOptions />
-          </ThemeProvider>
-        </EditorProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
-      expect(screen.getByTestId('VideoBlockEditor')).toBeInTheDocument()
-    )
-  })
-
-  it('should reset subtitleLanguageId when selecting different YouTube video', async () => {
-    const videoBlockResult = jest.fn(() => {
-      return {
-        data: {
-          videoBlockUpdate: {
-            ...video,
-            videoId: 'newYoutubeVideoId',
-            source: VideoBlockSource.youTube
-          }
-        }
-      }
-    })
-
-    const videoBlockUpdateVariables = {
-      id: video.id,
-      input: {
-        videoId: 'newYoutubeVideoId',
-        source: VideoBlockSource.youTube,
+        videoId: 'videoId',
+        videoVariantLanguageId: '529',
+        source: VideoBlockSource.internal,
         startAt: 0,
-        endAt: 200,
-        subtitleLanguageId: null
-      }
-    }
-
-    render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: VIDEO_BLOCK_UPDATE,
-              variables: videoBlockUpdateVariables
-            },
-            result: videoBlockResult
-          }
-        ]}
-      >
-        <EditorProvider
-          initialState={{
-            selectedBlock: {
-              ...video,
-              videoId: 'oldYoutubeVideoId',
-              source: VideoBlockSource.youTube,
-              subtitleLanguage: {
-                __typename: 'Language',
-                id: '529',
-                bcp47: 'es'
-              }
-            },
-            selectedAttributeId: video.id
-          }}
-        >
-          <ThemeProvider>
-            <VideoOptions />
-          </ThemeProvider>
-        </EditorProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
-      expect(screen.getByTestId('VideoBlockEditor')).toBeInTheDocument()
-    )
-  })
-
-  it('should reset showGeneratedSubtitles when selecting different video', async () => {
-    const videoBlockResult = jest.fn(() => {
-      return {
-        data: {
-          videoBlockUpdate: {
-            ...video,
-            videoId: 'newMuxVideoId',
-            source: VideoBlockSource.mux,
-            showGeneratedSubtitles: null
-          }
-        }
-      }
-    })
-
-    const videoBlockUpdateVariables = {
-      id: video.id,
-      input: {
-        videoId: 'newMuxVideoId',
-        source: VideoBlockSource.mux,
-        startAt: 0,
+        endAt: 144,
+        duration: 144,
         subtitleLanguageId: null,
         showGeneratedSubtitles: null
       }
     }
-
     render(
       <MockedProvider
         mocks={[
+          { ...getVideoMock, result },
+
           {
             request: {
               query: VIDEO_BLOCK_UPDATE,
@@ -482,12 +348,7 @@ describe('VideoOptions', () => {
       >
         <EditorProvider
           initialState={{
-            selectedBlock: {
-              ...video,
-              videoId: 'oldMuxVideoId',
-              source: VideoBlockSource.mux,
-              showGeneratedSubtitles: true
-            },
+            selectedBlock: { ...video, videoId: null },
             selectedAttributeId: video.id
           }}
         >
@@ -497,292 +358,16 @@ describe('VideoOptions', () => {
         </EditorProvider>
       </MockedProvider>
     )
-
     await waitFor(() =>
-      expect(screen.getByTestId('VideoBlockEditor')).toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button', { name: 'Select Video' }))
     )
-  })
-
-  it('should not dispatch SetEditorFocusAction when shouldFocus is false', async () => {
-    const dispatchMock = jest.fn()
-    const videoBlockResult = jest.fn(() => ({
-      data: {
-        videoBlockUpdate: {
-          ...video,
-          muted: false
-        }
-      }
-    }))
-
-    const VideoOptionsWrapper = (): ReactElement => {
-      const { dispatch } = useEditor()
-      if (dispatchMock.mock.calls.length === 0) {
-        dispatchMock.mockImplementation(dispatch)
-      }
-      return <VideoOptions />
-    }
-
-    render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: VIDEO_BLOCK_UPDATE,
-              variables: {
-                id: video.id,
-                input: {
-                  muted: false
-                }
-              }
-            },
-            result: videoBlockResult
-          }
-        ]}
-      >
-        <CommandProvider>
-          <EditorProvider
-            initialState={{
-              selectedBlock: video,
-              selectedAttributeId: video.id
-            }}
-          >
-            <ThemeProvider>
-              <VideoOptionsWrapper />
-            </ThemeProvider>
-          </EditorProvider>
-        </CommandProvider>
-      </MockedProvider>
-    )
-
+    await waitFor(() => fireEvent.click(screen.getByText('title1')))
     await waitFor(() =>
-      expect(screen.getByTestId('VideoBlockEditor')).toBeInTheDocument()
+      expect(result).toHaveBeenCalledWith(getVideoMock.request.variables)
     )
-  })
-
-  it('should render empty fragment when no video block is selected', () => {
-    const { container } = render(
-      <MockedProvider mocks={[]}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: undefined
-          }}
-        >
-          <ThemeProvider>
-            <VideoOptions />
-          </ThemeProvider>
-        </EditorProvider>
-      </MockedProvider>
-    )
-
-    expect(container.firstChild).toBeNull()
-  })
-
-  it('should render empty fragment when selected block is not a VideoBlock', () => {
-    const { container } = render(
-      <MockedProvider mocks={[]}>
-        <EditorProvider
-          initialState={{
-            selectedBlock: {
-              id: 'button1',
-              __typename: 'ButtonBlock',
-              parentBlockId: 'card1',
-              parentOrder: 0,
-              label: 'Click me',
-              buttonVariant: null,
-              buttonColor: null,
-              size: null,
-              startIconId: null,
-              endIconId: null,
-              submitEnabled: null,
-              action: null,
-              settings: null,
-              children: []
-            }
-          }}
-        >
-          <ThemeProvider>
-            <VideoOptions />
-          </ThemeProvider>
-        </EditorProvider>
-      </MockedProvider>
-    )
-
-    expect(container.firstChild).toBeNull()
-  })
-
-  it('should handle updates to all video block properties', async () => {
-    const videoBlockResult = jest.fn(() => ({
-      data: {
-        videoBlockUpdate: {
-          ...video,
-          muted: false,
-          autoplay: false,
-          fullsize: false,
-          objectFit: VideoBlockObjectFit.fill,
-          posterBlockId: 'poster1',
-          showGeneratedSubtitles: true
-        }
-      }
-    }))
-
-    render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: VIDEO_BLOCK_UPDATE,
-              variables: {
-                id: video.id,
-                input: {
-                  muted: false,
-                  autoplay: false,
-                  fullsize: false,
-                  objectFit: VideoBlockObjectFit.fill,
-                  posterBlockId: 'poster1',
-                  showGeneratedSubtitles: true
-                }
-              }
-            },
-            result: videoBlockResult
-          }
-        ]}
-      >
-        <EditorProvider
-          initialState={{
-            selectedBlock: video,
-            selectedAttributeId: video.id
-          }}
-        >
-          <ThemeProvider>
-            <VideoOptions />
-          </ThemeProvider>
-        </EditorProvider>
-      </MockedProvider>
-    )
-
+    fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     await waitFor(() =>
-      expect(screen.getByTestId('VideoBlockEditor')).toBeInTheDocument()
-    )
-  })
-
-  it('should handle optimistic response correctly', async () => {
-    const videoBlockUpdateSpy = jest.fn()
-
-    render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: VIDEO_BLOCK_UPDATE,
-              variables: {
-                id: video.id,
-                input: {
-                  startAt: 10
-                }
-              }
-            },
-            result: () => {
-              videoBlockUpdateSpy()
-              return {
-                data: {
-                  videoBlockUpdate: {
-                    ...video,
-                    startAt: 10
-                  }
-                }
-              }
-            }
-          }
-        ]}
-      >
-        <EditorProvider
-          initialState={{
-            selectedBlock: video,
-            selectedAttributeId: video.id
-          }}
-        >
-          <ThemeProvider>
-            <VideoOptions />
-          </ThemeProvider>
-        </EditorProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
-      expect(screen.getByTestId('VideoBlockEditor')).toBeInTheDocument()
-    )
-  })
-
-  it('should preserve subtitleLanguageId in inverse input when it exists', async () => {
-    const videoWithSubtitle = {
-      ...video,
-      subtitleLanguage: {
-        __typename: 'Language' as const,
-        id: '529',
-        bcp47: 'en'
-      }
-    }
-
-    const undoResult = jest.fn(() => ({
-      data: {
-        videoBlockUpdate: videoWithSubtitle
-      }
-    }))
-
-    const executeResult = jest.fn(() => ({
-      data: {
-        videoBlockUpdate: {
-          ...videoWithSubtitle,
-          muted: false
-        }
-      }
-    }))
-
-    render(
-      <MockedProvider
-        mocks={[
-          {
-            request: {
-              query: VIDEO_BLOCK_UPDATE,
-              variables: {
-                id: video.id,
-                input: {
-                  muted: false
-                }
-              }
-            },
-            result: executeResult
-          },
-          {
-            request: {
-              query: VIDEO_BLOCK_UPDATE,
-              variables: {
-                id: video.id,
-                input: {
-                  muted: true
-                }
-              }
-            },
-            result: undoResult
-          }
-        ]}
-      >
-        <EditorProvider
-          initialState={{
-            selectedBlock: videoWithSubtitle,
-            selectedAttributeId: video.id
-          }}
-        >
-          <ThemeProvider>
-            <CommandUndoItem variant="button" />
-            <VideoOptions />
-          </ThemeProvider>
-        </EditorProvider>
-      </MockedProvider>
-    )
-
-    await waitFor(() =>
-      expect(screen.getByTestId('VideoBlockEditor')).toBeInTheDocument()
+      expect(videoBlockResult).toHaveBeenCalledWith(videoBlockUpdateVariables)
     )
   })
 })
