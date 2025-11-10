@@ -36,12 +36,10 @@ export function WebsiteCover({
   const posterImage =
     videoBlock?.mediaVideo?.__typename === 'Video'
       ? videoBlock?.posterBlockId != null
-        ? (
-            videoBlock.children.find(
-              (block) =>
-                block.id === videoBlock.posterBlockId &&
-                block.__typename === 'ImageBlock'
-            )
+        ? videoBlock.children.find(
+            (block): block is TreeBlock<ImageFields> =>
+              block.__typename === 'ImageBlock' &&
+              block.id === videoBlock.posterBlockId
           )?.src
         : videoBlock?.mediaVideo?.images[0]?.mobileCinematicHigh
       : videoBlock?.image
