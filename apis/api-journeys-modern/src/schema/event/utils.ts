@@ -46,6 +46,7 @@ export async function validateBlockEvent(
   visitor: Visitor
   journeyVisitor: JourneyVisitor
   journeyId: string
+  teamId: string
   block: Block
 }> {
   const block = await prisma.block.findUnique({
@@ -58,6 +59,18 @@ export async function validateBlockEvent(
     })
   }
   const journeyId = block.journeyId
+
+  // Fetch journey to get teamId
+  const journey = await prisma.journey.findUnique({
+    where: { id: journeyId },
+    select: { teamId: true }
+  })
+
+  if (journey == null) {
+    throw new GraphQLError('Journey does not exist', {
+      extensions: { code: 'NOT_FOUND' }
+    })
+  }
 
   // Get visitor by userId and check if they have access to this journey
   const visitor = await prisma.visitor.findFirst({
@@ -102,7 +115,7 @@ export async function validateBlockEvent(
     }
   }
 
-  return { visitor, journeyVisitor, journeyId, block }
+  return { visitor, journeyVisitor, journeyId, teamId: journey.teamId, block }
 }
 
 export async function validateBlock(
@@ -264,13 +277,12 @@ export async function appendEventToGoogleSheets({
 
   // Ensure base headers
   const baseHeaders = ['visitorId', 'createdAt', 'name', 'email', 'phone']
-  let headers: string[] = existingHeader.length > 0 ? existingHeader : []
-  if (headers.length === 0) headers = [...baseHeaders]
-
-  // Ensure base headers are present (prepend if missing)
-  for (let i = 0; i < baseHeaders.length; i++) {
-    if (!headers.includes(baseHeaders[i])) headers.splice(i, 0, baseHeaders[i])
-  }
+  // Build headers as baseHeaders followed by existingHeaders filtered to remove duplicates
+  const baseHeaderSet = new Set(baseHeaders)
+  const additionalHeaders = existingHeader.filter(
+    (h) => h !== '' && !baseHeaderSet.has(h)
+  )
+  const headers: string[] = [...baseHeaders, ...additionalHeaders]
   // Ensure dynamic key column exists (if provided)
   if (dynamicKey !== '' && !headers.includes(dynamicKey)) {
     headers.push(dynamicKey)

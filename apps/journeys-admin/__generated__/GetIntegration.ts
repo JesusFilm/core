@@ -45,8 +45,6 @@ export interface GetIntegration_integrations_IntegrationGoogle {
   id: string;
   team: GetIntegration_integrations_IntegrationGoogle_team;
   type: IntegrationType;
-  accessId: string | null;
-  accessSecretPart: string | null;
   user: GetIntegration_integrations_IntegrationGoogle_user | null;
   accountEmail: string | null;
 }

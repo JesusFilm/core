@@ -86,12 +86,16 @@ async function* getJourneyVisitors(
       }
 
       journeyVisitor.events.forEach((event) => {
-        if (event.blockId && event.label) {
+        if (event.blockId && event.label && event.value != null) {
+          const val = String(event.value)
+          if (val === '') {
+            return
+          }
           const key = `${event.blockId}-${event.label}`
           if (row[key]) {
-            row[key] += `; ${event.value!}`
+            row[key] += `; ${val}`
           } else {
-            row[key] = event.value!
+            row[key] = val
           }
         }
       })
@@ -114,10 +118,22 @@ const ExportDestinationInput = builder.inputType(
         }),
         required: true
       }),
-      spreadsheetTitle: t.string(),
-      folderId: t.string(),
-      spreadsheetId: t.string(),
-      sheetName: t.string()
+      spreadsheetTitle: t.string({
+        description:
+          'Required when mode is "create". The title for the new spreadsheet.'
+      }),
+      folderId: t.string({
+        description:
+          'Required when mode is "create". The ID of the folder where the spreadsheet should be created.'
+      }),
+      spreadsheetId: t.string({
+        description:
+          'Required when mode is "existing". The ID of the existing spreadsheet to export to.'
+      }),
+      sheetName: t.string({
+        description:
+          'Required when mode is "existing". The name of the sheet within the existing spreadsheet.'
+      })
     })
   }
 )
@@ -129,9 +145,9 @@ const ExportResultRef = builder.objectRef<{
 }>('JourneyVisitorGoogleSheetExportResult')
 builder.objectType(ExportResultRef, {
   fields: (t) => ({
-    spreadsheetId: t.exposeString('spreadsheetId'),
-    spreadsheetUrl: t.exposeString('spreadsheetUrl'),
-    sheetName: t.exposeString('sheetName')
+    spreadsheetId: t.exposeID('spreadsheetId', { nullable: false }),
+    spreadsheetUrl: t.exposeString('spreadsheetUrl', { nullable: false }),
+    sheetName: t.exposeString('sheetName', { nullable: false })
   })
 })
 
@@ -237,6 +253,46 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       const integrationIdUsed = integrationRecord.id
       const integrationEmail = integrationRecord.accountEmail ?? null
 
+      // Validate required fields based on mode
+      if (destination.mode === 'create') {
+        if (
+          destination.spreadsheetTitle == null ||
+          destination.spreadsheetTitle.trim() === ''
+        ) {
+          throw new GraphQLError(
+            'spreadsheetTitle is required when mode is "create"',
+            { extensions: { code: 'BAD_USER_INPUT' } }
+          )
+        }
+        if (
+          destination.folderId == null ||
+          destination.folderId.trim() === ''
+        ) {
+          throw new GraphQLError('folderId is required when mode is "create"', {
+            extensions: { code: 'BAD_USER_INPUT' }
+          })
+        }
+      } else if (destination.mode === 'existing') {
+        if (
+          destination.spreadsheetId == null ||
+          destination.spreadsheetId.trim() === ''
+        ) {
+          throw new GraphQLError(
+            'spreadsheetId is required when mode is "existing"',
+            { extensions: { code: 'BAD_USER_INPUT' } }
+          )
+        }
+        if (
+          destination.sheetName == null ||
+          destination.sheetName.trim() === ''
+        ) {
+          throw new GraphQLError(
+            'sheetName is required when mode is "existing"',
+            { extensions: { code: 'BAD_USER_INPUT' } }
+          )
+        }
+      }
+
       let spreadsheetId: string
       let spreadsheetUrl: string
       const sheetName =
@@ -244,24 +300,16 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         `${format(new Date(), 'yyyy-MM-dd')} ${journey.slug ?? ''}`.trim()
 
       if (destination.mode === 'create') {
-        const title =
-          destination.spreadsheetTitle ?? `${journey.title} Visitors`
         const res = await createSpreadsheet({
           accessToken,
-          title,
-          folderId: destination.folderId ?? undefined,
+          title: destination.spreadsheetTitle!,
+          folderId: destination.folderId!,
           initialSheetTitle: sheetName
         })
         spreadsheetId = res.spreadsheetId
         spreadsheetUrl = res.spreadsheetUrl
       } else {
-        if (destination.spreadsheetId == null) {
-          throw new GraphQLError(
-            'spreadsheetId is required for existing mode',
-            { extensions: { code: 'BAD_USER_INPUT' } }
-          )
-        }
-        spreadsheetId = destination.spreadsheetId
+        spreadsheetId = destination.spreadsheetId!
         spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}`
         await ensureSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
       }
@@ -278,8 +326,12 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           (v) => v ?? ''
         )
         if (existingHeader.length > 0) {
-          // Ensure base headers exist in the correct order at start
-          const base = ['visitorId', 'createdAt', 'name', 'email', 'phone']
+          // Ensure base headers exist in the correct order at start, respecting select preferences
+          const base: string[] = ['visitorId']
+          if (select?.createdAt !== false) base.push('createdAt')
+          if (select?.name !== false) base.push('name')
+          if (select?.email !== false) base.push('email')
+          if (select?.phone !== false) base.push('phone')
           const merged: string[] = []
           for (const b of base) if (!merged.includes(b)) merged.push(b)
           for (const h of existingHeader)

@@ -576,6 +576,7 @@ model Block {
   duration                   Int?
   objectFit                  VideoBlockObjectFit?
   subtitleLanguageId         String?
+  showGeneratedSubtitles     Boolean?
   triggerStart               Int?
   x                          Int?
   y                          Int?

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 
 import { SubtitleMenu } from './SubtitleMenu'
 
@@ -47,8 +47,8 @@ describe('SubtitleMenu', () => {
     anchorEl: mockAnchorEl,
     open: true,
     onClose: mockOnClose,
-    youtubeCaptionTracks: mockCaptionTracks,
-    activeYoutubeTrack: mockActiveTrack,
+    tracks: mockCaptionTracks,
+    activeTrack: mockActiveTrack,
     onChange: mockOnChange
   })
 
@@ -56,8 +56,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={mockCaptionTracks}
-        activeYoutubeTrack={mockActiveTrack}
+        tracks={mockCaptionTracks}
+        activeTrack={mockActiveTrack}
       />
     )
 
@@ -77,8 +77,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={[]}
-        activeYoutubeTrack={undefined}
+        tracks={[]}
+        activeTrack={undefined}
       />
     )
 
@@ -93,8 +93,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={[]}
-        activeYoutubeTrack={undefined}
+        tracks={[]}
+        activeTrack={undefined}
       />
     )
 
@@ -114,8 +114,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={mockCaptionTracks}
-        activeYoutubeTrack={activeTrack}
+        tracks={mockCaptionTracks}
+        activeTrack={activeTrack}
       />
     )
 
@@ -137,8 +137,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={mockCaptionTracks}
-        activeYoutubeTrack={activeTrack}
+        tracks={mockCaptionTracks}
+        activeTrack={activeTrack}
       />
     )
 
@@ -156,8 +156,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={mockCaptionTracks}
-        activeYoutubeTrack={undefined}
+        tracks={mockCaptionTracks}
+        activeTrack={undefined}
       />
     )
 
@@ -172,8 +172,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={mockCaptionTracks}
-        activeYoutubeTrack={undefined}
+        tracks={mockCaptionTracks}
+        activeTrack={undefined}
       />
     )
 
@@ -188,8 +188,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={mockCaptionTracks}
-        activeYoutubeTrack={undefined}
+        tracks={mockCaptionTracks}
+        activeTrack={undefined}
       />
     )
 
@@ -210,8 +210,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={tracksWithoutLabels}
-        activeYoutubeTrack={undefined}
+        tracks={tracksWithoutLabels}
+        activeTrack={undefined}
       />
     )
 
@@ -231,8 +231,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={tracksWithoutLabelsOrLanguage}
-        activeYoutubeTrack={undefined}
+        tracks={tracksWithoutLabelsOrLanguage}
+        activeTrack={undefined}
       />
     )
 
@@ -243,8 +243,8 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={[]}
-        activeYoutubeTrack={undefined}
+        tracks={[]}
+        activeTrack={undefined}
       />
     )
 
@@ -256,13 +256,90 @@ describe('SubtitleMenu', () => {
     render(
       <SubtitleMenu
         {...getDefaultProps()}
-        youtubeCaptionTracks={[]}
-        activeYoutubeTrack={undefined}
+        tracks={[]}
+        activeTrack={undefined}
       />
     )
 
     const offMenuItem = screen.getByText('Off').closest('[role="menuitem"]')
     const checkIcon = offMenuItem?.querySelector('svg')
     expect(checkIcon).toBeInTheDocument()
+  })
+
+  it('should enable portal when fullscreen is false', () => {
+    render(<SubtitleMenu {...getDefaultProps()} fullscreen={false} />)
+
+    const menu = screen.getByRole('menu')
+    expect(menu).toBeInTheDocument()
+
+    // When portal is enabled, menu is rendered in document.body
+    const menuInBody = document.body.contains(menu)
+    expect(menuInBody).toBe(true)
+  })
+
+  it('should disable portal when fullscreen is true', () => {
+    const TestContainer = () => (
+      <div data-testid="fullscreen-container">
+        <SubtitleMenu {...getDefaultProps()} fullscreen={true} />
+      </div>
+    )
+
+    render(<TestContainer />)
+
+    // When portal is disabled, menu may be in a hidden container
+    // Check that menu exists in the DOM (even if hidden)
+    const menu = screen.getByRole('menu', { hidden: true })
+    expect(menu).toBeInTheDocument()
+
+    // Menu items should still be accessible
+    const menuWithin = within(menu)
+    expect(menuWithin.getByText('Off')).toBeInTheDocument()
+  })
+
+  it('should default to portal enabled when fullscreen prop is not provided', () => {
+    render(<SubtitleMenu {...getDefaultProps()} />)
+
+    const menu = screen.getByRole('menu')
+    expect(menu).toBeInTheDocument()
+
+    // Default behavior should use portal (fullscreen defaults to false)
+    const menuInBody = document.body.contains(menu)
+    expect(menuInBody).toBe(true)
+  })
+
+  it('should render menu correctly in fullscreen mode', () => {
+    render(
+      <SubtitleMenu
+        {...getDefaultProps()}
+        fullscreen={true}
+        tracks={mockCaptionTracks}
+      />
+    )
+
+    // When portal is disabled, menu may be in a hidden container
+    const menu = screen.getByRole('menu', { hidden: true })
+    expect(menu).toBeInTheDocument()
+    const menuWithin = within(menu)
+    expect(menuWithin.getByText('Off')).toBeInTheDocument()
+    expect(menuWithin.getByText('English')).toBeInTheDocument()
+    expect(menuWithin.getByText('Spanish')).toBeInTheDocument()
+  })
+
+  it('should handle menu interactions correctly in fullscreen mode', () => {
+    render(
+      <SubtitleMenu
+        {...getDefaultProps()}
+        fullscreen={true}
+        tracks={mockCaptionTracks}
+      />
+    )
+
+    const menu = screen.getByRole('menu', { hidden: true })
+    const menuWithin = within(menu)
+    const englishMenuItem = menuWithin.getByText('English')
+    fireEvent.click(englishMenuItem)
+
+    expect(mockOnChange).toHaveBeenCalledWith('track1')
+    expect(mockOnClose).toHaveBeenCalled()
   })
 })

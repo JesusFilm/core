@@ -4,9 +4,9 @@ export const CreateGoogleSheetsSyncInput = builder.inputType(
   'CreateGoogleSheetsSyncInput',
   {
     fields: (t) => ({
-      journeyId: t.string({ required: true }),
-      integrationId: t.string({ required: true }),
-      spreadsheetId: t.string({ required: true }),
+      journeyId: t.id({ required: true }),
+      integrationId: t.id({ required: true }),
+      spreadsheetId: t.id({ required: true }),
       sheetName: t.string({ required: true }),
       folderId: t.string()
     })

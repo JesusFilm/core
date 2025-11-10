@@ -12,11 +12,7 @@ builder.mutationField('googleSheetsSyncDelete', (t) =>
     nullable: false,
     args: { id: t.arg.id({ required: true }) },
     resolve: async (query, _parent, { id }, context) => {
-      const userId = context.user?.id
-      if (userId == null)
-        throw new GraphQLError('unauthenticated', {
-          extensions: { code: 'UNAUTHENTICATED' }
-        })
+      const userId = context.user.id
 
       const sync = await prisma.googleSheetsSync.findUnique({
         where: { id },
@@ -31,12 +27,13 @@ builder.mutationField('googleSheetsSyncDelete', (t) =>
           extensions: { code: 'NOT_FOUND' }
         })
 
-      const isTeamManagerOrOwner = sync.team.userTeams.some(
+      const isTeamManager = sync.team.userTeams.some(
         (ut) => ut.userId === userId && ut.role === 'manager'
       )
-      const isIntegrationOwner = sync.integration?.userId === userId
+      const isIntegrationOwner =
+        sync.integration != null && sync.integration.userId === userId
 
-      if (!isIntegrationOwner && !isTeamManagerOrOwner) {
+      if (!(isIntegrationOwner || isTeamManager)) {
         throw new GraphQLError('Forbidden', {
           extensions: { code: 'FORBIDDEN' }
         })
@@ -46,8 +43,7 @@ builder.mutationField('googleSheetsSyncDelete', (t) =>
         ...query,
         where: { id },
         data: {
-          deletedAt: new Date(),
-          integrationId: null
+          deletedAt: new Date()
         }
       })
     }

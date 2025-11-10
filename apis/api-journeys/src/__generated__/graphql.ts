@@ -482,12 +482,11 @@ export type CountryName = {
 };
 
 export type CreateGoogleSheetsSyncInput = {
-  appendMode?: InputMaybe<Scalars['Boolean']['input']>;
   folderId?: InputMaybe<Scalars['String']['input']>;
-  integrationId: Scalars['String']['input'];
-  journeyId: Scalars['String']['input'];
+  integrationId: Scalars['ID']['input'];
+  journeyId: Scalars['ID']['input'];
   sheetName: Scalars['String']['input'];
-  spreadsheetId: Scalars['String']['input'];
+  spreadsheetId: Scalars['ID']['input'];
 };
 
 export type CreateVerificationRequestInput = {
@@ -636,6 +635,11 @@ export type ForeignKeyConstraintErrorLocation = {
   value?: Maybe<Scalars['String']['output']>;
 };
 
+export type GenerateSubtitlesInput = {
+  languageCode: Scalars['String']['input'];
+  languageName: Scalars['String']['input'];
+};
+
 export enum GoogleSheetExportMode {
   Create = 'create',
   Existing = 'existing'
@@ -643,18 +647,24 @@ export enum GoogleSheetExportMode {
 
 export type GoogleSheetsSync = {
   __typename?: 'GoogleSheetsSync';
-  appendMode?: Maybe<Scalars['Boolean']['output']>;
-  folderId?: Maybe<Scalars['String']['output']>;
-  id?: Maybe<Scalars['ID']['output']>;
-  integrationId?: Maybe<Scalars['String']['output']>;
-  journeyId?: Maybe<Scalars['String']['output']>;
-  sheetName?: Maybe<Scalars['String']['output']>;
-  spreadsheetId?: Maybe<Scalars['String']['output']>;
-  teamId?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
-  updatedAt: Scalars['DateTime']['output'];
-  integration: Integration;
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  folderId?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  integration?: Maybe<Integration>;
+  integrationId?: Maybe<Scalars['ID']['output']>;
   journey: Journey;
+  journeyId: Scalars['String']['output'];
+  sheetName?: Maybe<Scalars['String']['output']>;
+  spreadsheetId: Scalars['ID']['output'];
+  teamId?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type GoogleSheetsSyncsFilter = {
+  integrationId?: InputMaybe<Scalars['ID']['input']>;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export enum GridAlignItems {
@@ -866,8 +876,6 @@ export type Integration = {
 
 export type IntegrationGoogle = Integration & {
   __typename?: 'IntegrationGoogle';
-  accessId?: Maybe<Scalars['String']['output']>;
-  accessSecretPart?: Maybe<Scalars['String']['output']>;
   accountEmail?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   team: Team;
@@ -1358,18 +1366,22 @@ export type JourneyVisitorFilter = {
 };
 
 export type JourneyVisitorGoogleSheetDestinationInput = {
+  /** Required when mode is "create". The ID of the folder where the spreadsheet should be created. */
   folderId?: InputMaybe<Scalars['String']['input']>;
   mode: GoogleSheetExportMode;
+  /** Required when mode is "existing". The name of the sheet within the existing spreadsheet. */
   sheetName?: InputMaybe<Scalars['String']['input']>;
+  /** Required when mode is "existing". The ID of the existing spreadsheet to export to. */
   spreadsheetId?: InputMaybe<Scalars['String']['input']>;
+  /** Required when mode is "create". The title for the new spreadsheet. */
   spreadsheetTitle?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type JourneyVisitorGoogleSheetExportResult = {
   __typename?: 'JourneyVisitorGoogleSheetExportResult';
-  sheetName?: Maybe<Scalars['String']['output']>;
-  spreadsheetId?: Maybe<Scalars['String']['output']>;
-  spreadsheetUrl?: Maybe<Scalars['String']['output']>;
+  sheetName: Scalars['String']['output'];
+  spreadsheetId: Scalars['ID']['output'];
+  spreadsheetUrl: Scalars['String']['output'];
 };
 
 export enum JourneyVisitorSort {
@@ -2075,6 +2087,7 @@ export type MutationCreateMuxVideoAndQueueUploadArgs = {
 
 export type MutationCreateMuxVideoUploadByFileArgs = {
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  generateSubtitlesInput?: InputMaybe<GenerateSubtitlesInput>;
   maxResolution?: InputMaybe<MaxResolutionTier>;
   name: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2330,7 +2343,7 @@ export type MutationJourneyViewEventCreateArgs = {
 export type MutationJourneyVisitorExportToGoogleSheetArgs = {
   destination: JourneyVisitorGoogleSheetDestinationInput;
   filter?: InputMaybe<JourneyEventsFilter>;
-  integrationId?: InputMaybe<Scalars['ID']['input']>;
+  integrationId: Scalars['ID']['input'];
   journeyId: Scalars['ID']['input'];
   select?: InputMaybe<JourneyVisitorExportSelect>;
 };
@@ -3115,6 +3128,16 @@ export type MutationVideoOriginUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type MuxSubtitleTrack = {
+  __typename?: 'MuxSubtitleTrack';
+  bcp47: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  muxVideoId: Scalars['ID']['output'];
+  source: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  trackId: Scalars['String']['output'];
+};
+
 export type MuxVideo = {
   __typename?: 'MuxVideo';
   assetId?: Maybe<Scalars['String']['output']>;
@@ -3518,6 +3541,7 @@ export type Query = {
   getMuxVideo?: Maybe<MuxVideo>;
   getMyCloudflareImage: CloudflareImage;
   getMyCloudflareImages: Array<CloudflareImage>;
+  getMyGeneratedMuxSubtitleTrack: QueryGetMyGeneratedMuxSubtitleTrackResult;
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
   getUserRole?: Maybe<UserRole>;
@@ -3716,6 +3740,13 @@ export type QueryGetMyCloudflareImagesArgs = {
 };
 
 
+export type QueryGetMyGeneratedMuxSubtitleTrackArgs = {
+  bcp47: Scalars['String']['input'];
+  muxVideoId: Scalars['ID']['input'];
+  userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
 export type QueryGetMyMuxVideoArgs = {
   id: Scalars['ID']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3729,7 +3760,7 @@ export type QueryGetMyMuxVideosArgs = {
 
 
 export type QueryGoogleSheetsSyncsArgs = {
-  journeyId: Scalars['ID']['input'];
+  filter: GoogleSheetsSyncsFilter;
 };
 
 
@@ -3739,8 +3770,7 @@ export type QueryHostsArgs = {
 
 
 export type QueryIntegrationGooglePickerTokenArgs = {
-  integrationId?: InputMaybe<Scalars['ID']['input']>;
-  teamId: Scalars['ID']['input'];
+  integrationId: Scalars['ID']['input'];
 };
 
 
@@ -4042,6 +4072,13 @@ export type QueryVisitorsConnectionArgs = {
 
 export type QueryYoutubeClosedCaptionLanguagesArgs = {
   videoId: Scalars['ID']['input'];
+};
+
+export type QueryGetMyGeneratedMuxSubtitleTrackResult = Error | QueryGetMyGeneratedMuxSubtitleTrackSuccess;
+
+export type QueryGetMyGeneratedMuxSubtitleTrackSuccess = {
+  __typename?: 'QueryGetMyGeneratedMuxSubtitleTrackSuccess';
+  data: MuxSubtitleTrack;
 };
 
 export type QueryPlaylistResult = NotFoundError | QueryPlaylistSuccess;
@@ -5115,6 +5152,7 @@ export type VideoBlock = Block & {
    * as the video poster. PosterBlock should be of type ImageBlock.
    */
   posterBlockId?: Maybe<Scalars['ID']['output']>;
+  showGeneratedSubtitles?: Maybe<Scalars['Boolean']['output']>;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
@@ -5164,6 +5202,7 @@ export type VideoBlockCreateInput = {
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId: Scalars['ID']['input'];
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
+  showGeneratedSubtitles?: InputMaybe<Scalars['Boolean']['input']>;
   source?: InputMaybe<VideoBlockSource>;
   startAt?: InputMaybe<Scalars['Int']['input']>;
   subtitleLanguageId?: InputMaybe<Scalars['ID']['input']>;
@@ -5215,6 +5254,7 @@ export type VideoBlockUpdateInput = {
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
+  showGeneratedSubtitles?: InputMaybe<Scalars['Boolean']['input']>;
   /**
    * internal source: videoId and videoVariantLanguageId required
    *   youTube source: videoId required

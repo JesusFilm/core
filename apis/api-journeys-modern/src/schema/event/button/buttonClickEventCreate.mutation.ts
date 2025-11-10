@@ -21,7 +21,7 @@ builder.mutationField('buttonClickEventCreate', (t) =>
         throw new Error('User not authenticated')
       }
 
-      const { visitor, journeyId } = await validateBlockEvent(
+      const { visitor, journeyId, teamId } = await validateBlockEvent(
         userId,
         input.blockId,
         input.stepId
@@ -39,26 +39,23 @@ builder.mutationField('buttonClickEventCreate', (t) =>
       })
 
       const updates: Array<Promise<unknown>> = []
-      // live sync to Google Sheets (fire and forget)
-      void appendEventToGoogleSheets({
-        journeyId,
-        teamId:
-          (
-            await prisma.journey.findUnique({
-              where: { id: journeyId },
-              select: { teamId: true }
-            })
-          )?.teamId ?? '',
-        row: [
-          event.visitorId,
-          event.createdAt.toISOString(),
-          '',
-          '',
-          '',
-          `${input.blockId}-${input.label ?? ''}`,
-          input.value ?? ''
-        ]
-      })
+      if (teamId) {
+        appendEventToGoogleSheets({
+          journeyId,
+          teamId,
+          row: [
+            event.visitorId,
+            event.createdAt.toISOString(),
+            '',
+            '',
+            '',
+            `${input.blockId}-${input.label ?? ''}`,
+            input.value ?? ''
+          ]
+        }).catch((error) => {
+          console.error('Failed to append event to Google Sheets:', error)
+        })
+      }
       if (input.action === 'LinkAction') {
         const visitorData: Prisma.VisitorUpdateInput = {
           ...(input.actionValue !== undefined

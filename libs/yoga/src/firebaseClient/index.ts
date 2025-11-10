@@ -4,5 +4,5 @@ export {
   getUserIdFromPayload,
   auth,
   impersonateUser,
-  User
+  type User
 } from './firebaseClient'

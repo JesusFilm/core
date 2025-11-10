@@ -76,7 +76,6 @@ export class IntegrationResolver {
 
   @ResolveField()
   async team(@Parent() integration: Integration): Promise<Team> {
-    console.log('hit')
     const result = await this.prismaService.team.findUnique({
       where: { id: integration.teamId }
     })

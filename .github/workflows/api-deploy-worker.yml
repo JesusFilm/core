@@ -43,6 +43,7 @@ jobs:
       ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      SKIP_ENV_VALIDATION: 1
     runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
@@ -61,7 +62,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'pnpm'
+          cache: "pnpm"
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
       - name: Prisma Generate
