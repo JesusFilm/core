@@ -24,4 +24,3 @@ export function cleanupUploadTask(
     })
   }, TASK_CLEANUP_DELAY)
 }
-
