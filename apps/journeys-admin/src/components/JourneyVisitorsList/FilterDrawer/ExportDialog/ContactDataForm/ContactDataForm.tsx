@@ -11,6 +11,7 @@ import {
   ReactElement,
   SetStateAction,
   useEffect,
+  useMemo,
   useState
 } from 'react'
 
@@ -23,6 +24,7 @@ interface ContactDataFormProps {
   selectedFields: string[]
   includeOldData?: boolean
   setIncludeOldData?: Dispatch<SetStateAction<boolean>>
+  availableBlockTypes?: string[]
 }
 
 /**
@@ -36,20 +38,28 @@ export function ContactDataForm({
   setSelectedFields,
   selectedFields,
   includeOldData = false,
-  setIncludeOldData
+  setIncludeOldData,
+  availableBlockTypes = []
 }: ContactDataFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [isOptionalSettingsOpen, setIsOptionalSettingsOpen] = useState(false)
 
-  const ALL_CONTACT_FIELDS = [
-    'RadioQuestionSubmissionEvent',
-    'MultiselectSubmissionEvent',
-    'SignUpSubmissionEvent',
-    'TextResponseSubmissionEvent'
-  ]
+  const CONTACT_BLOCK_TO_EVENT: Record<string, string> = {
+    RadioQuestionBlock: 'RadioQuestionSubmissionEvent',
+    MultiselectBlock: 'MultiselectSubmissionEvent',
+    SignUpBlock: 'SignUpSubmissionEvent',
+    TextResponseBlock: 'TextResponseSubmissionEvent'
+  }
+
+  const availableContactEvents = useMemo(() => {
+    const mapped = availableBlockTypes
+      .map((bt) => CONTACT_BLOCK_TO_EVENT[bt])
+      .filter((v): v is string => v != null)
+    return Array.from(new Set(mapped))
+  }, [availableBlockTypes])
 
   const handleSelectAll = (checked: boolean): void => {
-    setSelectedFields(checked ? ALL_CONTACT_FIELDS : [])
+    setSelectedFields(checked ? availableContactEvents : [])
   }
 
   const toggleField = (field: string) => {
@@ -72,38 +82,49 @@ export function ContactDataForm({
   }
 
   useEffect(() => {
-    setSelectedFields(ALL_CONTACT_FIELDS)
-  }, [setSelectedFields])
+    setSelectedFields(availableContactEvents)
+  }, [setSelectedFields, availableContactEvents])
 
   return (
     <Stack>
       <FormGroup>
         <CheckboxOption
-          checked={ALL_CONTACT_FIELDS.every((f) => selectedFields.includes(f))}
+          checked={
+            availableContactEvents.length > 0 &&
+            availableContactEvents.every((f) => selectedFields.includes(f))
+          }
           onChange={handleSelectAll}
           label={t('All')}
         />
         <Box sx={{ pl: 6, display: 'flex', flexDirection: 'column' }}>
-          <CheckboxOption
-            checked={selectedFields.includes('TextResponseSubmissionEvent')}
-            onChange={toggleField('TextResponseSubmissionEvent')}
-            label={t('Text Submission')}
-          />
-          <CheckboxOption
-            checked={selectedFields.includes('RadioQuestionSubmissionEvent')}
-            onChange={toggleField('RadioQuestionSubmissionEvent')}
-            label={t('Poll Selection')}
-          />
-          <CheckboxOption
-            checked={selectedFields.includes('MultiselectSubmissionEvent')}
-            onChange={toggleField('MultiselectSubmissionEvent')}
-            label={t('Multiselect Responses')}
-          />
-          <CheckboxOption
-            checked={selectedFields.includes('SignUpSubmissionEvent')}
-            onChange={toggleField('SignUpSubmissionEvent')}
-            label={t('Subscription')}
-          />
+          {availableContactEvents.includes('TextResponseSubmissionEvent') && (
+            <CheckboxOption
+              checked={selectedFields.includes('TextResponseSubmissionEvent')}
+              onChange={toggleField('TextResponseSubmissionEvent')}
+              label={t('Text Submission')}
+            />
+          )}
+          {availableContactEvents.includes('RadioQuestionSubmissionEvent') && (
+            <CheckboxOption
+              checked={selectedFields.includes('RadioQuestionSubmissionEvent')}
+              onChange={toggleField('RadioQuestionSubmissionEvent')}
+              label={t('Poll Selection')}
+            />
+          )}
+          {availableContactEvents.includes('MultiselectSubmissionEvent') && (
+            <CheckboxOption
+              checked={selectedFields.includes('MultiselectSubmissionEvent')}
+              onChange={toggleField('MultiselectSubmissionEvent')}
+              label={t('Multiselect Responses')}
+            />
+          )}
+          {availableContactEvents.includes('SignUpSubmissionEvent') && (
+            <CheckboxOption
+              checked={selectedFields.includes('SignUpSubmissionEvent')}
+              onChange={toggleField('SignUpSubmissionEvent')}
+              label={t('Subscription')}
+            />
+          )}
         </Box>
       </FormGroup>
       <Divider sx={{ my: 2 }} />

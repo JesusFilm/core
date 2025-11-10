@@ -717,4 +717,535 @@ describe('journeyVisitorExport', () => {
       '"Date","Choose Your Options"\n"Date","Multiselect"\n"2024-01-20","Option 1; Option 2"\n'
     )
   })
+
+  it('excludes disconnected steps by default, includes them when includeUnconnectedCards=true', async () => {
+    jf.mockResolvedValueOnce({
+      id: 'journey1',
+      team: { userTeams: [{ userId: mockUser.id, role: 'manager' }] },
+      userJourneys: [],
+      blocks: [
+        // Entry step (top-level first)
+        {
+          id: 'step1',
+          typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          nextBlockId: 'step2',
+          action: null,
+          content: null
+        },
+        {
+          id: 'card1',
+          typename: 'CardBlock',
+          parentBlockId: 'step1',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'typography1',
+          typename: 'TypographyBlock',
+          parentBlockId: 'card1',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: 'Step 1 Heading'
+        },
+        {
+          id: 'blockA',
+          typename: 'TextResponseBlock',
+          parentBlockId: 'card1',
+          parentOrder: 1,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        // Connected step via nextBlockId
+        {
+          id: 'step2',
+          typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 1,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'card2',
+          typename: 'CardBlock',
+          parentBlockId: 'step2',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'typography2',
+          typename: 'TypographyBlock',
+          parentBlockId: 'card2',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: 'Step 2 Heading'
+        },
+        {
+          id: 'blockB',
+          typename: 'TextResponseBlock',
+          parentBlockId: 'card2',
+          parentOrder: 1,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        // Disconnected step (top-level but not reachable)
+        {
+          id: 'stepX',
+          typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 2,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'cardX',
+          typename: 'CardBlock',
+          parentBlockId: 'stepX',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'typographyX',
+          typename: 'TypographyBlock',
+          parentBlockId: 'cardX',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: 'Disconnected Heading'
+        },
+        {
+          id: 'blockC',
+          typename: 'TextResponseBlock',
+          parentBlockId: 'cardX',
+          parentOrder: 1,
+          nextBlockId: null,
+          action: null,
+          content: null
+        }
+      ] as unknown as SelectedJourneyBlock[]
+    })
+    // Headers should include only A and B by default (C excluded)
+    evFM.mockResolvedValueOnce([
+      { blockId: 'blockA', label: 'Question A' },
+      { blockId: 'blockB', label: 'Question B' }
+    ])
+    jvFM.mockResolvedValueOnce([
+      {
+        id: 'jv1',
+        createdAt: new Date('2024-02-01T00:00:00Z'),
+        events: [
+          {
+            blockId: 'blockA',
+            label: 'Question A',
+            value: 'Alice',
+            typename: 'TextResponseSubmissionEvent'
+          },
+          {
+            blockId: 'blockB',
+            label: 'Question B',
+            value: 'Bob',
+            typename: 'TextResponseSubmissionEvent'
+          }
+        ]
+      }
+    ])
+    const resultDefault = await authClient({
+      document: JOURNEY_VISITOR_EXPORT_QUERY,
+      variables: { journeyId: 'journey1' }
+    })
+    expect(resultDefault).toHaveProperty(
+      'data.journeyVisitorExport',
+      '"Date","Step 1 Heading","Step 2 Heading"\n"Date","Question A","Question B"\n"2024-02-01","Alice","Bob"\n'
+    )
+
+    // Now include unconnected cards; headers should include C as well
+    // Re-mock journey for a second resolver call
+    jf.mockResolvedValueOnce({
+      id: 'journey1',
+      team: { userTeams: [{ userId: mockUser.id, role: 'manager' }] },
+      userJourneys: [],
+      blocks: [
+        {
+          id: 'step1',
+          typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          nextBlockId: 'step2',
+          action: null,
+          content: null
+        },
+        {
+          id: 'card1',
+          typename: 'CardBlock',
+          parentBlockId: 'step1',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'typography1',
+          typename: 'TypographyBlock',
+          parentBlockId: 'card1',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: 'Step 1 Heading'
+        },
+        {
+          id: 'blockA',
+          typename: 'TextResponseBlock',
+          parentBlockId: 'card1',
+          parentOrder: 1,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'step2',
+          typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 1,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'card2',
+          typename: 'CardBlock',
+          parentBlockId: 'step2',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'typography2',
+          typename: 'TypographyBlock',
+          parentBlockId: 'card2',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: 'Step 2 Heading'
+        },
+        {
+          id: 'blockB',
+          typename: 'TextResponseBlock',
+          parentBlockId: 'card2',
+          parentOrder: 1,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'stepX',
+          typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 2,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'cardX',
+          typename: 'CardBlock',
+          parentBlockId: 'stepX',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'typographyX',
+          typename: 'TypographyBlock',
+          parentBlockId: 'cardX',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: 'Disconnected Heading'
+        },
+        {
+          id: 'blockC',
+          typename: 'TextResponseBlock',
+          parentBlockId: 'cardX',
+          parentOrder: 1,
+          nextBlockId: null,
+          action: null,
+          content: null
+        }
+      ] as unknown as SelectedJourneyBlock[]
+    })
+    evFM.mockResolvedValueOnce([
+      { blockId: 'blockA', label: 'Question A' },
+      { blockId: 'blockB', label: 'Question B' },
+      { blockId: 'blockC', label: 'Question C' }
+    ])
+    jvFM.mockResolvedValueOnce([
+      {
+        id: 'jv2',
+        createdAt: new Date('2024-02-02T00:00:00Z'),
+        events: [
+          {
+            blockId: 'blockA',
+            label: 'Question A',
+            value: 'Ann',
+            typename: 'TextResponseSubmissionEvent'
+          },
+          {
+            blockId: 'blockB',
+            label: 'Question B',
+            value: 'Ben',
+            typename: 'TextResponseSubmissionEvent'
+          },
+          {
+            blockId: 'blockC',
+            label: 'Question C',
+            value: 'Cat',
+            typename: 'TextResponseSubmissionEvent'
+          }
+        ]
+      }
+    ])
+    const resultInclude = await authClient({
+      document: JOURNEY_VISITOR_EXPORT_QUERY,
+      variables: {
+        journeyId: 'journey1',
+        filter: { includeUnconnectedCards: true }
+      }
+    })
+    expect(resultInclude).toHaveProperty(
+      'data.journeyVisitorExport',
+      '"Date","Step 1 Heading","Step 2 Heading","Disconnected Heading"\n"Date","Question A","Question B","Question C"\n"2024-02-02","Ann","Ben","Cat"\n'
+    )
+  })
+
+  it('excludes deleted blocks from headers', async () => {
+    jf.mockResolvedValueOnce({
+      id: 'journey1',
+      team: { userTeams: [{ userId: mockUser.id, role: 'manager' }] },
+      userJourneys: [],
+      blocks: [
+        {
+          id: 'step1',
+          typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'card1',
+          typename: 'CardBlock',
+          parentBlockId: 'step1',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'typ1',
+          typename: 'TypographyBlock',
+          parentBlockId: 'card1',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: 'Heading'
+        },
+        // non-deleted block (kept)
+        {
+          id: 'blockAlive',
+          typename: 'TextResponseBlock',
+          parentBlockId: 'card1',
+          parentOrder: 1,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        // deleted block (should be excluded)
+        {
+          id: 'blockDeleted',
+          typename: 'TextResponseBlock',
+          parentBlockId: 'card1',
+          parentOrder: 2,
+          nextBlockId: null,
+          action: null,
+          content: null,
+          deletedAt: new Date('2024-01-01T00:00:00Z')
+        }
+      ] as unknown as SelectedJourneyBlock[]
+    })
+    // Only alive block should be returned by header query based on server where
+    evFM.mockResolvedValueOnce([{ blockId: 'blockAlive', label: 'Alive Q' }])
+    jvFM.mockResolvedValueOnce([
+      {
+        id: 'jv1',
+        createdAt: new Date('2024-03-01T00:00:00Z'),
+        events: [
+          {
+            blockId: 'blockAlive',
+            label: 'Alive Q',
+            value: 'A',
+            typename: 'TextResponseSubmissionEvent'
+          }
+        ]
+      }
+    ])
+    const result = await authClient({
+      document: JOURNEY_VISITOR_EXPORT_QUERY,
+      variables: { journeyId: 'journey1' }
+    })
+    expect(result).toHaveProperty(
+      'data.journeyVisitorExport',
+      '"Date","Heading"\n"Date","Alive Q"\n"2024-03-01","A"\n'
+    )
+  })
+
+  it('orders columns using renderer tree order (parentOrder/pre-order)', async () => {
+    jf.mockResolvedValueOnce({
+      id: 'journey1',
+      team: { userTeams: [{ userId: mockUser.id, role: 'manager' }] },
+      userJourneys: [],
+      blocks: [
+        // root steps in order
+        {
+          id: 's1',
+          typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 's2',
+          typename: 'StepBlock',
+          parentBlockId: null,
+          parentOrder: 1,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        // s1 children: card, then blocks a,b
+        {
+          id: 'c1',
+          typename: 'CardBlock',
+          parentBlockId: 's1',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'h1',
+          typename: 'TypographyBlock',
+          parentBlockId: 'c1',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: 'Card 1'
+        },
+        {
+          id: 'a',
+          typename: 'TextResponseBlock',
+          parentBlockId: 'c1',
+          parentOrder: 1,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'b',
+          typename: 'TextResponseBlock',
+          parentBlockId: 'c1',
+          parentOrder: 2,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        // s2 children: card, then block c
+        {
+          id: 'c2',
+          typename: 'CardBlock',
+          parentBlockId: 's2',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: null
+        },
+        {
+          id: 'h2',
+          typename: 'TypographyBlock',
+          parentBlockId: 'c2',
+          parentOrder: 0,
+          nextBlockId: null,
+          action: null,
+          content: 'Card 2'
+        },
+        {
+          id: 'c',
+          typename: 'TextResponseBlock',
+          parentBlockId: 'c2',
+          parentOrder: 1,
+          nextBlockId: null,
+          action: null,
+          content: null
+        }
+      ] as unknown as SelectedJourneyBlock[]
+    })
+    // events for b,a,c (intentionally out of order to test sort)
+    evFM.mockResolvedValueOnce([
+      { blockId: 'b', label: 'Label B' },
+      { blockId: 'a', label: 'Label A' },
+      { blockId: 'c', label: 'Label C' }
+    ])
+    jvFM.mockResolvedValueOnce([
+      {
+        id: 'jv1',
+        createdAt: new Date('2024-04-01T00:00:00Z'),
+        events: [
+          {
+            blockId: 'b',
+            label: 'Label B',
+            value: 'BV',
+            typename: 'TextResponseSubmissionEvent'
+          },
+          {
+            blockId: 'a',
+            label: 'Label A',
+            value: 'AV',
+            typename: 'TextResponseSubmissionEvent'
+          },
+          {
+            blockId: 'c',
+            label: 'Label C',
+            value: 'CV',
+            typename: 'TextResponseSubmissionEvent'
+          }
+        ]
+      }
+    ])
+    const result = await authClient({
+      document: JOURNEY_VISITOR_EXPORT_QUERY,
+      variables: { journeyId: 'journey1' }
+    })
+    // Expected order: a, b (under Card 1), then c (under Card 2)
+    expect(result).toHaveProperty(
+      'data.journeyVisitorExport',
+      '"Date","Card 1","Card 1","Card 2"\n"Date","Label A","Label B","Label C"\n"2024-04-01","AV","BV","CV"\n'
+    )
+  })
 })

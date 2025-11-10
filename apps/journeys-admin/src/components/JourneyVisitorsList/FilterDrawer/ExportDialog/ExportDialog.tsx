@@ -24,6 +24,7 @@ export const GET_JOURNEY_CREATED_AT = gql`
     journey: adminJourney(id: $id, idType: databaseId) {
       id
       createdAt
+      blockTypenames
     }
   }
 `
@@ -55,12 +56,18 @@ export function ExportDialog({
     variables: { id: journeyId }
   })
 
+  const clampToToday = (date: Date | null): Date | null => {
+    if (date == null) return null
+    const now = new Date()
+    return date.getTime() > now.getTime() ? now : date
+  }
+
   const [startDate, setStartDate] = useState<Date | null>(() =>
     journeyData?.journey?.createdAt
-      ? new Date(journeyData.journey.createdAt)
+      ? clampToToday(new Date(String(journeyData.journey.createdAt)))
       : null
   )
-  const [endDate, setEndDate] = useState<Date | null>(new Date())
+  const [endDate, setEndDate] = useState<Date | null>(clampToToday(new Date()))
   const [selectedEvents, setSelectedEvents] = useState<string[]>([])
   const [contactData, setContactData] = useState<string[]>([])
   const [exportBy, setExportBy] = useState<string>('')
@@ -68,7 +75,8 @@ export function ExportDialog({
 
   useEffect(() => {
     if (journeyData?.journey?.createdAt != null) {
-      setStartDate(new Date(journeyData.journey.createdAt))
+      const newStart = clampToToday(new Date(String(journeyData.journey.createdAt)))
+      setStartDate(newStart)
     }
   }, [journeyData])
 
@@ -137,8 +145,8 @@ export function ExportDialog({
       <DateRangePicker
         startDate={startDate}
         endDate={endDate}
-        onStartDateChange={setStartDate}
-        onEndDateChange={setEndDate}
+        onStartDateChange={(d) => setStartDate(clampToToday(d))}
+        onEndDateChange={(d) => setEndDate(clampToToday(d))}
       />
       <Box
         sx={{
@@ -196,6 +204,7 @@ export function ExportDialog({
             selectedFields={contactData}
             includeOldData={includeOldData}
             setIncludeOldData={setIncludeOldData}
+            availableBlockTypes={journeyData?.journey?.blockTypenames ?? []}
           />
         </Box>
       )}

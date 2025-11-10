@@ -16,6 +16,12 @@ describe('ContactDataForm', () => {
         <ContactDataForm
           setSelectedFields={setSelectedFields}
           selectedFields={selectedFields}
+          availableBlockTypes={[
+            'RadioQuestionBlock',
+            'MultiselectBlock',
+            'SignUpBlock',
+            'TextResponseBlock'
+          ]}
         />
       </>
     )

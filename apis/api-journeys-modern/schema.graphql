@@ -690,6 +690,11 @@ type Journey
   plausibleToken: String
   fromTemplateId: String
   journeyTheme: JourneyTheme
+
+  """
+  Distinct block typenames present on this journey (non-deleted blocks only)
+  """
+  blockTypenames: [String!]!
   journeyCollections: [JourneyCollection!]!
 }
 
