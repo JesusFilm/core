@@ -1,6 +1,12 @@
 import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react'
 import { InfiniteHitsRenderState } from 'instantsearch.js/es/connectors/infinite-hits/connectInfiniteHits'
 import { SearchBoxRenderState } from 'instantsearch.js/es/connectors/search-box/connectSearchBox'
 import { NextRouter, useRouter } from 'next/router'
@@ -49,6 +55,8 @@ describe('VideoLibrary', () => {
   const on = jest.fn()
 
   beforeEach(() => {
+    jest.clearAllMocks()
+
     mockUseSearchBox.mockReturnValue({
       refine: jest.fn()
     } as unknown as SearchBoxRenderState)
@@ -67,7 +75,18 @@ describe('VideoLibrary', () => {
       }
     } as unknown as InstantSearchApi)
 
-    jest.clearAllMocks()
+    mockedUseRouter.mockReturnValue({
+      query: { tab: 'active' },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+  })
+
+  afterEach(async () => {
+    cleanup()
+    jest.clearAllTimers()
   })
 
   describe('smUp', () => {
@@ -78,9 +97,11 @@ describe('VideoLibrary', () => {
     it('should render the Video Library on the right', () => {
       render(
         <MockedProvider>
-          <MuxVideoUploadProvider>
-            <VideoLibrary open />
-          </MuxVideoUploadProvider>
+          <SnackbarProvider>
+            <MuxVideoUploadProvider>
+              <VideoLibrary open />
+            </MuxVideoUploadProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
       expect(screen.getByText('Video Library')).toBeInTheDocument()
@@ -93,9 +114,11 @@ describe('VideoLibrary', () => {
       const onClose = jest.fn()
       render(
         <MockedProvider>
-          <MuxVideoUploadProvider>
-            <VideoLibrary open onClose={onClose} />
-          </MuxVideoUploadProvider>
+          <SnackbarProvider>
+            <MuxVideoUploadProvider>
+              <VideoLibrary open onClose={onClose} />
+            </MuxVideoUploadProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
       expect(screen.getAllByRole('button')[0]).toContainElement(
@@ -114,9 +137,11 @@ describe('VideoLibrary', () => {
     it('should render the VideoLibrary from the bottom', () => {
       render(
         <MockedProvider>
-          <MuxVideoUploadProvider>
-            <VideoLibrary open />
-          </MuxVideoUploadProvider>
+          <SnackbarProvider>
+            <MuxVideoUploadProvider>
+              <VideoLibrary open />
+            </MuxVideoUploadProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
       expect(screen.getByText('Video Library')).toBeInTheDocument()
@@ -134,9 +159,11 @@ describe('VideoLibrary', () => {
     it('displays searched video', async () => {
       render(
         <MockedProvider>
-          <MuxVideoUploadProvider>
-            <VideoLibrary open />
-          </MuxVideoUploadProvider>
+          <SnackbarProvider>
+            <MuxVideoUploadProvider>
+              <VideoLibrary open />
+            </MuxVideoUploadProvider>
+          </SnackbarProvider>
         </MockedProvider>
       )
       const searchBox = screen.getByRole('searchbox')
@@ -152,9 +179,11 @@ describe('VideoLibrary', () => {
   it('should render the Video Library on the right', () => {
     render(
       <MockedProvider>
-        <MuxVideoUploadProvider>
-          <VideoLibrary open />
-        </MuxVideoUploadProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <VideoLibrary open />
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(screen.getByText('Video Library')).toBeInTheDocument()
@@ -212,9 +241,11 @@ describe('VideoLibrary', () => {
     ]
     render(
       <MockedProvider mocks={mocks}>
-        <MuxVideoUploadProvider>
-          <VideoLibrary open onSelect={onSelect} onClose={onClose} />
-        </MuxVideoUploadProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <VideoLibrary open onSelect={onSelect} onClose={onClose} />
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     await waitFor(() => expect(screen.getByText('title1')).toBeInTheDocument())
@@ -246,42 +277,44 @@ describe('VideoLibrary', () => {
 
     render(
       <MockedProvider>
-        <MuxVideoUploadProvider>
-          <VideoLibrary
-            open
-            selectedBlock={{
-              id: 'video1.id',
-              __typename: 'VideoBlock',
-              parentBlockId: 'card1.id',
-              description:
-                'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
-              duration: 348,
-              endAt: 348,
-              fullsize: true,
-              image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
-              muted: false,
-              autoplay: true,
-              startAt: 0,
-              title: 'What is the Bible?',
-              videoId: 'ak06MSETeo4',
-              videoVariantLanguageId: null,
-              parentOrder: 0,
-              action: null,
-              source: VideoBlockSource.youTube,
-              mediaVideo: {
-                __typename: 'YouTube',
-                id: 'videoId'
-              },
-              objectFit: null,
-              subtitleLanguage: null,
-              showGeneratedSubtitles: null,
-              posterBlockId: 'poster1.id',
-              children: []
-            }}
-            onSelect={onSelect}
-            onClose={onClose}
-          />
-        </MuxVideoUploadProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <VideoLibrary
+              open
+              selectedBlock={{
+                id: 'video1.id',
+                __typename: 'VideoBlock',
+                parentBlockId: 'card1.id',
+                description:
+                  'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+                duration: 348,
+                endAt: 348,
+                fullsize: true,
+                image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
+                muted: false,
+                autoplay: true,
+                startAt: 0,
+                title: 'What is the Bible?',
+                videoId: 'ak06MSETeo4',
+                videoVariantLanguageId: null,
+                parentOrder: 0,
+                action: null,
+                source: VideoBlockSource.youTube,
+                mediaVideo: {
+                  __typename: 'YouTube',
+                  id: 'videoId'
+                },
+                objectFit: null,
+                subtitleLanguage: null,
+                showGeneratedSubtitles: null,
+                posterBlockId: 'poster1.id',
+                children: []
+              }}
+              onSelect={onSelect}
+              onClose={onClose}
+            />
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -299,9 +332,11 @@ describe('VideoLibrary', () => {
 
     render(
       <MockedProvider>
-        <MuxVideoUploadProvider>
-          <VideoLibrary open />
-        </MuxVideoUploadProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <VideoLibrary open />
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     fireEvent.click(screen.getByRole('tab', { name: 'YouTube' }))

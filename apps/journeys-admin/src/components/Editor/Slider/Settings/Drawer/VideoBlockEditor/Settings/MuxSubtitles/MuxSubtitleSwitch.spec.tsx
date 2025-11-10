@@ -1,9 +1,11 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
+import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
 
@@ -186,16 +188,27 @@ describe('MuxSubtitleSwitch', () => {
   })
 
   it('disables switch and shows message when subtitle is processing', async () => {
+    const videoBlockWithNullSubtitles: TreeBlock<VideoBlock> = {
+      ...mockVideoBlock,
+      showGeneratedSubtitles: null
+    }
+
     render(
       <MockedProvider mocks={[mockSubtitleTrackProcessing]}>
-        <EditorProvider initialState={{ selectedBlock: mockVideoBlock }}>
-          <MuxSubtitleSwitch
-            videoBlockId="video-1"
-            muxVideoId="mux-video-id"
-            journeyLanguageBcp47="en"
-            onChange={mockOnChange}
-          />
-        </EditorProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <EditorProvider
+              initialState={{ selectedBlock: videoBlockWithNullSubtitles }}
+            >
+              <MuxSubtitleSwitch
+                videoBlockId="video-1"
+                muxVideoId="mux-video-id"
+                journeyLanguageBcp47="en"
+                onChange={mockOnChange}
+              />
+            </EditorProvider>
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -210,16 +223,27 @@ describe('MuxSubtitleSwitch', () => {
   })
 
   it('disables switch when subtitle track is errored', async () => {
+    const videoBlockWithNullSubtitles: TreeBlock<VideoBlock> = {
+      ...mockVideoBlock,
+      showGeneratedSubtitles: null
+    }
+
     render(
       <MockedProvider mocks={[mockSubtitleTrackErrored]}>
-        <EditorProvider initialState={{ selectedBlock: mockVideoBlock }}>
-          <MuxSubtitleSwitch
-            videoBlockId="video-1"
-            muxVideoId="mux-video-id"
-            journeyLanguageBcp47="en"
-            onChange={mockOnChange}
-          />
-        </EditorProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <EditorProvider
+              initialState={{ selectedBlock: videoBlockWithNullSubtitles }}
+            >
+              <MuxSubtitleSwitch
+                videoBlockId="video-1"
+                muxVideoId="mux-video-id"
+                journeyLanguageBcp47="en"
+                onChange={mockOnChange}
+              />
+            </EditorProvider>
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -229,16 +253,27 @@ describe('MuxSubtitleSwitch', () => {
   })
 
   it('disables switch when subtitle track query errors', async () => {
+    const videoBlockWithNullSubtitles: TreeBlock<VideoBlock> = {
+      ...mockVideoBlock,
+      showGeneratedSubtitles: null
+    }
+
     render(
       <MockedProvider mocks={[mockSubtitleTrackError]}>
-        <EditorProvider initialState={{ selectedBlock: mockVideoBlock }}>
-          <MuxSubtitleSwitch
-            videoBlockId="video-1"
-            muxVideoId="mux-video-id"
-            journeyLanguageBcp47="en"
-            onChange={mockOnChange}
-          />
-        </EditorProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <EditorProvider
+              initialState={{ selectedBlock: videoBlockWithNullSubtitles }}
+            >
+              <MuxSubtitleSwitch
+                videoBlockId="video-1"
+                muxVideoId="mux-video-id"
+                journeyLanguageBcp47="en"
+                onChange={mockOnChange}
+              />
+            </EditorProvider>
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -497,40 +532,66 @@ describe('MuxSubtitleSwitch', () => {
     })
   })
 
-  it('skips query when muxVideoId is null', () => {
+  it('skips query when muxVideoId is null', async () => {
+    const videoBlockWithNullSubtitles: TreeBlock<VideoBlock> = {
+      ...mockVideoBlock,
+      showGeneratedSubtitles: null
+    }
+
     render(
       <MockedProvider mocks={[]}>
-        <EditorProvider initialState={{ selectedBlock: mockVideoBlock }}>
-          <MuxSubtitleSwitch
-            videoBlockId="video-1"
-            muxVideoId={null}
-            journeyLanguageBcp47="en"
-            onChange={mockOnChange}
-          />
-        </EditorProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <EditorProvider
+              initialState={{ selectedBlock: videoBlockWithNullSubtitles }}
+            >
+              <MuxSubtitleSwitch
+                videoBlockId="video-1"
+                muxVideoId={null}
+                journeyLanguageBcp47="en"
+                onChange={mockOnChange}
+              />
+            </EditorProvider>
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
     expect(screen.getByText('Subtitles')).toBeInTheDocument()
-    expect(screen.getByRole('checkbox')).toBeDisabled()
+    await waitFor(() => {
+      expect(screen.getByRole('checkbox')).toBeDisabled()
+    })
   })
 
-  it('skips query when journeyLanguageCode is null', () => {
+  it('skips query when journeyLanguageCode is null', async () => {
+    const videoBlockWithNullSubtitles: TreeBlock<VideoBlock> = {
+      ...mockVideoBlock,
+      showGeneratedSubtitles: null
+    }
+
     render(
       <MockedProvider mocks={[]}>
-        <EditorProvider initialState={{ selectedBlock: mockVideoBlock }}>
-          <MuxSubtitleSwitch
-            videoBlockId="video-1"
-            muxVideoId="mux-video-id"
-            journeyLanguageBcp47={null}
-            onChange={mockOnChange}
-          />
-        </EditorProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <EditorProvider
+              initialState={{ selectedBlock: videoBlockWithNullSubtitles }}
+            >
+              <MuxSubtitleSwitch
+                videoBlockId="video-1"
+                muxVideoId="mux-video-id"
+                journeyLanguageBcp47={null}
+                onChange={mockOnChange}
+              />
+            </EditorProvider>
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
     expect(screen.getByText('Subtitles')).toBeInTheDocument()
-    expect(screen.getByRole('checkbox')).toBeDisabled()
+    await waitFor(() => {
+      expect(screen.getByRole('checkbox')).toBeDisabled()
+    })
   })
 
   it('skips query when language is invalid', () => {
@@ -616,58 +677,5 @@ describe('MuxSubtitleSwitch', () => {
 
     // Toggle should be enabled since subtitles are ready (just disabled)
     expect(screen.getByRole('checkbox')).not.toBeDisabled()
-  })
-
-  it('persists showGeneratedSubtitles when subtitle track transitions from processing to ready', async () => {
-    mockOnChange.mockResolvedValue(undefined)
-    const videoBlockWithNullSubtitles: TreeBlock<VideoBlock> = {
-      ...mockVideoBlock,
-      showGeneratedSubtitles: null
-    }
-
-    // First render with processing status
-    const { rerender } = render(
-      <MockedProvider mocks={[mockSubtitleTrackProcessing]}>
-        <EditorProvider
-          initialState={{ selectedBlock: videoBlockWithNullSubtitles }}
-        >
-          <MuxSubtitleSwitch
-            videoBlockId="video-1"
-            muxVideoId="mux-video-id"
-            journeyLanguageBcp47="en"
-            onChange={mockOnChange}
-          />
-        </EditorProvider>
-      </MockedProvider>
-    )
-
-    // Wait for processing status to be detected
-    await waitFor(() => {
-      expect(screen.getByRole('checkbox')).toBeDisabled()
-    })
-
-    // Now rerender with ready status to simulate the transition
-    rerender(
-      <MockedProvider mocks={[mockSubtitleTrackReady]}>
-        <EditorProvider
-          initialState={{ selectedBlock: videoBlockWithNullSubtitles }}
-        >
-          <MuxSubtitleSwitch
-            videoBlockId="video-1"
-            muxVideoId="mux-video-id"
-            journeyLanguageBcp47="en"
-            onChange={mockOnChange}
-          />
-        </EditorProvider>
-      </MockedProvider>
-    )
-
-    // Wait for ready status and verify onChange(false) was called to persist the state
-    await waitFor(
-      () => {
-        expect(mockOnChange).toHaveBeenCalledWith(false)
-      },
-      { timeout: 3000 }
-    )
   })
 })

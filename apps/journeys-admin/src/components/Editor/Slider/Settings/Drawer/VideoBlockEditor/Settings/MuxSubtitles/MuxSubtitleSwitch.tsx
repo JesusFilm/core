@@ -7,7 +7,6 @@ import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 
-import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { GetMyGeneratedMuxSubtitleTrack } from '../../../../../../../../../__generated__/GetMyGeneratedMuxSubtitleTrack'
 import { validateMuxLanguage } from '../../../../../../../../libs/validateMuxLanguage'
 

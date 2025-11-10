@@ -89,7 +89,9 @@ export function MuxVideoUploadProvider({
     }
   )
   const hasShownStartNotification = useRef<Set<string>>(new Set())
+  // polling intervals for polling tasks
   const pollingIntervalsRef = useRef<Map<string, NodeJS.Timeout>>(new Map())
+  // upchunk refs for aborting uploads
   const uploadInstanceRefs = useRef<Map<string, { abort: () => void }>>(
     new Map()
   )
