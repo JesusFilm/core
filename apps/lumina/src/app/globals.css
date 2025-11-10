@@ -1,2 +1,33 @@
 @import 'tailwindcss';
 
+@theme {
+  --color-primary-50: #fff5f0;
+  --color-primary-100: #ffe8db;
+  --color-primary-200: #ffd1b8;
+  --color-primary-300: #ffb894;
+  --color-primary-400: #ff8c42;
+  --color-primary-500: #e85d2e;
+  --color-primary-600: #d14a1f;
+  --color-primary-700: #c94a1f;
+  --color-primary-800: #a63d1a;
+  --color-primary-900: #8b3215;
+}
+
+@layer utilities {
+  .texture-orange-gradient {
+    background: linear-gradient(
+      135deg,
+      #c94a1f 0%,
+      #d14a1f 25%,
+      #e85d2e 40%,
+      #ff8c42 75%
+    );
+    position: relative;
+  }
+}
+
+@layer base {
+  button {
+    cursor: pointer;
+  }
+}

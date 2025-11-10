@@ -112,7 +112,7 @@ export default function SignUpPage() {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-600"></div>
+          <div className="border-t-primary-500 h-8 w-8 animate-spin rounded-full border-4 border-gray-300"></div>
           <p className="text-gray-600">{t('signingUp')}</p>
         </div>
       </div>
@@ -125,7 +125,7 @@ export default function SignUpPage() {
         <div className="flex w-full flex-col justify-center bg-white px-8 py-12 lg:w-2/5">
           <div>
             <div className="mb-12 flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600">
+              <div className="bg-primary-500 flex h-10 w-10 items-center justify-center rounded-lg">
                 <svg
                   className="h-6 w-6 text-white"
                   fill="none"
@@ -166,7 +166,7 @@ export default function SignUpPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="focus:border-primary-500 focus:ring-primary-500 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:ring-1 focus:outline-none"
                   placeholder={t('emailPlaceholder')}
                   disabled={
                     isEmailLoading || isGoogleLoading || isFacebookLoading
@@ -175,12 +175,20 @@ export default function SignUpPage() {
               </div>
 
               <div>
-                <label
-                  htmlFor="password"
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                >
-                  {t('passwordLabel')}
-                </label>
+                <div className="mb-1 flex items-center justify-between">
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    {t('passwordLabel')}
+                  </label>
+                  <Link
+                    href="#"
+                    className="text-primary-500 hover:text-primary-600 text-sm"
+                  >
+                    Forgot Your Password?
+                  </Link>
+                </div>
                 <input
                   id="password"
                   name="password"
@@ -189,12 +197,24 @@ export default function SignUpPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  className="focus:border-primary-500 focus:ring-primary-500 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:ring-1 focus:outline-none"
                   placeholder={t('passwordPlaceholder')}
                   disabled={
                     isEmailLoading || isGoogleLoading || isFacebookLoading
                   }
                 />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    className="text-primary-500 focus:ring-primary-500 h-4 w-4 rounded border-gray-300"
+                  />
+                  <span className="ml-2 text-sm text-gray-700">
+                    Remember Me
+                  </span>
+                </label>
               </div>
 
               {error != null && (
@@ -208,7 +228,7 @@ export default function SignUpPage() {
                 disabled={
                   isEmailLoading || isGoogleLoading || isFacebookLoading
                 }
-                className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                className="bg-primary-500 hover:bg-primary-600 focus:ring-primary-500 w-full rounded-lg px-4 py-2.5 text-sm font-medium text-white transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isEmailLoading ? (
                   <span className="flex items-center justify-center">
@@ -234,7 +254,7 @@ export default function SignUpPage() {
                 disabled={
                   isEmailLoading || isGoogleLoading || isFacebookLoading
                 }
-                className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                className="focus:ring-primary-500 flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isGoogleLoading ? (
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-gray-400 border-t-transparent"></span>
@@ -267,7 +287,7 @@ export default function SignUpPage() {
                 disabled={
                   isEmailLoading || isGoogleLoading || isFacebookLoading
                 }
-                className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                className="focus:ring-primary-500 flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isFacebookLoading ? (
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-gray-400 border-t-transparent"></span>
@@ -284,7 +304,7 @@ export default function SignUpPage() {
               <span>{t('switchToSignIn')} </span>
               <Link
                 href="/users/sign-in"
-                className="font-medium text-blue-600 hover:text-blue-700"
+                className="text-primary-500 hover:text-primary-600 font-medium"
               >
                 {t('switchToSignInLink')}
               </Link>
@@ -301,12 +321,12 @@ export default function SignUpPage() {
           </div>
         </div>
 
-        <div className="hidden flex-col justify-center bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 px-12 py-12 lg:flex lg:w-3/5">
-          <div className="max-w-lg">
-            <h2 className="mb-6 text-4xl font-bold leading-tight text-white">
+        <div className="texture-orange-gradient hidden flex-col justify-center px-12 py-12 lg:flex lg:w-3/5">
+          <div className="relative z-10 max-w-lg">
+            <h2 className="mb-6 text-4xl leading-tight font-bold text-white">
               {t('promoTitle')}
             </h2>
-            <p className="mb-12 text-lg leading-relaxed text-blue-100">
+            <p className="text-primary-100 mb-12 text-lg leading-relaxed">
               {t('promoDescription')}
             </p>
 
@@ -331,9 +351,7 @@ export default function SignUpPage() {
                   <h3 className="mb-1 text-xl font-semibold text-white">
                     {t('promoFeature1')}
                   </h3>
-                  <p className="text-blue-100">
-                    {t('promoFeature1Desc')}
-                  </p>
+                  <p className="text-primary-100">{t('promoFeature1Desc')}</p>
                 </div>
               </div>
 
@@ -357,9 +375,7 @@ export default function SignUpPage() {
                   <h3 className="mb-1 text-xl font-semibold text-white">
                     {t('promoFeature2')}
                   </h3>
-                  <p className="text-blue-100">
-                    {t('promoFeature2Desc')}
-                  </p>
+                  <p className="text-primary-100">{t('promoFeature2Desc')}</p>
                 </div>
               </div>
 
@@ -383,9 +399,7 @@ export default function SignUpPage() {
                   <h3 className="mb-1 text-xl font-semibold text-white">
                     {t('promoFeature3')}
                   </h3>
-                  <p className="text-blue-100">
-                    {t('promoFeature3Desc')}
-                  </p>
+                  <p className="text-primary-100">{t('promoFeature3Desc')}</p>
                 </div>
               </div>
             </div>
