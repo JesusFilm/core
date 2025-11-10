@@ -53,7 +53,6 @@ export function MuxSubtitleSwitch({
     videoBlock?.showGeneratedSubtitles ?? false
   )
   const [updating, setUpdating] = useState(false)
-  const previousSubtitleStatusRef = useRef<string | null>(null)
 
   // Query subtitle track status only when showGeneratedSubtitles is null (still waiting for generation)
   // If showGeneratedSubtitles is already set, we don't need to query as subtitles are ready
@@ -73,7 +72,15 @@ export function MuxSubtitleSwitch({
         !isValidLanguage ||
         muxVideoId == null ||
         journeyLanguageCode == null ||
-        videoBlock?.showGeneratedSubtitles != null
+        videoBlock?.showGeneratedSubtitles != null,
+      onCompleted: async (data) => {
+        if (
+          data?.getMyGeneratedMuxSubtitleTrack.__typename ===
+            'QueryGetMyGeneratedMuxSubtitleTrackSuccess' &&
+          data.getMyGeneratedMuxSubtitleTrack.data.status === 'ready'
+        )
+          await onChange(false)
+      }
     }
   )
 
@@ -87,53 +94,12 @@ export function MuxSubtitleSwitch({
   // Mux subtitle generation typically takes longer to complete than the video upload does
   // Poll to check when completed.
   useEffect(() => {
-    if (subtitleTrack?.status === 'processing') {
-      startPolling(3000)
-    } else {
-      stopPolling()
-    }
+    if (subtitleTrack?.status === 'processing') startPolling(1000)
 
     return () => {
       stopPolling()
     }
   }, [subtitleTrack?.status, startPolling, stopPolling])
-
-  // Sync toggle state with videoBlock when showGeneratedSubtitles is set
-  useEffect(() => {
-    if (videoBlock?.showGeneratedSubtitles != null) {
-      setToggleChecked(videoBlock.showGeneratedSubtitles)
-    }
-  }, [videoBlock?.showGeneratedSubtitles])
-
-  // Programmatically persist showGeneratedSubtitles when subtitle track transitions from processing to ready
-  // This ensures that on subsequent page reloads, showGeneratedSubtitles is set (not null) and the query is skipped
-  useEffect(() => {
-    const currentStatus = subtitleTrack?.status ?? null
-    const previousStatus = previousSubtitleStatusRef.current
-
-    // Detect transition from "processing" to "ready"
-    if (
-      previousStatus === 'processing' &&
-      currentStatus === 'ready' &&
-      videoBlock?.showGeneratedSubtitles == null &&
-      videoBlockId != null &&
-      !updating
-    ) {
-      // Persist showGeneratedSubtitles = false to prevent repeated queries on reload
-      void onChange(false).catch(() => {
-        // Silently handle errors - the user can still toggle manually later
-      })
-    }
-
-    // Update ref for next comparison
-    previousSubtitleStatusRef.current = currentStatus
-  }, [
-    subtitleTrack?.status,
-    videoBlock?.showGeneratedSubtitles,
-    videoBlockId,
-    updating,
-    onChange
-  ])
 
   // Programmatically turn off switch when language becomes invalid
   useEffect(() => {

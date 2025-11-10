@@ -678,4 +678,35 @@ describe('MuxSubtitleSwitch', () => {
     // Toggle should be enabled since subtitles are ready (just disabled)
     expect(screen.getByRole('checkbox')).not.toBeDisabled()
   })
+
+  it('calls onChange with false when subtitle track becomes ready', async () => {
+    mockOnChange.mockResolvedValue(undefined)
+    const videoBlockWithNullSubtitles: TreeBlock<VideoBlock> = {
+      ...mockVideoBlock,
+      showGeneratedSubtitles: null
+    }
+
+    render(
+      <MockedProvider mocks={[mockSubtitleTrackReady]}>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <EditorProvider
+              initialState={{ selectedBlock: videoBlockWithNullSubtitles }}
+            >
+              <MuxSubtitleSwitch
+                videoBlockId="video-1"
+                muxVideoId="mux-video-id"
+                journeyLanguageBcp47="en"
+                onChange={mockOnChange}
+              />
+            </EditorProvider>
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(mockOnChange).toHaveBeenCalledWith(false)
+    })
+  })
 })

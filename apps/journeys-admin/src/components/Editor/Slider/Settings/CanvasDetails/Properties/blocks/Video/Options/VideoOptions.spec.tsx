@@ -443,6 +443,66 @@ describe('VideoOptions', () => {
     )
   })
 
+  it('should reset showGeneratedSubtitles when selecting different video', async () => {
+    const videoBlockResult = jest.fn(() => {
+      return {
+        data: {
+          videoBlockUpdate: {
+            ...video,
+            videoId: 'newMuxVideoId',
+            source: VideoBlockSource.mux,
+            showGeneratedSubtitles: null
+          }
+        }
+      }
+    })
+
+    const videoBlockUpdateVariables = {
+      id: video.id,
+      input: {
+        videoId: 'newMuxVideoId',
+        source: VideoBlockSource.mux,
+        startAt: 0,
+        subtitleLanguageId: null,
+        showGeneratedSubtitles: null
+      }
+    }
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: VIDEO_BLOCK_UPDATE,
+              variables: videoBlockUpdateVariables
+            },
+            result: videoBlockResult
+          }
+        ]}
+      >
+        <EditorProvider
+          initialState={{
+            selectedBlock: {
+              ...video,
+              videoId: 'oldMuxVideoId',
+              source: VideoBlockSource.mux,
+              showGeneratedSubtitles: true
+            },
+            selectedAttributeId: video.id
+          }}
+        >
+          <ThemeProvider>
+            <VideoOptions />
+          </ThemeProvider>
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('VideoBlockEditor')).toBeInTheDocument()
+    )
+  })
+
   it('should not dispatch SetEditorFocusAction when shouldFocus is false', async () => {
     const dispatchMock = jest.fn()
     const videoBlockResult = jest.fn(() => ({

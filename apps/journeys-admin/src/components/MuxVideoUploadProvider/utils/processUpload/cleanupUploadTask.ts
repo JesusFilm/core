@@ -16,6 +16,7 @@ export function cleanupUploadTask(
 
   uploadInstanceRefs.current.delete(videoBlockId)
 
+  // time out so that task doesn't get re-run in provider useEffect unnecessarily
   setTimeout(() => {
     setUploadTasks((prev) => {
       const next = new Map(prev)
