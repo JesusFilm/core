@@ -2,6 +2,7 @@
 import { TFunction } from 'i18next'
 
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
+import { ContactActionType } from '../../../../../__generated__/globalTypes'
 
 import { getJourneyLinks } from './getJourneyLinks'
 
@@ -84,7 +85,7 @@ describe('getJourneyLinks', () => {
             __typename: 'PhoneAction',
             phone: '+1234567890',
             countryCode: 'US',
-            contactAction: 'call',
+            contactAction: ContactActionType.call,
             customizable: true,
             parentStepId: 'step-6'
           }
@@ -139,11 +140,12 @@ describe('getJourneyLinks', () => {
       },
       {
         id: 'btn-3',
-        linkType: 'url',
+        linkType: 'phone',
         url: '+1234567890',
         label: 'Call us',
         parentStepId: 'step-6',
-        customizable: true
+        customizable: true,
+        contactAction: ContactActionType.call
       },
       {
         id: 'btn-4',
@@ -169,7 +171,7 @@ describe('getJourneyLinks', () => {
             __typename: 'PhoneAction',
             phone: '+1234567890',
             countryCode: 'US',
-            contactAction: 'call',
+            contactAction: ContactActionType.call,
             customizable: true,
             parentStepId: 'step-1'
           }
@@ -182,7 +184,7 @@ describe('getJourneyLinks', () => {
             __typename: 'PhoneAction',
             phone: '+1987654321',
             countryCode: 'US',
-            contactAction: 'text',
+            contactAction: ContactActionType.text,
             customizable: true,
             parentStepId: 'step-2'
           }
@@ -195,7 +197,7 @@ describe('getJourneyLinks', () => {
             __typename: 'PhoneAction',
             phone: '+1555555555',
             countryCode: 'US',
-            contactAction: 'call',
+            contactAction: ContactActionType.call,
             customizable: false,
             parentStepId: 'step-3'
           }
@@ -207,19 +209,21 @@ describe('getJourneyLinks', () => {
     expect(links).toEqual([
       {
         id: 'phone-btn-1',
-        linkType: 'url',
+        linkType: 'phone',
         url: '+1234567890',
         label: 'Call Support',
         parentStepId: 'step-1',
-        customizable: true
+        customizable: true,
+        contactAction: ContactActionType.call
       },
       {
         id: 'phone-btn-2',
-        linkType: 'url',
+        linkType: 'phone',
         url: '+1987654321',
         label: 'Text Us',
         parentStepId: 'step-2',
-        customizable: true
+        customizable: true,
+        contactAction: ContactActionType.text
       }
     ])
   })

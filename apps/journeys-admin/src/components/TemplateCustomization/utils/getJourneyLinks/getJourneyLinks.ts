@@ -9,6 +9,7 @@ import {
   GetJourney_journey_blocks_VideoBlock as VideoBlock,
   GetJourney_journey_blocks_VideoTriggerBlock as VideoTriggerBlock
 } from '../../../../../__generated__/GetJourney'
+import { ContactActionType } from '../../../../../__generated__/globalTypes'
 
 export type JourneyLink =
   | {
@@ -20,11 +21,12 @@ export type JourneyLink =
     }
   | {
       id: string
-      linkType: 'url' | 'email'
+      linkType: 'url' | 'email' | 'phone'
       url: string
       label: string
       parentStepId?: string | null
       customizable?: boolean | null
+      contactAction?: ContactActionType | null
     }
 
 export function getJourneyLinks(
@@ -96,7 +98,7 @@ export function getJourneyLinks(
     let url: string | null = null
     let parentStepId: string | null = null
     let customizable: boolean | null = null
-    let linkType: 'url' | 'email' = 'url'
+    let linkType: 'url' | 'email' | 'phone' = 'url'
     switch (action.__typename) {
       case 'LinkAction':
         if (action.customizable === true) {
@@ -118,8 +120,22 @@ export function getJourneyLinks(
         if (action.customizable === true) {
           url = action.phone
           parentStepId = action.parentStepId ?? null
-          linkType = 'url'
+          linkType = 'phone'
           customizable = action.customizable
+          // Preserve contact action so callers can decide tel: vs sms:
+          const ca = (action as { contactAction?: ContactActionType })
+            ?.contactAction
+          links.push({
+            id: block.id,
+            linkType,
+            parentStepId,
+            url,
+            customizable,
+            contactAction: ca ?? null,
+            label:
+              label == null || label === '' ? t('No label provided') : label
+          })
+          return
         }
         break
       case 'ChatAction':
