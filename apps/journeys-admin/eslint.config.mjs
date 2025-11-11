@@ -4,9 +4,9 @@ export default [
   ...nextConfig,
   {
     ignores: [
-      'jest.config.ts',
-      'postcss.config.mjs',
-      'next.config.js'
+      'apps/journeys-admin/jest.config.ts',
+      'apps/journeys-admin/postcss.config.mjs',
+      'apps/journeys-admin/next.config.js'
     ]
   },
   {
@@ -14,7 +14,7 @@ export default [
     rules: {
       '@next/next/no-html-link-for-pages': [
         'error',
-        'pages/'
+        'apps/journeys-admin/pages/'
       ],
       'no-void': ['error', { allowAsStatement: true }],
       '@typescript-eslint/no-misused-promises': 'off',
