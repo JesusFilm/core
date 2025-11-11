@@ -5,7 +5,7 @@ import { VideoProvider } from '../../../../libs/videoContext'
 import { WatchProvider } from '../../../../libs/watchContext'
 import { videos } from '../../../Videos/__generated__/testData'
 
-import { HeroVideo } from './HeroVideo'
+import { VideoBlockPlayer } from './VideoBlockPlayer'
 
 jest.mock('video.js', () => {
   const mockPlayer = {
@@ -31,7 +31,7 @@ jest.mock('./HeroSubtitleOverlay', () => ({
   HeroSubtitleOverlay: () => <div data-testid="HeroSubtitleOverlay">HeroSubtitleOverlay</div>
 }))
 
-describe('HeroVideo', () => {
+describe('VideoBlockPlayer', () => {
   const defaultProps = {
     isPreview: false,
     collapsed: true,
@@ -47,13 +47,13 @@ describe('HeroVideo', () => {
       <VideoProvider value={{ content: videos[0] }}>
         <PlayerProvider>
           <WatchProvider>
-            <HeroVideo {...defaultProps} />
+            <VideoBlockPlayer {...defaultProps} />
           </WatchProvider>
         </PlayerProvider>
       </VideoProvider>
     )
 
-    expect(screen.getByTestId('ContentHeroVideoContainer')).toBeInTheDocument()
+    expect(screen.getByTestId('VideoBlockPlayerContainer')).toBeInTheDocument()
   })
 
   it('should apply height 120% when collapsed is true', () => {
@@ -61,13 +61,13 @@ describe('HeroVideo', () => {
       <VideoProvider value={{ content: videos[0] }}>
         <PlayerProvider>
           <WatchProvider>
-            <HeroVideo {...defaultProps} collapsed={true} />
+            <VideoBlockPlayer {...defaultProps} collapsed={true} />
           </WatchProvider>
         </PlayerProvider>
       </VideoProvider>
     )
 
-    const videoElement = container.querySelector('[data-testid="ContentHeroVideo"]')
+    const videoElement = container.querySelector('[data-testid="VideoBlockPlayer"]')
     expect(videoElement).toBeInTheDocument()
     expect(videoElement).toHaveStyle({ height: '120%' })
   })
@@ -77,13 +77,13 @@ describe('HeroVideo', () => {
       <VideoProvider value={{ content: videos[0] }}>
         <PlayerProvider>
           <WatchProvider>
-            <HeroVideo {...defaultProps} collapsed={false} />
+            <VideoBlockPlayer {...defaultProps} collapsed={false} />
           </WatchProvider>
         </PlayerProvider>
       </VideoProvider>
     )
 
-    const videoElement = container.querySelector('[data-testid="ContentHeroVideo"]')
+    const videoElement = container.querySelector('[data-testid="VideoBlockPlayer"]')
     expect(videoElement).toBeInTheDocument()
     expect(videoElement).toHaveStyle({ height: '100%' })
   })
@@ -93,13 +93,13 @@ describe('HeroVideo', () => {
       <VideoProvider value={{ content: videos[0] }}>
         <PlayerProvider>
           <WatchProvider>
-            <HeroVideo {...defaultProps} collapsed={true} placement="carouselItem" />
+            <VideoBlockPlayer {...defaultProps} collapsed={true} placement="carouselItem" />
           </WatchProvider>
         </PlayerProvider>
       </VideoProvider>
     )
 
-    const videoElement = container.querySelector('[data-testid="ContentHeroVideo"]')
+    const videoElement = container.querySelector('[data-testid="VideoBlockPlayer"]')
     expect(videoElement).toBeInTheDocument()
     expect(videoElement).toHaveStyle({ height: '120%' })
   })
@@ -109,13 +109,13 @@ describe('HeroVideo', () => {
       <VideoProvider value={{ content: videos[0] }}>
         <PlayerProvider>
           <WatchProvider>
-            <HeroVideo {...defaultProps} collapsed={false} placement="carouselItem" />
+            <VideoBlockPlayer {...defaultProps} collapsed={false} placement="carouselItem" />
           </WatchProvider>
         </PlayerProvider>
       </VideoProvider>
     )
 
-    const videoElement = container.querySelector('[data-testid="ContentHeroVideo"]')
+    const videoElement = container.querySelector('[data-testid="VideoBlockPlayer"]')
     expect(videoElement).toBeInTheDocument()
     expect(videoElement).toHaveStyle({ height: '100%' })
   })

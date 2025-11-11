@@ -6,7 +6,7 @@ import { useVideo } from '../../libs/videoContext/VideoContext'
 import type { CarouselMuxSlide } from '../../types/inserts'
 
 import { ContentHeader } from '../ContentHeader'
-import { HeroVideo } from './HeroVideo'
+import { VideoBlockPlayer } from './VideoBlockPlayer'
 
 export function VideoBlock({
   isPreview = false,
@@ -68,7 +68,7 @@ export function VideoBlock({
         languageSlug={languageSlug?.replace('.html', '')}
         isPersistent={placement == 'carouselItem'}
       />
-      <HeroVideo
+      <VideoBlockPlayer
         isPreview={placement == 'carouselItem'}
         collapsed={collapsed}
         placement={placement}
@@ -79,21 +79,6 @@ export function VideoBlock({
         wasUnmuted={wasUnmuted}
         key={currentMuxInsert ? currentMuxInsert.id : variant?.hls}
       />
-      {!wasUnmuted && (
-        <div
-          data-testid="ContainerHeroTitleContainer"
-          className="w-full relative z-2 flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"
-        >
-        <div
-          className="absolute top-0 left-0 right-0 h-full w-full pointer-events-none block md:hidden"
-          style={{
-            backdropFilter: 'brightness(.6) blur(40px)',
-            maskImage:
-              'linear-gradient(0deg, rgba(2,0,36,1) 46%, rgba(2,0,36,1) 53%, rgba(0,0,0,0) 100%)'
-          }}
-        />
-        </div>
-      )}
     </div>
   )
 }

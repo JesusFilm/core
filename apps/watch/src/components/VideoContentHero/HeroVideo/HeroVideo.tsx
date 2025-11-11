@@ -10,31 +10,36 @@ import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
 
 import 'videojs-mux'
 
-import { usePlayer } from '../../../libs/playerContext'
+import { usePlayer } from '../../../libs/playerContext/PlayerContext'
 import { useVideo } from '../../../libs/videoContext'
 import { useWatch } from '../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../libs/watchContext/useSubtitleUpdate'
 import type { CarouselMuxSlide } from '../../../types/inserts'
-import { MuxInsertLogoOverlay, VideoControls } from '../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
+// TODO: Reimplement VideoControls and MuxInsertLogoOverlay components
+import { VideoControls } from '../../VideoControls'
 
 import { HeroSubtitleOverlay } from './HeroSubtitleOverlay'
 
 interface HeroVideoProps {
   isPreview?: boolean
   collapsed?: boolean
+  placement?: 'carouselItem' | 'singleVideo'
   onMuteToggle?: (isMuted: boolean) => void
   currentMuxInsert?: CarouselMuxSlide | null
   onMuxInsertComplete?: () => void
   onSkip?: () => void
+  wasUnmuted?: boolean
 }
 
 export function HeroVideo({
   isPreview = false,
   collapsed = true,
+  placement = 'singleVideo',
   onMuteToggle,
   currentMuxInsert,
   onMuxInsertComplete,
-  onSkip
+  onSkip,
+  wasUnmuted = false
 }: HeroVideoProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
@@ -48,7 +53,9 @@ export function HeroVideo({
   const [mediaError, setMediaError] = useState<Error | null>(null)
 
   // Use Mux insert title if available, otherwise use regular video title
-  const title = currentMuxInsert ? currentMuxInsert.overlay.title : (last(video.title)?.value ?? '')
+  const title = currentMuxInsert
+    ? currentMuxInsert.overlay.title
+    : (last(video.title)?.value ?? '')
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<
@@ -164,9 +171,10 @@ export function HeroVideo({
   useEffect(() => {
     const setupPlayer = async () => {
       // Determine the video source and ID based on current content
-      const videoSource = currentMuxInsert ? currentMuxInsert.urls.hls : variant?.hls
+      const videoSource = currentMuxInsert
+        ? currentMuxInsert.urls.hls
+        : variant?.hls
       const videoId = currentMuxInsert ? currentMuxInsert.id : variant?.id
-
 
       if (!videoRef.current || !videoSource) {
         return
@@ -187,7 +195,7 @@ export function HeroVideo({
           currentPlayer.src('')
 
           // Small delay to allow abort events to fire
-          await new Promise(resolve => setTimeout(resolve, 50))
+          await new Promise((resolve) => setTimeout(resolve, 50))
 
           // Now dispose safely
           currentPlayer.dispose()
@@ -267,7 +275,9 @@ export function HeroVideo({
         const playerError = player.error()
         if (playerError) {
           // Create a more user-friendly error
-          const mediaError = new Error(`Video loading failed: ${playerError.message}`)
+          const mediaError = new Error(
+            `Video loading failed: ${playerError.message}`
+          )
           mediaError.name = 'MediaError'
           ;(mediaError as any).code = playerError.code
           ;(mediaError as any).videoId = videoId
@@ -275,61 +285,61 @@ export function HeroVideo({
         }
       })
 
-    player.on('abort', () => {
-      // Note: Abort events are normal when switching videos, so we don't set mediaError here
-    })
+      player.on('abort', () => {
+        // Note: Abort events are normal when switching videos, so we don't set mediaError here
+      })
 
-    player.on('emptied', () => {
-      // Player emptied
-    })
+      player.on('emptied', () => {
+        // Player emptied
+      })
 
-    player.on('loadstart', () => {
-      // Load started
-    })
+      player.on('loadstart', () => {
+        // Load started
+      })
 
-    player.on('progress', () => {
-      // Progress event
-    })
+      player.on('progress', () => {
+        // Progress event
+      })
 
-    player.on('loadeddata', () => {
-      // Clear any previous errors once data loads successfully
-      setMediaError(null)
-    })
+      player.on('loadeddata', () => {
+        // Clear any previous errors once data loads successfully
+        setMediaError(null)
+      })
 
-    player.on('canplay', () => {
-      // Can play
-    })
+      player.on('canplay', () => {
+        // Can play
+      })
 
-    player.on('canplaythrough', () => {
-      // Can play through
-    })
+      player.on('canplaythrough', () => {
+        // Can play through
+      })
 
-    // Handle stalled loading (network issues)
-    player.on('stalled', () => {
-      // Player stalled - possible network issue
-    })
+      // Handle stalled loading (network issues)
+      player.on('stalled', () => {
+        // Player stalled - possible network issue
+      })
 
-    // Handle waiting for data
-    player.on('waiting', () => {
-      // Waiting for data
-    })
+      // Handle waiting for data
+      player.on('waiting', () => {
+        // Waiting for data
+      })
 
-    // Track play/pause events that might be causing state conflicts
-    player.on('play', () => {
-      // Player play event
-    })
+      // Track play/pause events that might be causing state conflicts
+      player.on('play', () => {
+        // Player play event
+      })
 
-    player.on('pause', () => {
-      // Player pause event
-    })
+      player.on('pause', () => {
+        // Player pause event
+      })
 
-    player.on('playing', () => {
-      // Player playing event
-    })
+      player.on('playing', () => {
+        // Player playing event
+      })
 
-    player.on('ended', () => {
-      // Player ended event
-    })
+      player.on('ended', () => {
+        // Player ended event
+      })
 
       return () => {
         if (playerRef.current) {
@@ -346,7 +356,14 @@ export function HeroVideo({
 
     // Execute the async setup
     setupPlayer()
-  }, [currentMuxInsert?.id, variant?.hls, title, variant?.id, currentMuxInsert, isPreview])
+  }, [
+    currentMuxInsert?.id,
+    variant?.hls,
+    title,
+    variant?.id,
+    currentMuxInsert,
+    isPreview
+  ])
 
   // Handle mute state changes dynamically without recreating the player
   useEffect(() => {
@@ -371,7 +388,7 @@ export function HeroVideo({
 
   useEffect(() => {
     if (playerRef.current && playerReady && !play) {
-        void playerRef.current.play()
+      void playerRef.current.play()
     }
   }, [playerReady])
 
@@ -388,12 +405,22 @@ export function HeroVideo({
     return () => {
       clearTimeout(timer)
     }
-  }, [currentMuxInsert?.duration, currentMuxInsert?.id, playerReady, onMuxInsertComplete])
+  }, [
+    currentMuxInsert?.duration,
+    currentMuxInsert?.id,
+    playerReady,
+    onMuxInsertComplete
+  ])
 
   const { subtitleUpdate } = useSubtitleUpdate()
 
   const effectiveSubtitleLanguageId =
     subtitleLanguageId ?? variant?.language.id ?? null
+
+  const carouselItemAndCollapsed = placement === 'carouselItem' && collapsed
+  const singleVideoAndWasNotUnmuted = placement === 'singleVideo' && !wasUnmuted
+  const shouldShowVisualOverlay =
+    carouselItemAndCollapsed || singleVideoAndWasNotUnmuted
 
   const handlePreviewClick = useCallback(
     (e: React.MouseEvent<HTMLVideoElement>) => {
@@ -431,89 +458,92 @@ export function HeroVideo({
 
   return (
     <>
-    <div
-      className={clsx(
-        "fixed top-0  left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners [body[style*='padding-right']_&]:right-[15px]",
-        {
-          'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]': isPreview && collapsed,
-          'aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)]  max-w-[1920px]': !isPreview || !collapsed
-        }
-      )}
-      data-testid="ContentHeroVideoContainer"
-    >
-      <>
-        {(currentMuxInsert?.urls.hls || variant?.hls) && (
-          <video
-            key={currentMuxInsert ? currentMuxInsert.id : variant?.hls}
-            data-testid="ContentHeroVideo"
-            ref={videoRef}
-            className={clsx(
-              'vjs hero-hide-native-subtitles md:[&_.vjs-tech]:object-cover',
-              {
-                '[&_.vjs-tech]:object-cover': isPreview && collapsed,
-                '[&_.vjs-tech]:object-contain': !isPreview || !collapsed,
-                'cursor-pointer': isPreview,
-              }
-            )}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: collapsed ? '120%' : '100%'
-            }}
-            playsInline
-            onClick={isPreview ? handlePreviewClick : undefined}
-          />
+      <div
+        className={clsx(
+          "fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners [body[style*='padding-right']_&]:right-[15px]",
+          {
+            'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md-expanded)]':
+              placement === 'singleVideo' || (isPreview && collapsed),
+            'aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)]  max-w-[1920px]':
+              !isPreview || !collapsed
+          }
         )}
-
-        {/* Error display for media loading failures */}
-        {mediaError && (
-          <div
-            className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-center p-4"
-            data-testid="ContentHeroVideoError"
-          >
-            <div>
-              <div className="text-lg font-semibold mb-2">Video Error</div>
-              <div className="text-sm opacity-90">{mediaError.message}</div>
-              {process.env.NODE_ENV === 'development' && (
-                <div className="text-xs opacity-75 mt-2">
-                  Code: {(mediaError as any).code} | Video ID: {(mediaError as any).videoId}
-                </div>
+        data-testid="ContentHeroVideoContainer"
+      >
+        <>
+          {(currentMuxInsert?.urls.hls || variant?.hls) && (
+            <video
+              key={currentMuxInsert ? currentMuxInsert.id : variant?.hls}
+              data-testid="ContentHeroVideo"
+              ref={videoRef}
+              // className={clsx(
+              //   'vjs [&_.vjs-tech]:object-cover [&_.vjs-tech]:md:object-cover hero-hide-native-subtitles',
+              //   { 'cursor-pointer': isPreview }
+              // )}
+              className={clsx(
+                'vjs hero-hide-native-subtitles [&_.vjs-tech]:object-cover',
+                {
+                  '[&_.vjs-tech]:object-cover': collapsed,
+                  '[&_.vjs-tech]:object-contain':
+                    !collapsed || (placement === 'singleVideo' && !mute),
+                  'cursor-pointer': isPreview
+                }
               )}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%'
+              }}
+              playsInline
+              onClick={isPreview ? handlePreviewClick : undefined}
+            />
+          )}
+
+          {/* Error display for media loading failures */}
+          {mediaError && (
+            <div
+              className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-center p-4"
+              data-testid="ContentHeroVideoError"
+            >
+              <div>
+                <div className="text-lg font-semibold mb-2">Video Error</div>
+                <div className="text-sm opacity-90">{mediaError.message}</div>
+                {process.env.NODE_ENV === 'development' && (
+                  <div className="text-xs opacity-75 mt-2">
+                    Code: {(mediaError as any).code} | Video ID:{' '}
+                    {(mediaError as any).videoId}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
-        {collapsed && (
-          <div
-            className="absolute inset-0 z-1 pointer-events-none opacity-70"
-            style={{
-              backdropFilter: 'brightness(.4) saturate(.6) sepia(.4)',
-              backgroundImage: 'url(/assets/overlay.svg)',
-              backgroundSize: '1600px auto'
-            }}
+          )}
+          {collapsed && (
+            <div
+              className="absolute inset-0 z-1 pointer-events-none opacity-70"
+              style={{
+                backdropFilter: 'brightness(.4) saturate(.6) sepia(.4)',
+                backgroundImage: 'url(/assets/overlay.svg)',
+                backgroundSize: '1600px auto'
+              }}
+            />
+          )}
+          <HeroSubtitleOverlay
+            player={playerRef.current}
+            subtitleLanguageId={effectiveSubtitleLanguageId}
+            visible={shouldShowOverlay}
           />
-        )}
-        <HeroSubtitleOverlay
-          player={playerRef.current}
-          subtitleLanguageId={effectiveSubtitleLanguageId}
-          visible={shouldShowOverlay}
-        />
-        
-        <MuxInsertLogoOverlay variantId={currentMuxInsert ? `${currentMuxInsert.id}-variant` : variant?.id} />
-      </>
-    </div>
-    {playerRef.current != null && playerReady && (
+
+          {/* TODO: Reimplement MuxInsertLogoOverlay component */}
+          {/* <MuxInsertLogoOverlay variantId={currentMuxInsert ? `${currentMuxInsert.id}-variant` : variant?.id} /> */}
+        </>
+      </div>
+
+      {playerRef.current != null && playerReady && (
           <>
             <VideoControls
               player={playerRef.current}
-              isPreview={isPreview}
-              onMuteToggle={onMuteToggle}
-              customDuration={currentMuxInsert?.duration}
-              action={currentMuxInsert?.overlay.action}
-              isMuxInsert={currentMuxInsert != null}
-              muxOverlay={currentMuxInsert?.overlay}
-              onSkip={onSkip}
             />
           </>
         )}

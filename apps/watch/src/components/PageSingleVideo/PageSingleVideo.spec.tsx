@@ -112,7 +112,7 @@ describe('PageSingleVideo', () => {
 
     expect(screen.getByTestId('ContentHero')).toBeInTheDocument()
     expect(screen.getByTestId('ContentHeader')).toBeInTheDocument()
-    expect(screen.getByTestId('ContentHeroVideoContainer')).toBeInTheDocument()
+    expect(screen.getByTestId('VideoBlockPlayerContainer')).toBeInTheDocument()
     expect(screen.getByTestId('ContentMetadata')).toBeInTheDocument()
     expect(screen.getByTestId('ContentDiscussionQuestions')).toBeInTheDocument()
     expect(screen.getByTestId('BibleCitations')).toBeInTheDocument()

@@ -80,6 +80,12 @@ function WatchApp({
 
   return (
     <>
+      <style jsx global>{`
+        :root {
+          --font-noto-serif: ${notoSerif.style.fontFamily};
+          --font-apercu-pro: ${apercuPro.style.fontFamily};
+        }
+      `}</style>
       <FlagsProvider flags={pageProps.flags}>
         <ApolloProvider client={client}>
           <AppCacheProvider emotionCache={emotionCache}>

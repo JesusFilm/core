@@ -19,7 +19,22 @@ import { MuxInsertLogoOverlay, VideoControls } from '../../VideoContentPage/Vide
 
 import { HeroSubtitleOverlay } from './HeroSubtitleOverlay'
 
-interface HeroVideoProps {
+function playWithAbortProtection(player?: Player | null): void {
+  if (player == null) return
+
+  const playResult = player.play()
+  if (playResult != null && typeof playResult.catch === 'function') {
+    playResult.catch((error: DOMException) => {
+      if (error?.name === 'AbortError') return
+
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('Video playback failed', error)
+      }
+    })
+  }
+}
+
+interface VideoBlockPlayerProps {
   isPreview?: boolean
   collapsed?: boolean
   onMuteToggle?: (isMuted: boolean) => void
@@ -30,7 +45,7 @@ interface HeroVideoProps {
   wasUnmuted?: boolean
 }
 
-export function HeroVideo({
+export function VideoBlockPlayer({
   isPreview = false,
   collapsed = true,
   onMuteToggle,
@@ -39,7 +54,7 @@ export function HeroVideo({
   onMuxInsertComplete,
   onSkip,
   wasUnmuted = false
-}: HeroVideoProps): ReactElement {
+}: VideoBlockPlayerProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
     state: { mute, play },
@@ -50,11 +65,6 @@ export function HeroVideo({
   } = useWatch()
   const [playerReady, setPlayerReady] = useState(false)
   const [mediaError, setMediaError] = useState<Error | null>(null)
-
-  // Log placement and wasUnmuted for debugging
-  useEffect(() => {
-    console.log('HeroVideo - placement:', placement, 'wasUnmuted:', wasUnmuted)
-  }, [placement, wasUnmuted])
 
   // Use Mux insert title if available, otherwise use regular video title
   const title = currentMuxInsert ? currentMuxInsert.overlay.title : (last(video.title)?.value ?? '')
@@ -70,7 +80,7 @@ export function HeroVideo({
       if (scrollY > 600) {
         playerRef.current.pause()
       } else if (scrollY === 0) {
-        void playerRef.current.play()
+        playWithAbortProtection(playerRef.current)
       }
     }
   }, [])
@@ -371,7 +381,7 @@ export function HeroVideo({
 
       // Only call play/pause if the player state doesn't match desired state
       if (play && !isCurrentlyPlaying) {
-        void playerRef.current.play()
+        playWithAbortProtection(playerRef.current)
       } else if (!play && isCurrentlyPlaying) {
         playerRef.current.pause()
       }
@@ -380,7 +390,7 @@ export function HeroVideo({
 
   useEffect(() => {
     if (playerRef.current && playerReady && !play) {
-        void playerRef.current.play()
+        playWithAbortProtection(playerRef.current)
     }
   }, [playerReady])
 
@@ -445,19 +455,19 @@ export function HeroVideo({
     <>
     <div
       className={clsx(
-        "fixed top-0  left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners [body[style*='padding-right']_&]:right-[15px]",
+        "fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners [body[style*='padding-right']_&]:right-[15px]",
         {
           'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]': placement == 'carouselItem' && collapsed,
           'aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)]  max-w-[1920px]': placement == 'singleVideo' || !collapsed
         }
       )}
-      data-testid="ContentHeroVideoContainer"
+      data-testid="VideoBlockPlayerContainer"
     >
       <>
         {(currentMuxInsert?.urls.hls || variant?.hls) && (
           <video
             key={currentMuxInsert ? currentMuxInsert.id : variant?.hls}
-            data-testid="ContentHeroVideo"
+            data-testid="VideoBlockPlayer"
             ref={videoRef}
             className={clsx(
               'vjs hero-hide-native-subtitles md:[&_.vjs-tech]:object-cover',
@@ -483,7 +493,7 @@ export function HeroVideo({
         {mediaError && (
           <div
             className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-center p-4"
-            data-testid="ContentHeroVideoError"
+            data-testid="VideoBlockPlayerError"
           >
             <div>
               <div className="text-lg font-semibold mb-2">Video Error</div>
