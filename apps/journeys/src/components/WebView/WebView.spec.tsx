@@ -10,6 +10,7 @@ import { STEP_VIEW_EVENT_CREATE } from '@core/journeys/ui/Step/Step'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
+import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import {
   JourneyViewEventCreate,
   JourneyViewEventCreateVariables
@@ -24,7 +25,6 @@ import {
   VisitorUpdateForCurrentUserVariables
 } from '../../../__generated__/VisitorUpdateForCurrentUser'
 import { basic, videoBlocks } from '../../libs/testData/storyData'
-import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import {
   JOURNEY_VIEW_EVENT_CREATE,
   JOURNEY_VISITOR_UPDATE
