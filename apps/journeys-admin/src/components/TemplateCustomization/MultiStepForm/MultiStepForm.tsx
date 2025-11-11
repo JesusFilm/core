@@ -24,6 +24,7 @@ import {
 } from './Screens'
 
 export const MULTI_STEP_FORM_MIN_HEIGHT = 900
+export const EDIT_MANUALLY_BUTTON_WIDTH = 141
 
 function renderScreen(
   screen: CustomizationScreen,
@@ -97,13 +98,13 @@ export function MultiStepForm(): ReactElement {
         width: '100%',
         minHeight: { xs: '100%', sm: MULTI_STEP_FORM_MIN_HEIGHT },
         backgroundColor: 'background.paper',
-        borderRadius: { xs: '0px', sm: '16px' },
+        borderRadius: { xs: 0, sm: 5 },
         mt: { xs: 0, sm: 6 },
         mb: { xs: 0, sm: 6 },
         py: 10
       }}
     >
-      <Stack gap={{ xs: 6, sm: 6 }} data-testid="MultiStepForm">
+      <Stack gap={{ xs: 6, sm: 4 }} data-testid="MultiStepForm">
         <NextLink href={link} passHref legacyBehavior>
           <Button
             variant="text"
@@ -111,9 +112,10 @@ export function MultiStepForm(): ReactElement {
             startIcon={<Edit3 />}
             sx={{
               alignSelf: 'flex-end',
-              mr: '4px',
+              width: EDIT_MANUALLY_BUTTON_WIDTH,
+              mr: 5,
               fontWeight: 'bold',
-              visibility: activeScreen === 'language' ? 'hidden' : 'visible',
+              display: activeScreen === 'language' ? 'none' : 'inline-flex',
               '& .MuiButton-startIcon': {
                 marginRight: 0.3,
                 marginTop: 1
@@ -137,8 +139,9 @@ export function MultiStepForm(): ReactElement {
           sx={{
             alignSelf: 'center',
             width: '100%',
-            px: '14px',
-            py: { xs: '10px', sm: '24px' }
+            px: 3.5,
+            pt: { xs: 2.5, sm: 13 },
+            pb: { xs: 2.5, sm: 6 }
           }}
         >
           {renderScreen(activeScreen, handleNext, handleScreenNavigation)}

@@ -25,11 +25,11 @@ export function SocialScreen({
     <Stack
       alignItems="center"
       sx={{
-        px: { xs: 5, sm: 20 }
+        px: { xs: 5, sm: 13 }
       }}
     >
       <Typography
-        variant="h4"
+        variant="h3"
         gutterBottom
         display={{ xs: 'none', sm: 'block' }}
       >
@@ -70,7 +70,7 @@ export function SocialScreen({
         data-testid="SocialShareAppearance"
         sx={{
           width: '100%',
-          py: 5,
+          py: 10,
           px: { xs: 5, sm: 10 }
         }}
       >

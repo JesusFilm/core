@@ -43,7 +43,12 @@ const renderEditableText = (
     // Add text before the match
     if (match.index > lastIndex) {
       parts.push(
-        <span key={`text-${lastIndex}`}>
+        <span 
+          key={`text-${lastIndex}`}
+          style={{
+            fontSize: '18px'
+          }}
+        >
           {safeText.slice(lastIndex, match.index)}
         </span>
       )
@@ -78,6 +83,7 @@ const renderEditableText = (
           wordBreak: 'break-word',
           overflowWrap: 'break-word',
           fontWeight: 'bold',
+          fontSize: '18px',
           lineHeight: 1.6
         }}
         onBlur={(e) => {
@@ -117,7 +123,12 @@ const renderEditableText = (
   // Add remaining text after the last match
   if (lastIndex < safeText.length) {
     parts.push(
-      <span key={`text-${lastIndex}`}>{safeText.slice(lastIndex)}</span>
+      <span 
+        key={`text-${lastIndex}`}
+        style={{
+          fontSize: '18px'
+        }}
+      >{safeText.slice(lastIndex)}</span>
     )
   }
 
@@ -196,15 +207,15 @@ export function TextScreen({
   return (
     <Stack
       alignItems="center"
-      gap={{ xs: 0, sm: 2 }}
+      gap={{ xs: 0, sm: 10 }}
       sx={{
-        px: { xs: 2, md: 8 },
+        px: { xs: 2, md: 13 },
         width: '100%'
       }}
     >
-      <Stack alignItems="center" sx={{ pb: 4 }}>
+      <Stack alignItems="center">
         <Typography
-          variant="h4"
+          variant="h3"
           display={{ xs: 'none', sm: 'block' }}
           gutterBottom
           sx={{
@@ -255,8 +266,8 @@ export function TextScreen({
           sx={{
             border: '2px solid',
             borderColor: '#CCCCCC',
-            borderRadius: 3,
-            p: { xs: 4, sm: 5 },
+            borderRadius: 5,
+            p: { xs: 4, sm: 8 },
             minHeight: 150,
             width: '100%',
             whiteSpace: 'pre-wrap',

@@ -19,6 +19,7 @@ import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetC
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
+import Box from '@mui/material/Box'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 
@@ -72,26 +73,26 @@ export function LanguageScreen({
 
   const languages = isParentTemplate
     ? [
-        ...parentJourneyLanguages,
-        ...childJourneyLanguages,
-        {
-          id: journey?.language?.id ?? '',
-          name: journey?.language?.name ?? [],
-          slug: null
-        }
-      ]
+      ...parentJourneyLanguages,
+      ...childJourneyLanguages,
+      {
+        id: journey?.language?.id ?? '',
+        name: journey?.language?.name ?? [],
+        slug: null
+      }
+    ]
     : [...parentJourneyLanguages, ...childJourneyLanguages]
 
   const languagesJourneyMap = isParentTemplate
     ? {
-        ...parentJourneyLanguagesJourneyMap,
-        ...childJourneyLanguagesJourneyMap,
-        [journey?.language?.id as string]: journey?.id
-      }
+      ...parentJourneyLanguagesJourneyMap,
+      ...childJourneyLanguagesJourneyMap,
+      [journey?.language?.id as string]: journey?.id
+    }
     : {
-        ...parentJourneyLanguagesJourneyMap,
-        ...childJourneyLanguagesJourneyMap
-      }
+      ...parentJourneyLanguagesJourneyMap,
+      ...childJourneyLanguagesJourneyMap
+    }
 
   const validationSchema = object({
     teamSelect: string().required()
@@ -108,7 +109,7 @@ export function LanguageScreen({
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
 
-  const FORM_SM_BREAKPOINT_WIDTH = '390px'
+  const FORM_SM_BREAKPOINT_WIDTH = '440px'
 
   async function handleSubmit(values: FormikValues) {
     setLoading(true)
@@ -149,10 +150,22 @@ export function LanguageScreen({
   }
 
   return (
-    <Stack alignItems="center" gap={4} sx={{ px: { xs: 0, sm: 20 } }}>
-      <Stack alignItems="center" sx={{ pb: { xs: 0, sm: 3 } }}>
+    <Stack
+      alignItems="center"
+      gap={4}
+      sx={{
+        px: { xs: 0, sm: 13 },
+        width: '100%'
+      }}
+    >
+      <Stack
+        alignItems="center"
+        sx={{
+          pb: { xs: 0, sm: 6 }
+        }}
+      >
         <Typography
-          variant="h4"
+          variant="h3"
           display={{ xs: 'none', sm: 'block' }}
           gutterBottom
           sx={{ mb: 2 }}
@@ -177,9 +190,12 @@ export function LanguageScreen({
       </Stack>
       <SocialImage />
       <Typography
-        variant="subtitle2"
+        variant="h6"
         gutterBottom
-        sx={{ mb: { xs: 0, sm: 2 } }}
+        sx={{
+          mt: { xs: 0, sm: -2 },
+          mb: { xs: 0, sm: 6 } 
+        }}
       >
         {journey?.title ?? ''}
       </Typography>
@@ -198,7 +214,7 @@ export function LanguageScreen({
               }}
             >
               <Stack gap={2}>
-                <Typography variant="h6" display={{ xs: 'none', sm: 'block' }}>
+                <Typography variant="subtitle1" display={{ xs: 'none', sm: 'block' }}>
                   {t('Select a language')}
                 </Typography>
                 <Typography
@@ -217,7 +233,7 @@ export function LanguageScreen({
                   onChange={(value) => setFieldValue('languageSelect', value)}
                 />
                 <Typography
-                  variant="h6"
+                  variant="subtitle1"
                   display={{ xs: 'none', sm: 'block' }}
                   sx={{ mt: 4 }}
                 >
@@ -231,12 +247,18 @@ export function LanguageScreen({
                   {t('Select a team')}
                 </Typography>
                 {isSignedIn && <JourneyCustomizeTeamSelect />}
-                <CustomizeFlowNextButton
-                  label={t('Next')}
-                  onClick={() => handleSubmit()}
-                  disabled={loading}
-                  ariaLabel={t('Next')}
-                />
+                <Box 
+                  display="flex"
+                  justifyContent="center" 
+                  sx={{ mt: 8 }}
+                >
+                  <CustomizeFlowNextButton
+                    label={t('Next')}
+                    onClick={() => handleSubmit()}
+                    disabled={loading}
+                    ariaLabel={t('Next')}
+                  />
+                </Box>
               </Stack>
             </FormControl>
           </Form>

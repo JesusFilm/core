@@ -18,6 +18,7 @@ export function ProgressStepper({
 }: ProgressStepperProps): ReactElement {
   // Create steps array based on totalSteps
   const steps = Array.from({ length: totalSteps - 1 }, (_, index) => index)
+  const PROGRESS_STEPPER_WIDTH = 200
 
   const ProgressStepperIcon = ({ icon }: StepIconProps): ReactElement => {
     const stepIndex = Number(icon)
@@ -28,8 +29,8 @@ export function ProgressStepper({
     return (
       <Box
         sx={{
-          height: 16,
-          width: 16,
+          height: 18,
+          width: 18,
           borderRadius: '50%',
           backgroundColor: isCompleted
             ? 'secondary.light'
@@ -81,7 +82,7 @@ export function ProgressStepper({
     <Box
       sx={{
         width: '100%',
-        maxWidth: { xs: '45%', sm: '30%' },
+        maxWidth: { xs: '45%', sm: PROGRESS_STEPPER_WIDTH },
         margin: '0 auto'
       }}
       data-testid="progress-stepper"
@@ -91,7 +92,7 @@ export function ProgressStepper({
         connector={<ProgressStepperConnector />}
         sx={{
           '& .MuiStep-root': {
-            padding: '0 3px'
+            padding: '0 4px'
           },
           '& .MuiStepLabel-root': {
             padding: 0
