@@ -53,14 +53,26 @@ export async function updateVideoVariantInAlgolia(
       return
     }
 
+    const imageAccount = process.env.CLOUDFLARE_IMAGE_ACCOUNT
+    const isValidImageAccount =
+      imageAccount != null &&
+      imageAccount !== '' &&
+      imageAccount !== 'testAccount'
+    if (!isValidImageAccount) {
+      logger?.warn(
+        `CLOUDFLARE_IMAGE_ACCOUNT is missing or invalid ("${imageAccount}"). Skipping Algolia update for ${videoVariantId} to avoid polluting prod.`
+      )
+      return
+    }
+
     const cfImage = videoVariant.video?.images.find(
       ({ aspectRatio }) => aspectRatio === 'banner'
     )
     let image = ''
-    if (cfImage != null)
-      image = `https://imagedelivery.net/${
-        process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
-      }/${cfImage.id}/f=jpg,w=1280,h=600,q=95`
+    if (cfImage != null) {
+      const version = videoVariant.version ?? 1
+      image = `https://imagedelivery.net/${imageAccount}/${cfImage.id}/f=jpg,w=1280,h=600,q=95?v=${version}`
+    }
 
     const sortedTitles = [...(videoVariant.video?.title ?? [])].sort(
       sortByEnglishFirst
