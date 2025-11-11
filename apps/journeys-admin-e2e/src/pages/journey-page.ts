@@ -1270,10 +1270,9 @@ export class JourneyPage {
       message: `Downloaded QR COde png file(${this.downloadedQrFile}) should be exist`
     }).toBeTruthy()
   }
-  async clickCloseIconForQrCodeDialog() {
-    await this.page
-      .locator('div.MuiDialog-paper button[data-testid="dialog-close-button"]')
-      .click()
+  async clickCloseIconForQrCodeDialog(): Promise<void> {
+    // Target the close button within the QR Code dialog specifically
+    await this.page.locator('div[role="dialog"] h2:has-text("QR Code") ~ button[data-testid="dialog-close-button"]').click();
   }
   async validateUrlFieldInShareDialog(expectedValue: string) {
     await expect(

@@ -29,33 +29,17 @@ export class CardLevelActionPage {
   }
 
   async clickOnJourneyCard() {
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator('div[data-testid="CardOverlayImageContainer"]')
-      .first()
-      .waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator('div[data-testid="CardOverlayImageContainer"]')
-      .first()
-      .click({ delay: 1000 })
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await frame.locator('div[data-testid="CardOverlayImageContainer"]').first().waitFor({ state: 'visible', timeout: sixtySecondsTimeout });
+    await frame.locator('div[data-testid="CardOverlayImageContainer"]').first().click({ delay: 1000 });
   }
 
   async clickOnVideoJourneyCard() {
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator(
-        'div[data-testid="CardOverlayImageContainer"] img[data-testid="background-image"]'
-      )
-      .first()
-      .waitFor({ state: 'visible', timeout: sixtySecondsTimeout })
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator(
-        'div[data-testid="CardOverlayImageContainer"] img[data-testid="background-image"]'
-      )
-      .first()
-      .click({ timeout: sixtySecondsTimeout, force: true })
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await frame.locator('div[data-testid="CardOverlayImageContainer"] img[data-testid="background-image"]').first().waitFor({ state: 'visible', timeout: sixtySecondsTimeout });
+    await frame.locator('div[data-testid="CardOverlayImageContainer"] img[data-testid="background-image"]').first().click({ timeout: sixtySecondsTimeout, force: true });
   }
 
   async clickAddBlockBtn() {
@@ -86,20 +70,10 @@ export class CardLevelActionPage {
   }
 
   async enterTextInJourneysTypographyField() {
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator(
-        'p[data-testid="JourneysTypography"] textarea[placeholder="Add your text here..."]'
-      )
-      .first()
-      .clear()
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator(
-        'p[data-testid="JourneysTypography"] textarea[placeholder="Add your text here..."]'
-      )
-      .first()
-      .fill(this.journeyName)
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await frame.locator('p[data-testid="JourneysTypography"] textarea[placeholder="Add your text here..."]').first().clear();
+    await frame.locator('p[data-testid="JourneysTypography"] textarea[placeholder="Add your text here..."]').first().fill(this.journeyName);
   }
 
   async clickDoneBtn() {
@@ -109,48 +83,29 @@ export class CardLevelActionPage {
   }
 
   async verifyTextAddedInJourneyCard() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]',
-          { hasText: this.journeyName }
-        )
-    ).toBeVisible()
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await expect(frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]', { hasText: this.journeyName })).toBeVisible();
   }
 
   async clickOnCreatedOrRenamedTextInJourneyCard(createdOrRenamed: string) {
-    const text =
-      createdOrRenamed === 'created' ? this.journeyName : this.renameJourmeyName
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator(
-        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]',
-        { hasText: text }
-      )
-      .dblclick({ delay: 3000 })
+    const text = createdOrRenamed === 'created' ? this.journeyName : this.renameJourmeyName;
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]', { hasText: text }).dblclick({ delay: 3000 });
   }
 
   async editTextInJourneyCard() {
-    this.renameJourmeyName =
-      testData.journey.renameJourneyName + this.randomNumber
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator(
-        'div[data-testid*="SelectableWrapper"] textarea[placeholder*="Add your text here"]'
-      )
-      .fill(this.renameJourmeyName)
+    this.renameJourmeyName = testData.journey.renameJourneyName + this.randomNumber;
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await frame.locator('div[data-testid*="SelectableWrapper"] textarea[placeholder*="Add your text here"]').fill(this.renameJourmeyName);
   }
 
   async verifyTextUpdatedInJourneyCard() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]',
-          { hasText: this.renameJourmeyName }
-        )
-    ).toBeVisible()
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await expect(frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]', { hasText: this.renameJourmeyName })).toBeVisible();
   }
 
   async changeFontStyleInJourneyCardText(styleName) {
@@ -162,38 +117,22 @@ export class CardLevelActionPage {
   }
 
   async verifyTextStyleChangedInJourneyCard() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]',
-          { hasText: this.renameJourmeyName }
-        )
-        .locator('h1')
-    ).toBeVisible()
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await expect(frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]', { hasText: this.renameJourmeyName }).locator('h1')).toBeVisible();
   }
 
   async clickDeleteBtnInToolTipBar() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator('div[role="tooltip"] button[id="delete-block-actions"]')
-    ).toHaveCount(1, { timeout: 10000 })
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator('div[role="tooltip"] button[id="delete-block-actions"]')
-      .click({ timeout: sixtySecondsTimeout, delay: 3000 })
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await expect(frame.locator('div[role="tooltip"] button[id="delete-block-actions"]')).toHaveCount(1, { timeout: 10000 });
+    await frame.locator('div[role="tooltip"] button[id="delete-block-actions"]').click({ timeout: sixtySecondsTimeout, delay: 3000 });
   }
 
   async verifyAddedTextDeletedFromJourneyCard() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]',
-          { hasText: this.renameJourmeyName }
-        )
-    ).toBeHidden({ timeout: 10000 })
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await expect(frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]', { hasText: this.renameJourmeyName })).toBeHidden({ timeout: 10000 });
   }
 
   async waitUntilJourneyCardLoaded() {
@@ -476,42 +415,17 @@ export class CardLevelActionPage {
   }
 
   async deleteAllAddedCardProperties() {
-    const properties = await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator(
-        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]'
-      )
-      .count()
-    console.log(`count ${properties}`)
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    const properties = await frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]').count();
+    console.log(`count ${properties}`);
     for (let property = 0; property < properties; property++) {
-      await this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]'
-        )
-        .last()
-        .dblclick({ force: true, delay: 1500 })
-      // Verifying whether the tooltip is displayed. If it is not, click the block again in catch block
-      /* eslint-disable playwright/missing-playwright-await */
-      await expect(
-        this.page
-          .frameLocator(this.journeyCardFrame)
-          .locator('div[role="tooltip"] button[id="delete-block-actions"]')
-          .first()
-      )
-        .toBeVisible()
-        .catch(async () => {
-          await this.page
-            .frameLocator(this.journeyCardFrame)
-            .locator(
-              'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]'
-            )
-            .last()
-            .dblclick()
-        })
-
-      await this.clickDeleteBtnInToolTipBar()
-      await this.verifyToastMessage()
+      await frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]').last().dblclick({ force: true, delay: 1500 });
+      await expect(frame.locator('div[role="tooltip"] button[id="delete-block-actions"]').first()).toBeVisible().catch(async () => {
+        await frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]').last().dblclick();
+      });
+      await this.clickDeleteBtnInToolTipBar();
+      await this.verifyToastMessage();
     }
   }
 
@@ -521,72 +435,40 @@ export class CardLevelActionPage {
   }
 
   async verifyPollOptionAddedToCard() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
-        )
-        .first()
-    ).toBeVisible()
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await expect(frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]').first()).toBeVisible();
   }
 
   async clickOnPollOptionInCard(pollOption: number) {
-    if (
-      await this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid*="add-option"]'
-        )
-        .isVisible()
-    ) {
-      await this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
-        )
-        .nth(pollOption - 1)
-        .click()
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    if (await frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid*="add-option"]').isVisible()) {
+      await frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]').nth(pollOption - 1).click();
     } else {
-      await this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
-        )
-        .nth(pollOption - 1)
-        .click()
-      await expect(
-        this.page
-          .frameLocator(this.journeyCardFrame)
-          .locator(
-            'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid*="add-option"]'
-          )
-      ).toHaveCount(1)
-      await this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
-        )
-        .nth(pollOption - 1)
-        .click()
+      await frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]').nth(pollOption - 1).click();
+      await expect(frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid*="add-option"]')).toHaveCount(1);
+      await frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]').nth(pollOption - 1).click();
     }
   }
 
   async clickOnPollProperties() {
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
     if (
-      await this.page
+      await frame
         .locator(
           'div[data-testid="RadioOptionProperties"] div[data-testid="AccordionSummary"][aria-expanded="false"]'
         )
         .isVisible()
     ) {
-      await this.page
+      await frame
         .locator(
           'div[data-testid="RadioOptionProperties"] div[data-testid="AccordionSummary"]'
         )
         .click()
     }
-    await this.page
+    await frame
       .locator('div[data-testid="Action"] div[aria-haspopup="listbox"]')
       .click()
   }
@@ -599,96 +481,41 @@ export class CardLevelActionPage {
   }
 
   async renamedPollOptionInCard(pollOption: number) {
-    this.pollRename = testData.cardLevelAction.pollRename + this.randomNumber
-    if (
-      await this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid*="add-option"]'
-        )
-        .isVisible()
-    ) {
-      await this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
-        )
-        .nth(pollOption - 1)
-        .dblclick()
+    this.pollRename = testData.cardLevelAction.pollRename + this.randomNumber;
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    if (await frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid*="add-option"]').isVisible()) {
+      await frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]').nth(pollOption - 1).dblclick();
     } else {
-      await this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
-        )
-        .nth(pollOption - 1)
-        .click()
-      await expect(
-        this.page
-          .frameLocator(this.journeyCardFrame)
-          .locator(
-            'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid*="add-option"]'
-          )
-      ).toBeVisible()
-      await this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
-        )
-        .nth(pollOption - 1)
-        .dblclick()
+      await frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]').nth(pollOption - 1).click();
+      await expect(frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid*="add-option"]')).toBeVisible();
+      await frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]').nth(pollOption - 1).dblclick();
     }
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator(
-        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]'
-      )
-      .nth(pollOption - 1)
-      .locator('textarea[name="radioOptionLabel"]')
-      .fill(this.pollRename)
+    await frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]').nth(pollOption - 1).locator('textarea[name="radioOptionLabel"]').fill(this.pollRename);
   }
 
   async verifyPollOptionGotRenamed() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]',
-          { hasText: this.pollRename }
-        )
-    ).toBeVisible()
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await expect(frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] button[data-testid="JourneysRadioOptionList"]', { hasText: this.pollRename })).toBeVisible();
   }
 
   async selectWholePollOptions() {
-    // await this.page.frameLocator(this.journeyCardFrame).locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestionList"] button').first().click()
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator(
-        'div[data-testid*="JourneysRadioQuestionList"] div[role="group"] div:not([data-testid*="SelectableWrapper"])',
-        { hasText: 'Add New Option' }
-      )
-      .click()
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await frame.locator('div[data-testid*="JourneysRadioQuestionList"] div[role="group"] div:not([data-testid*="SelectableWrapper"])', { hasText: 'Add New Option' }).click();
   }
 
   async verifyPollOptionsDeletedFromCard() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestionList"]'
-        )
-    ).toBeHidden()
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await expect(frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid*="JourneysRadioQuestionList"]')).toBeHidden();
   }
 
   async verifyFeedBackAddedToCard() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysTextResponse"]'
-        )
-        .first()
-    ).toBeVisible()
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await expect(frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysTextResponse"]').first()).toBeVisible();
   }
 
   async clickFeedBackPropertiesDropDown(feedBackProperty: string) {
@@ -739,25 +566,15 @@ export class CardLevelActionPage {
   }
 
   async verifyLabelUpdatedIncard() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysTextResponse"]',
-          { hasText: testData.cardLevelAction.feedBackLabel }
-        )
-    ).toBeVisible()
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await expect(frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysTextResponse"]', { hasText: testData.cardLevelAction.feedBackLabel })).toBeVisible();
   }
 
   async verifyHintUpdatedInCard() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysTextResponse"]',
-          { hasText: testData.cardLevelAction.feedBackHint }
-        )
-    ).toBeVisible()
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await expect(frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysTextResponse"]', { hasText: testData.cardLevelAction.feedBackHint })).toBeVisible();
   }
 
   async clickActionOfFeedBackProperties() {
@@ -783,43 +600,29 @@ export class CardLevelActionPage {
   }
 
   async verifySelectedIconInCardBelowFeedBack() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="JourneysTextResponse"] button svg[data-testid="ChatBubbleOutlineRoundedIcon"]'
-        )
-    ).toBeVisible()
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await expect(frame.locator('div[data-testid="JourneysTextResponse"] button svg[data-testid="ChatBubbleOutlineRoundedIcon"]')).toBeVisible();
   }
 
   async selectWholeFeedBackSection() {
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator(
-        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysTextResponse"]'
-      )
-      .click()
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysTextResponse"]').click();
   }
 
   async verifyFeedBackDeletedFromCard() {
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
     await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysTextResponse"]'
-        )
-    ).toBeHidden()
+      frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysTextResponse"]')
+    ).toBeHidden();
   }
 
   async verifySubscribeAddedToCard() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysSignUp"]'
-        )
-        .first()
-    ).toBeVisible()
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await expect(frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysSignUp"]').first()).toBeVisible();
   }
 
   async clickOnSelectCardOptionInPrepertiesOptions() {
@@ -833,74 +636,30 @@ export class CardLevelActionPage {
   }
 
   async verifySelecetdIconInCardBelowSubscribe() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="JourneysSignUp"] button svg[data-testid="ChatBubbleOutlineRoundedIcon"]'
-        )
-        .first()
-    ).toBeVisible()
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await expect(frame.locator('div[data-testid="JourneysSignUp"] button svg[data-testid="ChatBubbleOutlineRoundedIcon"]').first()).toBeVisible();
   }
 
   async verifySubscribeDeletedFromCard() {
-    await expect(
-      this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysSignUp"]'
-        )
-        .first()
-    ).toBeHidden()
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await expect(frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysSignUp"]').first()).toBeHidden();
   }
 
   async selectWholeSubscribeSectionInCard() {
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator(
-        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysSignUp"]'
-      )
-      .first()
-      .click()
-  }
-
-  async clickPropertiesDropDown(feedBackProperty: string) {
-    await this.page
-      .locator(
-        'div[data-testid="SignUpProperties"] [data-testid="AccordionSummary"]',
-        { hasText: feedBackProperty }
-      )
-      .click()
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await frame.locator('div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"] div[data-testid="JourneysSignUp"]').first().click();
   }
 
   async selectWholeFooterSectionInCard() {
-    await this.page
-      .frameLocator(this.journeyCardFrame)
-      .first()
-      .locator(
-        'div[data-testid="CardWrapper"] ~ div[data-testid="JourneysStepFooter"] > div'
-      )
-      .click({ delay: 3000 })
-    // Verify whether the footer block is selected. If it is not, click the footer block again. in catch block
-    /* eslint-disable playwright/missing-playwright-await */
-    await expect(
-      this.page.locator('div[data-testid="AccordionSummary"]').filter({
-        has: this.page.getByRole('heading', {
-          name: 'Hosted By',
-          exact: true
-        })
-      })
-    )
-      .toBeVisible()
-      .catch(async () => {
-        await this.page
-          .frameLocator(this.journeyCardFrame)
-          .first()
-          .locator(
-            'div[data-testid="CardWrapper"] ~ div[data-testid="JourneysStepFooter"] > div'
-          )
-          .dblclick({ force: true })
-      })
+    const iframes = this.page.locator(this.journeyCardFrame);
+    const frame = await iframes.first().contentFrame();
+    await frame.locator('div[data-testid="CardWrapper"] ~ div[data-testid="JourneysStepFooter"] > div').click({ delay: 3000 });
+    await expect(this.page.locator('div[data-testid="AccordionSummary"]').filter({ has: this.page.getByRole('heading', { name: 'Hosted By', exact: true }) })).toBeVisible().catch(async () => {
+      await frame.locator('div[data-testid="CardWrapper"] ~ div[data-testid="JourneysStepFooter"] > div').dblclick({ force: true });
+    });
   }
 
   async clicSelectHostBtn() {
@@ -1110,33 +869,6 @@ export class CardLevelActionPage {
         .click({ delay: 3000 })
     } catch (error) {
       console.error('An error occurred:', error)
-    }
-  }
-
-  async deleteAllThePollOptions() {
-    const pollOptionCount = await this.page
-      .frameLocator(this.journeyCardFrame)
-      .locator(
-        'div[data-testid*="JourneysRadioQuestionList"] div[role="group"] [data-testid*="SelectableWrapper"]'
-      )
-      .count()
-    for (let poll = 0; poll < pollOptionCount; poll++) {
-      await this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid*="JourneysRadioQuestionList"] div[role="group"] [data-testid*="SelectableWrapper"]'
-        )
-        .last()
-        .click()
-      await this.page
-        .frameLocator(this.journeyCardFrame)
-        .locator(
-          'div[data-testid*="JourneysRadioQuestionList"] div[role="group"] [data-testid*="SelectableWrapper"]'
-        )
-        .last()
-        .click({ delay: 2000 })
-      await this.clickDeleteBtnInToolTipBar()
-      await this.verifyToastMessage()
     }
   }
 
@@ -1399,46 +1131,20 @@ export class CardLevelActionPage {
       pixelHeightAfterChange != null && parseInt(pixelHeightAfterChange)
     ).toBeGreaterThan(parseInt(pixelHeightBeforeChange))
   }
-  async moveSpacerHeightTo() {
-    let desiredPosition = 0
-
-    const slider_thumb = this.page.locator(
-      'div.Mui-expanded span.MuiSlider-thumb'
-    )
-
-    // Wait for the slider to appear
-    const slider = this.page.locator('div.Mui-expanded .MuiSlider-root') // Find the slider by its class
-    await expect(slider).toBeVisible()
-    const sliderThumbPosition = (await slider_thumb.boundingBox())?.x
-    //Get the slider's position and width, fail if sliderBoundingBox is null
-    const sliderBoundingBox = await slider.boundingBox()
-    if (sliderBoundingBox == null) {
-      expect(false, {
-        message: 'Slider Bonding Box value is null'
-      }).toBeTruthy()
-    } else {
-      //Move the thumb (slider) to a specific position, e.g., 50% of the width
-      const sliderWidth = sliderBoundingBox?.width
-      desiredPosition = sliderWidth * 0.5 // Move to 50% of the width
-      //Drag the slider thumb to the desired position
-      //Drag the slider thumb to the desired position
-      await slider_thumb.hover({ force: true })
-      await this.page.mouse.down()
-      await slider_thumb.hover({
-        force: true,
-        position: { x: desiredPosition, y: sliderBoundingBox.y }
-      })
-      await this.page.mouse.up()
-
-      //await slider_thumb.dragTo(slider, { targetPosition: {x: desiredPosition, y: sliderBoundingBox.y }});
-      const thumbPositionAfterSlide = (await slider_thumb.boundingBox())?.x
-      if (thumbPositionAfterSlide != null && sliderThumbPosition != null) {
-        expect(thumbPositionAfterSlide).toBeGreaterThan(sliderThumbPosition)
-      } else {
-        expect(false, {
-          message: 'Slider thumb Bonding Box value is null'
-        }).toBeTruthy()
-      }
+  async moveSpacerHeightTo(): Promise<void> {
+    // Interact directly with the slider thumb for Material UI sliders
+    const thumb = this.page.locator('.MuiSlider-thumb').first();
+    await thumb.waitFor({ state: 'visible', timeout: 20000 });
+    const box = await thumb.boundingBox();
+    if (box) {
+      // Drag the thumb to the right (increase height)
+      const targetX = box.x + box.width / 2 + 100; // Adjust 100 as needed for your slider's range
+      const targetY = box.y + box.height / 2;
+      await thumb.hover();
+      await this.page.mouse.down();
+      await this.page.mouse.move(targetX, targetY, { steps: 10 });
+      await this.page.mouse.up();
+      await this.page.waitForTimeout(500);
     }
   }
   async selectAllTheReactionOptions() {
