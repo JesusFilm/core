@@ -60,6 +60,12 @@ export function App(): ReactElement {
     return integration.__typename === 'IntegrationGrowthSpaces'
   }
 
+  function isTextResponseBlock(
+    block: TreeBlock | null | undefined
+  ): block is TreeBlock<TextResponseBlock> {
+    return block?.__typename === 'TextResponseBlock'
+  }
+
   const options = (data?.integrations ?? [])
     .filter(isGrowthSpacesIntegration)
     .reduce<
@@ -73,6 +79,13 @@ export function App(): ReactElement {
   function handleChange(integrationId: string | null): void {
     if (selectedBlock == null) return
 
+    const previousIntegrationId = isTextResponseBlock(selectedBlock)
+      ? selectedBlock.integrationId
+      : null
+    const previousRouteId = isTextResponseBlock(selectedBlock)
+      ? selectedBlock.routeId
+      : null
+
     add({
       parameters: {
         execute: {
@@ -80,8 +93,8 @@ export function App(): ReactElement {
           routeId: null
         },
         undo: {
-          integrationId: selectedBlock.integrationId,
-          routeId: selectedBlock.routeId
+          integrationId: previousIntegrationId,
+          routeId: previousRouteId
         }
       },
       execute({ integrationId, routeId }) {
@@ -115,7 +128,11 @@ export function App(): ReactElement {
       <Typography variant="subtitle2">{t('Growth Spaces')}</Typography>
       <Select
         label={t('App ID')}
-        value={selectedBlock?.integrationId ?? undefined}
+        value={
+          isTextResponseBlock(selectedBlock)
+            ? (selectedBlock?.integrationId ?? undefined)
+            : undefined
+        }
         onChange={handleChange}
         options={options}
       />

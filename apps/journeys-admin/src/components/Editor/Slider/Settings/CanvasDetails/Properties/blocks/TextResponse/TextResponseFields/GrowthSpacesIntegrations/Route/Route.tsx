@@ -52,12 +52,19 @@ export function Route(): ReactElement {
   function isMatchingGrowthSpacesIntegration(
     integration: GetIntegration_integrations
   ): integration is GetIntegration_integrations_IntegrationGrowthSpaces {
-    if (selectedBlock?.integrationId == null) return false
+    if (!isTextResponseBlock(selectedBlock) || selectedBlock.integrationId == null)
+      return false
 
     return (
       integration.__typename === 'IntegrationGrowthSpaces' &&
       integration.id === selectedBlock.integrationId
     )
+  }
+
+  function isTextResponseBlock(
+    block: TreeBlock | null | undefined
+  ): block is TreeBlock<TextResponseBlock> {
+    return block?.__typename === 'TextResponseBlock'
   }
 
   const selectedIntegration = data?.integrations.find(
@@ -91,7 +98,11 @@ export function Route(): ReactElement {
     add({
       parameters: {
         execute: { routeId },
-        undo: { routeId: selectedBlock.routeId }
+        undo: {
+          routeId: isTextResponseBlock(selectedBlock)
+            ? selectedBlock.routeId
+            : null
+        }
       },
       execute({ routeId }) {
         dispatch({
@@ -121,16 +132,22 @@ export function Route(): ReactElement {
 
   return (
     <>
-      {selectedBlock?.integrationId != null && !loading && (
+      {isTextResponseBlock(selectedBlock) &&
+        selectedBlock.integrationId != null &&
+        !loading && (
         <>
           <Select
             label={t('Route')}
-            value={selectedBlock?.routeId ?? undefined}
+              value={
+                isTextResponseBlock(selectedBlock)
+                  ? selectedBlock?.routeId ?? undefined
+                  : undefined
+              }
             onChange={handleChange}
             options={options}
           />
         </>
-      )}
+        )}
     </>
   )
 }
