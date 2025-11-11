@@ -39,7 +39,6 @@ describe('VideoWrapper', () => {
       fullsize: null,
       action: null,
       objectFit: null,
-      showGeneratedSubtitles: null,
       subtitleLanguage: null,
       showGeneratedSubtitles: false,
       children: [
@@ -100,7 +99,6 @@ describe('VideoWrapper', () => {
         description: null,
         duration: null,
         image: null,
-        showGeneratedSubtitles: null,
         objectFit: null,
         mediaVideo: null,
         videoId: null,
@@ -134,7 +132,6 @@ describe('VideoWrapper', () => {
       fullsize: null,
       action: null,
       objectFit: null,
-      showGeneratedSubtitles: null,
       subtitleLanguage: null,
       showGeneratedSubtitles: false,
       children: [
@@ -195,7 +192,6 @@ describe('VideoWrapper', () => {
         description: null,
         duration: null,
         image: null,
-        showGeneratedSubtitles: null,
         objectFit: null,
         mediaVideo: null,
         videoId: null,
