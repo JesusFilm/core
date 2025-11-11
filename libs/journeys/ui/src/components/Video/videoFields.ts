@@ -27,7 +27,6 @@ export const VIDEO_FIELDS = gql`
       id
       bcp47
     }
-    showGeneratedSubtitles
     mediaVideo {
       ... on Video {
         id
