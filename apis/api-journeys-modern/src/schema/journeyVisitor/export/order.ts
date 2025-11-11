@@ -52,8 +52,9 @@ export function computeOrderIndex(roots: TreeNode[]): Map<string, number> {
   let counter = 0
 
   const visit = (node: TreeNode): void => {
-    if (node.parentOrder == null) return
-    orderIndex.set(node.id, counter++)
+    if (node.parentOrder != null) {
+      orderIndex.set(node.id, counter++)
+    }
     for (const child of node.children) visit(child)
   }
 
