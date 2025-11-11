@@ -38,9 +38,12 @@ export function WebView({ blocks, stepBlock }: WebViewProps): ReactElement {
     | TreeBlock<StepFields>
     | undefined
 
+  const cardBlock = activeBlock?.children[0]
+  const coverBlockId =
+    cardBlock?.__typename === 'CardBlock' ? cardBlock.coverBlockId : undefined
   const hasVideoBlock =
-    activeBlock?.children[0]?.children.some(
-      (block) => block.__typename === 'VideoBlock'
+    cardBlock?.children.some(
+      (block) => block.__typename === 'VideoBlock' && block.id !== coverBlockId
     ) ?? false
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
