@@ -164,6 +164,7 @@ export function WebView({ blocks, stepBlock }: WebViewProps): ReactElement {
         />
         <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
           <Box
+            className="active-card"
             sx={{
               height: '100%',
               marginTop: { lg: `-${STEP_HEADER_HEIGHT}` },
