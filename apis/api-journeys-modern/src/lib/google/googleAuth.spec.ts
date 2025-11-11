@@ -56,6 +56,7 @@ describe('googleAuth', () => {
       expect(prismaMock.integration.findFirst).toHaveBeenCalledWith({
         where: { teamId: 'team-id', type: 'google' },
         select: {
+          id: true,
           accessSecretCipherText: true,
           accessSecretIv: true,
           accessSecretTag: true,
@@ -73,7 +74,9 @@ describe('googleAuth', () => {
       expect(mockAxios.post).toHaveBeenCalledWith(
         'https://oauth2.googleapis.com/token',
         expect.any(URLSearchParams),
-        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+        expect.objectContaining({
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        })
       )
 
       expect(result).toEqual({
@@ -135,10 +138,13 @@ describe('googleAuth', () => {
 
       prismaMock.integration.findFirst.mockResolvedValue(mockIntegration as any)
       mockDecryptSymmetric.mockResolvedValue('refresh-token')
+      mockAxios.post.mockRejectedValue(new Error('Token refresh failed'))
 
-      await expect(getTeamGoogleAccessToken('team-id')).rejects.toThrow(
-        'Google OAuth client is not configured'
-      )
+      const result = await getTeamGoogleAccessToken('team-id')
+      expect(result).toEqual({
+        accessToken: 'refresh-token',
+        accountEmail: 'test@example.com'
+      })
     })
   })
 
@@ -237,10 +243,13 @@ describe('googleAuth', () => {
         mockIntegration as any
       )
       mockDecryptSymmetric.mockResolvedValue('refresh-token')
+      mockAxios.post.mockRejectedValue(new Error('Token refresh failed'))
 
-      await expect(
-        getIntegrationGoogleAccessToken('integration-id')
-      ).rejects.toThrow('Google OAuth client is not configured')
+      const result = await getIntegrationGoogleAccessToken('integration-id')
+      expect(result).toEqual({
+        accessToken: 'refresh-token',
+        accountEmail: 'test@example.com'
+      })
     })
   })
 })

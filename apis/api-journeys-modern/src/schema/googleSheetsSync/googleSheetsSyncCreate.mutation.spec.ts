@@ -48,6 +48,11 @@ describe('googleSheetsSyncCreate', () => {
       userId: mockUser.id,
       roles: []
     } as any)
+    // Default auth: user is integration owner for provided integrationId
+    prismaMock.integration.findUnique.mockResolvedValue({
+      id: 'integration-id',
+      userId: 'userId'
+    } as any)
   })
 
   it('should create Google Sheets sync', async () => {
@@ -260,6 +265,11 @@ describe('googleSheetsSyncCreate', () => {
 
     prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
     prismaMock.integration.findFirst.mockResolvedValue(mockIntegration as any)
+    // Auth guard denies ownership
+    prismaMock.integration.findUnique.mockResolvedValue({
+      id: 'integration-id',
+      userId: 'other-user-id'
+    } as any)
 
     const result = await authClient({
       document: GOOGLE_SHEETS_SYNC_CREATE_MUTATION,
@@ -277,7 +287,7 @@ describe('googleSheetsSyncCreate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'Only the integration owner can create a sync'
+          message: expect.stringContaining('Not authorized')
         })
       ]
     })

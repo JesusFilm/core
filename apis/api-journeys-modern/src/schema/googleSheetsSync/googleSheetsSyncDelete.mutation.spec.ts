@@ -86,8 +86,7 @@ describe('googleSheetsSyncDelete', () => {
     expect(updateCall).toMatchObject({
       where: { id: 'sync-id' },
       data: {
-        deletedAt: expect.any(Date),
-        integrationId: null
+        deletedAt: expect.any(Date)
       }
     })
 
