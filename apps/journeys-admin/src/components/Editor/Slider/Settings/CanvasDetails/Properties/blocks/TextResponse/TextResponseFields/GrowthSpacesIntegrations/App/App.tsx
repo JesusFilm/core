@@ -15,6 +15,7 @@ import {
 } from '../../../../../../../../../../../../__generated__/TextResponseIntegrationUpdate'
 import { useIntegrationQuery } from '../../../../../../../../../../../libs/useIntegrationQuery'
 import { Select } from '../Select'
+import { GetIntegration_integrations_IntegrationGrowthSpaces } from '../../../../../../../../../../../../__generated__/GetIntegration'
 
 export const TEXT_RESPONSE_INTEGRATION_UPDATE = gql`
   mutation TextResponseIntegrationUpdate(
@@ -53,10 +54,13 @@ export function App(): ReactElement {
   })
 
   const options =
-    data?.integrations
+    (
+      data?.integrations as GetIntegration_integrations_IntegrationGrowthSpaces[]
+    )
       // eslint-disable-next-line @typescript-eslint/naming-convention
       .filter(({ __typename }) => __typename === 'IntegrationGrowthSpaces')
-      .map(({ id, accessId }) => ({ value: id, label: accessId })) ?? []
+      .map(({ id, accessId }) => ({ value: id, label: accessId as string })) ??
+    []
 
   function handleChange(integrationId: string | null): void {
     if (selectedBlock == null) return

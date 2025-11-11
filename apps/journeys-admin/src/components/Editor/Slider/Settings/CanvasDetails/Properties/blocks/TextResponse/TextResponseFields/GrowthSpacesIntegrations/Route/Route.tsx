@@ -12,6 +12,11 @@ import {
   TextResponseRouteUpdate,
   TextResponseRouteUpdateVariables
 } from '../../../../../../../../../../../../__generated__/TextResponseRouteUpdate'
+import type {
+  GetIntegration_integrations,
+  GetIntegration_integrations_IntegrationGrowthSpaces,
+  GetIntegration_integrations_IntegrationGrowthSpaces_routes
+} from '../../../../../../../../../../../../__generated__/GetIntegration'
 import { useIntegrationQuery } from '../../../../../../../../../../../libs/useIntegrationQuery'
 import { Select } from '../Select'
 
@@ -46,15 +51,41 @@ export function Route(): ReactElement {
     teamId: activeTeam?.id as string
   })
 
+  function isMatchingGrowthSpacesIntegration(
+    integration: GetIntegration_integrations
+  ): integration is GetIntegration_integrations_IntegrationGrowthSpaces {
+    if (selectedBlock?.integrationId == null) return false
+
+    return (
+      integration.__typename === 'IntegrationGrowthSpaces' &&
+      integration.id === selectedBlock.integrationId
+    )
+  }
+
   const selectedIntegration = data?.integrations.find(
-    (integration) => selectedBlock?.integrationId === integration.id
+    isMatchingGrowthSpacesIntegration
   )
 
   const options =
-    selectedIntegration?.routes.map(({ id, name }) => ({
-      value: id,
-      label: name
-    })) ?? []
+    selectedIntegration?.routes?.reduce<
+      Array<{ value: string; label: string }>
+    >((accumulatedOptions, route) => {
+      if (route == null) return accumulatedOptions
+
+      const validRoute = validateRoute(route)
+      if (validRoute == null) return accumulatedOptions
+
+      accumulatedOptions.push(validRoute)
+      return accumulatedOptions
+    }, []) ?? []
+
+  function validateRoute(
+    route: GetIntegration_integrations_IntegrationGrowthSpaces_routes
+  ): { value: string; label: string } | null {
+    if (route.id == null || route.name == null) return null
+
+    return { value: route.id, label: route.name }
+  }
 
   function handleChange(routeId: string | null): void {
     if (selectedBlock == null) return
