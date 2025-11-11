@@ -43,7 +43,7 @@ const renderEditableText = (
     // Add text before the match
     if (match.index > lastIndex) {
       parts.push(
-        <span 
+        <span
           key={`text-${lastIndex}`}
           style={{
             fontSize: '18px'
@@ -123,12 +123,14 @@ const renderEditableText = (
   // Add remaining text after the last match
   if (lastIndex < safeText.length) {
     parts.push(
-      <span 
+      <span
         key={`text-${lastIndex}`}
         style={{
           fontSize: '18px'
         }}
-      >{safeText.slice(lastIndex)}</span>
+      >
+        {safeText.slice(lastIndex)}
+      </span>
     )
   }
 

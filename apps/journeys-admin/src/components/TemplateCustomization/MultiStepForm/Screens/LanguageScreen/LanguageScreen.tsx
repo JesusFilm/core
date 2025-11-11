@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -19,7 +20,6 @@ import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetC
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
-import Box from '@mui/material/Box'
 
 import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 
@@ -73,26 +73,26 @@ export function LanguageScreen({
 
   const languages = isParentTemplate
     ? [
-      ...parentJourneyLanguages,
-      ...childJourneyLanguages,
-      {
-        id: journey?.language?.id ?? '',
-        name: journey?.language?.name ?? [],
-        slug: null
-      }
-    ]
+        ...parentJourneyLanguages,
+        ...childJourneyLanguages,
+        {
+          id: journey?.language?.id ?? '',
+          name: journey?.language?.name ?? [],
+          slug: null
+        }
+      ]
     : [...parentJourneyLanguages, ...childJourneyLanguages]
 
   const languagesJourneyMap = isParentTemplate
     ? {
-      ...parentJourneyLanguagesJourneyMap,
-      ...childJourneyLanguagesJourneyMap,
-      [journey?.language?.id as string]: journey?.id
-    }
+        ...parentJourneyLanguagesJourneyMap,
+        ...childJourneyLanguagesJourneyMap,
+        [journey?.language?.id as string]: journey?.id
+      }
     : {
-      ...parentJourneyLanguagesJourneyMap,
-      ...childJourneyLanguagesJourneyMap
-    }
+        ...parentJourneyLanguagesJourneyMap,
+        ...childJourneyLanguagesJourneyMap
+      }
 
   const validationSchema = object({
     teamSelect: string().required()
@@ -194,7 +194,7 @@ export function LanguageScreen({
         gutterBottom
         sx={{
           mt: { xs: 0, sm: -2 },
-          mb: { xs: 0, sm: 6 } 
+          mb: { xs: 0, sm: 6 }
         }}
       >
         {journey?.title ?? ''}
@@ -214,7 +214,10 @@ export function LanguageScreen({
               }}
             >
               <Stack gap={2}>
-                <Typography variant="subtitle1" display={{ xs: 'none', sm: 'block' }}>
+                <Typography
+                  variant="subtitle1"
+                  display={{ xs: 'none', sm: 'block' }}
+                >
                   {t('Select a language')}
                 </Typography>
                 <Typography
@@ -247,11 +250,7 @@ export function LanguageScreen({
                   {t('Select a team')}
                 </Typography>
                 {isSignedIn && <JourneyCustomizeTeamSelect />}
-                <Box 
-                  display="flex"
-                  justifyContent="center" 
-                  sx={{ mt: 8 }}
-                >
+                <Box display="flex" justifyContent="center" sx={{ mt: 8 }}>
                   <CustomizeFlowNextButton
                     label={t('Next')}
                     onClick={() => handleSubmit()}
