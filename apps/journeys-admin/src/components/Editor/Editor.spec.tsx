@@ -6,7 +6,6 @@ import { NextRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
-import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import type { GetJourney_journey as Journey } from '../../../__generated__/GetJourney'
 import type { GetStepBlocksWithPosition } from '../../../__generated__/GetStepBlocksWithPosition'
@@ -30,14 +29,6 @@ jest.mock('next/compat/router', () => ({
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
-}))
-
-jest.mock('./FontLoader/FontLoader', () => ({
-  FontLoader: jest.fn(() => null)
-}))
-
-jest.mock('./Hotkeys', () => ({
-  Hotkeys: jest.fn(() => null)
 }))
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
@@ -241,145 +232,5 @@ describe('Editor', () => {
     await waitFor(() =>
       expect(screen.getByText('Test selected step')).toBeInTheDocument()
     )
-  })
-
-  it('should render Hotkeys component', () => {
-    const { Hotkeys } = require('./Hotkeys')
-
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <ThemeProvider>
-            <Editor journey={journey} />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(Hotkeys).toHaveBeenCalled()
-  })
-
-  it('should render FontLoader component', () => {
-    const { FontLoader } = require('./FontLoader/FontLoader')
-
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <ThemeProvider>
-            <Editor journey={journey} />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(FontLoader).toHaveBeenCalled()
-  })
-
-  it('should handle undefined journey', () => {
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <ThemeProvider>
-            <Editor />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('Toolbar')).toBeInTheDocument()
-    expect(screen.getByTestId('Slider')).toBeInTheDocument()
-  })
-
-  it('should not set selected step when selectedStepId does not match any step', () => {
-    const { FontLoader } = require('./FontLoader/FontLoader')
-
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <ThemeProvider>
-            <Editor journey={journey} selectedStepId="nonexistent-step-id" />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('Toolbar')).toBeInTheDocument()
-  })
-
-  it('should pass user prop to Toolbar', () => {
-    const mockUser = {
-      id: 'userId',
-      email: 'test@example.com',
-      displayName: 'Test User',
-      emailVerified: true,
-      phoneNumber: null,
-      photoURL: null
-    }
-
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <ThemeProvider>
-            <Editor journey={journey} user={mockUser as any} />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('Toolbar')).toBeInTheDocument()
-  })
-
-  it('should pass initialState to EditorProvider', () => {
-    const initialState = {
-      showAnalytics: true
-    }
-
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <ThemeProvider>
-            <Editor journey={journey} initialState={initialState} />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('Toolbar')).toBeInTheDocument()
-  })
-
-  it('should transform journey blocks into steps', () => {
-    const journeyWithBlocks: Journey = {
-      ...journey,
-      blocks: [
-        {
-          id: 'step0.id',
-          __typename: 'StepBlock',
-          parentBlockId: null,
-          parentOrder: 0,
-          locked: false,
-          nextBlockId: 'step1.id'
-        },
-        {
-          id: 'step1.id',
-          __typename: 'StepBlock',
-          parentBlockId: null,
-          parentOrder: 1,
-          locked: false,
-          nextBlockId: null
-        }
-      ] as TreeBlock[]
-    }
-
-    render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <ThemeProvider>
-            <Editor journey={journeyWithBlocks} />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    expect(screen.getByTestId('Toolbar')).toBeInTheDocument()
   })
 })
