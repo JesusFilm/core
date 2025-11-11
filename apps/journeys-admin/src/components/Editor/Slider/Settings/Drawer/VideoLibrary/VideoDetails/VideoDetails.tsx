@@ -145,13 +145,15 @@ export function VideoDetails({
             mt: activeVideoBlock != null ? -6 : 0
           }}
         >
-          <Details
-            key={activeVideoBlock?.videoId}
-            id={id}
-            open={open}
-            onSelect={handleSelect}
-            activeVideoBlock={activeVideoBlock}
-          />
+          {open && (
+            <Details
+              key={activeVideoBlock?.videoId}
+              id={id}
+              open={open}
+              onSelect={handleSelect}
+              activeVideoBlock={activeVideoBlock}
+            />
+          )}
         </Box>
       </Stack>
     </Drawer>
