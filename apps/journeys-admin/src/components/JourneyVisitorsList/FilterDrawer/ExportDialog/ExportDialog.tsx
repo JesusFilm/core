@@ -75,7 +75,9 @@ export function ExportDialog({
 
   useEffect(() => {
     if (journeyData?.journey?.createdAt != null) {
-      const newStart = clampToToday(new Date(String(journeyData.journey.createdAt)))
+      const newStart = clampToToday(
+        new Date(String(journeyData.journey.createdAt))
+      )
       setStartDate(newStart)
     }
   }, [journeyData])

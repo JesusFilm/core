@@ -67,7 +67,8 @@ export function FilterDrawer({
     skip: journeyId == null,
     variables: { id: journeyId! }
   })
-  const availableBlockTypes: string[] = blockTypesData?.journey?.blockTypenames ?? []
+  const availableBlockTypes: string[] =
+    blockTypesData?.journey?.blockTypenames ?? []
 
   return (
     <Stack sx={{ height: '100vh' }} data-testid="FilterDrawer">
@@ -176,7 +177,7 @@ export function FilterDrawer({
             {disableExportButton ? (
               <Tooltip
                 title={t(
-                  "Only team members and journey owners can export data."
+                  'Only team members and journey owners can export data.'
                 )}
                 placement="top"
               >

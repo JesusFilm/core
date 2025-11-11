@@ -32,5 +32,3 @@ export function createCsvStringifier(columns: CsvColumn[]) {
     getContent: () => csvContent
   }
 }
-
-
