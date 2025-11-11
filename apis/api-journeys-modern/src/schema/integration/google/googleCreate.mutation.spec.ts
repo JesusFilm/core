@@ -240,10 +240,6 @@ describe('integrationGoogleCreate', () => {
     })
   })
 
-  it.skip('should throw error when GOOGLE_CLIENT_ID is not configured', async () => {})
-
-  it.skip('should throw error when GOOGLE_CLIENT_SECRET is not configured', async () => {})
-
   it('should throw error when OAuth exchange fails', async () => {
     mockAxios.post.mockRejectedValueOnce(new Error('Invalid grant'))
 

@@ -244,8 +244,6 @@ describe('integrationGoogleUpdate', () => {
     expect(prismaMock.integration.update).not.toHaveBeenCalled()
   })
 
-  it.skip('should throw error when GOOGLE_CLIENT_ID is not configured', async () => {})
-
   it('should throw error when OAuth exchange fails', async () => {
     prismaMock.integration.findUnique.mockResolvedValue({
       id: 'integration-id',

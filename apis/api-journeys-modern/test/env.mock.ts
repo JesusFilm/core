@@ -9,5 +9,3 @@ export const env = {
     return process.env.GOOGLE_CLIENT_SECRET ?? ''
   }
 }
-
-
