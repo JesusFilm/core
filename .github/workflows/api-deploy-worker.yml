@@ -62,7 +62,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "pnpm"
+          cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
       - name: Prisma Generate
@@ -109,7 +109,7 @@ jobs:
 
       - name: Set image output
         run: |
-          echo "image=${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
+          echo 'image=${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}' >> $GITHUB_OUTPUT
 
       - name: Restart task definition
         run: |

@@ -15,7 +15,10 @@ import {
 } from '../../../../../../../../../../../../__generated__/TextResponseIntegrationUpdate'
 import { useIntegrationQuery } from '../../../../../../../../../../../libs/useIntegrationQuery'
 import { Select } from '../Select'
-import { GetIntegration_integrations_IntegrationGrowthSpaces } from '../../../../../../../../../../../../__generated__/GetIntegration'
+import type {
+  GetIntegration_integrations,
+  GetIntegration_integrations_IntegrationGrowthSpaces
+} from '../../../../../../../../../../../../__generated__/GetIntegration'
 
 export const TEXT_RESPONSE_INTEGRATION_UPDATE = gql`
   mutation TextResponseIntegrationUpdate(
@@ -53,14 +56,21 @@ export function App(): ReactElement {
     teamId: activeTeam?.id as string
   })
 
-  const options =
-    (
-      data?.integrations as GetIntegration_integrations_IntegrationGrowthSpaces[]
-    )
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      .filter(({ __typename }) => __typename === 'IntegrationGrowthSpaces')
-      .map(({ id, accessId }) => ({ value: id, label: accessId as string })) ??
-    []
+  function isGrowthSpacesIntegration(
+    integration: GetIntegration_integrations
+  ): integration is GetIntegration_integrations_IntegrationGrowthSpaces {
+    return integration.__typename === 'IntegrationGrowthSpaces'
+  }
+
+  const options = (data?.integrations ?? [])
+    .filter(isGrowthSpacesIntegration)
+    .reduce<
+      Array<{ value: string; label: string }>
+    >((acc, { id, accessId }) => {
+      if (accessId == null) return acc
+      acc.push({ value: id, label: accessId })
+      return acc
+    }, [])
 
   function handleChange(integrationId: string | null): void {
     if (selectedBlock == null) return
