@@ -41,7 +41,11 @@ export function VideoBlockEditor({
   return (
     <>
       <Box sx={{ p: 4, pt: 0 }} data-testid="VideoBlockEditor">
-        <Source selectedBlock={selectedBlock} onChange={onChange} />
+        <Source
+          key={selectedBlock?.videoId}
+          selectedBlock={selectedBlock}
+          onChange={onChange}
+        />
       </Box>
       {videoBlock?.videoId != null && (
         <Box pb={4}>

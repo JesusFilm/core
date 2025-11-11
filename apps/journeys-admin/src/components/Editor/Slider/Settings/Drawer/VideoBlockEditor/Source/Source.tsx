@@ -132,6 +132,7 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
       </Card>
       {open != null && (
         <VideoLibrary
+          key={selectedBlock?.videoId}
           open={open}
           onClose={() => setOpen(false)}
           selectedBlock={selectedBlock}

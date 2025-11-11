@@ -268,7 +268,6 @@ describe('VideoLibrary', () => {
       },
       true
     )
-    expect(onClose).toHaveBeenCalled()
   })
 
   it('should render video details if videoId is not null', async () => {

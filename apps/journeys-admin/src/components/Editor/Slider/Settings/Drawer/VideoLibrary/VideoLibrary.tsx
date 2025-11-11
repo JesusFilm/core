@@ -68,10 +68,8 @@ export function VideoLibrary({
   const router = useRouter()
 
   useEffect(() => {
-    setOpenVideoDetails(
-      selectedBlock?.videoId != null && open && activeTab !== UPLOAD_TAB
-    )
-  }, [open, selectedBlock?.videoId, activeTab])
+    setOpenVideoDetails(selectedBlock?.videoId != null && open)
+  }, [open, selectedBlock?.videoId])
 
   const TabParams = {
     [LIBRARY_TAB]: 'video-library',
@@ -105,15 +103,6 @@ export function VideoLibrary({
     const shouldFocus = shouldCloseDrawer
     if (handleSelect != null) handleSelect(block, shouldFocus)
     setOpenVideoDetails(false)
-
-    // Close drawer unless background upload is still processing
-    // Exception: close if user is still on upload tab to show editor settings
-    if (shouldCloseDrawer || (!shouldCloseDrawer && activeTab === UPLOAD_TAB)) {
-      if (!shouldCloseDrawer && activeTab === UPLOAD_TAB) {
-        setActiveTab(LIBRARY_TAB)
-      }
-      onClose?.()
-    }
   }
 
   const handleVideoDetailsClose = (closeParent?: boolean): void => {
@@ -200,6 +189,7 @@ export function VideoLibrary({
       </Drawer>
       {selectedBlock?.videoId != null && (
         <VideoDetails
+          key={selectedBlock.videoId}
           id={selectedBlock.videoId}
           open={openVideoDetails}
           source={selectedBlock.source}

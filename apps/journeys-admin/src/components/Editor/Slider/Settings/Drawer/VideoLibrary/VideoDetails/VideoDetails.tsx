@@ -146,6 +146,7 @@ export function VideoDetails({
           }}
         >
           <Details
+            key={activeVideoBlock?.videoId}
             id={id}
             open={open}
             onSelect={handleSelect}
