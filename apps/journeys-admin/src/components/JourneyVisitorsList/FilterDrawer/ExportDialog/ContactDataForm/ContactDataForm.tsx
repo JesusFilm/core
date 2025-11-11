@@ -82,8 +82,14 @@ export function ContactDataForm({
   }
 
   useEffect(() => {
-    setSelectedFields(availableContactEvents)
-  }, [setSelectedFields, availableContactEvents])
+    setSelectedFields((prev) => {
+      const hasSameLength = prev.length === availableContactEvents.length
+      const hasSameMembers =
+        hasSameLength &&
+        prev.every((field) => availableContactEvents.includes(field))
+      return hasSameMembers ? prev : [...availableContactEvents]
+    })
+  }, [availableContactEvents, setSelectedFields])
 
   return (
     <Stack>
