@@ -12,6 +12,7 @@ import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit, ContactAc
 export interface VideoBlockCreate_videoBlockCreate_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface VideoBlockCreate_videoBlockCreate_mediaVideo_Video_title {
@@ -178,6 +179,7 @@ export interface VideoBlockCreate_videoBlockCreate {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: VideoBlockCreate_videoBlockCreate_subtitleLanguage | null;
   mediaVideo: VideoBlockCreate_videoBlockCreate_mediaVideo | null;
   /**

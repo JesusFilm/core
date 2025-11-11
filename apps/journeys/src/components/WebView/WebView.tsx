@@ -29,10 +29,19 @@ interface WebViewProps {
   stepBlock: TreeBlock<StepFields>
 }
 export function WebView({ blocks, stepBlock }: WebViewProps): ReactElement {
-  const { setTreeBlocks } = useBlocks()
+  const { setTreeBlocks, blockHistory } = useBlocks()
   const { journey, variant } = useJourney()
   const { locale, rtl } = getJourneyRTL(journey)
   const theme = useTheme()
+
+  const activeBlock = blockHistory[blockHistory.length - 1] as
+    | TreeBlock<StepFields>
+    | undefined
+
+  const hasVideoBlock =
+    activeBlock?.children[0]?.children.some(
+      (block) => block.__typename === 'VideoBlock'
+    ) ?? false
 
   const [journeyViewEventCreate] = useMutation<JourneyViewEventCreate>(
     JOURNEY_VIEW_EVENT_CREATE
@@ -152,6 +161,7 @@ export function WebView({ blocks, stepBlock }: WebViewProps): ReactElement {
         />
         <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>
           <Box
+            className="active-card"
             sx={{
               height: '100%',
               marginTop: { lg: `-${STEP_HEADER_HEIGHT}` },
@@ -161,13 +171,15 @@ export function WebView({ blocks, stepBlock }: WebViewProps): ReactElement {
             <BlockRenderer block={stepBlock} />
           </Box>
         </ThemeProvider>
-        <StepFooter
-          sx={{
-            ...mobileNotchStyling,
-            display: 'flex',
-            px: { lg: 8 }
-          }}
-        />
+        {!hasVideoBlock && (
+          <StepFooter
+            sx={{
+              ...mobileNotchStyling,
+              display: 'flex',
+              px: { lg: 8 }
+            }}
+          />
+        )}
       </Container>
     </ThemeProvider>
   )

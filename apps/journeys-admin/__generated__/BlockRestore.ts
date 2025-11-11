@@ -373,6 +373,7 @@ export interface BlockRestore_blockRestore_TypographyBlock {
 export interface BlockRestore_blockRestore_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface BlockRestore_blockRestore_VideoBlock_mediaVideo_Video_title {
@@ -539,6 +540,7 @@ export interface BlockRestore_blockRestore_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: BlockRestore_blockRestore_VideoBlock_subtitleLanguage | null;
   mediaVideo: BlockRestore_blockRestore_VideoBlock_mediaVideo | null;
   /**

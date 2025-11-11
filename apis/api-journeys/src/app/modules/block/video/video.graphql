@@ -113,4 +113,5 @@ type VideoBlock implements Block @key(fields: "id") @shareable {
   """
   objectFit: VideoBlockObjectFit @shareable
   subtitleLanguage: Language @shareable
+  showGeneratedSubtitles: Boolean @shareable
 }

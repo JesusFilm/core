@@ -53,6 +53,7 @@ const video: TreeBlock<VideoBlock> = {
   image: null,
   objectFit: null,
   subtitleLanguage: null,
+  showGeneratedSubtitles: null,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -314,7 +315,8 @@ describe('VideoOptions', () => {
             source: VideoBlockSource.youTube,
             subtitleLanguage: {
               __typename: 'Language',
-              id: 'lang-en'
+              id: '529',
+              bcp47: 'en'
             }
           }
         }
@@ -354,7 +356,8 @@ describe('VideoOptions', () => {
               endAt: 100,
               subtitleLanguage: {
                 __typename: 'Language',
-                id: 'lang-en'
+                id: '529',
+                bcp47: 'en'
               }
             },
             selectedAttributeId: video.id
@@ -416,7 +419,8 @@ describe('VideoOptions', () => {
               source: VideoBlockSource.youTube,
               subtitleLanguage: {
                 __typename: 'Language',
-                id: 'lang-es'
+                id: '529',
+                bcp47: 'es'
               }
             },
             selectedAttributeId: video.id

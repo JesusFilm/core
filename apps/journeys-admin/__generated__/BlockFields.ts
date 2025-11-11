@@ -363,6 +363,7 @@ export interface BlockFields_TypographyBlock {
 export interface BlockFields_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface BlockFields_VideoBlock_mediaVideo_Video_title {
@@ -529,6 +530,7 @@ export interface BlockFields_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: BlockFields_VideoBlock_subtitleLanguage | null;
   mediaVideo: BlockFields_VideoBlock_mediaVideo | null;
   /**

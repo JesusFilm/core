@@ -377,6 +377,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_TypographyBlock {
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_title {
@@ -543,6 +544,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_subtitleLanguage | null;
   mediaVideo: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo | null;
   /**

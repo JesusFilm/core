@@ -12,6 +12,7 @@ import { VideoBlockCreateInput, VideoBlockSource, VideoBlockObjectFit, ContactAc
 export interface CardVideoCreate_video_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardVideoCreate_video_mediaVideo_Video_title {
@@ -178,6 +179,7 @@ export interface CardVideoCreate_video {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardVideoCreate_video_subtitleLanguage | null;
   mediaVideo: CardVideoCreate_video_mediaVideo | null;
   /**

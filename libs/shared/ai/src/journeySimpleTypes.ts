@@ -23,7 +23,7 @@ export const journeySimplePollOptionSchemaUpdate =
     const hasUrl = !!data.url
     if (hasNextCard === hasUrl) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'Exactly one of nextCard or url must be provided.'
       })
     }
@@ -59,7 +59,7 @@ export const journeySimpleButtonSchemaUpdate =
     const hasUrl = !!data.url
     if (hasNextCard === hasUrl) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'Exactly one of nextCard or url must be provided.'
       })
     }
@@ -74,12 +74,8 @@ export type JourneySimpleButtonUpdate = z.infer<
 export const journeySimpleImageSchema = z.object({
   src: z.string().describe('A URL for the image.'),
   alt: z.string().describe('Alt text for the image for accessibility.'),
-  width: z.number().int().positive().describe('Width of the image in pixels.'),
-  height: z
-    .number()
-    .int()
-    .positive()
-    .describe('Height of the image in pixels.'),
+  width: z.int().positive().describe('Width of the image in pixels.'),
+  height: z.int().positive().describe('Height of the image in pixels.'),
   blurhash: z
     .string()
     .describe('A compact representation of a placeholder for the image.')
@@ -90,13 +86,11 @@ export type JourneySimpleImage = z.infer<typeof journeySimpleImageSchema>
 export const journeySimpleVideoSchema = z.object({
   url: z.string().describe('The YouTube video URL.'),
   startAt: z
-    .number()
     .int()
     .nonnegative()
     .optional()
     .describe('Start time in seconds. If not provided, defaults to 0.'),
   endAt: z
-    .number()
     .int()
     .positive()
     .optional()
@@ -115,7 +109,7 @@ export const journeySimpleVideoSchemaUpdate =
       data.endAt <= data.startAt
     ) {
       ctx.addIssue({
-        code: z.ZodIssueCode.custom,
+        code: 'custom',
         message: 'endAt must be greater than startAt if both are provided.'
       })
     }
@@ -182,7 +176,7 @@ export const journeySimpleCardSchemaUpdate = journeySimpleCardSchema
       for (const field of forbiddenFields) {
         if ((data as Record<string, unknown>)[field] !== undefined) {
           ctx.addIssue({
-            code: z.ZodIssueCode.custom,
+            code: 'custom',
             message: `If video is present, ${field} must not be set.`
           })
         }
@@ -190,7 +184,7 @@ export const journeySimpleCardSchemaUpdate = journeySimpleCardSchema
       // Enforce defaultNextCard is required for video cards
       if (data.defaultNextCard === undefined) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           message: 'If video is present, defaultNextCard is required.'
         })
       }
@@ -201,7 +195,7 @@ export const journeySimpleCardSchemaUpdate = journeySimpleCardSchema
       const hasDefaultNextCard = !!data.defaultNextCard
       if (!hasButton && !hasPoll && !hasDefaultNextCard) {
         ctx.addIssue({
-          code: z.ZodIssueCode.custom,
+          code: 'custom',
           message:
             'At least one of button, poll, or defaultNextCard must be present to provide navigation.'
         })
