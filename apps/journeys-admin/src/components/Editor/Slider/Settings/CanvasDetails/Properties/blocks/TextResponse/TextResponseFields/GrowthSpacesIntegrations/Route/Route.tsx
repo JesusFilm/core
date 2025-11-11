@@ -8,15 +8,15 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
-import {
-  TextResponseRouteUpdate,
-  TextResponseRouteUpdateVariables
-} from '../../../../../../../../../../../../__generated__/TextResponseRouteUpdate'
 import type {
   GetIntegration_integrations,
   GetIntegration_integrations_IntegrationGrowthSpaces,
   GetIntegration_integrations_IntegrationGrowthSpaces_routes
 } from '../../../../../../../../../../../../__generated__/GetIntegration'
+import {
+  TextResponseRouteUpdate,
+  TextResponseRouteUpdateVariables
+} from '../../../../../../../../../../../../__generated__/TextResponseRouteUpdate'
 import { useIntegrationQuery } from '../../../../../../../../../../../libs/useIntegrationQuery'
 import { Select } from '../Select'
 
@@ -36,9 +36,7 @@ export function Route(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { state, dispatch } = useEditor()
-  const selectedBlock = state.selectedBlock as
-    | TreeBlock<TextResponseBlock>
-    | undefined
+  const selectedBlock = state.selectedBlock
 
   const { add } = useCommand()
 

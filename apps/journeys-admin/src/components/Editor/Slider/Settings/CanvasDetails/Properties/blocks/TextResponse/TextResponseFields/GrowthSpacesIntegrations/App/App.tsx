@@ -9,16 +9,16 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
+import type {
+  GetIntegration_integrations,
+  GetIntegration_integrations_IntegrationGrowthSpaces
+} from '../../../../../../../../../../../../__generated__/GetIntegration'
 import {
   TextResponseIntegrationUpdate,
   TextResponseIntegrationUpdateVariables
 } from '../../../../../../../../../../../../__generated__/TextResponseIntegrationUpdate'
 import { useIntegrationQuery } from '../../../../../../../../../../../libs/useIntegrationQuery'
 import { Select } from '../Select'
-import type {
-  GetIntegration_integrations,
-  GetIntegration_integrations_IntegrationGrowthSpaces
-} from '../../../../../../../../../../../../__generated__/GetIntegration'
 
 export const TEXT_RESPONSE_INTEGRATION_UPDATE = gql`
   mutation TextResponseIntegrationUpdate(
@@ -41,9 +41,7 @@ export function App(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { state, dispatch } = useEditor()
-  const selectedBlock = state.selectedBlock as
-    | TreeBlock<TextResponseBlock>
-    | undefined
+  const selectedBlock = state.selectedBlock
 
   const { add } = useCommand()
 
