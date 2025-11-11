@@ -37,6 +37,8 @@ import {
   calculateScale,
   calculateScaledMargin
 } from './utils/calculateDimensions'
+import { Input } from '../../../../Input'
+import Edit2 from '@core/shared/ui/icons/Edit2'
 
 const fadeIn = keyframes`
   from {
@@ -188,6 +190,15 @@ export function Canvas(): ReactElement {
             justifyContent: 'center'
           }}
         >
+          <Input
+            value={selectedStep?.id}
+            onChange={(e) => {
+              console.log(e.target.value)
+            }}
+            startIcon={<Edit2 />}
+            fullWidth
+            className="mb-2"
+          />
           <Box
             data-testId="CanvasContainer"
             sx={{
