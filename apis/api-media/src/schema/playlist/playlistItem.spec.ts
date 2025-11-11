@@ -46,18 +46,25 @@ describe('playlistItem', () => {
     } as any
   }
 
+  const createMockPlaylistItem = (
+    id: string,
+    videoVariantId: string,
+    order: number
+  ) => ({
+    ...mockPlaylistItem,
+    id,
+    videoVariantId,
+    order,
+    videoVariant: { id: videoVariantId } as any
+  })
+
   describe('mutations', () => {
     describe('playlistItemAdd', () => {
       const ADD_ITEM_MUTATION = graphql(`
-        mutation AddPlaylistItem(
-          $id: ID
-          $playlistId: ID!
-          $videoVariantId: ID!
-        ) {
+        mutation AddPlaylistItem($playlistId: ID!, $videoVariantIds: [ID!]!) {
           playlistItemAdd(
-            id: $id
             playlistId: $playlistId
-            videoVariantId: $videoVariantId
+            videoVariantIds: $videoVariantIds
           ) {
             ... on MutationPlaylistItemAddSuccess {
               data {
@@ -84,102 +91,169 @@ describe('playlistItem', () => {
         }
       `)
 
-      it('should add item to playlist', async () => {
+      it('should add items to playlist', async () => {
+        const videoVariantIds = ['videoVariantId1', 'videoVariantId2']
+        const playlistItems = [
+          createMockPlaylistItem('playlistItemId1', 'videoVariantId1', 0),
+          createMockPlaylistItem('playlistItemId2', 'videoVariantId2', 1)
+        ]
+
         prismaMock.playlist.findUnique.mockResolvedValueOnce(mockPlaylist)
-        prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
-          id: 'videoVariantId'
-        } as any)
-        prismaMock.$transaction.mockImplementation(async (callback) =>
+        prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+          { id: 'videoVariantId2' },
+          { id: 'videoVariantId1' }
+        ] as any)
+        prismaMock.$transaction.mockImplementation(async (callback: any) =>
           callback(prismaMock)
         )
-        prismaMock.playlistItem.create.mockResolvedValueOnce(mockPlaylistItem)
+        prismaMock.playlistItem.createManyAndReturn.mockResolvedValueOnce([
+          playlistItems[0],
+          playlistItems[1]
+        ])
+        prismaMock.playlistItem.findMany.mockResolvedValueOnce(playlistItems)
 
         const data = await authClient({
           document: ADD_ITEM_MUTATION,
           variables: {
-            id: 'playlistItemId',
             playlistId: 'playlistId',
-            videoVariantId: 'videoVariantId'
+            videoVariantIds
           }
         })
 
         expect(prismaMock.playlist.findUnique).toHaveBeenCalledWith({
           where: { id: 'playlistId', ownerId: 'testUserId' }
         })
-        expect(prismaMock.videoVariant.findUnique).toHaveBeenCalledWith({
-          where: { id: 'videoVariantId' }
+        expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
+          where: { id: { in: videoVariantIds } },
+          select: { id: true }
         })
         expect(prismaMock.playlistItem.findFirst).toHaveBeenCalledWith({
           where: { playlistId: 'playlistId' },
           orderBy: { order: 'desc' },
           select: { order: true }
         })
-        expect(prismaMock.playlistItem.create).toHaveBeenCalledWith({
-          data: {
-            id: 'playlistItemId',
-            playlistId: 'playlistId',
-            videoVariantId: 'videoVariantId',
-            order: 0
-          },
+        expect(
+          prismaMock.playlistItem.createManyAndReturn
+        ).toHaveBeenCalledWith({
+          select: { id: true },
+          data: [
+            {
+              playlistId: 'playlistId',
+              videoVariantId: 'videoVariantId1',
+              order: 0
+            },
+            {
+              playlistId: 'playlistId',
+              videoVariantId: 'videoVariantId2',
+              order: 1
+            }
+          ]
+        })
+        expect(prismaMock.playlistItem.findMany).toHaveBeenCalledWith({
           include: {
             playlist: true,
             videoVariant: true
-          }
+          },
+          where: { id: { in: ['playlistItemId1', 'playlistItemId2'] } },
+          orderBy: { order: 'asc' }
         })
         expect(data).toHaveProperty('data.playlistItemAdd', {
-          data: {
-            id: 'playlistItemId',
-            order: 1,
-            playlist: { id: 'playlistId' },
-            videoVariant: { id: 'videoVariantId' },
-            createdAt: new Date('2023-01-01').toISOString(),
-            updatedAt: new Date('2023-01-01').toISOString()
-          }
+          data: [
+            {
+              id: 'playlistItemId1',
+              order: 0,
+              playlist: { id: 'playlistId' },
+              videoVariant: { id: 'videoVariantId1' },
+              createdAt: new Date('2023-01-01').toISOString(),
+              updatedAt: new Date('2023-01-01').toISOString()
+            },
+            {
+              id: 'playlistItemId2',
+              order: 1,
+              playlist: { id: 'playlistId' },
+              videoVariant: { id: 'videoVariantId2' },
+              createdAt: new Date('2023-01-01').toISOString(),
+              updatedAt: new Date('2023-01-01').toISOString()
+            }
+          ]
         })
       })
 
-      it('should add item with correct order when items exist', async () => {
+      it('should add items with correct order when items exist', async () => {
+        const videoVariantIds = ['videoVariantId1', 'videoVariantId2']
         const existingItem = { ...mockPlaylistItem, order: 0 }
-        const newItem = { ...mockPlaylistItem, order: 1 }
+        const newItems = [
+          createMockPlaylistItem('playlistItemId1', 'videoVariantId1', 1),
+          createMockPlaylistItem('playlistItemId2', 'videoVariantId2', 2)
+        ]
 
         prismaMock.playlist.findUnique.mockResolvedValueOnce(mockPlaylist)
-        prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
-          id: 'videoVariantId'
-        } as any)
-        prismaMock.$transaction.mockImplementation(async (callback) =>
+        prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+          { id: 'videoVariantId1' },
+          { id: 'videoVariantId2' }
+        ] as any)
+        prismaMock.$transaction.mockImplementation(async (callback: any) =>
           callback(prismaMock)
         )
         prismaMock.playlistItem.findFirst.mockResolvedValueOnce(existingItem)
-        prismaMock.playlistItem.create.mockResolvedValueOnce(newItem)
+        prismaMock.playlistItem.createManyAndReturn.mockResolvedValueOnce([
+          newItems[0],
+          newItems[1]
+        ])
+        prismaMock.playlistItem.findMany.mockResolvedValueOnce(newItems)
 
         const data = await authClient({
           document: ADD_ITEM_MUTATION,
           variables: {
             playlistId: 'playlistId',
-            videoVariantId: 'videoVariantId'
+            videoVariantIds
           }
         })
 
-        expect(prismaMock.playlistItem.create).toHaveBeenCalledWith({
-          data: {
-            playlistId: 'playlistId',
-            videoVariantId: 'videoVariantId',
-            order: 1
-          },
+        expect(
+          prismaMock.playlistItem.createManyAndReturn
+        ).toHaveBeenCalledWith({
+          select: { id: true },
+          data: [
+            {
+              playlistId: 'playlistId',
+              videoVariantId: 'videoVariantId1',
+              order: 1
+            },
+            {
+              playlistId: 'playlistId',
+              videoVariantId: 'videoVariantId2',
+              order: 2
+            }
+          ]
+        })
+        expect(prismaMock.playlistItem.findMany).toHaveBeenCalledWith({
           include: {
             playlist: true,
             videoVariant: true
-          }
+          },
+          where: { id: { in: ['playlistItemId1', 'playlistItemId2'] } },
+          orderBy: { order: 'asc' }
         })
         expect(data).toHaveProperty('data.playlistItemAdd', {
-          data: {
-            id: 'playlistItemId',
-            order: 1,
-            playlist: { id: 'playlistId' },
-            videoVariant: { id: 'videoVariantId' },
-            createdAt: new Date('2023-01-01').toISOString(),
-            updatedAt: new Date('2023-01-01').toISOString()
-          }
+          data: [
+            {
+              id: 'playlistItemId1',
+              order: 1,
+              playlist: { id: 'playlistId' },
+              videoVariant: { id: 'videoVariantId1' },
+              createdAt: new Date('2023-01-01').toISOString(),
+              updatedAt: new Date('2023-01-01').toISOString()
+            },
+            {
+              id: 'playlistItemId2',
+              order: 2,
+              playlist: { id: 'playlistId' },
+              videoVariant: { id: 'videoVariantId2' },
+              createdAt: new Date('2023-01-01').toISOString(),
+              updatedAt: new Date('2023-01-01').toISOString()
+            }
+          ]
         })
       })
 
@@ -190,7 +264,7 @@ describe('playlistItem', () => {
           document: ADD_ITEM_MUTATION,
           variables: {
             playlistId: 'nonExistentId',
-            videoVariantId: 'videoVariantId'
+            videoVariantIds: ['videoVariantId']
           }
         })
 
@@ -201,21 +275,23 @@ describe('playlistItem', () => {
         expect(prismaMock.playlistItem.create).not.toHaveBeenCalled()
       })
 
-      it('should fail if video variant not found', async () => {
+      it('should fail if some video variants not found', async () => {
         prismaMock.playlist.findUnique.mockResolvedValueOnce(mockPlaylist)
-        prismaMock.videoVariant.findUnique.mockResolvedValueOnce(null)
+        prismaMock.videoVariant.findMany.mockResolvedValueOnce([
+          { id: 'videoVariantId1' }
+        ] as any)
 
         const data = await authClient({
           document: ADD_ITEM_MUTATION,
           variables: {
             playlistId: 'playlistId',
-            videoVariantId: 'nonExistentId'
+            videoVariantIds: ['videoVariantId1', 'nonExistentId']
           }
         })
 
         expect(data).toHaveProperty('data.playlistItemAdd', {
-          message: 'Video variant not found',
-          location: [{ path: ['videoVariantId'], value: 'nonExistentId' }]
+          message: 'Some video variants not found',
+          location: [{ path: ['videoVariantIds'], value: 'nonExistentId' }]
         })
         expect(prismaMock.playlistItem.create).not.toHaveBeenCalled()
       })
@@ -225,11 +301,321 @@ describe('playlistItem', () => {
           document: ADD_ITEM_MUTATION,
           variables: {
             playlistId: 'playlistId',
-            videoVariantId: 'videoVariantId'
+            videoVariantIds: ['videoVariantId']
           }
         })
 
         expect(data).toHaveProperty('data.playlistItemAdd', null)
+        expect(prismaMock.playlistItem.create).not.toHaveBeenCalled()
+      })
+    })
+
+    describe('playlistItemAddWithVideoAndLanguageIds', () => {
+      const ADD_ITEM_WITH_VIDEO_AND_LANGUAGE_IDS_MUTATION = graphql(`
+        mutation AddPlaylistItemWithVideoAndLanguageIds(
+          $playlistId: ID!
+          $videos: [PlaylistItemVideoInput!]!
+        ) {
+          playlistItemAddWithVideoAndLanguageIds(
+            playlistId: $playlistId
+            videos: $videos
+          ) {
+            ... on MutationPlaylistItemAddWithVideoAndLanguageIdsSuccess {
+              data {
+                id
+                order
+                playlist {
+                  id
+                }
+                videoVariant {
+                  id
+                }
+                createdAt
+                updatedAt
+              }
+            }
+            ... on NotFoundError {
+              message
+              location {
+                path
+                value
+              }
+            }
+          }
+        }
+      `)
+
+      it('should add items to playlist using videoId and languageId pairs', async () => {
+        const videos = [
+          { videoId: 'videoId1', languageId: 'languageId1' },
+          { videoId: 'videoId2', languageId: 'languageId2' }
+        ]
+        const videoVariants = [
+          {
+            id: 'videoVariantId1',
+            videoId: 'videoId1',
+            languageId: 'languageId1'
+          },
+          {
+            id: 'videoVariantId2',
+            videoId: 'videoId2',
+            languageId: 'languageId2'
+          }
+        ] as unknown as VideoVariant[]
+        const playlistItems = [
+          createMockPlaylistItem('playlistItemId1', 'videoVariantId1', 0),
+          createMockPlaylistItem('playlistItemId2', 'videoVariantId2', 1)
+        ]
+
+        prismaMock.playlist.findUnique.mockResolvedValueOnce(mockPlaylist)
+        prismaMock.videoVariant.findMany.mockResolvedValueOnce(videoVariants)
+        prismaMock.$transaction.mockImplementation(async (callback: any) =>
+          callback(prismaMock)
+        )
+        prismaMock.playlistItem.createManyAndReturn.mockResolvedValueOnce([
+          playlistItems[0],
+          playlistItems[1]
+        ])
+        prismaMock.playlistItem.findMany.mockResolvedValueOnce(playlistItems)
+
+        const data = await authClient({
+          document: ADD_ITEM_WITH_VIDEO_AND_LANGUAGE_IDS_MUTATION,
+          variables: {
+            playlistId: 'playlistId',
+            videos
+          }
+        })
+
+        expect(prismaMock.playlist.findUnique).toHaveBeenCalledWith({
+          where: { id: 'playlistId', ownerId: 'testUserId' }
+        })
+        expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
+          where: {
+            OR: [
+              { videoId: 'videoId1', languageId: 'languageId1' },
+              { videoId: 'videoId2', languageId: 'languageId2' }
+            ]
+          },
+          select: { id: true, videoId: true, languageId: true }
+        })
+        expect(prismaMock.playlistItem.findFirst).toHaveBeenCalledWith({
+          where: { playlistId: 'playlistId' },
+          orderBy: { order: 'desc' },
+          select: { order: true }
+        })
+        expect(
+          prismaMock.playlistItem.createManyAndReturn
+        ).toHaveBeenCalledWith({
+          select: { id: true },
+          data: [
+            {
+              playlistId: 'playlistId',
+              videoVariantId: 'videoVariantId1',
+              order: 0
+            },
+            {
+              playlistId: 'playlistId',
+              videoVariantId: 'videoVariantId2',
+              order: 1
+            }
+          ]
+        })
+        expect(prismaMock.playlistItem.findMany).toHaveBeenCalledWith({
+          include: {
+            playlist: true,
+            videoVariant: true
+          },
+          where: { id: { in: ['playlistItemId1', 'playlistItemId2'] } },
+          orderBy: { order: 'asc' }
+        })
+        expect(data).toHaveProperty(
+          'data.playlistItemAddWithVideoAndLanguageIds',
+          {
+            data: [
+              {
+                id: 'playlistItemId1',
+                order: 0,
+                playlist: { id: 'playlistId' },
+                videoVariant: { id: 'videoVariantId1' },
+                createdAt: new Date('2023-01-01').toISOString(),
+                updatedAt: new Date('2023-01-01').toISOString()
+              },
+              {
+                id: 'playlistItemId2',
+                order: 1,
+                playlist: { id: 'playlistId' },
+                videoVariant: { id: 'videoVariantId2' },
+                createdAt: new Date('2023-01-01').toISOString(),
+                updatedAt: new Date('2023-01-01').toISOString()
+              }
+            ]
+          }
+        )
+      })
+
+      it('should add items with correct order when items exist', async () => {
+        const videos = [
+          { videoId: 'videoId1', languageId: 'languageId1' },
+          { videoId: 'videoId2', languageId: 'languageId2' }
+        ]
+        const existingItem = { ...mockPlaylistItem, order: 0 }
+        const videoVariants = [
+          {
+            id: 'videoVariantId2',
+            videoId: 'videoId2',
+            languageId: 'languageId2'
+          },
+          {
+            id: 'videoVariantId1',
+            videoId: 'videoId1',
+            languageId: 'languageId1'
+          }
+        ] as unknown as VideoVariant[]
+        const newItems = [
+          createMockPlaylistItem('playlistItemId1', 'videoVariantId1', 1),
+          createMockPlaylistItem('playlistItemId2', 'videoVariantId2', 2)
+        ]
+
+        prismaMock.playlist.findUnique.mockResolvedValueOnce(mockPlaylist)
+        prismaMock.videoVariant.findMany.mockResolvedValueOnce(videoVariants)
+        prismaMock.$transaction.mockImplementation(async (callback: any) =>
+          callback(prismaMock)
+        )
+        prismaMock.playlistItem.findFirst.mockResolvedValueOnce(existingItem)
+        prismaMock.playlistItem.createManyAndReturn.mockResolvedValueOnce([
+          newItems[0],
+          newItems[1]
+        ])
+        prismaMock.playlistItem.findMany.mockResolvedValueOnce(newItems)
+
+        const data = await authClient({
+          document: ADD_ITEM_WITH_VIDEO_AND_LANGUAGE_IDS_MUTATION,
+          variables: {
+            playlistId: 'playlistId',
+            videos
+          }
+        })
+
+        expect(
+          prismaMock.playlistItem.createManyAndReturn
+        ).toHaveBeenCalledWith({
+          select: { id: true },
+          data: [
+            {
+              playlistId: 'playlistId',
+              videoVariantId: 'videoVariantId1',
+              order: 1
+            },
+            {
+              playlistId: 'playlistId',
+              videoVariantId: 'videoVariantId2',
+              order: 2
+            }
+          ]
+        })
+        expect(prismaMock.playlistItem.findMany).toHaveBeenCalledWith({
+          include: {
+            playlist: true,
+            videoVariant: true
+          },
+          where: { id: { in: ['playlistItemId1', 'playlistItemId2'] } },
+          orderBy: { order: 'asc' }
+        })
+        expect(data).toHaveProperty(
+          'data.playlistItemAddWithVideoAndLanguageIds',
+          {
+            data: [
+              {
+                id: 'playlistItemId1',
+                order: 1,
+                playlist: { id: 'playlistId' },
+                videoVariant: { id: 'videoVariantId1' },
+                createdAt: new Date('2023-01-01').toISOString(),
+                updatedAt: new Date('2023-01-01').toISOString()
+              },
+              {
+                id: 'playlistItemId2',
+                order: 2,
+                playlist: { id: 'playlistId' },
+                videoVariant: { id: 'videoVariantId2' },
+                createdAt: new Date('2023-01-01').toISOString(),
+                updatedAt: new Date('2023-01-01').toISOString()
+              }
+            ]
+          }
+        )
+      })
+
+      it('should fail if playlist not found', async () => {
+        prismaMock.playlist.findUnique.mockResolvedValueOnce(null)
+
+        const data = await authClient({
+          document: ADD_ITEM_WITH_VIDEO_AND_LANGUAGE_IDS_MUTATION,
+          variables: {
+            playlistId: 'nonExistentId',
+            videos: [{ videoId: 'videoId1', languageId: 'languageId1' }]
+          }
+        })
+
+        expect(data).toHaveProperty(
+          'data.playlistItemAddWithVideoAndLanguageIds',
+          {
+            message: 'Playlist not found',
+            location: [{ path: ['playlistId'], value: 'nonExistentId' }]
+          }
+        )
+        expect(prismaMock.playlistItem.create).not.toHaveBeenCalled()
+      })
+
+      it('should fail if some video variants not found', async () => {
+        const videos = [
+          { videoId: 'videoId1', languageId: 'languageId1' },
+          { videoId: 'videoId2', languageId: 'languageId2' }
+        ]
+        const foundVideoVariants = [
+          {
+            id: 'videoVariantId1',
+            videoId: 'videoId1',
+            languageId: 'languageId1'
+          }
+        ] as unknown as VideoVariant[]
+
+        prismaMock.playlist.findUnique.mockResolvedValueOnce(mockPlaylist)
+        prismaMock.videoVariant.findMany.mockResolvedValueOnce(
+          foundVideoVariants
+        )
+
+        const data = await authClient({
+          document: ADD_ITEM_WITH_VIDEO_AND_LANGUAGE_IDS_MUTATION,
+          variables: {
+            playlistId: 'playlistId',
+            videos
+          }
+        })
+
+        expect(data).toHaveProperty(
+          'data.playlistItemAddWithVideoAndLanguageIds',
+          {
+            message: 'Some video variants not found',
+            location: [{ path: ['videos'], value: 'languageId2/videoId2' }]
+          }
+        )
+        expect(prismaMock.playlistItem.create).not.toHaveBeenCalled()
+      })
+
+      it('should fail if not authenticated', async () => {
+        const data = await client({
+          document: ADD_ITEM_WITH_VIDEO_AND_LANGUAGE_IDS_MUTATION,
+          variables: {
+            playlistId: 'playlistId',
+            videos: [{ videoId: 'videoId1', languageId: 'languageId1' }]
+          }
+        })
+
+        expect(data).toHaveProperty(
+          'data.playlistItemAddWithVideoAndLanguageIds',
+          null
+        )
         expect(prismaMock.playlistItem.create).not.toHaveBeenCalled()
       })
     })
@@ -287,7 +673,7 @@ describe('playlistItem', () => {
         prismaMock.playlistItem.findUnique.mockResolvedValueOnce(
           mockPlaylistItem
         )
-        prismaMock.$transaction.mockImplementation(async (callback) =>
+        prismaMock.$transaction.mockImplementation(async (callback: any) =>
           callback(prismaMock)
         )
         prismaMock.playlistItem.delete.mockResolvedValueOnce(mockPlaylistItem)
@@ -462,7 +848,7 @@ describe('playlistItem', () => {
 
         prismaMock.playlist.findUnique.mockResolvedValueOnce(mockPlaylist)
         prismaMock.playlistItem.findMany.mockResolvedValueOnce(reorderedItems)
-        prismaMock.$transaction.mockImplementation(async (callback) =>
+        prismaMock.$transaction.mockImplementation(async (callback: any) =>
           callback(prismaMock)
         )
         prismaMock.playlistItem.update.mockResolvedValue({} as any)
@@ -505,6 +891,10 @@ describe('playlistItem', () => {
         expect(prismaMock.playlistItem.update).toHaveBeenCalledWith({
           where: { id: 'item3' },
           data: { order: 2 }
+        })
+        expect(prismaMock.playlistItem.findMany).toHaveBeenCalledWith({
+          where: { playlistId: 'playlistId' },
+          orderBy: { order: 'asc' }
         })
         expect(data).toHaveProperty('data.playlistItemsReorder', {
           data: [

@@ -36,6 +36,8 @@ describe('MuxDetails', () => {
           image: null,
           duration: 10,
           objectFit: VideoBlockObjectFit.fill,
+          subtitleLanguage: null,
+          showGeneratedSubtitles: null,
           action: null,
           mediaVideo: {
             __typename: 'MuxVideo',

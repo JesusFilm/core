@@ -186,6 +186,8 @@ describe('Source', () => {
             source: VideoBlockSource.youTube,
             mediaVideo: null,
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: null,
             posterBlockId: 'poster1.id',
             children: []
           }}
@@ -244,6 +246,8 @@ describe('Source', () => {
               id: 'ak06MSETeo4'
             },
             objectFit: null,
+            subtitleLanguage: null,
+            showGeneratedSubtitles: null,
             posterBlockId: 'poster1.id',
             children: []
           }}

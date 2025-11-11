@@ -48,8 +48,12 @@ export function VideoOptions(): ReactElement {
       inverseInput.autoplay = selectedBlock.autoplay
     if (input.duration !== undefined)
       inverseInput.duration = selectedBlock.duration
-    if (input.videoId !== undefined)
+    if (input.videoId !== undefined) {
       inverseInput.videoId = selectedBlock.videoId
+      if (input.videoId !== selectedBlock.videoId) {
+        input.subtitleLanguageId = null
+      }
+    }
     if (input.videoVariantLanguageId !== undefined)
       inverseInput.videoVariantLanguageId = selectedBlock.videoVariantLanguageId
     if (input.source !== undefined) inverseInput.source = selectedBlock.source
@@ -59,6 +63,8 @@ export function VideoOptions(): ReactElement {
       inverseInput.fullsize = selectedBlock.fullsize
     if (input.objectFit !== undefined)
       inverseInput.objectFit = selectedBlock.objectFit
+    if (input.subtitleLanguageId !== undefined)
+      inverseInput.subtitleLanguageId = selectedBlock.subtitleLanguage?.id
 
     add({
       parameters: {

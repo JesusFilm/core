@@ -39,7 +39,6 @@ builder.mutationField('videoBlockUpdate', (t) =>
       const { id, input: initialInput } = args
 
       const block = await fetchBlockWithJourneyAcl(id)
-
       // Check permissions using ACL
       if (
         !ability(

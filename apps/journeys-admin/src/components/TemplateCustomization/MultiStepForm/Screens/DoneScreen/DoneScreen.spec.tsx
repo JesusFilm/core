@@ -1,18 +1,20 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { useRouter, NextRouter } from 'next/router'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
-import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { GET_CUSTOM_DOMAINS } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
-import { GET_JOURNEY_FOR_SHARING } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
-import { DoneScreen } from './DoneScreen'
+import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
+
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../__generated__/BlockFields'
 import {
   ThemeMode,
   ThemeName
 } from '../../../../../../__generated__/globalTypes'
+import { GET_CUSTOM_DOMAINS } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery'
+import { GET_JOURNEY_FOR_SHARING } from '../../../../../libs/useJourneyForShareLazyQuery/useJourneyForShareLazyQuery'
+
+import { DoneScreen } from './DoneScreen'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -127,9 +129,7 @@ describe('DoneScreen', () => {
       </MockedProvider>
     )
 
-    expect(screen.getAllByRole('heading', { level: 1 })[0]).toHaveTextContent(
-      "It's Ready!"
-    )
+    expect(screen.getAllByText("It's Ready!")).toHaveLength(2)
   })
 
   it('renders journey preview card with title and description', () => {
@@ -276,8 +276,8 @@ describe('DoneScreen', () => {
   it('does not navigate when journey has no id', () => {
     const journeyWithoutId = {
       ...journey,
-      id: null
-    } as any
+      id: null as unknown as string
+    }
 
     render(
       <MockedProvider mocks={[getCustomDomainsMock]}>

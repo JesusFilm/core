@@ -1,9 +1,11 @@
-import { render, screen, fireEvent } from '@testing-library/react'
-import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { ShareDrawer } from './ShareDrawer'
+import { journey } from '@core/journeys/ui/JourneyProvider/JourneyProvider.mock'
+
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../__generated__/BlockFields'
+
+import { ShareDrawer } from './ShareDrawer'
 
 jest.mock('react-i18next', () => ({
   __esModule: true,

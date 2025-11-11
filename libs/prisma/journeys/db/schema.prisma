@@ -88,6 +88,7 @@ enum ButtonAction {
   LinkAction
   EmailAction
   PhoneAction
+  ChatAction
 }
 
 enum VideoBlockSource {
@@ -145,7 +146,7 @@ model Event {
   journeyVisitorVisitorId String?
   updatedAt               DateTime          @default(now()) @updatedAt
   visitor                 Visitor           @relation(fields: [visitorId], references: [id], onDelete: Cascade)
-  journeyVisitor          JourneyVisitor?   @relation(fields: [journeyVisitorJourneyId, journeyVisitorVisitorId], references: [journeyId, visitorId])
+  journeyVisitor          JourneyVisitor?   @relation(fields: [journeyId, visitorId], references: [journeyId, visitorId])
   journey                 Journey?          @relation(fields: [journeyId], references: [id])
 
   @@index(journeyId)
@@ -219,6 +220,7 @@ model JourneyVisitor {
   lastTextResponse          String?
   lastRadioQuestion         String?
   lastRadioOptionSubmission String?
+  lastMultiselectSubmission String?
   activityCount             Int              @default(0)
   updatedAt                 DateTime         @default(now()) @updatedAt
   journey                   Journey          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
@@ -232,6 +234,7 @@ model JourneyVisitor {
   @@index(lastChatStartedAt)
   @@index(lastRadioQuestion)
   @@index(lastTextResponse)
+  @@index(lastMultiselectSubmission)
   @@index(activityCount(sort: Desc))
   @@index(duration(sort: Desc))
 }
@@ -542,6 +545,8 @@ model Block {
   image                      String?
   duration                   Int?
   objectFit                  VideoBlockObjectFit?
+  subtitleLanguageId         String?
+  showGeneratedSubtitles     Boolean?
   triggerStart               Int?
   x                          Int?
   y                          Int?
@@ -571,6 +576,8 @@ model Block {
   menuStepBlockParent        Journey?             @relation("MenuStepBlock")
   logoImageBlockParent       Journey?             @relation("LogoImageBlock")
   slug                       String?
+  min                        Int?
+  max                        Int?
   settings                   Json                 @default("{ }") // block settings
 
   @@unique([slug, journeyId])
@@ -596,6 +603,7 @@ model Action {
   parentBlock   Block    @relation(fields: [parentBlockId], references: [id], onDelete: Cascade)
   journey       Journey? @relation(fields: [journeyId], references: [id])
   block         Block?   @relation("Block", fields: [blockId], references: [id])
+  chatUrl       String?
 
   @@index(parentBlockId)
 }

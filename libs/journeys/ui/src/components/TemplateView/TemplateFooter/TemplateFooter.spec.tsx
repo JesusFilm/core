@@ -1,12 +1,12 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, waitFor, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { NextRouter, useRouter } from 'next/router'
 
+import { isJourneyCustomizable } from '../../../libs/isJourneyCustomizable'
 import { JourneyProvider } from '../../../libs/JourneyProvider'
 
 import { journey } from './data'
 import { TemplateFooter } from './TemplateFooter'
-import { NextRouter, useRouter } from 'next/router'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -17,6 +17,14 @@ jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn()
 }))
+
+jest.mock('../../../libs/isJourneyCustomizable', () => ({
+  isJourneyCustomizable: jest.fn()
+}))
+
+const mockIsJourneyCustomizable = isJourneyCustomizable as jest.MockedFunction<
+  typeof isJourneyCustomizable
+>
 
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 
@@ -51,8 +59,8 @@ describe('TemplateFooter', () => {
     ).not.toBeDisabled()
   })
 
-  it('should disable when loading', () => {
-    const { getByRole } = render(
+  it('should show loading skeleton', () => {
+    const { getByTestId } = render(
       <MockedProvider>
         <JourneyProvider value={{}}>
           <TemplateFooter />
@@ -60,17 +68,17 @@ describe('TemplateFooter', () => {
       </MockedProvider>
     )
 
-    expect(getByRole('button', { name: 'Use This Template' })).toBeDisabled()
+    expect(getByTestId('UseThisTemplateButtonSkeleton')).toBeInTheDocument()
   })
 
-  it('should push signed in user to customization flow page when clicking template customization button while feature flag is enabled.', async () => {
+  it('should push signed in user to customization flow page ', async () => {
+    mockIsJourneyCustomizable.mockReturnValue(true)
+
     const { getByRole } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ journeyCustomization: true }}>
-          <JourneyProvider value={{ journey }}>
-            <TemplateFooter signedIn />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider value={{ journey }}>
+          <TemplateFooter signedIn />
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -85,14 +93,14 @@ describe('TemplateFooter', () => {
     })
   })
 
-  it('should open legacy copy to team dialog when clicking template customization button while feature flag is disabled.', async () => {
+  it('should open copy to team dialog if journey is not customizable', async () => {
+    mockIsJourneyCustomizable.mockReturnValue(false)
+
     const { getByRole } = render(
       <MockedProvider>
-        <FlagsProvider flags={{ journeyCustomization: false }}>
-          <JourneyProvider value={{ journey }}>
-            <TemplateFooter signedIn />
-          </JourneyProvider>
-        </FlagsProvider>
+        <JourneyProvider value={{ journey }}>
+          <TemplateFooter signedIn />
+        </JourneyProvider>
       </MockedProvider>
     )
 

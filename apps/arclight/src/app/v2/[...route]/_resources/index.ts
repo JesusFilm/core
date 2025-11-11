@@ -305,7 +305,7 @@ const LanguageSchema = z.object({
 const ResourcesResponseSchema = z.object({
   _links: z.object({
     self: z.object({
-      href: z.string().url()
+      href: z.url()
     })
   }),
   _embedded: z.object({

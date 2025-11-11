@@ -1,7 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
 import { NextRouter, useRouter } from 'next/router'
+import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { GetJourney_journey as Journey } from '../../libs/useJourneyQuery/__generated__/GetJourney'
@@ -704,9 +704,7 @@ describe('CopyToTeamDialog', () => {
 
     await waitFor(() => expect(result).toHaveBeenCalled())
 
-    expect(
-      getByText(/This is not the original journey template/)
-    ).toBeInTheDocument()
+    expect(getByText(/This template isn't the original/)).toBeInTheDocument()
 
     const translationSwitch = getByRole('checkbox', { name: 'Translation' })
     expect(translationSwitch).toBeDisabled()

@@ -43,7 +43,7 @@ export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate
           id: 'textResponseBlock.id',
           journeyId: 'journey.id',
           parentBlockId: 'card.id',
-          label: 'Label'
+          label: 'Field Name'
         }
       }
     },
@@ -54,14 +54,15 @@ export const textResponseBlockCreateMock: MockedResponse<TextResponseBlockCreate
           id: 'textResponseBlock.id',
           parentBlockId: 'card.id',
           parentOrder: 0,
-          label: 'Label',
+          label: 'Field Name',
           hint: null,
           minRows: null,
           type: null,
           routeId: null,
           integrationId: null,
           placeholder: null,
-          required: null
+          required: null,
+          hideLabel: false
         }
       }
     }))
