@@ -506,6 +506,11 @@ export class CardLevelActionPage {
     await frame.locator('div[data-testid*="JourneysRadioQuestionList"] div[role="group"] div:not([data-testid*="SelectableWrapper"])', { hasText: 'Add New Option' }).click();
   }
 
+  async deleteAllThePollOptions() {
+    await this.selectWholePollOptions()
+    await this.clickDeleteBtnInToolTipBar()
+  }
+
   async verifyPollOptionsDeletedFromCard() {
     const iframes = this.page.locator(this.journeyCardFrame);
     const frame = await iframes.first().contentFrame();
