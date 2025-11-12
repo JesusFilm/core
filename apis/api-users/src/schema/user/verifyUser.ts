@@ -15,7 +15,6 @@ export async function verifyUser(
   const token = isExample
     ? (process.env.EXAMPLE_EMAIL_TOKEN ?? generateSixDigitNumber()) // Use random token if EXAMPLE_EMAIL_TOKEN not set
     : generateSixDigitNumber()
-  
 
   const job = await queue.getJob(userId)
   if (job != null) {
