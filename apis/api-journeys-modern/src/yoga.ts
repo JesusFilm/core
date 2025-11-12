@@ -80,7 +80,10 @@ export const yoga = createYoga<
     process.env.NODE_ENV !== 'test'
       ? useResponseCache({
           session: () => null,
-          cache
+          cache,
+          ttlPerSchemaCoordinate: {
+            'Journey.blockTypenames': 0
+          }
         })
       : {}
   ]

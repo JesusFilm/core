@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
 
 import { ContactDataForm } from './ContactDataForm'
@@ -49,62 +50,76 @@ describe('ContactDataForm', () => {
     const selectAllCheckbox = screen.getByLabelText('All')
 
     // Uncheck all
-    fireEvent.click(selectAllCheckbox)
-    expect(selectAllCheckbox).not.toBeChecked()
-    expect(screen.getByLabelText('Poll Selection')).not.toBeChecked()
-    expect(screen.getByLabelText('Subscription')).not.toBeChecked()
-    expect(screen.getByLabelText('Text Submission')).not.toBeChecked()
-    expect(screen.getByLabelText('Multiselect Responses')).not.toBeChecked()
+    userEvent.click(selectAllCheckbox)
+    waitFor(() => {
+      expect(selectAllCheckbox).not.toBeChecked()
+      expect(screen.getByLabelText('Poll Selection')).not.toBeChecked()
+      expect(screen.getByLabelText('Subscription')).not.toBeChecked()
+      expect(screen.getByLabelText('Text Submission')).not.toBeChecked()
+      expect(screen.getByLabelText('Multiselect Responses')).not.toBeChecked()
+    })
 
     // Check all again
-    fireEvent.click(selectAllCheckbox)
-    expect(selectAllCheckbox).toBeChecked()
-    expect(screen.getByLabelText('Poll Selection')).toBeChecked()
-    expect(screen.getByLabelText('Subscription')).toBeChecked()
-    expect(screen.getByLabelText('Text Submission')).toBeChecked()
-    expect(screen.getByLabelText('Multiselect Responses')).toBeChecked()
+    userEvent.click(selectAllCheckbox)
+    waitFor(() => {
+      expect(selectAllCheckbox).toBeChecked()
+      expect(screen.getByLabelText('Poll Selection')).toBeChecked()
+      expect(screen.getByLabelText('Subscription')).toBeChecked()
+      expect(screen.getByLabelText('Text Submission')).toBeChecked()
+      expect(screen.getByLabelText('Multiselect Responses')).toBeChecked()
+    })
   })
 
   it('handles individual checkbox selection correctly', () => {
     render(<ContactDataFormWithState />)
 
     // Uncheck All
-    fireEvent.click(screen.getByLabelText('Poll Selection'))
-    fireEvent.click(screen.getByLabelText('Subscription'))
-    fireEvent.click(screen.getByLabelText('Text Submission'))
-    fireEvent.click(screen.getByLabelText('Multiselect Responses'))
-    expect(screen.getByTestId('selected-fields')).toHaveTextContent('')
+    userEvent.click(screen.getByLabelText('Poll Selection'))
+    userEvent.click(screen.getByLabelText('Subscription'))
+    userEvent.click(screen.getByLabelText('Text Submission'))
+    userEvent.click(screen.getByLabelText('Multiselect Responses'))
+    waitFor(() => {
+      expect(screen.getByTestId('selected-fields')).toBeEmptyDOMElement()
+    })
 
     // Check Poll Selection
-    fireEvent.click(screen.getByLabelText('Poll Selection'))
-    expect(screen.getByLabelText('Poll Selection')).toBeChecked()
-    expect(screen.getByLabelText('All')).not.toBeChecked()
-    expect(screen.getByTestId('selected-fields')).toHaveTextContent(
-      'RadioQuestionSubmissionEvent'
-    )
+    userEvent.click(screen.getByLabelText('Poll Selection'))
+    waitFor(() => {
+      expect(screen.getByLabelText('Poll Selection')).toBeChecked()
+      expect(screen.getByLabelText('All')).not.toBeChecked()
+      expect(screen.getByTestId('selected-fields')).toHaveTextContent(
+        'RadioQuestionSubmissionEvent'
+      )
+    })
 
     // Check Subscription
-    fireEvent.click(screen.getByLabelText('Subscription'))
-    expect(screen.getByLabelText('Subscription')).toBeChecked()
-    expect(screen.getByLabelText('All')).not.toBeChecked()
-    expect(screen.getByTestId('selected-fields')).toHaveTextContent(
-      'RadioQuestionSubmissionEvent, SignUpSubmissionEvent'
-    )
+    userEvent.click(screen.getByLabelText('Subscription'))
+    waitFor(() => {
+      expect(screen.getByLabelText('Subscription')).toBeChecked()
+      expect(screen.getByLabelText('All')).not.toBeChecked()
+      expect(screen.getByTestId('selected-fields')).toHaveTextContent(
+        'RadioQuestionSubmissionEvent, SignUpSubmissionEvent'
+      )
+    })
 
     // Check Text Submission
-    fireEvent.click(screen.getByLabelText('Text Submission'))
-    expect(screen.getByLabelText('Text Submission')).toBeChecked()
-    expect(screen.getByLabelText('All')).not.toBeChecked()
-    expect(screen.getByTestId('selected-fields')).toHaveTextContent(
-      'RadioQuestionSubmissionEvent, SignUpSubmissionEvent, TextResponseSubmissionEvent'
-    )
+    userEvent.click(screen.getByLabelText('Text Submission'))
+    waitFor(() => {
+      expect(screen.getByLabelText('Text Submission')).toBeChecked()
+      expect(screen.getByLabelText('All')).not.toBeChecked()
+      expect(screen.getByTestId('selected-fields')).toHaveTextContent(
+        'RadioQuestionSubmissionEvent, SignUpSubmissionEvent, TextResponseSubmissionEvent'
+      )
+    })
 
     // Check Multiselect Responses
-    fireEvent.click(screen.getByLabelText('Multiselect Responses'))
-    expect(screen.getByLabelText('Multiselect Responses')).toBeChecked()
-    expect(screen.getByLabelText('All')).toBeChecked()
-    expect(screen.getByTestId('selected-fields')).toHaveTextContent(
-      'RadioQuestionSubmissionEvent, SignUpSubmissionEvent, TextResponseSubmissionEvent, MultiselectSubmissionEvent'
-    )
+    userEvent.click(screen.getByLabelText('Multiselect Responses'))
+    waitFor(() => {
+      expect(screen.getByLabelText('Multiselect Responses')).toBeChecked()
+      expect(screen.getByLabelText('All')).toBeChecked()
+      expect(screen.getByTestId('selected-fields')).toHaveTextContent(
+        'RadioQuestionSubmissionEvent, SignUpSubmissionEvent, TextResponseSubmissionEvent, MultiselectSubmissionEvent'
+      )
+    })
   })
 })
