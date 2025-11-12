@@ -875,14 +875,12 @@ export class CardLevelActionPage {
       )
       .click({ delay: 3000 })
     await expect(
-      this.page
-        .locator('div[data-testid="AccordionSummary"]')
-        .filter({
-          has: this.page.getByRole('heading', {
-            name: 'Hosted By',
-            exact: true
-          })
+      this.page.locator('div[data-testid="AccordionSummary"]').filter({
+        has: this.page.getByRole('heading', {
+          name: 'Hosted By',
+          exact: true
         })
+      })
     )
       .toBeVisible()
       .catch(async () => {
