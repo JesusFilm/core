@@ -16,9 +16,13 @@ export async function validateEmail(
   })
 
   // Special handling for @example.com emails with EXAMPLE_EMAIL_TOKEN
-  // This bypass is enabled when EXAMPLE_EMAIL_TOKEN is configured
-  // Environment gate: requires EXAMPLE_EMAIL_TOKEN is set
-  if (process.env.EXAMPLE_EMAIL_TOKEN && user?.email && token) {
+  // Enabled only outside production to prevent accidental prod bypass
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    process.env.EXAMPLE_EMAIL_TOKEN &&
+    user?.email &&
+    token
+  ) {
     // Normalize inputs: trim and lowercase for consistent comparison
     const normalizedEmail = user.email.trim().toLowerCase()
     const normalizedToken = token.trim().toLowerCase()
