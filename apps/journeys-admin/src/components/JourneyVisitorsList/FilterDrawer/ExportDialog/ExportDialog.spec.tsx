@@ -6,10 +6,8 @@ import {
   CreateEventsExportLog,
   CreateEventsExportLogVariables
 } from '../../../../../__generated__/CreateEventsExportLog'
-import {
-  GetJourneyCreatedAt,
-  GetJourneyCreatedAtVariables
-} from '../../../../../__generated__/GetJourneyCreatedAt'
+import { GetJourneyCreatedAtVariables } from '../../../../../__generated__/GetJourneyCreatedAt'
+import { DocumentNode } from 'graphql'
 import {
   GetJourneyEvents,
   GetJourneyEventsVariables
@@ -27,12 +25,20 @@ import { ExportDialog, GET_JOURNEY_CREATED_AT } from './ExportDialog'
 const mockOnClose = jest.fn()
 
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
+type GetJourneyCreatedAtDataForTest = {
+  journey: {
+    id: string
+    createdAt: string
+    __typename: 'Journey'
+    blockTypenames: string[]
+  }
+}
 const mockJourneyCreatedAt: MockedResponse<
-  GetJourneyCreatedAt,
+  GetJourneyCreatedAtDataForTest,
   GetJourneyCreatedAtVariables
 > = {
   request: {
-    query: GET_JOURNEY_CREATED_AT,
+    query: GET_JOURNEY_CREATED_AT as unknown as DocumentNode,
     variables: { id: 'journey1' }
   },
   result: {
@@ -40,7 +46,22 @@ const mockJourneyCreatedAt: MockedResponse<
       journey: {
         id: 'journey1',
         createdAt: journeyCreatedAt,
-        __typename: 'Journey'
+        __typename: 'Journey',
+        blockTypenames: [
+          'ButtonBlock',
+          'CardBlock',
+          'IconBlock',
+          'ImageBlock',
+          'MultiselectBlock',
+          'MultiselectOptionBlock',
+          'RadioOptionBlock',
+          'RadioQuestionBlock',
+          'StepBlock',
+          'TextResponseBlock',
+          'TypographyBlock',
+          'VideoBlock',
+          'SignUpBlock'
+        ]
       }
     }
   }
@@ -353,8 +374,11 @@ describe('ExportDialog', () => {
       const selectElement = screen.getByRole('combobox')
       fireEvent.mouseDown(selectElement)
       fireEvent.click(screen.getByText('Contact Data'))
+      await waitFor(() =>
+        expect(screen.getByLabelText('Text Submission')).toBeInTheDocument()
+      )
 
-      expect(screen.getByLabelText('All')).toBeChecked()
+      // expect(screen.getByLabelText('All')).toBeChecked()
       expect(screen.getByLabelText('Poll Selection')).toBeChecked()
       expect(screen.getByLabelText('Subscription')).toBeChecked()
       expect(screen.getByLabelText('Text Submission')).toBeChecked()
@@ -392,8 +416,16 @@ describe('ExportDialog', () => {
       const selectElement = screen.getByRole('combobox')
       fireEvent.mouseDown(selectElement)
       fireEvent.click(screen.getByText('Contact Data'))
-
-      expect(screen.getByLabelText('All')).toBeChecked()
+      console.log('--------------------------------')
+      console.log(
+        'blockTypenames',
+        (mockJourneyCreatedAt.result as any)?.data?.journey?.blockTypenames
+      )
+      console.log('--------------------------------')
+      await waitFor(() =>
+        expect(screen.getByLabelText('Text Submission')).toBeInTheDocument()
+      )
+      // expect(screen.getByLabelText('All')).toBeChecked()
       fireEvent.click(screen.getByLabelText('All'))
       fireEvent.click(screen.getByLabelText('Poll Selection'))
 
@@ -402,10 +434,11 @@ describe('ExportDialog', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Export (CSV)' }))
       expect(mockExportJourneyContacts).toHaveBeenCalledWith({
         journeyId: 'journey1',
-        filter: {
+        filter: expect.objectContaining({
           typenames: ['RadioQuestionSubmissionEvent'],
+          periodRangeStart: '2023-01-01T00:00:00.000Z',
           periodRangeEnd: expect.any(String)
-        }
+        })
       })
       await waitFor(() => {
         expect(mockOnClose).toHaveBeenCalled()

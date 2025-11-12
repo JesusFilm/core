@@ -56,6 +56,15 @@ export function ExportDialog({
     variables: { id: journeyId }
   })
 
+  console.log('---------------EXPORT DIALOG-----------------')
+  console.log('journeyData', journeyData)
+  console.log('---------------EXPORT DIALOG-----------------')
+  console.log(
+    'journeyData?.journey?.blockTypenames',
+    journeyData?.journey?.blockTypenames
+  )
+  console.log('---------------EXPORT DIALOG-----------------')
+
   const clampToToday = (date: Date | null): Date | null => {
     if (date == null) return null
     const now = new Date()
