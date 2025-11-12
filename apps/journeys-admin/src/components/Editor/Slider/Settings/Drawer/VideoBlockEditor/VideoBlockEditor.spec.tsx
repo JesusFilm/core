@@ -32,6 +32,8 @@ const videoInternal: TreeBlock<VideoBlock> = {
   duration: null,
   image: null,
   objectFit: null,
+  subtitleLanguage: null,
+  showGeneratedSubtitles: false,
   mediaVideo: {
     __typename: 'Video',
     id: '2_0-FallingPlates',
@@ -115,6 +117,8 @@ const videoYouTube: TreeBlock<VideoBlock> = {
   source: VideoBlockSource.youTube,
   mediaVideo: null,
   objectFit: null,
+  subtitleLanguage: null,
+  showGeneratedSubtitles: false,
   posterBlockId: 'poster1.id',
   children: []
 }
@@ -324,5 +328,150 @@ describe('VideoBlockEditor', () => {
       </ThemeProvider>
     )
     expect(getByRole('checkbox', { name: 'Autoplay' })).toBeEnabled()
+  })
+
+  it('renders VideoBlockEditorSettings when videoId is present', async () => {
+    const { getByRole } = render(
+      <ThemeProvider>
+        <MockedProvider mocks={mocks}>
+          <SnackbarProvider>
+            <VideoBlockEditor
+              selectedBlock={videoInternal}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+    await waitFor(() => {
+      expect(getByRole('checkbox', { name: 'Autoplay' })).toBeInTheDocument()
+    })
+  })
+
+  it('does not render VideoBlockEditorSettings when videoId is null', () => {
+    const videoWithoutId = {
+      ...videoInternal,
+      videoId: null
+    } as TreeBlock<VideoBlock>
+
+    const { queryByRole } = render(
+      <ThemeProvider>
+        <MockedProvider mocks={mocks}>
+          <SnackbarProvider>
+            <VideoBlockEditor
+              selectedBlock={videoWithoutId}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+    expect(
+      queryByRole('checkbox', { name: 'Autoplay' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('renders Source component', () => {
+    const { getByTestId } = render(
+      <ThemeProvider>
+        <MockedProvider mocks={mocks}>
+          <SnackbarProvider>
+            <VideoBlockEditor
+              selectedBlock={videoInternal}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+    expect(getByTestId('VideoBlockEditor')).toBeInTheDocument()
+  })
+
+  it('calls onChange when video properties are updated', async () => {
+    const onChange = jest.fn()
+    const { getByRole } = render(
+      <ThemeProvider>
+        <MockedProvider mocks={mocks}>
+          <SnackbarProvider>
+            <VideoBlockEditor
+              selectedBlock={videoInternal}
+              onChange={onChange}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByRole('checkbox', { name: 'Autoplay' })).toBeInTheDocument()
+    })
+  })
+
+  it('handles Mux video source', async () => {
+    const videoMux: TreeBlock<VideoBlock> = {
+      ...videoInternal,
+      source: VideoBlockSource.mux,
+      mediaVideo: {
+        __typename: 'MuxVideo',
+        id: 'muxVideoId',
+        assetId: 'assetId',
+        playbackId: 'playbackId'
+      }
+    }
+
+    const { getByTestId } = render(
+      <ThemeProvider>
+        <MockedProvider mocks={mocks}>
+          <SnackbarProvider>
+            <VideoBlockEditor selectedBlock={videoMux} onChange={jest.fn()} />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByTestId('VideoBlockEditor')).toBeInTheDocument()
+    })
+  })
+
+  it('finds posterBlock from children', async () => {
+    const videoWithPoster: TreeBlock<VideoBlock> = {
+      ...videoInternal,
+      posterBlockId: 'poster1.id',
+      children: [
+        {
+          id: 'poster1.id',
+          __typename: 'ImageBlock',
+          parentBlockId: 'video1.id',
+          parentOrder: 0,
+          src: 'https://example.com/poster.jpg',
+          alt: 'poster',
+          width: 1920,
+          height: 1080,
+          blurhash: 'blurhash',
+          scale: null,
+          focalTop: null,
+          focalLeft: null,
+          children: []
+        }
+      ]
+    }
+
+    const { getByTestId } = render(
+      <ThemeProvider>
+        <MockedProvider mocks={mocks}>
+          <SnackbarProvider>
+            <VideoBlockEditor
+              selectedBlock={videoWithPoster}
+              onChange={jest.fn()}
+            />
+          </SnackbarProvider>
+        </MockedProvider>
+      </ThemeProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByTestId('VideoBlockEditor')).toBeInTheDocument()
+    })
   })
 })

@@ -8,6 +8,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Formik, FormikHelpers } from 'formik'
 import sortBy from 'lodash/sortBy'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 import { boolean, object, string } from 'yup'
@@ -15,14 +16,13 @@ import { boolean, object, string } from 'yup'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
+import { useJourney } from '../../libs/JourneyProvider'
 import { SUPPORTED_LANGUAGE_IDS } from '../../libs/useJourneyAiTranslateSubscription/supportedLanguages'
 import { useLanguagesQuery } from '../../libs/useLanguagesQuery'
 import { UPDATE_LAST_ACTIVE_TEAM_ID } from '../../libs/useUpdateLastActiveTeamIdMutation'
 import { UpdateLastActiveTeamId } from '../../libs/useUpdateLastActiveTeamIdMutation/__generated__/UpdateLastActiveTeamId'
 import { useTeam } from '../TeamProvider'
 import { TranslationDialogWrapper } from '../TranslationDialogWrapper'
-import { useJourney } from '../../libs/JourneyProvider'
-import { useRouter } from 'next/router'
 
 interface CopyToTeamDialogProps {
   title: string
@@ -292,7 +292,7 @@ export function CopyToTeamDialog({
               {disablePublisherCopyAndTranslate && (
                 <Typography variant="caption" color="red">
                   {t(
-                    'This is not the original journey template, it is a translation or copy of the original template. If you want to translate or copy this journey - please use the original template.'
+                    `This template isn't the original — it's a copy or an AI translated copy. For most accurate translations, please translate from the original template`
                   )}
                 </Typography>
               )}

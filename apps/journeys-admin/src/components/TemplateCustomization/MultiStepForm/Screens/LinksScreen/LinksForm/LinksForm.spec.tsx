@@ -1,8 +1,9 @@
-import { render, screen, fireEvent, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { Formik, FormikProvider } from 'formik'
 
-import { LinksForm } from './LinksForm'
 import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
+
+import { LinksForm } from './LinksForm'
 
 describe('LinksForm', () => {
   it('should render links with labels, fields and open buttons', () => {
@@ -85,7 +86,7 @@ describe('LinksForm', () => {
 
     const input = within(screen.getByLabelText('Edit URL Link')).getByRole(
       'textbox'
-    ) as HTMLInputElement
+    )
     fireEvent.change(input, { target: { value: 'example.com' } })
     expect(setFieldValue).toHaveBeenCalledWith('url-1', 'https://example.com')
   })
@@ -255,7 +256,7 @@ describe('LinksForm', () => {
 
     const input = within(screen.getByLabelText('Edit URL Link')).getByRole(
       'textbox'
-    ) as HTMLInputElement
+    )
     fireEvent.change(input, { target: { value: 'example.com' } })
     expect(setFieldValue).toHaveBeenCalledWith('url-1', 'https://example.com')
   })

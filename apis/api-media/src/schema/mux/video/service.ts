@@ -1,6 +1,60 @@
 import Mux from '@mux/mux-node'
 
-import { MaxResolutionTierEnum } from './enums/maxResolutionTier'
+import { MaxResolutionTierEnum } from './enums/maxResolutionTierEnum'
+
+type MuxGeneratedSubtitleLanguageCode = NonNullable<
+  NonNullable<
+    NonNullable<
+      NonNullable<
+        Parameters<Mux['video']['uploads']['create']>[0]['new_asset_settings']
+      >['inputs']
+    >[number]['generated_subtitles']
+  >[number]['language_code']
+>
+
+// Define valid language codes as a Record keyed by the union type
+// satisfies will error at compile time if any value from MuxLanguageCodeUnion is missing, ergo needs to be a Record and not a Union as unions do not support this.
+const VALID_MUX_LANGUAGE_CODES = {
+  en: true,
+  es: true,
+  it: true,
+  pt: true,
+  de: true,
+  fr: true,
+  pl: true,
+  ru: true,
+  nl: true,
+  ca: true,
+  tr: true,
+  sv: true,
+  uk: true,
+  no: true,
+  fi: true,
+  sk: true,
+  el: true,
+  cs: true,
+  hr: true,
+  da: true,
+  ro: true,
+  bg: true
+} as const satisfies Record<MuxGeneratedSubtitleLanguageCode, true>
+
+// Extract the keys at runtime - these are guaranteed to match the union type
+const VALID_MUX_GENERATED_SUBTITLE_LANGUAGE_CODES: MuxGeneratedSubtitleLanguageCode[] =
+  Object.keys(
+    VALID_MUX_LANGUAGE_CODES
+  ) as Array<MuxGeneratedSubtitleLanguageCode>
+
+// This validates that the language code is a member of the union type at runtime
+export function isValidMuxGeneratedSubtitleLanguageCode(
+  value: string | null | undefined
+): value is MuxGeneratedSubtitleLanguageCode {
+  // we want to return true to account for the case where the user does not want to generate subtitles
+  if (value == null) return true
+  return VALID_MUX_GENERATED_SUBTITLE_LANGUAGE_CODES.includes(
+    value as MuxGeneratedSubtitleLanguageCode
+  )
+}
 
 // Type guard to safely check if a value is a valid MaxResolutionTierEnum key
 export function isValidMaxResolutionTier(
@@ -55,14 +109,31 @@ function getClient(userGenerated: boolean): Mux {
 export async function createVideoByDirectUpload(
   userGenerated: boolean,
   maxResolution?: Mux.Video.Asset['max_resolution_tier'],
-  downloadable = false
+  downloadable = false,
+  generateSubtitlesInput?: { languageCode: string; languageName: string } | null
 ): Promise<{ id: string; uploadUrl: string }> {
   if (process.env.CORS_ORIGIN == null) throw new Error('Missing CORS_ORIGIN')
+
+  const generateSubtitles =
+    generateSubtitlesInput != null && userGenerated ? true : false
+
+  // if generating subs, validate the language code
+  if (generateSubtitles) {
+    if (
+      !isValidMuxGeneratedSubtitleLanguageCode(
+        generateSubtitlesInput!.languageCode
+      )
+    ) {
+      throw new Error(
+        `Invalid language code: ${generateSubtitlesInput!.languageCode}`
+      )
+    }
+  }
 
   const response = await getClient(userGenerated).video.uploads.create({
     cors_origin: process.env.CORS_ORIGIN,
     new_asset_settings: {
-      encoding_tier: 'smart',
+      encoding_tier: generateSubtitles ? 'premium' : 'smart',
       playback_policy: ['public'],
       max_resolution_tier: userGenerated ? '1080p' : maxResolution,
       static_renditions: downloadable
@@ -74,6 +145,19 @@ export async function createVideoByDirectUpload(
             { resolution: '1080p' },
             { resolution: '1440p' },
             { resolution: '2160p' }
+          ]
+        : [],
+      inputs: generateSubtitles
+        ? [
+            {
+              generated_subtitles: [
+                {
+                  language_code: generateSubtitlesInput!
+                    .languageCode as MuxGeneratedSubtitleLanguageCode,
+                  name: generateSubtitlesInput!.languageName
+                }
+              ]
+            }
           ]
         : []
     }

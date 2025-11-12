@@ -171,6 +171,7 @@ mediaComponentLanguages.openapi(route, async (c) => {
             select: {
               id: true,
               bcp47: true,
+              iso3: true,
               name: {
                 where: {
                   languageId: { equals: '529' }
@@ -197,8 +198,8 @@ mediaComponentLanguages.openapi(route, async (c) => {
         const language = languageMap.get(languageId)
         return {
           languageId: Number(languageId),
-          languageName: language?.name[0]?.value ?? '',
-          languageTag: language?.bcp47 ?? '',
+          languageName: language?.name[0]?.value ?? 'English',
+          languageTag: language?.bcp47 ?? language?.iso3 ?? 'en',
           url: url,
           edition: edition
         }

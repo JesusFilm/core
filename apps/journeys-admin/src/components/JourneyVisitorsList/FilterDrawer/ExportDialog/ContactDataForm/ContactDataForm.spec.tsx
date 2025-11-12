@@ -1,37 +1,51 @@
 import { fireEvent, render, screen } from '@testing-library/react'
+import { useState } from 'react'
 
 import { ContactDataForm } from './ContactDataForm'
 
-jest.mock('next-i18next', () => ({
-  useTranslation: () => ({
-    t: (str: string) => str
-  })
-}))
-
 describe('ContactDataForm', () => {
-  const mockSetContactData = jest.fn()
-
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
+  const ContactDataFormWithState = () => {
+    const [selectedFields, setSelectedFields] = useState(() => [])
+    return (
+      <>
+        <div data-testid="selected-fields">{selectedFields.join(', ')}</div>
+        <ContactDataForm
+          setSelectedFields={setSelectedFields}
+          selectedFields={selectedFields}
+        />
+      </>
+    )
+  }
+
   it('renders all checkboxes with correct initial state', () => {
-    render(<ContactDataForm setContactData={mockSetContactData} />)
+    render(<ContactDataFormWithState />)
 
     // Check if all contact data fields are rendered
     expect(screen.getByLabelText('Name')).toBeInTheDocument()
     expect(screen.getByLabelText('Email')).toBeInTheDocument()
     expect(screen.getByLabelText('Phone')).toBeInTheDocument()
+    expect(screen.getByLabelText('Poll Selection')).toBeInTheDocument()
+    expect(screen.getByLabelText('Multiselect Submission')).toBeInTheDocument()
+    expect(screen.getByLabelText('Subscription')).toBeInTheDocument()
+    expect(screen.getByLabelText('Text Submission')).toBeInTheDocument()
 
     // Check initial state - all checkboxes should be checked
     expect(screen.getByLabelText('All')).toBeChecked()
     expect(screen.getByLabelText('Name')).toBeChecked()
     expect(screen.getByLabelText('Email')).toBeChecked()
     expect(screen.getByLabelText('Phone')).toBeChecked()
+    expect(screen.getByLabelText('Poll Selection')).toBeChecked()
+    expect(screen.getByLabelText('Subscription')).toBeChecked()
+    expect(screen.getByLabelText('Text Submission')).toBeChecked()
+    expect(screen.getByLabelText('Multiselect Submission')).toBeChecked()
   })
 
   it('handles "Select All" checkbox correctly', () => {
-    render(<ContactDataForm setContactData={mockSetContactData} />)
+    render(<ContactDataFormWithState />)
     const selectAllCheckbox = screen.getByLabelText('All')
 
     // Uncheck all
@@ -40,6 +54,10 @@ describe('ContactDataForm', () => {
     expect(screen.getByLabelText('Name')).not.toBeChecked()
     expect(screen.getByLabelText('Email')).not.toBeChecked()
     expect(screen.getByLabelText('Phone')).not.toBeChecked()
+    expect(screen.getByLabelText('Poll Selection')).not.toBeChecked()
+    expect(screen.getByLabelText('Subscription')).not.toBeChecked()
+    expect(screen.getByLabelText('Text Submission')).not.toBeChecked()
+    expect(screen.getByLabelText('Multiselect Submission')).not.toBeChecked()
 
     // Check all again
     fireEvent.click(selectAllCheckbox)
@@ -47,56 +65,76 @@ describe('ContactDataForm', () => {
     expect(screen.getByLabelText('Name')).toBeChecked()
     expect(screen.getByLabelText('Email')).toBeChecked()
     expect(screen.getByLabelText('Phone')).toBeChecked()
+    expect(screen.getByLabelText('Poll Selection')).toBeChecked()
+    expect(screen.getByLabelText('Subscription')).toBeChecked()
+    expect(screen.getByLabelText('Text Submission')).toBeChecked()
   })
 
   it('handles individual checkbox selection correctly', () => {
-    render(<ContactDataForm setContactData={mockSetContactData} />)
+    render(<ContactDataFormWithState />)
 
-    // Uncheck Name
+    // Uncheck All
     fireEvent.click(screen.getByLabelText('Name'))
-    expect(screen.getByLabelText('Name')).not.toBeChecked()
-    expect(screen.getByLabelText('All')).not.toBeChecked()
-
-    // Uncheck Email
     fireEvent.click(screen.getByLabelText('Email'))
-    expect(screen.getByLabelText('Email')).not.toBeChecked()
-    expect(screen.getByLabelText('All')).not.toBeChecked()
+    fireEvent.click(screen.getByLabelText('Phone'))
+    fireEvent.click(screen.getByLabelText('Poll Selection'))
+    fireEvent.click(screen.getByLabelText('Subscription'))
+    fireEvent.click(screen.getByLabelText('Text Submission'))
+    fireEvent.click(screen.getByLabelText('Multiselect Submission'))
+    expect(screen.getByTestId('selected-fields')).toHaveTextContent('')
 
-    // Check Name again
+    // Check Name
     fireEvent.click(screen.getByLabelText('Name'))
     expect(screen.getByLabelText('Name')).toBeChecked()
-    expect(screen.getByLabelText('All')).not.toBeChecked() // Still not all selected
+    expect(screen.getByLabelText('All')).not.toBeChecked()
+    expect(screen.getByTestId('selected-fields')).toHaveTextContent('name')
 
-    // Check Email again
+    // Check Email
     fireEvent.click(screen.getByLabelText('Email'))
     expect(screen.getByLabelText('Email')).toBeChecked()
-    expect(screen.getByLabelText('All')).toBeChecked() // Now all selected
-  })
+    expect(screen.getByLabelText('All')).not.toBeChecked()
+    expect(screen.getByTestId('selected-fields')).toHaveTextContent(
+      'name, email'
+    )
 
-  it('calls setContactData with correct contact data fields', () => {
-    render(<ContactDataForm setContactData={mockSetContactData} />)
-
-    // Initially all fields should be selected
-    expect(mockSetContactData).toHaveBeenCalledWith(['name', 'email', 'phone'])
-
-    // Uncheck Name
-    fireEvent.click(screen.getByLabelText('Name'))
-
-    // Verify the callback excludes the unchecked field
-    const lastCall =
-      mockSetContactData.mock.calls[mockSetContactData.mock.calls.length - 1][0]
-    expect(lastCall).toEqual(['email', 'phone'])
-
-    // Uncheck Email
-    fireEvent.click(screen.getByLabelText('Email'))
-    const secondLastCall =
-      mockSetContactData.mock.calls[mockSetContactData.mock.calls.length - 1][0]
-    expect(secondLastCall).toEqual(['phone'])
-
-    // Uncheck Phone
+    // Check Phone
     fireEvent.click(screen.getByLabelText('Phone'))
-    const thirdLastCall =
-      mockSetContactData.mock.calls[mockSetContactData.mock.calls.length - 1][0]
-    expect(thirdLastCall).toEqual([])
+    expect(screen.getByLabelText('Phone')).toBeChecked()
+    expect(screen.getByLabelText('All')).not.toBeChecked()
+    expect(screen.getByTestId('selected-fields')).toHaveTextContent(
+      'name, email, phone'
+    )
+
+    // Check Poll Selection
+    fireEvent.click(screen.getByLabelText('Poll Selection'))
+    expect(screen.getByLabelText('Poll Selection')).toBeChecked()
+    expect(screen.getByLabelText('All')).not.toBeChecked()
+    expect(screen.getByTestId('selected-fields')).toHaveTextContent(
+      'name, email, phone, RadioQuestionSubmissionEvent'
+    )
+
+    // Check Subscription
+    fireEvent.click(screen.getByLabelText('Subscription'))
+    expect(screen.getByLabelText('Subscription')).toBeChecked()
+    expect(screen.getByLabelText('All')).not.toBeChecked()
+    expect(screen.getByTestId('selected-fields')).toHaveTextContent(
+      'name, email, phone, RadioQuestionSubmissionEvent, SignUpSubmissionEvent'
+    )
+
+    // Check Text Submission
+    fireEvent.click(screen.getByLabelText('Text Submission'))
+    expect(screen.getByLabelText('Text Submission')).toBeChecked()
+    expect(screen.getByLabelText('All')).not.toBeChecked()
+    expect(screen.getByTestId('selected-fields')).toHaveTextContent(
+      'name, email, phone, RadioQuestionSubmissionEvent, SignUpSubmissionEvent, TextResponseSubmissionEvent'
+    )
+
+    // Check Multiselect Submission
+    fireEvent.click(screen.getByLabelText('Multiselect Submission'))
+    expect(screen.getByLabelText('Multiselect Submission')).toBeChecked()
+    expect(screen.getByLabelText('All')).toBeChecked()
+    expect(screen.getByTestId('selected-fields')).toHaveTextContent(
+      'name, email, phone, RadioQuestionSubmissionEvent, SignUpSubmissionEvent, TextResponseSubmissionEvent, MultiselectSubmissionEvent'
+    )
   })
 })

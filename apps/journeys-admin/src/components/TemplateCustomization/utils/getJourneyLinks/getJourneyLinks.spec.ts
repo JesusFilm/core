@@ -2,7 +2,6 @@
 import { TFunction } from 'i18next'
 
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
-import { MessagePlatform } from '../../../../../__generated__/globalTypes'
 
 import { getJourneyLinks } from './getJourneyLinks'
 
@@ -11,35 +10,6 @@ const t = ((key: string) => key) as unknown as TFunction
 describe('getJourneyLinks', () => {
   it('returns empty array if no journey is provided', () => {
     expect(getJourneyLinks(t, undefined)).toEqual([])
-  })
-
-  it('should return chat buttons as links without step association', () => {
-    const journey = {
-      chatButtons: [
-        {
-          id: 'chat-1',
-          platform: MessagePlatform.whatsApp,
-          link: 'https://wa.me/123'
-        },
-        { id: 'chat-2', platform: null, link: 'https://example.com' }
-      ],
-      blocks: []
-    } as unknown as Journey
-    const links = getJourneyLinks(t, journey)
-    expect(links).toEqual([
-      {
-        id: 'chat-1',
-        linkType: 'chatButtons',
-        url: 'https://wa.me/123',
-        label: 'Chat: whatsApp'
-      },
-      {
-        id: 'chat-2',
-        linkType: 'chatButtons',
-        url: 'https://example.com',
-        label: 'Chat: '
-      }
-    ])
   })
 
   it('returns empty array if journey has no blocks', () => {
@@ -105,6 +75,17 @@ describe('getJourneyLinks', () => {
             customizable: false,
             parentStepId: 'step-5'
           }
+        },
+        {
+          __typename: 'ButtonBlock',
+          id: 'btn-3',
+          label: 'Chat Support',
+          action: {
+            __typename: 'ChatAction',
+            chatUrl: 'https://chat.example.com',
+            customizable: true,
+            parentStepId: 'step-6'
+          }
         }
       ]
     } as unknown as Journey
@@ -141,6 +122,14 @@ describe('getJourneyLinks', () => {
         url: 'https://ignored',
         label: 'No label provided',
         parentStepId: 'step-4',
+        customizable: true
+      },
+      {
+        id: 'btn-3',
+        linkType: 'url',
+        url: 'https://chat.example.com',
+        label: 'Chat Support',
+        parentStepId: 'step-6',
         customizable: true
       }
     ])

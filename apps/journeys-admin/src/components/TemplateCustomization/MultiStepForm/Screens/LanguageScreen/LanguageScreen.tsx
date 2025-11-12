@@ -1,4 +1,3 @@
-import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -12,19 +11,16 @@ import { object, string } from 'yup'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
-import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
+import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
-import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
 import { useGetParentTemplateJourneyLanguages } from '../../../../../libs/useGetParentTemplateJourneyLanguages'
-import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
-import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
-import {
-  BUTTON_NEXT_STEP_WIDTH,
-  BUTTON_NEXT_STEP_HEIGHT
-} from '../../../utils/sharedStyles'
+import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
+
+import { JourneyCustomizeTeamSelect } from './JourneyCustomizeTeamSelect'
 
 interface LanguageScreenProps {
   handleNext: () => void
@@ -170,12 +166,21 @@ export function LanguageScreen({
         >
           {t("Let's get started!")}
         </Typography>
-        <Typography variant="h6" color="text.secondary" align="center">
+        <Typography
+          variant="subtitle2"
+          color="text.secondary"
+          align="center"
+          display={{ xs: 'none', sm: 'block' }}
+        >
           {t('A few quick edits and your template will be ready to share.')}
         </Typography>
       </Stack>
       <SocialImage />
-      <Typography variant="h6" gutterBottom sx={{ mb: { xs: 0, sm: 2 } }}>
+      <Typography
+        variant="subtitle2"
+        gutterBottom
+        sx={{ mb: { xs: 0, sm: 2 } }}
+      >
         {journey?.title ?? ''}
       </Typography>
       <Formik
@@ -226,34 +231,12 @@ export function LanguageScreen({
                   {t('Select a team')}
                 </Typography>
                 {isSignedIn && <JourneyCustomizeTeamSelect />}
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  disabled={loading}
+                <CustomizeFlowNextButton
+                  label={t('Next')}
                   onClick={() => handleSubmit()}
-                  data-testid="LanguageScreenSubmitButton"
-                  sx={{
-                    width: BUTTON_NEXT_STEP_WIDTH,
-                    height: BUTTON_NEXT_STEP_HEIGHT,
-                    alignSelf: 'center',
-                    mt: { xs: 6, sm: 4 },
-                    borderRadius: '8px'
-                  }}
-                >
-                  <Stack direction="row" alignItems="center" gap={1}>
-                    <Typography
-                      sx={{
-                        fontWeight: 'bold',
-                        display: { xs: 'none', sm: 'block' }
-                      }}
-                    >
-                      {t('Next Step')}
-                    </Typography>
-                    <ArrowRightIcon
-                      sx={{ fontSize: { xs: '24px', sm: '16px' } }}
-                    />
-                  </Stack>
-                </Button>
+                  disabled={loading}
+                  ariaLabel={t('Next')}
+                />
               </Stack>
             </FormControl>
           </Form>

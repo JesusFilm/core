@@ -23,7 +23,7 @@ import {
   VisitorUpdateForCurrentUser,
   VisitorUpdateForCurrentUserVariables
 } from '../../../__generated__/VisitorUpdateForCurrentUser'
-import { basic } from '../../libs/testData/storyData'
+import { basic, videoBlocks } from '../../libs/testData/storyData'
 import {
   JOURNEY_VIEW_EVENT_CREATE,
   JOURNEY_VISITOR_UPDATE
@@ -209,5 +209,38 @@ describe('WebView', () => {
     expect(screen.getByTestId('JourneysStepHeader')).toBeInTheDocument()
     expect(screen.getByTestId('JourneysStepFooter')).toBeInTheDocument()
     expect(screen.getByText('Step 1')).toBeInTheDocument()
+  })
+
+  it('should not render step footer if there is a video block', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <JourneyProvider value={{ journey }}>
+          <SnackbarProvider>
+            <WebView
+              blocks={videoBlocks}
+              stepBlock={videoBlocks[0] as TreeBlock<StepFields>}
+            />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(screen.queryByTestId('JourneysStepFooter')).not.toBeInTheDocument()
+  })
+
+  it('should have active-card class for fullscreen support', () => {
+    render(
+      <MockedProvider mocks={[]}>
+        <JourneyProvider value={{ journey }}>
+          <SnackbarProvider>
+            <WebView
+              blocks={basic}
+              stepBlock={basic[0] as TreeBlock<StepFields>}
+            />
+          </SnackbarProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    const activeCard = document.querySelector('.active-card')
+    expect(activeCard).toBeInTheDocument()
   })
 })

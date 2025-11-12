@@ -27,7 +27,9 @@ export const VideoBlockCreateInput = builder.inputType(
       muted: t.boolean({ required: false }),
       autoplay: t.boolean({ required: false }),
       fullsize: t.boolean({ required: false }),
-      posterBlockId: t.id({ required: false })
+      posterBlockId: t.id({ required: false }),
+      subtitleLanguageId: t.id({ required: false }),
+      showGeneratedSubtitles: t.boolean({ required: false })
     })
   }
 )

@@ -8,11 +8,7 @@ const { i18n } = require('./next-i18next.config')
  * Updated to trigger deployment for email verification fix testing
  **/
 const nextConfig = {
-  nx: {
-    // Set this to true if you would like to to use SVGR
-    // See: https://github.com/gregberge/svgr
-    svgr: false
-  },
+  nx: {},
   i18n,
   images: {
     remotePatterns: [
