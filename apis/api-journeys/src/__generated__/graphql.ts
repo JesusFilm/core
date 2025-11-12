@@ -1366,7 +1366,7 @@ export type JourneyVisitorFilter = {
 };
 
 export type JourneyVisitorGoogleSheetDestinationInput = {
-  /** Required when mode is "create". The ID of the folder where the spreadsheet should be created. */
+  /** Optional when mode is "create". The Drive folder ID to create the spreadsheet in. If omitted, it will be created in My Drive. */
   folderId?: InputMaybe<Scalars['String']['input']>;
   mode: GoogleSheetExportMode;
   /** Required when mode is "existing". The name of the sheet within the existing spreadsheet. */

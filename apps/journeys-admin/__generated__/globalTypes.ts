@@ -422,6 +422,11 @@ export interface EmailActionInput {
   parentStepId?: string | null;
 }
 
+export interface GenerateSubtitlesInput {
+  languageCode: string;
+  languageName: string;
+}
+
 export interface GoogleSheetsSyncsFilter {
   journeyId?: string | null;
   integrationId?: string | null;
