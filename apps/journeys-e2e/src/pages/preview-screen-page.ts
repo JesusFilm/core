@@ -238,7 +238,7 @@ export class BasePage {
     const currentCard = await this.getCurrentCardLocator(currentIndex)
 
     try {
-      await this.waitForvideoLoading(5000)
+      await this.waitForVideoLoading(5000)
       await expect(
         currentCard.locator(this.scrubBarPointer, {
           has: this.page.locator(this.scrubBarPointerInput)
@@ -333,7 +333,7 @@ export class BasePage {
     return nextIndex
   }
   async verifyVideoFullScreen() {
-    await this.waitForvideoLoading()
+    await this.waitForVideoLoading()
     const beforeFullScreen = await this.page
       .locator(`div[data-testid="JourneysStepHeader"]`)
       .getAttribute('class')
@@ -344,7 +344,7 @@ export class BasePage {
 
     await this.page.locator(this.videoFullScreen).click()
 
-    await this.waitForvideoLoading()
+    await this.waitForVideoLoading()
     const afterFullScreen = await this.page
       .locator(`div[data-testid="JourneysStepHeader"]`)
       .getAttribute('class')
@@ -356,7 +356,7 @@ export class BasePage {
       .not.toEqual(afterFullScreen)
 
     if (beforeFullScreen !== afterFullScreen) {
-      await this.waitForvideoLoading()
+      await this.waitForVideoLoading()
       await this.page.locator(this.videoFullScreen).click()
     } else {
       console.log('Full screen toggle failed so not need to exit full screen')
@@ -407,7 +407,7 @@ export class BasePage {
     ).toBeVisible()
   }
 
-  async waitForvideoLoading(timeoutInMilliSecond = 1500) {
+  async waitForVideoLoading(timeoutInMilliSecond = 1500) {
     // eslint-disable-next-line playwright/no-wait-for-timeout
     await this.page.waitForTimeout(timeoutInMilliSecond)
   }
