@@ -186,7 +186,6 @@ export function VideoBlockPlayer({
       const videoSource = currentMuxInsert ? currentMuxInsert.urls.hls : variant?.hls
       const videoId = currentMuxInsert ? currentMuxInsert.id : variant?.id
 
-
       if (!videoRef.current || !videoSource) {
         return
       }
@@ -364,7 +363,7 @@ export function VideoBlockPlayer({
     }
 
     // Execute the async setup
-    setupPlayer()
+    void setupPlayer()
   }, [currentMuxInsert?.id, variant?.hls, title, variant?.id, currentMuxInsert, placement == 'carouselItem'])
 
   // Handle mute state changes dynamically without recreating the player
@@ -496,13 +495,16 @@ export function VideoBlockPlayer({
             data-testid="VideoBlockPlayerError"
           >
             <div>
+              {/* eslint-disable-next-line i18next/no-literal-string */}
               <div className="text-lg font-semibold mb-2">Video Error</div>
               <div className="text-sm opacity-90">{mediaError.message}</div>
+              {/* eslint-disable i18next/no-literal-string */}
               {process.env.NODE_ENV === 'development' && (
                 <div className="text-xs opacity-75 mt-2">
                   Code: {(mediaError as any).code} | Video ID: {(mediaError as any).videoId}
                 </div>
               )}
+              {/* eslint-enable i18next/no-literal-string */}
             </div>
           </div>
         )}

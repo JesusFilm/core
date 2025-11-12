@@ -12,12 +12,12 @@ import { SearchComponent } from '../SearchComponent'
 
 import { AboutProjectSection } from './AboutProjectSection'
 import { CollectionsRail } from './CollectionsRail'
+import { ContainerWithMedia } from './ContainerWithMedia'
 import { SectionLanguageMap } from './SectionLanguageMap'
 import { SectionNewsletterSignup } from './SectionNewsletterSignup'
 import { SectionPromo } from './SectionPromo'
 import { SeeAllVideos } from './SeeAllVideos'
 import { useWatchHeroCarousel } from './useWatchHeroCarousel'
-import { ContainerWithMedia } from './ContainerWithMedia'
 
 interface PageMainProps {
   languageId?: string | undefined

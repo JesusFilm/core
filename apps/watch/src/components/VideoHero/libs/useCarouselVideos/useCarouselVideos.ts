@@ -97,7 +97,9 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       // Clear localStorage played videos to reset exhaustion
       try {
         localStorage.removeItem('carousel-played-ids')
-      } catch (e) {}
+      } catch {
+        // Ignore localStorage errors
+      }
       // Reset session played videos
       if (typeof window !== 'undefined' && (window as any).__sessionPlayedIds) {
         ;(window as any).__sessionPlayedIds = new Set()
@@ -129,8 +131,10 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       fetchPolicy: 'cache-first',
       nextFetchPolicy: 'cache-first',
       errorPolicy: 'all',
-      onCompleted: (data) => {},
-      onError: (error) => {}
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      onCompleted: () => {},
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      onError: () => {}
     }
   )
 
@@ -140,8 +144,10 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
     fetchPolicy: 'cache-first',
     nextFetchPolicy: 'cache-first',
     errorPolicy: 'all',
-    onCompleted: (data) => {},
-    onError: (error) => {}
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    onCompleted: () => {},
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    onError: () => {}
   })
 
   // Find next available pool - skip exhausted ones
@@ -274,7 +280,9 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
           )
           return findVideoInCollection(nextId, depth + 1)
         }
-      } catch (err) {}
+      } catch {
+        // Ignore errors when finding video in collection
+      }
 
       return null
     },
@@ -489,7 +497,8 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
           )
         }
       }
-    } catch (err) {
+    } catch {
+      // Ignore errors when loading video
     } finally {
       setLoadingQueue((prev) => {
         const newSet = new Set(prev)
@@ -534,13 +543,13 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
   // Load first video when data is ready
   useEffect(() => {
     if (!countsData || videos.length > 0) return
-    loadNextVideo()
+    void loadNextVideo()
   }, [countsData, videos.length, loadNextVideo])
 
   // Start progressive loading after first video is set
   useEffect(() => {
     if (videos.length === 0 || !countsData) return
-    loadNextVideo()
+    void loadNextVideo()
   }, [videos.length, countsData, loadNextVideo])
 
   // Continue loading next videos to maintain prefetch count
@@ -559,7 +568,7 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       loadingQueue.size === 0
 
     if (shouldLoad) {
-      loadNextVideo()
+      void loadNextVideo()
     }
   }, [videos.length, currentIndex, loadingQueue.size, loadNextVideo])
 

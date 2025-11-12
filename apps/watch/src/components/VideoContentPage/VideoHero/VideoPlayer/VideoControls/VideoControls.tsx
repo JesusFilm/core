@@ -1,3 +1,7 @@
+import { sendGTMEvent } from '@next/third-parties/google'
+import fscreen from 'fscreen'
+import debounce from 'lodash/debounce'
+import last from 'lodash/last'
 import {
   Globe,
   Loader2,
@@ -11,29 +15,24 @@ import {
   Volume2,
   VolumeX
 } from 'lucide-react'
-import { sendGTMEvent } from '@next/third-parties/google'
-import fscreen from 'fscreen'
-import debounce from 'lodash/debounce'
-import last from 'lodash/last'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { MouseEventHandler, ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
-import { Button, Skeleton } from '@core/shared/uimodern'
 import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
+import { Button, Skeleton } from '@core/shared/uimodern'
 
 import { cn } from '../../../../../libs/cn'
-import { VideoSlider } from '../../../../VideoControls/VideoSlider'
 import { usePlayer } from '../../../../../libs/playerContext'
 import { useVideo } from '../../../../../libs/videoContext'
 import { useLanguageActions } from '../../../../../libs/watchContext'
 import type { InsertAction, InsertOverlay } from '../../../../../types/inserts'
 import { HeroOverlay } from '../../../../HeroOverlay/HeroOverlay'
-import { VideoTitle } from '../../../../VideoControls/VideoTitle/VideoTitle'
-
 import { handleVideoTitleClick } from '../../../../VideoControls/utils/handleVideoTitleClick/handleVideoTitleClick'
+import { VideoSlider } from '../../../../VideoControls/VideoSlider'
+import { VideoTitle } from '../../../../VideoControls/VideoTitle/VideoTitle'
 
 const DynamicLanguageSwitchDialog = dynamic<{
   open: boolean

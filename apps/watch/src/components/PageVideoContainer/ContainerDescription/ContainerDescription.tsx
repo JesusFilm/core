@@ -1,10 +1,11 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { ReactElement } from 'react'
 import { Share } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
 
 import { ExtendedButton } from '@core/shared/uimodern'
+
 import { TextFormatter } from '../../TextFormatter'
 
 export interface ContainerDescriptionProps {

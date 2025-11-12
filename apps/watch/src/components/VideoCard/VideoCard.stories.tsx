@@ -4,8 +4,8 @@ import { Meta, StoryObj } from '@storybook/nextjs'
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 
 import { watchConfig } from '../../libs/storybook'
-import { videos } from '../Videos/__generated__/testData'
 import { getAlgoliaVideosHandlers } from '../PageVideos/PageVideos.handlers'
+import { videos } from '../Videos/__generated__/testData'
 
 import { VideoCard } from '.'
 

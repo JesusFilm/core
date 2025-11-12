@@ -2,6 +2,7 @@ import { Meta, StoryObj } from '@storybook/nextjs'
 import { ComponentPropsWithoutRef } from 'react'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
+
 import { VideoCard } from './VideoCard'
 
 type StoryArgs = ComponentPropsWithoutRef<typeof VideoCard>

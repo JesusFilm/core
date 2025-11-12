@@ -14,16 +14,16 @@ import { useVideoChildren } from '../../libs/useVideoChildren'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useVideo } from '../../libs/videoContext'
 import type { VideoCarouselSlide } from '../../types/inserts'
-import { PageWrapper } from '../PageWrapper'
+import { ContentPageBlurFilter } from '../ContentPageBlurFilter'
 import { DialogShare } from '../DialogShare'
+import { PageWrapper } from '../PageWrapper'
+import { VideoBlock } from '../VideoBlock'
+import { VideoCarousel } from '../VideoCarousel'
 
 import { BibleCitations } from './BibleCitations'
 import { ContentMetadata } from './ContentMetadata'
-import { ContentPageBlurFilter } from '../ContentPageBlurFilter'
 import { DiscussionQuestions } from './DiscussionQuestions'
 import { NewVideoContentHeader } from './NewVideoContentHeader'
-import { VideoCarousel } from '../VideoCarousel'
-import { VideoBlock } from '../VideoBlock'
 
 export function PageSingleVideo(): ReactElement {
   const { t } = useTranslation('apps-watch')

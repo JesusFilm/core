@@ -9,8 +9,8 @@ import {
 } from 'react'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
-
 import { cn } from '@core/shared/uimodern/utils'
+
 import {
   SectionVideoCollectionCarouselSlide,
   SectionVideoCollectionCarouselSource,

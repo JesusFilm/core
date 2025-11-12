@@ -1,11 +1,11 @@
-import { Button } from '@core/shared/uimodern/components'
 import { Globe } from 'lucide-react'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement, useState } from 'react'
 
-import { usePlayer } from '../../libs/playerContext/PlayerContext'
+import { Button } from '@core/shared/uimodern/components'
 
+import { usePlayer } from '../../libs/playerContext/PlayerContext'
 import { DialogLangSwitch } from '../DialogLangSwitch'
 
 interface ContentHeaderProps {

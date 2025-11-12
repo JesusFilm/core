@@ -6,6 +6,7 @@ import { VideoLabel } from '../../../__generated__/globalTypes'
 import { GET_COLLECTION_SHOWCASE_CONTENT } from './queries'
 import { SectionVideoCarousel } from './SectionVideoCarousel'
 import type { SectionVideoCollectionCarouselSlide } from './useSectionVideoCollectionCarouselContent'
+// eslint-disable-next-line import/no-namespace
 import * as carouselContentHook from './useSectionVideoCollectionCarouselContent'
 
 const originalUseCarouselContent =
@@ -41,22 +42,6 @@ jest.mock('next/router', () => ({
 }))
 
 let capturedSlides: SectionVideoCollectionCarouselSlide[] = []
-
-beforeEach(() => {
-  mockVideoCard.mockClear()
-  capturedSlides = []
-  jest
-    .spyOn(carouselContentHook, 'useSectionVideoCollectionCarouselContent')
-    .mockImplementation((options) => {
-      const result = originalUseCarouselContent(options)
-      capturedSlides = result.slides
-      return result
-    })
-})
-
-afterEach(() => {
-  jest.restoreAllMocks()
-})
 
 const collectionMock = {
   __typename: 'Video',
@@ -285,6 +270,22 @@ const emptyMocks: MockedResponse[] = [
 ]
 
 describe('SectionVideoCarousel', () => {
+  beforeEach(() => {
+    mockVideoCard.mockClear()
+    capturedSlides = []
+    jest
+      .spyOn(carouselContentHook, 'useSectionVideoCollectionCarouselContent')
+      .mockImplementation((options) => {
+        const result = originalUseCarouselContent(options)
+        capturedSlides = result.slides
+        return result
+      })
+  })
+
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
   it('renders slides from collection children and videos', async () => {
     render(
       <MockedProvider mocks={baseMocks} addTypename>

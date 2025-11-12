@@ -9,8 +9,8 @@ import { ThemeMode } from '@core/shared/ui/themes'
 
 import { useVideoChildren } from '../../libs/useVideoChildren'
 import { useVideo } from '../../libs/videoContext'
-import { PageWrapper } from '../PageWrapper'
 import { DialogShare } from '../DialogShare'
+import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
 
 import { ContainerDescription } from './ContainerDescription'

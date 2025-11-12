@@ -1,11 +1,12 @@
+import { useTranslation } from 'next-i18next'
+import { FocusEvent, ReactElement } from 'react'
+
 import {
   Dialog,
   DialogContent,
   DialogOverlay,
   DialogPortal
 } from '@core/shared/uimodern/components/dialog'
-import { useTranslation } from 'next-i18next'
-import { FocusEvent, ReactElement } from 'react'
 
 import { CategoryGrid } from './CategoryGrid'
 import { LanguageSelector } from './LanguageSelector'

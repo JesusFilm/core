@@ -4,8 +4,8 @@ import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { usePlayer } from '../../libs/playerContext/PlayerContext'
 import { useVideo } from '../../libs/videoContext/VideoContext'
 import type { CarouselMuxSlide } from '../../types/inserts'
-
 import { ContentHeader } from '../ContentHeader'
+
 import { VideoBlockPlayer } from './VideoBlockPlayer'
 
 export function VideoBlock({

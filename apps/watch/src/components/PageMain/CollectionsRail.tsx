@@ -5,7 +5,8 @@ import { collectionShowcaseSources } from '../PageCollections/collectionShowcase
 
 const SectionVideoCarousel = dynamic(
   () =>
-    import('../SectionVideoCarousel').then((mod) => ({
+    // eslint-disable-next-line import/dynamic-import-chunkname
+    import(/* webpackChunkName: "SectionVideoCarousel" */ '../SectionVideoCarousel').then((mod) => ({
       default: mod.SectionVideoCarousel
     })),
   { ssr: false }
@@ -13,7 +14,8 @@ const SectionVideoCarousel = dynamic(
 
 const SectionVideoGrid = dynamic(
   () =>
-    import('../SectionVideoGrid').then((mod) => ({
+    // eslint-disable-next-line import/dynamic-import-chunkname
+    import(/* webpackChunkName: "SectionVideoGrid" */ '../SectionVideoGrid').then((mod) => ({
       default: mod.SectionVideoGrid
     })),
   { ssr: false }

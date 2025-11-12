@@ -2,9 +2,9 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import { useVideoChildren } from '../../libs/useVideoChildren/useVideoChildren'
 import { VideoProvider } from '../../libs/videoContext'
 import { WatchProvider } from '../../libs/watchContext'
-import { useVideoChildren } from '../../libs/useVideoChildren/useVideoChildren'
 import { videos } from '../Videos/__generated__/testData'
 
 import { PageSingleVideo } from './PageSingleVideo'

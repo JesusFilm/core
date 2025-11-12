@@ -1,5 +1,6 @@
-import { Badge } from '@core/shared/uimodern/components/badge'
 import { ReactElement } from 'react'
+
+import { Badge } from '@core/shared/uimodern/components/badge'
 
 export interface QuickListProps {
   title: string

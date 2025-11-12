@@ -5,10 +5,10 @@ import { PageWrapper } from '../../../PageWrapper'
 import { SectionVideoCarousel } from '../../../SectionVideoCarousel'
 import { CollectionIntroText } from '../../CollectionIntroText'
 import { collectionShowcaseSources } from '../../collectionShowcaseConfig'
-import { PageCollectionsContent } from '../../PageCollectionsContent/CollectionsPageContent'
 import { CollectionsVideoContent } from '../../CollectionsVideoContent'
 import { CollectionVideoContentCarousel } from '../../CollectionVideoContentCarousel'
 import { ContainerHero } from '../../ContainerHero'
+import { PageCollectionsContent } from '../../PageCollectionsContent/CollectionsPageContent'
 
 export function PageCollections(): ReactElement {
   const [mutePage, setMutePage] = useState(true)

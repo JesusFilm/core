@@ -120,5 +120,3 @@ describe('HeroVideo', () => {
   })
 })
 
-
-

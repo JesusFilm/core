@@ -2,17 +2,17 @@ import { ReactElement, useCallback } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
+import { cn } from '@core/shared/uimodern/utils'
+
 import {
+  CarouselVideoLike,
+  UnifiedCardData,
   VideoCarouselSlide,
   isMuxSlide,
   transformMuxSlide,
-  transformVideoChild,
-  UnifiedCardData,
-  CarouselVideoLike
+  transformVideoChild
 } from '../../../src/types/inserts'
 import { VideoCard as CarouselVideoCard } from '../CarouselVideoCard/VideoCard'
-
-import { cn } from '@core/shared/uimodern/utils'
 
 export interface VideoCarouselProps {
   slides: VideoCarouselSlide[]

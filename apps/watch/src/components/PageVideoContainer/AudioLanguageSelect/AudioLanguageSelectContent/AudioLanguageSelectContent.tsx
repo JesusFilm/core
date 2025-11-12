@@ -1,10 +1,11 @@
 import NextLink from 'next/link'
 import { useMemo } from 'react'
 
+import { SelectContent } from '@core/shared/uimodern'
+
 import { Language, useLanguages } from '../../../../libs/useLanguages'
 import { useVideo } from '../../../../libs/videoContext'
 import { useWatch } from '../../../../libs/watchContext'
-import { SelectContent } from '@core/shared/uimodern'
 
 export function AudioLanguageSelectContent() {
   const { variant } = useVideo()

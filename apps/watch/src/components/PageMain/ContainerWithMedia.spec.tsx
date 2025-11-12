@@ -102,5 +102,3 @@ describe('ContainerWithMedia', () => {
   })
 })
 
-
-

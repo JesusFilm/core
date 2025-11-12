@@ -1,5 +1,3 @@
-import { ExtendedButton as Button } from '@core/shared/uimodern/components'
-import { Input } from '@core/shared/uimodern/components/input'
 import { Formik } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { type FocusEvent, type ReactElement, useState } from 'react'
@@ -7,6 +5,8 @@ import { type FocusEvent, type ReactElement, useState } from 'react'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import X1Icon from '@core/shared/ui/icons/X1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
+import { ExtendedButton as Button } from '@core/shared/uimodern/components'
+import { Input } from '@core/shared/uimodern/components/input'
 
 interface SimpleSearchBarProps {
   loading?: boolean
@@ -105,9 +105,9 @@ export function SimpleSearchBar({
                       aria-label="clear search"
                       className={`w-6 h-6 p-0 cursor-pointer hover:opacity-70 flex items-center justify-center ${isFocused ? 'text-black' : 'text-white'}`}
                       onClick={() => {
-                        setFieldValue('title', '')
+                        void setFieldValue('title', '')
                         if (onSearch) {
-                          onSearch('')
+                          void onSearch('')
                         }
                       }}
                     >

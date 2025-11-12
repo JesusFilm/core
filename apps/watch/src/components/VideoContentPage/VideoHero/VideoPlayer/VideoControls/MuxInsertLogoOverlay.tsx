@@ -1,6 +1,7 @@
-import muxConfig from '../../../../../../config/video-inserts.mux.json'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
+
+import muxConfig from '../../../../../../config/video-inserts.mux.json'
 
 interface MuxInsertLogoOverlayProps {
   variantId?: string | null

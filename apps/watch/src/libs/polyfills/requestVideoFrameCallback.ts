@@ -54,6 +54,7 @@ if (
     }
 
     const callbackId = nextCallbackId++
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const video = this
 
     const rafCallback = (timestamp: DOMHighResTimeStamp) => {

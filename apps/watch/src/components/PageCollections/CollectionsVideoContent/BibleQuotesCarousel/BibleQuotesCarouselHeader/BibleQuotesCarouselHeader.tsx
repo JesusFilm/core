@@ -3,7 +3,6 @@ import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
-
 import { ExtendedButton as Button } from '@core/shared/uimodern/components'
 
 interface BibleQuotesCarouselHeaderProps {

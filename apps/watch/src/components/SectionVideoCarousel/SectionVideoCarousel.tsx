@@ -4,8 +4,8 @@ import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
-
 import { cn } from '@core/shared/uimodern/utils'
+
 import { VideoCard } from '../VideoCard'
 
 import {
