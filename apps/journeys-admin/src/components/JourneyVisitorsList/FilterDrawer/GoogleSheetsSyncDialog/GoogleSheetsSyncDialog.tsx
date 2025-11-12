@@ -776,7 +776,7 @@ export function GoogleSheetsSyncDialog({
       <Formik
         initialValues={{
           integrationId: '',
-          googleMode: 'create' as 'create' | 'existing',
+          googleMode: '',
           spreadsheetTitle: '',
           sheetName: '',
           folderId: undefined as string | undefined,
@@ -934,13 +934,28 @@ export function GoogleSheetsSyncDialog({
                 </FormControl>
 
                 <FormControl fullWidth>
+                  <Typography variant="subtitle2">
+                    {t('Spreadsheet Setup')}
+                  </Typography>
                   <Select
                     name="googleMode"
                     value={values.googleMode}
                     onChange={handleChange}
                     IconComponent={ChevronDown}
                     inputProps={{ 'aria-label': t('Destination') }}
+                    displayEmpty
+                    renderValue={(selected) => {
+                      if (selected === '') return t('Select an option')
+                      if (selected === 'create')
+                        return t('Create new spreadsheet')
+                      if (selected === 'existing')
+                        return t('Use existing spreadsheet')
+                      return ''
+                    }}
                   >
+                    <MenuItem value="" disabled>
+                      {t('Select an option')}
+                    </MenuItem>
                     <MenuItem value="create">
                       {t('Create new spreadsheet')}
                     </MenuItem>
@@ -950,87 +965,94 @@ export function GoogleSheetsSyncDialog({
                   </Select>
                 </FormControl>
 
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  {values.googleMode === 'create' && (
-                    <>
-                      <Typography variant="subtitle2">
-                        {t('Sheet Name')}
-                      </Typography>
-                      <TextField
-                        name="spreadsheetTitle"
-                        value={values.spreadsheetTitle}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        placeholder={t('Enter Sheet title')}
-                        inputProps={{ 'aria-label': t('Sheet title') }}
-                        size="small"
-                        required
-                        error={
-                          errors.spreadsheetTitle != null &&
-                          touched.spreadsheetTitle != null
+                {values.googleMode !== '' && (
+                  <Box
+                    sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+                  >
+                    {values.googleMode === 'create' ? (
+                      <>
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          onClick={() =>
+                            handleOpenDrivePicker(
+                              'folder',
+                              values.integrationId || undefined,
+                              setFieldValue
+                            )
+                          }
+                        >
+                          {values.folderId
+                            ? (values.folderName ?? values.folderId)
+                            : t('Choose Folder')}
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        variant="outlined"
+                        onClick={() =>
+                          handleOpenDrivePicker(
+                            'sheet',
+                            values.integrationId || undefined,
+                            setFieldValue
+                          )
                         }
-                        helperText={
-                          touched.spreadsheetTitle != null &&
-                          errors.spreadsheetTitle != null
-                            ? (errors.spreadsheetTitle as string)
-                            : undefined
-                        }
-                      />
-                    </>
-                  )}
-                  <Typography variant="subtitle2">
-                    {t('Sheet Tab Name')}
-                  </Typography>
-                  <TextField
-                    name="sheetName"
-                    value={values.sheetName}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    placeholder={t('Enter Sheet tab name')}
-                    inputProps={{ 'aria-label': t('Sheet tab name') }}
-                    size="small"
-                    required
-                    error={
-                      errors.sheetName != null && touched.sheetName != null
-                    }
-                    helperText={
-                      touched.sheetName != null && errors.sheetName != null
-                        ? (errors.sheetName as string)
-                        : undefined
-                    }
-                  />
-                  {values.googleMode === 'create' ? (
-                    <Button
-                      variant="outlined"
-                      onClick={() =>
-                        handleOpenDrivePicker(
-                          'folder',
-                          values.integrationId || undefined,
-                          setFieldValue
-                        )
+                      >
+                        {values.existingSpreadsheetId
+                          ? t('Spreadsheet selected')
+                          : t('Choose Spreadsheet')}
+                      </Button>
+                    )}
+                    {values.googleMode === 'create' && (
+                      <>
+                        <Typography variant="subtitle2">
+                          {t('Spreadsheet Name')}
+                        </Typography>
+                        <TextField
+                          name="spreadsheetTitle"
+                          value={values.spreadsheetTitle}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          placeholder={t('Enter Spreadsheet name')}
+                          inputProps={{ 'aria-label': t('Sheet title') }}
+                          size="small"
+                          required
+                          error={
+                            errors.spreadsheetTitle != null &&
+                            touched.spreadsheetTitle != null
+                          }
+                          helperText={
+                            touched.spreadsheetTitle != null &&
+                            errors.spreadsheetTitle != null
+                              ? (errors.spreadsheetTitle as string)
+                              : undefined
+                          }
+                        />
+                      </>
+                    )}
+                    <Typography variant="subtitle2">
+                      {t('Sheet Name')}
+                    </Typography>
+                    <TextField
+                      name="sheetName"
+                      value={values.sheetName}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      placeholder={t('Enter Sheet name')}
+                      inputProps={{ 'aria-label': t('Sheet tab name') }}
+                      size="small"
+                      required
+                      error={
+                        errors.sheetName != null && touched.sheetName != null
                       }
-                    >
-                      {values.folderId
-                        ? (values.folderName ?? values.folderId)
-                        : t('Choose Folder (optional)')}
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="outlined"
-                      onClick={() =>
-                        handleOpenDrivePicker(
-                          'sheet',
-                          values.integrationId || undefined,
-                          setFieldValue
-                        )
+                      helperText={
+                        touched.sheetName != null && errors.sheetName != null
+                          ? (errors.sheetName as string)
+                          : undefined
                       }
-                    >
-                      {values.existingSpreadsheetId
-                        ? t('Spreadsheet selected')
-                        : t('Choose Spreadsheet')}
-                    </Button>
-                  )}
-                </Box>
+                    />
+                  </Box>
+                )}
               </Box>
             </Form>
           </Dialog>
