@@ -416,12 +416,6 @@ describe('ExportDialog', () => {
       const selectElement = screen.getByRole('combobox')
       fireEvent.mouseDown(selectElement)
       fireEvent.click(screen.getByText('Contact Data'))
-      console.log('--------------------------------')
-      console.log(
-        'blockTypenames',
-        (mockJourneyCreatedAt.result as any)?.data?.journey?.blockTypenames
-      )
-      console.log('--------------------------------')
       await waitFor(() =>
         expect(screen.getByLabelText('Text Submission')).toBeInTheDocument()
       )
