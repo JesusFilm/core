@@ -16,17 +16,17 @@ export async function validateEmail(
   })
 
   // Special handling for @example.com emails with EXAMPLE_EMAIL_TOKEN
-  // Enabled only outside production to prevent accidental prod bypass
-  if (
-    process.env.NODE_ENV !== 'production' &&
-    process.env.EXAMPLE_EMAIL_TOKEN &&
-    user?.email &&
-    token
-  ) {
+  // Enabled for any non-production Vercel environment
+  const isProd = (process.env.VERCEL_ENV ?? '').toLowerCase() === 'prod'
+  const allowBypass =
+    !isProd && process.env.EXAMPLE_EMAIL_TOKEN && user?.email && token
+  if (allowBypass) {
     // Normalize inputs: trim and lowercase for consistent comparison
     const normalizedEmail = user.email.trim().toLowerCase()
     const normalizedToken = token.trim().toLowerCase()
-    const expectedToken = process.env.EXAMPLE_EMAIL_TOKEN.trim().toLowerCase()
+    const expectedToken = (process.env.EXAMPLE_EMAIL_TOKEN ?? '')
+      .trim()
+      .toLowerCase()
 
     if (
       normalizedEmail.endsWith('@example.com') &&

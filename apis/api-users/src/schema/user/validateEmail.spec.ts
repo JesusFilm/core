@@ -58,7 +58,7 @@ describe('validateEmail', () => {
   })
 
   it('should validate email for example.com emails in non-production environments', async () => {
-    process.env.NODE_ENV = 'test'
+    process.env.VERCEL_ENV = 'preview'
     process.env.EXAMPLE_EMAIL_TOKEN = 'example-token'
 
     prismaMock.user.findUnique.mockResolvedValue({
