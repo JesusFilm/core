@@ -1070,7 +1070,7 @@ input JourneyVisitorGoogleSheetDestinationInput {
   spreadsheetTitle: String
 
   """
-  Required when mode is "create". The ID of the folder where the spreadsheet should be created.
+  Optional when mode is "create". The Drive folder ID to create the spreadsheet in. If omitted, it will be created in My Drive.
   """
   folderId: String
 

@@ -524,10 +524,23 @@ describe('journeyVisitorExportToGoogleSheet', () => {
     })
   })
 
-  it('should throw error when folderId is missing in create mode', async () => {
+  it('should create spreadsheet in root when folderId is missing in create mode', async () => {
+    const mockSpreadsheet = {
+      spreadsheetId: 'spreadsheet-id',
+      spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/spreadsheet-id'
+    }
     prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
     prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.journeyVisitor.findMany.mockResolvedValue([])
     prismaMock.integration.findUnique.mockResolvedValue(mockIntegration as any)
+    prismaMock.googleSheetsSync.findFirst.mockResolvedValue(null)
+    prismaMock.googleSheetsSync.create.mockResolvedValue({
+      id: 'sync-id',
+      spreadsheetId: 'spreadsheet-id',
+      sheetName: `${format(new Date(), 'yyyy-MM-dd')} ${mockJourney.slug}`
+    } as any)
+    mockCreateSpreadsheet.mockResolvedValue(mockSpreadsheet)
+    mockReadValues.mockResolvedValue([])
 
     const result = await authClient({
       document: JOURNEY_VISITOR_EXPORT_TO_GOOGLE_SHEET_MUTATION,
@@ -541,14 +554,20 @@ describe('journeyVisitorExportToGoogleSheet', () => {
       }
     })
 
-    expect(result).toEqual({
-      data: null,
-      errors: [
-        expect.objectContaining({
-          message: 'folderId is required when mode is "create"'
+    expect(mockCreateSpreadsheet).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Test Journey Visitors',
+        folderId: undefined
+      })
+    )
+    expect(prismaMock.googleSheetsSync.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          folderId: null
         })
-      ]
-    })
+      })
+    )
+    expect(result.data?.journeyVisitorExportToGoogleSheet).toBeDefined()
   })
 
   it('should throw error when spreadsheetTitle is empty string in create mode', async () => {

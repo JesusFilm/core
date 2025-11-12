@@ -124,7 +124,7 @@ const ExportDestinationInput = builder.inputType(
       }),
       folderId: t.string({
         description:
-          'Required when mode is "create". The ID of the folder where the spreadsheet should be created.'
+          'Optional when mode is "create". The Drive folder ID to create the spreadsheet in. If omitted, it will be created in My Drive.'
       }),
       spreadsheetId: t.string({
         description:
@@ -264,14 +264,6 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
             { extensions: { code: 'BAD_USER_INPUT' } }
           )
         }
-        if (
-          destination.folderId == null ||
-          destination.folderId.trim() === ''
-        ) {
-          throw new GraphQLError('folderId is required when mode is "create"', {
-            extensions: { code: 'BAD_USER_INPUT' }
-          })
-        }
       } else if (destination.mode === 'existing') {
         if (
           destination.spreadsheetId == null ||
@@ -303,7 +295,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         const res = await createSpreadsheet({
           accessToken,
           title: destination.spreadsheetTitle!,
-          folderId: destination.folderId!,
+          folderId: destination.folderId ?? undefined,
           initialSheetTitle: sheetName
         })
         spreadsheetId = res.spreadsheetId
