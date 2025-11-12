@@ -44,10 +44,6 @@ const nextConfig = {
     // handled by github actions
     ignoreBuildErrors: process.env.CI === 'true'
   },
-  eslint: {
-    // handled by github actions
-    ignoreDuringBuilds: true
-  },
   transpilePackages: ['locales'],
   outputFileTracingExcludes: {
     '*': [
