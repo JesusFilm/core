@@ -31,6 +31,16 @@ jest.mock('@mui/material/useMediaQuery', () => ({
   default: jest.fn()
 }))
 
+const mockGetUploadStatus = jest.fn()
+jest.mock('../../../../../MuxVideoUploadProvider', () => ({
+  ...jest.requireActual('../../../../../MuxVideoUploadProvider'),
+  useMuxVideoUpload: jest.fn(() => ({
+    getUploadStatus: mockGetUploadStatus,
+    addUploadTask: jest.fn(),
+    cancelUploadForBlock: jest.fn()
+  }))
+}))
+
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
@@ -127,6 +137,116 @@ describe('VideoLibrary', () => {
       fireEvent.click(screen.getAllByRole('button')[0])
       expect(onClose).toHaveBeenCalled()
     })
+  })
+
+  it('should set initial tab to upload tab during an upload', () => {
+    const videoBlockId = 'videoBlock-1'
+    mockGetUploadStatus.mockImplementation((id: string) =>
+      id === videoBlockId
+        ? {
+            videoBlockId,
+            file: new File(['test'], 'test.mp4', { type: 'video/mp4' }),
+            status: 'uploading',
+            progress: 50
+          }
+        : null
+    )
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <VideoLibrary
+              open
+              selectedBlock={{
+                id: videoBlockId,
+                __typename: 'VideoBlock',
+                parentBlockId: 'card1.id',
+                videoId: 'existing-video-id',
+                videoVariantLanguageId: null,
+                source: VideoBlockSource.internal,
+                parentOrder: 0,
+                action: null,
+                muted: false,
+                autoplay: true,
+                startAt: 0,
+                endAt: null,
+                fullsize: true,
+                title: null,
+                description: null,
+                duration: null,
+                image: null,
+                subtitleLanguage: null,
+                showGeneratedSubtitles: null,
+                mediaVideo: null,
+                objectFit: null,
+                posterBlockId: null,
+                children: []
+              }}
+            />
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByRole('tab', { name: 'Upload' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+    expect(screen.queryByText('Video Details')).not.toBeInTheDocument()
+  })
+
+  it('should not open video details tab if there is a pending upload even if the videoId is not null', () => {
+    const videoBlockId = 'videoBlock-1'
+    mockGetUploadStatus.mockImplementation((id: string) =>
+      id === videoBlockId
+        ? {
+            videoBlockId,
+            file: new File(['test'], 'test.mp4', { type: 'video/mp4' }),
+            status: 'uploading',
+            progress: 50
+          }
+        : null
+    )
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <VideoLibrary
+              open
+              selectedBlock={{
+                id: videoBlockId,
+                __typename: 'VideoBlock',
+                parentBlockId: 'card1.id',
+                videoId: 'existing-video-id',
+                videoVariantLanguageId: null,
+                source: VideoBlockSource.internal,
+                parentOrder: 0,
+                action: null,
+                muted: false,
+                autoplay: true,
+                startAt: 0,
+                endAt: null,
+                fullsize: true,
+                title: null,
+                description: null,
+                duration: null,
+                image: null,
+                subtitleLanguage: null,
+                showGeneratedSubtitles: null,
+                mediaVideo: null,
+                objectFit: null,
+                posterBlockId: null,
+                children: []
+              }}
+            />
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.queryByText('Video Details')).not.toBeInTheDocument()
   })
 
   describe('xsDown', () => {
@@ -413,39 +533,6 @@ describe('VideoLibrary', () => {
         },
         undefined,
         { shallow: true }
-      )
-    })
-  })
-
-  it('should switch to Library tab and close drawer after upload completes on Upload tab', async () => {
-    const onSelect = jest.fn()
-    const onClose = jest.fn()
-    const push = jest.fn()
-    mockedUseRouter.mockReturnValue({
-      query: { param: null },
-      push,
-      events: {
-        on
-      }
-    } as unknown as NextRouter)
-
-    const { getByRole } = render(
-      <MockedProvider>
-        <SnackbarProvider>
-          <MuxVideoUploadProvider>
-            <VideoLibrary open onSelect={onSelect} onClose={onClose} />
-          </MuxVideoUploadProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    )
-
-    // Click on Upload tab
-    fireEvent.click(getByRole('tab', { name: 'Upload' }))
-
-    await waitFor(() => {
-      expect(getByRole('tab', { name: 'Upload' })).toHaveAttribute(
-        'aria-selected',
-        'true'
       )
     })
   })
