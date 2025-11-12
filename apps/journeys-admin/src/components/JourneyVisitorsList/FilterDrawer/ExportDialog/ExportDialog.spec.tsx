@@ -6,8 +6,6 @@ import {
   CreateEventsExportLog,
   CreateEventsExportLogVariables
 } from '../../../../../__generated__/CreateEventsExportLog'
-import { GetJourneyCreatedAtVariables } from '../../../../../__generated__/GetJourneyCreatedAt'
-import { DocumentNode } from 'graphql'
 import {
   GetJourneyEvents,
   GetJourneyEventsVariables
@@ -20,52 +18,11 @@ import {
 import { getMockGetJourneyEventsCountQuery } from '../../../../libs/useJourneyEventsExport/useJourneyEventsExport.mock'
 import { FILTERED_EVENTS } from '../../../../libs/useJourneyEventsExport/utils/constants'
 
-import { ExportDialog, GET_JOURNEY_CREATED_AT } from './ExportDialog'
+import { ExportDialog } from './ExportDialog'
 
 const mockOnClose = jest.fn()
 
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
-type GetJourneyCreatedAtDataForTest = {
-  journey: {
-    id: string
-    createdAt: string
-    __typename: 'Journey'
-    blockTypenames: string[]
-  }
-}
-const mockJourneyCreatedAt: MockedResponse<
-  GetJourneyCreatedAtDataForTest,
-  GetJourneyCreatedAtVariables
-> = {
-  request: {
-    query: GET_JOURNEY_CREATED_AT as unknown as DocumentNode,
-    variables: { id: 'journey1' }
-  },
-  result: {
-    data: {
-      journey: {
-        id: 'journey1',
-        createdAt: journeyCreatedAt,
-        __typename: 'Journey',
-        blockTypenames: [
-          'ButtonBlock',
-          'CardBlock',
-          'IconBlock',
-          'ImageBlock',
-          'MultiselectBlock',
-          'MultiselectOptionBlock',
-          'RadioOptionBlock',
-          'RadioQuestionBlock',
-          'StepBlock',
-          'TextResponseBlock',
-          'TypographyBlock',
-          'VideoBlock',
-          'SignUpBlock'
-        ]
-      }
-    }
-  }
-}
 
 const mockGetJourneyEventsCountQuery = getMockGetJourneyEventsCountQuery({
   journeyId: 'journey1',
@@ -89,7 +46,14 @@ jest.mock('../../../../libs/useJourneyContactsExport', () => ({
 const defaultProps = {
   open: true,
   onClose: mockOnClose,
-  journeyId: 'journey1'
+  journeyId: 'journey1',
+  availableBlockTypes: [
+    'RadioQuestionBlock',
+    'MultiselectBlock',
+    'TextResponseBlock',
+    'SignUpBlock'
+  ],
+  createdAt: journeyCreatedAt
 }
 
 describe('ExportDialog', () => {
@@ -221,11 +185,7 @@ describe('ExportDialog', () => {
     it('should render correctly with initial state', async () => {
       render(
         <MockedProvider
-          mocks={[
-            mockGetJourneyEventsCountQuery,
-            mockJourneyCreatedAt,
-            getJourneyEventsMock
-          ]}
+          mocks={[mockGetJourneyEventsCountQuery, getJourneyEventsMock]}
         >
           <SnackbarProvider>
             <ExportDialog {...defaultProps} />
@@ -247,16 +207,12 @@ describe('ExportDialog', () => {
       const mockExportJourneyEventsResult = jest.fn(() => ({
         ...getJourneyEventsMock.result
       }))
-      const mockJourneyCreatedAtResult = jest.fn(() => ({
-        ...mockJourneyCreatedAt.result
-      }))
 
       render(
         <MockedProvider
           mocks={[
             mockGetJourneyEventsCountQuery,
             mockCreateEventsExportLogMutation,
-            { ...mockJourneyCreatedAt, result: mockJourneyCreatedAtResult },
             { ...getJourneyEventsMock, result: mockExportJourneyEventsResult }
           ]}
         >
@@ -265,10 +221,6 @@ describe('ExportDialog', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-
-      await waitFor(async () => {
-        expect(mockJourneyCreatedAtResult).toHaveBeenCalled()
-      })
 
       // Select "Visitor Actions" to show the FilterForm
       const selectElement = screen.getByRole('combobox')
@@ -288,7 +240,7 @@ describe('ExportDialog', () => {
 
     it('should disable export button when no events are selected', async () => {
       render(
-        <MockedProvider mocks={[mockJourneyCreatedAt]}>
+        <MockedProvider>
           <SnackbarProvider>
             <ExportDialog {...defaultProps} />
           </SnackbarProvider>
@@ -319,26 +271,13 @@ describe('ExportDialog', () => {
         )
       }
 
-      const mockJourneyCreatedAtResult = jest.fn(() => ({
-        ...mockJourneyCreatedAt.result
-      }))
-
       render(
-        <MockedProvider
-          mocks={[
-            { ...mockJourneyCreatedAt, result: mockJourneyCreatedAtResult },
-            getJourneyEventsMockError
-          ]}
-        >
+        <MockedProvider mocks={[getJourneyEventsMockError]}>
           <SnackbarProvider>
             <ExportDialog {...defaultProps} />
           </SnackbarProvider>
         </MockedProvider>
       )
-
-      await waitFor(async () => {
-        expect(mockJourneyCreatedAtResult).toHaveBeenCalled()
-      })
 
       // Select "Visitor Actions" to show the FilterForm
       const selectElement = screen.getByRole('combobox')
@@ -363,7 +302,7 @@ describe('ExportDialog', () => {
   describe('Contact Data', () => {
     it('should render correctly with initial state', async () => {
       render(
-        <MockedProvider mocks={[mockJourneyCreatedAt]}>
+        <MockedProvider>
           <SnackbarProvider>
             <ExportDialog {...defaultProps} />
           </SnackbarProvider>
@@ -405,7 +344,7 @@ describe('ExportDialog', () => {
 
     it('should call export function with correct typenames', async () => {
       render(
-        <MockedProvider mocks={[mockJourneyCreatedAt]}>
+        <MockedProvider>
           <SnackbarProvider>
             <ExportDialog {...defaultProps} />
           </SnackbarProvider>

@@ -23,6 +23,16 @@ import { Tooltip } from '../../Tooltip/Tooltip'
 import { ClearAllButton } from './ClearAllButton'
 import { ExportDialog } from './ExportDialog'
 
+export const GET_JOURNEY_BLOCK_TYPENAMES = graphql(`
+  query GetJourneyBlockTypes($id: ID!) {
+    journey: adminJourney(id: $id, idType: databaseId) {
+      id
+      createdAt
+      blockTypenames
+    }
+  }
+`)
+
 interface FilterDrawerProps {
   handleClose?: () => void
   handleChange?: (e) => void
@@ -55,14 +65,6 @@ export function FilterDrawer({
   const { t } = useTranslation('apps-journeys-admin')
   const [showExportDialog, setShowExportDialog] = useState(false)
 
-  const GET_JOURNEY_BLOCK_TYPENAMES = graphql(`
-    query GetJourneyBlockTypes($id: ID!) {
-      journey: adminJourney(id: $id, idType: databaseId) {
-        id
-        blockTypenames
-      }
-    }
-  `)
   const { data: blockTypesData } = useQuery(GET_JOURNEY_BLOCK_TYPENAMES, {
     skip: journeyId == null,
     variables: { id: journeyId! }
@@ -223,6 +225,12 @@ export function FilterDrawer({
             open={showExportDialog}
             onClose={() => setShowExportDialog(false)}
             journeyId={journeyId}
+            availableBlockTypes={availableBlockTypes}
+            createdAt={
+              blockTypesData?.journey?.createdAt != null
+                ? String(blockTypesData.journey.createdAt)
+                : null
+            }
           />
         </>
       )}
