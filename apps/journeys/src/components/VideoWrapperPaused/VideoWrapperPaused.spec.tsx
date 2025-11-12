@@ -13,6 +13,10 @@ jest.mock('@core/journeys/ui/Video', () => ({
 }))
 
 describe('VideoWrapper', () => {
+  beforeEach(() => {
+    ;(Video as jest.Mock).mockClear()
+  })
+
   it('should set videoId to null', () => {
     const block: TreeBlock = {
       id: 'video5.id',
@@ -35,8 +39,8 @@ describe('VideoWrapper', () => {
       fullsize: null,
       action: null,
       objectFit: null,
-      showGeneratedSubtitles: null,
       subtitleLanguage: null,
+      showGeneratedSubtitles: false,
       children: [
         {
           id: 'image5.id',
@@ -95,10 +99,10 @@ describe('VideoWrapper', () => {
         description: null,
         duration: null,
         image: null,
-        showGeneratedSubtitles: null,
         objectFit: null,
         mediaVideo: null,
         videoId: null,
+        showGeneratedSubtitles: false,
         videoVariantLanguageId: '529',
         subtitleLanguage: null
       },
@@ -128,8 +132,8 @@ describe('VideoWrapper', () => {
       fullsize: null,
       action: null,
       objectFit: null,
-      showGeneratedSubtitles: null,
       subtitleLanguage: null,
+      showGeneratedSubtitles: false,
       children: [
         {
           id: 'image5.id',
@@ -188,10 +192,10 @@ describe('VideoWrapper', () => {
         description: null,
         duration: null,
         image: null,
-        showGeneratedSubtitles: null,
         objectFit: null,
         mediaVideo: null,
         videoId: null,
+        showGeneratedSubtitles: false,
         videoVariantLanguageId: '529',
         subtitleLanguage: null
       },

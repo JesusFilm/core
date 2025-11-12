@@ -15,6 +15,7 @@ import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 import { BlockDelete } from '../../../../../../../__generated__/BlockDelete'
 import { StepFields as StepBlock } from '../../../../../../../__generated__/StepFields'
 import { useBlockDeleteMutation } from '../../../../../../libs/useBlockDeleteMutation'
+import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
 import { useDeleteEdge } from '../useDeleteEdge'
 
 import { useDeleteOnKeyPress } from './useDeleteOnKeyPress'
@@ -74,7 +75,9 @@ describe('useDeleteOnKeyPress', () => {
     const { result } = renderHook(() => useDeleteOnKeyPress(), {
       wrapper: ({ children }) => (
         <EditorProvider initialState={initialState}>
-          <MockedProvider>{children}</MockedProvider>
+          <MockedProvider>
+            <MuxVideoUploadProvider>{children}</MuxVideoUploadProvider>
+          </MockedProvider>
         </EditorProvider>
       )
     })
@@ -102,7 +105,9 @@ describe('useDeleteOnKeyPress', () => {
       wrapper: ({ children }) => (
         <JourneyProvider value={{ journey: defaultJourney }}>
           <EditorProvider initialState={initialState}>
-            <MockedProvider>{children}</MockedProvider>
+            <MockedProvider>
+              <MuxVideoUploadProvider>{children}</MuxVideoUploadProvider>
+            </MockedProvider>
           </EditorProvider>
         </JourneyProvider>
       )

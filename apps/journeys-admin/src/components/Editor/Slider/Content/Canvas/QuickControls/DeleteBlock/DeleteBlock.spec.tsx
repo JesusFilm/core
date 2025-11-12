@@ -22,6 +22,7 @@ import {
   selectedStep
 } from '../../../../../../../libs/useBlockDeleteMutation/useBlockDeleteMutation.mock'
 import { restoreStepMock } from '../../../../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
+import { MuxVideoUploadProvider } from '../../../../../../MuxVideoUploadProvider'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
 import { DeleteBlock } from './DeleteBlock'
@@ -64,7 +65,9 @@ describe('DeleteBlock', () => {
             }}
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-              <DeleteBlock variant="button" />
+              <MuxVideoUploadProvider>
+                <DeleteBlock variant="button" />
+              </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
@@ -112,7 +115,9 @@ describe('DeleteBlock', () => {
             }}
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-              <DeleteBlock variant="list-item" />
+              <MuxVideoUploadProvider>
+                <DeleteBlock variant="list-item" />
+              </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
@@ -165,7 +170,9 @@ describe('DeleteBlock', () => {
             }}
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-              <DeleteBlock variant="button" />
+              <MuxVideoUploadProvider>
+                <DeleteBlock variant="button" />
+              </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
@@ -225,7 +232,9 @@ describe('DeleteBlock', () => {
             }}
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-              <DeleteBlock variant="list-item" />
+              <MuxVideoUploadProvider>
+                <DeleteBlock variant="list-item" />
+              </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
@@ -253,7 +262,9 @@ describe('DeleteBlock', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <DeleteBlock variant="button" />
+          <MuxVideoUploadProvider>
+            <DeleteBlock variant="button" />
+          </MuxVideoUploadProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -264,7 +275,9 @@ describe('DeleteBlock', () => {
     render(
       <SnackbarProvider>
         <MockedProvider>
-          <DeleteBlock variant="button" disabled />
+          <MuxVideoUploadProvider>
+            <DeleteBlock variant="button" disabled />
+          </MuxVideoUploadProvider>
         </MockedProvider>
       </SnackbarProvider>
     )
@@ -354,8 +367,10 @@ describe('DeleteBlock', () => {
                 steps: [passedInStep, selectedStep]
               }}
             >
-              <TestEditorState />
-              <DeleteBlock variant="list-item" block={passedInStep} />
+              <MuxVideoUploadProvider>
+                <TestEditorState />
+                <DeleteBlock variant="list-item" block={passedInStep} />
+              </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>
@@ -423,8 +438,10 @@ describe('DeleteBlock', () => {
             }}
           >
             <EditorProvider initialState={{ selectedBlock, selectedStep }}>
-              <DeleteBlock variant="list-item" />
-              <CommandUndoItem variant="button" />
+              <MuxVideoUploadProvider>
+                <DeleteBlock variant="list-item" />
+                <CommandUndoItem variant="button" />
+              </MuxVideoUploadProvider>
             </EditorProvider>
           </JourneyProvider>
         </MockedProvider>

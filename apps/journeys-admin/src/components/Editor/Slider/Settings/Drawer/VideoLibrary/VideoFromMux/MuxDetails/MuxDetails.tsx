@@ -2,8 +2,9 @@ import Stack from '@mui/material/Stack'
 import Box from '@mui/system/Box'
 import { ReactElement, useEffect, useRef } from 'react'
 import videojs from 'video.js'
-import Player from 'video.js/dist/types/player'
 
+import { getCaptionsAndSubtitleTracks } from '@core/journeys/ui/Video/utils/getCaptionsAndSubtitleTracks'
+import VideoJsPlayer from '@core/journeys/ui/Video/utils/videoJsTypes'
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
 import type { VideoDetailsProps } from '../../VideoDetails/VideoDetails'
@@ -18,7 +19,21 @@ export function MuxDetails({
   'open' | 'activeVideoBlock' | 'onSelect'
 >): ReactElement {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const playerRef = useRef<Player | null>(null)
+  const playerRef = useRef<VideoJsPlayer | null>(null)
+
+  const updateSubtitleTracks = (player: VideoJsPlayer | null): void => {
+    if (player == null) return
+
+    const tracks = getCaptionsAndSubtitleTracks(player)
+    tracks.forEach((track) => {
+      if (track.kind === 'subtitles') {
+        track.mode =
+          (activeVideoBlock?.showGeneratedSubtitles ?? false)
+            ? 'showing'
+            : 'hidden'
+      }
+    })
+  }
 
   useEffect(() => {
     if (
@@ -32,13 +47,41 @@ export function MuxDetails({
         fluid: true,
         controls: true,
         poster: `https://image.mux.com/${activeVideoBlock.mediaVideo.playbackId}/thumbnail.png?time=1`
-      })
+      }) as VideoJsPlayer
+
+      const player = playerRef.current
+
+      // Listen for loadedmetadata event, reliable way for knowing when tracks are ready
+      // Added for edge case on intial view of player where useEffect does not have tracks
+      const handleLoadedMetadata = (): void => {
+        updateSubtitleTracks(playerRef.current)
+      }
+
+      player.on('loadedmetadata', handleLoadedMetadata)
+
+      return () => {
+        if (playerRef.current != null) {
+          playerRef.current.off('loadedmetadata', handleLoadedMetadata)
+        }
+      }
     }
-  }, [activeVideoBlock, open, videoRef])
+  }, [
+    activeVideoBlock,
+    open,
+    videoRef,
+    activeVideoBlock?.showGeneratedSubtitles
+  ])
+
+  useEffect(() => {
+    updateSubtitleTracks(playerRef.current)
+  })
 
   return (
     <Stack spacing={4} sx={{ p: 6 }} data-testid="MuxDetails">
       <Box
+        role="region"
+        aria-label="Video Player"
+        tabIndex={0}
         sx={{
           borderRadius: 3,
           position: 'relative',
@@ -47,7 +90,7 @@ export function MuxDetails({
       >
         <video
           ref={videoRef}
-          className="video-js vjs-big-play-centered"
+          className="video-js vjs-tech vjs-big-play-centered"
           playsInline
         >
           {activeVideoBlock?.mediaVideo?.__typename === 'MuxVideo' &&

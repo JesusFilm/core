@@ -24,6 +24,7 @@ import {
   restoreStepMock,
   useBlockRestoreMutationMock
 } from '../../../../libs/useBlockRestoreMutation/useBlockRestoreMutation.mock'
+import { MuxVideoUploadProvider } from '../../../MuxVideoUploadProvider'
 import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 
 import {
@@ -68,10 +69,12 @@ describe('useBlockDeleteCommand', () => {
             <JourneyProvider
               value={{ journey: { ...defaultJourney, id: 'journey-id' } }}
             >
-              <CommandProvider>
-                <CommandUndoItem variant="icon-button" />
-                {children}
-              </CommandProvider>
+              <MuxVideoUploadProvider>
+                <CommandProvider>
+                  <CommandUndoItem variant="icon-button" />
+                  {children}
+                </CommandProvider>
+              </MuxVideoUploadProvider>
             </JourneyProvider>
           </EditorProvider>
         </MockedProvider>
@@ -115,10 +118,12 @@ describe('useBlockDeleteCommand', () => {
             <JourneyProvider
               value={{ journey: { ...defaultJourney, id: 'journey-id' } }}
             >
-              <CommandProvider>
-                <CommandUndoItem variant="icon-button" />
-                {children}
-              </CommandProvider>
+              <MuxVideoUploadProvider>
+                <CommandProvider>
+                  <CommandUndoItem variant="icon-button" />
+                  {children}
+                </CommandProvider>
+              </MuxVideoUploadProvider>
             </JourneyProvider>
           </EditorProvider>
         </MockedProvider>
@@ -247,10 +252,12 @@ describe('useBlockDeleteCommand', () => {
             <JourneyProvider
               value={{ journey: { ...defaultJourney, id: 'journey-id' } }}
             >
-              <CommandProvider>
-                <CommandUndoItem variant="icon-button" />
-                {children}
-              </CommandProvider>
+              <MuxVideoUploadProvider>
+                <CommandProvider>
+                  <CommandUndoItem variant="icon-button" />
+                  {children}
+                </CommandProvider>
+              </MuxVideoUploadProvider>
             </JourneyProvider>
           </EditorProvider>
         </MockedProvider>
@@ -355,10 +362,12 @@ describe('useBlockDeleteCommand', () => {
             <JourneyProvider
               value={{ journey: { ...defaultJourney, id: 'journey-id' } }}
             >
-              <CommandProvider>
-                <CommandUndoItem variant="icon-button" />
-                {children}
-              </CommandProvider>
+              <MuxVideoUploadProvider>
+                <CommandProvider>
+                  <CommandUndoItem variant="icon-button" />
+                  {children}
+                </CommandProvider>
+              </MuxVideoUploadProvider>
             </JourneyProvider>
           </EditorProvider>
         </MockedProvider>

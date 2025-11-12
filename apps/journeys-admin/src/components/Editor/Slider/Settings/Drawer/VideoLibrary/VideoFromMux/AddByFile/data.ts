@@ -2,11 +2,10 @@ import { MockedResponse } from '@apollo/client/testing'
 
 import { CreateMuxVideoUploadByFileMutation } from '../../../../../../../../../__generated__/CreateMuxVideoUploadByFileMutation'
 import { GetMyMuxVideoQuery } from '../../../../../../../../../__generated__/GetMyMuxVideoQuery'
-
 import {
   CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION,
   GET_MY_MUX_VIDEO_QUERY
-} from './AddByFile'
+} from '../../../../../../../../../src/components/MuxVideoUploadProvider/MuxVideoUploadProvider'
 
 export const createMuxVideoMock: MockedResponse<CreateMuxVideoUploadByFileMutation> =
   {
