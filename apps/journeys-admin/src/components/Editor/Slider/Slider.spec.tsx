@@ -21,6 +21,7 @@ import {
 } from '../../../../__generated__/UpdateJourneyFlowBackButtonClicked'
 import { mockReactFlow } from '../../../../test/mockReactFlow'
 import { TestEditorState } from '../../../libs/TestEditorState'
+import { MuxVideoUploadProvider } from '../../MuxVideoUploadProvider'
 
 import {
   GET_JOURNEY_FLOW_BACK_BUTTON_CLICKED,
@@ -73,7 +74,9 @@ describe('Slider', () => {
     render(
       <MockedProvider>
         <EditorProvider initialState={state}>
-          <Slider />
+          <MuxVideoUploadProvider>
+            <Slider />
+          </MuxVideoUploadProvider>
         </EditorProvider>
       </MockedProvider>
     )
@@ -89,8 +92,10 @@ describe('Slider', () => {
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={state}>
-            <TestEditorState />
-            <Slider />
+            <MuxVideoUploadProvider>
+              <TestEditorState />
+              <Slider />
+            </MuxVideoUploadProvider>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -110,8 +115,10 @@ describe('Slider', () => {
     render(
       <MockedProvider>
         <EditorProvider initialState={contentState}>
-          <TestEditorState />
-          <Slider />
+          <MuxVideoUploadProvider>
+            <TestEditorState />
+            <Slider />
+          </MuxVideoUploadProvider>
         </EditorProvider>
       </MockedProvider>
     )
@@ -131,8 +138,10 @@ describe('Slider', () => {
     render(
       <MockedProvider>
         <EditorProvider initialState={contentState}>
-          <TestEditorState />
-          <Slider />
+          <MuxVideoUploadProvider>
+            <TestEditorState />
+            <Slider />
+          </MuxVideoUploadProvider>
         </EditorProvider>
       </MockedProvider>
     )
@@ -155,8 +164,10 @@ describe('Slider', () => {
     render(
       <MockedProvider>
         <EditorProvider initialState={contentState}>
-          <TestEditorState />
-          <Slider />
+          <MuxVideoUploadProvider>
+            <TestEditorState />
+            <Slider />
+          </MuxVideoUploadProvider>
         </EditorProvider>
       </MockedProvider>
     )
@@ -223,7 +234,9 @@ describe('Slider', () => {
       >
         <SnackbarProvider>
           <EditorProvider initialState={contentState}>
-            <Slider />
+            <MuxVideoUploadProvider>
+              <Slider />
+            </MuxVideoUploadProvider>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -264,9 +277,11 @@ describe('Slider', () => {
 
     render(
       <MockedProvider mocks={[mockGetJourneyFlowBackButtonClicked]}>
-        <EditorProvider initialState={contentState}>
-          <Slider />
-        </EditorProvider>
+        <MuxVideoUploadProvider>
+          <EditorProvider initialState={contentState}>
+            <Slider />
+          </EditorProvider>
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
 
