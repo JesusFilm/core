@@ -187,7 +187,7 @@ test.describe('Preview Screen Slides', () => {
 
     // Not showing that Video
     // test.skip(
-    //   `Commented Out- 24. Verify the Repeat steps 18-22 on this card and then swipe to go to next card. 
+    //   `Commented Out- 24. Verify the Repeat steps 18-22 on this card and then swipe to go to next card.
     //   - (Video from Youtube Link)
     //   - This is testing a video from YouTube library
     //   - (Verified the video should be Visibled, Pause, Play, Full Screen, Video Playback time Changing, Automatically Navigate the Next Card)`,
@@ -195,7 +195,7 @@ test.describe('Preview Screen Slides', () => {
     // )
 
     // test.skip(
-    //   `Commented Out - 25. Verify the Repeat steps 18-22 on this card and then swipe to go to next card. 
+    //   `Commented Out - 25. Verify the Repeat steps 18-22 on this card and then swipe to go to next card.
     //   - (Video from Youtube Link)
     //   - This is testing a video from YouTube library
     //   - (Verified the video should be Visibled, Pause, Play, Full Screen, Video Playback time Changing, Automatically Navigate the Next Card)`,
@@ -204,7 +204,7 @@ test.describe('Preview Screen Slides', () => {
 
     // // Video Loading Issue
     // test.skip(
-    //   `Commented Out - 26. Verify the Repeat steps 18-22 on this card and then swipe to go to next card. 
+    //   `Commented Out - 26. Verify the Repeat steps 18-22 on this card and then swipe to go to next card.
     //   - Uploaded Video
     //   - This is testing a Uploded video
     //   - (Verified the video should be Visibled, Pause, Play, Full Screen, Video Playback time Changing, Automatically Navigate the Next Card)`,
@@ -213,16 +213,16 @@ test.describe('Preview Screen Slides', () => {
 
     // // Video Loading Issue
     // test.skip(
-    //   `Commented Out - 27. Verify the Swipe to go to next card. 
+    //   `Commented Out - 27. Verify the Swipe to go to next card.
     //   - Should take you to this card with image blocks and a poll
-      
-    //   28. Verify the Select 'House by the beach' option. 
+
+    //   28. Verify the Select 'House by the beach' option.
     //     - Should take you to this card with a background image and a response field
     //     - This response field is required
-      
-    //   29. Verify the Input Field. 
+
+    //   29. Verify the Input Field.
     //     - A notification should be appear below the text input box
-      
+
     //   30. Verify the Click "submit" button without entering any text.
     //     - You can still move onto the next even if you haven't filled out the response field
     //     - This is an expected behaviour`
