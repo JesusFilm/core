@@ -311,12 +311,30 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       } else {
         spreadsheetId = destination.spreadsheetId!
         spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}`
-        await ensureSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
+      }
+
+      // Check for existing sync immediately after spreadsheetId and sheetName are resolved,
+      // before any Google API calls (ensureSheet, readValues, writeValues)
+      const existingSync = await prisma.googleSheetsSync.findFirst({
+        where: {
+          teamId: journey.teamId,
+          journeyId,
+          spreadsheetId,
+          sheetName
+        }
+      })
+
+      if (existingSync != null) {
+        throw new GraphQLError(
+          'A sync already exists for this journey, spreadsheet, and sheet combination',
+          { extensions: { code: 'CONFLICT' } }
+        )
       }
 
       // Read existing header (for existing sheets) and merge to preserve/extend columns
       let finalHeader = desiredHeader
       if (destination.mode === 'existing') {
+        await ensureSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
         const headerRes = await readValues({
           accessToken,
           spreadsheetId,
@@ -358,22 +376,6 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       })
 
       // Record Google Sheets sync configuration for this journey
-      const existingSync = await prisma.googleSheetsSync.findFirst({
-        where: {
-          teamId: journey.teamId,
-          journeyId,
-          spreadsheetId,
-          sheetName
-        }
-      })
-
-      if (existingSync != null) {
-        throw new GraphQLError(
-          'A sync already exists for this journey, spreadsheet, and sheet combination',
-          { extensions: { code: 'CONFLICT' } }
-        )
-      }
-
       const syncData = {
         teamId: journey.teamId,
         journeyId,

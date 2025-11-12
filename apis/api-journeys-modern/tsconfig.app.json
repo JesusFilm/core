@@ -1,10 +1,6 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "outDir": "../../dist/out-tsc",
-    "module": "esnext",
-    "moduleResolution": "bundler",
     "strict": true,
     "types": [
       "node",

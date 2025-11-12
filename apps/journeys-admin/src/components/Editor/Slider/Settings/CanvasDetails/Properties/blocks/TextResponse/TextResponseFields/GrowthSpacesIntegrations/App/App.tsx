@@ -9,6 +9,10 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 import { BlockFields_TextResponseBlock as TextResponseBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
+import type {
+  GetIntegration_integrations,
+  GetIntegration_integrations_IntegrationGrowthSpaces
+} from '../../../../../../../../../../../../__generated__/GetIntegration'
 import {
   TextResponseIntegrationUpdate,
   TextResponseIntegrationUpdateVariables
@@ -37,9 +41,7 @@ export function App(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
   const { state, dispatch } = useEditor()
-  const selectedBlock = state.selectedBlock as
-    | TreeBlock<TextResponseBlock>
-    | undefined
+  const selectedBlock = state.selectedBlock
 
   const { add } = useCommand()
 
@@ -52,14 +54,37 @@ export function App(): ReactElement {
     teamId: activeTeam?.id as string
   })
 
-  const options =
-    data?.integrations
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      .filter(({ __typename }) => __typename === 'IntegrationGrowthSpaces')
-      .map(({ id, accessId }) => ({ value: id, label: accessId ?? id })) ?? []
+  function isGrowthSpacesIntegration(
+    integration: GetIntegration_integrations
+  ): integration is GetIntegration_integrations_IntegrationGrowthSpaces {
+    return integration.__typename === 'IntegrationGrowthSpaces'
+  }
+
+  function isTextResponseBlock(
+    block: TreeBlock | null | undefined
+  ): block is TreeBlock<TextResponseBlock> {
+    return block?.__typename === 'TextResponseBlock'
+  }
+
+  const options = (data?.integrations ?? [])
+    .filter(isGrowthSpacesIntegration)
+    .reduce<
+      Array<{ value: string; label: string }>
+    >((acc, { id, accessId }) => {
+      if (accessId == null) return acc
+      acc.push({ value: id, label: accessId })
+      return acc
+    }, [])
 
   function handleChange(integrationId: string | null): void {
     if (selectedBlock == null) return
+
+    const previousIntegrationId = isTextResponseBlock(selectedBlock)
+      ? selectedBlock.integrationId
+      : null
+    const previousRouteId = isTextResponseBlock(selectedBlock)
+      ? selectedBlock.routeId
+      : null
 
     add({
       parameters: {
@@ -68,8 +93,8 @@ export function App(): ReactElement {
           routeId: null
         },
         undo: {
-          integrationId: selectedBlock.integrationId,
-          routeId: selectedBlock.routeId
+          integrationId: previousIntegrationId,
+          routeId: previousRouteId
         }
       },
       execute({ integrationId, routeId }) {
@@ -103,7 +128,11 @@ export function App(): ReactElement {
       <Typography variant="subtitle2">{t('Growth Spaces')}</Typography>
       <Select
         label={t('App ID')}
-        value={selectedBlock?.integrationId ?? undefined}
+        value={
+          isTextResponseBlock(selectedBlock)
+            ? (selectedBlock?.integrationId ?? undefined)
+            : undefined
+        }
         onChange={handleChange}
         options={options}
       />

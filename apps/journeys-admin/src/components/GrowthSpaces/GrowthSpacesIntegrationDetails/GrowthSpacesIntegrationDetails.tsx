@@ -142,9 +142,14 @@ export function GrowthSpacesIntegrationDetails(): ReactElement {
 
   useEffect(() => {
     const selectedIntegration = data?.integrations.find(
-      (integration) => integration.id === integrationId
+      (integration) =>
+        integration.id === integrationId &&
+        integration.__typename === 'IntegrationGrowthSpaces'
     )
-    if (selectedIntegration != null) {
+    if (
+      selectedIntegration != null &&
+      selectedIntegration.__typename === 'IntegrationGrowthSpaces'
+    ) {
       setAccessId(selectedIntegration.accessId ?? undefined)
       setAccessSecret(selectedIntegration.accessSecretPart ?? undefined)
     }

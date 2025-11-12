@@ -80,7 +80,8 @@ describe('IntegrationResolver', () => {
       expect(prismaService.integration.findMany).toHaveBeenCalledWith({
         where: {
           AND: [accessibleIntegrations, { teamId: 'teamId' }]
-        }
+        },
+        include: { team: true }
       })
     })
   })

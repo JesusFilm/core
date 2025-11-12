@@ -57,6 +57,8 @@ describe('googleSheetsSyncs', () => {
       userId: mockUser.id,
       roles: []
     } as any)
+    // Default: user is member of any team for membership checks
+    prismaMock.userTeam.findFirst.mockResolvedValue({ id: 'ut-1' } as any)
   })
 
   describe('filter by journeyId', () => {
@@ -271,6 +273,12 @@ describe('googleSheetsSyncs', () => {
           ]
         }
       }
+      // Membership check
+      prismaMock.userTeam.findFirst.mockResolvedValue({
+        teamId: 'team-id',
+        userId: 'userId',
+        role: 'manager'
+      } as any)
 
       const mockSyncs = [
         {
@@ -349,6 +357,8 @@ describe('googleSheetsSyncs', () => {
       prismaMock.integration.findUnique.mockResolvedValue(
         mockIntegration as any
       )
+      // Not in team
+      prismaMock.userTeam.findFirst.mockResolvedValue(null)
 
       const result = await authClient({
         document: GOOGLE_SHEETS_SYNCS_QUERY,
@@ -382,13 +392,37 @@ describe('googleSheetsSyncs', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'Exactly one of journeyId or integrationId must be provided'
+          message: 'At least journeyId or integrationId must be provided'
         })
       ]
     })
   })
 
-  it('should throw error when both journeyId and integrationId are provided', async () => {
+  it('should return syncs when both journeyId and integrationId are provided', async () => {
+    const mockJourney = {
+      id: 'journey-id',
+      teamId: 'team-id',
+      team: { id: 'team-id', userTeams: [] }
+    }
+    const mockIntegration = {
+      id: 'integration-id',
+      teamId: 'team-id',
+      team: { id: 'team-id', userTeams: [] }
+    }
+    const mockSyncs = [
+      {
+        id: 'sync-1',
+        journeyId: 'journey-id',
+        integrationId: 'integration-id',
+        spreadsheetId: 'spreadsheet-1',
+        sheetName: 'Sheet1',
+        deletedAt: null
+      }
+    ]
+    prismaMock.journey.findUnique.mockResolvedValue(mockJourney as any)
+    prismaMock.integration.findUnique.mockResolvedValue(mockIntegration as any)
+    prismaMock.googleSheetsSync.findMany.mockResolvedValue(mockSyncs as any)
+
     const result = await authClient({
       document: GOOGLE_SHEETS_SYNCS_QUERY,
       variables: {
@@ -399,13 +433,19 @@ describe('googleSheetsSyncs', () => {
       }
     })
 
+    expect(prismaMock.googleSheetsSync.findMany).toHaveBeenCalled()
+    const findManyCall = (prismaMock.googleSheetsSync.findMany as jest.Mock)
+      .mock.calls[0][0]
+    expect(findManyCall).toMatchObject({
+      where: { journeyId: 'journey-id', integrationId: 'integration-id' },
+      orderBy: [{ deletedAt: 'asc' }, { createdAt: 'desc' }]
+    })
     expect(result).toEqual({
-      data: null,
-      errors: [
-        expect.objectContaining({
-          message: 'Exactly one of journeyId or integrationId must be provided'
-        })
-      ]
+      data: {
+        googleSheetsSyncs: expect.arrayContaining([
+          expect.objectContaining({ id: 'sync-1' })
+        ])
+      }
     })
   })
 

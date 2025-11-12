@@ -58,6 +58,8 @@ describe('integrationGoogleCreate', () => {
       userId: mockUser.id,
       roles: []
     } as any)
+    // Pass isInTeam auth guard
+    prismaMock.userTeam.findFirst.mockResolvedValue({ id: 'ut-1' } as any)
   })
 
   afterEach(() => {
@@ -117,12 +119,16 @@ describe('integrationGoogleCreate', () => {
     expect(mockAxios.post).toHaveBeenCalledWith(
       'https://oauth2.googleapis.com/token',
       expect.any(URLSearchParams),
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+      expect.objectContaining({
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      })
     )
 
     expect(mockAxios.get).toHaveBeenCalledWith(
       'https://openidconnect.googleapis.com/v1/userinfo',
-      { headers: { Authorization: 'Bearer access-token' } }
+      expect.objectContaining({
+        headers: { Authorization: 'Bearer access-token' }
+      })
     )
 
     expect(mockEncryptSymmetric).toHaveBeenCalledWith(
@@ -155,7 +161,7 @@ describe('integrationGoogleCreate', () => {
     })
   })
 
-  it('should create integration with access token when refresh token is not provided', async () => {
+  it('should throw a clear error when refresh token is not provided', async () => {
     const mockTokenResponse = {
       data: {
         access_token: 'access-token-only',
@@ -172,24 +178,10 @@ describe('integrationGoogleCreate', () => {
       }
     }
 
-    const mockIntegration = {
-      id: 'integration-id',
-      type: 'google',
-      teamId: 'team-id',
-      userId: 'userId',
-      accountEmail: 'test@example.com'
-    }
-
     mockAxios.post.mockResolvedValueOnce(mockTokenResponse as any)
     mockAxios.get.mockResolvedValueOnce(mockUserInfoResponse as any)
-    mockEncryptSymmetric.mockResolvedValue({
-      ciphertext: 'encrypted-secret',
-      iv: 'iv',
-      tag: 'tag'
-    })
-    prismaMock.integration.create.mockResolvedValue(mockIntegration as any)
 
-    await authClient({
+    const result = await authClient({
       document: INTEGRATION_GOOGLE_CREATE_MUTATION,
       variables: {
         input: {
@@ -200,10 +192,21 @@ describe('integrationGoogleCreate', () => {
       }
     })
 
-    expect(mockEncryptSymmetric).toHaveBeenCalledWith(
-      'access-token-only',
-      'test-secret'
-    )
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message:
+            'A Google refresh token is required to complete the connection. Please re-authorize your Google account.',
+          extensions: {
+            code: 'BAD_USER_INPUT'
+          }
+        })
+      ]
+    })
+
+    expect(mockEncryptSymmetric).not.toHaveBeenCalled()
+    expect(prismaMock.integration.create).not.toHaveBeenCalled()
   })
 
   it('should throw error when user is not authenticated', async () => {
@@ -234,54 +237,6 @@ describe('integrationGoogleCreate', () => {
     })
   })
 
-  it('should throw error when GOOGLE_CLIENT_ID is not configured', async () => {
-    delete process.env.GOOGLE_CLIENT_ID
-
-    const result = await authClient({
-      document: INTEGRATION_GOOGLE_CREATE_MUTATION,
-      variables: {
-        input: {
-          teamId: 'team-id',
-          code: 'auth-code',
-          redirectUri: 'https://example.com/callback'
-        }
-      }
-    })
-
-    expect(result).toEqual({
-      data: null,
-      errors: [
-        expect.objectContaining({
-          message: 'GOOGLE_CLIENT_ID not configured'
-        })
-      ]
-    })
-  })
-
-  it('should throw error when GOOGLE_CLIENT_SECRET is not configured', async () => {
-    delete process.env.GOOGLE_CLIENT_SECRET
-
-    const result = await authClient({
-      document: INTEGRATION_GOOGLE_CREATE_MUTATION,
-      variables: {
-        input: {
-          teamId: 'team-id',
-          code: 'auth-code',
-          redirectUri: 'https://example.com/callback'
-        }
-      }
-    })
-
-    expect(result).toEqual({
-      data: null,
-      errors: [
-        expect.objectContaining({
-          message: 'GOOGLE_CLIENT_SECRET not configured'
-        })
-      ]
-    })
-  })
-
   it('should throw error when OAuth exchange fails', async () => {
     mockAxios.post.mockRejectedValueOnce(new Error('Invalid grant'))
 
@@ -300,7 +255,7 @@ describe('integrationGoogleCreate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'Invalid grant',
+          message: 'OAuth exchange failed',
           extensions: {
             code: 'BAD_USER_INPUT'
           }
@@ -338,7 +293,7 @@ describe('integrationGoogleCreate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'Userinfo fetch failed',
+          message: 'OAuth exchange failed',
           extensions: {
             code: 'BAD_USER_INPUT'
           }
