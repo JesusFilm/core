@@ -3,21 +3,13 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
-import {
-  GetJourneyCreatedAt,
-  GetJourneyCreatedAtVariables
-} from '../../../../__generated__/GetJourneyCreatedAt'
-
-import { GET_JOURNEY_CREATED_AT } from './ExportDialog/ExportDialog'
+import { GET_JOURNEY_BLOCK_TYPENAMES } from './FilterDrawer'
 import { FilterDrawer } from './FilterDrawer'
 
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
-const mockJourneyCreatedAt: MockedResponse<
-  GetJourneyCreatedAt,
-  GetJourneyCreatedAtVariables
-> = {
+const mockJourneyCreatedAt: MockedResponse = {
   request: {
-    query: GET_JOURNEY_CREATED_AT,
+    query: GET_JOURNEY_BLOCK_TYPENAMES,
     variables: { id: 'journey1' }
   },
   result: {
@@ -25,7 +17,14 @@ const mockJourneyCreatedAt: MockedResponse<
       journey: {
         id: 'journey1',
         createdAt: journeyCreatedAt,
-        __typename: 'Journey'
+        __typename: 'Journey',
+        blockTypenames: [
+          'RadioQuestionBlock',
+          'MultiselectBlock',
+          'IconBlock',
+          'SignUpBlock',
+          'TextResponseBlock'
+        ]
       }
     }
   }
@@ -70,10 +69,14 @@ describe('FilterDrawer', () => {
 
     fireEvent.click(screen.getByText('Chat Started'))
     expect(handleChange).toHaveReturnedWith('Chat Started')
+    // Wait for async-rendered options based on block types
+    await screen.findByText('Poll Answers')
     fireEvent.click(screen.getByText('Poll Answers'))
     expect(handleChange).toHaveReturnedWith('Poll Answers')
+    await screen.findByText('Submitted Text')
     fireEvent.click(screen.getByText('Submitted Text'))
     expect(handleChange).toHaveReturnedWith('Submitted Text')
+    await screen.findByText('Icon')
     fireEvent.click(screen.getByText('Icon'))
     expect(handleChange).toHaveReturnedWith('Icon')
     fireEvent.click(screen.getByText('Hide Inactive'))

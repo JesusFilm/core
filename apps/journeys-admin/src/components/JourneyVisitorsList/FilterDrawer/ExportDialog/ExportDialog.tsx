@@ -1,4 +1,3 @@
-import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
@@ -19,20 +18,12 @@ import { ContactDataForm } from './ContactDataForm'
 import { DateRangePicker } from './DateRangePicker'
 import { FilterForm } from './FilterForm'
 
-export const GET_JOURNEY_CREATED_AT = gql`
-  query GetJourneyCreatedAt($id: ID!) {
-    journey: adminJourney(id: $id, idType: databaseId) {
-      id
-      createdAt
-      blockTypenames
-    }
-  }
-`
-
 interface ExportDialogProps {
   open: boolean
   onClose: () => void
   journeyId: string
+  availableBlockTypes: string[]
+  createdAt?: string | null
 }
 
 /**
@@ -44,7 +35,9 @@ interface ExportDialogProps {
 export function ExportDialog({
   open,
   onClose,
-  journeyId
+  journeyId,
+  availableBlockTypes,
+  createdAt
 }: ExportDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -52,9 +45,6 @@ export function ExportDialog({
     useJourneyEventsExport()
   const { exportJourneyContacts, downloading: contactsDownloading } =
     useJourneyContactsExport()
-  const { data: journeyData } = useQuery(GET_JOURNEY_CREATED_AT, {
-    variables: { id: journeyId }
-  })
 
   const clampToToday = (date: Date | null): Date | null => {
     if (date == null) return null
@@ -63,9 +53,7 @@ export function ExportDialog({
   }
 
   const [startDate, setStartDate] = useState<Date | null>(() =>
-    journeyData?.journey?.createdAt
-      ? clampToToday(new Date(String(journeyData.journey.createdAt)))
-      : null
+    createdAt != null ? clampToToday(new Date(String(createdAt))) : null
   )
   const [endDate, setEndDate] = useState<Date | null>(clampToToday(new Date()))
   const [selectedEvents, setSelectedEvents] = useState<string[]>([])
@@ -74,13 +62,11 @@ export function ExportDialog({
   const [includeOldData, setIncludeOldData] = useState<boolean>(false)
 
   useEffect(() => {
-    if (journeyData?.journey?.createdAt != null) {
-      const newStart = clampToToday(
-        new Date(String(journeyData.journey.createdAt))
-      )
+    if (createdAt != null) {
+      const newStart = clampToToday(new Date(String(createdAt)))
       setStartDate(newStart)
     }
-  }, [journeyData])
+  }, [createdAt])
 
   const handleExport = async (): Promise<void> => {
     try {
@@ -206,7 +192,7 @@ export function ExportDialog({
             selectedFields={contactData}
             includeOldData={includeOldData}
             setIncludeOldData={setIncludeOldData}
-            availableBlockTypes={journeyData?.journey?.blockTypenames ?? []}
+            availableBlockTypes={availableBlockTypes}
           />
         </Box>
       )}
