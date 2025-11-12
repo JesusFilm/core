@@ -7,7 +7,6 @@ import { Page, TestType, expect } from '@playwright/test'
 export class BasePage {
   page: Page
 
-  url: string
   adminLogo: string
 
   rightNavBtn: string
@@ -64,7 +63,6 @@ export class BasePage {
     this.page = page
     this.test = test
 
-    this.url = 'https://journeys-daily-e2e-jesusfilm.vercel.app/e2e-priority'
     this.adminLogo = '[data-testid="StepFooterHostAvatars"]'
 
     this.rightNavBtn = 'button[data-testid="ConductorNavigationButtonNext"]'

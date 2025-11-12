@@ -17,7 +17,7 @@ export class PreviewScreenPage extends BasePage {
   }
 
   async goto(): Promise<void> {
-    await this.page.goto(this.url, {
+    await this.page.goto('/e2e-priority', {
       waitUntil: 'domcontentloaded',
       timeout: 60000
     })
