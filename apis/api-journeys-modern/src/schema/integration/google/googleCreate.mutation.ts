@@ -126,7 +126,26 @@ builder.mutationField('integrationGoogleCreate', (t) =>
         }
         const accountEmail = userInfo.data.email
 
-        const secretToStore = refreshToken ?? accessToken
+        // Require refresh token; do not fall back to short-lived access token
+        if (refreshToken == null || refreshToken === '') {
+          logger.error(
+            {
+              scopes: tokenResponse?.data.scope,
+              hasRefreshToken: false
+            },
+            'Google OAuth did not return a refresh token - offline access not granted'
+          )
+          throw new GraphQLError(
+            'A Google refresh token is required to complete the connection. Please re-authorize your Google account.',
+            {
+              extensions: {
+                code: 'BAD_USER_INPUT'
+              }
+            }
+          )
+        }
+
+        const secretToStore = refreshToken
 
         const { ciphertext, iv, tag } = await encryptSymmetric(
           secretToStore,

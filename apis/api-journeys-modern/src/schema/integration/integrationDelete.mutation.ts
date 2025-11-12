@@ -14,7 +14,7 @@ export const IntegrationDelete = builder.mutationField(
       type: IntegrationRef,
       nullable: false,
       args: { id: t.arg.id({ required: true }) },
-      resolve: async (_query, _parent, args, context) => {
+      resolve: async (query, _parent, args, context) => {
         const { id } = args
         const integration = await prisma.integration.findUnique({
           where: { id },
@@ -45,7 +45,10 @@ export const IntegrationDelete = builder.mutationField(
             }
           })
 
-          return await tx.integration.delete({ where: { id } })
+          return await tx.integration.delete({
+            ...query,
+            where: { id }
+          })
         })
       }
     })
