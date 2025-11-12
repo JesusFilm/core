@@ -61,7 +61,7 @@ export default defineConfig({
     {
       name: 'chrome-mobile',
       use: {
-        ...devices['Pixel 9'],
+        ...devices['Pixel 7'],
         channel:
           process.platform === 'linux' && process.arch === 'arm64'
             ? 'chromium'

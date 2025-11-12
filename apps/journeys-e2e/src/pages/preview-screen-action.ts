@@ -17,7 +17,7 @@ export class PreviewScreenPage extends BasePage {
   }
 
   async goto(): Promise<void> {
-    await this.page.goto(this.url, { waitUntil: 'load' })
+    await this.page.goto(this.url, { waitUntil: 'domcontentloaded', timeout: 60000 })
   }
 
   async verifyLandingPage(): Promise<void> {
