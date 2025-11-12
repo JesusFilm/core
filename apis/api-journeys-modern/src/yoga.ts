@@ -80,10 +80,7 @@ export const yoga = createYoga<
     process.env.NODE_ENV !== 'test'
       ? useResponseCache({
           session: () => null,
-          cache,
-          ttlPerSchemaCoordinate: {
-            'Query.googleSheetsSyncs': 0
-          }
+          cache
         })
       : {}
   ]
