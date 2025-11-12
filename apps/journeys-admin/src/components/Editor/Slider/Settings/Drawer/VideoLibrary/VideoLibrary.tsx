@@ -18,6 +18,7 @@ import { VideoBlockUpdateInput } from '../../../../../../../__generated__/global
 import { Drawer } from '../Drawer'
 
 import { VideoFromLocal } from './VideoFromLocal'
+import { useMuxVideoUpload } from '../../../../../MuxVideoUploadProvider'
 
 const VideoDetails = dynamic(
   async () =>
@@ -64,7 +65,13 @@ export function VideoLibrary({
   const [openVideoDetails, setOpenVideoDetails] = useState(
     selectedBlock?.videoId != null && open
   )
-  const [activeTab, setActiveTab] = useState(LIBRARY_TAB)
+
+  const { getUploadStatus } = useMuxVideoUpload()
+  const uploadStatus = getUploadStatus(selectedBlock?.id ?? '')
+
+  const [activeTab, setActiveTab] = useState(
+    uploadStatus != null ? UPLOAD_TAB : LIBRARY_TAB
+  )
   const router = useRouter()
 
   useEffect(() => {
@@ -187,7 +194,7 @@ export function VideoLibrary({
           </TabPanel>
         </Box>
       </Drawer>
-      {selectedBlock?.videoId != null && (
+      {selectedBlock?.videoId != null && uploadStatus == null && (
         <VideoDetails
           key={selectedBlock.videoId}
           id={selectedBlock.videoId}
