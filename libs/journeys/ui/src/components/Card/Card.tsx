@@ -30,6 +30,7 @@ import { getFormInitialValues } from './utils/getFormInitialValues'
 import { getMultiselectBlocks } from './utils/getMultiselectBlocks'
 import { getTextResponseBlocks } from './utils/getTextResponseBlocks'
 import { getValidationSchema } from './utils/getValidationSchema/getValidationSchema'
+import { WebsiteCover } from './WebsiteCover'
 
 export const STEP_NEXT_EVENT_CREATE = gql`
   mutation StepNextEventCreate($input: StepNextEventCreateInput!) {
@@ -99,7 +100,8 @@ export function Card({
   const { t } = useTranslation('journeys-ui')
   const theme = useTheme()
   const { blockHistory, treeBlocks } = useBlocks()
-  const { variant } = useJourney()
+  const { variant, journey } = useJourney()
+  const borderRadius = { xs: 'inherit', lg: journey?.website === true ? 0 : 3 }
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
@@ -272,6 +274,7 @@ export function Card({
   }
 
   const isContained = (coverBlock != null && !fullscreen) || videoBlock != null
+  const isWebsite = isContained && journey?.website === true
 
   return (
     <Formik
@@ -293,7 +296,7 @@ export function Card({
             height: '100%',
             width: '100%',
             overflow: 'hidden',
-            borderRadius: { xs: 'inherit', lg: 3 }
+            borderRadius
           }}
         >
           <Paper
@@ -302,7 +305,7 @@ export function Card({
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              borderRadius: { xs: 'inherit', lg: 3 },
+              borderRadius,
               backgroundColor,
               width: '100%',
               height: '100%',
@@ -311,7 +314,17 @@ export function Card({
             }}
             elevation={3}
           >
-            {isContained ? (
+            {isWebsite ? (
+              <WebsiteCover
+                backgroundColor={cardColor}
+                backgroundBlur={blurUrl}
+                videoBlock={videoBlock}
+                imageBlock={imageBlock}
+                hasFullscreenVideo={hasFullscreenVideo}
+              >
+                {renderedChildren}
+              </WebsiteCover>
+            ) : isContained ? (
               <ContainedCover
                 backgroundColor={cardColor}
                 backgroundBlur={blurUrl}
