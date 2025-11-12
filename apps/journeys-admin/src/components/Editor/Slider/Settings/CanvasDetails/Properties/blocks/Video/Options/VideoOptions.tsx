@@ -36,7 +36,10 @@ export function VideoOptions(): ReactElement {
 
   const selectedBlock = stateSelectedBlock as TreeBlock<VideoBlock> | undefined
 
-  function handleChange(input: VideoBlockUpdateInput): void {
+  function handleChange(
+    input: VideoBlockUpdateInput,
+    shouldFocus = true
+  ): void {
     if (selectedBlock == null) return
 
     const inverseInput: VideoBlockUpdateInput = {}
@@ -52,6 +55,7 @@ export function VideoOptions(): ReactElement {
       inverseInput.videoId = selectedBlock.videoId
       if (input.videoId !== selectedBlock.videoId) {
         input.subtitleLanguageId = null
+        input.showGeneratedSubtitles = null
       }
     }
     if (input.videoVariantLanguageId !== undefined)
@@ -65,6 +69,8 @@ export function VideoOptions(): ReactElement {
       inverseInput.objectFit = selectedBlock.objectFit
     if (input.subtitleLanguageId !== undefined)
       inverseInput.subtitleLanguageId = selectedBlock.subtitleLanguage?.id
+    if (input.showGeneratedSubtitles !== undefined)
+      inverseInput.showGeneratedSubtitles = selectedBlock.showGeneratedSubtitles
 
     add({
       parameters: {
@@ -76,11 +82,15 @@ export function VideoOptions(): ReactElement {
         }
       },
       execute({ input }) {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          selectedStep,
-          selectedBlock
-        })
+        // Only dispatch SetEditorFocusAction for user-initiated actions
+        // Skip for background upload completions to avoid unwanted navigation
+        if (shouldFocus) {
+          dispatch({
+            type: 'SetEditorFocusAction',
+            selectedStep,
+            selectedBlock
+          })
+        }
         void videoBlockUpdate({
           variables: {
             id: selectedBlock.id,
@@ -101,7 +111,7 @@ export function VideoOptions(): ReactElement {
   return selectedBlock?.__typename === 'VideoBlock' ? (
     <VideoBlockEditor
       selectedBlock={selectedBlock}
-      onChange={async (input) => handleChange(input)}
+      onChange={async (input, shouldFocus) => handleChange(input, shouldFocus)}
     />
   ) : (
     <></>

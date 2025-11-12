@@ -627,6 +627,11 @@ export type ForeignKeyConstraintErrorLocation = {
   value?: Maybe<Scalars['String']['output']>;
 };
 
+export type GenerateSubtitlesInput = {
+  languageCode: Scalars['String']['input'];
+  languageName: Scalars['String']['input'];
+};
+
 export enum GridAlignItems {
   Baseline = 'baseline',
   Center = 'center',
@@ -2003,6 +2008,7 @@ export type MutationCreateMuxVideoAndQueueUploadArgs = {
 
 export type MutationCreateMuxVideoUploadByFileArgs = {
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  generateSubtitlesInput?: InputMaybe<GenerateSubtitlesInput>;
   maxResolution?: InputMaybe<MaxResolutionTier>;
   name: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3013,6 +3019,16 @@ export type MutationVideoOriginUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type MuxSubtitleTrack = {
+  __typename?: 'MuxSubtitleTrack';
+  bcp47: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  muxVideoId: Scalars['ID']['output'];
+  source: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  trackId: Scalars['String']['output'];
+};
+
 export type MuxVideo = {
   __typename?: 'MuxVideo';
   assetId?: Maybe<Scalars['String']['output']>;
@@ -3416,6 +3432,7 @@ export type Query = {
   getMuxVideo?: Maybe<MuxVideo>;
   getMyCloudflareImage: CloudflareImage;
   getMyCloudflareImages: Array<CloudflareImage>;
+  getMyGeneratedMuxSubtitleTrack: QueryGetMyGeneratedMuxSubtitleTrackResult;
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
   getUserRole?: Maybe<UserRole>;
@@ -3609,6 +3626,13 @@ export type QueryGetMyCloudflareImageArgs = {
 export type QueryGetMyCloudflareImagesArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetMyGeneratedMuxSubtitleTrackArgs = {
+  bcp47: Scalars['String']['input'];
+  muxVideoId: Scalars['ID']['input'];
+  userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -3928,6 +3952,13 @@ export type QueryVisitorsConnectionArgs = {
 
 export type QueryYoutubeClosedCaptionLanguagesArgs = {
   videoId: Scalars['ID']['input'];
+};
+
+export type QueryGetMyGeneratedMuxSubtitleTrackResult = Error | QueryGetMyGeneratedMuxSubtitleTrackSuccess;
+
+export type QueryGetMyGeneratedMuxSubtitleTrackSuccess = {
+  __typename?: 'QueryGetMyGeneratedMuxSubtitleTrackSuccess';
+  data: MuxSubtitleTrack;
 };
 
 export type QueryPlaylistResult = NotFoundError | QueryPlaylistSuccess;
@@ -5001,6 +5032,7 @@ export type VideoBlock = Block & {
    * as the video poster. PosterBlock should be of type ImageBlock.
    */
   posterBlockId?: Maybe<Scalars['ID']['output']>;
+  showGeneratedSubtitles?: Maybe<Scalars['Boolean']['output']>;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
@@ -5050,6 +5082,7 @@ export type VideoBlockCreateInput = {
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId: Scalars['ID']['input'];
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
+  showGeneratedSubtitles?: InputMaybe<Scalars['Boolean']['input']>;
   source?: InputMaybe<VideoBlockSource>;
   startAt?: InputMaybe<Scalars['Int']['input']>;
   subtitleLanguageId?: InputMaybe<Scalars['ID']['input']>;
@@ -5101,6 +5134,7 @@ export type VideoBlockUpdateInput = {
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
+  showGeneratedSubtitles?: InputMaybe<Scalars['Boolean']['input']>;
   /**
    * internal source: videoId and videoVariantLanguageId required
    *   youTube source: videoId required
