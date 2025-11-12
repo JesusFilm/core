@@ -363,6 +363,7 @@ export interface TextResponseWithButtonRestore_textResponse_TypographyBlock {
 export interface TextResponseWithButtonRestore_textResponse_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_title {
@@ -529,6 +530,7 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: TextResponseWithButtonRestore_textResponse_VideoBlock_subtitleLanguage | null;
   mediaVideo: TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo | null;
   /**
@@ -951,6 +953,7 @@ export interface TextResponseWithButtonRestore_button_TypographyBlock {
 export interface TextResponseWithButtonRestore_button_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_title {
@@ -1117,6 +1120,7 @@ export interface TextResponseWithButtonRestore_button_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: TextResponseWithButtonRestore_button_VideoBlock_subtitleLanguage | null;
   mediaVideo: TextResponseWithButtonRestore_button_VideoBlock_mediaVideo | null;
   /**
@@ -1539,6 +1543,7 @@ export interface TextResponseWithButtonRestore_startIcon_TypographyBlock {
 export interface TextResponseWithButtonRestore_startIcon_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_title {
@@ -1705,6 +1710,7 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: TextResponseWithButtonRestore_startIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo | null;
   /**
@@ -2127,6 +2133,7 @@ export interface TextResponseWithButtonRestore_endIcon_TypographyBlock {
 export interface TextResponseWithButtonRestore_endIcon_VideoBlock_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_title {
@@ -2293,6 +2300,7 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: TextResponseWithButtonRestore_endIcon_VideoBlock_subtitleLanguage | null;
   mediaVideo: TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo | null;
   /**

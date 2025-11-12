@@ -11,10 +11,11 @@ import { FormikValues, useFormik } from 'formik'
 import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useRef } from 'react'
+import { ReactElement } from 'react'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import {
   type YouTubeLanguage,
   useYouTubeClosedCaptions
@@ -37,6 +38,7 @@ import {
   VideoBlockUpdateInput
 } from '../../../../../../../../__generated__/globalTypes'
 
+import { MuxSubtitleSwitch } from './MuxSubtitles'
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 import { YouTubeSubtitleSelector } from './SubtitleSelector'
 
@@ -63,6 +65,8 @@ export function VideoBlockEditorSettings({
   onChange
 }: VideoBlockEditorSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { journey } = useJourney()
+  const isWebsite = journey?.website === true
   const { enqueueSnackbar } = useSnackbar()
 
   // Fetch closed captions using custom hook
@@ -81,58 +85,59 @@ export function VideoBlockEditorSettings({
     objectFit: selectedBlock?.objectFit ?? ObjectFit.fill,
     subtitleLanguageId: selectedBlock?.subtitleLanguage?.id ?? null
   }
-  const { values, errors, handleChange, setFieldValue } = useFormik<Values>({
-    initialValues,
-    enableReinitialize: true,
-    validate: async (values) => {
-      const convertedStartAt = timeFormatToSeconds(values.startAt)
-      const convertedEndAt = timeFormatToSeconds(values.endAt)
-      if (convertedStartAt > convertedEndAt - 3) {
-        const message = t(
-          'Start time has to be at least 3 seconds less than end time'
-        )
-        errors.startAt = message
-        enqueueSnackbar(message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      } else if (
-        selectedBlock?.duration != null &&
-        convertedStartAt > selectedBlock?.duration - 3
-      ) {
-        const message = t(
-          'Start time has to be at least 3 seconds less than video duration {{ time }}',
-          { time: secondsToTimeFormat(selectedBlock?.duration) }
-        )
-        errors.startAt = message
-        enqueueSnackbar(message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      } else if (
-        selectedBlock?.duration != null &&
-        convertedEndAt > selectedBlock?.duration
-      ) {
-        const message = t(
-          'End time has to be no more than video duration {{ time }}',
-          { time: secondsToTimeFormat(selectedBlock?.duration) }
-        )
-        errors.endAt = message
-        enqueueSnackbar(message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      } else {
-        await onChange({
-          ...values,
-          startAt: convertedStartAt,
-          endAt: convertedEndAt
-        })
-      }
-      return errors
-    },
-    onSubmit: noop
-  })
+  const { values, errors, handleChange, setFieldValue, setValues } =
+    useFormik<Values>({
+      initialValues,
+      enableReinitialize: true,
+      validate: async (values) => {
+        const convertedStartAt = timeFormatToSeconds(values.startAt)
+        const convertedEndAt = timeFormatToSeconds(values.endAt)
+        if (convertedStartAt > convertedEndAt - 3) {
+          const message = t(
+            'Start time has to be at least 3 seconds less than end time'
+          )
+          errors.startAt = message
+          enqueueSnackbar(message, {
+            variant: 'error',
+            preventDuplicate: true
+          })
+        } else if (
+          selectedBlock?.duration != null &&
+          convertedStartAt > selectedBlock?.duration - 3
+        ) {
+          const message = t(
+            'Start time has to be at least 3 seconds less than video duration {{ time }}',
+            { time: secondsToTimeFormat(selectedBlock?.duration) }
+          )
+          errors.startAt = message
+          enqueueSnackbar(message, {
+            variant: 'error',
+            preventDuplicate: true
+          })
+        } else if (
+          selectedBlock?.duration != null &&
+          convertedEndAt > selectedBlock?.duration
+        ) {
+          const message = t(
+            'End time has to be no more than video duration {{ time }}',
+            { time: secondsToTimeFormat(selectedBlock?.duration) }
+          )
+          errors.endAt = message
+          enqueueSnackbar(message, {
+            variant: 'error',
+            preventDuplicate: true
+          })
+        } else {
+          await onChange({
+            ...values,
+            startAt: convertedStartAt,
+            endAt: convertedEndAt
+          })
+        }
+        return errors
+      },
+      onSubmit: noop
+    })
 
   return (
     <Box
@@ -140,8 +145,7 @@ export function VideoBlockEditorSettings({
       data-testid="VideoBlockEditorSettings"
     >
       <Stack direction="column" spacing={6}>
-        {/* Subtitles */}
-        {/* Only show subtitles for YouTube source, MUX and Internal not yet supported*/}
+        {/* Youtube Subtitles */}
         {selectedBlock?.source === VideoBlockSource.youTube && (
           <Stack direction="column" spacing={4}>
             <Typography
@@ -159,6 +163,34 @@ export function VideoBlockEditorSettings({
                 await setFieldValue('subtitleLanguageId', subtitleLanguageId)
               }}
               disabled={selectedBlock == null}
+            />
+            <Divider />
+          </Stack>
+        )}
+
+        {/* Mux Subtitles */}
+        {selectedBlock?.source === VideoBlockSource.mux && (
+          <Stack direction="column" spacing={4}>
+            <MuxSubtitleSwitch
+              videoBlockId={selectedBlock?.id ?? null}
+              muxVideoId={
+                selectedBlock?.mediaVideo?.__typename === 'MuxVideo'
+                  ? selectedBlock.mediaVideo.id
+                  : null
+              }
+              journeyLanguageBcp47={journey?.language.bcp47}
+              onChange={async (showGeneratedSubtitles) => {
+                await setValues(
+                  {
+                    ...values,
+                    showGeneratedSubtitles,
+                    subtitleLanguageId: showGeneratedSubtitles
+                      ? (journey?.language.id ?? null)
+                      : null
+                  },
+                  true
+                )
+              }}
             />
             <Divider />
           </Stack>
@@ -229,22 +261,26 @@ export function VideoBlockEditorSettings({
               variant="subtitle2"
               sx={{
                 color:
-                  selectedBlock?.source === VideoBlockSource.youTube
+                  selectedBlock?.source === VideoBlockSource.youTube ||
+                  isWebsite
                     ? 'action.disabled'
                     : undefined
               }}
             >
               {t('Aspect ratio')}
             </Typography>
-            {selectedBlock?.source === VideoBlockSource.youTube && (
+            {(selectedBlock?.source === VideoBlockSource.youTube ||
+              isWebsite) && (
               <Typography variant="caption" color="action.disabled">
-                {t('This option is not available for YouTube videos')}
+                {isWebsite
+                  ? t('This option is not available for microwebsites')
+                  : t('This option is not available for YouTube videos')}
               </Typography>
             )}
           </Stack>
           <ToggleButtonGroup
             value={
-              selectedBlock?.source === VideoBlockSource.youTube
+              selectedBlock?.source === VideoBlockSource.youTube || isWebsite
                 ? ObjectFit.fit
                 : values.objectFit
             }
@@ -254,7 +290,9 @@ export function VideoBlockEditorSettings({
               if (value != null) await setFieldValue('objectFit', value)
             }}
             aria-label="Object Fit"
-            disabled={selectedBlock?.source === VideoBlockSource.youTube}
+            disabled={
+              selectedBlock?.source === VideoBlockSource.youTube || isWebsite
+            }
           >
             <ToggleButton
               sx={{

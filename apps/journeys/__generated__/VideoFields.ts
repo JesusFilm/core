@@ -12,6 +12,7 @@ import { VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./glob
 export interface VideoFields_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface VideoFields_mediaVideo_Video_title {
@@ -178,6 +179,7 @@ export interface VideoFields {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: VideoFields_subtitleLanguage | null;
   mediaVideo: VideoFields_mediaVideo | null;
   /**

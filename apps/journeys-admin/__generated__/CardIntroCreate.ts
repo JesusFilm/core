@@ -230,6 +230,7 @@ export interface CardIntroCreate_buttonBlockUpdate {
 export interface CardIntroCreate_video_subtitleLanguage {
   __typename: "Language";
   id: string;
+  bcp47: string | null;
 }
 
 export interface CardIntroCreate_video_mediaVideo_Video_title {
@@ -396,6 +397,7 @@ export interface CardIntroCreate_video {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: CardIntroCreate_video_subtitleLanguage | null;
   mediaVideo: CardIntroCreate_video_mediaVideo | null;
   /**
