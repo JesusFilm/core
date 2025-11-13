@@ -81,15 +81,25 @@ export function ContactDataForm({
     setIsOptionalSettingsOpen(!isOptionalSettingsOpen)
   }
 
+  // Initialize selection to "all" exactly once when available events are first known.
+  // On subsequent available set changes, preserve user selections but drop any no-longer-available ones.
+  const [initialized, setInitialized] = useState(false)
+  const availableKey = useMemo(
+    () => availableContactEvents.join('|'),
+    [availableContactEvents]
+  )
   useEffect(() => {
     setSelectedFields((prev) => {
-      const hasSameLength = prev.length === availableContactEvents.length
-      const hasSameMembers =
-        hasSameLength &&
-        prev.every((field) => availableContactEvents.includes(field))
-      return hasSameMembers ? prev : [...availableContactEvents]
+      if (!initialized) {
+        setInitialized(true)
+        return [...availableContactEvents]
+      }
+      const filtered = prev.filter((f) => availableContactEvents.includes(f))
+      return filtered
     })
-  }, [availableContactEvents, setSelectedFields])
+    // Only react to content changes, not reference changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availableKey, setSelectedFields])
 
   return (
     <Stack>
