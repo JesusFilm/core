@@ -70,6 +70,10 @@ export function PageCollections(): ReactElement {
     }
   ]
 
+  const heroImageUrl =
+    navigationContentItems[0]?.image ??
+    'https://images.unsplash.com/photo-1482424917728-d82d29662023?w=1600&auto=format&fit=crop&q=60'
+
   const shareDataTitle =
     '👋 Mira estos videos sobre los orígenes de la Pascua. Pensé que te gustarían.'
 
@@ -81,6 +85,8 @@ export function PageCollections(): ReactElement {
           descriptionBeforeYear="Pascua"
           descriptionAfterYear="videos y recursos sobre la Cuaresma, la Semana Santa, la Resurrección"
           feedbackButtonLabel="Dar Comentarios"
+          coverImageUrl={heroImageUrl}
+          coverImageAlt={navigationContentItems[0]?.title}
         />
       }
       hideHeader

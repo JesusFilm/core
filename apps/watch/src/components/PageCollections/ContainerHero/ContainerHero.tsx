@@ -1,10 +1,8 @@
-import { ReactElement, useCallback, useState } from 'react'
-import Player from 'video.js/dist/types/player'
+import { ReactElement } from 'react'
 
 import { ContainerHeroVideo } from '../ContainerHeroVideo'
 
 import { CollectionsHeader } from './CollectionsHeader'
-import { ContainerHeroMuteButton } from './ContainerHeroMuteButton'
 
 export interface ContainerHeroProps {
   /** Title displayed in the hero section */
@@ -15,51 +13,37 @@ export interface ContainerHeroProps {
   descriptionAfterYear: string
   /** Label for the feedback button */
   feedbackButtonLabel: string
+  /** Cover image shown behind the hero */
+  coverImageUrl: string
+  /** Alt text for the cover image */
+  coverImageAlt?: string
+  /** Optional language slug for header links */
+  languageSlug?: string
 }
 
 export function ContainerHero({
   title,
   descriptionBeforeYear,
   descriptionAfterYear,
-  feedbackButtonLabel
+  feedbackButtonLabel,
+  coverImageUrl,
+  coverImageAlt,
+  languageSlug
 }: ContainerHeroProps): ReactElement {
-  const [playerRef, setPlayerRef] = useState<Player | null>(null)
-  const [isMuted, setIsMuted] = useState(true)
-  const [hasUnmutedOnce, setHasUnmutedOnce] = useState(false)
   const currentYear = new Date().getFullYear()
-
-  const handlePlayerReady = useCallback((player: Player): void => {
-    setPlayerRef(player)
-  }, [])
-
-  const handleMutedChange = useCallback((muted: boolean): void => {
-    setIsMuted(muted)
-  }, [])
-
-  const handleToggleMute = useCallback((): void => {
-    if (playerRef) {
-      const newMutedState = !isMuted
-      playerRef.muted(newMutedState)
-      setIsMuted(newMutedState)
-
-      // If unmuting for the first time, restart video
-      if (!newMutedState && !hasUnmutedOnce) {
-        playerRef.currentTime(0)
-        void playerRef.play()
-        setHasUnmutedOnce(true)
-      }
-    }
-  }, [isMuted, hasUnmutedOnce, playerRef])
 
   return (
     <div
       className="h-[90vh] md:h-[70vh] w-full flex items-end relative transition-height duration-300 ease-out bg-stone-900 font-sans"
       data-testid="ContainerHero"
     >
-      <CollectionsHeader feedbackButtonLabel={feedbackButtonLabel} />
+      <CollectionsHeader
+        feedbackButtonLabel={feedbackButtonLabel}
+        languageSlug={languageSlug}
+      />
       <ContainerHeroVideo
-        onMutedChange={handleMutedChange}
-        onPlayerReady={handlePlayerReady}
+        coverImageUrl={coverImageUrl}
+        coverImageAlt={coverImageAlt ?? title}
       />
 
       <div
@@ -77,23 +61,16 @@ export function ContainerHero({
           data-testid="ContainerHeroTitle"
           className="w-full flex padded pb-4 min-h-[500px] items-end"
         >
-          <div className="pb-4 sm:pb-0 w-full relative z-[2] flex flex-col">
-            <div className="flex items-center justify-between w-full z-[2]">
-              <h2 className="text-[3.75rem] font-bold text-white opacity-90 mix-blend-screen mb-1 flex-grow">
-                {title}
-              </h2>
-              <ContainerHeroMuteButton
-                isMuted={isMuted}
-                onClick={handleToggleMute}
-              />
-            </div>
-
-            <h1
-              className="text-secondary-contrast opacity-50 mix-blend-screen z-[2] uppercase tracking-widest text-white"
+          <div className="pb-4 sm:pb-0 w-full relative z-[2] flex flex-col gap-4">
+            <h2 className="text-[clamp(2.5rem,5vw,4rem)] font-bold text-white opacity-90 mix-blend-screen">
+              {title}
+            </h2>
+            <p
+              className="text-secondary-contrast opacity-70 mix-blend-screen z-[2] uppercase tracking-[0.4em] text-white text-sm"
               data-testid="ContainerHeroDescription"
             >
               {`${descriptionBeforeYear} ${currentYear} ${descriptionAfterYear}`}
-            </h1>
+            </p>
           </div>
         </div>
       </div>
