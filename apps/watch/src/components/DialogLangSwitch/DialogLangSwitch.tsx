@@ -1,15 +1,14 @@
-import CloseIcon from '@mui/icons-material/Close'
-import Box from '@mui/material/Box'
-import Dialog from '@mui/material/Dialog'
-import DialogContent from '@mui/material/DialogContent'
-import IconButton from '@mui/material/IconButton'
-import Stack from '@mui/material/Stack'
-import { ThemeProvider } from '@mui/material/styles'
 import { ReactElement } from 'react'
 
-import { websiteLight } from '@core/shared/ui/themes/website/theme'
-
 import { useWatch } from '../../libs/watchContext'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '../Dialog'
 
 import { AudioTrackSelect } from './AudioTrackSelect'
 import { SubtitlesSelect } from './SubtitlesSelect'
@@ -32,40 +31,45 @@ export function DialogLangSwitch({
       subtitleOn
     }
   } = useWatch()
-  return (
-    <ThemeProvider theme={websiteLight}>
-      <Dialog
-        open={open || false}
-        onClose={handleClose}
-        maxWidth="sm"
-        fullWidth
-        aria-label="Language Settings"
-      >
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <IconButton
-            onClick={handleClose}
-            size="small"
-            aria-label="Close dialog"
-            sx={{ m: 2 }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </Box>
+  const handleOpenChange = (isOpen: boolean): void => {
+    if (!isOpen && handleClose != null) handleClose()
+  }
 
-        <DialogContent sx={{ pt: 0, pb: 6, px: 0 }}>
-          <Stack gap={8}>
-            <AudioTrackSelect
-              videoAudioLanguageIds={videoAudioLanguageIds}
-              audioLanguageId={audioLanguageId}
-            />
-            <SubtitlesSelect
-              videoSubtitleLanguageIds={videoSubtitleLanguageIds}
-              subtitleLanguageId={subtitleLanguageId}
-              subtitleOn={subtitleOn}
-            />
-          </Stack>
+  return (
+    <Dialog open={open ?? false} onOpenChange={handleOpenChange}>
+      <DialogPortal>
+        <DialogOverlay className="blured-bg bg-stone-900/5" />
+        <DialogContent
+          aria-label="Language Settings"
+          className="
+            fixed inset-0 z-[201] max-w-none translate-x-0 translate-y-0 border-0
+            bg-transparent p-0 shadow-none outline-none
+            overflow-y-auto overscroll-contain
+            [&>button]:right-10 [&>button]:top-10 [&>button]:cursor-pointer
+            [&>button]:text-white [&>button]:scale-150
+          "
+        >
+          <DialogTitle className="sr-only">Language Settings</DialogTitle>
+          <DialogDescription className="sr-only">
+            Select audio language and subtitle options for the current video.
+          </DialogDescription>
+          <div className="flex min-h-full w-full items-center justify-center px-4 py-12 md:px-10">
+            <div className="w-full max-w-2xl rounded-[32px] border border-white/10 bg-black/40 px-6 py-10 backdrop-blur-sm">
+              <div className="flex flex-col gap-12">
+                <AudioTrackSelect
+                  videoAudioLanguageIds={videoAudioLanguageIds}
+                  audioLanguageId={audioLanguageId}
+                />
+                <SubtitlesSelect
+                  videoSubtitleLanguageIds={videoSubtitleLanguageIds}
+                  subtitleLanguageId={subtitleLanguageId}
+                  subtitleOn={subtitleOn}
+                />
+              </div>
+            </div>
+          </div>
         </DialogContent>
-      </Dialog>
-    </ThemeProvider>
+      </DialogPortal>
+    </Dialog>
   )
 }

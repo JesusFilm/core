@@ -1,15 +1,11 @@
-import ClosedCaptionOffOutlinedIcon from '@mui/icons-material/ClosedCaptionOffOutlined'
-import Autocomplete from '@mui/material/Autocomplete'
-import Box from '@mui/material/Box'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
+import { Captions } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
-import { ChangeEvent, ReactElement, useMemo } from 'react'
+import { ChangeEvent, ReactElement, useId, useMemo } from 'react'
 
 import { SUBTITLE_LANGUAGE_IDS } from '../../../libs/localeMapping'
 import { Language, useLanguages } from '../../../libs/useLanguages'
 import { useLanguageActions } from '../../../libs/watchContext'
-import { filterOptions } from '../utils/filterOptions'
+import { LanguageCommandSelect } from '../LanguageCommandSelect'
 
 interface SubtitlesSelectProps {
   videoSubtitleLanguageIds?: string[]
@@ -22,9 +18,11 @@ export function SubtitlesSelect({
   subtitleLanguageId,
   subtitleOn
 }: SubtitlesSelectProps): ReactElement {
-  const { t } = useTranslation()
+  const { t } = useTranslation('apps-watch')
   const { updateSubtitleLanguage, updateSubtitlesOn } = useLanguageActions()
   const { languages: allLanguages, isLoading } = useLanguages()
+  const comboboxId = useId()
+  const helperTextId = `${comboboxId}-helper`
   const languages = useMemo(() => {
     return allLanguages.filter((language) =>
       SUBTITLE_LANGUAGE_IDS.includes(language.id)
@@ -38,11 +36,9 @@ export function SubtitlesSelect({
   )
   const options = useMemo(() => {
     if (videoSubtitleLanguageIds == null) return languages
-    return [
-      ...languages.filter((language) =>
-        videoSubtitleLanguageIds.includes(language.id)
-      )
-    ]
+    return languages.filter((language) =>
+      videoSubtitleLanguageIds.includes(language.id)
+    )
   }, [languages, videoSubtitleLanguageIds])
   const helperText = useMemo(() => {
     if (isLoading) return t('Loading...')
@@ -70,9 +66,7 @@ export function SubtitlesSelect({
     }
   }, [isLoading, t, videoSubtitleLanguageIds, selectedOption])
 
-  function handleSubtitleLanguageChange(_, language: Language | null): void {
-    if (language == null) return
-
+  function handleSubtitleLanguageChange(language: Language): void {
     updateSubtitleLanguage(language)
   }
   function handleSubtitlesOnChange(event: ChangeEvent<HTMLInputElement>): void {
@@ -83,8 +77,8 @@ export function SubtitlesSelect({
     <div className="mx-6 font-sans">
       <div className="flex items-center justify-between">
         <label
-          htmlFor="subtitles-select"
-          className="ml-7 block text-xl font-medium text-gray-700"
+          htmlFor={comboboxId}
+          className="ml-7 block text-xl font-medium text-gray-200"
         >
           {t('Subtitles')}
         </label>
@@ -98,55 +92,20 @@ export function SubtitlesSelect({
             </span>
           )}
       </div>
-      <div className="relative mt-1 flex items-start gap-2">
-        <div className="pt-4">
-          <ClosedCaptionOffOutlinedIcon fontSize="small" />
-        </div>
-        <div className="relative w-full">
-          <Autocomplete
-            disableClearable
-            // this is a workaround to keep the autocomplete controlled
-            value={selectedOption as unknown as Language | undefined}
-            options={options}
-            filterOptions={filterOptions}
-            onChange={handleSubtitleLanguageChange}
-            loading={isLoading}
-            getOptionKey={(option) => option.id}
-            getOptionLabel={(option) => option.displayName}
-            renderOption={({ key, ...optionProps }, option) => {
-              return (
-                <Box
-                  key={key}
-                  component="li"
-                  {...optionProps}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                    justifyContent: 'space-between !important'
-                  }}
-                >
-                  <Typography variant="body1">{option.displayName}</Typography>
-                  {option.nativeName &&
-                    option.nativeName.value !== option.displayName && (
-                      <Typography variant="body2" color="text.secondary">
-                        {option.nativeName.value}
-                      </Typography>
-                    )}
-                </Box>
-              )
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                hiddenLabel
-                id="subtitles-select"
-                variant="filled"
-                helperText={helperText}
-              />
-            )}
-          />
-        </div>
+      <div className="relative mt-2">
+        <LanguageCommandSelect
+          options={options}
+          selectedOption={selectedOption}
+          placeholder={t('Search languages...')}
+          emptyMessage={t('No languages found.')}
+          loadingMessage={t('Loading languages...')}
+          helperText={helperText}
+          onSelect={handleSubtitleLanguageChange}
+          icon={<Captions className="h-5 w-5 text-stone-400" />}
+          disabled={isLoading}
+          id={comboboxId}
+          ariaDescribedBy={helperText != null ? helperTextId : undefined}
+        />
       </div>
       <div className="my-4 ml-8 flex items-center gap-2">
         <input
