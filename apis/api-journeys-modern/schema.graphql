@@ -1253,6 +1253,7 @@ type Mutation {
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent! @override(from: "api-journeys")
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!): IntegrationGoogle!
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!): IntegrationGoogle!
+  integrationDelete(id: ID!): Integration!
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!

@@ -471,7 +471,6 @@ type Mutation {
   hostDelete(id: ID!, teamId: ID!): Host!
   integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces!
   integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces!
-  integrationDelete(id: ID!): Integration!
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
   journeyDuplicate(id: ID!, teamId: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!

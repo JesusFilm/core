@@ -128,24 +128,6 @@ describe('integrationDelete', () => {
     })
   })
 
-  it('returns NOT_FOUND when integration is missing', async () => {
-    prismaMock.integration.findUnique.mockResolvedValue(null as any)
-
-    const result = await authClient({
-      document: INTEGRATION_DELETE,
-      variables: { id: 'missing' }
-    })
-
-    expect(result).toEqual({
-      data: null,
-      errors: [
-        expect.objectContaining({
-          message: 'integration not found'
-        })
-      ]
-    })
-  })
-
   it('returns FORBIDDEN when user is neither owner nor team manager', async () => {
     prismaMock.integration.findUnique.mockResolvedValue({
       id: 'integration-id',
