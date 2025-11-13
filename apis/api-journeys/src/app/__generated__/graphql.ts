@@ -1180,6 +1180,8 @@ export abstract class IMutation {
 
     abstract integrationGrowthSpacesUpdate(id: string, input: IntegrationGrowthSpacesUpdateInput): IntegrationGrowthSpaces | Promise<IntegrationGrowthSpaces>;
 
+    abstract integrationDelete(id: string): Integration | Promise<Integration>;
+
     abstract journeyCreate(input: JourneyCreateInput, teamId: string): Journey | Promise<Journey>;
 
     abstract journeyDuplicate(id: string, teamId: string): Journey | Promise<Journey>;
