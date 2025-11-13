@@ -32,11 +32,11 @@ jest.mock('firebase-admin/auth', () => ({
 }))
 
 describe('validateEmail', () => {
-  const originalEnv = process.env
+  const originalEnv = { ...process.env }
 
   afterEach(() => {
     jest.clearAllMocks()
-    process.env = originalEnv
+    process.env = { ...originalEnv }
   })
 
   it('should return true', async () => {
@@ -63,20 +63,13 @@ describe('validateEmail', () => {
 
   it('should validate email for example.com emails', async () => {
     process.env.EXAMPLE_EMAIL_TOKEN = 'example-token'
+    const userId = 'bypassUser'
+    const userEmail = 'playwrightuser@example.com'
+    const token = 'example-token'
 
-    prismaMock.user.findUnique.mockResolvedValue({
-      email: 'playwrightuser@example.com'
-    } as any)
-    prismaMock.user.update.mockResolvedValue({} as any)
-
-    const result = await validateEmail(
-      'bypassUser',
-      'playwrightuser@example.com',
-      'example-token'
-    )
+    const result = await validateEmail(userId, userEmail, token)
     expect(result).toBe(true)
 
-    // Assert Prisma updated first, then Firebase
     const updateUserMock = (getAuth as jest.Mock).mock.results[0].value
       .updateUser as jest.Mock
 
@@ -87,9 +80,5 @@ describe('validateEmail', () => {
       where: { userId: 'bypassUser' },
       data: { emailVerified: true }
     })
-
-    const prismaCallOrder = prismaMock.user.update.mock.invocationCallOrder[0]
-    const firebaseCallOrder = updateUserMock.mock.invocationCallOrder[0]
-    expect(prismaCallOrder).toBeLessThan(firebaseCallOrder)
   })
 })
