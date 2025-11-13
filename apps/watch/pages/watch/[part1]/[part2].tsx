@@ -56,12 +56,12 @@ interface Part2PageProps {
   videoAudioLanguageIds: string[]
 }
 
-const DynamicPageVideoContainer = dynamic(
+const DynamicPageCollection = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "PageVideoContainer" */
-      '../../../src/components/PageVideoContainer'
-    )
+      /* webpackChunkName: "PageCollection" */
+      '../../../src/components/PageCollection'
+    ).then((mod) => mod.PageCollection)
 )
 
 const DynamicNewContentPage = dynamic(
@@ -94,7 +94,7 @@ export default function Part2Page({
             {content.variant?.hls != null && content.variant?.hls != '' ? (
               <DynamicNewContentPage />
             ) : (
-              <DynamicPageVideoContainer />
+              <DynamicPageCollection />
             )}
           </PlayerProvider>
         </VideoProvider>
