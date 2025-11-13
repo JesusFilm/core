@@ -4,6 +4,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs'
 import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
 
 import { watchConfig } from '../../libs/storybook'
+import { PlayerProvider } from '../../libs/playerContext'
 import { getVideoChildrenMock } from '../../libs/useVideoChildren/getVideoChildrenMock'
 import { VideoProvider } from '../../libs/videoContext'
 import { videos } from '../Videos/__generated__/testData'
@@ -23,11 +24,13 @@ const PageVideoContainerStory: Meta<typeof PageVideoContainer> = {
 const Template: StoryObj<typeof PageVideoContainer> = {
   render: () => (
     <MockedProvider mocks={[getVideoChildrenMock]}>
-      <VideoProvider value={{ content: videos[0] }}>
-        <InstantSearchTestWrapper>
-          <PageVideoContainer />
-        </InstantSearchTestWrapper>
-      </VideoProvider>
+      <PlayerProvider>
+        <VideoProvider value={{ content: videos[0] }}>
+          <InstantSearchTestWrapper>
+            <PageVideoContainer />
+          </InstantSearchTestWrapper>
+        </VideoProvider>
+      </PlayerProvider>
     </MockedProvider>
   )
 }
