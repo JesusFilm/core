@@ -28,12 +28,15 @@ export async function validateEmail(
 }
 
 async function updateEmailVerified(userId: string): Promise<void> {
-  await prisma.user.update({
-    where: { userId },
-    data: { emailVerified: true }
-  })
+  const auth = getAuth(firebaseClient)
+  await prisma.$transaction(async (tx) => {
+    await tx.user.update({
+      where: { userId },
+      data: { emailVerified: true }
+    })
 
-  await getAuth(firebaseClient).updateUser(userId, {
-    emailVerified: true
+    await auth.updateUser(userId, {
+      emailVerified: true
+    })
   })
 }
