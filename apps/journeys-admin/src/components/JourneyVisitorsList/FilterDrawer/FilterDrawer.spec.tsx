@@ -112,9 +112,7 @@ describe('FilterDrawer', () => {
         </MockedProvider>
       )
 
-      expect(
-        screen.queryByRole('button', { name: 'Export Data' })
-      ).toBeDisabled()
+      expect(screen.getByRole('button', { name: /Export Data/ })).toBeDisabled()
     })
 
     it('opens the export dialog when export button is clicked', async () => {
