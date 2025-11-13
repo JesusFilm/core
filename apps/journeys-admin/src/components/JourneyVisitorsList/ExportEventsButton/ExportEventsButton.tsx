@@ -7,6 +7,7 @@ import Download2 from '@core/shared/ui/icons/Download2'
 
 import { ExportDialog } from '../FilterDrawer/ExportDialog'
 import { GET_JOURNEY_BLOCK_TYPENAMES } from '../FilterDrawer/FilterDrawer'
+
 export { GET_JOURNEY_BLOCK_TYPENAMES } from '../FilterDrawer/FilterDrawer'
 
 interface ExportEventsButtonProps {
