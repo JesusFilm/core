@@ -3,25 +3,16 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import { ReactElement, useState } from 'react'
 
-import { graphql } from '@core/shared/gql'
 import Download2 from '@core/shared/ui/icons/Download2'
 
 import { ExportDialog } from '../FilterDrawer/ExportDialog'
+import { GET_JOURNEY_BLOCK_TYPENAMES } from '../FilterDrawer/FilterDrawer'
+export { GET_JOURNEY_BLOCK_TYPENAMES } from '../FilterDrawer/FilterDrawer'
 
 interface ExportEventsButtonProps {
   journeyId: string
   disabled: boolean
 }
-
-export const GET_JOURNEY_BLOCK_TYPENAMES = graphql(`
-  query GetJourneyBlockTypesForButton($id: ID!) {
-    journey: adminJourney(id: $id, idType: databaseId) {
-      id
-      createdAt
-      blockTypenames
-    }
-  }
-`)
 
 export function ExportEventsButton({
   journeyId,
