@@ -91,6 +91,7 @@ builder.mutationField('integrationGoogleUpdate', (t) =>
           )
 
           return await prisma.integration.update({
+            ...query,
             where: { id },
             data: {
               accessId: 'oauth2',
@@ -103,34 +104,11 @@ builder.mutationField('integrationGoogleUpdate', (t) =>
           })
         }
 
-        // refreshToken is undefined, reuse existing encrypted secret fields
-        const existing = await prisma.integration.findUnique({
-          where: { id },
-          select: {
-            accessSecretCipherText: true,
-            accessSecretIv: true,
-            accessSecretTag: true,
-            accessSecretPart: true
-          }
-        })
-        if (existing == null) {
-          throw new GraphQLError('Integration not found', {
-            extensions: { code: 'NOT_FOUND' }
-          })
-        }
-
-        return await prisma.integration.update({
-          ...query,
-          where: { id },
-          data: {
-            accessId: 'oauth2',
-            accessSecretCipherText: existing.accessSecretCipherText,
-            accessSecretIv: existing.accessSecretIv,
-            accessSecretTag: existing.accessSecretTag,
-            accessSecretPart: existing.accessSecretPart,
-            accountEmail
-          }
-        })
+        // refreshToken is undefined, fail with clear guidance to re-authorize
+        throw new GraphQLError(
+          'A Google refresh token is required to complete the connection. Please re-authorize your Google account.',
+          { extensions: { code: 'BAD_USER_INPUT' } }
+        )
       }
     })
 )

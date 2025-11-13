@@ -140,17 +140,19 @@ describe('integrationGoogleUpdate', () => {
       })
     )
 
-    expect(prismaMock.integration.update).toHaveBeenCalledWith({
-      where: { id: 'integration-id' },
-      data: {
-        accessId: 'oauth2',
-        accessSecretPart: 'new-re',
-        accessSecretCipherText: 'encrypted-secret',
-        accessSecretIv: 'iv',
-        accessSecretTag: 'tag',
-        accountEmail: 'updated@example.com'
-      }
-    })
+    expect(prismaMock.integration.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'integration-id' },
+        data: {
+          accessId: 'oauth2',
+          accessSecretPart: 'new-re',
+          accessSecretCipherText: 'encrypted-secret',
+          accessSecretIv: 'iv',
+          accessSecretTag: 'tag',
+          accountEmail: 'updated@example.com'
+        }
+      })
+    )
 
     expect(result).toEqual({
       data: {
@@ -267,6 +269,61 @@ describe('integrationGoogleUpdate', () => {
       errors: [
         expect.objectContaining({
           message: 'Invalid grant',
+          extensions: {
+            code: 'BAD_USER_INPUT'
+          }
+        })
+      ]
+    })
+
+    expect(prismaMock.integration.update).not.toHaveBeenCalled()
+  })
+
+  it('should throw a clear error when refresh token is not provided on update', async () => {
+    const mockExistingIntegration = {
+      id: 'integration-id',
+      userId: 'userId'
+    }
+
+    const mockTokenResponse = {
+      data: {
+        access_token: 'access-token-only',
+        expires_in: 3600,
+        scope: 'openid email',
+        token_type: 'Bearer'
+      }
+    }
+
+    const mockUserInfoResponse = {
+      data: {
+        email: 'updated@example.com',
+        email_verified: true
+      }
+    }
+
+    prismaMock.integration.findUnique.mockResolvedValue(
+      mockExistingIntegration as any
+    )
+    mockAxios.post.mockResolvedValueOnce(mockTokenResponse as any)
+    mockAxios.get.mockResolvedValueOnce(mockUserInfoResponse as any)
+
+    const result = await authClient({
+      document: INTEGRATION_GOOGLE_UPDATE_MUTATION,
+      variables: {
+        id: 'integration-id',
+        input: {
+          code: 'auth-code',
+          redirectUri: 'https://example.com/callback'
+        }
+      }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message:
+            'A Google refresh token is required to complete the connection. Please re-authorize your Google account.',
           extensions: {
             code: 'BAD_USER_INPUT'
           }
