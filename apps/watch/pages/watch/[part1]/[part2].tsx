@@ -12,6 +12,7 @@ import type {
   GetVideoContentVariables
 } from '../../../__generated__/GetVideoContent'
 import type { VideoContentFields } from '../../../__generated__/VideoContentFields'
+import { VideoLabel } from '../../../__generated__/globalTypes'
 import i18nConfig from '../../../next-i18next.config'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { getCookie } from '../../../src/libs/cookieHandler'
@@ -72,6 +73,14 @@ const DynamicNewContentPage = dynamic(
     ).then((mod) => mod.PageSingleVideo)
 )
 
+const DynamicCollectionContentPage = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "CollectionContentPage" */
+      '../../../src/components/PageCollectionVideo'
+    ).then((mod) => mod.PageCollectionVideo)
+)
+
 export default function Part2Page({
   content,
   videoSubtitleLanguageIds,
@@ -86,12 +95,19 @@ export default function Part2Page({
     videoAudioLanguageIds
   }
 
+  const isCollectionLabel = [
+    VideoLabel.collection,
+    VideoLabel.series
+  ].includes(content.label)
+
   return (
     <SnackbarProvider>
       <WatchProvider initialState={initialWatchState}>
         <VideoProvider value={{ content }}>
           <PlayerProvider>
-            {content.variant?.hls != null && content.variant?.hls != '' ? (
+            {isCollectionLabel ? (
+              <DynamicCollectionContentPage />
+            ) : content.variant?.hls != null && content.variant?.hls !== '' ? (
               <DynamicNewContentPage />
             ) : (
               <DynamicPageVideoContainer />
