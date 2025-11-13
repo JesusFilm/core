@@ -131,4 +131,19 @@ describe('ContentMetadata', () => {
     expect(boldText).toBeInTheDocument()
     expect(boldText).toHaveClass('font-bold text-white')
   })
+
+  it('can hide the download button when showDownloadButton is false', () => {
+    render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <ContentMetadata
+          {...defaultProps}
+          showDownloadButton={false}
+        />
+      </VideoProvider>
+    )
+
+    expect(
+      screen.queryByRole('button', { name: /Download/i })
+    ).not.toBeInTheDocument()
+  })
 })
