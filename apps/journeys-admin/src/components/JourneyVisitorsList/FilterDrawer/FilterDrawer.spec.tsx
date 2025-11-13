@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
-import { FilterDrawer , GET_JOURNEY_BLOCK_TYPENAMES } from './FilterDrawer'
+import { FilterDrawer, GET_JOURNEY_BLOCK_TYPENAMES } from './FilterDrawer'
 
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
 const mockJourneyCreatedAt: MockedResponse = {
