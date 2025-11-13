@@ -3,8 +3,8 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import { ReactElement, useState } from 'react'
 
-import Download2 from '@core/shared/ui/icons/Download2'
 import { graphql } from '@core/shared/gql'
+import Download2 from '@core/shared/ui/icons/Download2'
 
 import { ExportDialog } from '../FilterDrawer/ExportDialog'
 
@@ -32,8 +32,13 @@ export function ExportEventsButton({
     variables: { id: journeyId }
   })
   const availableBlockTypes: string[] = data?.journey?.blockTypenames ?? []
+  const rawCreatedAt = data?.journey?.createdAt
   const createdAt =
-    data?.journey?.createdAt != null ? String(data.journey.createdAt) : null
+    typeof rawCreatedAt === 'string'
+      ? rawCreatedAt
+      : rawCreatedAt instanceof Date
+        ? rawCreatedAt.toISOString()
+        : null
 
   return (
     <Box sx={{ display: { sm: 'block', md: 'none' } }}>

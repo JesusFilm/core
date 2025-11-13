@@ -3,9 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
-import { GET_JOURNEY_BLOCK_TYPENAMES } from './ExportEventsButton'
-
-import { ExportEventsButton } from './ExportEventsButton'
+import { ExportEventsButton , GET_JOURNEY_BLOCK_TYPENAMES } from './ExportEventsButton'
 
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
 const mockJourneyCreatedAt: MockedResponse = {
