@@ -35,10 +35,7 @@ export function AudioLanguageButton({
         >
           <LanguageIcon />
         </IconButton>
-        <DialogLangSwitch
-          open={isDialogOpen}
-          handleClose={handleCloseDialog}
-        />
+        <DialogLangSwitch open={isDialogOpen} handleClose={handleCloseDialog} />
       </>
     )
   }

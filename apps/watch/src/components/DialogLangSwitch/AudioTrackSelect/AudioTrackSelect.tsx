@@ -3,9 +3,8 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useId, useMemo } from 'react'
 import { useInstantSearch } from 'react-instantsearch'
 
-import { LANGUAGE_MAPPINGS } from '../../../libs/localeMapping'
+
 import { type Language, useLanguages } from '../../../libs/useLanguages'
-import { useLanguageActions } from '../../../libs/watchContext'
 import { LanguageCommandSelect } from '../LanguageCommandSelect'
 
 function useSafeInstantSearch() {
@@ -19,18 +18,17 @@ function useSafeInstantSearch() {
 interface AudioTrackSelectProps {
   videoAudioLanguageIds?: string[]
   audioLanguageId?: string
+  onLanguageChange?: (language: Language) => void
 }
 
 export function AudioTrackSelect({
   videoAudioLanguageIds,
-  audioLanguageId
+  audioLanguageId,
+  onLanguageChange
 }: AudioTrackSelectProps): ReactElement {
-  const { t, i18n } = useTranslation('apps-watch')
-  const { updateAudioLanguage } = useLanguageActions()
+  const { t } = useTranslation('apps-watch')
   const { languages, isLoading } = useLanguages()
-  const instantSearch = useSafeInstantSearch()
   const comboboxId = useId()
-  const helperTextId = `${comboboxId}-helper`
 
   const selectedOption = useMemo(
     () => languages.find((language) => language.id === audioLanguageId) ?? null,
@@ -42,55 +40,33 @@ export function AudioTrackSelect({
       videoAudioLanguageIds.includes(language.id)
     )
   }, [languages, videoAudioLanguageIds])
+
+  const languageCount = useMemo(() => {
+    if (isLoading) return 0
+    return videoAudioLanguageIds == null
+      ? languages.length
+      : videoAudioLanguageIds.length
+  }, [isLoading, videoAudioLanguageIds, languages.length])
+
   const helperText = useMemo(() => {
     if (isLoading) return t('Loading...')
 
-    if (videoAudioLanguageIds == null)
-      return t('Available in {{count}} languages.', { count: languages.length })
+    if (videoAudioLanguageIds == null) return undefined
 
     const available = videoAudioLanguageIds.length
     if (
       selectedOption != null &&
       videoAudioLanguageIds.find((id) => id === selectedOption.id) == null
     ) {
-      return [
-        t('This content is not available in {{language}}.', {
-          language: selectedOption.displayName
-        }),
-        t('Available in {{count}} languages.', {
-          count: available
-        })
-      ].join(' ')
-    } else {
-      return t('Available in {{count}} languages.', {
-        count: available
+      return t('This content is not available in {{language}}.', {
+        language: selectedOption.displayName
       })
     }
+    return undefined
   }, [isLoading, t, videoAudioLanguageIds, selectedOption])
 
   function handleSelect(language: Language): void {
-    let reload = instantSearch == null
-    if (reload) {
-      const found = videoAudioLanguageIds?.find((id) => id === language.id)
-      reload = found != null
-    }
-    updateAudioLanguage(language, reload)
-    const languageLocale = Object.values(LANGUAGE_MAPPINGS).find(
-      (mapping) => mapping.languageId === language.id
-    )?.locale
-    if (languageLocale != null) {
-      void i18n.changeLanguage(languageLocale)
-    }
-
-    const languageEnglishName = language.englishName?.value
-    if (instantSearch != null && languageEnglishName != null)
-      instantSearch.setIndexUiState((prev) => ({
-        ...prev,
-        refinementList: {
-          ...prev.refinementList,
-          languageEnglishName: [languageEnglishName]
-        }
-      }))
+    onLanguageChange?.(language)
   }
 
   return (
@@ -98,19 +74,18 @@ export function AudioTrackSelect({
       <div className="flex items-center justify-between">
         <label
           htmlFor={comboboxId}
-          className="ml-7 block text-xl font-medium text-gray-200"
+          className="block text-xl font-medium text-gray-200"
         >
-          {t('Language')}
+          <span className="flex items-center gap-2">{t('Language')}</span>
         </label>
-        {selectedOption?.nativeName &&
-          selectedOption?.nativeName.value !== selectedOption?.displayName && (
-            <span
-              className="text-sm text-gray-400"
-              data-testid="AudioTrackSelectNativeName"
-            >
-              {selectedOption?.nativeName.value}
-            </span>
-          )}
+        {!isLoading && languageCount > 0 && (
+          <span
+            className="text-sm text-stone-400"
+            data-testid="AudioTrackSelectNativeName"
+          >
+            {t('{{count}} languages', { count: languageCount })}
+          </span>
+        )}
       </div>
       <div className="relative mt-2">
         <LanguageCommandSelect
@@ -119,12 +94,12 @@ export function AudioTrackSelect({
           placeholder={t('Search languages...')}
           emptyMessage={t('No languages found.')}
           loadingMessage={t('Loading languages...')}
-          helperText={helperText}
+          noLanguagesMessage={t('Not available')}
           onSelect={handleSelect}
           icon={<Languages className="h-5 w-5 text-stone-400" />}
-          disabled={isLoading}
+          disabled={isLoading || languageCount === 0}
+          isLoading={isLoading}
           id={comboboxId}
-          ariaDescribedBy={helperText != null ? helperTextId : undefined}
         />
       </div>
     </div>

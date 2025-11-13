@@ -1,5 +1,8 @@
+import { VideoLabel } from '../../__generated__/globalTypes'
 import type { VideoChildFields } from '../../__generated__/VideoChildFields'
 import type { CarouselVideo } from '../components/VideoHero/libs/useCarouselVideos'
+
+// Unified interface for both video cards and mux inserts
 
 export interface InsertOverlay {
   label: string
@@ -85,9 +88,6 @@ export function isVideoSlide(
 ): slide is CarouselVideoSlide {
   return slide.source === 'video'
 }
-
-// Unified interface for both video cards and mux inserts
-import { VideoLabel } from '../../__generated__/globalTypes'
 
 export interface UnifiedCardData {
   id: string

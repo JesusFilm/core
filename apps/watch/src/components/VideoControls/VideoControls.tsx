@@ -28,13 +28,13 @@ import Player from 'video.js/dist/types/player'
 import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
-import { HeroOverlay } from '../HeroOverlay/HeroOverlay'
 import { usePlayer } from '../../libs/playerContext'
 import { useVideo } from '../../libs/videoContext'
 import { useLanguageActions } from '../../libs/watchContext'
-import { VideoTitle } from './VideoTitle'
+import { HeroOverlay } from '../HeroOverlay/HeroOverlay'
 
 import { handleVideoTitleClick } from './utils/handleVideoTitleClick'
+import { VideoTitle } from './VideoTitle'
 
 const DynamicDialogLangSwitch = dynamic<{
   open: boolean
@@ -99,8 +99,7 @@ export function VideoControls({
     },
     dispatch: dispatchPlayer
   } = usePlayer()
-  const [openDialogLangSwitch, setOpenDialogLangSwitch] =
-    useState<boolean>()
+  const [openDialogLangSwitch, setOpenDialogLangSwitch] = useState<boolean>()
 
   const { updateSubtitlesOn } = useLanguageActions()
   const { id, title, variant, images, imageAlt } = useVideo()

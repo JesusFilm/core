@@ -4,15 +4,15 @@ import { ReactElement } from 'react'
 import HelpSquareContained from '@core/shared/ui/icons/HelpSquareContained'
 import Mail1 from '@core/shared/ui/icons/Mail1'
 import MessageCircle from '@core/shared/ui/icons/MessageCircle'
-
+import { ExtendedButton as Button } from '@core/shared/uimodern/components'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger
 } from '@core/shared/uimodern/components/accordion'
+
 import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../../../__generated__/VideoContentFields'
-import { ExtendedButton as Button } from '@core/shared/uimodern/components'
 
 interface QuestionProps {
   questions: StudyQuestions[]

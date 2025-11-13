@@ -1,3 +1,8 @@
+import { Check, ChevronsUpDown, Globe } from 'lucide-react'
+import { useTranslation } from 'next-i18next'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useRefinementList } from 'react-instantsearch'
+
 import { languageRefinementProps } from '@core/journeys/ui/algolia/SearchBarProvider'
 import { ExtendedButton as Button } from '@core/shared/uimodern/components'
 import {
@@ -9,10 +14,6 @@ import {
   CommandList
 } from '@core/shared/uimodern/components/command'
 import { cn } from '@core/shared/uimodern/utils'
-import { Check, ChevronsUpDown, Globe } from 'lucide-react'
-import { useTranslation } from 'next-i18next'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { useRefinementList } from 'react-instantsearch'
 
 import { useLanguages } from '../../libs/useLanguages'
 
@@ -139,13 +140,13 @@ export function LanguageSelector(): JSX.Element {
           variant="outline"
           role="combobox"
           disabled
-          className="w-full flex items-center justify-between opacity-50 h-12 px-4 bg-stone-800/50 border-stone-700/50 text-white rounded-md"
+          className="flex h-12 w-full items-center justify-between rounded-md border-stone-700/50 bg-stone-800/50 px-4 text-white opacity-50"
         >
-          <div className="flex items-center flex-1 min-w-0">
-            <Globe className="mr-2 h-4 w-4 text-stone-400 shrink-0" />
+          <div className="flex min-w-0 flex-1 items-center">
+            <Globe className="mr-2 h-4 w-4 shrink-0 text-stone-400" />
             <span className="text-white">{t('Loading languages...')}</span>
           </div>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50 text-stone-400" />
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 text-stone-400 opacity-50" />
         </Button>
       </div>
     )
@@ -158,26 +159,26 @@ export function LanguageSelector(): JSX.Element {
         role="combobox"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between cursor-pointer h-12 px-4 bg-stone-800/50 border-stone-700/50 hover:bg-stone-800/70 text-white rounded-md"
+        className="flex h-12 w-full cursor-pointer items-center justify-between rounded-md border-stone-700/50 bg-stone-800/50 px-4 text-white hover:bg-stone-800/70"
       >
-        <div className="flex items-center flex-1 min-w-0">
-          <Globe className="mr-2 h-5 w-5 text-stone-400 shrink-0" />
+        <div className="flex min-w-0 flex-1 items-center">
+          <Globe className="mr-2 h-5 w-5 shrink-0 text-stone-400" />
           <span className="truncate text-base font-medium text-white">
             {getDisplayValue()}
           </span>
         </div>
-        <ChevronsUpDown className="ml-2 h-5 w-5 shrink-0 opacity-50 text-stone-400" />
+        <ChevronsUpDown className="ml-2 h-5 w-5 shrink-0 text-stone-400 opacity-50" />
       </Button>
 
       {open && (
-        <div className="absolute top-full left-0 right-0 z-[200] mt-1 px-3 bg-popover border border-border rounded-md shadow-md">
+        <div className="bg-popover border-border absolute top-full right-0 left-0 z-[200] mt-1 rounded-md border px-3 shadow-md">
           <Command>
             <CommandInput
               ref={searchInputRef}
               placeholder={t('Search languages...')}
               className="focus:outline-none focus-visible:outline-none"
             />
-            <CommandList className="max-h-[60svh] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <CommandList className="max-h-[60svh] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <CommandEmpty>{t('No languages found.')}</CommandEmpty>
               <CommandGroup>
                 {languageOptions.map((option) => (
@@ -185,14 +186,14 @@ export function LanguageSelector(): JSX.Element {
                     key={option.value}
                     value={`${option.englishName} ${option.nativeName}`}
                     onSelect={() => handleLanguageSelect(option.value)}
-                    className="flex items-center justify-between cursor-pointer px-4 py-2 hover:bg-white/5"
+                    className="flex cursor-pointer items-center justify-between px-4 py-2 hover:bg-white/5"
                   >
-                    <div className="flex flex-col items-start flex-1">
-                      <span className="font-medium text-base">
+                    <div className="flex flex-1 flex-col items-start">
+                      <span className="text-base font-medium">
                         {option.englishName}
                       </span>
                       {option.nativeName !== option.englishName && (
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-muted-foreground text-sm">
                           {option.nativeName}
                         </span>
                       )}

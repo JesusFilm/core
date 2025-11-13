@@ -5,10 +5,11 @@ import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo, useState } from 'react'
 
+import { Select, SelectTrigger, SelectValue } from '@core/shared/uimodern'
+
 import { useLanguages } from '../../../libs/useLanguages'
 import { useVideo } from '../../../libs/videoContext'
 import { useWatch } from '../../../libs/watchContext'
-import { Select, SelectTrigger, SelectValue } from '@core/shared/uimodern'
 
 const DynamicAudioLanguageSelectContent = dynamic(
   async () =>

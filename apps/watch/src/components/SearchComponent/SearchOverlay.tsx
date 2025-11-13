@@ -1,11 +1,12 @@
+import { useTranslation } from 'next-i18next'
+import { FocusEvent, ReactElement } from 'react'
+
 import {
   Dialog,
   DialogContent,
   DialogOverlay,
   DialogPortal
 } from '@core/shared/uimodern/components/dialog'
-import { useTranslation } from 'next-i18next'
-import { FocusEvent, ReactElement } from 'react'
 
 import { CategoryGrid } from './CategoryGrid'
 import { LanguageSelector } from './LanguageSelector'
@@ -55,19 +56,13 @@ export function SearchOverlay({
           onBlur={onBlur}
           onOpenAutoFocus={(event) => event.preventDefault()}
           onCloseAutoFocus={(event) => event.preventDefault()}
-          className="
-            fixed inset-x-0 bottom-0 top-[100px] lg:top-[159px] max-w-none
-            overflow-y-auto overscroll-contain p-0 border-0
-            translate-x-0 translate-y-0 left-0 bg-stone-900/5
-            [&>button]:scale-175 [&>button]:right-12 [&>button]:cursor-pointer
-            [&>button]:scale-175 [&>button]:right-12 [&>button]:cursor-pointer
-          "
+          className="fixed inset-x-0 top-[100px] bottom-0 left-0 max-w-none translate-x-0 translate-y-0 overflow-y-auto overscroll-contain border-0 bg-stone-900/5 p-0 lg:top-[159px] [&>button]:right-12 [&>button]:scale-175 [&>button]:cursor-pointer"
           data-testid="SearchOverlay"
         >
-          <div className="max-w-screen-2xl px-4 md:px-12 pt-8 md:pt-12 pb-10 md:pb-16">
+          <div className="max-w-screen-2xl px-4 pt-8 pb-10 md:px-12 md:pt-12 md:pb-16">
             {!hasQuery ? (
               <div className="flex flex-col gap-6 md:gap-8">
-                <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <div className="flex flex-col gap-4 md:flex-row md:gap-6">
                   <div className="flex-1">
                     <QuickList
                       title={trendingTitle}
@@ -76,8 +71,8 @@ export function SearchOverlay({
                       isLoading={isTrendingLoading}
                     />
                   </div>
-                  <div className="w-full md:w-90 flex-shrink-0">
-                    <div className="block mb-3 font-semibold text-sm uppercase tracking-wider text-stone-600">
+                  <div className="w-full flex-shrink-0 md:w-90">
+                    <div className="mb-3 block text-sm font-semibold tracking-wider text-stone-600 uppercase">
                       {t('Search Filters')}
                     </div>
                     <LanguageSelector />

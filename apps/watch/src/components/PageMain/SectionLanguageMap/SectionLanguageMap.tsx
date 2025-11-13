@@ -5,6 +5,7 @@ import type { ReactElement } from 'react'
 import { useMemo } from 'react'
 
 import { cn } from '@core/shared/uimodern/utils'
+
 import { useLanguageMap } from '../../../libs/useLanguageMap'
 
 import { LanguageMap } from './LanguageMap'
@@ -25,7 +26,7 @@ export function SectionLanguageMap(): ReactElement {
       className="flex w-full flex-col gap-8 pt-16 text-white"
     >
       <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-        <div className="max-w-3xl space-y-4 padded">
+        <div className="padded max-w-3xl space-y-4">
           <h2
             id="watch-language-map-heading"
             className="text-3xl font-semibold tracking-tight sm:text-4xl"
@@ -40,7 +41,7 @@ export function SectionLanguageMap(): ReactElement {
         </div>
         {hasData && (
           <div className="flex-shrink-0 rounded-lg p-4 text-center sm:p-6">
-            <div className="text-4xl font-medium text-white ">
+            <div className="text-4xl font-medium text-white">
               {uniqueLanguagesCount.toLocaleString()}
             </div>
             <div className="text-sm text-white/60 sm:text-base">
@@ -51,11 +52,11 @@ export function SectionLanguageMap(): ReactElement {
       </div>
       <div
         className={cn(
-          'relative w-full overflow-hidden  bg-slate-900/60 shadow-2xl',
+          'relative w-full overflow-hidden bg-slate-900/60 shadow-2xl',
           'before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_top,_rgba(37,99,235,0.35),_transparent_60%)] before:content-[""]'
         )}
       >
-        <div className="w-full h-[700px]">
+        <div className="h-[700px] w-full">
           {hasData ? (
             <LanguageMap
               points={points}

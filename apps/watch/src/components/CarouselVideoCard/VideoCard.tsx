@@ -48,7 +48,7 @@ function CardContent({
   const ContentElement = interactive ? 'div' : 'div'
 
   return (
-    <div className="flex flex-col flex-grow h-full min-h-full w-full">
+    <div className="flex h-full min-h-full w-full flex-grow flex-col">
       <ContainerElement
         data-testid={`VideoCardButton-${data.slug}`}
         {...(interactive && {
@@ -58,10 +58,10 @@ function CardContent({
               : last(data.title)?.value,
           disabled: data == null
         })}
-        className="beveled rounded-lg w-full h-full relative text-left border-none bg-transparent p-0 cursor-pointer disabled:cursor-default"
+        className="beveled relative h-full w-full cursor-pointer rounded-lg border-none bg-transparent p-0 text-left disabled:cursor-default"
       >
         <ContentElement
-          className="relative h-full flex flex-col justify-end w-full rounded-xl cursor-pointer bg-black"
+          className="relative flex h-full w-full cursor-pointer flex-col justify-end rounded-xl bg-black"
           {...(interactive && {
             tabIndex: 0,
             role: 'button',
@@ -72,7 +72,7 @@ function CardContent({
           onMouseLeave={onMouseLeave}
         >
           {/* Image Layer with Lazy Loading - Only render when imageSrc is available */}
-          <div className="absolute left-0 right-0 top-0 bottom-0 rounded-lg overflow-hidden">
+          <div className="absolute top-0 right-0 bottom-0 left-0 overflow-hidden rounded-lg">
             {imageSrc && (
               <Image
                 fill
@@ -91,7 +91,7 @@ function CardContent({
 
           {/* Active/Hover Border Layer */}
           <div
-            className={`absolute left-0 right-0 top-0 bottom-0 rounded-lg overflow-visible transition-all duration-100 ease-in-out pointer-events-none ${
+            className={`pointer-events-none absolute top-0 right-0 bottom-0 left-0 overflow-visible rounded-lg transition-all duration-100 ease-in-out ${
               active || isHovered ? 'shadow-[inset_0_0_0_4px_#fff]' : ''
             }`}
             data-testid="ActiveLayer"
@@ -100,7 +100,7 @@ function CardContent({
           {/* Progress Bar Overlay */}
           {active && playerProgress >= 5 && (
             <div
-              className="absolute left-0 top-0 bottom-0 bg-stone-100/30 rounded-l-lg pointer-events-none mix-blend-hard-light transition-[width] duration-1200 ease-linear"
+              className="pointer-events-none absolute top-0 bottom-0 left-0 rounded-l-lg bg-stone-100/30 mix-blend-hard-light transition-[width] duration-1200 ease-linear"
               style={{ width: `${playerProgress}%` }}
               data-testid="ProgressOverlay"
             />
@@ -108,7 +108,7 @@ function CardContent({
 
           {/* Play Button with Fade */}
           <div
-            className={`absolute top-1/2 right-1/2 transform translate-x-1/2 -translate-y-1/2 w-20 h-20 flex items-center justify-center text-white bg-red-500 bg-opacity-50 rounded-full transition-all duration-300 cursor-pointer z-2 ${
+            className={`bg-opacity-50 absolute top-1/2 right-1/2 z-2 flex h-20 w-20 translate-x-1/2 -translate-y-1/2 transform cursor-pointer items-center justify-center rounded-full bg-red-500 text-white transition-all duration-300 ${
               !active && isHovered ? 'opacity-100' : 'opacity-0'
             }`}
             style={{
@@ -119,15 +119,15 @@ function CardContent({
           </div>
 
           {/* Content */}
-          <div className="p-4 font-sans z-1">
+          <div className="z-1 p-4 font-sans">
             <span
-              className="text-stone-100/80 text-xs font-bold tracking-widest uppercase"
+              className="text-xs font-bold tracking-widest text-stone-100/80 uppercase"
               data-testid="CarouselItemCategory"
             >
               {label}
             </span>
             <h3
-              className="font-bold text-base text-stone-50 leading-tight overflow-hidden text-shadow-xs"
+              className="overflow-hidden text-base leading-tight font-bold text-stone-50 text-shadow-xs"
               style={{
                 display: '-webkit-box',
                 WebkitLineClamp: 3,

@@ -155,19 +155,19 @@ export function SectionNewsletterSignup(): ReactElement {
   return (
     <section className="mt-20">
       <div className="responsive-container">
-        <div className="bg-black/50 backdrop-blur-md border border-white/15 rounded-[32px] p-8 md:p-12 lg:p-16 flex flex-col gap-10">
+        <div className="flex flex-col gap-10 rounded-[32px] border border-white/15 bg-black/50 p-8 backdrop-blur-md md:p-12 lg:p-16">
           <div className="space-y-4 text-white">
-            <p className="text-sm uppercase tracking-[0.3em] text-white/60">
+            <p className="text-sm tracking-[0.3em] text-white/60 uppercase">
               {t('newsletterSection.kicker', {
                 defaultValue: 'Stay connected'
               })}
             </p>
-            <h2 className="text-3xl md:text-4xl font-semibold">
+            <h2 className="text-3xl font-semibold md:text-4xl">
               {t('newsletterSection.title', {
                 defaultValue: 'Subscribe to our newsletter'
               })}
             </h2>
-            <p className="text-base md:text-lg text-white/80 max-w-3xl">
+            <p className="max-w-3xl text-base text-white/80 md:text-lg">
               {t('newsletterSection.description', {
                 defaultValue:
                   'Every month we add new gospel videos to our library, new translations, releases, and tools. Subscribe to our email to be notified about new tools and new media available for you.'
@@ -186,7 +186,7 @@ export function SectionNewsletterSignup(): ReactElement {
               <div className="flex flex-col gap-3">
                 <label
                   htmlFor="newsletter-name"
-                  className="text-sm font-semibold uppercase tracking-wide text-white/70"
+                  className="text-sm font-semibold tracking-wide text-white/70 uppercase"
                 >
                   {t('newsletterSection.nameLabel', { defaultValue: 'Name' })}
                 </label>
@@ -202,7 +202,7 @@ export function SectionNewsletterSignup(): ReactElement {
                   placeholder={t('newsletterSection.namePlaceholder', {
                     defaultValue: 'Your name'
                   })}
-                  className="w-full rounded-2xl border border-white/30 bg-white/10 px-5 py-4 text-base text-white placeholder:text-white/40 shadow-[0_0_0_1px_rgba(255,255,255,0.1)] focus:border-white focus:outline-none focus:ring-2 focus:ring-white/40"
+                  className="w-full rounded-2xl border border-white/30 bg-white/10 px-5 py-4 text-base text-white shadow-[0_0_0_1px_rgba(255,255,255,0.1)] placeholder:text-white/40 focus:border-white focus:ring-2 focus:ring-white/40 focus:outline-none"
                 />
                 <p className="text-xs text-white/50">
                   {t('newsletterSection.nameHelper', {
@@ -214,7 +214,7 @@ export function SectionNewsletterSignup(): ReactElement {
               <div className="flex flex-col gap-3">
                 <label
                   htmlFor="newsletter-email"
-                  className="text-sm font-semibold uppercase tracking-wide text-white/70"
+                  className="text-sm font-semibold tracking-wide text-white/70 uppercase"
                 >
                   {t('newsletterSection.emailLabel', {
                     defaultValue: 'Email address'
@@ -232,7 +232,7 @@ export function SectionNewsletterSignup(): ReactElement {
                   placeholder={t('newsletterSection.emailPlaceholder', {
                     defaultValue: 'name@example.com'
                   })}
-                  className="w-full rounded-2xl border border-white/30 bg-white/10 px-5 py-4 text-base text-white placeholder:text-white/40 shadow-[0_0_0_1px_rgba(255,255,255,0.1)] focus:border-white focus:outline-none focus:ring-2 focus:ring-white/40"
+                  className="w-full rounded-2xl border border-white/30 bg-white/10 px-5 py-4 text-base text-white shadow-[0_0_0_1px_rgba(255,255,255,0.1)] placeholder:text-white/40 focus:border-white focus:ring-2 focus:ring-white/40 focus:outline-none"
                 />
                 {email !== '' ? (
                   <p className="text-xs text-white/60">
@@ -255,7 +255,7 @@ export function SectionNewsletterSignup(): ReactElement {
               <>
                 <div className="grid gap-6 lg:grid-cols-3">
                   <fieldset className="flex flex-col gap-4">
-                    <legend className="text-sm font-semibold uppercase tracking-wide text-white/70 mb-2">
+                    <legend className="mb-2 text-sm font-semibold tracking-wide text-white/70 uppercase">
                       {t('newsletterSection.audienceLabel', {
                         defaultValue: 'I am'
                       })}
@@ -282,7 +282,7 @@ export function SectionNewsletterSignup(): ReactElement {
                     </div>
                   </fieldset>
                   <fieldset className="flex flex-col gap-4">
-                    <legend className="text-sm font-semibold uppercase tracking-wide text-white/70 mb-2">
+                    <legend className="mb-2 text-sm font-semibold tracking-wide text-white/70 uppercase">
                       {t('newsletterSection.interestsLabel', {
                         defaultValue: 'Topics I am interested in'
                       })}
@@ -309,7 +309,7 @@ export function SectionNewsletterSignup(): ReactElement {
                     </div>
                   </fieldset>
                   <fieldset className="flex flex-col gap-4">
-                    <legend className="text-sm font-semibold uppercase tracking-wide text-white/70 mb-2">
+                    <legend className="mb-2 text-sm font-semibold tracking-wide text-white/70 uppercase">
                       {t('newsletterSection.languagesLabel', {
                         defaultValue: 'Preferred Languages'
                       })}

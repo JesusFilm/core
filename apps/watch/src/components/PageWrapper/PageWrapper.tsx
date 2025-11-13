@@ -19,6 +19,8 @@ interface PageWrapperProps {
   headerThemeMode?: ThemeMode
   hideFooter?: boolean
   isFullscreen?: boolean
+  hideHeaderSpacer?: boolean
+  showLanguageSwitcher?: boolean
 }
 
 export function PageWrapper({

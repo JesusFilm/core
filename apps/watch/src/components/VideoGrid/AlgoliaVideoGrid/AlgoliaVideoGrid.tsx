@@ -1,23 +1,22 @@
 import {
+  type MouseEvent,
+  type ReactElement,
   useEffect,
   useMemo,
   useRef,
-  useState,
-  type MouseEvent,
-  type ReactElement
+  useState
 } from 'react'
-
 import { useRefinementList } from 'react-instantsearch'
 
-import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 import { languageRefinementProps } from '@core/journeys/ui/algolia/SearchBarProvider'
+import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
+import { useLatestVideos } from '../../../hooks/useLatestVideos'
 import {
   type CoreVideo,
   transformAlgoliaVideos as transformItems
 } from '../../../libs/algolia/transformAlgoliaVideos'
 import { useLanguages } from '../../../libs/useLanguages'
-import { useLatestVideos } from '../../../hooks/useLatestVideos'
 import { VideoGrid, VideoGridProps } from '../VideoGrid'
 
 export function AlgoliaVideoGrid({

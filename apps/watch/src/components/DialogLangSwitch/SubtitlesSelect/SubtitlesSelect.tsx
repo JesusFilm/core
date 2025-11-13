@@ -1,28 +1,32 @@
 import { Captions } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
-import { ChangeEvent, ReactElement, useId, useMemo } from 'react'
+import { ReactElement, useId, useMemo } from 'react'
+
+import { Switch } from '@core/shared/uimodern/components'
+import { cn } from '@core/shared/uimodern/utils'
 
 import { SUBTITLE_LANGUAGE_IDS } from '../../../libs/localeMapping'
 import { Language, useLanguages } from '../../../libs/useLanguages'
-import { useLanguageActions } from '../../../libs/watchContext'
 import { LanguageCommandSelect } from '../LanguageCommandSelect'
 
 interface SubtitlesSelectProps {
   videoSubtitleLanguageIds?: string[]
   subtitleLanguageId?: string
   subtitleOn?: boolean
+  onLanguageChange?: (languageId: string) => void
+  onSubtitleToggleChange?: (subtitleOn: boolean) => void
 }
 
 export function SubtitlesSelect({
   videoSubtitleLanguageIds,
   subtitleLanguageId,
-  subtitleOn
+  subtitleOn,
+  onLanguageChange,
+  onSubtitleToggleChange
 }: SubtitlesSelectProps): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const { updateSubtitleLanguage, updateSubtitlesOn } = useLanguageActions()
   const { languages: allLanguages, isLoading } = useLanguages()
   const comboboxId = useId()
-  const helperTextId = `${comboboxId}-helper`
   const languages = useMemo(() => {
     return allLanguages.filter((language) =>
       SUBTITLE_LANGUAGE_IDS.includes(language.id)
@@ -40,37 +44,36 @@ export function SubtitlesSelect({
       videoSubtitleLanguageIds.includes(language.id)
     )
   }, [languages, videoSubtitleLanguageIds])
+
+  const subtitleCount = useMemo(() => {
+    if (isLoading) return 0
+    return videoSubtitleLanguageIds == null
+      ? languages.length
+      : videoSubtitleLanguageIds.length
+  }, [isLoading, videoSubtitleLanguageIds, languages.length])
+
   const helperText = useMemo(() => {
     if (isLoading) return t('Loading...')
 
-    if (videoSubtitleLanguageIds == null)
-      return t('Available in {{count}} languages.', { count: languages.length })
+    if (videoSubtitleLanguageIds == null) return undefined
 
     const available = videoSubtitleLanguageIds.length
     if (
       selectedOption != null &&
       videoSubtitleLanguageIds.find((id) => id === selectedOption.id) == null
     ) {
-      return [
-        t('Subtitles are not available in {{language}}.', {
-          language: selectedOption.displayName
-        }),
-        t('Available in {{count}} languages.', {
-          count: available
-        })
-      ].join(' ')
-    } else {
-      return t('Available in {{count}} languages.', {
-        count: available
+      return t('Subtitles are not available in {{language}}.', {
+        language: selectedOption.displayName
       })
     }
+    return undefined
   }, [isLoading, t, videoSubtitleLanguageIds, selectedOption])
 
   function handleSubtitleLanguageChange(language: Language): void {
-    updateSubtitleLanguage(language)
+    onLanguageChange?.(language.id)
   }
-  function handleSubtitlesOnChange(event: ChangeEvent<HTMLInputElement>): void {
-    updateSubtitlesOn(event.target.checked)
+  function handleSubtitlesOnChange(checked: boolean): void {
+    onSubtitleToggleChange?.(checked)
   }
 
   return (
@@ -78,47 +81,48 @@ export function SubtitlesSelect({
       <div className="flex items-center justify-between">
         <label
           htmlFor={comboboxId}
-          className="ml-7 block text-xl font-medium text-gray-200"
-        >
-          {t('Subtitles')}
-        </label>
-        {selectedOption?.nativeName &&
-          selectedOption?.nativeName.value !== selectedOption?.displayName && (
-            <span
-              className="text-sm text-gray-400"
-              data-testid="SubtitlesSelectNativeName"
-            >
-              {selectedOption?.nativeName.value}
-            </span>
+          className={cn(
+            'block text-xl text-stone-200',
+            subtitleOn ? 'font-medium' : 'font-regular text-md'
           )}
-      </div>
-      <div className="relative mt-2">
-        <LanguageCommandSelect
-          options={options}
-          selectedOption={selectedOption}
-          placeholder={t('Search languages...')}
-          emptyMessage={t('No languages found.')}
-          loadingMessage={t('Loading languages...')}
-          helperText={helperText}
-          onSelect={handleSubtitleLanguageChange}
-          icon={<Captions className="h-5 w-5 text-stone-400" />}
-          disabled={isLoading}
-          id={comboboxId}
-          ariaDescribedBy={helperText != null ? helperTextId : undefined}
-        />
-      </div>
-      <div className="my-4 ml-8 flex items-center gap-2">
-        <input
-          id="no-subtitles"
-          type="checkbox"
-          checked={subtitleOn}
-          onChange={handleSubtitlesOnChange}
-          className="h-4 w-4 rounded border-gray-300 accent-[#CB333B] focus:ring-0"
-        />
-        <label htmlFor="no-subtitles" className="text-sm text-gray-500">
-          {t('Show subtitles')}
+        >
+          <span className="flex items-center gap-2">
+            {t('Subtitles')}
+            <Switch
+              id="show-subtitles"
+              checked={subtitleOn}
+              onCheckedChange={handleSubtitlesOnChange}
+              disabled={subtitleCount === 0}
+              className={cn(
+                'ml-2 data-[state=checked]:bg-white data-[state=unchecked]:bg-stone-200/40',
+                subtitleCount === 0 && 'cursor-not-allowed opacity-50'
+              )}
+            />
+          </span>
         </label>
+        {!isLoading && subtitleCount > 0 && (
+          <span className="text-sm text-stone-400">
+            {t('{{count}} languages', { count: subtitleCount })}
+          </span>
+        )}
       </div>
+      {subtitleOn && (
+        <div className="relative mt-2">
+          <LanguageCommandSelect
+            options={options}
+            selectedOption={selectedOption}
+            placeholder={t('Search languages...')}
+            emptyMessage={t('No languages found.')}
+            loadingMessage={t('Loading languages...')}
+            noLanguagesMessage={t('Not available')}
+            onSelect={handleSubtitleLanguageChange}
+            icon={<Captions className="h-5 w-5 text-stone-400" />}
+            disabled={isLoading || subtitleCount === 0}
+            isLoading={isLoading}
+            id={comboboxId}
+          />
+        </div>
+      )}
     </div>
   )
 }

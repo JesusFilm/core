@@ -4,8 +4,8 @@ import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { usePlayer } from '../../libs/playerContext/PlayerContext'
 import { useVideo } from '../../libs/videoContext/VideoContext'
 import type { CarouselMuxSlide } from '../../types/inserts'
-
 import { ContentHeader } from '../ContentHeader'
+
 import { VideoBlockPlayer } from './VideoBlockPlayer'
 
 export function VideoBlock({
@@ -54,7 +54,7 @@ export function VideoBlock({
   return (
     <div
       className={clsx(
-        'w-full flex items-end relative bg-[#000] z-[1] transition-all duration-300 ease-out overflow-hidden',
+        'relative z-[1] flex w-full items-end overflow-hidden bg-[#000] transition-all duration-300 ease-out',
         {
           'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]':
             placement == 'carouselItem' && collapsed,

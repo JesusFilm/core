@@ -15,6 +15,10 @@ import { HeaderMenuPanel } from './HeaderMenuPanel'
 interface HeaderProps {
   /** Theme mode to apply to the header. */
   themeMode?: ThemeMode
+  hideTopAppBar?: boolean
+  hideBottomAppBar?: boolean
+  hideSpacer?: boolean
+  showLanguageSwitcher?: boolean
 }
 
 /**
@@ -37,46 +41,46 @@ export function Header({
       themeMode={ThemeMode.light}
       nested
     >
-        <SwipeableDrawer
-          anchor="right"
-          open={drawerOpen}
-          onClose={() => setDrawerOpen(false)}
-          onOpen={() => setDrawerOpen(true)}
-          slotProps={{
-            backdrop: { sx: { backgroundColor: 'rgba(0, 0, 0, 0.13)' } }
-          }}
-          PaperProps={{
-            sx: {
-              width: '100%',
-              background: 'transparent',
-              boxShadow: 'none',
-              overflowX: 'hidden',
-              overscrollBehaviorY: 'none'
-            },
-            onClick: () => setDrawerOpen(false)
+      <SwipeableDrawer
+        anchor="right"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        onOpen={() => setDrawerOpen(true)}
+        slotProps={{
+          backdrop: { sx: { backgroundColor: 'rgba(0, 0, 0, 0.13)' } }
+        }}
+        PaperProps={{
+          sx: {
+            width: '100%',
+            background: 'transparent',
+            boxShadow: 'none',
+            overflowX: 'hidden',
+            overscrollBehaviorY: 'none'
+          },
+          onClick: () => setDrawerOpen(false)
+        }}
+      >
+        <Container
+          maxWidth="xxl"
+          disableGutters
+          sx={{
+            minHeight: '100%',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            position: 'relative'
           }}
         >
-          <Container
-            maxWidth="xxl"
-            disableGutters
+          <Box
             sx={{
               minHeight: '100%',
-              display: 'flex',
-              justifyContent: 'flex-end',
-              position: 'relative'
+              width: { xs: '100%', lg: 530 }
             }}
+            onClick={(e) => e.stopPropagation()}
           >
-            <Box
-              sx={{
-                minHeight: '100%',
-                width: { xs: '100%', lg: 530 }
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <HeaderMenuPanel onClose={() => setDrawerOpen(false)} />
-            </Box>
-          </Container>
-        </SwipeableDrawer>
+            <HeaderMenuPanel onClose={() => setDrawerOpen(false)} />
+          </Box>
+        </Container>
+      </SwipeableDrawer>
     </ThemeProvider>
   )
 }

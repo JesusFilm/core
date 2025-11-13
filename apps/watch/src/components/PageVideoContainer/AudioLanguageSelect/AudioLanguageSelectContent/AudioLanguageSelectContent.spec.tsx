@@ -2,10 +2,11 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import { Select, SelectTrigger } from '@core/shared/uimodern'
+
 import { useLanguages } from '../../../../libs/useLanguages'
 import { VideoPageProps, VideoProvider } from '../../../../libs/videoContext'
 import { WatchProvider } from '../../../../libs/watchContext'
-import { Select, SelectTrigger } from '@core/shared/uimodern'
 import { videos } from '../../../Videos/__generated__/testData'
 
 import { AudioLanguageSelectContent } from './AudioLanguageSelectContent'

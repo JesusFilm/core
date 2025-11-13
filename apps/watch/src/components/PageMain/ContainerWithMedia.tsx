@@ -7,8 +7,8 @@ import {
   type VideoCarouselSlide
 } from '../../types/inserts'
 import { ContentPageBlurFilter } from '../ContentPageBlurFilter'
-import { VideoCarousel } from '../VideoCarousel/VideoCarousel'
 import { VideoBlock } from '../VideoBlock/VideoBlock'
+import { VideoCarousel } from '../VideoCarousel/VideoCarousel'
 
 interface ContainerWithMediaProps {
   slides: VideoCarouselSlide[]

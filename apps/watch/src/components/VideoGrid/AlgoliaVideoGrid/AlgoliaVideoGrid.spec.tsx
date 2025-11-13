@@ -1,12 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-
 import { useRefinementList } from 'react-instantsearch'
 
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
+import { useLatestVideos } from '../../../hooks/useLatestVideos'
 import { type CoreVideo } from '../../../libs/algolia/transformAlgoliaVideos'
 import { useLanguages } from '../../../libs/useLanguages'
-import { useLatestVideos } from '../../../hooks/useLatestVideos'
 
 import { AlgoliaVideoGrid } from './AlgoliaVideoGrid'
 

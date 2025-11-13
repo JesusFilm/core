@@ -1,10 +1,11 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { ReactElement } from 'react'
 import { Share } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
 
 import { ExtendedButton } from '@core/shared/uimodern'
+
 import { TextFormatter } from '../../TextFormatter'
 
 export interface ContainerDescriptionProps {
@@ -44,7 +45,7 @@ export function ContainerDescription({
           onClick={openDialog}
           className="min-w-[200px]"
         >
-          <Share className="w-4 h-4" />
+          <Share className="h-4 w-4" />
           {t('Share')}
         </ExtendedButton>
       </Box>

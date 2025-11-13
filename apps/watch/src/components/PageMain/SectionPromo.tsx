@@ -74,18 +74,18 @@ export function SectionPromo(): ReactElement {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-red-950/60 via-purple-950/20 to-orange-600/10 py-18">
       <div className="">
-        <div className="responsive-container isolate  shadow-[0_45px_80px_-40px_rgba(15,23,42,0.8)] ">
+        <div className="responsive-container isolate shadow-[0_45px_80px_-40px_rgba(15,23,42,0.8)]">
           <div
             aria-hidden
-            className="pointer-events-none absolute -left-24 top-[-10%] h-56 w-56 rounded-full bg-red-600/30 blur-3xl"
+            className="pointer-events-none absolute top-[-10%] -left-24 h-56 w-56 rounded-full bg-red-600/30 blur-3xl"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute bottom-[-20%] right-[-10%] h-80 w-80 rounded-full bg-amber-600/25 blur-[120px]"
+            className="pointer-events-none absolute right-[-10%] bottom-[-20%] h-80 w-80 rounded-full bg-amber-600/25 blur-[120px]"
           />
           <div className="relative flex flex-col gap-14">
             <div className="max-w-3xl space-y-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-red-100/70">
+              <p className="text-xs font-semibold tracking-[0.3em] text-red-100/70 uppercase">
                 {t('PromoEyebrow', {
                   defaultValue: 'Future-ready for global missions'
                 })}
@@ -131,7 +131,7 @@ export function SectionPromo(): ReactElement {
             </div>
             <div className="space-y-6">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
+                <p className="text-xs font-semibold tracking-[0.3em] text-white/60 uppercase">
                   {t('PromoHighlightsLabel', {
                     defaultValue: 'What we are building next'
                   })}

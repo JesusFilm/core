@@ -78,7 +78,7 @@ export function SearchResultsLayout({
 
   return (
     <div className="flex flex-col gap-4 md:gap-6">
-      <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+      <div className="flex flex-col gap-4 md:flex-row md:gap-6">
         <div className="flex-1">
           <QuickList
             title={t('Related Searches')}
@@ -87,8 +87,8 @@ export function SearchResultsLayout({
             isLoading={false}
           />
         </div>
-        <div className="w-full md:w-90 flex-shrink-0">
-          <div className="block mb-3 font-semibold text-sm uppercase tracking-wider text-stone-600">
+        <div className="w-full flex-shrink-0 md:w-90">
+          <div className="mb-3 block text-sm font-semibold tracking-wider text-stone-600 uppercase">
             {t('Search Filters')}
           </div>
           <LanguageSelector />

@@ -7,7 +7,13 @@ import { videos } from '../Videos/__generated__/testData'
 import { ContainerWithMedia } from './ContainerWithMedia'
 
 jest.mock('../VideoCarousel/VideoCarousel', () => ({
-  VideoCarousel: ({ slides, containerSlug, activeVideoId, loading, onVideoSelect }: any) => (
+  VideoCarousel: ({
+    slides,
+    containerSlug,
+    activeVideoId,
+    loading,
+    onVideoSelect
+  }: any) => (
     <div data-testid="VideoCarousel">
       {slides.map((slide: VideoCarouselSlide) => (
         <div key={slide.id} data-testid={`slide-${slide.id}`}>
@@ -84,7 +90,9 @@ describe('ContainerWithMedia', () => {
   it('should not apply py-5 padding class to VideoCarousel container div', () => {
     const { container } = render(<ContainerWithMedia {...defaultProps} />)
 
-    const carouselContainer = container.querySelector('[data-testid="ContentPageBlurFilter"] > div')
+    const carouselContainer = container.querySelector(
+      '[data-testid="ContentPageBlurFilter"] > div'
+    )
     expect(carouselContainer).toBeInTheDocument()
     expect(carouselContainer).not.toHaveClass('py-5')
   })
@@ -101,6 +109,3 @@ describe('ContainerWithMedia', () => {
     expect(screen.getByTestId('VideoCarousel')).toBeInTheDocument()
   })
 })
-
-
-

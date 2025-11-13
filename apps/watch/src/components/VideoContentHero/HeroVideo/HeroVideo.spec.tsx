@@ -28,7 +28,9 @@ jest.mock('../../VideoContentPage/VideoHero/VideoPlayer/VideoControls', () => ({
 }))
 
 jest.mock('./HeroSubtitleOverlay', () => ({
-  HeroSubtitleOverlay: () => <div data-testid="HeroSubtitleOverlay">HeroSubtitleOverlay</div>
+  HeroSubtitleOverlay: () => (
+    <div data-testid="HeroSubtitleOverlay">HeroSubtitleOverlay</div>
+  )
 }))
 
 describe('HeroVideo', () => {
@@ -66,7 +68,9 @@ describe('HeroVideo', () => {
       </VideoProvider>
     )
 
-    const videoElement = container.querySelector('[data-testid="ContentHeroVideo"]')
+    const videoElement = container.querySelector(
+      '[data-testid="ContentHeroVideo"]'
+    )
     expect(videoElement).toBeInTheDocument()
     expect(videoElement).toHaveStyle({ height: '120%' })
   })
@@ -82,7 +86,9 @@ describe('HeroVideo', () => {
       </VideoProvider>
     )
 
-    const videoElement = container.querySelector('[data-testid="ContentHeroVideo"]')
+    const videoElement = container.querySelector(
+      '[data-testid="ContentHeroVideo"]'
+    )
     expect(videoElement).toBeInTheDocument()
     expect(videoElement).toHaveStyle({ height: '100%' })
   })
@@ -98,7 +104,9 @@ describe('HeroVideo', () => {
       </VideoProvider>
     )
 
-    const videoElement = container.querySelector('[data-testid="ContentHeroVideo"]')
+    const videoElement = container.querySelector(
+      '[data-testid="ContentHeroVideo"]'
+    )
     expect(videoElement).toBeInTheDocument()
     expect(videoElement).toHaveStyle({ height: '120%' })
   })
@@ -114,11 +122,10 @@ describe('HeroVideo', () => {
       </VideoProvider>
     )
 
-    const videoElement = container.querySelector('[data-testid="ContentHeroVideo"]')
+    const videoElement = container.querySelector(
+      '[data-testid="ContentHeroVideo"]'
+    )
     expect(videoElement).toBeInTheDocument()
     expect(videoElement).toHaveStyle({ height: '100%' })
   })
 })
-
-
-

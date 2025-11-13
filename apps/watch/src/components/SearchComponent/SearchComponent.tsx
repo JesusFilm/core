@@ -35,8 +35,8 @@ export function SearchComponent({
 
   return (
     <SearchBarProvider>
-      <div className="fixed top-[26px] lg:top-[76px] left-1/2 -translate-x-1/2 w-[calc(100%-60px)] min-w-[300px] max-w-[800px] z-[100] px-2 md:px-0">
-        <div className="w-full max-w-[70%] min-w-[60%] mx-auto">
+      <div className="fixed top-[26px] left-1/2 z-[100] w-[calc(100%-60px)] max-w-[800px] min-w-[300px] -translate-x-1/2 px-2 md:px-0 lg:top-[76px]">
+        <div className="mx-auto w-full max-w-[70%] min-w-[60%]">
           <SimpleSearchBar
             loading={loading && hasQuery}
             value={searchValue}

@@ -98,7 +98,7 @@ describe('VideoControls', () => {
 
     const mobileSlider = screen.getByLabelText('mobile-progress-control')
     const desktopSlider = screen.getByLabelText('desktop-progress-control')
-    
+
     expect(mobileSlider).toBeInTheDocument()
     expect(desktopSlider).toBeInTheDocument()
   })
@@ -198,4 +198,3 @@ describe('VideoControls', () => {
     expect(mockPlayer.off).toHaveBeenCalledWith('seeked', expect.any(Function))
   })
 })
-
