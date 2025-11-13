@@ -37,7 +37,7 @@ builder.mutationField('integrationGoogleUpdate', (t) =>
         id: t.arg.id({ required: true }),
         input: t.arg({ type: IntegrationGoogleUpdateInput, required: true })
       },
-      resolve: async (_query, _parent, args, context) => {
+      resolve: async (query, _parent, args, context) => {
         const { id, input } = args
 
         const clientId = env.GOOGLE_CLIENT_ID
@@ -80,23 +80,54 @@ builder.mutationField('integrationGoogleUpdate', (t) =>
           })
         }
 
-        const secretToStore = refreshToken ?? accessToken
-
         const encryptionSecret = env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
 
-        const { ciphertext, iv, tag } = await encryptSymmetric(
-          secretToStore,
-          encryptionSecret
-        )
+        // Only store refresh token. If absent, reuse existing encrypted secret fields.
+        if (refreshToken != null) {
+          const secretToStore = refreshToken
+          const { ciphertext, iv, tag } = await encryptSymmetric(
+            secretToStore,
+            encryptionSecret
+          )
+
+          return await prisma.integration.update({
+            where: { id },
+            data: {
+              accessId: 'oauth2',
+              accessSecretPart: secretToStore.slice(0, 6),
+              accessSecretCipherText: ciphertext,
+              accessSecretIv: iv,
+              accessSecretTag: tag,
+              accountEmail
+            }
+          })
+        }
+
+        // refreshToken is undefined, reuse existing encrypted secret fields
+        const existing = await prisma.integration.findUnique({
+          where: { id },
+          select: {
+            accessSecretCipherText: true,
+            accessSecretIv: true,
+            accessSecretTag: true,
+            accessSecretPart: true
+          }
+        })
+        if (existing == null) {
+          throw new GraphQLError('Integration not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+        }
 
         return await prisma.integration.update({
+          ...query,
           where: { id },
           data: {
             accessId: 'oauth2',
-            accessSecretPart: secretToStore.slice(0, 6),
-            accessSecretCipherText: ciphertext,
-            accessSecretIv: iv,
-            accessSecretTag: tag,
+            accessSecretCipherText: existing.accessSecretCipherText,
+            accessSecretIv: existing.accessSecretIv,
+            accessSecretTag: existing.accessSecretTag,
+            accessSecretPart: existing.accessSecretPart,
             accountEmail
           }
         })

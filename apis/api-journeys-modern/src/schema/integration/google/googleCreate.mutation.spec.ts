@@ -137,6 +137,7 @@ describe('integrationGoogleCreate', () => {
     )
 
     expect(prismaMock.integration.create).toHaveBeenCalledWith({
+      include: { team: true },
       data: {
         type: 'google',
         teamId: 'team-id',

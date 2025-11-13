@@ -153,6 +153,7 @@ builder.mutationField('integrationGoogleCreate', (t) =>
         )
 
         return await prisma.integration.create({
+          ..._query,
           data: {
             type: 'google',
             teamId,

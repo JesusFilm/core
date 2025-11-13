@@ -85,7 +85,7 @@ describe('googleAuth', () => {
       })
     })
 
-    it('should fallback to using secret as access token when refresh fails', async () => {
+    it('should throw re-authorization required error when refresh fails', async () => {
       const mockIntegration = {
         accessSecretCipherText: 'ciphertext',
         accessSecretIv: 'iv',
@@ -97,12 +97,9 @@ describe('googleAuth', () => {
       mockDecryptSymmetric.mockResolvedValue('access-token-direct')
       mockAxios.post.mockRejectedValue(new Error('Token refresh failed'))
 
-      const result = await getTeamGoogleAccessToken('team-id')
-
-      expect(result).toEqual({
-        accessToken: 'access-token-direct',
-        accountEmail: 'test@example.com'
-      })
+      await expect(getTeamGoogleAccessToken('team-id')).rejects.toThrow(
+        'Failed to refresh Google OAuth token. Re-authorization is required to continue. Please reconnect your Google account.'
+      )
     })
 
     it('should throw error when integration not configured', async () => {
@@ -140,11 +137,9 @@ describe('googleAuth', () => {
       mockDecryptSymmetric.mockResolvedValue('refresh-token')
       mockAxios.post.mockRejectedValue(new Error('Token refresh failed'))
 
-      const result = await getTeamGoogleAccessToken('team-id')
-      expect(result).toEqual({
-        accessToken: 'refresh-token',
-        accountEmail: 'test@example.com'
-      })
+      await expect(getTeamGoogleAccessToken('team-id')).rejects.toThrow(
+        'Failed to refresh Google OAuth token. Re-authorization is required to continue. Please reconnect your Google account.'
+      )
     })
   })
 
@@ -186,7 +181,7 @@ describe('googleAuth', () => {
       })
     })
 
-    it('should fallback to using secret as access token when refresh fails', async () => {
+    it('should throw re-authorization required error when refresh fails', async () => {
       const mockIntegration = {
         accessSecretCipherText: 'ciphertext',
         accessSecretIv: 'iv',
@@ -200,12 +195,11 @@ describe('googleAuth', () => {
       mockDecryptSymmetric.mockResolvedValue('direct-access-token')
       mockAxios.post.mockRejectedValue(new Error('Refresh failed'))
 
-      const result = await getIntegrationGoogleAccessToken('integration-id')
-
-      expect(result).toEqual({
-        accessToken: 'direct-access-token',
-        accountEmail: 'integration@example.com'
-      })
+      await expect(
+        getIntegrationGoogleAccessToken('integration-id')
+      ).rejects.toThrow(
+        'Failed to refresh Google OAuth token. Re-authorization is required to continue. Please reconnect your Google account.'
+      )
     })
 
     it('should throw error when integration not found', async () => {
@@ -245,11 +239,11 @@ describe('googleAuth', () => {
       mockDecryptSymmetric.mockResolvedValue('refresh-token')
       mockAxios.post.mockRejectedValue(new Error('Token refresh failed'))
 
-      const result = await getIntegrationGoogleAccessToken('integration-id')
-      expect(result).toEqual({
-        accessToken: 'refresh-token',
-        accountEmail: 'test@example.com'
-      })
+      await expect(
+        getIntegrationGoogleAccessToken('integration-id')
+      ).rejects.toThrow(
+        'Failed to refresh Google OAuth token. Re-authorization is required to continue. Please reconnect your Google account.'
+      )
     })
   })
 })
