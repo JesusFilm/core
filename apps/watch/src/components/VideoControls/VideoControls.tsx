@@ -99,8 +99,7 @@ export function VideoControls({
     },
     dispatch: dispatchPlayer
   } = usePlayer()
-  const [openDialogLangSwitch, setOpenDialogLangSwitch] =
-    useState<boolean>()
+  const [openDialogLangSwitch, setOpenDialogLangSwitch] = useState<boolean>()
 
   const { updateSubtitlesOn } = useLanguageActions()
   const { id, title, variant, images, imageAlt } = useVideo()

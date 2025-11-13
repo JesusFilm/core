@@ -1,15 +1,12 @@
 import dynamic from 'next/dynamic'
 import { type ReactElement } from 'react'
 
-import {
-  christmasAdventShowcaseSources,
-  collectionShowcaseSources
-} from '../PageCollections/collectionShowcaseConfig'
+import { collectionShowcaseSources, christmasAdventShowcaseSources } from '../PageCollections/collectionShowcaseConfig'
 
 const SectionVideoCarousel = dynamic(
   () =>
     import(
-      /* webpackChunkName: "watch-section-video-carousel" */
+      /* webpackChunkName: "SectionVideoCarousel" */
       '../SectionVideoCarousel'
     ).then((mod) => ({
       default: mod.SectionVideoCarousel
@@ -20,7 +17,7 @@ const SectionVideoCarousel = dynamic(
 const SectionVideoGrid = dynamic(
   () =>
     import(
-      /* webpackChunkName: "watch-section-video-grid" */
+      /* webpackChunkName: "SectionVideoGrid" */
       '../SectionVideoGrid'
     ).then((mod) => ({
       default: mod.SectionVideoGrid
@@ -57,9 +54,19 @@ export function CollectionsRail({
         showSequenceNumbers={true}
       />
       <SectionVideoGrid
+        id="home-collection-showcase-grid-vertical"
+        sources={collectionShowcaseSources}
+        primaryCollectionId="LUMOCollection"
+        subtitleOverride="Video Bible Collection"
+        titleOverride="Discover the full story (Vertical Cards)"
+        descriptionOverride="Explore our collection of videos and resources that bring the Bible to life through engaging stories and teachings."
+        orientation="vertical"
+        languageId={languageId}
+      />
+      <SectionVideoGrid
         id="home-collection-showcase-grid-christmas-advent"
         sources={christmasAdventShowcaseSources}
-        primaryCollectionId="ChristmasAdventCollection"
+        // primaryCollectionId="ChristmasAdventCollection"
         subtitleOverride="Christmas Advent"
         titleOverride="Christmas Advent Countdown"
         descriptionOverride="Join our Advent journey with a daily video that builds anticipation for Christmas, exploring the hope, joy, and promise of Jesus' arrival."
@@ -84,19 +91,10 @@ export function CollectionsRail({
         id="home-collection-nua-origins-worth"
         primaryCollectionId="7_Origins2Worth"
         subtitleOverride="Worth Series"
+        titleOverride="NUA Worth"
+        
         languageId={languageId}
       />
-      <SectionVideoGrid
-        id="home-collection-showcase-grid-vertical"
-        sources={collectionShowcaseSources}
-        primaryCollectionId="LUMOCollection"
-        subtitleOverride="Video Bible Collection"
-        titleOverride="Discover the full story (Vertical Cards)"
-        descriptionOverride="Explore our collection of videos and resources that bring the Bible to life through engaging stories and teachings."
-        orientation="vertical"
-        languageId={languageId}
-      />
-
     </>
   )
 }

@@ -2,6 +2,31 @@
 @source "./src/**/*.{js,ts,jsx,tsx}";
 @source "../../../libs/**/*.{js,ts,jsx,tsx}";
 
+@keyframes loading-gradient-wave {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.loading-gradient-text {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.98) 25%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(255, 255, 255, 0.98) 75%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: loading-gradient-wave 2s ease-in-out infinite;
+}
+
 @theme {
   --font-sans:
     'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
@@ -321,7 +346,7 @@
   }
 
   .section-divider {
-    @apply z-1 absolute top-0 left-0 right-0 border-t-2 border-t-black/70 border-b-1 border-b-white/5 inset-shadow-sm;
+    @apply absolute top-0 right-0 left-0 z-1 border-t-2 border-b-1 border-t-black/70 border-b-white/5 inset-shadow-sm;
   }
 
   .overlay-texture {
@@ -364,10 +389,10 @@
   }
 
   .btn-outlined {
-    @apply border border-gray-300 bg-white text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors;
+    @apply focus:ring-primary rounded-md border border-gray-300 bg-white px-4 py-2 text-gray-700 transition-colors hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:outline-none;
   }
 
   .btn-primary {
-    @apply bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors;
+    @apply bg-primary hover:bg-primary-light focus:ring-primary rounded-md px-4 py-2 text-white transition-colors focus:ring-2 focus:ring-offset-2 focus:outline-none;
   }
 }

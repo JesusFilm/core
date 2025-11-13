@@ -54,7 +54,7 @@ export function VideoBlock({
   return (
     <div
       className={clsx(
-        'w-full flex items-end relative bg-[#000] z-[1] transition-all duration-300 ease-out overflow-hidden',
+        'relative z-[1] flex w-full items-end overflow-hidden bg-[#000] transition-all duration-300 ease-out',
         {
           'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]':
             placement == 'carouselItem' && collapsed,

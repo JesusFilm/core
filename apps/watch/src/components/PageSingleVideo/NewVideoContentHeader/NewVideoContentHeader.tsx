@@ -31,11 +31,11 @@ export function NewVideoContentHeader({
   return (
     <div
       data-testid="NewVideoContentHeader"
-      className="flex z-2 py-6 responsive-container relative"
+      className="responsive-container relative z-2 flex py-6"
     >
       <div className="w-full">
         <div
-          className="flex flex-row justify-between items-center"
+          className="flex flex-row items-center justify-between"
           data-testid="VideoHeading"
         >
           <div className="flex flex-row items-center space-x-4">
@@ -43,22 +43,22 @@ export function NewVideoContentHeader({
               <NextLink
                 href={`/watch/${container.variant.slug}`}
                 locale={false}
-                className="uppercase text-sm tracking-wider text-primary no-underline"
+                className="text-primary text-sm tracking-wider uppercase no-underline"
               >
                 {last(container.title)?.value}
               </NextLink>
             ) : (
-              <span className="uppercase text-sm tracking-wider text-primary no-underline">
+              <span className="text-primary text-sm tracking-wider uppercase no-underline">
                 {last(container.title)?.value}
               </span>
             )}
             <p
-              className="uppercase text-sm tracking-wider text-[#bbbcbc] hidden xl:block font-bold"
+              className="hidden text-sm font-bold tracking-wider text-[#bbbcbc] uppercase xl:block"
               aria-hidden="true"
             >
               •
             </p>
-            <div className="uppercase text-sm tracking-wider text-[#bbbcbc]  hidden xl:block">
+            <div className="hidden text-sm tracking-wider text-[#bbbcbc] uppercase xl:block">
               {loading === true ? (
                 <Skeleton width={100} height={20} />
               ) : (
@@ -76,7 +76,7 @@ export function NewVideoContentHeader({
             <NextLink
               href={`/watch/${container.variant.slug}`}
               locale={false}
-              className="border border-[#bbbcbc] rounded-md px-2 py-1 text-sm text-[#bbbcbc] hidden xl:block cursor-pointer font-bold"
+              className="hidden cursor-pointer rounded-md border border-[#bbbcbc] px-2 py-1 text-sm font-bold text-[#bbbcbc] xl:block"
             >
               {container.label === VideoLabel.featureFilm
                 ? 'Watch Full Film'
@@ -85,7 +85,7 @@ export function NewVideoContentHeader({
           )}
           <div
             data-testid="container-progress-short"
-            className="uppercase text-xs tracking-wider text-[#bbbcbc] block xl:hidden"
+            className="block text-xs tracking-wider text-[#bbbcbc] uppercase xl:hidden"
           >
             {loading === true ? (
               <Skeleton width={100} height={20} />

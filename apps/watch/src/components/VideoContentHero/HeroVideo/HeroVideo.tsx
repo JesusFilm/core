@@ -355,7 +355,7 @@ export function HeroVideo({
     }
 
     // Execute the async setup
-    void setupPlayer()
+    setupPlayer()
   }, [
     currentMuxInsert?.id,
     variant?.hls,
@@ -460,11 +460,11 @@ export function HeroVideo({
     <>
       <div
         className={clsx(
-          "fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners [body[style*='padding-right']_&]:right-[15px]",
+          "vjs-hide-loading-spinners fixed top-0 right-0 left-0 z-0 mx-auto [body[style*='padding-right']_&]:right-[15px]",
           {
             'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md-expanded)]':
               placement === 'singleVideo' || (isPreview && collapsed),
-            'aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)]  max-w-[1920px]':
+            'aspect-[var(--ratio-sm-expanded)] max-w-[1920px] md:aspect-[var(--ratio-md-expanded)]':
               !isPreview || !collapsed
           }
         )}
@@ -504,27 +504,24 @@ export function HeroVideo({
           {/* Error display for media loading failures */}
           {mediaError && (
             <div
-              className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-center p-4"
+              className="bg-opacity-50 absolute inset-0 flex items-center justify-center bg-black p-4 text-center text-white"
               data-testid="ContentHeroVideoError"
             >
               <div>
-                {/* eslint-disable-next-line i18next/no-literal-string */}
-                <div className="text-lg font-semibold mb-2">Video Error</div>
+                <div className="mb-2 text-lg font-semibold">Video Error</div>
                 <div className="text-sm opacity-90">{mediaError.message}</div>
-                {/* eslint-disable i18next/no-literal-string */}
                 {process.env.NODE_ENV === 'development' && (
-                  <div className="text-xs opacity-75 mt-2">
+                  <div className="mt-2 text-xs opacity-75">
                     Code: {(mediaError as any).code} | Video ID:{' '}
                     {(mediaError as any).videoId}
                   </div>
                 )}
-                {/* eslint-enable i18next/no-literal-string */}
               </div>
             </div>
           )}
           {collapsed && (
             <div
-              className="absolute inset-0 z-1 pointer-events-none opacity-70"
+              className="pointer-events-none absolute inset-0 z-1 opacity-70"
               style={{
                 backdropFilter: 'brightness(.4) saturate(.6) sepia(.4)',
                 backgroundImage: 'url(/assets/overlay.svg)',
@@ -544,12 +541,10 @@ export function HeroVideo({
       </div>
 
       {playerRef.current != null && playerReady && (
-          <>
-            <VideoControls
-              player={playerRef.current}
-            />
-          </>
-        )}
+        <>
+          <VideoControls player={playerRef.current} />
+        </>
+      )}
     </>
   )
 }

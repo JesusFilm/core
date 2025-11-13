@@ -18,7 +18,7 @@ export type { SectionVideoCollectionCarouselSource } from './useSectionVideoColl
 
 export interface SectionVideoCarouselProps {
   id?: string
-  sources: SectionVideoCollectionCarouselSource[]
+  sources?: SectionVideoCollectionCarouselSource[]
   primaryCollectionId?: string
   subtitleOverride?: string
   titleOverride?: string
@@ -106,14 +106,14 @@ export function SectionVideoCarousel({
     <section
       id={id}
       className={cn(
-        'relative bg-linear-to-tr from-blue-950/10 via-purple-950/10 to-[#91214A]/90 py-16 scroll-snap-start-always',
+        'scroll-snap-start-always relative bg-linear-to-tr from-blue-950/10 via-purple-950/10 to-[#91214A]/90 py-16',
         backgroundClassName
       )}
       data-testid="SectionVideoCarousel"
     >
       <div
         className={cn(
-          'absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-opacity duration-500 ease-in-out filter sepia-off blur-lg mix-blend-overlay',
+          'sepia-off absolute inset-0 z-0 bg-cover bg-center bg-no-repeat mix-blend-overlay blur-lg filter transition-opacity duration-500 ease-in-out',
           isBackgroundVisible ? 'opacity-30' : 'opacity-0'
         )}
         style={
@@ -129,7 +129,7 @@ export function SectionVideoCarousel({
           <div className="flex flex-col gap-1">
             {subtitle != null && subtitle !== '' && (
               <h4
-                className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70"
+                className="text-sm font-semibold tracking-wider text-red-100/70 uppercase xl:text-base 2xl:text-lg"
                 data-testid="SectionVideoCarouselSubtitle"
               >
                 {subtitle}
@@ -137,7 +137,7 @@ export function SectionVideoCarousel({
             )}
             {title != null && title !== '' && (
               <h2
-                className="text-2xl xl:text-3xl 2xl:text-4xl font-bold"
+                className="text-2xl font-bold xl:text-3xl 2xl:text-4xl"
                 data-testid="SectionVideoCarouselTitle"
               >
                 {title}
@@ -147,7 +147,7 @@ export function SectionVideoCarousel({
           <a href={ctaHref} data-analytics-tag={analyticsTag}>
             <button
               aria-label={ctaLabel}
-              className="inline-flex items-center gap-2 px-4 py-2 text-xs text-black font-bold uppercase tracking-wider rounded-full bg-white hover:bg-red-500 hover:text-white transition-colors duration-200 cursor-pointer"
+              className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold tracking-wider text-black uppercase transition-colors duration-200 hover:bg-red-500 hover:text-white"
               data-testid="SectionVideoCarouselCTA"
             >
               <Icon
@@ -182,7 +182,7 @@ export function SectionVideoCarousel({
                   key={`skeleton-${index}`}
                   className={`max-w-[200px] ${index === 0 ? 'padded-l' : ''}`}
                 >
-                  <div className="h-[330px] w-[220px] rounded-lg bg-white/10 animate-pulse" />
+                  <div className="h-[330px] w-[220px] animate-pulse rounded-lg bg-white/10" />
                 </SwiperSlide>
               ))
             : slides.map((slide, index) => (
@@ -206,7 +206,7 @@ export function SectionVideoCarousel({
       <div className="padded space-y-6">
         {description != null && description !== '' && (
           <p
-            className="text-lg xl:text-xl mt-8 leading-relaxed text-stone-200/80"
+            className="mt-8 text-lg leading-relaxed text-stone-200/80 xl:text-xl"
             data-testid="SectionVideoCarouselDescription"
           >
             {description}

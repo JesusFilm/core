@@ -41,9 +41,7 @@
         "libs/shared/ui/src/libs/*"
       ],
       "@core/shared/uimodern": ["libs/shared/uimodern/src/index"],
-      "@core/shared/uimodern/*": [
-        "libs/shared/uimodern/src/*"
-      ],
+      "@core/shared/uimodern/*": ["libs/shared/uimodern/src/*"],
       "@shadcn": ["libs/shared/uimodern/src/index.ts"],
       "@shadcn/*": ["libs/shared/uimodern/src/*"],
       "@/lib/utils": ["libs/shared/uimodern/src/utils"],

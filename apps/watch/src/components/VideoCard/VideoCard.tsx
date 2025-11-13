@@ -22,6 +22,7 @@ interface VideoCardProps {
   analyticsTag?: string
   showSequenceNumber?: boolean
   onHoverImageChange?: (imageUrl?: string | null) => void
+  variant?: string
 }
 
 export function getSlug(
@@ -70,7 +71,7 @@ export function VideoCard({
   return (
     <a
       href={href}
-      className={`block no-underline text-inherit ${
+      className={`block text-inherit no-underline ${
         video != null
           ? 'pointer-events-auto cursor-pointer'
           : 'pointer-events-none'
@@ -84,18 +85,18 @@ export function VideoCard({
         <button
           type="button"
           disabled={video == null}
-          className={`relative overflow-hidden group rounded-lg ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} hover:scale-102 focus-visible:scale-102 transition-transform duration-300 beveled ${imageClassName || ''} cursor-pointer disabled:cursor-default`}
+          className={`group relative overflow-hidden rounded-lg ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} beveled transition-transform duration-300 hover:scale-102 focus-visible:scale-102 ${imageClassName || ''} cursor-pointer disabled:cursor-default`}
         >
           {sequenceLabel != null && (
             <span
-              className="absolute top-2 left-2 z-10 text-[48px] font-bold leading-none text-stone-100/90 text-shadow-lg"
+              className="absolute top-2 left-2 z-10 text-[48px] leading-none font-bold text-stone-100/90 text-shadow-lg"
               aria-hidden="true"
               data-testid="VideoCardSequenceNumber"
             >
               {sequenceLabel}
             </span>
           )}
-          <div className="absolute inset-0 rounded-lg overflow-hidden bg-black/50 transition-transform duration-300">
+          <div className="absolute inset-0 overflow-hidden rounded-lg bg-black/50 transition-transform duration-300">
             {imageSrc ? (
               <Image
                 src={imageSrc}
@@ -111,27 +112,27 @@ export function VideoCard({
             ) : (
               <div className="aspect-video">
                 <div
-                  className="w-full h-full bg-gray-300 animate-pulse"
+                  className="h-full w-full animate-pulse bg-gray-300"
                   data-testid="VideoImageSkeleton"
                 />
               </div>
             )}
           </div>
-          <div className="absolute inset-0 rounded-lg gradient-contained transition-opacity duration-300 opacity-15 hover:opacity-50 shadow-[inset_0px_0px_0px_1px_rgba(255,255,255,0.12)]" />
+          <div className="gradient-contained absolute inset-0 rounded-lg opacity-15 shadow-[inset_0px_0px_0px_1px_rgba(255,255,255,0.12)] transition-opacity duration-300 hover:opacity-50" />
           <div className="absolute inset-0 flex flex-col justify-end p-4">
-            <h3 className="text-xl font-bold text-white leading-tight text-left text-shadow-strong">
+            <h3 className="text-shadow-strong text-left text-xl leading-tight font-bold text-white">
               {video != null ? (
                 last(video?.title)?.value
               ) : (
                 <div
-                  className="w-3/5 h-5 bg-gray-400 animate-pulse"
+                  className="h-5 w-3/5 animate-pulse bg-gray-400"
                   data-testid="VideoTitleSkeleton"
                 />
               )}
             </h3>
-            <div className="flex flex-row justify-between items-end min-w-0 gap-2">
+            <div className="flex min-w-0 flex-row items-end justify-between gap-2">
               <div
-                className={`text-xs uppercase tracking-wider truncate leading-8 ${
+                className={`truncate text-xs leading-8 tracking-wider uppercase ${
                   color === 'primary.main'
                     ? 'text-primary'
                     : color === 'secondary.main'
@@ -143,20 +144,20 @@ export function VideoCard({
                   label
                 ) : (
                   <div
-                    className="w-12 h-4 bg-gray-400 animate-pulse"
+                    className="h-4 w-12 animate-pulse bg-gray-400"
                     data-testid="VideoLabelSkeleton"
                   />
                 )}
               </div>
 
               <div
-                className={`flex flex-row items-center gap-1 p-2 rounded h-7 text-white flex-shrink-0 ${
+                className={`flex h-7 flex-shrink-0 flex-row items-center gap-1 rounded p-2 text-white ${
                   active === true ? 'bg-primary' : 'bg-black/50'
                 }`}
               >
                 {active === true ? (
                   <>
-                    <Play className="w-4 h-4" />
+                    <Play className="h-4 w-4" />
                     <span className="text-sm font-semibold">
                       {t('Playing now')}
                     </span>
@@ -165,16 +166,16 @@ export function VideoCard({
                   <>
                     {video == null && (
                       <>
-                        <Play className="w-4 h-4" />
+                        <Play className="h-4 w-4" />
                         <div
-                          className="w-5 h-4 bg-gray-400 animate-pulse"
+                          className="h-4 w-5 animate-pulse bg-gray-400"
                           data-testid="VideoVariantDurationSkeleton"
                         />
                       </>
                     )}
                     {video?.childrenCount === 0 && (
                       <>
-                        <Play className="w-4 h-4" />
+                        <Play className="h-4 w-4" />
                         <span className="text-sm font-semibold">
                           {secondsToTimeFormat(video?.variant?.duration ?? 0, {
                             trimZeroes: true

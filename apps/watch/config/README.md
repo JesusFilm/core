@@ -53,7 +53,6 @@ pnpm nx test watch
 - `prefers-reduced-motion` visitors see a poster with a manual play control.
 - If the video fails to load a static fallback card displays the overlay content.
 
-
 # Mux Video Inserts Configuration
 
 This directory contains configuration for Mux video inserts that integrate with the Watch application's video player and carousel system.

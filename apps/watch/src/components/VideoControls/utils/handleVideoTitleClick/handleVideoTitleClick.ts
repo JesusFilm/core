@@ -20,7 +20,7 @@ export function handleVideoTitleClick({
   onMuteToggle
 }: HandleVideoTitleClickProps): void {
   if (player == null) return
-  
+
   if (mute) {
     player.muted(false)
     dispatch({

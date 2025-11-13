@@ -22,6 +22,7 @@ export interface VideoGridProps {
   fallbackLoading?: boolean
   onClearSearch?: () => void
   selectedLanguages?: string[]
+  variant?: string
 }
 
 export function VideoGrid({
@@ -106,14 +107,14 @@ export function VideoGrid({
               onHoverImageChange={onCardHoverChange}
             />
           </div>
-          <div className="w-full hidden md:block">
+          <div className="hidden w-full md:block">
             <VideoCard
               orientation={orientation}
               analyticsTag={analyticsTag}
               onHoverImageChange={onCardHoverChange}
             />
           </div>
-          <div className="w-full hidden xl:block">
+          <div className="hidden w-full xl:block">
             <VideoCard
               orientation={orientation}
               analyticsTag={analyticsTag}
@@ -123,24 +124,24 @@ export function VideoGrid({
         </>
       )}
       {!loading && hasNoResults && (
-        <div className="w-full flex justify-center items-center col-span-full">
+        <div className="col-span-full flex w-full items-center justify-center">
           <div className="w-full rounded-3xl border border-white/10 p-6 md:p-10">
-            <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-10">
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:gap-10">
               <div className="flex justify-center md:justify-start">
                 <FishOff
-                  className="h-30 w-30 md:h-20 md:w-20 text-stone-200"
+                  className="h-30 w-30 text-stone-200 md:h-20 md:w-20"
                   aria-hidden="true"
                 />
               </div>
-              <div className="flex-1 flex flex-col gap-4 text-center md:text-left items-center md:items-start">
-                <span className="uppercase tracking-widest text-[#FF9E00] font-sans font-bold mb-0 animate-fade-in-up animation-delay-100 text-md">
+              <div className="flex flex-1 flex-col items-center gap-4 text-center md:items-start md:text-left">
+                <span className="animate-fade-in-up animation-delay-100 text-md mb-0 font-sans font-bold tracking-widest text-[#FF9E00] uppercase">
                   {t('No videos found')}
                 </span>
-                <p className="font-bold text-stone-50 text-shadow-xs mb-0 font-sans animate-fade-in-up animation-delay-200 text-2xl md:text-2xl lg:text-3xl xl:text-4xl">
+                <p className="animate-fade-in-up animation-delay-200 mb-0 font-sans text-2xl font-bold text-stone-50 text-shadow-xs md:text-2xl lg:text-3xl xl:text-4xl">
                   {t('No catch here—try the other side of the boat.')}
                 </p>
                 {onClearSearch != null && (
-                  <div className="flex justify-center md:justify-start animate-fade-in-up animation-delay-300">
+                  <div className="animate-fade-in-up animation-delay-300 flex justify-center md:justify-start">
                     <button
                       type="button"
                       className="btn-primary"
@@ -184,14 +185,14 @@ export function VideoGrid({
         </div>
       )}
       {showLoadMore && !hasNoResults && (
-        <div className="w-full col-span-full">
+        <div className="col-span-full w-full">
           <div className="flex justify-center py-6">
             <button
-              className={`btn-outlined flex items-center gap-2 ${!hasNextPage ? 'opacity-50 cursor-not-allowed' : ''}`}
+              className={`btn-outlined flex items-center gap-2 ${!hasNextPage ? 'cursor-not-allowed opacity-50' : ''}`}
               onClick={showMore}
               disabled={!hasNextPage}
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="h-4 w-4" />
               {loading
                 ? 'Loading...'
                 : hasNextPage

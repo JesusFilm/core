@@ -15,7 +15,10 @@ import { useVideo } from '../../../libs/videoContext'
 import { useWatch } from '../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../libs/watchContext/useSubtitleUpdate'
 import type { CarouselMuxSlide } from '../../../types/inserts'
-import { MuxInsertLogoOverlay, VideoControls } from '../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
+import {
+  MuxInsertLogoOverlay,
+  VideoControls
+} from '../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
 
 import { HeroSubtitleOverlay } from './HeroSubtitleOverlay'
 
@@ -67,7 +70,9 @@ export function VideoBlockPlayer({
   const [mediaError, setMediaError] = useState<Error | null>(null)
 
   // Use Mux insert title if available, otherwise use regular video title
-  const title = currentMuxInsert ? currentMuxInsert.overlay.title : (last(video.title)?.value ?? '')
+  const title = currentMuxInsert
+    ? currentMuxInsert.overlay.title
+    : (last(video.title)?.value ?? '')
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<
@@ -183,7 +188,9 @@ export function VideoBlockPlayer({
   useEffect(() => {
     const setupPlayer = async () => {
       // Determine the video source and ID based on current content
-      const videoSource = currentMuxInsert ? currentMuxInsert.urls.hls : variant?.hls
+      const videoSource = currentMuxInsert
+        ? currentMuxInsert.urls.hls
+        : variant?.hls
       const videoId = currentMuxInsert ? currentMuxInsert.id : variant?.id
 
       if (!videoRef.current || !videoSource) {
@@ -205,7 +212,7 @@ export function VideoBlockPlayer({
           currentPlayer.src('')
 
           // Small delay to allow abort events to fire
-          await new Promise(resolve => setTimeout(resolve, 50))
+          await new Promise((resolve) => setTimeout(resolve, 50))
 
           // Now dispose safely
           currentPlayer.dispose()
@@ -285,7 +292,9 @@ export function VideoBlockPlayer({
         const playerError = player.error()
         if (playerError) {
           // Create a more user-friendly error
-          const mediaError = new Error(`Video loading failed: ${playerError.message}`)
+          const mediaError = new Error(
+            `Video loading failed: ${playerError.message}`
+          )
           mediaError.name = 'MediaError'
           ;(mediaError as any).code = playerError.code
           ;(mediaError as any).videoId = videoId
@@ -293,61 +302,61 @@ export function VideoBlockPlayer({
         }
       })
 
-    player.on('abort', () => {
-      // Note: Abort events are normal when switching videos, so we don't set mediaError here
-    })
+      player.on('abort', () => {
+        // Note: Abort events are normal when switching videos, so we don't set mediaError here
+      })
 
-    player.on('emptied', () => {
-      // Player emptied
-    })
+      player.on('emptied', () => {
+        // Player emptied
+      })
 
-    player.on('loadstart', () => {
-      // Load started
-    })
+      player.on('loadstart', () => {
+        // Load started
+      })
 
-    player.on('progress', () => {
-      // Progress event
-    })
+      player.on('progress', () => {
+        // Progress event
+      })
 
-    player.on('loadeddata', () => {
-      // Clear any previous errors once data loads successfully
-      setMediaError(null)
-    })
+      player.on('loadeddata', () => {
+        // Clear any previous errors once data loads successfully
+        setMediaError(null)
+      })
 
-    player.on('canplay', () => {
-      // Can play
-    })
+      player.on('canplay', () => {
+        // Can play
+      })
 
-    player.on('canplaythrough', () => {
-      // Can play through
-    })
+      player.on('canplaythrough', () => {
+        // Can play through
+      })
 
-    // Handle stalled loading (network issues)
-    player.on('stalled', () => {
-      // Player stalled - possible network issue
-    })
+      // Handle stalled loading (network issues)
+      player.on('stalled', () => {
+        // Player stalled - possible network issue
+      })
 
-    // Handle waiting for data
-    player.on('waiting', () => {
-      // Waiting for data
-    })
+      // Handle waiting for data
+      player.on('waiting', () => {
+        // Waiting for data
+      })
 
-    // Track play/pause events that might be causing state conflicts
-    player.on('play', () => {
-      // Player play event
-    })
+      // Track play/pause events that might be causing state conflicts
+      player.on('play', () => {
+        // Player play event
+      })
 
-    player.on('pause', () => {
-      // Player pause event
-    })
+      player.on('pause', () => {
+        // Player pause event
+      })
 
-    player.on('playing', () => {
-      // Player playing event
-    })
+      player.on('playing', () => {
+        // Player playing event
+      })
 
-    player.on('ended', () => {
-      // Player ended event
-    })
+      player.on('ended', () => {
+        // Player ended event
+      })
 
       return () => {
         if (playerRef.current) {
@@ -363,8 +372,15 @@ export function VideoBlockPlayer({
     }
 
     // Execute the async setup
-    void setupPlayer()
-  }, [currentMuxInsert?.id, variant?.hls, title, variant?.id, currentMuxInsert, placement == 'carouselItem'])
+    setupPlayer()
+  }, [
+    currentMuxInsert?.id,
+    variant?.hls,
+    title,
+    variant?.id,
+    currentMuxInsert,
+    placement == 'carouselItem'
+  ])
 
   // Handle mute state changes dynamically without recreating the player
   useEffect(() => {
@@ -389,7 +405,7 @@ export function VideoBlockPlayer({
 
   useEffect(() => {
     if (playerRef.current && playerReady && !play) {
-        playWithAbortProtection(playerRef.current)
+      playWithAbortProtection(playerRef.current)
     }
   }, [playerReady])
 
@@ -406,7 +422,12 @@ export function VideoBlockPlayer({
     return () => {
       clearTimeout(timer)
     }
-  }, [currentMuxInsert?.duration, currentMuxInsert?.id, playerReady, onMuxInsertComplete])
+  }, [
+    currentMuxInsert?.duration,
+    currentMuxInsert?.id,
+    playerReady,
+    onMuxInsertComplete
+  ])
 
   const { subtitleUpdate } = useSubtitleUpdate()
 
@@ -445,105 +466,116 @@ export function VideoBlockPlayer({
     playerReady
   ])
 
-  const shouldShowOverlay = playerReady && (mute || (subtitleOn ?? false)) && !(placement === 'singleVideo' && wasUnmuted)
+  const shouldShowOverlay =
+    playerReady &&
+    (mute || (subtitleOn ?? false)) &&
+    !(placement === 'singleVideo' && wasUnmuted)
 
   const isVideoExpanded = placement == 'singleVideo' || !collapsed
   const objectFitClass = isVideoExpanded ? 'object-contain' : 'object-cover'
 
   return (
     <>
-    <div
-      className={clsx(
-        "fixed top-0 left-0 right-0 mx-auto z-0 vjs-hide-loading-spinners [body[style*='padding-right']_&]:right-[15px]",
-        {
-          'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]': placement == 'carouselItem' && collapsed,
-          'aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)]  max-w-[1920px]': placement == 'singleVideo' || !collapsed
-        }
-      )}
-      data-testid="VideoBlockPlayerContainer"
-    >
-      <>
-        {(currentMuxInsert?.urls.hls || variant?.hls) && (
-          <video
-            key={currentMuxInsert ? currentMuxInsert.id : variant?.hls}
-            data-testid="VideoBlockPlayer"
-            ref={videoRef}
-            className={clsx(
-              'vjs hero-hide-native-subtitles md:[&_.vjs-tech]:object-cover',
-              {
-                '[&_.vjs-tech]:object-cover': placement == 'carouselItem' && collapsed,
-                '[&_.vjs-tech]:object-contain': placement == 'singleVideo' || !collapsed,
-                'cursor-pointer': placement == 'carouselItem',
-              }
-            )}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: collapsed ? '120%' : '100%'
-            }}
-            playsInline
-            onClick={placement == 'carouselItem' ? handlePreviewClick : undefined}
-          />
+      <div
+        className={clsx(
+          "vjs-hide-loading-spinners fixed top-0 right-0 left-0 z-0 mx-auto [body[style*='padding-right']_&]:right-[15px]",
+          {
+            'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]':
+              placement == 'carouselItem' && collapsed,
+            'aspect-[var(--ratio-sm-expanded)] max-w-[1920px] md:aspect-[var(--ratio-md-expanded)]':
+              placement == 'singleVideo' || !collapsed
+          }
         )}
-
-        {/* Error display for media loading failures */}
-        {mediaError && (
-          <div
-            className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-center p-4"
-            data-testid="VideoBlockPlayerError"
-          >
-            <div>
-              {/* eslint-disable-next-line i18next/no-literal-string */}
-              <div className="text-lg font-semibold mb-2">Video Error</div>
-              <div className="text-sm opacity-90">{mediaError.message}</div>
-              {/* eslint-disable i18next/no-literal-string */}
-              {process.env.NODE_ENV === 'development' && (
-                <div className="text-xs opacity-75 mt-2">
-                  Code: {(mediaError as any).code} | Video ID: {(mediaError as any).videoId}
-                </div>
+        data-testid="VideoBlockPlayerContainer"
+      >
+        <>
+          {(currentMuxInsert?.urls.hls || variant?.hls) && (
+            <video
+              key={currentMuxInsert ? currentMuxInsert.id : variant?.hls}
+              data-testid="VideoBlockPlayer"
+              ref={videoRef}
+              className={clsx(
+                'vjs hero-hide-native-subtitles md:[&_.vjs-tech]:object-cover',
+                {
+                  '[&_.vjs-tech]:object-cover':
+                    placement == 'carouselItem' && collapsed,
+                  '[&_.vjs-tech]:object-contain':
+                    placement == 'singleVideo' || !collapsed,
+                  'cursor-pointer': placement == 'carouselItem'
+                }
               )}
-              {/* eslint-enable i18next/no-literal-string */}
-            </div>
-          </div>
-        )}
-        {collapsed && !(placement === 'singleVideo' && wasUnmuted) && (
-          <div
-            className="absolute inset-0 z-1 pointer-events-none opacity-70"
-            style={{
-              backdropFilter: 'brightness(.4) saturate(.6) sepia(.4)',
-              backgroundImage: 'url(/assets/overlay.svg)',
-              backgroundSize: '1600px auto'
-            }}
-          />
-        )}
-        {/* Subtitles */}
-        <HeroSubtitleOverlay
-          player={playerRef.current}
-          subtitleLanguageId={effectiveSubtitleLanguageId}
-          visible={shouldShowOverlay}
-        />
-        
-        <MuxInsertLogoOverlay variantId={currentMuxInsert ? `${currentMuxInsert.id}-variant` : variant?.id} />
-      </>
-    </div>
-    {playerRef.current != null && playerReady && (
-          <>
-            <VideoControls
-              player={playerRef.current}
-              isPreview={isPreview}
-              onMuteToggle={onMuteToggle}
-              customDuration={currentMuxInsert?.duration}
-              action={currentMuxInsert?.overlay.action}
-              isMuxInsert={currentMuxInsert != null}
-              muxOverlay={currentMuxInsert?.overlay}
-              onSkip={onSkip}
-              placement={placement}
-              wasUnmuted={wasUnmuted}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: collapsed ? '120%' : '100%'
+              }}
+              playsInline
+              onClick={
+                placement == 'carouselItem' ? handlePreviewClick : undefined
+              }
             />
-          </>
-        )}
+          )}
+
+          {/* Error display for media loading failures */}
+          {mediaError && (
+            <div
+              className="bg-opacity-50 absolute inset-0 flex items-center justify-center bg-black p-4 text-center text-white"
+              data-testid="VideoBlockPlayerError"
+            >
+              <div>
+                <div className="mb-2 text-lg font-semibold">Video Error</div>
+                <div className="text-sm opacity-90">{mediaError.message}</div>
+                {process.env.NODE_ENV === 'development' && (
+                  <div className="mt-2 text-xs opacity-75">
+                    Code: {(mediaError as any).code} | Video ID:{' '}
+                    {(mediaError as any).videoId}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          {collapsed && !(placement === 'singleVideo' && wasUnmuted) && (
+            <div
+              className="pointer-events-none absolute inset-0 z-1 opacity-70"
+              style={{
+                backdropFilter: 'brightness(.4) saturate(.6) sepia(.4)',
+                backgroundImage: 'url(/assets/overlay.svg)',
+                backgroundSize: '1600px auto'
+              }}
+            />
+          )}
+          {/* Subtitles */}
+          <HeroSubtitleOverlay
+            player={playerRef.current}
+            subtitleLanguageId={effectiveSubtitleLanguageId}
+            visible={shouldShowOverlay}
+          />
+
+          <MuxInsertLogoOverlay
+            variantId={
+              currentMuxInsert ? `${currentMuxInsert.id}-variant` : variant?.id
+            }
+          />
+        </>
+      </div>
+      {playerRef.current != null && playerReady && (
+        <>
+          <VideoControls
+            player={playerRef.current}
+            isPreview={isPreview}
+            onMuteToggle={onMuteToggle}
+            customDuration={currentMuxInsert?.duration}
+            action={currentMuxInsert?.overlay.action}
+            isMuxInsert={currentMuxInsert != null}
+            muxOverlay={currentMuxInsert?.overlay}
+            onSkip={onSkip}
+            placement={placement}
+            wasUnmuted={wasUnmuted}
+          />
+        </>
+      )}
     </>
   )
 }

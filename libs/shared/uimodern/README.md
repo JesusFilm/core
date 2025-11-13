@@ -14,6 +14,7 @@ cd libs/shared/uimodern
 ```
 
 Example:
+
 ```bash
 ./add-shadcn-component.sh button
 ./add-shadcn-component.sh dialog

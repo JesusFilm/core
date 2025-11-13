@@ -22,7 +22,7 @@ const triggerSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('after-count'),
     count: z
-      .number({ invalid_type_error: 'trigger.count must be a number' })
+      .number()
       .int('trigger.count must be an integer')
       .min(1, 'trigger.count must be at least 1')
   })
@@ -32,13 +32,9 @@ const muxInsertSchema = z.object({
   id: z.string().min(1, 'id is required'),
   enabled: z.boolean().default(true),
   source: z.literal('mux'),
-  playbackIds: z
-    .array(z.string().min(1, 'playbackIds must contain non-empty strings'), {
-      required_error: 'playbackIds are required'
-    })
-    .min(1, 'playbackIds must include at least one ID'),
+  playbackIds: z.tuple([z.string().min(1)]).rest(z.string().min(1)),
   duration: z
-    .number({ invalid_type_error: 'duration must be a number' })
+    .number()
     .positive('duration must be positive')
     .optional(),
   overlay: overlaySchema,

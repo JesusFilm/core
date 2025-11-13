@@ -29,17 +29,14 @@ export function VideoContentHero({
 
   const languageSlug = variant?.slug?.split('/')[1]
 
-  const handleMuteToggle = useCallback(
-    (isMuted: boolean): void => {
-      setCollapsed(isMuted)
-    },
-    []
-  )
+  const handleMuteToggle = useCallback((isMuted: boolean): void => {
+    setCollapsed(isMuted)
+  }, [])
 
   return (
     <div
       className={clsx(
-        'w-full flex items-end relative bg-[#000] z-[1] transition-all duration-300 ease-out overflow-hidden',
+        'relative z-[1] flex w-full items-end overflow-hidden bg-[#000] transition-all duration-300 ease-out',
         {
           'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]':
             isPreview && collapsed,
@@ -65,10 +62,10 @@ export function VideoContentHero({
       />
       <div
         data-testid="ContainerHeroTitleContainer"
-        className="w-full relative z-2 flex flex-col sm:flex-row max-w-[1920px] mx-auto pb-4"
+        className="relative z-2 mx-auto flex w-full max-w-[1920px] flex-col pb-4 sm:flex-row"
       >
         <div
-          className="absolute top-0 left-0 right-0 h-full w-full pointer-events-none block md:hidden"
+          className="pointer-events-none absolute top-0 right-0 left-0 block h-full w-full md:hidden"
           style={{
             backdropFilter: 'brightness(.6) blur(40px)',
             maskImage:

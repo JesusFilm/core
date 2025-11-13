@@ -866,14 +866,13 @@ export function LanguageMap({
       />
 
       {activeCountry != null ? (
-        <aside className="pointer-events-auto absolute right-16 top-1/2 h-[90%] w-[400px] max-w-full -translate-y-1/2 overflow-hidden rounded-3xl border border-stone-700/40 bg-stone-950/60 p-5 text-stone-100 shadow-2xl backdrop-blur-lg">
+        <aside className="pointer-events-auto absolute top-1/2 right-16 h-[90%] w-[400px] max-w-full -translate-y-1/2 overflow-hidden rounded-3xl border border-stone-700/40 bg-stone-950/60 p-5 text-stone-100 shadow-2xl backdrop-blur-lg">
           <div className="flex items-start justify-between gap-3">
             <div>
-              {/* eslint-disable-next-line i18next/no-literal-string */}
-              <p className="text-xs uppercase tracking-[0.18em] text-stone-300/70">
+              <p className="text-xs tracking-[0.18em] text-stone-300/70 uppercase">
                 Country
               </p>
-              <h3 className="text-lg font-semibold leading-tight">
+              <h3 className="text-lg leading-tight font-semibold">
                 {activeCountryFlag != null ? (
                   <span
                     className="mr-2 inline-block align-middle text-xl"
@@ -887,9 +886,7 @@ export function LanguageMap({
                 </span>
               </h3>
               <p className="mt-1 text-sm text-stone-300/80">
-                {/* eslint-disable-next-line i18next/no-literal-string */}
                 {activeCountry.languages.length} language
-                {/* eslint-disable-next-line i18next/no-literal-string */}
                 {activeCountry.languages.length === 1 ? '' : 's'} spoken here
               </p>
             </div>
@@ -915,7 +912,6 @@ export function LanguageMap({
                       {language.languageName}
                     </p>
                     <span className="text-xs text-stone-300/70">
-                      {/* eslint-disable-next-line i18next/no-literal-string */}
                       {language.speakers.toLocaleString()} speakers
                     </span>
                   </div>

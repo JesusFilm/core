@@ -37,7 +37,7 @@ function extractSegmentsFromCue(
 ): SubtitleSegment[] {
   if (cue == null) return []
 
-  const text = 'text' in cue ? cue.text : ''
+  const text = 'text' in cue ? (cue as any).text : ''
   if (text == null) return []
 
   const rawLines = text
@@ -238,14 +238,14 @@ export function HeroSubtitleOverlay({
   return (
     <>
       <div
-        className="pointer-events-none absolute z-2 inset-x-0 top-1/2 -translate-y-1/2 md:top-auto md:translate-y-0 md:bottom-[0px] flex justify-center px-6 min-h-[120px]"
+        className="pointer-events-none absolute inset-x-0 top-1/2 z-2 flex min-h-[120px] -translate-y-1/2 justify-center px-6 md:top-auto md:bottom-[0px] md:translate-y-0"
         aria-live="polite"
       >
-        <div className="flex max-w-4xl flex-col text-center text-white md:-mr-20  md:max-w-[400px] lg:max-w-none justify-center">
+        <div className="flex max-w-4xl flex-col justify-center text-center text-white md:-mr-20 md:max-w-[400px] lg:max-w-none">
           {segments[currentSegmentIndex] != null && (
             <span
               key={segments[currentSegmentIndex].id}
-              className="hero-subtitle-line mx-auto px-6 py-4 md:font-mono font-bold md:font-semibold leading-tight tracking-wider text-2xl md:text-lg lg:text-xl uppercase md:normal-case text-shadow-lg"
+              className="hero-subtitle-line mx-auto px-6 py-4 text-2xl leading-tight font-bold tracking-wider uppercase text-shadow-lg md:font-mono md:text-lg md:font-semibold md:normal-case lg:text-xl"
             >
               {segments[currentSegmentIndex].text}
             </span>

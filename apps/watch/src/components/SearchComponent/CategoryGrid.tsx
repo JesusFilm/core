@@ -65,10 +65,10 @@ export function CategoryGrid({
 
   return (
     <div>
-      <div className="block mb-3 font-semibold text-sm uppercase tracking-wider text-stone-600">
+      <div className="mb-3 block text-sm font-semibold tracking-wider text-stone-600 uppercase">
         {t('Browse Categories')}
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 xl:grid-cols-4">
         {categories.map((category, index) => {
           const IconComponent = category.icon
 
@@ -76,24 +76,24 @@ export function CategoryGrid({
             <div key={index}>
               <button
                 onClick={() => onCategorySelect(category.searchTerm)}
-                className="w-full aspect-video p-6 rounded-lg relative overflow-hidden text-white text-shadow-sm hover:scale-105 transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer"
+                className="relative aspect-video w-full cursor-pointer overflow-hidden rounded-lg p-6 text-white transition-transform duration-200 text-shadow-sm hover:scale-105 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
                 style={{
                   background: category.gradient,
                   textShadow: '0 1px 2px rgba(0,0,0,0.3)'
                 }}
               >
-                <div className="absolute inset-0 flex items-start justify-end pointer-events-none">
+                <div className="pointer-events-none absolute inset-0 flex items-start justify-end">
                   <IconComponent
-                    className="w-12 h-12 drop-shadow-lg opacity-20 mix-blend-overlay"
+                    className="h-12 w-12 opacity-20 mix-blend-overlay drop-shadow-lg"
                     style={{
                       transform: 'scale(5)',
                       transformOrigin: 'top right'
                     }}
                   />
                 </div>
-                <div className="absolute inset-0 bg-[url(/assets/overlay.svg)] bg-repeat mix-blend-multiply opacity-70 pointer-events-none"></div>
+                <div className="pointer-events-none absolute inset-0 bg-[url(/assets/overlay.svg)] bg-repeat opacity-70 mix-blend-multiply"></div>
                 <div
-                  className="absolute bottom-3 left-3 text-3xl font-extrabold leading-tight"
+                  className="absolute bottom-3 left-3 text-3xl leading-tight font-extrabold"
                   style={{
                     textShadow: '0 1px 3px rgba(0,0,0,0.4)',
                     lineHeight: 1.2

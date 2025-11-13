@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import { VideoLabel } from '../../../__generated__/globalTypes'
 import { useVideoChildren } from '../../libs/useVideoChildren/useVideoChildren'
 import { VideoProvider } from '../../libs/videoContext'
 import { WatchProvider } from '../../libs/watchContext'
@@ -37,8 +38,13 @@ const mockChildren = [
         mobileCinematicHigh: 'https://example.com/child-one.jpg'
       }
     ],
-    imageAlt: [{ __typename: 'VideoImageAlt' as const, value: 'Child One Alt' }],
-    label: 'segment' as const,
+    imageAlt: [
+      { __typename: 'VideoImageAlt' as const, value: 'Child One Alt' }
+    ],
+    snippet: [
+      { __typename: 'VideoSnippet' as const, value: 'Child One Description' }
+    ],
+    label: VideoLabel.segment,
     variant: {
       __typename: 'VideoVariant' as const,
       id: 'child-1-var',
@@ -50,7 +56,13 @@ const mockChildren = [
       language: {
         __typename: 'Language' as const,
         id: '529',
-        name: [{ __typename: 'LanguageName' as const, value: 'English', primary: true }],
+        name: [
+          {
+            __typename: 'LanguageName' as const,
+            value: 'English',
+            primary: true
+          }
+        ],
         bcp47: 'en'
       },
       subtitleCount: 0
@@ -68,8 +80,13 @@ const mockChildren = [
         mobileCinematicHigh: 'https://example.com/child-two.jpg'
       }
     ],
-    imageAlt: [{ __typename: 'VideoImageAlt' as const, value: 'Child Two Alt' }],
-    label: 'segment' as const,
+    imageAlt: [
+      { __typename: 'VideoImageAlt' as const, value: 'Child Two Alt' }
+    ],
+    snippet: [
+      { __typename: 'VideoSnippet' as const, value: 'Child Two Description' }
+    ],
+    label: VideoLabel.segment,
     variant: {
       __typename: 'VideoVariant' as const,
       id: 'child-2-var',
@@ -81,7 +98,13 @@ const mockChildren = [
       language: {
         __typename: 'Language' as const,
         id: '529',
-        name: [{ __typename: 'LanguageName' as const, value: 'English', primary: true }],
+        name: [
+          {
+            __typename: 'LanguageName' as const,
+            value: 'English',
+            primary: true
+          }
+        ],
         bcp47: 'en'
       },
       subtitleCount: 0

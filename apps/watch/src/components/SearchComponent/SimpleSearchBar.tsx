@@ -5,7 +5,6 @@ import { type FocusEvent, type ReactElement, useState } from 'react'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import X1Icon from '@core/shared/ui/icons/X1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
-import { ExtendedButton as Button } from '@core/shared/uimodern/components'
 import { Input } from '@core/shared/uimodern/components/input'
 
 interface SimpleSearchBarProps {
@@ -51,9 +50,9 @@ export function SimpleSearchBar({
         }) => (
           <>
             <div className="relative">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 flex items-center">
+              <div className="absolute top-1/2 left-4 z-10 flex -translate-y-1/2 items-center">
                 <Search1Icon
-                  className={`w-5 h-5 ${isFocused ? 'text-black' : 'text-white'}`}
+                  className={`h-5 w-5 ${isFocused ? 'text-black' : 'text-white'}`}
                 />
               </div>
               <Input
@@ -64,13 +63,7 @@ export function SimpleSearchBar({
                 type="text"
                 placeholder={t('Search videos by keyword...')}
                 autoComplete="off"
-                className={`
-                  w-full pl-12 pr-12 py-3 text-lg rounded-[35px] border-none outline-1 outline-white/20 shadow-xl shadow-stone-800/10 
-                  bg-white/10 backdrop-blur-[10px] transition-all duration-200
-                  text-white placeholder:text-white/70 cursor-text hover:cursor-text focus:cursor-text
-                  focus:bg-white/80 focus:text-black focus:placeholder:text-black/60 focus:outline-none focus-visible:outline-none
-                  ${values.title.trim().length > 0 ? 'pr-12' : 'pr-4'}
-                `}
+                className={`w-full cursor-text rounded-[35px] border-none bg-white/10 py-3 pr-12 pl-12 text-lg text-white shadow-xl shadow-stone-800/10 outline-1 outline-white/20 backdrop-blur-[10px] transition-all duration-200 placeholder:text-white/70 hover:cursor-text focus:cursor-text focus:bg-white/80 focus:text-black focus:outline-none focus:placeholder:text-black/60 focus-visible:outline-none ${values.title.trim().length > 0 ? 'pr-12' : 'pr-4'} `}
                 onChange={(event) => {
                   // Only update the form value, don't trigger search
                   handleChange(event)
@@ -94,24 +87,24 @@ export function SimpleSearchBar({
                 }}
               />
               {values.title.trim().length > 0 && (
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex items-center cursor-pointer">
+                <div className="absolute top-1/2 right-4 z-10 flex -translate-y-1/2 cursor-pointer items-center">
                   {loading ? (
                     <div
-                      className={`w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin ${isFocused ? 'text-black' : 'text-white'}`}
+                      className={`h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent ${isFocused ? 'text-black' : 'text-white'}`}
                     />
                   ) : (
                     <button
                       type="button"
                       aria-label="clear search"
-                      className={`w-6 h-6 p-0 cursor-pointer hover:opacity-70 flex items-center justify-center ${isFocused ? 'text-black' : 'text-white'}`}
+                      className={`flex h-6 w-6 cursor-pointer items-center justify-center p-0 hover:opacity-70 ${isFocused ? 'text-black' : 'text-white'}`}
                       onClick={() => {
                         void setFieldValue('title', '')
                         if (onSearch) {
-                          void onSearch('')
+                          onSearch('')
                         }
                       }}
                     >
-                      <X1Icon className="w-4 h-4" />
+                      <X1Icon className="h-4 w-4" />
                     </button>
                   )}
                 </div>

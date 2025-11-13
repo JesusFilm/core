@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
+import { VideoLabel } from '../../../__generated__/globalTypes'
 import { usePlayer } from '../../libs/playerContext'
 import { UnifiedCardData } from '../../types/inserts'
 import { videos } from '../../Videos/__generated__/testData'
@@ -36,7 +37,7 @@ const mockVideoData: UnifiedCardData = {
   title: [{ value: 'Test Video' }],
   images: [{ mobileCinematicHigh: 'test-image.jpg' }],
   imageAlt: [{ value: 'Test video alt' }],
-  label: 'chapter',
+  label: VideoLabel.segment,
   slug: 'test-video',
   variant: { slug: 'test-video' }
 }
@@ -52,7 +53,10 @@ describe('VideoCard', () => {
     render(<VideoCard data={mockVideoData} active={false} />)
 
     expect(screen.getByTestId('video-image')).toBeInTheDocument()
-    expect(screen.getByText(mockVideoData.title[0].value)).toBeInTheDocument()
+    const titleText = Array.isArray(mockVideoData.title)
+      ? mockVideoData.title[0].value
+      : mockVideoData.title
+    expect(screen.getByText(titleText)).toBeInTheDocument()
   })
 
   it('shows active border when active is true', () => {
@@ -109,7 +113,9 @@ describe('VideoCard', () => {
   })
 
   it('applies correct CSS classes for layout (flex-grow, h-full, min-h-full, w-full)', () => {
-    const { container } = render(<VideoCard data={mockVideoData} active={false} />)
+    const { container } = render(
+      <VideoCard data={mockVideoData} active={false} />
+    )
 
     const cardElement = container.querySelector('.flex.flex-col')
     expect(cardElement).toHaveClass('flex-grow')
@@ -119,7 +125,9 @@ describe('VideoCard', () => {
   })
 
   it('applies h-full and w-full classes to container element', () => {
-    const { container } = render(<VideoCard data={mockVideoData} active={false} />)
+    const { container } = render(
+      <VideoCard data={mockVideoData} active={false} />
+    )
 
     const containerElement = container.querySelector('.beveled.rounded-lg')
     expect(containerElement).toHaveClass('h-full')
@@ -127,14 +135,18 @@ describe('VideoCard', () => {
   })
 
   it('applies h-full class to content element', () => {
-    const { container } = render(<VideoCard data={mockVideoData} active={false} />)
+    const { container } = render(
+      <VideoCard data={mockVideoData} active={false} />
+    )
 
     const contentElement = container.querySelector('.relative.h-full')
     expect(contentElement).toHaveClass('h-full')
   })
 
   it('applies h-full min-h-full w-full classes to link/wrapper element', () => {
-    const { container } = render(<VideoCard data={mockVideoData} active={false} />)
+    const { container } = render(
+      <VideoCard data={mockVideoData} active={false} />
+    )
 
     const linkElement = screen.getByRole('link')
     expect(linkElement).toHaveClass('h-full')

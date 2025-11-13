@@ -1,27 +1,29 @@
-# Watch Home Advent Grid Implementation Log
+# Language dialog overlay refresh
 
 ## Goals
-- Introduce a Christmas Advent grid on the Watch home page to highlight a daily video countdown to Christmas.
-- Maintain the existing "Discover the full story" collections experience while extending it with seasonal programming.
+
+- Match the watch language selection dialog visuals to the search overlay (dark, blurred, fullscreen, with a clear close icon).
 
 ## Implementation Strategy
-- [x] Review existing collection showcase configuration used by the home page grid.
-- [x] Define a new Christmas Advent source list that can surface the curated Advent collection and key Christmas content.
-- [x] Render an additional `SectionVideoGrid` instance in the home collections rail with Advent-specific copy and analytics tagging.
-- [x] Document the work performed, known limitations, and validation steps in this log.
 
-## Obstacles
-- The repository does not currently expose Advent-specific collection identifiers, making it unclear which IDs the new grid should hydrate.
+- [x] Replace the existing MUI `Dialog` shell with the shared shadcn-based dialog from `apps/watch/src/components/Dialog` so we can style the overlay/background identically to the search overlay.
+- [x] Apply the same `blured-bg` / `bg-stone-900/5` overlay treatment and extend the content to full-screen width, positioning the close icon in the top-right corner.
+- [x] Keep the existing `AudioTrackSelect` and `SubtitlesSelect` stacks intact but wrap them in a centered container that mirrors the search modal padding.
+- [x] Ensure accessibility labels remain (`aria-label="Language Settings"`) so automated tests keep passing.
+- [x] Update the Jest spec if necessary and re-run the component tests.
 
-## Resolutions
-- Seeded the Advent grid with the published `2_0-ConsideringChristmas` media component and the `ChristmasAdventCollection` placeholder so the UI is ready once backend content is finalized.
+## Obstacles & Resolutions
+
+- **Portal styling**: The shared dialog component auto-renders its own overlay, so to customize it like the search modal we follow the same pattern—render an explicit `DialogPortal`/`DialogOverlay` before `DialogContent` and pass the desired Tailwind classes.
 
 ## Test Coverage
-- `pnpm dlx nx lint watch`
 
-## User Flows
-- Visit Watch home → Scroll to Discover the full story (Grid View) → Continue to new Christmas Advent grid → Choose Day N card → Play corresponding Advent video.
+- `pnpm dlx nx test watch --testFile apps/watch/src/components/DialogLangSwitch/DialogLangSwitch.spec.tsx`
+
+## User Flow
+
+- Open video player → tap the language icon → fullscreen overlay appears with blurred dark background and close icon → pick language/subtitle → close.
 
 ## Follow-up Ideas
-- Confirm final Advent collection/video identifiers with the content team and update the configuration once the playlist is published.
-- Consider adding localized copy for the Advent section via `next-i18next` if the section becomes permanent.
+
+- Consider extracting a shared "fullscreen overlay" wrapper used by both Search and Language dialogs to avoid duplicated Tailwind strings.

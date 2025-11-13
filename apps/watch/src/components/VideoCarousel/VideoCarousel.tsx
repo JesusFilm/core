@@ -20,6 +20,7 @@ export interface VideoCarouselProps {
   activeVideoId: string
   loading: boolean
   onVideoSelect?: (videoId: string) => void
+  variant?: string
 }
 
 export function VideoCarousel({
@@ -90,17 +91,16 @@ export function VideoCarousel({
         slidesPerView="auto"
         spaceBetween={0}
         slidesOffsetAfter={32}
-        className="w-full h-auto [&>div]:py-4"
+        className="h-auto w-full [&>div]:py-4"
         data-testid="VideoCarousel"
       >
         {loading
           ? Array.from({ length: 4 }).map((_, index) => (
               <SwiperSlide
                 key={`skeleton-${index}`}
-                className={`max-w-[140px] md:max-w-[200px] mr-2 md:mr-3 ${index === 0 ? 'padded-l' : ''}`}
-                  
+                className={`mr-2 max-w-[140px] md:mr-3 md:max-w-[200px] ${index === 0 ? 'padded-l' : ''}`}
               >
-                <div className="h-[330px] w-[220px] rounded-lg bg-white/10 animate-pulse" />
+                <div className="h-[330px] w-[220px] animate-pulse rounded-lg bg-white/10" />
               </SwiperSlide>
             ))
           : slides.map((slide, index) => {
@@ -108,13 +108,12 @@ export function VideoCarousel({
               return (
                 <SwiperSlide
                   key={slide.id}
-                  className={`max-w-[140px] md:max-w-[260px] !h-34 mr-2 md:mr-3 flex flex-col ${index === 0 ? 'padded-l' : ''}`}
-                  
+                  className={`mr-2 flex !h-34 max-w-[140px] flex-col md:mr-3 md:max-w-[260px] ${index === 0 ? 'padded-l' : ''}`}
                   data-testid={`VideoCarouselSlide-${slide.id}`}
                 >
                   <div
                     className={cn(
-                      'transition-opacity duration-200 flex flex-col flex-1 h-full min-h-full w-full',
+                      'flex h-full min-h-full w-full flex-1 flex-col transition-opacity duration-200',
                       slide.id === activeVideoId
                         ? 'opacity-100'
                         : 'opacity-60 hover:opacity-80'

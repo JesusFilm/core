@@ -263,7 +263,7 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
               totalVideosLoaded: videos.length
             }
           )
-          return videoChildren[offset] || null
+          return (videoChildren[offset] as CarouselVideo) || null
         }
 
         const collectionChildren = children.filter(
@@ -321,7 +321,7 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
               totalVideosLoaded: videos.length
             }
           )
-          return shortFilms[offset] || null
+          return (shortFilms[offset] as CarouselVideo) || null
         }
       } else {
         // Handle regular collections (including nested)

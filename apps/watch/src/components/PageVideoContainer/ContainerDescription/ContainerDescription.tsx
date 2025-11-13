@@ -45,7 +45,7 @@ export function ContainerDescription({
           onClick={openDialog}
           className="min-w-[200px]"
         >
-          <Share className="w-4 h-4" />
+          <Share className="h-4 w-4" />
           {t('Share')}
         </ExtendedButton>
       </Box>

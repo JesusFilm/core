@@ -71,7 +71,9 @@ export function PageSingleVideo(): ReactElement {
   // If current video is a container (not in children), select first child
   const activeVideoIdForCarousel = useMemo(() => {
     if (childrenSlides.length === 0) return id
-    const currentVideoInChildren = childrenSlides.find((slide) => slide.id === id)
+    const currentVideoInChildren = childrenSlides.find(
+      (slide) => slide.id === id
+    )
     // If current video is not in children (it's a container), select first child
     return currentVideoInChildren?.id ?? childrenSlides[0]?.id ?? id
   }, [childrenSlides, id])
@@ -80,7 +82,9 @@ export function PageSingleVideo(): ReactElement {
   useEffect(() => {
     setCurrentPlayingId(id)
     if (childrenSlides.length > 0) {
-      const currentVideoIndex = childrenSlides.findIndex((slide) => slide.id === id)
+      const currentVideoIndex = childrenSlides.findIndex(
+        (slide) => slide.id === id
+      )
       if (currentVideoIndex >= 0) {
         setCurrentSlideIndex(currentVideoIndex)
       } else {
@@ -235,9 +239,9 @@ export function PageSingleVideo(): ReactElement {
           )}
           <div
             data-testid="ContentPageContent"
-            className="flex flex-col gap-20 py-14 z-10 responsive-container"
+            className="responsive-container z-10 flex flex-col gap-20 py-14"
           >
-            <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] z-10 gap-20">
+            <div className="z-10 grid grid-cols-1 gap-20 xl:grid-cols-[3fr_2fr]">
               <ContentMetadata
                 title={last(title)?.value ?? ''}
                 description={last(description)?.value ?? ''}
@@ -245,16 +249,16 @@ export function PageSingleVideo(): ReactElement {
               />
               <DiscussionQuestions questions={questions} />
             </div>
-            <div className="z-10 flex flex-row gap-2 justify-between">
-              <h3 className="text-sm xl:text-base 2xl:text-lg font-semibold tracking-wider uppercase text-red-100/70">
+            <div className="z-10 flex flex-row justify-between gap-2">
+              <h3 className="text-sm font-semibold tracking-wider text-red-100/70 uppercase xl:text-base 2xl:text-lg">
                 {t('Bible Quotes')}
               </h3>
               <div className="flex flex-row gap-2">
                 <button
                   onClick={() => setShowShare(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-gray-900 font-bold uppercase tracking-wider bg-white hover:bg-[#cb333b] hover:text-white transition-colors duration-200 text-sm cursor-pointer"
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold tracking-wider text-gray-900 uppercase transition-colors duration-200 hover:bg-[#cb333b] hover:text-white"
                 >
-                  <LinkExternal className="w-4 h-4" />
+                  <LinkExternal className="h-4 w-4" />
                   {t('Share')}
                 </button>
               </div>

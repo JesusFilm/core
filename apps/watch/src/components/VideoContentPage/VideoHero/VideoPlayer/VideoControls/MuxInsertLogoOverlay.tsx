@@ -97,7 +97,7 @@ export function MuxInsertLogoOverlay({
 
   return (
     <div
-      className="z-10 absolute top-1/2 left-1/2 pointer-events-none -translate-x-1/2 -translate-y-1/2"
+      className="pointer-events-none absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2"
       style={{
         transform: 'scale(1.25)',
         transformOrigin: 'center'
@@ -142,7 +142,7 @@ export function MuxInsertLogoOverlay({
 
       {/* Main Logo - appears after 5 seconds */}
       <div
-        className={`relative z-20 pointer-events-none transition-opacity duration-500 ease-in-out ${
+        className={`pointer-events-none relative z-20 transition-opacity duration-500 ease-in-out ${
           logoVisible ? 'opacity-100' : 'opacity-0'
         }`}
       >
@@ -156,4 +156,3 @@ export function MuxInsertLogoOverlay({
     </div>
   )
 }
-

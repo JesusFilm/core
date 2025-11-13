@@ -47,7 +47,7 @@ const nextConfig = {
     }
   },
   nx: {
-    svgr: false,
+    svgr: false
   },
   productionBrowserSourceMaps: true,
   typescript: {
@@ -75,13 +75,13 @@ const nextConfig = {
     config.module.rules.push({
       test: /\.svg$/i,
       type: 'asset',
-      resourceQuery: /url/, // *.svg?url
+      resourceQuery: /url/ // *.svg?url
     })
     config.module.rules.push({
       test: /\.svg$/i,
       issuer: /\.[jt]sx?$/,
       resourceQuery: { not: [/url/] }, // exclude if *.svg?url
-      use: ['@svgr/webpack'],
+      use: ['@svgr/webpack']
     })
 
     return config

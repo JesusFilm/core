@@ -17,7 +17,7 @@ export function VideoGridItem({
   return (
     <a
       href={slide.href}
-      className="block relative group shadow-xl shadow-stone-950/70 beveled overflow-hidden rounded-lg"
+      className="group beveled relative block overflow-hidden rounded-lg shadow-xl shadow-stone-950/70"
       aria-label={t('Watch {{title}}', { title: slide.title })}
       data-analytics-tag={analyticsTag}
       data-testid={`SectionVideoGridSlide-${slide.id}`}
@@ -25,11 +25,11 @@ export function VideoGridItem({
       <img
         src={slide.imageUrl}
         alt={slide.alt}
-        className="w-full aspect-[2/3] object-cover rounded-lg poster-hover-zoom"
+        className="poster-hover-zoom aspect-[2/3] w-full rounded-lg object-cover"
       />
-      <div className="absolute top-0 left-0 w-full h-full outline-4 outline-transparent hover:outline-white rounded-lg">
-        <div className="absolute z-1 bottom-4 flex items-center justify-center w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          <div className="w-16 h-16 rounded-full bg-stone-900/60 flex items-center justify-center hover:bg-red-500">
+      <div className="absolute top-0 left-0 h-full w-full rounded-lg outline-4 outline-transparent hover:outline-white">
+        <div className="absolute bottom-4 z-1 flex h-full w-full items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-stone-900/60 hover:bg-red-500">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-12 w-12"

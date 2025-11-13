@@ -76,7 +76,7 @@ export function PageCollections(): ReactElement {
                       'Даже во времена хаоса и неопределенности мы можем доверять Божьему суверенитету, потому что:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Бог остается в контроле даже тогда, когда обстоятельства кажутся неконтролируемыми'
@@ -107,7 +107,7 @@ export function PageCollections(): ReactElement {
                       'Пасха является центральной для христианской веры, потому что:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Она отмечает воскресение Иисуса, доказывающее Его победу над смертью'
@@ -135,7 +135,7 @@ export function PageCollections(): ReactElement {
                   <p>
                     {'Библия рассказывает нам о нескольких ключевых событиях:'}
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Тело Иисуса было положено в гробницу и охранялось римскими солдатами'
@@ -220,7 +220,7 @@ export function PageCollections(): ReactElement {
                       'Прощение Иисуса демонстрирует благодать и милость Божью. Разбойник на кресте признал невиновность и божественность Иисуса, смиренно прося помнить о нем в Его Царстве. Ответ Иисуса показывает:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Спасение основано на вере, а не на делах'}</li>
                     <li>
                       {
@@ -250,7 +250,7 @@ export function PageCollections(): ReactElement {
                       'Иисус добровольно принял смерть, потому что это было частью Божьего плана искупления. Его жертва была необходима для исполнения пророчеств и принесения спасения. Основные причины включают:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Его смерть исполнила пророчества Ветхого Завета (Исаия 53)'
@@ -281,7 +281,7 @@ export function PageCollections(): ReactElement {
                       'Быть в раю с Иисусом означает вечную жизнь в присутствии Бога. Разбойник на кресте получил уверенность в своем месте с Иисусом на небесах благодаря своей вере. Важные аспекты этого обещания включают:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Оно означает немедленное присутствие со Христом после смерти'
@@ -395,7 +395,7 @@ export function PageCollections(): ReactElement {
                       'Божья природа включает как любовь, так и справедливость. Его святость требует наказания за грех:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {'Грех должен быть наказан из-за Божьей справедливости'}
                     </li>
@@ -463,7 +463,7 @@ export function PageCollections(): ReactElement {
                       'Родиться свыше означает пережить духовное возрождение. Иисус объяснил Никодиму, что это возрождение не физическое, а духовное — рождение от воды и Духа.'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Это работа Святого Духа'}</li>
                     <li>{'Это включает веру в Иисуса как Спасителя'}</li>
                     <li>
@@ -484,7 +484,7 @@ export function PageCollections(): ReactElement {
                       'Иисус хотел, чтобы Никодим понял, что религиозных знаний и добрых дел недостаточно. Для входа в Царство Божие необходимо полное внутреннее преображение.'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Это показывает нашу нужду в духовном обновлении'}</li>
                     <li>
                       {'Это указывает на спасение через веру, а не через дела'}
@@ -504,7 +504,7 @@ export function PageCollections(): ReactElement {
                       'Иисус объяснил, что рождение свыше приходит через веру в Него. Это личный шаг веры, который приводит к новой жизни в Боге.'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Поверить в Иисуса Христа как Сына Божьего'}</li>
                     <li>{'Принять Его жертву за наши грехи'}</li>
                     <li>
@@ -575,7 +575,7 @@ export function PageCollections(): ReactElement {
                       'Существуют сильные исторические и библейские доказательства смерти и воскресения Иисуса:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {'Римские воины подтвердили Его смерть перед погребением'}
                     </li>
@@ -604,7 +604,7 @@ export function PageCollections(): ReactElement {
                       'Воскресение является центральным для христианской веры, потому что:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {'Оно доказывает победу Иисуса над грехом и смертью'}
                     </li>
@@ -624,7 +624,7 @@ export function PageCollections(): ReactElement {
                   <p>
                     {'Воскресение Иисуса требует личного ответа. Мы можем:'}
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Поверить в Него как нашего Спасителя и Господа'}</li>
                     <li>{'Покаяться в грехах и следовать Его учению'}</li>
                     <li>
@@ -809,7 +809,7 @@ export function PageCollections(): ReactElement {
                       'Библия учит, что всё началось с Бога, Творца вселенной. Он словом создал всё с целью и замыслом. Человечество было создано по Его образу, чтобы жить в гармонии с Ним, друг с другом и творением.'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Бог создал мир из любви и порядка'}</li>
                     <li>
                       {'Изначально всё было совершенным, без боли и страданий'}
@@ -829,7 +829,7 @@ export function PageCollections(): ReactElement {
                       'Страдания существуют потому, что грех вошел в мир, когда человечество решило восстать против Бога. Это непослушание нарушило первоначальное совершенство, принеся смерть, боль и разделение с Богом.'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Грех принес страдания, разрушение и смерть'}</li>
                     <li>{'Мы все вносим свой вклад в проблему греха'}</li>
                     <li>
@@ -852,7 +852,7 @@ export function PageCollections(): ReactElement {
                       'Да! Бог послал Иисуса как спасителя. Иисус прожил совершенную жизнь, умер на кресте, чтобы заплатить за грех, и воскрес из мертвых, чтобы победить саму смерть. Через Него мы можем быть восстановлены для Бога и обрести новую жизнь.'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Жертва Иисуса делает прощение возможным'}</li>
                     <li>
                       {'Его воскресение доказывает Его власть над смертью'}
@@ -876,7 +876,7 @@ export function PageCollections(): ReactElement {
                       'Согласно Библии, Бог обещал будущее, где Он восстановит всё. Те, кто верит в Иисуса, будут жить вечно с Ним в совершенном, обновленном мире. Греха, страданий и смерти больше не будет.'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Бог создаст новое небо и новую землю'}</li>
                     <li>{'Не будет больше боли, страданий и смерти'}</li>
                     <li>{'Иисус вернется, чтобы судить живых и мертвых'}</li>
@@ -947,7 +947,7 @@ export function PageCollections(): ReactElement {
                       'История Марии Магдалины — это история преображения и искупления. Как и многие из нас, она несла бремя прошлого, полного борьбы, но Иисус освободил её и дал новую цель. Её история учит нас:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Иисус предлагает искупление независимо от нашего прошлого'
@@ -972,7 +972,7 @@ export function PageCollections(): ReactElement {
                       'Религиозные лидеры противостояли Иисусу, потому что Его учение бросало вызов их авторитету и традициям. Основные причины включают:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>
                       {
                         'Он принимал грешников и отверженных, нарушая социальные нормы'
@@ -1006,7 +1006,7 @@ export function PageCollections(): ReactElement {
                       'Первое явление Иисуса Марии Магдалине имело глубокое значение. Это показало:'
                     }
                   </p>
-                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                  <ul className="mt-2 list-disc space-y-2 pl-6">
                     <li>{'Его заботу о тех, кого мир не замечал'}</li>
                     <li>{'Важность веры и преданности превыше статуса'}</li>
                     <li>

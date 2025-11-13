@@ -35,9 +35,7 @@ const WithFlagsTemplate: StoryObj<typeof Header> = {
         ...trueHeaderItemsFlags
       }}
     >
-      <Header
-        themeMode={ThemeMode.light}
-      />
+      <Header themeMode={ThemeMode.light} />
     </FlagsProvider>
   )
 }
