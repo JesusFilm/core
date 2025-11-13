@@ -1,6 +1,4 @@
-import AddOutlined from '@mui/icons-material/AddOutlined'
-import KeyboardArrowDownOutlined from '@mui/icons-material/KeyboardArrowDownOutlined'
-import LanguageOutlined from '@mui/icons-material/LanguageOutlined'
+import { ChevronDown, Languages, Plus } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo, useState } from 'react'
@@ -46,8 +44,8 @@ export function AudioLanguageSelect(): ReactElement {
         data-testid="AudioLanguageSelectTrigger"
         className={`h-auto cursor-pointer border-none bg-transparent p-0 shadow-none hover:bg-transparent focus:border-0 focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:border-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none [&>svg]:hidden`}
       >
-        <div className="flex items-center gap-1">
-          <LanguageOutlined fontSize="small" className="text-white" />
+        <div className="flex items-center gap-1 text-white">
+          <Languages className="h-4 w-4" aria-hidden="true" />
           <SelectValue>
             <span
               className={`truncate overflow-hidden font-sans text-base leading-tight font-semibold whitespace-nowrap text-white`}
@@ -56,7 +54,7 @@ export function AudioLanguageSelect(): ReactElement {
             </span>
           </SelectValue>
           <div className="hidden items-center gap-1 lg:flex">
-            <AddOutlined fontSize="small" className="text-white" />
+            <Plus className="h-4 w-4" aria-hidden="true" />
             <span
               className={`font-sans text-base leading-tight font-semibold whitespace-nowrap text-white`}
             >
@@ -65,7 +63,7 @@ export function AudioLanguageSelect(): ReactElement {
               })}
             </span>
           </div>
-          <KeyboardArrowDownOutlined fontSize="small" className="text-white" />
+          <ChevronDown className="h-4 w-4" aria-hidden="true" />
         </div>
       </SelectTrigger>
       {open != null && <DynamicAudioLanguageSelectContent />}

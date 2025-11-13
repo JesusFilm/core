@@ -1,27 +1,35 @@
-import Box from '@mui/material/Box'
-import Container from '@mui/material/Container'
-import Stack from '@mui/material/Stack'
 import last from 'lodash/last'
+import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
 import { ReactElement, useState } from 'react'
 
 import { ThemeMode } from '@core/shared/ui/themes'
 
 import { useVideoChildren } from '../../libs/useVideoChildren'
+import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 import { useVideo } from '../../libs/videoContext'
+import { ContentPageBlurFilter } from '../ContentPageBlurFilter'
 import { DialogShare } from '../DialogShare'
 import { PageWrapper } from '../PageWrapper'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
 
+import { CollectionContentHeader } from './CollectionContentHeader'
+import { CollectionHero } from './CollectionHero'
 import { ContainerDescription } from './ContainerDescription'
-import { ContainerHero } from './ContainerHero'
 
 // Usually Series or Collection Videos
 export function PageVideoContainer(): ReactElement {
   const router = useRouter()
-  const { snippet, slug, variant } = useVideo()
+  const { t } = useTranslation('apps-watch')
+  const { snippet, slug, variant, label, childrenCount } = useVideo()
   const { loading, children } = useVideoChildren(variant?.slug, router.locale)
   const [shareDialog, setShareDialog] = useState<boolean>(false)
+  const { label: labelText, childCountLabel } = getLabelDetails(
+    t,
+    label,
+    childrenCount
+  )
+  const snippetText = last(snippet)?.value ?? ''
   function handleOpenDialog(): void {
     setShareDialog(true)
   }
@@ -32,35 +40,33 @@ export function PageVideoContainer(): ReactElement {
 
   return (
     <PageWrapper
-      hero={<ContainerHero openDialog={handleOpenDialog} />}
+      hero={<CollectionHero />}
       headerThemeMode={ThemeMode.dark}
-      hideHeaderSpacer
-      showLanguageSwitcher
+      hideHeader
+      hideFooter
     >
-      <Container maxWidth="xxl" data-testid="PageVideoContainer">
-        <Stack
-          spacing={{ xs: 4, md: 11 }}
-          py={{ xs: 7, md: 17 }}
-          direction="column"
+      <ContentPageBlurFilter>
+        <CollectionContentHeader
+          label={labelText}
+          childCountLabel={childCountLabel}
+          onShare={handleOpenDialog}
+        />
+        <div
+          className="responsive-container flex flex-col gap-10 py-10"
+          data-testid="PageVideoContainer"
         >
-          <ContainerDescription
-            value={last(snippet)?.value ?? ''}
-            openDialog={handleOpenDialog}
-          />
+          {snippetText !== '' && (
+            <ContainerDescription value={snippetText} />
+          )}
           <DialogShare open={shareDialog} onClose={handleCloseDialog} />
-          <Box>
-            {loading ? (
-              <VideoGrid variant="expanded" />
-            ) : (
-              <VideoGrid
-                containerSlug={slug}
-                videos={children}
-                variant="expanded"
-              />
-            )}
-          </Box>
-        </Stack>
-      </Container>
+          <VideoGrid
+            containerSlug={slug}
+            videos={children}
+            loading={loading}
+            orientation="vertical"
+          />
+        </div>
+      </ContentPageBlurFilter>
     </PageWrapper>
   )
 }

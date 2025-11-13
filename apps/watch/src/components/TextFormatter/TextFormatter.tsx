@@ -1,6 +1,6 @@
-import Link from '@mui/material/Link'
-import Typography from '@mui/material/Typography'
-import { ComponentProps, Fragment, ReactElement, ReactNode } from 'react'
+import { Fragment, ReactElement, ReactNode } from 'react'
+
+import { cn } from '../../libs/cn/cn'
 
 function hasProtocol(word: string): boolean {
   const protocolPattern = /^(http|https):\/\/(.*)/gm
@@ -19,33 +19,47 @@ function isEmail(word: string): boolean {
 }
 
 function addMarkup(word: string): ReactElement | string {
-  return isUrl(word) ? (
-    <Link href={hasProtocol(word) ? word : `https://${word}`} target="_blank">
-      {word
-        .replace('https://', '')
-        .replace('http://', '')
-        .replace(/^www./, '')
-        .replace(/\/$/, '')}
-    </Link>
-  ) : isEmail(word) ? (
-    <Link href={`mailto:${word}`} target="_blank">
-      {word}
-    </Link>
-  ) : (
-    word
-  )
+  if (isUrl(word)) {
+    const href = hasProtocol(word) ? word : `https://${word}`
+    const label = word
+      .replace('https://', '')
+      .replace('http://', '')
+      .replace(/^www\./, '')
+      .replace(/\/$/, '')
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        className="text-primary underline decoration-primary/60 hover:decoration-primary"
+      >
+        {label}
+      </a>
+    )
+  }
+
+  if (isEmail(word)) {
+    return (
+      <a
+        href={`mailto:${word}`}
+        className="text-primary underline decoration-primary/60 hover:decoration-primary"
+      >
+        {word}
+      </a>
+    )
+  }
+
+  return word
 }
 
 interface TextFormatterProps {
   children: ReactNode
-  slotProps?: {
-    typography?: ComponentProps<typeof Typography>
-  }
+  className?: string
 }
 
 export function TextFormatter({
   children,
-  slotProps
+  className
 }: TextFormatterProps): ReactElement {
   if (typeof children !== 'string') {
     return <>{children}</>
@@ -59,16 +73,21 @@ export function TextFormatter({
   return (
     <>
       {paragraphs.map((lines, i) => (
-        <Typography key={i} {...slotProps?.typography}>
+        <p
+          key={i}
+          className={cn(
+            'mb-4 last:mb-0 text-base leading-relaxed text-white/80',
+            className
+          )}
+        >
           {lines.map((words, j) => (
-            <Fragment key={j}>
+            <span key={j} className="block">
               {words.map((word, k) => (
                 <Fragment key={k}>{addMarkup(word)} </Fragment>
               ))}
-              <br />
-            </Fragment>
+            </span>
           ))}
-        </Typography>
+        </p>
       ))}
     </>
   )
