@@ -188,6 +188,9 @@ export function FilterDrawer({
                     variant="contained"
                     color="secondary"
                     sx={{ width: '100%' }}
+                    aria-label={`${t('Export Data')} - ${t(
+                      'Only team members and journey owners can export data.'
+                    )}`}
                     onClick={() => setShowExportDialog(true)}
                     disabled
                   >
