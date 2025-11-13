@@ -7,15 +7,18 @@ import { Button } from '@core/shared/uimodern/components'
 
 import { usePlayer } from '../../libs/playerContext/PlayerContext'
 import { DialogLangSwitch } from '../DialogLangSwitch'
+import { InlineLanguageSelector } from './InlineLanguageSelector'
 
 interface ContentHeaderProps {
   languageSlug?: string
   isPersistent?: boolean
+  languageSelectorVariant?: 'dialog' | 'dropdown'
 }
 
 export function ContentHeader({
   languageSlug,
-  isPersistent = false
+  isPersistent = false,
+  languageSelectorVariant = 'dialog'
 }: ContentHeaderProps): ReactElement {
   const {
     state: { play, active, loading }
@@ -54,20 +57,27 @@ export function ContentHeader({
           className="max-w-[50px] lg:max-w-[70px]"
         />
       </NextLink>
-      <>
-        <Button
-          onClick={handleOpenDialog}
-          variant="ghost"
-          size="icon"
-          data-testid="AudioLanguageButton"
-          aria-label="select audio language"
-          tabIndex={0}
-          className="text-white hover:bg-white/10"
-        >
-          <Globe className="h-5 w-5 drop-shadow-xs" />
-        </Button>
-        <DialogLangSwitch open={isDialogOpen} handleClose={handleCloseDialog} />
-      </>
+      {languageSelectorVariant === 'dialog' ? (
+        <>
+          <Button
+            onClick={handleOpenDialog}
+            variant="ghost"
+            size="icon"
+            data-testid="AudioLanguageButton"
+            aria-label="select audio language"
+            tabIndex={0}
+            className="text-white hover:bg-white/10"
+          >
+            <Globe className="h-5 w-5 drop-shadow-xs" />
+          </Button>
+          <DialogLangSwitch
+            open={isDialogOpen}
+            handleClose={handleCloseDialog}
+          />
+        </>
+      ) : (
+        <InlineLanguageSelector />
+      )}
     </div>
   )
 }

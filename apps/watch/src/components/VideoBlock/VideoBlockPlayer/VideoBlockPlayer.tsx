@@ -43,6 +43,7 @@ interface VideoBlockPlayerProps {
   onMuxInsertComplete?: () => void
   onSkip?: () => void
   wasUnmuted?: boolean
+  posterImageUrl?: string
 }
 
 export function VideoBlockPlayer({
@@ -53,7 +54,8 @@ export function VideoBlockPlayer({
   currentMuxInsert,
   onMuxInsertComplete,
   onSkip,
-  wasUnmuted = false
+  wasUnmuted = false,
+  posterImageUrl
 }: VideoBlockPlayerProps): ReactElement {
   const { variant, ...video } = useVideo()
   const {
@@ -485,6 +487,7 @@ export function VideoBlockPlayer({
             }}
             playsInline
             onClick={placement == 'carouselItem' ? handlePreviewClick : undefined}
+            poster={posterImageUrl}
           />
         )}
 

@@ -7,6 +7,15 @@ import './test/i18n'
 
 configure({ asyncUtilTimeout: 2500 })
 
+jest.mock(
+  'styled-jsx/style',
+  () => ({
+    __esModule: true,
+    default: () => null
+  }),
+  { virtual: true }
+)
+
 jest.mock('next/image', () => ({
   __esModule: true,
   // eslint-disable-next-line @next/next/no-img-element

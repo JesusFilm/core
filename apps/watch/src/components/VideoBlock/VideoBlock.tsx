@@ -13,13 +13,17 @@ export function VideoBlock({
   placement = 'singleVideo',
   currentMuxInsert,
   onMuxInsertComplete,
-  onSkipActiveVideo
+  onSkipActiveVideo,
+  languageSelectorVariant,
+  posterImageUrl
 }: {
   isPreview?: boolean
   placement?: 'carouselItem' | 'singleVideo'
   currentMuxInsert?: CarouselMuxSlide | null
   onMuxInsertComplete?: () => void
   onSkipActiveVideo?: () => void
+  languageSelectorVariant?: 'dialog' | 'dropdown'
+  posterImageUrl?: string
 }): ReactElement {
   const { variant } = useVideo()
   const {
@@ -67,6 +71,7 @@ export function VideoBlock({
       <ContentHeader
         languageSlug={languageSlug?.replace('.html', '')}
         isPersistent={placement == 'carouselItem'}
+        languageSelectorVariant={languageSelectorVariant}
       />
       <VideoBlockPlayer
         isPreview={placement == 'carouselItem'}
@@ -78,6 +83,7 @@ export function VideoBlock({
         onSkip={onSkipActiveVideo}
         wasUnmuted={wasUnmuted}
         key={currentMuxInsert ? currentMuxInsert.id : variant?.hls}
+        posterImageUrl={posterImageUrl}
       />
     </div>
   )
