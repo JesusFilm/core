@@ -37,6 +37,8 @@ import {
   calculateScale,
   calculateScaledMargin
 } from './utils/calculateDimensions'
+import { Input } from '../../../../Input'
+import Typography from '@mui/material/Typography'
 
 const fadeIn = keyframes`
   from {
@@ -188,6 +190,19 @@ export function Canvas(): ReactElement {
             justifyContent: 'center'
           }}
         >
+          <Input
+            value={selectedStep?.id}
+            onChange={(e) => {
+              console.log(e.target.value)
+            }}
+            startIcon={
+              <Typography fontSize={26} sx={{ pl: 3 }}>
+                /
+              </Typography>
+            }
+            fullWidth
+            className="mb-2"
+          />
           <Box
             data-testId="CanvasContainer"
             sx={{
