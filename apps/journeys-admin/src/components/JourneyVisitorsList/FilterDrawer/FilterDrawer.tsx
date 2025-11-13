@@ -230,9 +230,11 @@ export function FilterDrawer({
             journeyId={journeyId}
             availableBlockTypes={availableBlockTypes}
             createdAt={
-              blockTypesData?.journey?.createdAt != null
-                ? String(blockTypesData.journey.createdAt)
-                : null
+              typeof blockTypesData?.journey?.createdAt === 'string'
+                ? blockTypesData.journey.createdAt
+                : blockTypesData?.journey?.createdAt instanceof Date
+                  ? blockTypesData.journey.createdAt.toISOString()
+                  : null
             }
           />
         </>

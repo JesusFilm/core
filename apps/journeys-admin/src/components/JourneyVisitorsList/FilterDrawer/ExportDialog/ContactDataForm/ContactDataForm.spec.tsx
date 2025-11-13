@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
 
@@ -45,13 +45,14 @@ describe('ContactDataForm', () => {
     expect(screen.getByLabelText('Multiselect Responses')).toBeChecked()
   })
 
-  it('handles "Select All" checkbox correctly', () => {
+  it('handles "Select All" checkbox correctly', async () => {
     render(<ContactDataFormWithState />)
+    const user = userEvent.setup()
     const selectAllCheckbox = screen.getByLabelText('All')
 
     // Uncheck all
-    userEvent.click(selectAllCheckbox)
-    waitFor(() => {
+    await user.click(selectAllCheckbox)
+    await waitFor(() => {
       expect(selectAllCheckbox).not.toBeChecked()
       expect(screen.getByLabelText('Poll Selection')).not.toBeChecked()
       expect(screen.getByLabelText('Subscription')).not.toBeChecked()
@@ -60,8 +61,8 @@ describe('ContactDataForm', () => {
     })
 
     // Check all again
-    userEvent.click(selectAllCheckbox)
-    waitFor(() => {
+    await user.click(selectAllCheckbox)
+    await waitFor(() => {
       expect(selectAllCheckbox).toBeChecked()
       expect(screen.getByLabelText('Poll Selection')).toBeChecked()
       expect(screen.getByLabelText('Subscription')).toBeChecked()
@@ -70,21 +71,22 @@ describe('ContactDataForm', () => {
     })
   })
 
-  it('handles individual checkbox selection correctly', () => {
+  it('handles individual checkbox selection correctly', async () => {
     render(<ContactDataFormWithState />)
+    const user = userEvent.setup()
 
     // Uncheck All
-    userEvent.click(screen.getByLabelText('Poll Selection'))
-    userEvent.click(screen.getByLabelText('Subscription'))
-    userEvent.click(screen.getByLabelText('Text Submission'))
-    userEvent.click(screen.getByLabelText('Multiselect Responses'))
-    waitFor(() => {
+    await user.click(screen.getByLabelText('Poll Selection'))
+    await user.click(screen.getByLabelText('Subscription'))
+    await user.click(screen.getByLabelText('Text Submission'))
+    await user.click(screen.getByLabelText('Multiselect Responses'))
+    await waitFor(() => {
       expect(screen.getByTestId('selected-fields')).toBeEmptyDOMElement()
     })
 
     // Check Poll Selection
-    userEvent.click(screen.getByLabelText('Poll Selection'))
-    waitFor(() => {
+    await user.click(screen.getByLabelText('Poll Selection'))
+    await waitFor(() => {
       expect(screen.getByLabelText('Poll Selection')).toBeChecked()
       expect(screen.getByLabelText('All')).not.toBeChecked()
       expect(screen.getByTestId('selected-fields')).toHaveTextContent(
@@ -93,8 +95,8 @@ describe('ContactDataForm', () => {
     })
 
     // Check Subscription
-    userEvent.click(screen.getByLabelText('Subscription'))
-    waitFor(() => {
+    await user.click(screen.getByLabelText('Subscription'))
+    await waitFor(() => {
       expect(screen.getByLabelText('Subscription')).toBeChecked()
       expect(screen.getByLabelText('All')).not.toBeChecked()
       expect(screen.getByTestId('selected-fields')).toHaveTextContent(
@@ -103,8 +105,8 @@ describe('ContactDataForm', () => {
     })
 
     // Check Text Submission
-    userEvent.click(screen.getByLabelText('Text Submission'))
-    waitFor(() => {
+    await user.click(screen.getByLabelText('Text Submission'))
+    await waitFor(() => {
       expect(screen.getByLabelText('Text Submission')).toBeChecked()
       expect(screen.getByLabelText('All')).not.toBeChecked()
       expect(screen.getByTestId('selected-fields')).toHaveTextContent(
@@ -113,8 +115,8 @@ describe('ContactDataForm', () => {
     })
 
     // Check Multiselect Responses
-    userEvent.click(screen.getByLabelText('Multiselect Responses'))
-    waitFor(() => {
+    await user.click(screen.getByLabelText('Multiselect Responses'))
+    await waitFor(() => {
       expect(screen.getByLabelText('Multiselect Responses')).toBeChecked()
       expect(screen.getByLabelText('All')).toBeChecked()
       expect(screen.getByTestId('selected-fields')).toHaveTextContent(
