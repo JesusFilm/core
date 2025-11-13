@@ -50,7 +50,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <div className={cn('relative', widthClass, wrapperClassName)}>
         <span
           data-slot="input-start-icon"
-          className="text-muted-foreground pointer-events-none absolute inset-y-0 left-2 flex items-center [&>svg:not([class*='size-'])]:size-4"
+          className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 mr-0 flex w-6 items-center justify-center pr-0 [&>svg:not([class*='size-'])]:size-4"
         >
           {startIcon}
         </span>
@@ -58,7 +58,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           data-slot="input"
           type={type}
           className={cn(
-            'border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex h-9 rounded-md border bg-transparent px-3 py-2 pl-9 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50',
+            'border-input placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex h-9 rounded-md border bg-transparent py-2 pr-6 pl-6 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50',
             widthClass,
             inputExtraClassName
           )}

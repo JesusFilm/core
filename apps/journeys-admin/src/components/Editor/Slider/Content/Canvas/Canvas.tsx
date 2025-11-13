@@ -38,7 +38,7 @@ import {
   calculateScaledMargin
 } from './utils/calculateDimensions'
 import { Input } from '../../../../Input'
-import Edit2 from '@core/shared/ui/icons/Edit2'
+import Typography from '@mui/material/Typography'
 
 const fadeIn = keyframes`
   from {
@@ -195,7 +195,11 @@ export function Canvas(): ReactElement {
             onChange={(e) => {
               console.log(e.target.value)
             }}
-            startIcon={<Edit2 />}
+            startIcon={
+              <Typography fontSize={26} sx={{ pl: 3 }}>
+                /
+              </Typography>
+            }
             fullWidth
             className="mb-2"
           />
