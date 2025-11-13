@@ -11,12 +11,14 @@ interface ContentMetadataProps {
   title: string
   description: string
   label: VideoLabel
+  showDownloadButton?: boolean
 }
 
 export function ContentMetadata({
   title,
   description,
-  label
+  label,
+  showDownloadButton = true
 }: ContentMetadataProps): ReactElement {
   const { t } = useTranslation('apps-watch')
   const { label: labelText } = getLabelDetails(t, label)
@@ -35,13 +37,15 @@ export function ContentMetadata({
                 {title}
               </h1>
             </div>
-            <button
-              onClick={() => setShowDownload(true)}
-              className="inline-flex max-h-10 cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold tracking-wider text-gray-900 uppercase transition-colors duration-200 hover:bg-[#cb333b] hover:text-white"
-            >
-              <Download2 className="h-4 w-4" />
-              {t('Download')}
-            </button>
+            {showDownloadButton && (
+              <button
+                onClick={() => setShowDownload(true)}
+                className="inline-flex max-h-10 cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold tracking-wider text-gray-900 uppercase transition-colors duration-200 hover:bg-[#cb333b] hover:text-white"
+              >
+                <Download2 className="h-4 w-4" />
+                {t('Download')}
+              </button>
+            )}
           </div>
           <p className="mt-2 text-lg leading-relaxed text-stone-200/80 xl:text-xl">
             <span className="font-bold text-white">
@@ -53,10 +57,12 @@ export function ContentMetadata({
           </p>
         </div>
       </div>
-      <DialogDownload
-        open={showDownload}
-        onClose={() => setShowDownload(false)}
-      />
+      {showDownloadButton && (
+        <DialogDownload
+          open={showDownload}
+          onClose={() => setShowDownload(false)}
+        />
+      )}
     </>
   )
 }
