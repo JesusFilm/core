@@ -78,16 +78,14 @@ export function ExportDialog({
         }
         await exportJourneyEvents({ journeyId, filter })
       } else if (exportBy === 'Contact Data') {
-        const filter: any = {
+        const filter = {
           typenames: contactData.filter(
             (data) => data !== 'name' && data !== 'email' && data !== 'phone'
           ),
           ...(startDate && { periodRangeStart: startDate.toISOString() }),
-          ...(endDate && { periodRangeEnd: endDate.toISOString() })
-        }
-        if (includeOldData) {
-          filter.includeUnconnectedCards = true
-        }
+          ...(endDate && { periodRangeEnd: endDate.toISOString() }),
+          ...(includeOldData && { includeUnconnectedCards: true })
+        } as const
         await exportJourneyContacts({
           journeyId,
           filter
