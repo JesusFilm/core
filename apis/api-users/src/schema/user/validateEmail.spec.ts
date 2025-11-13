@@ -41,8 +41,10 @@ describe('validateEmail', () => {
   it('should return true', async () => {
     const userId = 'userId'
     const token = 'token'
+    const userEmail = 'user@email.com'
+
     prismaMock.user.update.mockResolvedValue({} as any)
-    expect(await validateEmail(userId, token)).toBe(true)
+    expect(await validateEmail(userId, userEmail, token)).toBe(true)
     expect(prismaMock.user.update).toHaveBeenCalledWith({
       where: { userId },
       data: { emailVerified: true }
@@ -52,13 +54,13 @@ describe('validateEmail', () => {
   it('should return false', async () => {
     const userId = 'userId2'
     const token = 'token'
+    const userEmail = 'user@email.com'
 
-    expect(await validateEmail(userId, token)).toBe(false)
+    expect(await validateEmail(userId, userEmail, token)).toBe(false)
     expect(prismaMock.user.update).not.toHaveBeenCalled()
   })
 
-  it('should validate email for example.com emails in non-production environments', async () => {
-    process.env.VERCEL_ENV = 'preview'
+  it('should validate email for example.com emails', async () => {
     process.env.EXAMPLE_EMAIL_TOKEN = 'example-token'
 
     prismaMock.user.findUnique.mockResolvedValue({
@@ -66,10 +68,14 @@ describe('validateEmail', () => {
     } as any)
     prismaMock.user.update.mockResolvedValue({} as any)
 
-    const result = await validateEmail('bypassUser', 'ExAmPlE-ToKeN')
+    const result = await validateEmail(
+      'bypassUser',
+      'playwrightuser@example.com',
+      'example-token'
+    )
     expect(result).toBe(true)
 
-    // Assert Firebase updated first, then Prisma
+    // Assert Prisma updated first, then Firebase
     const updateUserMock = (getAuth as jest.Mock).mock.results[0].value
       .updateUser as jest.Mock
 
@@ -81,8 +87,8 @@ describe('validateEmail', () => {
       data: { emailVerified: true }
     })
 
-    const firebaseCallOrder = updateUserMock.mock.invocationCallOrder[0]
     const prismaCallOrder = prismaMock.user.update.mock.invocationCallOrder[0]
-    expect(firebaseCallOrder).toBeLessThan(prismaCallOrder)
+    const firebaseCallOrder = updateUserMock.mock.invocationCallOrder[0]
+    expect(prismaCallOrder).toBeLessThan(firebaseCallOrder)
   })
 })
