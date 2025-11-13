@@ -443,4 +443,27 @@ describe('SectionVideoGrid', () => {
       expect(screen.getByTestId('VideoCard-child-1')).toBeInTheDocument()
     )
   })
+
+  it('resolves sources from primaryCollectionId when sources prop is not provided', async () => {
+    render(
+      <MockedProvider mocks={collectionOnlyMocks} addTypename>
+        <SectionVideoGrid
+          primaryCollectionId="collection-1"
+          limitChildren={3}
+        />
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('VideoCard-child-1')).toBeInTheDocument()
+    )
+
+    expect(capturedSlides).toHaveLength(2)
+
+    const childSlide = capturedSlides.find((slide) => slide.id === 'child-1')
+    expect(childSlide).toMatchObject({
+      containerSlug: 'collection-slug',
+      variantSlug: 'child-one/en'
+    })
+  })
 })

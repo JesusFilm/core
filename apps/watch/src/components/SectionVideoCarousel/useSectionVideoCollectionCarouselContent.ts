@@ -1,11 +1,13 @@
 import { useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo } from 'react'
+import { useTranslation } from 'next-i18next'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { getLanguageIdFromLocale } from '../../libs/getLanguageIdFromLocale'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
+import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 
 import { GET_COLLECTION_SHOWCASE_CONTENT } from './queries'
 
@@ -314,6 +316,7 @@ export function useSectionVideoCollectionCarouselContent({
 }: UseSectionVideoCollectionCarouselContentOptions): SectionVideoCollectionCarouselContentResult {
   const { locale } = useRouter()
   const languageId = providedLanguageId ?? getLanguageIdFromLocale(locale)
+  const { t } = useTranslation('apps-watch')
 
   useEffect(() => {
     const slugSources = sources.filter((source) => source.idType === 'slug')
@@ -413,7 +416,13 @@ export function useSectionVideoCollectionCarouselContent({
     return data.collections[0]
   }, [collectionSources, data, primaryCollectionId])
 
-  const subtitle = subtitleOverride ?? primaryCollection?.snippet?.[0]?.value
+  const typeSubtitle =
+    primaryCollection != null
+      ? getLabelDetails(t, primaryCollection.label).label
+      : undefined
+
+  const subtitle =
+    subtitleOverride ?? typeSubtitle ?? primaryCollection?.snippet?.[0]?.value
   const title = titleOverride ?? primaryCollection?.title?.[0]?.value
 
   const description =
