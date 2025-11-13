@@ -25,3 +25,8 @@
 ## Follow-up Ideas
 - Confirm final Advent collection/video identifiers with the content team and update the configuration once the playlist is published.
 - Consider adding localized copy for the Advent section via `next-i18next` if the section becomes permanent.
+
+## Current Session
+- [x] Replace the legacy collection experience with a new `PageCollection` template that mirrors the modern single-video layout while using collection metadata and artwork.
+- [x] Swap the video player hero for a collection thumbnail hero and remove the Bible quotes + discussion widgets from collection views.
+- [x] Surface collection children directly beneath the description via `SectionVideoGrid` and expose the search modal language filter UI for switching languages.
