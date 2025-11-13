@@ -94,8 +94,6 @@ builder.mutationField('integrationGoogleUpdate', (t) =>
             ...query,
             where: { id },
             data: {
-              accessId: 'oauth2',
-              accessSecretPart: secretToStore.slice(0, 6),
               accessSecretCipherText: ciphertext,
               accessSecretIv: iv,
               accessSecretTag: tag,

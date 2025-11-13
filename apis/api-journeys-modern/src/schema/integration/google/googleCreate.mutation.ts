@@ -158,8 +158,6 @@ builder.mutationField('integrationGoogleCreate', (t) =>
             type: 'google',
             teamId,
             userId,
-            accessId: 'oauth2',
-            accessSecretPart: secretToStore.slice(0, 6),
             accessSecretCipherText: ciphertext,
             accessSecretIv: iv,
             accessSecretTag: tag,

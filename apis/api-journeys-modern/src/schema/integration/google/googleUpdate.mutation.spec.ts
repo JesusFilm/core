@@ -97,9 +97,7 @@ describe('integrationGoogleUpdate', () => {
       type: 'google',
       teamId: 'team-id',
       userId: 'userId',
-      accountEmail: 'updated@example.com',
-      accessId: 'oauth2',
-      accessSecretPart: 'new-re'
+      accountEmail: 'updated@example.com'
     }
 
     prismaMock.integration.findUnique.mockResolvedValue(
@@ -144,8 +142,6 @@ describe('integrationGoogleUpdate', () => {
       expect.objectContaining({
         where: { id: 'integration-id' },
         data: {
-          accessId: 'oauth2',
-          accessSecretPart: 'new-re',
           accessSecretCipherText: 'encrypted-secret',
           accessSecretIv: 'iv',
           accessSecretTag: 'tag',
