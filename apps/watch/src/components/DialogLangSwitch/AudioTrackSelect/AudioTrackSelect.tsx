@@ -1,16 +1,12 @@
-import SpatialAudioOffOutlinedIcon from '@mui/icons-material/SpatialAudioOffOutlined'
-import Autocomplete from '@mui/material/Autocomplete'
-import Box from '@mui/material/Box'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
+import { Languages } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useId, useMemo } from 'react'
 import { useInstantSearch } from 'react-instantsearch'
 
 import { LANGUAGE_MAPPINGS } from '../../../libs/localeMapping'
 import { type Language, useLanguages } from '../../../libs/useLanguages'
 import { useLanguageActions } from '../../../libs/watchContext'
-import { filterOptions } from '../utils/filterOptions'
+import { LanguageCommandSelect } from '../LanguageCommandSelect'
 
 function useSafeInstantSearch() {
   try {
@@ -29,10 +25,12 @@ export function AudioTrackSelect({
   videoAudioLanguageIds,
   audioLanguageId
 }: AudioTrackSelectProps): ReactElement {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useTranslation('apps-watch')
   const { updateAudioLanguage } = useLanguageActions()
   const { languages, isLoading } = useLanguages()
   const instantSearch = useSafeInstantSearch()
+  const comboboxId = useId()
+  const helperTextId = `${comboboxId}-helper`
 
   const selectedOption = useMemo(
     () => languages.find((language) => language.id === audioLanguageId) ?? null,
@@ -40,11 +38,9 @@ export function AudioTrackSelect({
   )
   const options = useMemo(() => {
     if (videoAudioLanguageIds == null) return languages
-    return [
-      ...languages.filter((language) =>
-        videoAudioLanguageIds.includes(language.id)
-      )
-    ]
+    return languages.filter((language) =>
+      videoAudioLanguageIds.includes(language.id)
+    )
   }, [languages, videoAudioLanguageIds])
   const helperText = useMemo(() => {
     if (isLoading) return t('Loading...')
@@ -72,9 +68,7 @@ export function AudioTrackSelect({
     }
   }, [isLoading, t, videoAudioLanguageIds, selectedOption])
 
-  function handleChange(_, language: Language | null): void {
-    if (language == null) return
-
+  function handleSelect(language: Language): void {
     let reload = instantSearch == null
     if (reload) {
       const found = videoAudioLanguageIds?.find((id) => id === language.id)
@@ -103,8 +97,8 @@ export function AudioTrackSelect({
     <div className="mx-6 font-sans">
       <div className="flex items-center justify-between">
         <label
-          htmlFor="audio-select"
-          className="ml-7 block text-xl font-medium text-gray-700"
+          htmlFor={comboboxId}
+          className="ml-7 block text-xl font-medium text-gray-200"
         >
           {t('Language')}
         </label>
@@ -118,55 +112,20 @@ export function AudioTrackSelect({
             </span>
           )}
       </div>
-      <div className="relative mt-1 flex items-start gap-2">
-        <div className="pt-4">
-          <SpatialAudioOffOutlinedIcon fontSize="small" />
-        </div>
-        <div className="relative w-full">
-          <Autocomplete
-            disableClearable
-            // this is a workaround to keep the autocomplete controlled
-            value={selectedOption as unknown as Language | undefined}
-            options={options}
-            filterOptions={filterOptions}
-            onChange={handleChange}
-            loading={isLoading}
-            getOptionKey={(option) => option.id}
-            getOptionLabel={(option) => option.displayName}
-            renderOption={({ key, ...optionProps }, option) => {
-              return (
-                <Box
-                  key={key}
-                  component="li"
-                  {...optionProps}
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                    justifyContent: 'space-between !important'
-                  }}
-                >
-                  <Typography variant="body1">{option.displayName}</Typography>
-                  {option.nativeName &&
-                    option.nativeName.value !== option.displayName && (
-                      <Typography variant="body2" color="text.secondary">
-                        {option.nativeName.value}
-                      </Typography>
-                    )}
-                </Box>
-              )
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                id="audio-select"
-                hiddenLabel
-                variant="filled"
-                helperText={helperText}
-              />
-            )}
-          />
-        </div>
+      <div className="relative mt-2">
+        <LanguageCommandSelect
+          options={options}
+          selectedOption={selectedOption}
+          placeholder={t('Search languages...')}
+          emptyMessage={t('No languages found.')}
+          loadingMessage={t('Loading languages...')}
+          helperText={helperText}
+          onSelect={handleSelect}
+          icon={<Languages className="h-5 w-5 text-stone-400" />}
+          disabled={isLoading}
+          id={comboboxId}
+          ariaDescribedBy={helperText != null ? helperTextId : undefined}
+        />
       </div>
     </div>
   )

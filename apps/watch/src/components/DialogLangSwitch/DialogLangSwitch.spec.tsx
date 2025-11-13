@@ -14,6 +14,27 @@ const useLanguagesMock = useLanguages as jest.MockedFunction<
   typeof useLanguages
 >
 
+beforeAll(() => {
+  class ResizeObserverMock {
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
+  }
+
+  // @ts-expect-error ResizeObserver is not defined in jsdom
+  global.ResizeObserver = ResizeObserverMock
+
+  if (
+    window.HTMLElement != null &&
+    window.HTMLElement.prototype.scrollIntoView == null
+  ) {
+    Object.defineProperty(window.HTMLElement.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: jest.fn()
+    })
+  }
+})
+
 describe('DialogLangSwitch', () => {
   const french = {
     id: '496',
@@ -120,9 +141,9 @@ describe('DialogLangSwitch', () => {
     await waitFor(() => {
       expect(screen.getAllByRole('combobox')[0]).toBeInTheDocument()
     })
-    expect(screen.getAllByRole('combobox')[0]).toHaveValue('English')
 
     const audioTrackSelect = screen.getAllByRole('combobox')[0]
+    expect(audioTrackSelect).toHaveTextContent('English')
     await userEvent.click(audioTrackSelect)
     // available languages
     expect(screen.getByRole('option', { name: 'English' })).toBeInTheDocument()
@@ -151,9 +172,9 @@ describe('DialogLangSwitch', () => {
     await waitFor(() => {
       expect(screen.getAllByRole('combobox')[1]).toBeInTheDocument()
     })
-    expect(screen.getAllByRole('combobox')[1]).toHaveValue('English')
 
     const subtitlesSelect = screen.getAllByRole('combobox')[1]
+    expect(subtitlesSelect).toHaveTextContent('English')
     await userEvent.click(subtitlesSelect)
     // available languages
     expect(screen.getByRole('option', { name: 'English' })).toBeInTheDocument()
