@@ -22,7 +22,7 @@ export type { SectionVideoCollectionCarouselSource as SectionVideoGridSource } f
 
 export interface SectionVideoGridProps {
   id?: string
-  sources: SectionVideoGridSource[]
+  sources?: SectionVideoGridSource[]
   primaryCollectionId?: string
   subtitleOverride?: string
   titleOverride?: string
@@ -35,6 +35,7 @@ export interface SectionVideoGridProps {
   orientation?: 'horizontal' | 'vertical'
   languageId?: string
   showSequenceNumbers?: boolean
+  limitChildren?: number
 }
 
 export function SectionVideoGrid({
@@ -51,13 +52,22 @@ export function SectionVideoGrid({
   backgroundClassName,
   orientation = 'horizontal',
   languageId,
-  showSequenceNumbers = false
+  showSequenceNumbers = false,
+  limitChildren = 12
 }: SectionVideoGridProps): ReactElement | null {
   const { t } = useTranslation('apps-watch')
 
+  const resolvedSources = useMemo(() => {
+    if (sources != null) return sources
+    if (primaryCollectionId != null) {
+      return [{ type: 'collection', id: primaryCollectionId, limitChildren }]
+    }
+    return []
+  }, [sources, primaryCollectionId, limitChildren])
+
   const { loading, slides, subtitle, title, description, ctaHref, ctaLabel } =
     useSectionVideoCollectionCarouselContent({
-      sources,
+      sources: resolvedSources,
       primaryCollectionId,
       subtitleOverride,
       titleOverride,
