@@ -69,6 +69,10 @@ export function PageCollections(): ReactElement {
     }
   ]
 
+  const heroImageUrl =
+    navigationContentItems[0]?.image ??
+    'https://images.unsplash.com/photo-1482424917728-d82d29662023?w=1600&auto=format&fit=crop&q=60'
+
   const shareDataTitle =
     '👋 Check out these videos about Easter origins. I thought you would like it.'
 
@@ -80,6 +84,8 @@ export function PageCollections(): ReactElement {
           descriptionBeforeYear="Easter"
           descriptionAfterYear="videos & resources about Lent, Holy Week, Resurrection"
           feedbackButtonLabel="Give Feedback"
+          coverImageUrl={heroImageUrl}
+          coverImageAlt={navigationContentItems[0]?.title}
         />
       }
       hideHeader

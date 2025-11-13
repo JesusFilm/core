@@ -13,6 +13,9 @@ import { PageCollectionsContent } from '../../PageCollectionsContent'
 export function PageCollections(): ReactElement {
   const [mutePage, setMutePage] = useState(true)
 
+  const heroImageUrl =
+    'https://images.unsplash.com/photo-1482424917728-d82d29662023?w=1600&auto=format&fit=crop&q=60'
+
   const shareDataTitle =
     "👋 Découvre ces vidéos sur les origines de Pâques. J'ai pensé que ça pourrait te plaire."
 
@@ -24,6 +27,8 @@ export function PageCollections(): ReactElement {
           descriptionBeforeYear="Pâques"
           descriptionAfterYear="vidéos et ressources sur le Carême, la Semaine Sainte, la Résurrection"
           feedbackButtonLabel="Donner un Avis"
+          coverImageUrl={heroImageUrl}
+          coverImageAlt="Collection Pâques"
         />
       }
       hideHeader

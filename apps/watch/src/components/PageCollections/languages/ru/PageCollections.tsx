@@ -13,6 +13,9 @@ import { PageCollectionsContent } from '../../PageCollectionsContent'
 export function PageCollections(): ReactElement {
   const [mutePage, setMutePage] = useState(true)
 
+  const heroImageUrl =
+    'https://images.unsplash.com/photo-1482424917728-d82d29662023?w=1600&auto=format&fit=crop&q=60'
+
   const shareDataTitle =
     '👋 Посмотрите эти видео о происхождении Пасхи. Думаю, вам понравится.'
 
@@ -24,6 +27,8 @@ export function PageCollections(): ReactElement {
           descriptionBeforeYear="Пасха"
           descriptionAfterYear="видео и ресурсы о Великом посте, Страстной неделе, Воскресении"
           feedbackButtonLabel="Оставить отзыв"
+          coverImageUrl={heroImageUrl}
+          coverImageAlt="Коллекция Пасха"
         />
       }
       hideHeader

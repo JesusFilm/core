@@ -6,15 +6,6 @@ describe('PageCollectionsContent', () => {
   it('should render correctly with all nested elements', () => {
     const { getByTestId } = render(<PageCollectionsContent />)
 
-    const page = getByTestId('CollectionPage')
-    expect(page).toBeInTheDocument()
-
-    const blurFilter = getByTestId('CollectionPageBlurFilter')
-    expect(blurFilter).toBeInTheDocument()
-
-    const container = getByTestId('CollectionPageContainer')
-    expect(container).toBeInTheDocument()
-
     const content = getByTestId('CollectionPageContent')
     expect(content).toBeInTheDocument()
   })

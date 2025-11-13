@@ -1,50 +1,34 @@
-import useScrollTrigger from '@mui/material/useScrollTrigger'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 
 import { CollectionsHeader } from './CollectionsHeader'
 
-// Mock the useScrollTrigger hook
-jest.mock('@mui/material/useScrollTrigger')
-
 describe('CollectionsHeader', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
-  })
-
-  it('renders the header with a logo', () => {
-    ;(useScrollTrigger as jest.Mock).mockReturnValue(false)
-
+  it('renders the header with a logo linking to watch', () => {
     render(<CollectionsHeader feedbackButtonLabel="Feedback" />)
 
-    const header = screen.getByRole('img', { name: 'JesusFilm Project' })
-    expect(header).toBeInTheDocument()
+    const logo = screen.getByRole('img', { name: 'JesusFilm Project' })
+    expect(logo).toBeInTheDocument()
 
-    const link = screen.getByRole('link')
-    expect(link).toHaveAttribute('href', 'https://www.jesusfilm.org/watch')
+    const link = screen.getByRole('link', { name: 'JesusFilm Project' })
+    expect(link).toHaveAttribute('href', '/watch')
   })
 
-  it('opens language modal when language button is clicked and closes when close button is clicked', async () => {
-    ;(useScrollTrigger as jest.Mock).mockReturnValue(false)
-
+  it('opens language dialog when the button is clicked', () => {
     render(<CollectionsHeader feedbackButtonLabel="Feedback" />)
 
     const languageButton = screen.getByTestId('LanguageButton')
-    expect(languageButton).toBeInTheDocument()
-
     fireEvent.click(languageButton)
 
-    const dialog = screen.getByRole('dialog')
-    expect(dialog).toBeInTheDocument()
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    expect(screen.getByTestId('language-button-en')).toBeInTheDocument()
+  })
 
-    const closeButton = screen.getByTestId('CloseLanguageButton')
-    expect(closeButton).toBeInTheDocument()
+  it('renders support link inside the language dialog', () => {
+    render(<CollectionsHeader feedbackButtonLabel="Contact us" />)
 
-    fireEvent.click(closeButton)
-
-    await waitFor(() => {
-      expect(
-        screen.queryByTestId('CloseLanguageButton')
-      ).not.toBeInTheDocument()
-    })
+    fireEvent.click(screen.getByTestId('LanguageButton'))
+    const supportLink = screen.getByTestId('language-button-support')
+    expect(supportLink).toHaveTextContent('Contact us')
+    expect(supportLink).toHaveAttribute('href', '/contact')
   })
 })
