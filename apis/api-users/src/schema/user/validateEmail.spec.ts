@@ -35,6 +35,7 @@ describe('validateEmail', () => {
   const originalEnv = process.env
 
   afterEach(() => {
+    jest.clearAllMocks()
     process.env = originalEnv
   })
 
