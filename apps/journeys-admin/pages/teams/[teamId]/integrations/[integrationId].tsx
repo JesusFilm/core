@@ -7,7 +7,7 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { ReactElement, Suspense } from 'react'
 
 import { GoogleIntegrationDetails } from '../../../../src/components/Google'
 import { GrowthSpacesIntegrationDetails } from '../../../../src/components/GrowthSpaces'
@@ -54,10 +54,14 @@ function IntegrationPage(): ReactElement {
           </Stack>
         }
       >
-        {selected?.type === 'google' ? (
-          <GoogleIntegrationDetails />
-        ) : (
-          <GrowthSpacesIntegrationDetails />
+        {selected != null && (
+          <>
+            {selected?.type === 'google' ? (
+              <GoogleIntegrationDetails />
+            ) : (
+              <GrowthSpacesIntegrationDetails />
+            )}
+          </>
         )}
       </PageWrapper>
     </>
