@@ -128,13 +128,9 @@ export function Button({
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
-  const startIcon = children.find((block) => block.id === startIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const startIcon = children.find((block) => block.id === startIconId)
 
-  const endIcon = children.find((block) => block.id === endIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const endIcon = children.find((block) => block.id === endIconId)
 
   const messagePlatform = useMemo(() => findMessagePlatform(action), [action])
   const actionValue = useMemo(
@@ -263,7 +259,7 @@ export function Button({
 
   function isEmptyForm(): boolean {
     if (formik == null) return true
-    const values = formik.values as unknown
+    const values = formik.values
     if (values == null || typeof values !== 'object') return true
     return Object.values(values as Record<string, unknown>).every(
       (value) => value === ''
