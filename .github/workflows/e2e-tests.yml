@@ -103,12 +103,13 @@ jobs:
       - name: Set consistent Vercel alias for daily e2e
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         run: |
-          # Create consistent alias for daily e2e environment
+          # Create consistent alias for daily e2e environment (matching pattern from app-deploy.yml)
           DEPLOYMENT_URL=$(cat apps/${{ matrix.app }}/.vercel-url)
           CONSISTENT_ALIAS="${{ matrix.app }}-daily-e2e-jesusfilm.vercel.app"
 
-          # Set the alias
+          # Set the alias (same format as vercel-alias target in project.json files)
           pnpm exec vercel alias set "$DEPLOYMENT_URL" "$CONSISTENT_ALIAS" --token=$VERCEL_TOKEN --scope=jesusfilm
 
           # Update the .vercel-url file with the consistent URL
