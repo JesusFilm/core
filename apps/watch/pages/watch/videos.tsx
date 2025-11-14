@@ -19,7 +19,7 @@ import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchP
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import i18nConfig from '../../next-i18next.config'
-import { Videos } from '../../src/components/VideosPage'
+import { Videos } from '../../src/components/PageVideos'
 import {
   createApolloClient,
   useApolloClient

@@ -1,41 +1,38 @@
-import FullscreenExitOutlined from '@mui/icons-material/FullscreenExitOutlined'
-import FullscreenOutlined from '@mui/icons-material/FullscreenOutlined'
-import PauseRounded from '@mui/icons-material/PauseRounded'
-import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded'
-import SubtitlesOutlined from '@mui/icons-material/SubtitlesOutlined'
-import VolumeDownOutlined from '@mui/icons-material/VolumeDownOutlined'
-import VolumeMuteOutlined from '@mui/icons-material/VolumeMuteOutlined'
-import VolumeOffOutlined from '@mui/icons-material/VolumeOffOutlined'
-import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined'
-import Box from '@mui/material/Box'
-import CircularProgress from '@mui/material/CircularProgress'
-import Container from '@mui/material/Container'
-import Fade from '@mui/material/Fade'
-import IconButton from '@mui/material/IconButton'
-import Skeleton from '@mui/material/Skeleton'
-import Slider from '@mui/material/Slider'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { sendGTMEvent } from '@next/third-parties/google'
 import fscreen from 'fscreen'
 import debounce from 'lodash/debounce'
 import last from 'lodash/last'
+import {
+  Globe,
+  Loader2,
+  Maximize,
+  Minimize,
+  Pause,
+  Play,
+  Subtitles,
+  Volume,
+  Volume1,
+  Volume2,
+  VolumeX
+} from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { MouseEventHandler, ReactElement, useEffect, useState } from 'react'
+import { MouseEventHandler, ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
 import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
+import { Button, Skeleton } from '@core/shared/uimodern'
 
+import { cn } from '../../../../../libs/cn'
 import { usePlayer } from '../../../../../libs/playerContext'
 import { useVideo } from '../../../../../libs/videoContext'
 import { useLanguageActions } from '../../../../../libs/watchContext'
+import type { InsertAction, InsertOverlay } from '../../../../../types/inserts'
 import { HeroOverlay } from '../../../../HeroOverlay/HeroOverlay'
-import { AudioLanguageButton } from '../../../AudioLanguageButton'
-import { VideoTitle } from '../VideoTitle'
-
-import { handleVideoTitleClick } from './utils/handleVideoTitleClick'
+import { handleVideoTitleClick } from '../../../../VideoControls/utils/handleVideoTitleClick/handleVideoTitleClick'
+import { VideoSlider } from '../../../../VideoControls/VideoSlider'
+import { VideoTitle } from '../../../../VideoControls/VideoTitle/VideoTitle'
 
 const DynamicLanguageSwitchDialog = dynamic<{
   open: boolean
@@ -43,18 +40,27 @@ const DynamicLanguageSwitchDialog = dynamic<{
 }>(
   async () =>
     await import(
-      /* webpackChunkName: "LanguageSwitchDialog" */
-      '../../../../LanguageSwitchDialog'
-    ).then((mod) => mod.LanguageSwitchDialog),
+      /* webpackChunkName: "DialogLangSwitch" */
+      '../../../../DialogLangSwitch'
+    ).then((mod) => mod.DialogLangSwitch),
   {
     ssr: false,
-    loading: () => <Box role="dialog" aria-label="Language Settings" />
+    loading: () => <div role="dialog" aria-label="Language Settings" />
   }
 )
 
 interface VideoControlProps {
   player?: Player
   onVisibleChanged?: (active: boolean) => void
+  isPreview?: boolean
+  onMuteToggle?: (isMuted: boolean) => void
+  customDuration?: number
+  action?: InsertAction
+  isMuxInsert?: boolean
+  muxOverlay?: InsertOverlay
+  onSkip?: () => void
+  placement?: 'carouselItem' | 'singleVideo'
+  wasUnmuted?: boolean
 }
 
 function evtToDataLayer(
@@ -81,9 +87,20 @@ const eventToDataLayer = debounce(evtToDataLayer, 500)
 
 export function VideoControls({
   player,
-  onVisibleChanged
+  onVisibleChanged,
+  isPreview = false,
+  onMuteToggle,
+  customDuration,
+  action,
+  isMuxInsert = false,
+  muxOverlay,
+  onSkip,
+  placement,
+  wasUnmuted = false
 }: VideoControlProps): ReactElement {
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
+  const isSeekingRef = useRef(false)
+  const [isSeekLoading, setIsSeekLoading] = useState(false)
   const {
     state: {
       play,
@@ -104,18 +121,42 @@ export function VideoControls({
     useState<boolean>()
 
   const { updateSubtitlesOn } = useLanguageActions()
-  const { id, title, variant, images, imageAlt } = useVideo()
+  const {
+    id,
+    title,
+    variant,
+    images,
+    imageAlt,
+    label,
+    description,
+    container,
+    slug
+  } = useVideo()
   const visible = !play || active || loading
 
   const videoTitle = last(title)?.value ?? ''
+  const videoLabel = isMuxInsert && muxOverlay ? muxOverlay.label : label?.replace(/_/g, ' ')
+  const videoDescription = isMuxInsert && muxOverlay ? muxOverlay.description : last(description)?.value
+  const containerSlug = container?.slug ?? slug
+  const collectionTitle = last(container?.title)?.value
 
   useEffect(() => {
     onVisibleChanged?.(!play || active || loading)
   }, [play, active, loading, onVisibleChanged])
 
-  // Set duration from variant data instead of trying to detect from HLS stream
+  // Set duration from custom duration, variant data, or try to detect from HLS stream
   useEffect(() => {
-    if (variant?.duration != null && variant.duration > 0) {
+    if (customDuration != null && customDuration > 0) {
+      const roundedDuration = Math.round(customDuration)
+      dispatchPlayer({
+        type: 'SetDurationSeconds',
+        durationSeconds: roundedDuration
+      })
+      dispatchPlayer({
+        type: 'SetDuration',
+        duration: secondsToTimeFormat(roundedDuration, { trimZeroes: true })
+      })
+    } else if (variant?.duration != null && variant.duration > 0) {
       const roundedDuration = Math.round(variant.duration)
       dispatchPlayer({
         type: 'SetDurationSeconds',
@@ -172,8 +213,11 @@ export function VideoControls({
       }
       // Only add fallback listeners if variant duration is not available
       const events = ['durationchange', 'loadedmetadata', 'canplay']
+      const durationHandlers: { [key: string]: () => void } = {}
+
       events.forEach((event) => {
-        player?.on(event, () => updateDuration(event))
+        durationHandlers[event] = () => updateDuration(event)
+        player?.on(event, durationHandlers[event])
       })
 
       updateDuration('initial')
@@ -183,14 +227,15 @@ export function VideoControls({
           clearTimeout(retryTimeout)
         }
         events.forEach((event) => {
-          player?.off(event, updateDuration)
+          player?.off(event, durationHandlers[event])
         })
       }
     }
-  }, [player, variant?.duration])
+  }, [player, variant?.duration, customDuration])
 
   useEffect(() => {
-    if ((progress / durationSeconds) * 100 > progressPercentNotYetEmitted[0]) {
+    const percent = durationSeconds > 0 ? Math.round((player?.currentTime() ?? 0) / durationSeconds * 100) : 0
+    if (percent > progressPercentNotYetEmitted[0]) {
       eventToDataLayer(
         `video_time_update_${progressPercentNotYetEmitted[0]}`,
         id,
@@ -199,7 +244,7 @@ export function VideoControls({
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
         Math.round(player?.currentTime() ?? 0),
-        Math.round((progress / durationSeconds) * 100)
+        percent
       )
       const [, ...rest] = progressPercentNotYetEmitted
       dispatchPlayer({
@@ -213,122 +258,197 @@ export function VideoControls({
     durationSeconds,
     progressPercentNotYetEmitted,
     title,
-    variant,
-    player
+    variant
   ])
 
-  useEffect(() => {
+  // Define stable event handlers using useCallback
+  const handlePlay = useCallback(() => {
+    if ((player?.currentTime() ?? 0) < 0.02) {
+      eventToDataLayer(
+        'video_start',
+        id,
+        variant?.language.id,
+        title[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player?.currentTime() ?? 0),
+        durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
+      )
+    } else {
+      eventToDataLayer(
+        'video_play',
+        id,
+        variant?.language.id,
+        title[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player?.currentTime() ?? 0),
+        durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
+      )
+    }
+    void player?.play()
+    dispatchPlayer({
+      type: 'SetPlay',
+      play: true
+    })
+  }, [player, id, variant, title, durationSeconds, dispatchPlayer])
+
+  const handlePause = useCallback(() => {
+    if ((player?.currentTime() ?? 0) > 0.02) {
+      eventToDataLayer(
+        'video_pause',
+        id,
+        variant?.language.id,
+        title[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player?.currentTime() ?? 0),
+        durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
+      )
+    }
+    player?.pause()
+    dispatchPlayer({
+      type: 'SetPlay',
+      play: false
+    })
+  }, [player, id, variant, title, durationSeconds, dispatchPlayer])
+
+  // Separate handlers for player events - sync state with actual player state
+  const handlePlayerEventPlay = useCallback(() => {
+    // Sync global state with actual player state
+    dispatchPlayer({
+      type: 'SetPlay',
+      play: true
+    })
+    // Analytics for player events
+    if ((player?.currentTime() ?? 0) < 0.02) {
+      eventToDataLayer(
+        'video_start',
+        id,
+        variant?.language.id,
+        title[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player?.currentTime() ?? 0),
+        durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
+      )
+    } else {
+      eventToDataLayer(
+        'video_play',
+        id,
+        variant?.language.id,
+        title[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player?.currentTime() ?? 0),
+        durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
+      )
+    }
+  }, [player, id, variant, title, durationSeconds, dispatchPlayer])
+
+  const handlePlayerEventPause = useCallback(() => {
+    // Sync global state with actual player state
+    dispatchPlayer({
+      type: 'SetPlay',
+      play: false
+    })
+    // Analytics for player events
+    if ((player?.currentTime() ?? 0) > 0.02) {
+      eventToDataLayer(
+        'video_pause',
+        id,
+        variant?.language.id,
+        title[0].value,
+        variant?.language?.name.find(({ primary }) => !primary)?.value ??
+          variant?.language?.name[0]?.value,
+        Math.round(player?.currentTime() ?? 0),
+        durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
+      )
+    }
+  }, [player, id, variant, title, durationSeconds, dispatchPlayer])
+
+  const handleTimeUpdate = useCallback(() => {
+    dispatchPlayer({
+      type: 'SetCurrentTime',
+      currentTime: secondsToTimeFormat(player?.currentTime() ?? 0, {
+        trimZeroes: true
+      })
+    })
+    dispatchPlayer({
+      type: 'SetProgress',
+      progress: durationSeconds > 0 ? Math.round(
+        ((player?.currentTime() ?? 0) / durationSeconds) * 100
+      ) : 0
+    })
+  }, [player, durationSeconds, dispatchPlayer])
+
+  const handleVolumeChange = useCallback(() => {
+    dispatchPlayer({
+      type: 'SetMute',
+      mute: player?.muted() ?? false
+    })
     dispatchPlayer({
       type: 'SetVolume',
       volume: (player?.volume() ?? 1) * 100
     })
-    player?.on('play', () => {
-      if ((player?.currentTime() ?? 0) < 0.02) {
-        eventToDataLayer(
-          'video_start',
-          id,
-          variant?.language.id,
-          title[0].value,
-          variant?.language?.name.find(({ primary }) => !primary)?.value ??
-            variant?.language?.name[0]?.value,
-          Math.round(player?.currentTime() ?? 0),
-          Math.round(
-            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-          )
-        )
-      } else {
-        eventToDataLayer(
-          'video_play',
-          id,
-          variant?.language.id,
-          title[0].value,
-          variant?.language?.name.find(({ primary }) => !primary)?.value ??
-            variant?.language?.name[0]?.value,
-          Math.round(player?.currentTime() ?? 0),
-          Math.round(
-            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-          )
-        )
-      }
-      dispatchPlayer({
-        type: 'SetPlay',
-        play: true
-      })
+  }, [player, dispatchPlayer])
+
+  const handleFullscreenChange = useCallback(() => {
+    dispatchPlayer({
+      type: 'SetFullscreen',
+      fullscreen: player?.isFullscreen() ?? false
     })
-    player?.on('pause', () => {
-      if ((player?.currentTime() ?? 0) > 0.02) {
-        eventToDataLayer(
-          'video_pause',
-          id,
-          variant?.language.id,
-          title[0].value,
-          variant?.language?.name.find(({ primary }) => !primary)?.value ??
-            variant?.language?.name[0]?.value,
-          Math.round(player?.currentTime() ?? 0),
-          Math.round(
-            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-          )
-        )
-      }
-      dispatchPlayer({
-        type: 'SetPlay',
-        play: false
-      })
-    })
-    player?.on('timeupdate', () => {
-      dispatchPlayer({
-        type: 'SetCurrentTime',
-        currentTime: secondsToTimeFormat(player?.currentTime() ?? 0, {
-          trimZeroes: true
-        })
-      })
-      dispatchPlayer({
-        type: 'SetProgress',
-        progress: Math.round(player?.currentTime() ?? 0)
-      })
-    })
-    player?.on('volumechange', () => {
-      dispatchPlayer({
-        type: 'SetMute',
-        mute: player?.muted() ?? false
-      })
-      dispatchPlayer({
-        type: 'SetVolume',
-        volume: (player?.volume() ?? 1) * 100
-      })
-    })
-    player?.on('fullscreenchange', () => {
-      dispatchPlayer({
-        type: 'SetFullscreen',
-        fullscreen: player?.isFullscreen() ?? false
-      })
-    })
-    player?.on('useractive', () =>
-      dispatchPlayer({
-        type: 'SetActive',
-        active: true
-      })
-    )
-    player?.on('userinactive', () =>
-      dispatchPlayer({
-        type: 'SetActive',
-        active: false
-      })
-    )
-    player?.on('waiting', () =>
+  }, [player, dispatchPlayer])
+
+  const handleUserActive = useCallback(() =>
+    dispatchPlayer({
+      type: 'SetActive',
+      active: true
+    }), [dispatchPlayer])
+
+  const handleUserInactive = useCallback(() =>
+    dispatchPlayer({
+      type: 'SetActive',
+      active: false
+    }), [dispatchPlayer])
+
+  const handleWaiting = useCallback(() => {
+    // Don't show loading state during user-initiated seeks
+    if (!isSeekingRef.current) {
       dispatchPlayer({
         type: 'SetLoading',
         loading: true
       })
-    )
-    player?.on('playing', () => {
-      setInitialLoadComplete(true)
-      dispatchPlayer({
-        type: 'SetLoading',
-        loading: false
-      })
+    } else {
+      // Show seek loading spinner in play/pause button
+      setIsSeekLoading(true)
+    }
+  }, [dispatchPlayer])
+
+  const handlePlaying = useCallback(() => {
+    setInitialLoadComplete(true)
+    dispatchPlayer({
+      type: 'SetLoading',
+      loading: false
     })
-    player?.on('ended', () => {
+    // Clear seeking flag when video starts playing
+    isSeekingRef.current = false
+    setIsSeekLoading(false)
+  }, [dispatchPlayer])
+
+  const handleEnded = useCallback(() => {
       eventToDataLayer(
         'video_ended',
         id,
@@ -337,24 +457,64 @@ export function VideoControls({
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
         Math.round(player?.currentTime() ?? 0),
-        Math.round(
-          ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-        )
+        durationSeconds > 0 ? Math.round(
+          ((player?.currentTime() ?? 0) / durationSeconds) * 100
+        ) : 0
       )
+  }, [player, id, variant, title, durationSeconds])
+
+  const handleCanPlay = useCallback(() => {
+    dispatchPlayer({
+      type: 'SetLoading',
+      loading: false
     })
-    player?.on('canplay', () =>
-      dispatchPlayer({
-        type: 'SetLoading',
-        loading: false
-      })
-    )
-    player?.on('canplaythrough', () =>
-      dispatchPlayer({
-        type: 'SetLoading',
-        loading: false
-      })
-    )
-    fscreen.addEventListener('fullscreenchange', () => {
+    // Clear seeking flag when video can play
+    isSeekingRef.current = false
+    setIsSeekLoading(false)
+  }, [dispatchPlayer])
+
+  const handleCanPlayThrough = useCallback(() => {
+    dispatchPlayer({
+      type: 'SetLoading',
+      loading: false
+    })
+    // Clear seeking flag when video can play through
+    isSeekingRef.current = false
+    setIsSeekLoading(false)
+  }, [dispatchPlayer])
+
+  const handleSeeked = useCallback(() => {
+    // Clear seeking flag when seek completes
+    isSeekingRef.current = false
+    setIsSeekLoading(false)
+    dispatchPlayer({
+      type: 'SetLoading',
+      loading: false
+    })
+  }, [dispatchPlayer])
+
+  useEffect(() => {
+    dispatchPlayer({
+      type: 'SetVolume',
+      volume: (player?.volume() ?? 1) * 100
+    })
+
+    // Attach handlers - use separate handlers for player events vs user interactions
+    player?.on('play', handlePlayerEventPlay)
+    player?.on('pause', handlePlayerEventPause)
+    player?.on('timeupdate', handleTimeUpdate)
+    player?.on('volumechange', handleVolumeChange)
+    player?.on('fullscreenchange', handleFullscreenChange)
+    player?.on('useractive', handleUserActive)
+    player?.on('userinactive', handleUserInactive)
+    player?.on('waiting', handleWaiting)
+    player?.on('playing', handlePlaying)
+    player?.on('ended', handleEnded)
+    player?.on('canplay', handleCanPlay)
+    player?.on('canplaythrough', handleCanPlayThrough)
+    player?.on('seeked', handleSeeked)
+
+    const fscreenHandler = () => {
       if (fscreen.fullscreenElement != null) {
         eventToDataLayer(
           'video_enter_full_screen',
@@ -364,9 +524,9 @@ export function VideoControls({
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
-          Math.round(
-            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-          )
+          durationSeconds > 0 ? Math.round(
+            ((player?.currentTime() ?? 0) / durationSeconds) * 100
+          ) : 0
         )
       } else {
         eventToDataLayer(
@@ -377,25 +537,62 @@ export function VideoControls({
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
-          Math.round(
-            ((player?.currentTime() ?? 0) / (player?.duration() ?? 1)) * 100
-          )
+          durationSeconds > 0 ? Math.round(
+            ((player?.currentTime() ?? 0) / durationSeconds) * 100
+          ) : 0
         )
       }
       dispatchPlayer({
         type: 'SetFullscreen',
         fullscreen: fscreen.fullscreenElement != null
       })
-    })
-  }, [id, player, dispatchPlayer, loading, title, variant])
-
-  function handlePlay(): void {
-    if (!play) {
-      void player?.play()
-    } else {
-      void player?.pause()
     }
-  }
+
+    fscreen.addEventListener('fullscreenchange', fscreenHandler)
+
+    return () => {
+      // Clean up player event handlers
+      player?.off('play', handlePlayerEventPlay)
+      player?.off('pause', handlePlayerEventPause)
+      player?.off('timeupdate', handleTimeUpdate)
+      player?.off('volumechange', handleVolumeChange)
+      player?.off('fullscreenchange', handleFullscreenChange)
+      player?.off('useractive', handleUserActive)
+      player?.off('userinactive', handleUserInactive)
+      player?.off('waiting', handleWaiting)
+      player?.off('playing', handlePlaying)
+      player?.off('ended', handleEnded)
+      player?.off('canplay', handleCanPlay)
+      player?.off('canplaythrough', handleCanPlayThrough)
+      player?.off('seeked', handleSeeked)
+
+      // Clean up fscreen handler
+      fscreen.removeEventListener('fullscreenchange', fscreenHandler)
+    }
+  }, [
+    id,
+    player,
+    dispatchPlayer,
+    loading,
+    title,
+    variant,
+    durationSeconds,
+    handlePlay,
+    handlePause,
+    handlePlayerEventPlay,
+    handlePlayerEventPause,
+    handleTimeUpdate,
+    handleVolumeChange,
+    handleFullscreenChange,
+    handleUserActive,
+    handleUserInactive,
+    handleWaiting,
+    handlePlaying,
+    handleEnded,
+    handleCanPlay,
+    handleCanPlayThrough,
+    handleSeeked
+  ])
 
   async function handleFullscreen(): Promise<void> {
     if (fullscreen) {
@@ -423,20 +620,41 @@ export function VideoControls({
 
   function handleSeek(_event: Event, value: number | number[]): void {
     if (!Array.isArray(value)) {
+      // Value is in seconds (from slider with min=0, max=durationSeconds)
+      const timeInSeconds = value
+      const progressPercent = durationSeconds > 0 
+        ? Math.round((timeInSeconds / durationSeconds) * 100) 
+        : 0
+      
+      // Mark that we're performing a user-initiated seek
+      isSeekingRef.current = true
+      // Reset seek loading state for new seek
+      setIsSeekLoading(false)
+      
       dispatchPlayer({
         type: 'SetProgress',
-        progress: value
+        progress: progressPercent
       })
-      player?.currentTime(value)
+      player?.currentTime(timeInSeconds)
+    }
+  }
+
+  function handleSeekValueChange(value: number[]): void {
+    if (value.length > 0) {
+      handleSeek({} as Event, value[0])
     }
   }
 
   function handleMute(): void {
-    player?.muted(!mute)
+    const newMuteState = !mute
+    player?.muted(newMuteState)
     dispatchPlayer({
       type: 'SetMute',
-      mute: !mute
+      mute: newMuteState
     })
+    if (onMuteToggle) {
+      onMuteToggle(newMuteState)
+    }
   }
 
   function handleVolume(_event: Event, value: number | number[]): void {
@@ -447,6 +665,12 @@ export function VideoControls({
         volume: value
       })
       player?.volume(value / 100)
+    }
+  }
+
+  function handleVolumeValueChange(value: number[]): void {
+    if (value.length > 0) {
+      handleVolume({} as Event, value[0])
     }
   }
 
@@ -478,31 +702,33 @@ export function VideoControls({
   }
 
   return (
-    <Box
-      sx={{
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        cursor: visible ? undefined : 'none',
-        zIndex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-end'
-      }}
+    <div
+      className={cn(
+        'absolute top-0 right-0 bottom-0 left-0 flex flex-col justify-end z-[2]',
+        visible ? 'cursor-default' : 'cursor-none'
+      )}
       onClick={getClickHandler(handlePlay, () => {
         void handleFullscreen()
       })}
       onMouseMove={() => player?.userActive(true)}
       data-testid="VideoControls"
     >
-      {!loading ? (
-        <Container maxWidth="xxl" sx={{ zIndex: 2 }}>
+      {/* Show title overlay only once on a single page */}
+      {!loading && mute && !wasUnmuted || placement == 'carouselItem'  ? (
+        <div className="responsive-container">
           <VideoTitle
             videoTitle={videoTitle}
+            videoLabel={videoLabel}
+            videoDescription={videoDescription}
             variant="unmute"
             showButton
+            isPreview={placement == 'carouselItem'}
+            containerSlug={containerSlug}
+            collectionTitle={collectionTitle}
+            action={action}
+            isMuxInsert={isMuxInsert}
+            onMuteToggle={handleMute}
+            onSkip={onSkip}
             onClick={(e) => {
               e.stopPropagation()
               handleVideoTitleClick({
@@ -510,25 +736,19 @@ export function VideoControls({
                 dispatch: dispatchPlayer,
                 mute,
                 volume,
-                play
+                play,
+                onMuteToggle
               })
             }}
           />
-        </Container>
-      ) : (
+        </div>
+      ) : null}
+      {/* Loading State */}
+      {loading && placement == 'singleVideo' && (
         <>
-          <Box
-            sx={{
-              display: 'flex',
-              flexGrow: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingTop: '104px',
-              zIndex: 2
-            }}
-          >
-            <CircularProgress size={65} />
-          </Box>
+          <div className="flex flex-grow items-center justify-center pt-[104px] z-[2]">
+            <div className="h-[65px] w-[65px] border-4 border-secondary border-t-primary rounded-full animate-spin" />
+          </div>
           {images[0]?.mobileCinematicHigh != null && (
             <Image
               src={images[0].mobileCinematicHigh}
@@ -540,7 +760,7 @@ export function VideoControls({
               }}
             />
           )}
-          <Container maxWidth="xxl" sx={{ zIndex: 2 }}>
+          <div className="max-w-7xl mx-auto z-[2] responsive-container">
             <VideoTitle
               showButton={!initialLoadComplete}
               videoTitle={videoTitle}
@@ -551,231 +771,161 @@ export function VideoControls({
                   dispatch: dispatchPlayer,
                   mute,
                   volume,
-                  play
+                  play,
+                  onMuteToggle
                 })
               }}
             />
-          </Container>
-          <Box
-            sx={{
-              zIndex: 0,
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0
-            }}
-          >
+          </div>
+          <div className="z-0 absolute top-0 left-0 right-0 bottom-0">
             <HeroOverlay />
-          </Box>
+          </div>
         </>
       )}
-      <Fade
-        in={visible}
-        style={{
-          transitionDelay: visible ? undefined : '2s',
-          transitionDuration: '225ms'
-        }}
-        timeout={{ exit: 2225 }}
-      >
-        <Box>
-          <Box
-            sx={{
-              background:
-                'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%)'
-            }}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <Container
-              data-testid="vjs-jfp-custom-controls"
-              maxWidth="xxl"
-              sx={{
-                zIndex: 5,
-                pb: 4,
-                transitionDelay: visible ? undefined : '0.5s'
-              }}
+      {/* Video Controls */}
+      {placement == 'singleVideo' && wasUnmuted && (
+        <div
+          className={cn(
+            'transition-opacity duration-[225ms]',
+            visible ? 'opacity-100 delay-0' : 'opacity-0 delay-[2000ms]'
+          )}
+        >
+          <div>
+            <div
+              className="mix-blend-multiply bg-gradient-to-b from-transparent via-stone-900/10 via-[30%] to-stone-900/80  pt-5"
+              onClick={(event) => event.stopPropagation()}
             >
-              <Slider
-                aria-label="mobile-progress-control"
-                min={0}
-                max={durationSeconds}
-                value={progress}
-                valueLabelFormat={(value) => {
-                  return secondsToTimeFormat(value, { trimZeroes: true })
-                }}
-                valueLabelDisplay="auto"
-                onChange={handleSeek}
-                sx={{
-                  height: 8.4,
-                  display: { xs: 'flex', md: 'none' },
-                  '& .MuiSlider-thumb': {
-                    width: 13,
-                    height: 13
-                  },
-                  '& .MuiSlider-rail': {
-                    backgroundColor: 'secondary.main'
-                  }
-                }}
-              />
-              <Stack
-                direction="row"
-                gap={5}
-                justifyContent={{ xs: 'space-between', md: 'none' }}
-                alignItems="center"
+              <div
+                data-testid="vjs-jfp-custom-controls"
+                className={cn(
+                  'max-w-7xl padded pb-4 z-[5]',
+                  visible ? 'delay-0' : 'delay-[500ms]'
+                )}
+                style={{ transitionDelay: visible ? undefined : '0.5s' }}
               >
-                <IconButton
-                  id={play ? 'pause-button' : 'play-button'}
-                  onClick={handlePlay}
-                  sx={{ display: { xs: 'none', md: 'flex' } }}
-                >
-                  {!play ? (
-                    <PlayArrowRounded fontSize="large" />
-                  ) : (
-                    <PauseRounded fontSize="large" />
-                  )}
-                </IconButton>
-                <Slider
-                  aria-label="desktop-progress-control"
+                <VideoSlider
+                  aria-label="mobile-progress-control"
                   min={0}
                   max={durationSeconds}
-                  value={progress}
-                  valueLabelFormat={(value) => {
-                    return secondsToTimeFormat(value, { trimZeroes: true })
-                  }}
-                  valueLabelDisplay="auto"
-                  onChange={handleSeek}
-                  sx={{
-                    height: 8.4,
-                    display: { xs: 'none', md: 'flex' },
-                    '& .MuiSlider-thumb': {
-                      width: 13,
-                      height: 13
-                    },
-                    '& .MuiSlider-rail': {
-                      backgroundColor: 'secondary.main'
-                    }
-                  }}
+                  value={[durationSeconds > 0 ? (progress / 100) * durationSeconds : 0]}
+                  onValueChange={handleSeekValueChange}
+                  className="h-[8.4px] flex md:hidden [&>button]:h-[13px] [&>button]:w-[13px] [&>span]:h-[8.4px] [&>span>span]:h-[8.4px]"
                 />
-                {player != null && (
-                  <Typography
-                    variant="body2"
-                    color="secondary.contrastText"
-                    sx={{ display: 'flex', gap: 1, zIndex: 2 }}
+                <div className="flex flex-row gap-5 justify-between md:justify-start items-center">
+                  <Button
+                    id={play ? 'pause-button' : 'play-button'}
+                    onClick={play ? handlePause : handlePlay}
+                    variant="ghost"
                   >
-                    <span className="font-sans">{currentTime ?? '0:00'}</span>
-                    <span>/</span>
-                    {duration === '0:00' ? (
-                      <Skeleton width={27} sx={{ bgcolor: 'grey.800' }} />
+                    {isSeekLoading ? (
+                      <Loader2 className="h-6 w-6 animate-spin" />
+                    ) : !play ? (
+                      <Play className="h-6 w-6" fill="currentColor" />
                     ) : (
-                      <span className="font-sans">{duration}</span>
+                      <Pause className="h-6 w-6" fill="currentColor" />
                     )}
-                  </Typography>
-                )}
-                <Stack direction="row" spacing={2}>
-                  <Stack
-                    alignItems="center"
-                    spacing={2}
-                    direction="row"
-                    sx={{
-                      display: { xs: 'flex', md: 'none' }
-                    }}
-                  >
-                    <IconButton onClick={handleMute}>
-                      {mute || volume === 0 ? (
-                        <VolumeOffOutlined />
-                      ) : volume > 60 ? (
-                        <VolumeUpOutlined />
-                      ) : volume > 30 ? (
-                        <VolumeDownOutlined />
+                  </Button>
+                  <VideoSlider
+                    aria-label="desktop-progress-control"
+                    min={0}
+                    max={durationSeconds}
+                    value={[durationSeconds > 0 ? (progress / 100) * durationSeconds : 0]}
+                    onValueChange={handleSeekValueChange}
+                    className="h-[8.4px] hidden md:flex [&>button]:h-[13px] [&>button]:w-[13px] [&>span]:h-[8.4px] [&>span>span]:h-[8.4px]"
+                  />
+                  {player != null && (
+                    <div className="flex gap-1 z-[2] text-sm text-secondary-foreground">
+                      <span className="font-sans">{currentTime ?? '0:00'}</span>
+                      <span>/</span>
+                      {duration === '0:00' ? (
+                        <Skeleton className="w-[27px] bg-muted" />
                       ) : (
-                        <VolumeMuteOutlined />
+                        <span className="font-sans">{duration}</span>
                       )}
-                    </IconButton>
-                  </Stack>
-                  <Stack
-                    alignItems="center"
-                    spacing={2}
-                    direction="row"
-                    sx={{
-                      display: { xs: 'none', md: 'flex' },
-                      '> .MuiSlider-root': {
-                        width: 0,
-                        opacity: 0,
-                        transition: 'all 0.2s ease-out'
-                      },
-                      '&:hover': {
-                        '> .MuiSlider-root': {
-                          width: 70,
-                          opacity: 1
-                        }
+                    </div>
+                  )}
+                  <div className="flex flex-row gap-2">
+                    <div className="flex flex-row items-center gap-2 md:hidden">
+                      <Button onClick={handleMute} variant="ghost" size="icon">
+                        {mute || volume === 0 ? (
+                          <VolumeX className="h-5 w-5" />
+                        ) : volume > 60 ? (
+                          <Volume2 className="h-5 w-5" />
+                        ) : volume > 30 ? (
+                          <Volume1 className="h-5 w-5" />
+                        ) : (
+                          <Volume className="h-5 w-5" />
+                        )}
+                      </Button>
+                    </div>
+                    <div className="hidden md:flex flex-row items-center gap-2 group">
+                      <VideoSlider
+                        aria-label="volume-control"
+                        min={0}
+                        max={100}
+                        value={[mute ? 0 : volume]}
+                        onValueChange={handleVolumeValueChange}
+                        className="w-0 opacity-0 transition-all duration-200 ease-out group-hover:w-[70px] group-hover:opacity-100 [&>button]:h-[10px] [&>button]:w-[10px] [&>span]:h-2 [&>span>span]:h-2"
+                      />
+                      <Button onClick={handleMute} variant="ghost" size="icon">
+                        {mute || volume === 0 ? (
+                          <VolumeX className="h-5 w-5" />
+                        ) : volume > 60 ? (
+                          <Volume2 className="h-5 w-5" />
+                        ) : volume > 30 ? (
+                          <Volume1 className="h-5 w-5" />
+                        ) : (
+                          <Volume className="h-5 w-5" />
+                        )}
+                      </Button>
+                    </div>
+                    <Button
+                      onClick={handleClick}
+                      variant="ghost"
+                      size="icon"
+                      aria-label="select audio language"
+                      data-testid="AudioLanguageButton"
+                    >
+                      <Globe className="h-5 w-5" />
+                    </Button>
+                    <Button
+                      onClick={handleClick}
+                      variant="ghost"
+                      size="icon"
+                      disabled={
+                        variant?.subtitleCount === undefined ||
+                        variant?.subtitleCount < 1
                       }
-                    }}
-                  >
-                    <IconButton onClick={handleMute}>
-                      {mute || volume === 0 ? (
-                        <VolumeOffOutlined />
-                      ) : volume > 60 ? (
-                        <VolumeUpOutlined />
-                      ) : volume > 30 ? (
-                        <VolumeDownOutlined />
+                    >
+                      <Subtitles className="h-5 w-5" />
+                    </Button>
+                    <Button
+                      onClick={handleFullscreen}
+                      data-testid="FullscreenButton"
+                      aria-pressed={fullscreen}
+                      variant="ghost"
+                      size="icon"
+                    >
+                      {fullscreen ? (
+                        <Minimize className="h-5 w-5" />
                       ) : (
-                        <VolumeMuteOutlined />
+                        <Maximize className="h-5 w-5" />
                       )}
-                    </IconButton>
-                    <Slider
-                      aria-label="volume-control"
-                      min={0}
-                      max={100}
-                      value={mute ? 0 : volume}
-                      valueLabelFormat={(value) => {
-                        return `${value}%`
-                      }}
-                      valueLabelDisplay="auto"
-                      onChange={handleVolume}
-                      sx={{
-                        width: 70,
-                        '& .MuiSlider-thumb': {
-                          width: 10,
-                          height: 10
-                        },
-                        '& .MuiSlider-rail': {
-                          backgroundColor: 'secondary.main'
-                        }
-                      }}
-                    />
-                  </Stack>
-                  <AudioLanguageButton componentVariant="icon" />
-                  <IconButton
-                    onClick={handleClick}
-                    disabled={
-                      variant?.subtitleCount === undefined ||
-                      variant?.subtitleCount < 1
-                    }
-                  >
-                    <SubtitlesOutlined />
-                  </IconButton>
-                  <IconButton
-                    onClick={handleFullscreen}
-                    data-testid="FullscreenButton"
-                  >
-                    {fullscreen ? (
-                      <FullscreenExitOutlined />
-                    ) : (
-                      <FullscreenOutlined />
-                    )}
-                  </IconButton>
-                </Stack>
-              </Stack>
-              {openLanguageSwitchDialog != null && (
-                <DynamicLanguageSwitchDialog
-                  open={openLanguageSwitchDialog}
-                  handleClose={() => setOpenLanguageSwitchDialog(false)}
-                />
-              )}
-            </Container>
-          </Box>
-        </Box>
-      </Fade>
-    </Box>
+                    </Button>
+                  </div>
+                </div>
+                {openLanguageSwitchDialog != null && (
+                  <DynamicLanguageSwitchDialog
+                    open={openLanguageSwitchDialog}
+                    handleClose={() => setOpenLanguageSwitchDialog(false)}
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
+
