@@ -9,26 +9,40 @@ import { IntegrationType } from "./globalTypes";
 // GraphQL query operation: GetIntegration
 // ====================================================
 
-export interface GetIntegration_integrations_team {
+export interface GetIntegration_integrations_IntegrationGoogle_team {
   __typename: "Team";
   id: string;
 }
 
-export interface GetIntegration_integrations_routes {
-  __typename: "IntegrationGrowthSpacesRoute";
+export interface GetIntegration_integrations_IntegrationGoogle {
+  __typename: "IntegrationGoogle";
   id: string;
-  name: string;
+  team: GetIntegration_integrations_IntegrationGoogle_team;
+  type: IntegrationType;
 }
 
-export interface GetIntegration_integrations {
+export interface GetIntegration_integrations_IntegrationGrowthSpaces_team {
+  __typename: "Team";
+  id: string;
+}
+
+export interface GetIntegration_integrations_IntegrationGrowthSpaces_routes {
+  __typename: "IntegrationGrowthSpacesRoute";
+  id: string | null;
+  name: string | null;
+}
+
+export interface GetIntegration_integrations_IntegrationGrowthSpaces {
   __typename: "IntegrationGrowthSpaces";
   id: string;
-  team: GetIntegration_integrations_team;
+  team: GetIntegration_integrations_IntegrationGrowthSpaces_team;
   type: IntegrationType;
-  accessId: string;
-  accessSecretPart: string;
-  routes: GetIntegration_integrations_routes[];
+  accessId: string | null;
+  accessSecretPart: string | null;
+  routes: GetIntegration_integrations_IntegrationGrowthSpaces_routes[] | null;
 }
+
+export type GetIntegration_integrations = GetIntegration_integrations_IntegrationGoogle | GetIntegration_integrations_IntegrationGrowthSpaces;
 
 export interface GetIntegration {
   integrations: GetIntegration_integrations[];

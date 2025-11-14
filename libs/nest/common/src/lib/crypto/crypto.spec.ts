@@ -23,7 +23,9 @@ describe('crypto', () => {
     accessSecretPart: 'plaint',
     accessSecretCipherText: 'saeRCBy44pMT',
     accessSecretIv: 'dx+2iBr7yYvilLIC',
-    accessSecretTag: 'VondZ4B9TbgdwCQeqjnkfA=='
+    accessSecretTag: 'VondZ4B9TbgdwCQeqjnkfA==',
+    accountEmail: null,
+    userId: null
   }
 
   describe('encryptSymmetric', () => {

@@ -39,7 +39,9 @@ const integration: Integration = {
   // decrypted value for accessSecretCipherText should be "plaintext"
   accessSecretCipherText: 'saeRCBy44pMT',
   accessSecretIv: 'dx+2iBr7yYvilLIC',
-  accessSecretTag: 'VondZ4B9TbgdwCQeqjnkfA=='
+  accessSecretTag: 'VondZ4B9TbgdwCQeqjnkfA==',
+  userId: null,
+  accountEmail: null
 }
 
 const teamWithUserTeam: Team = {

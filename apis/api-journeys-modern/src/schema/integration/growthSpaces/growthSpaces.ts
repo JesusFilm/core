@@ -20,7 +20,7 @@ export const IntegrationGrowthSpacesRef = builder.prismaObject('Integration', {
   fields: (t) => ({
     accessId: t.exposeString('accessId'),
     accessSecretPart: t.exposeString('accessSecretPart'),
-    team: t.relation('team'),
+    team: t.relation('team', { nullable: false }),
     routes: t.field({
       type: [IntegrationGrowthSpacesRouteRef],
       resolve: async (integration) => {
