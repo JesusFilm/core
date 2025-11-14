@@ -10,7 +10,6 @@ import { ReactElement, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import GlobeIcon from '@core/shared/ui/icons/Globe'
 import MoreIcon from '@core/shared/ui/icons/More'
@@ -59,7 +58,6 @@ export function TeamMenu(): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
-  const { teamIntegrations } = useFlags()
 
   const [teamCreateOpen, setTeamCreateOpen] = useState<boolean | undefined>()
   const [teamUpdateOpen, setTeamUpdateOpen] = useState<boolean | undefined>()
@@ -217,17 +215,15 @@ export function TeamMenu(): ReactElement {
             setAnchorEl(null)
           }}
         />
-        {teamIntegrations && (
-          <MenuItem
-            key="integrations"
-            label={t('Integrations')}
-            icon={<PackagePlusIcon />}
-            onClick={async () => {
-              await router.push(`teams/${activeTeam?.id}/integrations`)
-              setAnchorEl(null)
-            }}
-          />
-        )}
+        <MenuItem
+          key="integrations"
+          label={t('Integrations')}
+          icon={<PackagePlusIcon />}
+          onClick={async () => {
+            await router.push(`teams/${activeTeam?.id}/integrations`)
+            setAnchorEl(null)
+          }}
+        />
       </Menu>
     </>
   )
