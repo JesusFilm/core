@@ -43,6 +43,7 @@ jobs:
       ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      SKIP_ENV_VALIDATION: 1
     runs-on: blacksmith-2vcpu-ubuntu-2204
     strategy:
       matrix:
@@ -108,7 +109,7 @@ jobs:
 
       - name: Set image output
         run: |
-          echo "image=${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}" >> $GITHUB_OUTPUT
+          echo 'image=${{ steps.login-ecr-ecs.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}' >> $GITHUB_OUTPUT
 
       - name: Restart task definition
         run: |

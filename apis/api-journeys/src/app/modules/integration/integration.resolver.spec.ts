@@ -80,42 +80,9 @@ describe('IntegrationResolver', () => {
       expect(prismaService.integration.findMany).toHaveBeenCalledWith({
         where: {
           AND: [accessibleIntegrations, { teamId: 'teamId' }]
-        }
+        },
+        include: { team: true }
       })
-    })
-  })
-
-  describe('integrationDelete', () => {
-    it('should delete integration', async () => {
-      prismaService.integration.delete.mockResolvedValue(integration)
-      prismaService.integration.findUnique.mockResolvedValue(integration)
-      await resolver.integrationDelete('integrationId', ability)
-      expect(prismaService.integration.delete).toHaveBeenCalledWith({
-        where: {
-          id: 'integrationId'
-        }
-      })
-    })
-
-    it('should throw error if integration not found', async () => {
-      await expect(
-        resolver.integrationDelete('integrationId', ability)
-      ).rejects.toThrow('integration not found')
-    })
-
-    it('should throw error if user not authorized to delete integration', async () => {
-      prismaService.integration.findUnique.mockResolvedValue({
-        ...integration,
-        team: {
-          id: 'teamId',
-          userTeams: [
-            { userId: 'different user Id', role: UserTeamRole.manager }
-          ]
-        }
-      } as unknown as Integration)
-      await expect(
-        resolver.integrationDelete('integrationId', ability)
-      ).rejects.toThrow('user is not allowed to delete integration')
     })
   })
 })

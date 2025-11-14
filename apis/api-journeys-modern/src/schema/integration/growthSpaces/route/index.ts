@@ -1,4 +1,4 @@
 export {
-  IntegrationGrowthSpacesRoute,
+  type IntegrationGrowthSpacesRoute,
   IntegrationGrowthSpacesRouteRef
 } from './route'
