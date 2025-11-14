@@ -4,7 +4,11 @@
     "sourceMap": false,
     "outDir": "../../dist/out-tsc",
     "allowJs": true,
-    "types": ["node", "@playwright/test"]
+    "types": ["node", "@playwright/test"],
+    "baseUrl": ".",
+    "paths": {
+      "@pages/*": ["src/pages/*"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.js", "playwright.config.ts"]
 }
