@@ -7,6 +7,7 @@ import { ResultOf, graphql } from '@core/shared/gql'
 import { getApolloClient } from '../../lib/apolloClient'
 import { getBrightcoveUrl } from '../../lib/brightcove'
 import { getClientIp, setCorsHeaders } from '../../lib/redirectUtils'
+import { createTracingMiddleware } from '../../lib/tracingMiddleware'
 
 export const GET_SHORT_LINK_QUERY = graphql(`
   query GetShortLinkQuery($hostname: String!, $pathname: String!) {
@@ -25,6 +26,12 @@ export const GET_SHORT_LINK_QUERY = graphql(`
 `)
 
 const app = new OpenAPIHono().basePath('/')
+
+// Add Datadog tracing middleware
+app.use(
+  '*',
+  createTracingMiddleware('arclight.keyword.request', 'arclight-keyword')
+)
 
 const keywordRoute = createRoute({
   method: 'get',

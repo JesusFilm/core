@@ -5,6 +5,8 @@ import { etag } from 'hono/etag'
 import { HTTPException } from 'hono/http-exception'
 import { handle } from 'hono/vercel'
 
+import { createTracingMiddleware } from '../../../lib/tracingMiddleware'
+
 import { mediaComponentLinks } from './_media-component-links'
 import { mediaComponents } from './_media-components'
 import { mediaCountries } from './_media-countries'
@@ -24,6 +26,9 @@ app.use(
 )
 
 app.use('*', etag())
+
+// Add Datadog tracing middleware
+app.use('*', createTracingMiddleware('arclight.v2.api.request', 'arclight-v2'))
 
 app.use('*', async (c, next) => {
   await next()
