@@ -1,4 +1,3 @@
-import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
@@ -19,19 +18,12 @@ import { ContactDataForm } from './ContactDataForm'
 import { DateRangePicker } from './DateRangePicker'
 import { FilterForm } from './FilterForm'
 
-export const GET_JOURNEY_CREATED_AT = gql`
-  query GetJourneyCreatedAt($id: ID!) {
-    journey: adminJourney(id: $id, idType: databaseId) {
-      id
-      createdAt
-    }
-  }
-`
-
 interface ExportDialogProps {
   open: boolean
   onClose: () => void
   journeyId: string
+  availableBlockTypes: string[]
+  createdAt?: string | null
 }
 
 /**
@@ -43,7 +35,9 @@ interface ExportDialogProps {
 export function ExportDialog({
   open,
   onClose,
-  journeyId
+  journeyId,
+  availableBlockTypes,
+  createdAt
 }: ExportDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
@@ -51,25 +45,28 @@ export function ExportDialog({
     useJourneyEventsExport()
   const { exportJourneyContacts, downloading: contactsDownloading } =
     useJourneyContactsExport()
-  const { data: journeyData } = useQuery(GET_JOURNEY_CREATED_AT, {
-    variables: { id: journeyId }
-  })
+
+  const clampToToday = (date: Date | null): Date | null => {
+    if (date == null) return null
+    const now = new Date()
+    return date.getTime() > now.getTime() ? now : date
+  }
 
   const [startDate, setStartDate] = useState<Date | null>(() =>
-    journeyData?.journey?.createdAt
-      ? new Date(journeyData.journey.createdAt)
-      : null
+    createdAt != null ? clampToToday(new Date(String(createdAt))) : null
   )
-  const [endDate, setEndDate] = useState<Date | null>(new Date())
+  const [endDate, setEndDate] = useState<Date | null>(clampToToday(new Date()))
   const [selectedEvents, setSelectedEvents] = useState<string[]>([])
   const [contactData, setContactData] = useState<string[]>([])
   const [exportBy, setExportBy] = useState<string>('')
+  const [includeOldData, setIncludeOldData] = useState<boolean>(false)
 
   useEffect(() => {
-    if (journeyData?.journey?.createdAt != null) {
-      setStartDate(new Date(journeyData.journey.createdAt))
+    if (createdAt != null) {
+      const newStart = clampToToday(new Date(String(createdAt)))
+      setStartDate(newStart)
     }
-  }, [journeyData])
+  }, [createdAt])
 
   const handleExport = async (): Promise<void> => {
     try {
@@ -86,16 +83,12 @@ export function ExportDialog({
             (data) => data !== 'name' && data !== 'email' && data !== 'phone'
           ),
           ...(startDate && { periodRangeStart: startDate.toISOString() }),
-          ...(endDate && { periodRangeEnd: endDate.toISOString() })
-        }
+          ...(endDate && { periodRangeEnd: endDate.toISOString() }),
+          ...(includeOldData && { includeUnconnectedCards: true })
+        } as const
         await exportJourneyContacts({
           journeyId,
-          filter,
-          select: {
-            name: contactData.includes('name'),
-            email: contactData.includes('email'),
-            phone: contactData.includes('phone')
-          }
+          filter
         })
       }
       onClose()
@@ -138,8 +131,8 @@ export function ExportDialog({
       <DateRangePicker
         startDate={startDate}
         endDate={endDate}
-        onStartDateChange={setStartDate}
-        onEndDateChange={setEndDate}
+        onStartDateChange={(d) => setStartDate(clampToToday(d))}
+        onEndDateChange={(d) => setEndDate(clampToToday(d))}
       />
       <Box
         sx={{
@@ -195,6 +188,9 @@ export function ExportDialog({
           <ContactDataForm
             setSelectedFields={setContactData}
             selectedFields={contactData}
+            includeOldData={includeOldData}
+            setIncludeOldData={setIncludeOldData}
+            availableBlockTypes={availableBlockTypes}
           />
         </Box>
       )}
