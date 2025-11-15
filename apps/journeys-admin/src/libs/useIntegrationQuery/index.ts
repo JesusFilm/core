@@ -1,1 +1,1 @@
-export { useIntegrationQuery } from './useIntegrationQuery'
+export { useIntegrationQuery, GET_INTEGRATION } from './useIntegrationQuery'
