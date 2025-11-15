@@ -187,16 +187,12 @@ export class JourneyLevelActions {
   }
 
   async verifySnackBarMsg(snackbarMsg: string): Promise<void> {
-    await expect(
-      this.page.locator('div[id="notistack-snackbar"]', {
-        hasText: snackbarMsg
-      })
-    ).toBeVisible({ timeout: thirtySecondsTimeout })
-    await expect(
-      this.page.locator('div[id="notistack-snackbar"]', {
-        hasText: snackbarMsg
-      })
-    ).toBeHidden({ timeout: thirtySecondsTimeout })
+    // Try case-sensitive first, then case-insensitive
+    const snackbarLocator = this.page
+      .locator('div[id="notistack-snackbar"]')
+      .filter({ hasText: new RegExp(snackbarMsg, 'i') })
+    await expect(snackbarLocator).toBeVisible({ timeout: thirtySecondsTimeout })
+    await expect(snackbarLocator).toBeHidden({ timeout: thirtySecondsTimeout })
   }
 
   async clickSelectTeamDropDownIcon(): Promise<void> {
