@@ -115,15 +115,27 @@ export function GoogleIntegrationDetails(): ReactElement {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  const currentUserId = currentUser?.id
+
+  const integrationOwnerId = (
+    data?.integrations.find(
+      (integration) => integration.id === integrationId
+    ) as any
+  )?.user?.id
+
   const isIntegrationOwner =
-    // @ts-expect-error union narrowing not applied on fragmentless union here
-    data?.integrations.find((i) => i.id === integrationId)?.user?.id ===
-    currentUser?.id
+    integrationOwnerId != null &&
+    currentUserId != null &&
+    integrationOwnerId === currentUserId
 
   const isTeamManager =
-    teamData?.userTeams.some(
-      (ut) => ut.user.id === currentUser.id && ut.role === UserTeamRole.manager
-    ) === true
+    currentUserId != null &&
+    (teamData?.userTeams?.some(
+      (userTeam) =>
+        userTeam.user.id === currentUserId &&
+        userTeam.role === UserTeamRole.manager
+    ) ??
+      false)
 
   const canManageSyncs = isIntegrationOwner || isTeamManager
 
@@ -145,9 +157,7 @@ export function GoogleIntegrationDetails(): ReactElement {
       <Stack direction="row" justifyContent="flex-end">
         <Button
           onClick={() => setConfirmOpen(true)}
-          disabled={
-            integrationLoading || (!isIntegrationOwner && !isTeamManager)
-          }
+          disabled={integrationLoading || !canManageSyncs}
         >
           {t('Remove')}
         </Button>
