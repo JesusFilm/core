@@ -64,19 +64,6 @@ describe('VideoLibrary', () => {
   const push = jest.fn()
   const on = jest.fn()
 
-  beforeAll(() => {
-    Object.defineProperty(document, 'visibilityState', {
-      writable: true,
-      configurable: true,
-      value: 'visible'
-    })
-    Object.defineProperty(document, 'clearImmediate', {
-      writable: true,
-      configurable: true,
-      value: jest.fn()
-    })
-  })
-
   beforeEach(() => {
     jest.clearAllMocks()
 
