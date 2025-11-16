@@ -15,6 +15,7 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { VideoBlockSource } from '../../../../../../../../__generated__/globalTypes'
 import { videoItems } from '../../VideoLibrary/data'
 import { GET_VIDEO } from '../../VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+import { MuxVideoUploadProvider } from '../../../../../../MuxVideoUploadProvider'
 
 import { GET_VIDEO_VARIANT_LANGUAGES } from './SourceFromLocal/SourceFromLocal'
 
@@ -157,9 +158,11 @@ describe('Source', () => {
 
     render(
       <MockedProvider mocks={[{ ...getVideoMock, result }]}>
-        <EditorProvider initialState={{ selectedAttributeId: 'video1.id' }}>
-          <Source selectedBlock={null} onChange={onChange} />
-        </EditorProvider>
+        <MuxVideoUploadProvider>
+          <EditorProvider initialState={{ selectedAttributeId: 'video1.id' }}>
+            <Source selectedBlock={null} onChange={onChange} />
+          </EditorProvider>
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -199,35 +202,37 @@ describe('Source', () => {
     const onChange = jest.fn()
     render(
       <MockedProvider>
-        <Source
-          selectedBlock={{
-            id: 'video1.id',
-            __typename: 'VideoBlock',
-            parentBlockId: 'card1.id',
-            description:
-              'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
-            duration: 348,
-            endAt: 348,
-            fullsize: true,
-            image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
-            muted: false,
-            autoplay: true,
-            startAt: 0,
-            title: 'What is the Bible?',
-            videoId: 'ak06MSETeo4',
-            videoVariantLanguageId: null,
-            parentOrder: 0,
-            action: null,
-            source: VideoBlockSource.youTube,
-            mediaVideo: null,
-            objectFit: null,
-            subtitleLanguage: null,
-            showGeneratedSubtitles: null,
-            posterBlockId: 'poster1.id',
-            children: []
-          }}
-          onChange={onChange}
-        />
+        <MuxVideoUploadProvider>
+          <Source
+            selectedBlock={{
+              id: 'video1.id',
+              __typename: 'VideoBlock',
+              parentBlockId: 'card1.id',
+              description:
+                'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+              duration: 348,
+              endAt: 348,
+              fullsize: true,
+              image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
+              muted: false,
+              autoplay: true,
+              startAt: 0,
+              title: 'What is the Bible?',
+              videoId: 'ak06MSETeo4',
+              videoVariantLanguageId: null,
+              parentOrder: 0,
+              action: null,
+              source: VideoBlockSource.youTube,
+              mediaVideo: null,
+              objectFit: null,
+              subtitleLanguage: null,
+              showGeneratedSubtitles: null,
+              posterBlockId: 'poster1.id',
+              children: []
+            }}
+            onChange={onChange}
+          />
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -256,38 +261,40 @@ describe('Source', () => {
 
     render(
       <MockedProvider>
-        <Source
-          selectedBlock={{
-            id: 'video1.id',
-            __typename: 'VideoBlock',
-            parentBlockId: 'card1.id',
-            description:
-              'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
-            duration: 348,
-            endAt: 348,
-            fullsize: true,
-            image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
-            muted: false,
-            autoplay: true,
-            startAt: 0,
-            title: 'What is the Bible?',
-            videoId: 'ak06MSETeo4',
-            videoVariantLanguageId: null,
-            parentOrder: 0,
-            action: null,
-            source: VideoBlockSource.youTube,
-            mediaVideo: {
-              __typename: 'YouTube',
-              id: 'ak06MSETeo4'
-            },
-            objectFit: null,
-            subtitleLanguage: null,
-            showGeneratedSubtitles: null,
-            posterBlockId: 'poster1.id',
-            children: []
-          }}
-          onChange={onChange}
-        />
+        <MuxVideoUploadProvider>
+          <Source
+            selectedBlock={{
+              id: 'video1.id',
+              __typename: 'VideoBlock',
+              parentBlockId: 'card1.id',
+              description:
+                'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+              duration: 348,
+              endAt: 348,
+              fullsize: true,
+              image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
+              muted: false,
+              autoplay: true,
+              startAt: 0,
+              title: 'What is the Bible?',
+              videoId: 'ak06MSETeo4',
+              videoVariantLanguageId: null,
+              parentOrder: 0,
+              action: null,
+              source: VideoBlockSource.youTube,
+              mediaVideo: {
+                __typename: 'YouTube',
+                id: 'ak06MSETeo4'
+              },
+              objectFit: null,
+              subtitleLanguage: null,
+              showGeneratedSubtitles: null,
+              posterBlockId: 'poster1.id',
+              children: []
+            }}
+            onChange={onChange}
+          />
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -320,50 +327,52 @@ describe('Source', () => {
 
     render(
       <MockedProvider mocks={[getVideoVariantLanguagesMock]}>
-        <EditorProvider>
-          <Source
-            selectedBlock={{
-              id: 'video1.id',
-              __typename: 'VideoBlock',
-              parentBlockId: 'card1.id',
-              description: 'A local video',
-              duration: 120,
-              endAt: 120,
-              fullsize: true,
-              image: 'https://example.com/image.jpg',
-              muted: false,
-              autoplay: true,
-              startAt: 0,
-              title: 'Local Video Title',
-              videoId: 'videoId',
-              videoVariantLanguageId: '529',
-              parentOrder: 0,
-              action: null,
-              source: VideoBlockSource.internal,
-              mediaVideo: {
-                __typename: 'Video',
-                id: 'videoId',
-                images: [
-                  {
-                    __typename: 'CloudflareImage',
-                    mobileCinematicHigh: 'https://example.com/thumbnail.jpg'
-                  }
-                ],
-                title: [
-                  { __typename: 'VideoTitle', value: 'Local Video Title' }
-                ],
-                variant: null,
-                variantLanguages: []
-              },
-              objectFit: null,
-              subtitleLanguage: null,
-              showGeneratedSubtitles: false,
-              posterBlockId: null,
-              children: []
-            }}
-            onChange={onChange}
-          />
-        </EditorProvider>
+        <MuxVideoUploadProvider>
+          <EditorProvider>
+            <Source
+              selectedBlock={{
+                id: 'video1.id',
+                __typename: 'VideoBlock',
+                parentBlockId: 'card1.id',
+                description: 'A local video',
+                duration: 120,
+                endAt: 120,
+                fullsize: true,
+                image: 'https://example.com/image.jpg',
+                muted: false,
+                autoplay: true,
+                startAt: 0,
+                title: 'Local Video Title',
+                videoId: 'videoId',
+                videoVariantLanguageId: '529',
+                parentOrder: 0,
+                action: null,
+                source: VideoBlockSource.internal,
+                mediaVideo: {
+                  __typename: 'Video',
+                  id: 'videoId',
+                  images: [
+                    {
+                      __typename: 'CloudflareImage',
+                      mobileCinematicHigh: 'https://example.com/thumbnail.jpg'
+                    }
+                  ],
+                  title: [
+                    { __typename: 'VideoTitle', value: 'Local Video Title' }
+                  ],
+                  variant: null,
+                  variantLanguages: []
+                },
+                objectFit: null,
+                subtitleLanguage: null,
+                showGeneratedSubtitles: false,
+                posterBlockId: null,
+                children: []
+              }}
+              onChange={onChange}
+            />
+          </EditorProvider>
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -383,36 +392,38 @@ describe('Source', () => {
 
     render(
       <MockedProvider>
-        <EditorProvider>
-          <Source
-            selectedBlock={{
-              id: 'video1.id',
-              __typename: 'VideoBlock',
-              parentBlockId: 'card1.id',
-              description: 'A Mux video',
-              duration: 180,
-              endAt: 180,
-              fullsize: true,
-              image: 'https://example.com/mux-image.jpg',
-              muted: false,
-              autoplay: true,
-              startAt: 0,
-              title: 'Mux Video Title',
-              videoId: 'muxVideoId',
-              videoVariantLanguageId: null,
-              parentOrder: 0,
-              action: null,
-              source: VideoBlockSource.mux,
-              mediaVideo: null,
-              objectFit: null,
-              subtitleLanguage: null,
-              showGeneratedSubtitles: false,
-              posterBlockId: null,
-              children: []
-            }}
-            onChange={onChange}
-          />
-        </EditorProvider>
+        <MuxVideoUploadProvider>
+          <EditorProvider>
+            <Source
+              selectedBlock={{
+                id: 'video1.id',
+                __typename: 'VideoBlock',
+                parentBlockId: 'card1.id',
+                description: 'A Mux video',
+                duration: 180,
+                endAt: 180,
+                fullsize: true,
+                image: 'https://example.com/mux-image.jpg',
+                muted: false,
+                autoplay: true,
+                startAt: 0,
+                title: 'Mux Video Title',
+                videoId: 'muxVideoId',
+                videoVariantLanguageId: null,
+                parentOrder: 0,
+                action: null,
+                source: VideoBlockSource.mux,
+                mediaVideo: null,
+                objectFit: null,
+                subtitleLanguage: null,
+                showGeneratedSubtitles: false,
+                posterBlockId: null,
+                children: []
+              }}
+              onChange={onChange}
+            />
+          </EditorProvider>
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -504,9 +515,11 @@ describe('Source', () => {
 
     render(
       <MockedProvider>
-        <EditorProvider initialState={{ selectedAttributeId: 'video1.id' }}>
-          <Source selectedBlock={null} onChange={onChange} />
-        </EditorProvider>
+        <MuxVideoUploadProvider>
+          <EditorProvider initialState={{ selectedAttributeId: 'video1.id' }}>
+            <Source selectedBlock={null} onChange={onChange} />
+          </EditorProvider>
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -536,9 +549,11 @@ describe('Source', () => {
 
     render(
       <MockedProvider>
-        <EditorProvider initialState={{ selectedAttributeId: 'video1.id' }}>
-          <Source selectedBlock={null} onChange={onChange} />
-        </EditorProvider>
+        <MuxVideoUploadProvider>
+          <EditorProvider initialState={{ selectedAttributeId: 'video1.id' }}>
+            <Source selectedBlock={null} onChange={onChange} />
+          </EditorProvider>
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     await waitFor(() =>

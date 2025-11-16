@@ -51,6 +51,7 @@ import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUn
 import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../../Drawer/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
 import { videoItems } from '../../../../../../Drawer/VideoLibrary/data'
 import { GET_VIDEO } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
+import { MuxVideoUploadProvider } from '../../../../../../../../../MuxVideoUploadProvider'
 
 import {
   COVER_VIDEO_BLOCK_CREATE,
@@ -438,13 +439,17 @@ describe('BackgroundMediaVideo', () => {
         <JourneyProvider value={{ journey, variant: 'admin' }}>
           <ThemeProvider>
             <SnackbarProvider>
-              <EditorProvider initialState={{ selectedAttributeId: video.id }}>
-                <CommandProvider>
-                  <BackgroundMediaVideo cardBlock={card} />
-                  <CommandUndoItem variant="button" />
-                  <CommandRedoItem variant="button" />
-                </CommandProvider>
-              </EditorProvider>
+              <MuxVideoUploadProvider>
+                <EditorProvider
+                  initialState={{ selectedAttributeId: video.id }}
+                >
+                  <CommandProvider>
+                    <BackgroundMediaVideo cardBlock={card} />
+                    <CommandUndoItem variant="button" />
+                    <CommandRedoItem variant="button" />
+                  </CommandProvider>
+                </EditorProvider>
+              </MuxVideoUploadProvider>
             </SnackbarProvider>
           </ThemeProvider>
         </JourneyProvider>
@@ -568,15 +573,17 @@ describe('BackgroundMediaVideo', () => {
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <ThemeProvider>
               <SnackbarProvider>
-                <EditorProvider
-                  initialState={{ selectedAttributeId: video.id }}
-                >
-                  <CommandProvider>
-                    <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-                    <CommandUndoItem variant="button" />
-                    <CommandRedoItem variant="button" />
-                  </CommandProvider>
-                </EditorProvider>
+                <MuxVideoUploadProvider>
+                  <EditorProvider
+                    initialState={{ selectedAttributeId: video.id }}
+                  >
+                    <CommandProvider>
+                      <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+                      <CommandUndoItem variant="button" />
+                      <CommandRedoItem variant="button" />
+                    </CommandProvider>
+                  </EditorProvider>
+                </MuxVideoUploadProvider>
               </SnackbarProvider>
             </ThemeProvider>
           </JourneyProvider>
@@ -628,15 +635,17 @@ describe('BackgroundMediaVideo', () => {
           <JourneyProvider value={{ journey, variant: 'admin' }}>
             <ThemeProvider>
               <SnackbarProvider>
-                <EditorProvider
-                  initialState={{ selectedAttributeId: video.id }}
-                >
-                  <CommandProvider>
-                    <BackgroundMediaVideo cardBlock={existingCoverBlock} />
-                    <CommandUndoItem variant="button" />
-                    <CommandRedoItem variant="button" />
-                  </CommandProvider>
-                </EditorProvider>
+                <MuxVideoUploadProvider>
+                  <EditorProvider
+                    initialState={{ selectedAttributeId: video.id }}
+                  >
+                    <CommandProvider>
+                      <BackgroundMediaVideo cardBlock={existingCoverBlock} />
+                      <CommandUndoItem variant="button" />
+                      <CommandRedoItem variant="button" />
+                    </CommandProvider>
+                  </EditorProvider>
+                </MuxVideoUploadProvider>
               </SnackbarProvider>
             </ThemeProvider>
           </JourneyProvider>
