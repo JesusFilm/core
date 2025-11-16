@@ -107,6 +107,8 @@ export interface CardVideoCreate_video_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardVideoCreate_video_action = CardVideoCreate_video_action_NavigateToBlockAction | CardVideoCreate_video_action_LinkAction | CardVideoCreate_video_action_EmailAction | CardVideoCreate_video_action_ChatAction | CardVideoCreate_video_action_PhoneAction;

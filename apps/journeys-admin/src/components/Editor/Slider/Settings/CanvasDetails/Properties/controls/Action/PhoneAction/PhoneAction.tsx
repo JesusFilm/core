@@ -218,7 +218,7 @@ export function PhoneAction(): ReactElement {
       }
 
       // Submit action if both fields are valid
-      if (hasValidCallingCode && hasValidPhoneNumber) {
+      if (hasValidCallingCode && hasValidPhoneNumber && selectedStep != null) {
         const selectedCountryForAction = findCountryByCallingCode(
           normalizedCallingCode,
           phoneAction?.countryCode
@@ -239,7 +239,9 @@ export function PhoneAction(): ReactElement {
             gtmEventName: '',
             phone: fullPhoneNumber,
             countryCode: selectedCountryForAction.countryCode,
-            contactAction: phoneAction?.contactAction ?? ContactActionType.call
+            contactAction: phoneAction?.contactAction ?? ContactActionType.call,
+            customizable: phoneAction?.customizable ?? false,
+            parentStepId: selectedStep.id
           },
           undoAction: selectedBlock.action,
           editorFocus: {
@@ -280,7 +282,13 @@ export function PhoneAction(): ReactElement {
   // Handle contact action change (Call/Text)
   const handleContactActionChange = useCallback(
     (contactAction: ContactActionType) => {
-      if (!selectedBlock || disableRadioAction || !phoneAction) return
+      if (
+        !selectedBlock ||
+        disableRadioAction ||
+        !phoneAction ||
+        selectedStep == null
+      )
+        return
 
       addAction({
         blockId: selectedBlock.id,
@@ -291,7 +299,9 @@ export function PhoneAction(): ReactElement {
           gtmEventName: '',
           phone: phoneAction.phone,
           countryCode: phoneAction.countryCode ?? 'US',
-          contactAction
+          contactAction,
+          customizable: phoneAction.customizable ?? false,
+          parentStepId: selectedStep.id
         },
         undoAction: selectedBlock.action,
         editorFocus: {

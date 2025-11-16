@@ -125,6 +125,8 @@ export interface CardFormCreate_button_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardFormCreate_button_action = CardFormCreate_button_action_NavigateToBlockAction | CardFormCreate_button_action_LinkAction | CardFormCreate_button_action_EmailAction | CardFormCreate_button_action_ChatAction | CardFormCreate_button_action_PhoneAction;
@@ -214,6 +216,8 @@ export interface CardFormCreate_buttonUpdate_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardFormCreate_buttonUpdate_action = CardFormCreate_buttonUpdate_action_NavigateToBlockAction | CardFormCreate_buttonUpdate_action_LinkAction | CardFormCreate_buttonUpdate_action_EmailAction | CardFormCreate_buttonUpdate_action_ChatAction | CardFormCreate_buttonUpdate_action_PhoneAction;

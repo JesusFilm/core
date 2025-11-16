@@ -787,7 +787,9 @@ describe('Button', () => {
       gtmEventName: 'click',
       phone: '+1234567890',
       countryCode: 'US',
-      contactAction: ContactActionType.call
+      contactAction: ContactActionType.call,
+      customizable: false,
+      parentStepId: 'step.id'
     }
 
     const buttonBlock = {
