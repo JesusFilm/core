@@ -176,7 +176,7 @@
     "add-tags": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec ts-node apis/api-media/src/scripts/add-tags.ts"
+        "command": "pnpm exec ts-node -P apis/api-media/tsconfig.app.json -r tsconfig-paths/register apis/api-media/src/scripts/add-tags.ts"
       }
     }
   }
