@@ -15,10 +15,10 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
 import { VideoBlockUpdateInput } from '../../../../../../../__generated__/globalTypes'
+import { useMuxVideoUpload } from '../../../../../MuxVideoUploadProvider'
 import { Drawer } from '../Drawer'
 
 import { VideoFromLocal } from './VideoFromLocal'
-import { useMuxVideoUpload } from '../../../../../MuxVideoUploadProvider'
 
 const VideoDetails = dynamic(
   async () =>
