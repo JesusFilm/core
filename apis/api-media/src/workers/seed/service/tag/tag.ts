@@ -71,7 +71,8 @@ export async function seedTags(): Promise<void> {
     'World Youth Day',
     "Valentine's Day",
     "Mother's & Women's Day",
-    "Father's Day"
+    "Father's Day",
+    'World Cup'
   ])
   await upsertTag('Audience', [
     'Catholic/Orthodox',
