@@ -64,6 +64,19 @@ describe('VideoLibrary', () => {
   const push = jest.fn()
   const on = jest.fn()
 
+  beforeAll(() => {
+    Object.defineProperty(document, 'visibilityState', {
+      writable: true,
+      configurable: true,
+      value: 'visible'
+    })
+    Object.defineProperty(document, 'clearImmediate', {
+      writable: true,
+      configurable: true,
+      value: jest.fn()
+    })
+  })
+
   beforeEach(() => {
     jest.clearAllMocks()
 
@@ -482,7 +495,7 @@ describe('VideoLibrary', () => {
       }
     } as unknown as NextRouter)
 
-    render(
+    const { getByRole } = render(
       <MockedProvider>
         <SnackbarProvider>
           <MuxVideoUploadProvider>
@@ -491,7 +504,6 @@ describe('VideoLibrary', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    const { getByRole } = { getByRole: screen.getByRole.bind(screen) }
     fireEvent.click(getByRole('tab', { name: 'Upload' }))
     fireEvent.click(getByRole('tab', { name: 'Library' }))
     await waitFor(() => {
