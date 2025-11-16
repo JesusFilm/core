@@ -5168,6 +5168,7 @@ input MutationAudioPreviewUpdateInput @join__type(graph: API_LANGUAGES)  {
 input LuminaAgentApiKeyCreateInput @join__type(graph: API_LUMINA)  {
   agentId: ID!
   name: String!
+  enabled: Boolean!
 }
 
 input LuminaAgentApiKeyUpdateInput @join__type(graph: API_LUMINA)  {

@@ -106,6 +106,7 @@ type LuminaAgentApiKey {
 input LuminaAgentApiKeyCreateInput {
   agentId: ID!
   name: String!
+  enabled: Boolean!
 }
 
 input LuminaAgentApiKeyUpdateInput {
