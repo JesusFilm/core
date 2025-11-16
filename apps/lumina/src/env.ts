@@ -57,7 +57,8 @@ export const env = createEnv({
         'ap2.datadoghq.com'
       ])
       .default('datadoghq.com'),
-    NEXT_PUBLIC_DATADOG_VERSION: z.string().optional()
+    NEXT_PUBLIC_DATADOG_VERSION: z.string().optional(),
+    NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: z.string().optional()
   },
   runtimeEnv: {
     ANALYZE: process.env['ANALYZE'],
@@ -76,6 +77,7 @@ export const env = createEnv({
     NEXT_PUBLIC_DATADOG_ENV: process.env['VERCEL_ENV'],
     NEXT_PUBLIC_DATADOG_SITE: process.env['NEXT_PUBLIC_DATADOG_SITE'],
     NEXT_PUBLIC_DATADOG_VERSION: process.env['VERCEL_GIT_COMMIT_SHA'],
+    NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: process.env['VERCEL_GIT_COMMIT_SHA'],
     VERCEL: process.env['VERCEL'],
     VERCEL_ENV: process.env['VERCEL_ENV'],
     VERCEL_URL: process.env['VERCEL_URL'],

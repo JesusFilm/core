@@ -1,3 +1,4 @@
+'use server'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale } from 'next-intl/server'
 import { getLangDir } from 'rtl-detect'
@@ -5,7 +6,8 @@ import { getLangDir } from 'rtl-detect'
 import DatadogErrorBoundary from '@/components/Datadog/ErrorBoundary'
 import DatadogInit from '@/components/Datadog/Init'
 import { AuthProvider } from '@/components/Auth/AuthProvider'
-import { getUser } from '@/libs/auth/getUser'
+import { getUser } from '@/libs/auth/getUser/server-getUser'
+import { ApolloProvider } from '@/components/ApolloProvider'
 
 import '@/app/globals.css'
 
@@ -23,12 +25,13 @@ export default async function RootLayout({
       <body>
         <DatadogInit />
         <NextIntlClientProvider>
-          <AuthProvider initialUser={user}>
-            <DatadogErrorBoundary>{children}</DatadogErrorBoundary>
-          </AuthProvider>
+          <ApolloProvider user={user}>
+            <AuthProvider initialUser={user}>
+              <DatadogErrorBoundary>{children}</DatadogErrorBoundary>
+            </AuthProvider>
+          </ApolloProvider>
         </NextIntlClientProvider>
       </body>
     </html>
   )
 }
-

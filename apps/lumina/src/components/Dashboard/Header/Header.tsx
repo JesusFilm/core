@@ -97,7 +97,9 @@ export function Header({ onMenuClick }: HeaderProps) {
                   <div className="font-medium">
                     {user.displayName ?? 'User'}
                   </div>
-                  <div className="text-xs text-gray-500">{user.email}</div>
+                  <div className="truncate text-xs text-gray-500">
+                    {user.email}
+                  </div>
                 </div>
               )}
               <button

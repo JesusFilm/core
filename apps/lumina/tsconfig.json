@@ -43,7 +43,8 @@
     ],
     "baseUrl": "./src",
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["*"],
+      "@core/shared/gql": ["../../../libs/shared/gql/src"]
     }
   },
   "include": [
@@ -58,4 +59,3 @@
   ],
   "exclude": ["node_modules", "jest.config.ts"]
 }
-

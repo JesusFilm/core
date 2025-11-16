@@ -1,11 +1,12 @@
 'use client'
 
-import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth'
-import { useEffect, useState } from 'react'
+import { onAuthStateChanged, type User as FirebaseUser } from 'firebase/auth'
+import { useEffect, useState, useRef } from 'react'
 
 import { getFirebaseAuth } from '@/libs/auth/firebase'
 
-import { AuthContext, User } from '@/libs/auth/authContext'
+import { AuthContext, type User } from '@/libs/auth/authContext'
+import { getUser } from '@/libs/auth/getUser/client-getUser'
 
 interface AuthProviderProps {
   children: React.ReactNode
@@ -14,6 +15,7 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children, initialUser }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(initialUser)
+  const isInitialMount = useRef(true)
 
   useEffect(() => {
     const auth = getFirebaseAuth()
@@ -21,20 +23,17 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
       auth,
       async (firebaseUser: FirebaseUser | null) => {
         if (firebaseUser != null) {
-          const token = await firebaseUser.getIdToken()
-          const userData: User = {
-            uid: firebaseUser.uid,
-            email: firebaseUser.email,
-            displayName: firebaseUser.displayName,
-            photoURL: firebaseUser.photoURL,
-            phoneNumber: firebaseUser.phoneNumber,
-            emailVerified: firebaseUser.emailVerified,
-            providerId: firebaseUser.providerData[0]?.providerId ?? null,
-            customClaims: {},
-            token
+          const userData = await getUser()
+          if (userData != null) {
+            setUser(userData)
           }
-          setUser(userData)
         } else {
+          if (isInitialMount.current) {
+            isInitialMount.current = false
+            if (initialUser != null) {
+              return
+            }
+          }
           setUser(null)
         }
       }
@@ -43,7 +42,7 @@ export function AuthProvider({ children, initialUser }: AuthProviderProps) {
     return () => {
       unsubscribe()
     }
-  }, [])
+  }, [initialUser])
 
   return (
     <AuthContext.Provider value={{ user }}>{children}</AuthContext.Provider>
