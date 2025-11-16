@@ -172,6 +172,12 @@
       "options": {
         "commands": ["pnpm exec ts-node apis/api-media/db/seed.ts"]
       }
+    },
+    "add-tags": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec ts-node apis/api-media/src/scripts/add-tags.ts"
+      }
     }
   }
 }
