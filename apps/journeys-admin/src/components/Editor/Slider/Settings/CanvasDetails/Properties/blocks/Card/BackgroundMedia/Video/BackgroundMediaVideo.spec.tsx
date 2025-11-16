@@ -45,13 +45,13 @@ import {
 import { VideoBlockSource } from '../../../../../../../../../../../__generated__/globalTypes'
 import { COVER_BLOCK_DELETE } from '../../../../../../../../../../libs/useCoverBlockDeleteMutation/useCoverBlockDeleteMutation'
 import { COVER_BLOCK_RESTORE } from '../../../../../../../../../../libs/useCoverBlockRestoreMutation/useCoverBlockRestoreMutation'
+import { MuxVideoUploadProvider } from '../../../../../../../../../MuxVideoUploadProvider'
 import { ThemeProvider } from '../../../../../../../../../ThemeProvider'
 import { CommandRedoItem } from '../../../../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../../../../Toolbar/Items/CommandUndoItem'
 import { GET_VIDEO_VARIANT_LANGUAGES } from '../../../../../../Drawer/VideoBlockEditor/Source/SourceFromLocal/SourceFromLocal'
 import { videoItems } from '../../../../../../Drawer/VideoLibrary/data'
 import { GET_VIDEO } from '../../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
-import { MuxVideoUploadProvider } from '../../../../../../../../../MuxVideoUploadProvider'
 
 import {
   COVER_VIDEO_BLOCK_CREATE,

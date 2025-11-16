@@ -19,11 +19,11 @@ import {
   VideoBlockObjectFit,
   VideoBlockSource
 } from '../../../../../../../../../../__generated__/globalTypes'
+import { MuxVideoUploadProvider } from '../../../../../../../../MuxVideoUploadProvider'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import { videoItems } from '../../../../../Drawer/VideoLibrary/data'
 import { GET_VIDEO } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/LocalDetails/LocalDetails'
-import { MuxVideoUploadProvider } from '../../../../../../../../MuxVideoUploadProvider'
 
 import { VIDEO_BLOCK_UPDATE, VideoOptions } from './VideoOptions'
 
