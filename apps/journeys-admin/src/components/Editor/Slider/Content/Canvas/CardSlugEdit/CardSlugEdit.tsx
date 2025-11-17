@@ -1,17 +1,19 @@
-import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { gql, useMutation } from '@apollo/client'
+import Box from '@mui/material/Box'
+import Fade from '@mui/material/Fade'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
-import Fade from '@mui/material/Fade'
-import Box from '@mui/material/Box'
-import { useCustomDomainsQuery } from '../../../../../../libs/useCustomDomainsQuery'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { gql, useMutation } from '@apollo/client'
-import { StepBlockSlugUpdate } from '../../../../../../../__generated__/StepBlockSlugUpdate'
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { enqueueSnackbar } from 'notistack'
+import { ReactElement } from 'react'
+
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+
+import { StepBlockSlugUpdate } from '../../../../../../../__generated__/StepBlockSlugUpdate'
+import { useCustomDomainsQuery } from '../../../../../../libs/useCustomDomainsQuery'
 import { TextFieldForm } from '../../../../../TextFieldForm'
 
 export const STEP_BLOCK_SLUG_UPDATE = gql`

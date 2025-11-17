@@ -1,6 +1,7 @@
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { NodeProps, useUpdateNodeInternals } from 'reactflow'
 
@@ -15,7 +16,6 @@ import { STEP_NODE_WIDTH } from './libs/sizes'
 import { StepBlockNodeAnalytics } from './StepBlockNodeAnalytics'
 import { StepBlockNodeCard } from './StepBlockNodeCard'
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
-import Typography from '@mui/material/Typography'
 
 export function StepBlockNode({
   id,

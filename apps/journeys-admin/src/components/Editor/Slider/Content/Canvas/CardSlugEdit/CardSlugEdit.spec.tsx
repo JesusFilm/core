@@ -1,17 +1,21 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
-import { EditorProvider, ActiveContent } from '@core/journeys/ui/EditorProvider'
-import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import type { TreeBlock } from '@core/journeys/ui/block'
+import { ActiveContent, EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+
 import { BlockFields_StepBlock as StepBlock } from '../../../../../../../__generated__/BlockFields'
-import { CardSlugEdit } from '.'
-import { STEP_BLOCK_SLUG_UPDATE } from './CardSlugEdit'
 import {
   StepBlockSlugUpdate,
   StepBlockSlugUpdateVariables
 } from '../../../../../../../__generated__/StepBlockSlugUpdate'
 import { CommandUndoItem } from '../../../../Toolbar/Items/CommandUndoItem/CommandUndoItem'
+
+import { STEP_BLOCK_SLUG_UPDATE } from './CardSlugEdit'
+
+import { CardSlugEdit } from '.'
 
 // Mock translations
 jest.mock('next-i18next', () => ({
@@ -138,7 +142,7 @@ describe('CardSlugEdit', () => {
       </MockedProvider>
     )
 
-    const input = screen.getByDisplayValue('old-slug') as HTMLInputElement
+    const input = screen.getByDisplayValue('old-slug')
     fireEvent.change(input, { target: { value: 'new-slug' } })
     fireEvent.blur(input)
 
@@ -184,7 +188,7 @@ describe('CardSlugEdit', () => {
       </MockedProvider>
     )
 
-    const input = screen.getByDisplayValue('valid-slug') as HTMLInputElement
+    const input = screen.getByDisplayValue('valid-slug')
     fireEvent.change(input, { target: { value: 'duplicate-slug' } })
     fireEvent.blur(input)
 
@@ -231,7 +235,7 @@ describe('CardSlugEdit', () => {
       </MockedProvider>
     )
 
-    const input = screen.getByDisplayValue('old-slug') as HTMLInputElement
+    const input = screen.getByDisplayValue('old-slug')
     fireEvent.change(input, { target: { value: 'new-slug' } })
     fireEvent.blur(input)
 

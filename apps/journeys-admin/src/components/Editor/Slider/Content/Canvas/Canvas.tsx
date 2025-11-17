@@ -25,6 +25,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { Hotkeys } from '../../../Hotkeys'
 
 import { CanvasFooter } from './CanvasFooter'
+import { CardSlugEdit } from './CardSlugEdit'
 import { CardWrapper } from './CardWrapper'
 import { DragDropWrapper } from './DragDropWrapper'
 import { DragItemWrapper } from './DragItemWrapper'
@@ -37,7 +38,6 @@ import {
   calculateScale,
   calculateScaledMargin
 } from './utils/calculateDimensions'
-import { CardSlugEdit } from './CardSlugEdit'
 
 const fadeIn = keyframes`
   from {
