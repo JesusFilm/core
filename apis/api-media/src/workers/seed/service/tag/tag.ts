@@ -24,7 +24,7 @@ export async function upsertTag(
       },
       update: {}
     })
-    await prisma.tagName.upsert({
+    await tx.tagName.upsert({
       where: {
         tagId_languageId: { tagId: tag.id, languageId: '529' }
       },
