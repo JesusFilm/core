@@ -1,5 +1,8 @@
+import Checkbox from '@mui/material/Checkbox'
 import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { Form, Formik, FormikValues } from 'formik'
 import { useRouter } from 'next/router'
@@ -12,7 +15,10 @@ import { object, string } from 'yup'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { SocialImage } from '@core/journeys/ui/TemplateView/TemplateViewHeader/SocialImage'
+import { useJourneyAiTranslateSubscription } from '@core/journeys/ui/useJourneyAiTranslateSubscription'
+import { SUPPORTED_LANGUAGE_IDS } from '@core/journeys/ui/useJourneyAiTranslateSubscription/supportedLanguages'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { useGetChildTemplateJourneyLanguages } from '../../../../../libs/useGetChildTemplateJourneyLanguages'
@@ -93,8 +99,28 @@ export function LanguageScreen({
         ...childJourneyLanguagesJourneyMap
       }
 
+  const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
+    languageId: '529',
+    where: {
+      ids: [...SUPPORTED_LANGUAGE_IDS]
+    }
+  })
+
   const validationSchema = object({
-    teamSelect: string().required()
+    teamSelect: string().required(),
+    translateLanguage: object()
+      .nullable()
+      .test(
+        'translateLanguage-required',
+        'Please select a translation language',
+        function (value) {
+          const { translateWithAI } = this.parent
+          if (translateWithAI) {
+            return value != null && typeof value === 'object' && 'id' in value
+          }
+          return true
+        }
+      )
   })
 
   const initialValues = {
@@ -103,10 +129,68 @@ export function LanguageScreen({
       id: journey?.language?.id,
       localName: journey?.language?.name.find((name) => name.primary)?.value,
       nativeName: journey?.language?.name.find((name) => !name.primary)?.value
-    }
+    },
+    translateWithAI: false,
+    translateLanguage: undefined as
+      | { id: string; localName?: string; nativeName?: string }
+      | undefined
   }
 
   const [journeyDuplicate] = useJourneyDuplicateMutation()
+
+  const [translationVariables, setTranslationVariables] = useState<
+    | {
+        journeyId: string
+        name: string
+        journeyLanguageName: string
+        textLanguageId: string
+        textLanguageName: string
+      }
+    | undefined
+  >(undefined)
+  const [translationCompleted, setTranslationCompleted] = useState(false)
+
+  // Set up the subscription for translation
+  const { data: translationData } = useJourneyAiTranslateSubscription({
+    variables: translationVariables,
+    skip: !translationVariables,
+    onData: ({ data }) => {
+      // Check if translation is complete (progress is 100 and journey is present)
+      if (
+        !translationCompleted &&
+        data?.data?.journeyAiTranslateCreateSubscription?.progress === 100 &&
+        data?.data?.journeyAiTranslateCreateSubscription?.journey
+      ) {
+        setTranslationCompleted(true)
+        const translatedJourneyId =
+          data.data.journeyAiTranslateCreateSubscription.journey.id
+
+        enqueueSnackbar(t('Journey Translated'), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+        setLoading(false)
+        setTranslationVariables(undefined)
+
+        // Navigate to the translated journey
+        void router.push(
+          `/templates/${translatedJourneyId}/customize`,
+          undefined,
+          { shallow: true }
+        )
+        handleNext()
+      }
+    },
+    onError: (error) => {
+      enqueueSnackbar(error.message, {
+        variant: 'error',
+        preventDuplicate: true
+      })
+      setLoading(false)
+      setTranslationVariables(undefined)
+      setTranslationCompleted(false)
+    }
+  })
 
   const FORM_SM_BREAKPOINT_WIDTH = '390px'
 
@@ -117,34 +201,129 @@ export function LanguageScreen({
       return
     }
     if (isSignedIn) {
-      const { teamSelect: teamId } = values
+      const { teamSelect: teamId, translateWithAI, translateLanguage } = values
+
+      // Validate that translateLanguage is selected if translateWithAI is enabled
+      if (translateWithAI && !translateLanguage?.id) {
+        enqueueSnackbar(t('Please select a translation language'), {
+          variant: 'error'
+        })
+        setLoading(false)
+        return
+      }
       const {
         languageSelect: { id: languageId }
       } = values
-      const journeyId = languagesJourneyMap?.[languageId] ?? journey.id
-      const { data: duplicateData } = await journeyDuplicate({
-        variables: { id: journeyId, teamId }
-      })
-      if (duplicateData?.journeyDuplicate == null) {
-        enqueueSnackbar(
-          t(
-            'Failed to duplicate journey to team, please refresh the page and try again'
-          ),
-          {
-            variant: 'error'
-          }
-        )
-        setLoading(false)
 
-        return
+      // Check if a journey for this language already exists
+      const existingJourneyId = languagesJourneyMap?.[languageId]
+
+      if (existingJourneyId && !translateWithAI) {
+        // Journey for this language exists and no AI translation requested - just duplicate it
+        const { data: duplicateData } = await journeyDuplicate({
+          variables: { id: existingJourneyId, teamId }
+        })
+        if (duplicateData?.journeyDuplicate == null) {
+          enqueueSnackbar(
+            t(
+              'Failed to duplicate journey to team, please refresh the page and try again'
+            ),
+            {
+              variant: 'error'
+            }
+          )
+          setLoading(false)
+          return
+        }
+        await router.push(
+          `/templates/${duplicateData.journeyDuplicate.id}/customize`,
+          undefined,
+          { shallow: true }
+        )
+        handleNext()
+        setLoading(false)
+      } else {
+        // AI translation requested or journey doesn't exist - duplicate and translate
+        try {
+          // Use the source journey or existing journey for duplication
+          const sourceJourneyId = existingJourneyId ?? journey.id
+          const { data: duplicateData } = await journeyDuplicate({
+            variables: { id: sourceJourneyId, teamId }
+          })
+
+          if (duplicateData?.journeyDuplicate?.id == null) {
+            throw new Error('Journey duplication failed')
+          }
+
+          const newJourneyId = duplicateData.journeyDuplicate.id
+
+          // If AI translation is requested, use the translateLanguage, otherwise use languageSelect
+          if (translateWithAI && translateLanguage) {
+            // Get source language name
+            const sourceLanguageName =
+              journey.language.name.find((name) => !name.primary)?.value ?? ''
+
+            // Get target language name from translateLanguage
+            const targetLanguageName =
+              translateLanguage.nativeName ?? translateLanguage.localName ?? ''
+
+            // Start translation
+            setTranslationCompleted(false)
+            setTranslationVariables({
+              journeyId: newJourneyId,
+              name: journey.title,
+              journeyLanguageName: sourceLanguageName,
+              textLanguageId: translateLanguage.id,
+              textLanguageName: targetLanguageName
+            })
+
+            // Don't navigate yet - wait for translation to complete
+          } else if (!existingJourneyId) {
+            // No existing journey and no AI translation - duplicate and translate to selected language
+            const {
+              languageSelect: { id: targetLanguageId, localName, nativeName }
+            } = values
+
+            // Get source language name
+            const sourceLanguageName =
+              journey.language.name.find((name) => !name.primary)?.value ?? ''
+
+            // Get target language name
+            const targetLanguageName = nativeName ?? localName ?? ''
+
+            // Start translation
+            setTranslationCompleted(false)
+            setTranslationVariables({
+              journeyId: newJourneyId,
+              name: journey.title,
+              journeyLanguageName: sourceLanguageName,
+              textLanguageId: targetLanguageId,
+              textLanguageName: targetLanguageName
+            })
+
+            // Don't navigate yet - wait for translation to complete
+          } else {
+            // Existing journey found and no translation needed - just navigate
+            await router.push(
+              `/templates/${newJourneyId}/customize`,
+              undefined,
+              { shallow: true }
+            )
+            handleNext()
+            setLoading(false)
+          }
+        } catch (error) {
+          enqueueSnackbar(
+            t(
+              'Failed to duplicate journey to team, please refresh the page and try again'
+            ),
+            {
+              variant: 'error'
+            }
+          )
+          setLoading(false)
+        }
       }
-      await router.push(
-        `/templates/${duplicateData.journeyDuplicate.id}/customize`,
-        undefined,
-        { shallow: true }
-      )
-      handleNext()
-      setLoading(false)
     }
   }
 
@@ -216,6 +395,38 @@ export function LanguageScreen({
                   }))}
                   onChange={(value) => setFieldValue('languageSelect', value)}
                 />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={values.translateWithAI}
+                      onChange={(e) => {
+                        setFieldValue('translateWithAI', e.target.checked)
+                        if (!e.target.checked) {
+                          setFieldValue('translateLanguage', undefined)
+                        }
+                      }}
+                    />
+                  }
+                  label={t('Translate with AI')}
+                />
+                {values.translateWithAI && (
+                  <LanguageAutocomplete
+                    value={values.translateLanguage}
+                    languages={languagesData?.languages}
+                    loading={languagesLoading}
+                    onChange={(value) =>
+                      setFieldValue('translateLanguage', value)
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        placeholder={t('Search Language')}
+                        label={t('Select Translation Language')}
+                        variant="filled"
+                      />
+                    )}
+                  />
+                )}
                 <Typography
                   variant="h6"
                   display={{ xs: 'none', sm: 'block' }}
