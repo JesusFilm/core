@@ -1238,15 +1238,17 @@ export class JourneyPage {
     ).toBeVisible()
   }
   async clickDownloadDropDownAndSelectCopyShortLink() {
-    await this.page
-      .locator(
-        'div.MuiDialogContent-root button[data-testid="DownloadDropdown"]'
-      )
-      .click()
-    await this.page
+    const dropdownBtn = this.page.locator(
+      'div.MuiDialogContent-root button[data-testid="DownloadDropdown"]'
+    )
+    await expect(dropdownBtn).toBeVisible({ timeout: thirtySecondsTimeout })
+    await expect(dropdownBtn).toBeEnabled({ timeout: thirtySecondsTimeout })
+    await dropdownBtn.click()
+    const menuItem = this.page
       .locator('div.MuiDialogContent-root div[role="tooltip"]')
       .getByRole('menuitem', { name: 'Copy Short Link' })
-      .click()
+    await expect(menuItem).toBeVisible({ timeout: thirtySecondsTimeout })
+    await menuItem.click()
   }
   async downloadQRCodeAsPng() {
     const qrDownload = this.page.waitForEvent('download', { timeout: 60000 })
@@ -1270,9 +1272,12 @@ export class JourneyPage {
       message: `Downloaded QR COde png file(${this.downloadedQrFile}) should be exist`
     }).toBeTruthy()
   }
-  async clickCloseIconForQrCodeDialog() {
+  async clickCloseIconForQrCodeDialog(): Promise<void> {
+    // Target only the close button in the QR Code dialog
     await this.page
-      .locator('div.MuiDialog-paper button[data-testid="dialog-close-button"]')
+      .locator(
+        'div[role="dialog"]:has(h2:has-text("QR Code")) button[data-testid="dialog-close-button"]'
+      )
       .click()
   }
   async validateUrlFieldInShareDialog(expectedValue: string) {

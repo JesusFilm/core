@@ -114,6 +114,7 @@ export enum IdType {
 }
 
 export enum IntegrationType {
+  google = "google",
   growthSpaces = "growthSpaces",
 }
 
@@ -511,6 +512,7 @@ export interface JourneyEventsFilter {
   typenames?: string[] | null;
   periodRangeStart?: any | null;
   periodRangeEnd?: any | null;
+  includeUnconnectedCards?: boolean | null;
 }
 
 export interface JourneyNotificationUpdateInput {
