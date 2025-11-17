@@ -17,7 +17,6 @@ import { STEP_BLOCK_SLUG_UPDATE } from './CardSlugEdit'
 
 import { CardSlugEdit } from '.'
 
-// Mock translations
 jest.mock('next-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key })
 }))
@@ -113,7 +112,7 @@ describe('CardSlugEdit', () => {
   it('should update the slug when the text field is submitted', async () => {
     const step: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
-      id: 'step.id',
+      id: 'step',
       parentBlockId: null,
       parentOrder: 0,
       locked: false,
@@ -127,7 +126,7 @@ describe('CardSlugEdit', () => {
     render(
       <MockedProvider mocks={[updateMock]}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey: { id: 'j1' } as any }}>
+          <JourneyProvider value={{ journey: { id: 'journeyId' } as any }}>
             <EditorProvider
               initialState={{
                 steps: [step],
@@ -142,9 +141,11 @@ describe('CardSlugEdit', () => {
       </MockedProvider>
     )
 
-    const input = screen.getByDisplayValue('old-slug')
-    fireEvent.change(input, { target: { value: 'new-slug' } })
-    fireEvent.blur(input)
+    expect(screen.getByRole('textbox')).toHaveValue('old-slug')
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'new-slug' }
+    })
+    fireEvent.blur(screen.getByRole('textbox'))
 
     await waitFor(() =>
       expect(updateMock.result as jest.Mock).toHaveBeenCalled()
@@ -204,7 +205,7 @@ describe('CardSlugEdit', () => {
   it('should undo slug update', async () => {
     const step: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
-      id: 'step.id',
+      id: 'step',
       parentBlockId: null,
       parentOrder: 0,
       locked: false,

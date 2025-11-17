@@ -38,10 +38,6 @@ export function CardSlugEdit({
   } = useEditor()
   const { add } = useCommand()
   const { journey } = useJourney()
-  const { hostname } = useCustomDomainsQuery({
-    variables: { teamId: journey?.team?.id ?? '' },
-    skip: journey?.team?.id == null
-  })
   const [stepBlockUpdate] = useMutation<StepBlockSlugUpdate>(
     STEP_BLOCK_SLUG_UPDATE
   )
