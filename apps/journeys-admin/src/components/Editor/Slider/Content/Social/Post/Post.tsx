@@ -35,8 +35,8 @@ export function Post(): ReactElement {
         {journey != null && (
           <Card
             sx={{
-              maxWidth: { xs: 208, md: 228 },
-              height: { xs: 274, md: 294 },
+              maxWidth: 228,
+              height: 294,
               border: '0.5px solid #DEDFE0',
               borderRadius: '16px',
               display: 'block',
