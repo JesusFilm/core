@@ -2,6 +2,7 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 import { VideoBlockSource } from '../../enums'
+import { Language } from '../../language/language'
 import { MediaVideo } from '../../mediaVideo/mediaVideo'
 import { Block } from '../block'
 
@@ -69,7 +70,18 @@ youTube source: videoId, title, description, and duration present`,
       nullable: true,
       resolve: (block) => block.fullsize ?? false
     }),
+    subtitleLanguage: t.field({
+      type: Language,
+      nullable: true,
+      resolve: (block) => {
+        if (block.subtitleLanguageId == null) return null
+        return { id: block.subtitleLanguageId }
+      }
+    }),
     action: t.relation('action'),
+    showGeneratedSubtitles: t.exposeBoolean('showGeneratedSubtitles', {
+      nullable: true
+    }),
     mediaVideo: t.field({
       type: MediaVideo,
       nullable: true,

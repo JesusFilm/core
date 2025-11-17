@@ -13,6 +13,13 @@ jest.mock('../../../lib/auth/fetchBlockWithJourneyAcl', () => ({
   fetchBlockWithJourneyAcl: jest.fn()
 }))
 
+jest.mock('./service', () => {
+  return {
+    ...jest.requireActual('./service'),
+    fetchFieldsFromYouTube: jest.fn()
+  }
+})
+
 describe('videoBlockUpdate', () => {
   const mockUser = { id: 'userId' }
   const authClient = getClient({
@@ -39,6 +46,10 @@ describe('videoBlockUpdate', () => {
         videoVariantLanguageId
         posterBlockId
         parentBlockId
+        showGeneratedSubtitles
+        subtitleLanguage {
+          id
+        }
       }
     }
   `)
@@ -85,6 +96,7 @@ describe('videoBlockUpdate', () => {
           id,
           journeyId: 'journeyId',
           typename: 'VideoBlock',
+          subtitleLanguage: null,
           ...input
         })
       },

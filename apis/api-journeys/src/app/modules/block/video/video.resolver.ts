@@ -48,4 +48,13 @@ export class VideoBlockResolver {
   ): VideoBlockSource {
     return block.source ?? VideoBlockSource.internal
   }
+
+  @ResolveField('subtitleLanguage')
+  subtitleLanguage(
+    @Parent()
+    block: Block
+  ): { id: string } | null {
+    if (block.subtitleLanguageId == null) return null
+    return { id: block.subtitleLanguageId }
+  }
 }
