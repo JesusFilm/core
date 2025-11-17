@@ -94,6 +94,8 @@
   "likes": "likes",
   "dislikes": "dislikes",
   "widget clicks": "widget clicks",
+  "This link name is already in use. Please choose a different one.": "This link name is already in use. Please choose a different one.",
+  "your-card-link": "your-card-link",
   "Fill this card with content": "Fill this card with content",
   "<0>Select Card Template</0><1>or add blocks using the<1></1>button below</1>": "<0>Select Card Template</0><1>or add blocks using the<1></1>button below</1>",
   "Edit text...": "Edit text...",
