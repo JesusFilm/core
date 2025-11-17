@@ -48,8 +48,8 @@ export function ExportEventsButton({
 
   return (
     <Box sx={{ display: { sm: 'block', md: 'none' } }}>
-      {!disabled ? (
-        <Tooltip title={`exportDisabledTooltip`} placement="bottom">
+      {disabled ? (
+        <Tooltip title={exportDisabledTooltip} placement="bottom">
           <span>
             <IconButton
               aria-label={`${t('Export Data')} - ${exportDisabledTooltip}`}
