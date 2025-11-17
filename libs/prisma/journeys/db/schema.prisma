@@ -99,6 +99,7 @@ enum VideoBlockSource {
 }
 
 enum IntegrationType {
+  google
   growthSpaces
 }
 
@@ -255,22 +256,50 @@ model Team {
   customDomains      CustomDomain[]
   integrations       Integration[]
   qrCodes            QrCode[]
+  googleSheetsSync   GoogleSheetsSync[]
 
   @@index(title)
 }
 
 model Integration {
-  id                     String          @id @default(uuid())
+  id                     String             @id @default(uuid())
   teamId                 String
+  userId                 String?
   type                   IntegrationType
   accessId               String?
   accessSecretPart       String?
   accessSecretCipherText String?
   accessSecretIv         String?
   accessSecretTag        String?
-  team                   Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  accountEmail           String?
+  googleSheetsSyncs      GoogleSheetsSync[]
+  team                   Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@index([teamId])
+  @@index(userId)
+}
+
+model GoogleSheetsSync {
+  id            String    @id @default(uuid())
+  teamId        String
+  journeyId     String
+  integrationId String?
+  spreadsheetId String
+  sheetName     String
+  folderId      String?
+  email         String?
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  integration Integration? @relation(fields: [integrationId], references: [id], onDelete: SetNull)
+  journey     Journey      @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  team        Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index(teamId)
+  @@index(journeyId)
+  @@index(integrationId)
+  @@index(deletedAt)
 }
 
 model UserTeam {
@@ -437,6 +466,7 @@ model Journey {
   journeyTheme                    JourneyTheme?
   journeyCustomizationDescription String?
   journeyCustomizationFields      JourneyCustomizationField[]
+  googleSheetsSync                GoogleSheetsSync[]
 
   @@index(title)
 }

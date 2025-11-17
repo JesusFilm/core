@@ -19,7 +19,7 @@ import { getInteropContext } from '@core/yoga/interop'
 
 import { logger } from './logger'
 import { schema } from './schema'
-import { Context } from './schema/builder'
+import { Context } from './schema/authScopes'
 
 export const cache = createInMemoryCache()
 
