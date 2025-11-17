@@ -73,8 +73,10 @@ export const getStaticProps: GetStaticProps<ResourcesPageProps> = async ({
   if (flags.strategies !== true)
     return {
       revalidate: 60,
-      redirect: '/',
-      props: {}
+      redirect: {
+        destination: '/',
+        permanent: false
+      }
     }
 
   const serverState = await getServerState(<ResourcesPage />, {

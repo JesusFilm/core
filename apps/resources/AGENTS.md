@@ -1,32 +1,32 @@
-# Watch App Agent Guide
+# Resources App Agent Guide
 
 ## Context & stack
 
-- **Location:** `apps/watch` in the Nx monorepo (Next.js pages router).
+- **Location:** `apps/resources` in the Nx monorepo (Next.js pages router).
 - **Tech:** React, TypeScript, Apollo Client with generated GraphQL types, `next-i18next` for localization, Tailwind CSS + shadcn/ui primitives.
 - **Design direction:** We are migrating to shadcn/Tailwind. Do **not** introduce new MUI usage even though the lint rule is relaxed. New shadcn work should coexist with core shells/wrappers that are still using MUI until explicit migration tasks retire them.
-- **Sister project:** E2E coverage lives in `apps/watch-e2e`; reuse its Playwright setup instead of creating new tooling.
+- **Sister project:** E2E coverage lives in `apps/resources-e2e`; reuse its Playwright setup instead of creating new tooling.
 
 ## Workspace setup
 
 1. Install dependencies: `pnpm install` (pnpm is the required package manager).
 2. Install Playwright browsers if missing: `pnpm exec playwright install --with-deps` (local-only; do not commit artifacts).
-3. Optional data prep: `pnpm dlx nx run watch:generate-test-data`.
+3. Optional data prep: `pnpm dlx nx run resources:generate-test-data`.
 
 ### CRITICAL PATH CONSTRAINT
 
 All file operations for this workspace MUST be within /core/ directory. Never create files or folders direclty in /workspaces/.
 
-Always verify current working directory is /core before file operations. Current app is part of monorepo and path to the current app is /code/apps/watch/.
+Always verify current working directory is /core before file operations. Current app is part of monorepo and path to the current app is /code/apps/resources/.
 
 ## Dev server safety & logging
 
 1. Before starting work, discover existing servers:
    - `ps aux | grep -E "(nx|pnpm|npm|yarn|bun).*(serve|dev|start|run)" | grep -v grep`
    - `lsof -i :3000-5000 | grep LISTEN`
-2. Reuse a healthy Watch instance when possible. If you must stop a stray process, run `pkill -f "nx run watch:serve"`.
+2. Reuse a healthy Resources instance when possible. If you must stop a stray process, run `pkill -f "nx run resources:serve"`.
 3. Existing running server is loging dev logs to: `tee dev-server.log`. At the end of each task review dev-server.log for new errors or warnings. Resolve any new errors automatically. Don't try to resolve issues that existed before your code changes.
-4. If no dev server with loging is running, launch your session with logging so issues are traceable: `pnpm dlx nx run watch:serve 2>&1 | tee dev-server.log &`.
+4. If no dev server with loging is running, launch your session with logging so issues are traceable: `pnpm dlx nx run resources:serve 2>&1 | tee dev-server.log &`.
 5. Keep the dev server you created running.
 
 ### Development Server Compilation Procedures
@@ -46,7 +46,7 @@ When starting the development server, follow this **mandatory waiting procedure*
 ````bash
 ✓ Starting...
 ✓ Ready in Xs        # Server compiled successfully
-Local: http://localhost:4300
+Local: http://localhost:4310
 
 ❌ **ERROR INDICATORS** (Must fix before continuing):
 ```bash
@@ -135,25 +135,25 @@ echo "✅ Page renders cleanly after $max_retries attempts"
 
 ## Core Nx targets (run with `pnpm dlx nx run <target>`)
 
-- `watch:serve` – Dev server on <http://localhost:4300>.
-- `watch:build` – Production bundle.
-- `watch:codegen` – Regenerate GraphQL artifacts after query changes.
-- `watch:extract-translations` – Update locale JSON when strings move.
-- `watch:generate-test-data` – See step 3 above for local fixtures.
+- `resources:serve` – Dev server on <http://localhost:4310>.
+- `resources:build` – Production bundle.
+- `resources:codegen` – Regenerate GraphQL artifacts after query changes.
+- `resources:extract-translations` – Update locale JSON when strings move.
+- `resources:generate-test-data` – See step 3 above for local fixtures.
 
 ## Quality gates & automated checks
 
 Run these before opening a PR. If a command fails due to pre-existing issues, ensure your changes introduce no new violations and note the exception in the PRD log.
 
 - Format check: `pnpm run prettier` (use `pnpm run prettier:fix` to apply fixes; Tailwind classes are auto-sorted by the plugin).
-- Watch lint: `pnpm dlx nx run watch:lint`.
-- Watch type-check: `pnpm dlx nx run watch:type-check` (targets `tsc -b apps/watch/tsconfig.json`).
-- Watch unit tests: `pnpm dlx nx run watch:test`.
-- Watch-e2e lint: `pnpm dlx nx run watch-e2e:lint`.
-- Watch-e2e type-check: `pnpm dlx nx run watch-e2e:type-check`.
-- Watch-e2e smoke: `pnpm dlx nx run watch-e2e:e2e` (start the dev server first).
-- Debugging UI issues: `PWDEBUG=1 pnpm dlx nx run watch-e2e:debug` lets you inspect the browser and console output live.
-- Playwright report: `pnpm dlx nx run watch-e2e:show-report` serves the HTML report on `http://127.0.0.1:9323` and keeps the terminal session open until you press `Ctrl+C`.
+- Resources lint: `pnpm dlx nx run resources:lint`.
+- Resources type-check: `pnpm dlx nx run resources:type-check` (targets `tsc -b apps/resources/tsconfig.json`).
+- Resources unit tests: `pnpm dlx nx run resources:test`.
+- Resources-e2e lint: `pnpm dlx nx run resources-e2e:lint`.
+- Resources-e2e type-check: `pnpm dlx nx run resources-e2e:type-check`.
+- Resources-e2e smoke: `pnpm dlx nx run resources-e2e:e2e` (start the dev server first).
+- Debugging UI issues: `PWDEBUG=1 pnpm dlx nx run resources-e2e:debug` lets you inspect the browser and console output live.
+- Playwright report: `pnpm dlx nx run resources-e2e:show-report` serves the HTML report on `http://127.0.0.1:9323` and keeps the terminal session open until you press `Ctrl+C`.
 
 ## Testing expectations
 
@@ -191,32 +191,32 @@ describe('MyComponent', () => {
 ```
 
 - Always propose and implement unit or integration tests that cover edge cases and likely failure paths touched by your changes. Base new specs on the function signatures and surrounding logic you modify.
-- Co-locate React Testing Library specs under `*.spec.ts(x)` and mock network traffic with MSW handlers in `apps/watch/test`.
+- Co-locate React Testing Library specs under `*.spec.ts(x)` and mock network traffic with MSW handlers in `apps/resources/test`.
 - Extend Playwright scenarios when UI behavior shifts, and capture console logs/screenshots for regressions.
-- Document the executed test suite, notable scenarios, and any skipped checks in `/prds/watch/`.
-- Reuse the shared Jest setup in `apps/watch/setupTests.tsx`; it already boots MSW, the Next router mock, and a longer async timeout.
+- Document the executed test suite, notable scenarios, and any skipped checks in `/prds/resources/`.
+- Reuse the shared Jest setup in `apps/resources/setupTests.tsx`; it already boots MSW, the Next router mock, and a longer async timeout.
 - Wrap component specs with `MockedProvider`, `VideoProvider`, and `WatchProvider` when the unit touches those contexts—`NewVideoContentPage.spec.tsx` shows the expected harness.
-- Enclose SWR-based hooks in `TestSWRConfig` (`apps/watch/test/TestSWRConfig.tsx`) to isolate cache state between assertions.
+- Enclose SWR-based hooks in `TestSWRConfig` (`apps/resources/test/TestSWRConfig.tsx`) to isolate cache state between assertions.
 
 ## Manual user validation
 
-1. Follow the discovery workflow above, then launch `watch:serve` with logging.
-2. Navigate to <http://localhost:4300/watch>, exercise the affected flows end-to-end, and confirm copy, layout, animations, and localization behave as expected.
+1. Follow the discovery workflow above, then launch `resources:serve` with logging.
+2. Navigate to <http://localhost:4310/resources>, exercise the affected flows end-to-end, and confirm copy, layout, animations, and localization behave as expected.
 3. Watch the browser console and network panel for errors; capture findings (and relevant log excerpts) in the PRD entry.
-4. When reproducing bugs, use either Playwright headed mode or targeted scripts (e.g., `pnpm dlx nx run watch-e2e:debug`) to validate fixes against the live dev server.
+4. When reproducing bugs, use either Playwright headed mode or targeted scripts (e.g., `pnpm dlx nx run resources-e2e:debug`) to validate fixes against the live dev server.
 
 ## State & provider stack
 
-- UI flows are expected to sit inside `VideoProvider`, `WatchProvider`, and `PlayerProvider` (see `apps/watch/src/libs/videoContext`, `watchContext`, and `playerContext`). Mirror that wiring when composing features and when writing tests.
+- UI flows are expected to sit inside `VideoProvider`, `WatchProvider`, and `PlayerProvider` (see `apps/resources/src/libs/videoContext`, `watchContext`, and `playerContext`). Mirror that wiring when composing features and when writing tests.
 - `useWatch` dispatches should target only the keys you intend to change (audio language, subtitle language, or `subtitleOn`) so user preferences are preserved across renders.
 - `usePlayer` handles playback state (mute, fullscreen, current time). Keep reducer updates idempotent and avoid mixing DOM mutations with state—hero playback relies on these flags.
 - Components like `VideoContentHero` depend on the full provider stack plus video.js and mux metadata; preserve the existing contracts so autoplay, subtitles, and analytics remain intact.
 
 ## Data fetching & codegen
 
-- Apollo hooks should use generated types alongside colocated documents. `useVideoChildren` (`apps/watch/src/libs/useVideoChildren/useVideoChildren.ts`) is the reference pattern.
+- Apollo hooks should use generated types alongside colocated documents. `useVideoChildren` (`apps/resources/src/libs/useVideoChildren/useVideoChildren.ts`) is the reference pattern.
 - REST-like endpoints belong in SWR hooks paired with zod guards (for example `useLanguages` and `util/transformData.ts`); parse responses before returning them to callers.
-- After editing GraphQL documents, run `pnpm dlx nx run watch:codegen`. The task clears and regenerates `apps/watch/__generated__`, so stage those artifacts with your changes.
+- After editing GraphQL documents, run `pnpm dlx nx run resources:codegen`. The task clears and regenerates `apps/resources/__generated__`, so stage those artifacts with your changes.
 
 ## Coding standards
 
@@ -317,7 +317,7 @@ describe('MyComponent', () => {
 
 ### Implementation Strategies & Engagement Logging
 
-For all new features that doens't already have execution plan, we create detailed **implementation strategy** in the `/core/prds/watch/` subfolder. These provide:
+For all new features that doens't already have execution plan, we create detailed **implementation strategy** in the `/core/prds/resources/` subfolder. These provide:
 
 - **Step-by-step execution plan** for specific PRD tasks (use markdown - [ ] for every task)
 - **Technical analysis and component mapping**
@@ -336,7 +336,7 @@ For all new features that doens't already have execution plan, we create detaile
 - Name the log file after the **branch name**, replacing slashes (`/`) with dashes (`-`).
   - Example:  
     Branch → `feature/abc-123-new-feature-name`  
-    Log → `/prds/watch/feature-abc-123-new-feature-name.md`
+    Log → `/prds/resources/feature-abc-123-new-feature-name.md`
 
 ### Updating `AGENTS`
 
@@ -357,17 +357,17 @@ For all new features that doens't already have execution plan, we create detaile
 
 #### Example Entry
 
-- **Issue:** `pnpm nx run watch:serve` produced no output due to Nx daemon caching.
+- **Issue:** `pnpm nx run resources:serve` produced no output due to Nx daemon caching.
 - **Learning:** Disable Nx daemon when debugging silent task failures:
   ```bash
-  NX_DAEMON=false pnpm nx run watch:serve
+  NX_DAEMON=false pnpm nx run resources:serve
   ```
 
 ### Agent Development Best Practices
 
 **Before Starting**:
 
-- [ ] Read the relevant PRD in /core/prds/watch/ completely
+- [ ] Read the relevant PRD in /core/prds/resources/ completely
   - [ ] If no PRD exists do initial research and planning from Technical Lead and SR. Developer outlining implementation strategy.
 - [ ] Understand current project constraints
 - [ ] Run existing tests to verify working state
