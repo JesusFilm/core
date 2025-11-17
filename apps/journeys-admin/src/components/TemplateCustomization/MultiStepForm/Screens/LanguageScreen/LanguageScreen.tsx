@@ -1,6 +1,8 @@
+import Box from '@mui/material/Box'
 import Checkbox from '@mui/material/Checkbox'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import LinearProgress from '@mui/material/LinearProgress'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -191,6 +193,17 @@ export function LanguageScreen({
       setTranslationCompleted(false)
     }
   })
+
+  // Extract translation progress for display
+  const translationProgress =
+    translationData?.journeyAiTranslateCreateSubscription
+      ? {
+          progress:
+            translationData.journeyAiTranslateCreateSubscription.progress ?? 0,
+          message:
+            translationData.journeyAiTranslateCreateSubscription.message ?? ''
+        }
+      : undefined
 
   const FORM_SM_BREAKPOINT_WIDTH = '390px'
 
@@ -442,10 +455,62 @@ export function LanguageScreen({
                   {t('Select a team')}
                 </Typography>
                 {isSignedIn && <JourneyCustomizeTeamSelect />}
+                {translationProgress && (
+                  <Box
+                    sx={{
+                      width: '100%',
+                      mt: 2,
+                      p: 3,
+                      borderRadius: 2,
+                      backgroundColor: 'background.paper',
+                      border: '1px solid',
+                      borderColor: 'divider'
+                    }}
+                  >
+                    <Box sx={{ width: '100%', textAlign: 'center' }}>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          mb: 2,
+                          color: 'text.primary',
+                          fontWeight: 500
+                        }}
+                      >
+                        {translationProgress.message}
+                      </Typography>
+                      <LinearProgress
+                        variant="determinate"
+                        value={translationProgress.progress}
+                        sx={{
+                          height: 8,
+                          borderRadius: 4,
+                          backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                          '& .MuiLinearProgress-bar': {
+                            borderRadius: 4
+                          }
+                        }}
+                      />
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          mt: 1,
+                          display: 'block',
+                          color: 'text.secondary'
+                        }}
+                      >
+                        {Math.round(translationProgress.progress)}%
+                      </Typography>
+                    </Box>
+                  </Box>
+                )}
                 <CustomizeFlowNextButton
                   label={t('Next')}
                   onClick={() => handleSubmit()}
-                  disabled={loading}
+                  disabled={
+                    loading ||
+                    (translationProgress != null &&
+                      translationProgress.progress < 100)
+                  }
                   ariaLabel={t('Next')}
                 />
               </Stack>

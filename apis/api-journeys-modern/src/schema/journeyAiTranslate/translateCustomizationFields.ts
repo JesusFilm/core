@@ -20,16 +20,17 @@ const CustomizationFieldTranslationSchema = z.object({
 const CustomizationDescriptionTranslationSchema = z.object({
   translatedDescription: z
     .string()
-    .describe('Translated customization description with updated field syntax')
+    .describe(
+      'Translated customization description with all {{ ... }} blocks preserved verbatim'
+    )
 })
 
 /**
  * Extracts and translates customization fields and description.
- * - Translates values but keeps keys unchanged
- * - Converts {{ key }} format to {{ key: translated_value }} format when key equals value
- * - Translates values in {{ key: value }} format
+ * - Translates field values but keeps keys unchanged
+ * - All {{ ... }} blocks in the description are preserved verbatim (no conversion or rewriting)
  * - Does NOT translate addresses, times, or locations
- * - Preserves anything inside {{ }} brackets in the description
+ * - Only translates text outside of {{ }} brackets in the description
  *
  * @param journeyCustomizationDescription - The customization description string
  * @param journeyCustomizationFields - Array of customization field objects
@@ -108,15 +109,14 @@ export async function translateCustomizationFields({
     })
   )
 
-  // Translate description and update field syntax
+  // Translate description while preserving all {{ ... }} blocks verbatim
   let translatedDescription: string | null = null
   if (journeyCustomizationDescription) {
     translatedDescription = await translateCustomizationDescription({
       description: journeyCustomizationDescription,
       sourceLanguageName,
       targetLanguageName,
-      journeyAnalysis,
-      fieldKeys: journeyCustomizationFields.map((f) => f.key)
+      journeyAnalysis
     })
   }
 
@@ -181,28 +181,28 @@ Return only the translated value, maintaining the same meaning and cultural appr
 }
 
 /**
- * Translates customization description and converts {{ key }} to {{ key: translated_value }} format
- * when the key itself is the value (i.e., when there's no explicit value provided)
- * Preserves anything inside {{ }} brackets exactly as-is
+ * Translates customization description while preserving all {{ ... }} blocks verbatim.
+ * All {{ key }} and {{ key: value }} blocks are preserved exactly as-is without any conversion or rewriting.
+ * Only text outside of {{ }} brackets is translated.
  */
 async function translateCustomizationDescription({
   description,
   sourceLanguageName,
   targetLanguageName,
-  journeyAnalysis,
-  fieldKeys
+  journeyAnalysis
 }: {
   description: string
   sourceLanguageName: string
   targetLanguageName: string
   journeyAnalysis?: string
-  fieldKeys: string[]
 }): Promise<string> {
-  // Pattern to match {{ key }} and {{ key: value }} formats
+  // Pattern to match {{ key }} and {{ key: value }} formats for identification only
+  // These blocks will be preserved verbatim in the translation
   const fieldPattern =
     /\{\{\s*([^:}]+)(?:\s*:\s*(?:(['"])([^'"]*)\2|([^}]*?)))?\s*\}\}/g
 
-  // Extract all field references for context (but we won't translate them)
+  // Extract all field references to provide context to the AI
+  // All {{ ... }} blocks will be preserved verbatim (no translation or modification)
   const fieldMatches: Array<{
     fullMatch: string
     key: string
@@ -228,14 +228,11 @@ async function translateCustomizationDescription({
     })
   }
 
-  // Build translation context with field information
+  // Build translation context listing all {{ ... }} blocks that must be preserved verbatim
+  // The AI will be instructed to copy these exactly as-is without any changes
   const fieldContext = fieldMatches
     .map((field, index) => {
-      if (field.value) {
-        return `Field ${index + 1}: "${field.fullMatch}" - preserve EXACTLY as-is (do not translate)`
-      } else {
-        return `Field ${index + 1}: "${field.fullMatch}" - preserve EXACTLY as-is (do not translate)`
-      }
+      return `Field ${index + 1}: "${field.fullMatch}" - preserve EXACTLY as-is (do not translate or modify)`
     })
     .join('\n')
 
@@ -247,24 +244,16 @@ CRITICAL RULES - READ CAREFULLY:
    - Do NOT translate ANYTHING inside {{ }} - neither keys nor values
    - Do NOT modify ANYTHING inside {{ }}
    - Do NOT change the format inside {{ }}
+   - Do NOT convert {{ key }} to {{ key: value }} format
+   - Do NOT rewrite {{ key: value }} in any way
    - The content inside {{ }} are field keys that map to journeyCustomizationFields and must remain completely unchanged
-   - Copy every {{ ... }} block exactly as-is to the output
-   - Example: {{ user_name }} stays as {{ user_name }}
-   - Example: {{ user_name: John }} stays as {{ user_name: John }} (do NOT translate "John")
+   - Copy every {{ ... }} block exactly as-is to the output without any modifications
+   - Example: {{ user_name }} stays as {{ user_name }} (no conversion)
+   - Example: {{ user_name: John }} stays as {{ user_name: John }} (no translation, no rewriting)
 
-2. For fields in the format {{ key }} (where key has no explicit value):
-   - Keep it as {{ key }} - do NOT convert to {{ key: value }} format
-   - The key is an identifier and must remain unchanged
-
-3. For fields in the format {{ key: value }}, keep the ENTIRE structure unchanged:
-   - Keep: {{ key: value }} exactly as-is
-   - Do NOT translate the value inside the brackets
-   - The keys map to journeyCustomizationFields and must remain unchanged
-
-
-4. DO NOT translate proper nouns (names of people, organizations, brands, etc.)
-5. Only translate text that is completely OUTSIDE the {{ }} brackets
-6. Maintain all other text formatting and structure
+2. DO NOT translate proper nouns (names of people, organizations, brands, etc.)
+3. Only translate text that is completely OUTSIDE the {{ }} brackets
+4. Maintain all other text formatting and structure
 
 Customization fields in the text:
 ${hardenPrompt(fieldContext)}
