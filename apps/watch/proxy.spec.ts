@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { middleware } from './middleware'
+import { proxy } from './proxy'
 
 const createMockRequest = (
   pathname: string,
@@ -37,7 +37,7 @@ describe('middleware', () => {
   describe('locale detection', () => {
     it('should use URL path locale if no cookie', async () => {
       const req = createMockRequest('/watch/jesus.html/french.html')
-      const result = await middleware(req)
+      const result = await proxy(req)
       expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
     })
 
@@ -45,7 +45,7 @@ describe('middleware', () => {
       const req = createMockRequest('/watch/jesus.html', {
         headers: { 'accept-language': 'fr-FR,fr;q=0.9,en;q=0.8' }
       })
-      const result = await middleware(req)
+      const result = await proxy(req)
       expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
     })
 
@@ -53,13 +53,13 @@ describe('middleware', () => {
       const req = createMockRequest('/watch/jesus.html', {
         headers: { 'cf-ipcountry': 'FR' }
       })
-      const result = await middleware(req)
+      const result = await proxy(req)
       expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
     })
 
     it('should fallback to default locale if no locale detected', async () => {
       const req = createMockRequest('/watch/jesus.html')
-      const result = await middleware(req)
+      const result = await proxy(req)
       expect(result).toEqual(NextResponse.next())
     })
   })
@@ -69,7 +69,7 @@ describe('middleware', () => {
       const req = createMockRequest('/watch/jesus.html', {
         cookies: [{ name: 'NEXT_LOCALE', value: 'fingerprint---en' }]
       })
-      const result = await middleware(req)
+      const result = await proxy(req)
       expect(result).toEqual(NextResponse.next())
     })
   })
@@ -81,7 +81,7 @@ describe('middleware', () => {
           'accept-language': 'fr-FR;q=0.9,fr;q=0.8,en-US;q=0.7,en;q=0.6'
         }
       })
-      const result = await middleware(req)
+      const result = await proxy(req)
       expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
     })
 
@@ -89,7 +89,7 @@ describe('middleware', () => {
       const req = createMockRequest('/watch/jesus.html', {
         headers: { 'accept-language': 'fr' }
       })
-      const result = await middleware(req)
+      const result = await proxy(req)
       expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
     })
 
@@ -97,7 +97,7 @@ describe('middleware', () => {
       const req = createMockRequest('/watch/jesus.html', {
         headers: { 'accept-language': 'xx-XX' }
       })
-      const result = await middleware(req)
+      const result = await proxy(req)
       expect(result).toEqual(NextResponse.next())
     })
   })
@@ -107,7 +107,7 @@ describe('middleware', () => {
       const req = createMockRequest('/watch/jesus.html', {
         headers: { 'cf-ipcountry': 'FR' }
       })
-      const result = await middleware(req)
+      const result = await proxy(req)
       expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
     })
 
@@ -115,7 +115,7 @@ describe('middleware', () => {
       const req = createMockRequest('/watch/jesus.html', {
         headers: { 'x-vercel-ip-country': 'FR' }
       })
-      const result = await middleware(req)
+      const result = await proxy(req)
       expect(result?.headers.get('x-middleware-rewrite')).toContain('/fr/')
     })
 
@@ -123,7 +123,7 @@ describe('middleware', () => {
       const req = createMockRequest('/watch/jesus.html', {
         headers: { 'cf-ipcountry': 'XX' }
       })
-      const result = await middleware(req)
+      const result = await proxy(req)
       expect(result).toEqual(NextResponse.next())
     })
   })
@@ -133,7 +133,7 @@ describe('middleware', () => {
       const req = createMockRequest('/watch', {
         cookies: [{ name: 'NEXT_LOCALE', value: 'fingerprint---fr' }]
       })
-      const result = await middleware(req)
+      const result = await proxy(req)
       expect(result).toBeInstanceOf(NextResponse)
       expect(result?.status).toBe(302)
       // Should redirect to French locale
@@ -145,7 +145,7 @@ describe('middleware', () => {
         headers: { 'accept-language': 'fr-FR,fr;q=0.9,en;q=0.8' }
       })
 
-      const result = await middleware(req)
+      const result = await proxy(req)
       expect(result).toBeInstanceOf(NextResponse)
       expect(result?.status).toBe(302)
       // Should redirect to French locale
@@ -156,7 +156,7 @@ describe('middleware', () => {
       const req = createMockRequest('/watch', {
         headers: { 'cf-ipcountry': 'FR' }
       })
-      const result = await middleware(req)
+      const result = await proxy(req)
       expect(result).toBeInstanceOf(NextResponse)
       expect(result?.status).toBe(302)
       expect(result?.headers.get('location')).toContain('/watch/french.html')
@@ -165,7 +165,7 @@ describe('middleware', () => {
     it('should handle watch root path with default locale', async () => {
       const req = createMockRequest('/watch')
 
-      const result = await middleware(req)
+      const result = await proxy(req)
 
       expect(result?.status).toBe(200)
     })
