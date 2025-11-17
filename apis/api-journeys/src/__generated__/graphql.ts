@@ -627,6 +627,11 @@ export type ForeignKeyConstraintErrorLocation = {
   value?: Maybe<Scalars['String']['output']>;
 };
 
+export type GenerateSubtitlesInput = {
+  languageCode: Scalars['String']['input'];
+  languageName: Scalars['String']['input'];
+};
+
 export enum GridAlignItems {
   Baseline = 'baseline',
   Center = 'center',
@@ -834,12 +839,32 @@ export type Integration = {
   type: IntegrationType;
 };
 
+export type IntegrationGoogle = Integration & {
+  __typename?: 'IntegrationGoogle';
+  accountEmail?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  team: Team;
+  type: IntegrationType;
+  user?: Maybe<User>;
+};
+
+export type IntegrationGoogleCreateInput = {
+  code: Scalars['String']['input'];
+  redirectUri: Scalars['String']['input'];
+  teamId: Scalars['String']['input'];
+};
+
+export type IntegrationGoogleUpdateInput = {
+  code: Scalars['String']['input'];
+  redirectUri: Scalars['String']['input'];
+};
+
 export type IntegrationGrowthSpaces = Integration & {
   __typename?: 'IntegrationGrowthSpaces';
-  accessId: Scalars['String']['output'];
-  accessSecretPart: Scalars['String']['output'];
+  accessId?: Maybe<Scalars['String']['output']>;
+  accessSecretPart?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  routes: Array<IntegrationGrowthSpacesRoute>;
+  routes?: Maybe<Array<IntegrationGrowthSpacesRoute>>;
   team: Team;
   type: IntegrationType;
 };
@@ -852,8 +877,8 @@ export type IntegrationGrowthSpacesCreateInput = {
 
 export type IntegrationGrowthSpacesRoute = {
   __typename?: 'IntegrationGrowthSpacesRoute';
-  id: Scalars['String']['output'];
-  name: Scalars['String']['output'];
+  id?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
 };
 
 export type IntegrationGrowthSpacesUpdateInput = {
@@ -862,12 +887,15 @@ export type IntegrationGrowthSpacesUpdateInput = {
 };
 
 export enum IntegrationType {
+  Google = 'google',
   GrowthSpaces = 'growthSpaces'
 }
 
 export type Journey = {
   __typename?: 'Journey';
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** Distinct block typenames present on this journey (non-deleted blocks only) */
+  blockTypenames: Array<Scalars['String']['output']>;
   blocks?: Maybe<Array<Block>>;
   chatButtons: Array<ChatButton>;
   createdAt: Scalars['DateTime']['output'];
@@ -1063,6 +1091,7 @@ export type JourneyEventsExportLogInput = {
 };
 
 export type JourneyEventsFilter = {
+  includeUnconnectedCards?: InputMaybe<Scalars['Boolean']['input']>;
   periodRangeEnd?: InputMaybe<Scalars['DateTime']['input']>;
   periodRangeStart?: InputMaybe<Scalars['DateTime']['input']>;
   typenames?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -1619,6 +1648,8 @@ export type Mutation = {
   imageBlockCreate: ImageBlock;
   imageBlockUpdate: ImageBlock;
   integrationDelete: Integration;
+  integrationGoogleCreate: IntegrationGoogle;
+  integrationGoogleUpdate: IntegrationGoogle;
   integrationGrowthSpacesCreate: IntegrationGrowthSpaces;
   integrationGrowthSpacesUpdate: IntegrationGrowthSpaces;
   journeyAiTranslateCreate: Journey;
@@ -2002,6 +2033,7 @@ export type MutationCreateMuxVideoAndQueueUploadArgs = {
 
 export type MutationCreateMuxVideoUploadByFileArgs = {
   downloadable?: InputMaybe<Scalars['Boolean']['input']>;
+  generateSubtitlesInput?: InputMaybe<GenerateSubtitlesInput>;
   maxResolution?: InputMaybe<MaxResolutionTier>;
   name: Scalars['String']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
@@ -2109,6 +2141,17 @@ export type MutationImageBlockUpdateArgs = {
 
 export type MutationIntegrationDeleteArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationIntegrationGoogleCreateArgs = {
+  input: IntegrationGoogleCreateInput;
+};
+
+
+export type MutationIntegrationGoogleUpdateArgs = {
+  id: Scalars['ID']['input'];
+  input: IntegrationGoogleUpdateInput;
 };
 
 
@@ -3012,6 +3055,16 @@ export type MutationVideoOriginUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type MuxSubtitleTrack = {
+  __typename?: 'MuxSubtitleTrack';
+  bcp47: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  muxVideoId: Scalars['ID']['output'];
+  source: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  trackId: Scalars['String']['output'];
+};
+
 export type MuxVideo = {
   __typename?: 'MuxVideo';
   assetId?: Maybe<Scalars['String']['output']>;
@@ -3419,10 +3472,12 @@ export type Query = {
   getMuxVideo?: Maybe<MuxVideo>;
   getMyCloudflareImage: CloudflareImage;
   getMyCloudflareImages: Array<CloudflareImage>;
+  getMyGeneratedMuxSubtitleTrack: QueryGetMyGeneratedMuxSubtitleTrackResult;
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
   getUserRole?: Maybe<UserRole>;
   hosts: Array<Host>;
+  integrationGooglePickerToken: Scalars['String']['output'];
   integrations: Array<Integration>;
   journey: Journey;
   journeyCollection: JourneyCollection;
@@ -3615,6 +3670,13 @@ export type QueryGetMyCloudflareImagesArgs = {
 };
 
 
+export type QueryGetMyGeneratedMuxSubtitleTrackArgs = {
+  bcp47: Scalars['String']['input'];
+  muxVideoId: Scalars['ID']['input'];
+  userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
 export type QueryGetMyMuxVideoArgs = {
   id: Scalars['ID']['input'];
   userGenerated?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3629,6 +3691,11 @@ export type QueryGetMyMuxVideosArgs = {
 
 export type QueryHostsArgs = {
   teamId: Scalars['ID']['input'];
+};
+
+
+export type QueryIntegrationGooglePickerTokenArgs = {
+  integrationId: Scalars['ID']['input'];
 };
 
 
@@ -3687,6 +3754,7 @@ export type QueryJourneyVisitorExportArgs = {
   filter?: InputMaybe<JourneyEventsFilter>;
   journeyId: Scalars['ID']['input'];
   select?: InputMaybe<JourneyVisitorExportSelect>;
+  timezone?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -3930,6 +3998,13 @@ export type QueryVisitorsConnectionArgs = {
 
 export type QueryYoutubeClosedCaptionLanguagesArgs = {
   videoId: Scalars['ID']['input'];
+};
+
+export type QueryGetMyGeneratedMuxSubtitleTrackResult = Error | QueryGetMyGeneratedMuxSubtitleTrackSuccess;
+
+export type QueryGetMyGeneratedMuxSubtitleTrackSuccess = {
+  __typename?: 'QueryGetMyGeneratedMuxSubtitleTrackSuccess';
+  data: MuxSubtitleTrack;
 };
 
 export type QueryPlaylistResult = NotFoundError | QueryPlaylistSuccess;
@@ -5003,6 +5078,7 @@ export type VideoBlock = Block & {
    * as the video poster. PosterBlock should be of type ImageBlock.
    */
   posterBlockId?: Maybe<Scalars['ID']['output']>;
+  showGeneratedSubtitles?: Maybe<Scalars['Boolean']['output']>;
   /**
    * internal source: videoId, videoVariantLanguageId, and video present
    * youTube source: videoId, title, description, and duration present
@@ -5052,6 +5128,7 @@ export type VideoBlockCreateInput = {
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId: Scalars['ID']['input'];
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
+  showGeneratedSubtitles?: InputMaybe<Scalars['Boolean']['input']>;
   source?: InputMaybe<VideoBlockSource>;
   startAt?: InputMaybe<Scalars['Int']['input']>;
   subtitleLanguageId?: InputMaybe<Scalars['ID']['input']>;
@@ -5103,6 +5180,7 @@ export type VideoBlockUpdateInput = {
   objectFit?: InputMaybe<VideoBlockObjectFit>;
   parentBlockId?: InputMaybe<Scalars['ID']['input']>;
   posterBlockId?: InputMaybe<Scalars['ID']['input']>;
+  showGeneratedSubtitles?: InputMaybe<Scalars['Boolean']['input']>;
   /**
    * internal source: videoId and videoVariantLanguageId required
    *   youTube source: videoId required
