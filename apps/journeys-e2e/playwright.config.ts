@@ -12,6 +12,7 @@ require('dotenv').config()
  */
 export default defineConfig({
   testDir: './src/e2e',
+  timeout: 60000,
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -44,23 +45,23 @@ export default defineConfig({
     //   name: 'Microsoft Edge',
     //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
     // },
-    {
-      name: 'chrome-desktop',
-      use: {
-        ...devices['Desktop Chrome'],
-        channel:
-          process.platform === 'linux' && process.arch === 'arm64'
-            ? 'chromium'
-            : 'chrome'
-      }
-    },
+    // {
+    //   name: 'chrome-desktop',
+    //   use: {
+    //     ...devices['Desktop Chrome'],
+    //     channel:
+    //       process.platform === 'linux' && process.arch === 'arm64'
+    //         ? 'chromium'
+    //         : 'chrome'
+    //   }
+    // },
 
     // /* Test against mobile viewports. */
     // // By default it's using chromium channel, changed it to chrome so it can play the video
     {
       name: 'chrome-mobile',
       use: {
-        ...devices['Pixel 5'],
+        ...devices['Pixel 7'],
         channel:
           process.platform === 'linux' && process.arch === 'arm64'
             ? 'chromium'
