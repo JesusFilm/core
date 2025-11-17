@@ -894,6 +894,8 @@ export enum IntegrationType {
 export type Journey = {
   __typename?: 'Journey';
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** Distinct block typenames present on this journey (non-deleted blocks only) */
+  blockTypenames: Array<Scalars['String']['output']>;
   blocks?: Maybe<Array<Block>>;
   chatButtons: Array<ChatButton>;
   createdAt: Scalars['DateTime']['output'];
@@ -1089,6 +1091,7 @@ export type JourneyEventsExportLogInput = {
 };
 
 export type JourneyEventsFilter = {
+  includeUnconnectedCards?: InputMaybe<Scalars['Boolean']['input']>;
   periodRangeEnd?: InputMaybe<Scalars['DateTime']['input']>;
   periodRangeStart?: InputMaybe<Scalars['DateTime']['input']>;
   typenames?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -3747,6 +3750,7 @@ export type QueryJourneyVisitorExportArgs = {
   filter?: InputMaybe<JourneyEventsFilter>;
   journeyId: Scalars['ID']['input'];
   select?: InputMaybe<JourneyVisitorExportSelect>;
+  timezone?: InputMaybe<Scalars['String']['input']>;
 };
 
 
