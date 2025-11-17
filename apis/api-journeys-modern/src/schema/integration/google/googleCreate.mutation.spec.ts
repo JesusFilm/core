@@ -91,9 +91,7 @@ describe('integrationGoogleCreate', () => {
       type: 'google',
       teamId: 'team-id',
       userId: 'userId',
-      accountEmail: 'test@example.com',
-      accessId: 'oauth2',
-      accessSecretPart: 'refres'
+      accountEmail: 'test@example.com'
     }
 
     mockAxios.post.mockResolvedValueOnce(mockTokenResponse as any)
@@ -137,12 +135,11 @@ describe('integrationGoogleCreate', () => {
     )
 
     expect(prismaMock.integration.create).toHaveBeenCalledWith({
+      include: { team: true },
       data: {
         type: 'google',
         teamId: 'team-id',
         userId: 'userId',
-        accessId: 'oauth2',
-        accessSecretPart: 'refres',
         accessSecretCipherText: 'encrypted-secret',
         accessSecretIv: 'iv',
         accessSecretTag: 'tag',

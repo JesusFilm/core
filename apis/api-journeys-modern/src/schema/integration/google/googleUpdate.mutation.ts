@@ -37,7 +37,7 @@ builder.mutationField('integrationGoogleUpdate', (t) =>
         id: t.arg.id({ required: true }),
         input: t.arg({ type: IntegrationGoogleUpdateInput, required: true })
       },
-      resolve: async (_query, _parent, args, context) => {
+      resolve: async (query, _parent, args, context) => {
         const { id, input } = args
 
         const clientId = env.GOOGLE_CLIENT_ID
@@ -80,26 +80,33 @@ builder.mutationField('integrationGoogleUpdate', (t) =>
           })
         }
 
-        const secretToStore = refreshToken ?? accessToken
-
         const encryptionSecret = env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
 
-        const { ciphertext, iv, tag } = await encryptSymmetric(
-          secretToStore,
-          encryptionSecret
-        )
+        // Only store refresh token. If absent, reuse existing encrypted secret fields.
+        if (refreshToken != null) {
+          const secretToStore = refreshToken
+          const { ciphertext, iv, tag } = await encryptSymmetric(
+            secretToStore,
+            encryptionSecret
+          )
 
-        return await prisma.integration.update({
-          where: { id },
-          data: {
-            accessId: 'oauth2',
-            accessSecretPart: secretToStore.slice(0, 6),
-            accessSecretCipherText: ciphertext,
-            accessSecretIv: iv,
-            accessSecretTag: tag,
-            accountEmail
-          }
-        })
+          return await prisma.integration.update({
+            ...query,
+            where: { id },
+            data: {
+              accessSecretCipherText: ciphertext,
+              accessSecretIv: iv,
+              accessSecretTag: tag,
+              accountEmail
+            }
+          })
+        }
+
+        // refreshToken is undefined, fail with clear guidance to re-authorize
+        throw new GraphQLError(
+          'A Google refresh token is required to complete the connection. Please re-authorize your Google account.',
+          { extensions: { code: 'BAD_USER_INPUT' } }
+        )
       }
     })
 )
