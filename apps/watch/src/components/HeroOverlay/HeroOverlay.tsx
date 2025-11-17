@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import { ComponentProps, ReactElement } from 'react'
 
-import GrainTexture from './assets/overlay.svg'
+const GrainTexture = { src: '/assets/overlay.svg' }
 
 interface HeroOverlayProps {
   sx?: ComponentProps<typeof Box>['sx']
@@ -27,7 +27,7 @@ export function HeroOverlay({ sx }: HeroOverlayProps): ReactElement {
           position: 'absolute',
           height: '100%',
           width: '100%',
-          backgroundImage: `url(${GrainTexture.src as string})`,
+          backgroundImage: `url(${GrainTexture.src})`,
           backgroundRepeat: 'repeat'
         }}
       />

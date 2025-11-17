@@ -1,1 +1,0 @@
-export { HeroVideo } from './HeroVideo'

@@ -9,17 +9,17 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { Footer } from '../Footer'
-import { Header } from '../Header'
+import { Header } from '../LegacyHeader'
 
 interface PageWrapperProps {
   hero?: ReactNode
   children?: ReactNode
   hideHeader?: boolean
-  hideHeaderSpacer?: boolean
   testId?: string
   headerThemeMode?: ThemeMode
   hideFooter?: boolean
   isFullscreen?: boolean
+  hideHeaderSpacer?: boolean
   showLanguageSwitcher?: boolean
 }
 
@@ -27,22 +27,14 @@ export function PageWrapper({
   hero,
   children,
   hideHeader,
-  hideHeaderSpacer,
   testId,
   headerThemeMode,
   hideFooter = false,
-  isFullscreen = false,
-  showLanguageSwitcher = false
+  isFullscreen = false
 }: PageWrapperProps): ReactElement {
   return (
     <Div100vh>
-      {hideHeader !== true && (
-        <Header
-          themeMode={headerThemeMode}
-          hideSpacer={hideHeaderSpacer}
-          showLanguageSwitcher={showLanguageSwitcher}
-        />
-      )}
+      {hideHeader !== true && <Header themeMode={headerThemeMode} />}
       <Stack
         justifyContent="space-between"
         sx={{

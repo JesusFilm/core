@@ -12,6 +12,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
+    "moduleResolution": "bundler",
     "tsBuildInfoFile": "../../.cache/watch/tsc/.tsbuildinfo"
   },
   "include": [

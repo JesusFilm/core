@@ -1,0 +1,1 @@
+export { PageCollectionsContent } from './PageCollectionsContent'
