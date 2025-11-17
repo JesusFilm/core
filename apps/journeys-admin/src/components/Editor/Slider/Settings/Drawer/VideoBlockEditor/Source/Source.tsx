@@ -56,7 +56,10 @@ const SourceFromMux = dynamic(
 
 interface SourceProps {
   selectedBlock: TreeBlock<VideoBlock> | null
-  onChange: (block: VideoBlockUpdateInput) => Promise<void>
+  onChange: (
+    block: VideoBlockUpdateInput,
+    shouldFocus?: boolean
+  ) => Promise<void>
 }
 
 export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
@@ -129,6 +132,7 @@ export function Source({ selectedBlock, onChange }: SourceProps): ReactElement {
       </Card>
       {open != null && (
         <VideoLibrary
+          key={selectedBlock?.videoId}
           open={open}
           onClose={() => setOpen(false)}
           selectedBlock={selectedBlock}
