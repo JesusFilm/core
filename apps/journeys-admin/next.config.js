@@ -5,7 +5,6 @@ const { i18n } = require('./next-i18next.config')
 
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
- * Updated to trigger deployment for email verification fix testing
  **/
 const nextConfig = {
   nx: {},
