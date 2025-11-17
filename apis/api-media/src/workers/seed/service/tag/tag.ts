@@ -1,4 +1,9 @@
-import { Service, prisma } from '@core/prisma/media/client'
+import {
+  type Prisma,
+  Service,
+  type Tag,
+  prisma
+} from '@core/prisma/media/client'
 
 export async function upsertTag(
   name: string,
@@ -6,25 +11,28 @@ export async function upsertTag(
   parentId?: string,
   service?: Service
 ): Promise<void> {
-  const tag = await prisma.tag.upsert({
-    where: {
-      name
-    },
-    create: {
-      name,
-      parentId,
-      service
-    },
-    update: {}
+  let tag: Tag
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    tag = await tx.tag.upsert({
+      where: {
+        name
+      },
+      create: {
+        name,
+        parentId,
+        service
+      },
+      update: {}
+    })
+    await prisma.tagName.upsert({
+      where: {
+        tagId_languageId: { tagId: tag.id, languageId: '529' }
+      },
+      create: { tagId: tag.id, value: name, languageId: '529', primary: true },
+      update: {}
+    })
   })
-
-  await prisma.tagName.upsert({
-    where: {
-      tagId_languageId: { tagId: tag.id, languageId: '529' }
-    },
-    create: { tagId: tag.id, value: name, languageId: '529', primary: true },
-    update: {}
-  })
+  // exit transaction for recursion
 
   await Promise.all(
     childrenNames.map(async (name) => {
