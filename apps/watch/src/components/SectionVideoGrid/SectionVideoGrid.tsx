@@ -12,7 +12,6 @@ import { Icon } from '@core/shared/ui/icons/Icon'
 import { cn } from '@core/shared/uimodern/utils'
 
 import {
-  SectionVideoCollectionCarouselSlide,
   SectionVideoCollectionCarouselSource,
   useSectionVideoCollectionCarouselContent
 } from '../SectionVideoCarousel/useSectionVideoCollectionCarouselContent'
@@ -20,15 +19,47 @@ import { VideoGrid } from '../VideoGrid/VideoGrid'
 
 export type SectionVideoGridSource = SectionVideoCollectionCarouselSource
 
+function isValueDisabled(value: string | false | null | undefined): boolean {
+  return value === '' || value === false || value === null
+}
+
+function hasHeaderContent(
+  subtitle: string | undefined,
+  title: string | undefined,
+  ctaHref: string | undefined,
+  ctaLabel: string | undefined,
+  subtitleOverride: string | false | null | undefined,
+  titleOverride: string | false | null | undefined,
+  ctaHrefOverride: string | false | null | undefined,
+  ctaLabelOverride: string | false | null | undefined
+): boolean {
+  // Check if subtitle should render (not disabled by override and has content)
+  const subtitleEnabled =
+    !isValueDisabled(subtitleOverride) && subtitle != null && subtitle !== ''
+  // Check if title should render (not disabled by override and has content)
+  const titleEnabled =
+    !isValueDisabled(titleOverride) && title != null && title !== ''
+  // Check if CTA should render (not disabled by overrides and has content)
+  const ctaEnabled =
+    !isValueDisabled(ctaHrefOverride) &&
+    !isValueDisabled(ctaLabelOverride) &&
+    ctaHref != null &&
+    ctaHref !== '' &&
+    ctaLabel != null &&
+    ctaLabel !== ''
+
+  return subtitleEnabled || titleEnabled || ctaEnabled
+}
+
 export interface SectionVideoGridProps {
   id?: string
   sources?: SectionVideoGridSource[]
   primaryCollectionId?: string
-  subtitleOverride?: string
-  titleOverride?: string
-  descriptionOverride?: string
-  ctaLabelOverride?: string
-  ctaHrefOverride?: string
+  subtitleOverride?: string | false | null
+  titleOverride?: string | false | null
+  descriptionOverride?: string | false | null
+  ctaLabelOverride?: string | false | null
+  ctaHrefOverride?: string | false | null
   watchButtonIcon?: 'Play3' | 'ArrowRight'
   analyticsTag?: string
   backgroundClassName?: string
@@ -69,10 +100,10 @@ export function SectionVideoGrid({
     useSectionVideoCollectionCarouselContent({
       sources: resolvedSources,
       primaryCollectionId,
-      subtitleOverride,
-      titleOverride,
-      descriptionOverride,
-      ctaLabelOverride,
+      subtitleOverride: subtitleOverride || undefined,
+      titleOverride: titleOverride || undefined,
+      descriptionOverride: descriptionOverride || undefined,
+      ctaLabelOverride: ctaLabelOverride || undefined,
       ctaHrefOverride,
       defaultCtaLabel: t('Watch'),
       languageId
@@ -144,45 +175,67 @@ export function SectionVideoGrid({
         aria-hidden="true"
       />
       <div className="absolute inset-0 bg-[url(/watch/assets/overlay.svg)] bg-repeat mix-blend-multiply" />
-      <div className="padded relative z-2 pb-6">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-col gap-1">
-            {subtitle != null && subtitle !== '' && (
-              <h4
-                className="text-sm font-semibold tracking-wider text-red-100/70 uppercase xl:text-base 2xl:text-lg"
-                data-testid="SectionVideoGridSubtitle"
-              >
-                {subtitle}
-              </h4>
-            )}
-            {title != null && title !== '' && (
-              <h2
-                className="text-2xl font-bold xl:text-3xl 2xl:text-4xl"
-                data-testid="SectionVideoGridTitle"
-              >
-                {title}
-              </h2>
-            )}
+      {hasHeaderContent(
+        subtitle,
+        title,
+        ctaHref,
+        ctaLabel,
+        subtitleOverride,
+        titleOverride,
+        ctaHrefOverride,
+        ctaLabelOverride
+      ) && (
+        <div className="padded relative z-2 pb-6">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-col gap-1">
+              {!isValueDisabled(subtitleOverride) &&
+                subtitle != null &&
+                subtitle !== '' && (
+                  <h4
+                    className="text-sm font-semibold tracking-wider text-red-100/70 uppercase xl:text-base 2xl:text-lg"
+                    data-testid="SectionVideoGridSubtitle"
+                  >
+                    {subtitle}
+                  </h4>
+                )}
+              {!isValueDisabled(titleOverride) &&
+                title != null &&
+                title !== '' && (
+                  <h2
+                    className="text-2xl font-bold xl:text-3xl 2xl:text-4xl"
+                    data-testid="SectionVideoGridTitle"
+                  >
+                    {title}
+                  </h2>
+                )}
+            </div>
+            {!isValueDisabled(ctaHrefOverride) &&
+              !isValueDisabled(ctaLabelOverride) &&
+              ctaHref != null &&
+              ctaHref !== '' &&
+              ctaLabel != null &&
+              ctaLabel !== '' && (
+                <a href={ctaHref} data-analytics-tag={analyticsTag}>
+                  <button
+                    aria-label={ctaLabel}
+                    className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold tracking-wider text-black uppercase transition-colors duration-200 hover:bg-red-500 hover:text-white"
+                    data-testid="SectionVideoGridCTA"
+                  >
+                    <Icon
+                      name={watchButtonIcon}
+                      sx={{
+                        width: 16,
+                        height: 16
+                      }}
+                      data-testid="SectionVideoGridCTAIcon"
+                    />
+                    <span>{ctaLabel}</span>
+                  </button>
+                </a>
+              )}
           </div>
-          <a href={ctaHref} data-analytics-tag={analyticsTag}>
-            <button
-              aria-label={ctaLabel}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold tracking-wider text-black uppercase transition-colors duration-200 hover:bg-red-500 hover:text-white"
-              data-testid="SectionVideoGridCTA"
-            >
-              <Icon
-                name={watchButtonIcon}
-                sx={{
-                  width: 16,
-                  height: 16
-                }}
-                data-testid="SectionVideoGridCTAIcon"
-              />
-              <span>{ctaLabel}</span>
-            </button>
-          </a>
         </div>
-      </div>
+      )}
 
       <div className="padded relative">
         <VideoGrid
@@ -196,16 +249,18 @@ export function SectionVideoGrid({
         />
       </div>
 
-      <div className="padded space-y-6">
-        {description != null && description !== '' && (
-          <p
-            className="mt-8 text-lg leading-relaxed text-stone-200/80 xl:text-xl"
-            data-testid="SectionVideoGridDescription"
-          >
-            {description}
-          </p>
+      {!isValueDisabled(descriptionOverride) &&
+        description != null &&
+        description !== '' && (
+          <div className="padded space-y-6">
+            <p
+              className="mt-8 text-lg leading-relaxed text-stone-200/80 xl:text-xl"
+              data-testid="SectionVideoGridDescription"
+            >
+              {description}
+            </p>
+          </div>
         )}
-      </div>
     </section>
   )
 }

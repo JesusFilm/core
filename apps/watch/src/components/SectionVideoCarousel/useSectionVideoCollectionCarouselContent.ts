@@ -1,13 +1,13 @@
 import { useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
-import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'next-i18next'
+import { useEffect, useMemo } from 'react'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { getLanguageIdFromLocale } from '../../libs/getLanguageIdFromLocale'
-import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
+import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 
 import { GET_COLLECTION_SHOWCASE_CONTENT } from './queries'
 

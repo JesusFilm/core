@@ -4,11 +4,12 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 
 import type { Feature, FeatureCollection, MultiPolygon, Polygon } from 'geojson'
 import maplibregl, {
+  type GeoJSONSource,
   type LngLatBoundsLike,
   Map as MapInstance,
   type MapLayerMouseEvent,
   type MapMouseEvent,
-  type MapboxGeoJSONFeature
+  type MapGeoJSONFeature
 } from 'maplibre-gl'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
@@ -418,8 +419,8 @@ function createFeatureCollection(
 }
 
 function isCountryFeature(
-  feature: MapboxGeoJSONFeature | undefined
-): feature is MapboxGeoJSONFeature & { properties: CountryFeatureProperties } {
+  feature: MapGeoJSONFeature | undefined
+): feature is MapGeoJSONFeature & { properties: CountryFeatureProperties } {
   return (
     (feature?.geometry?.type === 'Polygon' ||
       feature?.geometry?.type === 'MultiPolygon') &&
@@ -522,8 +523,7 @@ export function LanguageMap({
       style: STYLE_URL,
       center: [10, 20],
       zoom: 1.3,
-      minZoom: 1.1,
-      attributionControl: true
+      minZoom: 1.1
     })
 
     map.addControl(
@@ -645,7 +645,7 @@ export function LanguageMap({
     }
 
     const handleCountryClick = (
-      event: MapMouseEvent | MapLayerMouseEvent
+      event: MapLayerMouseEvent
     ): void => {
       const feature = event.features?.[0]
       if (!isCountryFeature(feature)) return
@@ -759,7 +759,7 @@ export function LanguageMap({
     const updateSource = (): void => {
       const source = map.getSource(SOURCE_ID)
       if (source?.type === 'geojson') {
-        source.setData(featureCollection)
+        (source as GeoJSONSource).setData(featureCollection)
       }
     }
 
