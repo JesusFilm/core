@@ -62,7 +62,7 @@ export function ContactDataForm({
     setSelectedFields(checked ? availableContactEvents : [])
   }
 
-  const toggleField = (field: string) => {
+  const handleToggleField = (field: string) => {
     return (checked: boolean) =>
       setSelectedFields((prev) =>
         !checked
@@ -116,28 +116,28 @@ export function ContactDataForm({
           {availableContactEvents.includes('TextResponseSubmissionEvent') && (
             <CheckboxOption
               checked={selectedFields.includes('TextResponseSubmissionEvent')}
-              onChange={toggleField('TextResponseSubmissionEvent')}
+              onChange={handleToggleField('TextResponseSubmissionEvent')}
               label={t('Text Submission')}
             />
           )}
           {availableContactEvents.includes('RadioQuestionSubmissionEvent') && (
             <CheckboxOption
               checked={selectedFields.includes('RadioQuestionSubmissionEvent')}
-              onChange={toggleField('RadioQuestionSubmissionEvent')}
+              onChange={handleToggleField('RadioQuestionSubmissionEvent')}
               label={t('Poll Selection')}
             />
           )}
           {availableContactEvents.includes('MultiselectSubmissionEvent') && (
             <CheckboxOption
               checked={selectedFields.includes('MultiselectSubmissionEvent')}
-              onChange={toggleField('MultiselectSubmissionEvent')}
+              onChange={handleToggleField('MultiselectSubmissionEvent')}
               label={t('Multiselect Responses')}
             />
           )}
           {availableContactEvents.includes('SignUpSubmissionEvent') && (
             <CheckboxOption
               checked={selectedFields.includes('SignUpSubmissionEvent')}
-              onChange={toggleField('SignUpSubmissionEvent')}
+              onChange={handleToggleField('SignUpSubmissionEvent')}
               label={t('Subscription')}
             />
           )}
