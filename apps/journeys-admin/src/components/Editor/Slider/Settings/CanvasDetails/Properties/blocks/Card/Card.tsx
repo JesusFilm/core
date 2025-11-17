@@ -13,7 +13,6 @@ import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
 import Image3Icon from '@core/shared/ui/icons/Image3'
-import LinkIcon from '@core/shared/ui/icons/Link'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 import SunIcon2 from '@core/shared/ui/icons/Sun2'
 import VideoOnIcon from '@core/shared/ui/icons/VideoOn'
@@ -21,8 +20,6 @@ import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
-
-import { Slug } from './Slug'
 
 const BackgroundColor = dynamic(
   async () =>
@@ -173,16 +170,6 @@ export function Card({
           disableExpanded={disableExpanded}
         />
       </Accordion>
-      {journey?.website === true && (
-        <Accordion
-          icon={<LinkIcon />}
-          id={`${id}-slug`}
-          name={t('Card URL')}
-          value={selectedStep?.slug ?? selectedStep?.id ?? ''}
-        >
-          <Slug />
-        </Accordion>
-      )}
     </Box>
   )
 }

@@ -1,1 +1,0 @@
-export { Slug } from './Slug'

@@ -15,6 +15,7 @@ import { STEP_NODE_WIDTH } from './libs/sizes'
 import { StepBlockNodeAnalytics } from './StepBlockNodeAnalytics'
 import { StepBlockNodeCard } from './StepBlockNodeCard'
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
+import Typography from '@mui/material/Typography'
 
 export function StepBlockNode({
   id,
@@ -40,6 +41,9 @@ export function StepBlockNode({
   const isHovered = hoveredStep?.id === step?.id
 
   const isMenuCard = journey?.menuStepBlock?.id === id
+
+  const showCardSlug =
+    journey?.website === true && step?.slug != null && step?.slug !== ''
 
   const targetHandleVariant = isMenuCard
     ? HandleVariant.None
@@ -67,6 +71,18 @@ export function StepBlockNode({
           <StepBlockNodeAnalytics stepId={step.id} />
         </div>
       </Fade>
+      {showCardSlug && (
+        <Typography
+          sx={{
+            maxWidth: STEP_NODE_WIDTH,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          {step.slug}
+        </Typography>
+      )}
       <Stack
         data-testid={`StepBlockNode-${step.id}`}
         direction="column"

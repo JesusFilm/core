@@ -37,8 +37,7 @@ import {
   calculateScale,
   calculateScaledMargin
 } from './utils/calculateDimensions'
-import { Input } from '../../../../Input'
-import Typography from '@mui/material/Typography'
+import { CardSlugEdit } from './CardSlugEdit'
 
 const fadeIn = keyframes`
   from {
@@ -69,6 +68,9 @@ export function Canvas(): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
+
+  const showSlugEdit =
+    journey?.website === true && activeSlide === ActiveSlide.Content
 
   const initialScale =
     typeof window !== 'undefined' && window.innerWidth <= 600 ? 0 : 1
@@ -190,19 +192,7 @@ export function Canvas(): ReactElement {
             justifyContent: 'center'
           }}
         >
-          <Input
-            value={selectedStep?.id}
-            onChange={(e) => {
-              console.log(e.target.value)
-            }}
-            startIcon={
-              <Typography fontSize={26} sx={{ pl: 3 }}>
-                /
-              </Typography>
-            }
-            fullWidth
-            className="mb-2"
-          />
+          <CardSlugEdit visible={showSlugEdit} />
           <Box
             data-testId="CanvasContainer"
             sx={{
