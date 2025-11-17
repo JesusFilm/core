@@ -29,7 +29,8 @@ builder.mutationField('googleSheetsSyncDelete', (t) =>
 
       const isTeamManager =
         sync.team?.userTeams?.some(
-          (userTeam) => userTeam.userId === userId && userTeam.role === 'manager'
+          (userTeam) =>
+            userTeam.userId === userId && userTeam.role === 'manager'
         ) ?? false
       const isIntegrationOwner =
         sync.integration != null && sync.integration.userId === userId
