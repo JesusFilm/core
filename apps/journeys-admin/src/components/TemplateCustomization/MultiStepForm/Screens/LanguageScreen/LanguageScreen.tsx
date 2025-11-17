@@ -325,7 +325,7 @@ export function LanguageScreen({
             handleNext()
             setLoading(false)
           }
-        } catch (error) {
+        } catch {
           enqueueSnackbar(
             t(
               'Failed to duplicate journey to team, please refresh the page and try again'
@@ -412,10 +412,10 @@ export function LanguageScreen({
                   control={
                     <Checkbox
                       checked={values.translateWithAI}
-                      onChange={(e) => {
-                        setFieldValue('translateWithAI', e.target.checked)
+                      onChange={async (e) => {
+                        await setFieldValue('translateWithAI', e.target.checked)
                         if (!e.target.checked) {
-                          setFieldValue('translateLanguage', undefined)
+                          await setFieldValue('translateLanguage', undefined)
                         }
                       }}
                     />
