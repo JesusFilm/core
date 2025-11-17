@@ -17,7 +17,14 @@ import {
 } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { MouseEventHandler, ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import {
+  MouseEventHandler,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 import Player from 'video.js/dist/types/player'
 
 import { isMobile } from '@core/shared/ui/deviceUtils'
@@ -135,8 +142,12 @@ export function VideoControls({
   const visible = !play || active || loading
 
   const videoTitle = last(title)?.value ?? ''
-  const videoLabel = isMuxInsert && muxOverlay ? muxOverlay.label : label?.replace(/_/g, ' ')
-  const videoDescription = isMuxInsert && muxOverlay ? muxOverlay.description : last(description)?.value
+  const videoLabel =
+    isMuxInsert && muxOverlay ? muxOverlay.label : label?.replace(/_/g, ' ')
+  const videoDescription =
+    isMuxInsert && muxOverlay
+      ? muxOverlay.description
+      : last(description)?.value
   const containerSlug = container?.slug ?? slug
   const collectionTitle = last(container?.title)?.value
 
@@ -234,7 +245,10 @@ export function VideoControls({
   }, [player, variant?.duration, customDuration])
 
   useEffect(() => {
-    const percent = durationSeconds > 0 ? Math.round((player?.currentTime() ?? 0) / durationSeconds * 100) : 0
+    const percent =
+      durationSeconds > 0
+        ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+        : 0
     if (percent > progressPercentNotYetEmitted[0]) {
       eventToDataLayer(
         `video_time_update_${progressPercentNotYetEmitted[0]}`,
@@ -272,9 +286,9 @@ export function VideoControls({
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
         Math.round(player?.currentTime() ?? 0),
-        durationSeconds > 0 ? Math.round(
-          ((player?.currentTime() ?? 0) / durationSeconds) * 100
-        ) : 0
+        durationSeconds > 0
+          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          : 0
       )
     } else {
       eventToDataLayer(
@@ -285,9 +299,9 @@ export function VideoControls({
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
         Math.round(player?.currentTime() ?? 0),
-        durationSeconds > 0 ? Math.round(
-          ((player?.currentTime() ?? 0) / durationSeconds) * 100
-        ) : 0
+        durationSeconds > 0
+          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          : 0
       )
     }
     void player?.play()
@@ -307,9 +321,9 @@ export function VideoControls({
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
         Math.round(player?.currentTime() ?? 0),
-        durationSeconds > 0 ? Math.round(
-          ((player?.currentTime() ?? 0) / durationSeconds) * 100
-        ) : 0
+        durationSeconds > 0
+          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          : 0
       )
     }
     player?.pause()
@@ -336,9 +350,9 @@ export function VideoControls({
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
         Math.round(player?.currentTime() ?? 0),
-        durationSeconds > 0 ? Math.round(
-          ((player?.currentTime() ?? 0) / durationSeconds) * 100
-        ) : 0
+        durationSeconds > 0
+          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          : 0
       )
     } else {
       eventToDataLayer(
@@ -349,9 +363,9 @@ export function VideoControls({
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
         Math.round(player?.currentTime() ?? 0),
-        durationSeconds > 0 ? Math.round(
-          ((player?.currentTime() ?? 0) / durationSeconds) * 100
-        ) : 0
+        durationSeconds > 0
+          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          : 0
       )
     }
   }, [player, id, variant, title, durationSeconds, dispatchPlayer])
@@ -372,9 +386,9 @@ export function VideoControls({
         variant?.language?.name.find(({ primary }) => !primary)?.value ??
           variant?.language?.name[0]?.value,
         Math.round(player?.currentTime() ?? 0),
-        durationSeconds > 0 ? Math.round(
-          ((player?.currentTime() ?? 0) / durationSeconds) * 100
-        ) : 0
+        durationSeconds > 0
+          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          : 0
       )
     }
   }, [player, id, variant, title, durationSeconds, dispatchPlayer])
@@ -388,9 +402,10 @@ export function VideoControls({
     })
     dispatchPlayer({
       type: 'SetProgress',
-      progress: durationSeconds > 0 ? Math.round(
-        ((player?.currentTime() ?? 0) / durationSeconds) * 100
-      ) : 0
+      progress:
+        durationSeconds > 0
+          ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+          : 0
     })
   }, [player, durationSeconds, dispatchPlayer])
 
@@ -412,17 +427,23 @@ export function VideoControls({
     })
   }, [player, dispatchPlayer])
 
-  const handleUserActive = useCallback(() =>
-    dispatchPlayer({
-      type: 'SetActive',
-      active: true
-    }), [dispatchPlayer])
+  const handleUserActive = useCallback(
+    () =>
+      dispatchPlayer({
+        type: 'SetActive',
+        active: true
+      }),
+    [dispatchPlayer]
+  )
 
-  const handleUserInactive = useCallback(() =>
-    dispatchPlayer({
-      type: 'SetActive',
-      active: false
-    }), [dispatchPlayer])
+  const handleUserInactive = useCallback(
+    () =>
+      dispatchPlayer({
+        type: 'SetActive',
+        active: false
+      }),
+    [dispatchPlayer]
+  )
 
   const handleWaiting = useCallback(() => {
     // Don't show loading state during user-initiated seeks
@@ -449,18 +470,18 @@ export function VideoControls({
   }, [dispatchPlayer])
 
   const handleEnded = useCallback(() => {
-      eventToDataLayer(
-        'video_ended',
-        id,
-        variant?.language.id,
-        title[0].value,
-        variant?.language?.name.find(({ primary }) => !primary)?.value ??
-          variant?.language?.name[0]?.value,
-        Math.round(player?.currentTime() ?? 0),
-        durationSeconds > 0 ? Math.round(
-          ((player?.currentTime() ?? 0) / durationSeconds) * 100
-        ) : 0
-      )
+    eventToDataLayer(
+      'video_ended',
+      id,
+      variant?.language.id,
+      title[0].value,
+      variant?.language?.name.find(({ primary }) => !primary)?.value ??
+        variant?.language?.name[0]?.value,
+      Math.round(player?.currentTime() ?? 0),
+      durationSeconds > 0
+        ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+        : 0
+    )
   }, [player, id, variant, title, durationSeconds])
 
   const handleCanPlay = useCallback(() => {
@@ -524,9 +545,9 @@ export function VideoControls({
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
-          durationSeconds > 0 ? Math.round(
-            ((player?.currentTime() ?? 0) / durationSeconds) * 100
-          ) : 0
+          durationSeconds > 0
+            ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+            : 0
         )
       } else {
         eventToDataLayer(
@@ -537,9 +558,9 @@ export function VideoControls({
           variant?.language?.name.find(({ primary }) => !primary)?.value ??
             variant?.language?.name[0]?.value,
           Math.round(player?.currentTime() ?? 0),
-          durationSeconds > 0 ? Math.round(
-            ((player?.currentTime() ?? 0) / durationSeconds) * 100
-          ) : 0
+          durationSeconds > 0
+            ? Math.round(((player?.currentTime() ?? 0) / durationSeconds) * 100)
+            : 0
         )
       }
       dispatchPlayer({
@@ -622,15 +643,16 @@ export function VideoControls({
     if (!Array.isArray(value)) {
       // Value is in seconds (from slider with min=0, max=durationSeconds)
       const timeInSeconds = value
-      const progressPercent = durationSeconds > 0 
-        ? Math.round((timeInSeconds / durationSeconds) * 100) 
-        : 0
-      
+      const progressPercent =
+        durationSeconds > 0
+          ? Math.round((timeInSeconds / durationSeconds) * 100)
+          : 0
+
       // Mark that we're performing a user-initiated seek
       isSeekingRef.current = true
       // Reset seek loading state for new seek
       setIsSeekLoading(false)
-      
+
       dispatchPlayer({
         type: 'SetProgress',
         progress: progressPercent
@@ -704,7 +726,7 @@ export function VideoControls({
   return (
     <div
       className={cn(
-        'absolute top-0 right-0 bottom-0 left-0 flex flex-col justify-end z-[2]',
+        'absolute top-0 right-0 bottom-0 left-0 z-[2] flex flex-col justify-end',
         visible ? 'cursor-default' : 'cursor-none'
       )}
       onClick={getClickHandler(handlePlay, () => {
@@ -714,7 +736,7 @@ export function VideoControls({
       data-testid="VideoControls"
     >
       {/* Show title overlay only once on a single page */}
-      {!loading && mute && !wasUnmuted || placement == 'carouselItem'  ? (
+      {(!loading && mute && !wasUnmuted) || placement == 'carouselItem' ? (
         <div className="responsive-container">
           <VideoTitle
             videoTitle={videoTitle}
@@ -746,8 +768,8 @@ export function VideoControls({
       {/* Loading State */}
       {loading && placement == 'singleVideo' && (
         <>
-          <div className="flex flex-grow items-center justify-center pt-[104px] z-[2]">
-            <div className="h-[65px] w-[65px] border-4 border-secondary border-t-primary rounded-full animate-spin" />
+          <div className="z-[2] flex flex-grow items-center justify-center pt-[104px]">
+            <div className="border-secondary border-t-primary h-[65px] w-[65px] animate-spin rounded-full border-4" />
           </div>
           {images[0]?.mobileCinematicHigh != null && (
             <Image
@@ -760,7 +782,7 @@ export function VideoControls({
               }}
             />
           )}
-          <div className="max-w-7xl mx-auto z-[2] responsive-container">
+          <div className="responsive-container z-[2] mx-auto max-w-7xl">
             <VideoTitle
               showButton={!initialLoadComplete}
               videoTitle={videoTitle}
@@ -777,7 +799,7 @@ export function VideoControls({
               }}
             />
           </div>
-          <div className="z-0 absolute top-0 left-0 right-0 bottom-0">
+          <div className="absolute top-0 right-0 bottom-0 left-0 z-0">
             <HeroOverlay />
           </div>
         </>
@@ -792,13 +814,13 @@ export function VideoControls({
         >
           <div>
             <div
-              className="mix-blend-multiply bg-gradient-to-b from-transparent via-stone-900/10 via-[30%] to-stone-900/80  pt-5"
+              className="bg-gradient-to-b from-transparent via-stone-900/10 via-[30%] to-stone-900/80 pt-5 mix-blend-multiply"
               onClick={(event) => event.stopPropagation()}
             >
               <div
                 data-testid="vjs-jfp-custom-controls"
                 className={cn(
-                  'max-w-7xl padded pb-4 z-[5]',
+                  'padded z-[5] max-w-7xl pb-4',
                   visible ? 'delay-0' : 'delay-[500ms]'
                 )}
                 style={{ transitionDelay: visible ? undefined : '0.5s' }}
@@ -807,11 +829,13 @@ export function VideoControls({
                   aria-label="mobile-progress-control"
                   min={0}
                   max={durationSeconds}
-                  value={[durationSeconds > 0 ? (progress / 100) * durationSeconds : 0]}
+                  value={[
+                    durationSeconds > 0 ? (progress / 100) * durationSeconds : 0
+                  ]}
                   onValueChange={handleSeekValueChange}
-                  className="h-[8.4px] flex md:hidden [&>button]:h-[13px] [&>button]:w-[13px] [&>span]:h-[8.4px] [&>span>span]:h-[8.4px]"
+                  className="flex h-[8.4px] md:hidden [&>button]:h-[13px] [&>button]:w-[13px] [&>span]:h-[8.4px] [&>span>span]:h-[8.4px]"
                 />
-                <div className="flex flex-row gap-5 justify-between md:justify-start items-center">
+                <div className="flex flex-row items-center justify-between gap-5 md:justify-start">
                   <Button
                     id={play ? 'pause-button' : 'play-button'}
                     onClick={play ? handlePause : handlePlay}
@@ -829,16 +853,20 @@ export function VideoControls({
                     aria-label="desktop-progress-control"
                     min={0}
                     max={durationSeconds}
-                    value={[durationSeconds > 0 ? (progress / 100) * durationSeconds : 0]}
+                    value={[
+                      durationSeconds > 0
+                        ? (progress / 100) * durationSeconds
+                        : 0
+                    ]}
                     onValueChange={handleSeekValueChange}
-                    className="h-[8.4px] hidden md:flex [&>button]:h-[13px] [&>button]:w-[13px] [&>span]:h-[8.4px] [&>span>span]:h-[8.4px]"
+                    className="hidden h-[8.4px] md:flex [&>button]:h-[13px] [&>button]:w-[13px] [&>span]:h-[8.4px] [&>span>span]:h-[8.4px]"
                   />
                   {player != null && (
-                    <div className="flex gap-1 z-[2] text-sm text-secondary-foreground">
+                    <div className="text-secondary-foreground z-[2] flex gap-1 text-sm">
                       <span className="font-sans">{currentTime ?? '0:00'}</span>
                       <span>/</span>
                       {duration === '0:00' ? (
-                        <Skeleton className="w-[27px] bg-muted" />
+                        <Skeleton className="bg-muted w-[27px]" />
                       ) : (
                         <span className="font-sans">{duration}</span>
                       )}
@@ -858,7 +886,7 @@ export function VideoControls({
                         )}
                       </Button>
                     </div>
-                    <div className="hidden md:flex flex-row items-center gap-2 group">
+                    <div className="group hidden flex-row items-center gap-2 md:flex">
                       <VideoSlider
                         aria-label="volume-control"
                         min={0}
@@ -928,4 +956,3 @@ export function VideoControls({
     </div>
   )
 }
-

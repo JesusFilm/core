@@ -258,6 +258,18 @@
     }
   }
 
+  @keyframes background-pan-zoom {
+    0% {
+      transform: translateX(-50%) scale(1);
+    }
+    50% {
+      transform: translateX(25%) scale(1.3);
+    }
+    100% {
+      transform: translateX(100%) scale(1);
+    }
+  }
+
   .animate-fade-in-up {
     animation: fade-in-up 0.6s ease-out forwards;
     opacity: 0;
@@ -281,6 +293,10 @@
 
   .animation-delay-500 {
     animation-delay: 0.5s;
+  }
+
+  .animate-background-pan-zoom {
+    animation: background-pan-zoom 28s ease-in-out infinite;
   }
 
   /* Video.js utility classes */

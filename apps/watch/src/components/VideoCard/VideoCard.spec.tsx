@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { fireEvent, render } from '@testing-library/react'
 
 import { useAlgoliaVideos } from '@core/journeys/ui/algolia/useAlgoliaVideos'
 
@@ -250,6 +250,46 @@ describe('VideoCard', () => {
     it('should set link pointer-events to none', async () => {
       const { getByRole } = render(<VideoCard variant="contained" />)
       expect(getByRole('link')).toHaveStyle('pointer-events: none')
+    })
+  })
+
+  describe('hover functionality', () => {
+    it('should call onHoverImageChange with image URL on mouse enter', () => {
+      const onHoverImageChange = jest.fn()
+      const { getByRole } = render(
+        <VideoCard video={videos[0]} onHoverImageChange={onHoverImageChange} />
+      )
+
+      const button = getByRole('button')
+      fireEvent.mouseEnter(button)
+
+      expect(onHoverImageChange).toHaveBeenCalledWith(
+        videos[0].images[0].mobileCinematicHigh
+      )
+    })
+
+    it('should call onHoverImageChange with null on mouse leave', () => {
+      const onHoverImageChange = jest.fn()
+      const { getByRole } = render(
+        <VideoCard video={videos[0]} onHoverImageChange={onHoverImageChange} />
+      )
+
+      const button = getByRole('button')
+      fireEvent.mouseLeave(button)
+
+      expect(onHoverImageChange).toHaveBeenCalledWith(null)
+    })
+
+    it('should not call onHoverImageChange when no video data', () => {
+      const onHoverImageChange = jest.fn()
+      const { getByRole } = render(
+        <VideoCard onHoverImageChange={onHoverImageChange} />
+      )
+
+      const button = getByRole('button')
+      fireEvent.mouseEnter(button)
+
+      expect(onHoverImageChange).not.toHaveBeenCalled()
     })
   })
 })

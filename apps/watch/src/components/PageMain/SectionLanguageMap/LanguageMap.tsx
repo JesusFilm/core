@@ -644,9 +644,7 @@ export function LanguageMap({
       hoveredCountryIdRef.current = nextId
     }
 
-    const handleCountryClick = (
-      event: MapLayerMouseEvent
-    ): void => {
+    const handleCountryClick = (event: MapLayerMouseEvent): void => {
       const feature = event.features?.[0]
       if (!isCountryFeature(feature)) return
 
@@ -759,7 +757,7 @@ export function LanguageMap({
     const updateSource = (): void => {
       const source = map.getSource(SOURCE_ID)
       if (source?.type === 'geojson') {
-        (source as GeoJSONSource).setData(featureCollection)
+        ;(source as GeoJSONSource).setData(featureCollection)
       }
     }
 

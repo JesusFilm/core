@@ -157,19 +157,37 @@ export function SectionVideoGrid({
     <section
       id={id}
       className={cn(
-        'scroll-snap-start-always relative bg-linear-to-tr from-blue-950/10 via-purple-950/10 to-[#91214A]/90 py-16',
+        'scroll-snap-start-always relative overflow-hidden bg-linear-to-tr from-blue-950/10 via-purple-950/10 to-[#91214A]/90 py-16',
         backgroundClassName
       )}
       data-testid="SectionVideoGrid"
     >
       <div
         className={cn(
-          'sepia-off absolute inset-0 z-0 bg-cover bg-center bg-no-repeat mix-blend-overlay blur-lg filter transition-opacity duration-500 ease-in-out',
+          'sepia-off absolute inset-0 z-0 bg-cover bg-center bg-no-repeat mix-blend-overlay blur-md filter transition-opacity duration-500 ease-in-out',
           isBackgroundVisible ? 'opacity-30' : 'opacity-0'
         )}
         style={
           hoverBackground != null
-            ? { backgroundImage: `url(${hoverBackground})` }
+            ? {
+                backgroundImage: `url(${hoverBackground})`
+              }
+            : undefined
+        }
+        aria-hidden="true"
+      />
+      <div
+        className={cn(
+          'sepia-off animate-background-pan-zoom absolute inset-0 z-0 bg-no-repeat mix-blend-overlay blur-xl brightness-[.5] saturate-2 filter',
+          isBackgroundVisible ? 'opacity-40' : 'opacity-0'
+        )}
+        style={
+          hoverBackground != null
+            ? {
+                backgroundImage: `url(${hoverBackground})`,
+                backgroundSize: '200% 200%',
+                backgroundPosition: 'center'
+              }
             : undefined
         }
         aria-hidden="true"

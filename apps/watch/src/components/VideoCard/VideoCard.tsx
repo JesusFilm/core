@@ -86,6 +86,8 @@ export function VideoCard({
           type="button"
           disabled={video == null}
           className={`group relative overflow-hidden rounded-lg ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} beveled transition-transform duration-300 hover:scale-102 focus-visible:scale-102 ${imageClassName || ''} cursor-pointer disabled:cursor-default`}
+          onMouseEnter={() => onHoverImageChange?.(imageSrc)}
+          onMouseLeave={() => onHoverImageChange?.(null)}
         >
           {sequenceLabel != null && (
             <span

@@ -27,7 +27,11 @@ export default class MyDocument extends Document<DocumentHeadTagsProps> {
             rel="stylesheet"
           />
           <link rel="icon" href="/watch/assets/favicon-32.png" sizes="32x32" />
-          <link rel="icon" href="/watch/assets/favicon-180.png" sizes="192x192" />
+          <link
+            rel="icon"
+            href="/watch/assets/favicon-180.png"
+            sizes="192x192"
+          />
           <link rel="apple-touch-icon" href="/watch/assets/favicon-180.png" />
           <meta
             name="msapplication-TileImage"

@@ -28,16 +28,15 @@ export function CollectionHero({
   )
 
   const heroImage = last(images)?.mobileCinematicHigh
-  const heroAlt = last(imageAlt)?.value ?? last(title)?.value ?? 'Collection hero'
+  const heroAlt =
+    last(imageAlt)?.value ?? last(title)?.value ?? 'Collection hero'
 
   return (
     <div
-      className="w-full flex items-end relative bg-[#000] z-[1] aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)] overflow-hidden"
+      className="relative z-[1] flex aspect-[var(--ratio-sm-expanded)] w-full items-end overflow-hidden bg-[#000] md:aspect-[var(--ratio-md-expanded)]"
       data-testid="CollectionHero"
     >
-      <div
-        className="fixed top-0 left-0 right-0 mx-auto z-0 aspect-[var(--ratio-sm-expanded)] md:aspect-[var(--ratio-md-expanded)] overflow-hidden max-w-[1920px]"
-      >
+      <div className="fixed top-0 right-0 left-0 z-0 mx-auto aspect-[var(--ratio-sm-expanded)] max-w-[1920px] overflow-hidden md:aspect-[var(--ratio-md-expanded)]">
         {heroImage != null && (
           <Image
             src={heroImage}
@@ -51,25 +50,25 @@ export function CollectionHero({
         <HeroOverlay />
       </div>
       <ContentHeader languageSlug={languageSlug} isPersistent />
-      <div className="relative z-10 w-full responsive-container pb-10 pt-20 flex flex-col gap-4">
+      <div className="responsive-container relative z-10 flex w-full flex-col gap-4 pt-20 pb-10">
         <div className="flex items-start justify-between gap-4">
-          <div className="flex flex-col gap-4 flex-1">
+          <div className="flex flex-1 flex-col gap-4">
             <p className="text-sm font-semibold tracking-wider text-red-100/70 uppercase">
               {labelText}
               {childCountLabel != null
                 ? ` • ${childCountLabel.toLowerCase()}`
                 : null}
             </p>
-            <h1 className="text-3xl md:text-5xl font-bold">
+            <h1 className="text-3xl font-bold md:text-5xl">
               {last(title)?.value}
             </h1>
           </div>
           {onShare != null && (
             <button
               onClick={onShare}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-gray-900 font-bold uppercase tracking-wider bg-white hover:bg-[#cb333b] hover:text-white transition-colors duration-200 text-sm cursor-pointer shrink-0"
+              className="inline-flex shrink-0 cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-bold tracking-wider text-gray-900 uppercase transition-colors duration-200 hover:bg-[#cb333b] hover:text-white"
             >
-              <LinkExternal className="w-4 h-4" />
+              <LinkExternal className="h-4 w-4" />
               {t('Share')}
             </button>
           )}

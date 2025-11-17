@@ -34,7 +34,9 @@ describe('mergeMuxInserts', () => {
     }))
 
     // eslint-disable-next-line import/dynamic-import-chunkname
-    const { mergeMuxInserts } = await import(/* webpackChunkName: "insertMux" */ './insertMux')
+    const { mergeMuxInserts } = await import(
+      /* webpackChunkName: "insertMux" */ './insertMux'
+    )
 
     const slides = mergeMuxInserts([
       { id: 'video-1' } as any,
@@ -67,7 +69,9 @@ describe('mergeMuxInserts', () => {
     }))
 
     // eslint-disable-next-line import/dynamic-import-chunkname
-    const { mergeMuxInserts } = await import(/* webpackChunkName: "insertMux" */ './insertMux')
+    const { mergeMuxInserts } = await import(
+      /* webpackChunkName: "insertMux" */ './insertMux'
+    )
 
     const slides = mergeMuxInserts([
       { id: 'video-1' } as any,

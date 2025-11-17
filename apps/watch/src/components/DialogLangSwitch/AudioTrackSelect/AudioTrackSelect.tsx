@@ -3,7 +3,6 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useId, useMemo } from 'react'
 import { useInstantSearch } from 'react-instantsearch'
 
-
 import { type Language, useLanguages } from '../../../libs/useLanguages'
 import { LanguageCommandSelect } from '../LanguageCommandSelect'
 

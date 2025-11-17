@@ -51,7 +51,12 @@ describe('LanguageCommandSelect', () => {
   })
 
   it('renders selected option display name', () => {
-    render(<LanguageCommandSelect {...defaultProps} selectedOption={mockLanguages[0]} />)
+    render(
+      <LanguageCommandSelect
+        {...defaultProps}
+        selectedOption={mockLanguages[0]}
+      />
+    )
 
     expect(screen.getByText('English')).toBeInTheDocument()
   })
@@ -79,14 +84,19 @@ describe('LanguageCommandSelect', () => {
 
   it('shows checkmark for selected option', async () => {
     const user = userEvent.setup()
-    render(<LanguageCommandSelect {...defaultProps} selectedOption={mockLanguages[0]} />)
+    render(
+      <LanguageCommandSelect
+        {...defaultProps}
+        selectedOption={mockLanguages[0]}
+      />
+    )
 
     await user.click(screen.getByRole('combobox'))
 
     // The checkmark should be visible for the selected option
-    const checkIcon = screen.getAllByRole('img', { hidden: true }).find(icon =>
-      icon.classList.contains('opacity-100')
-    )
+    const checkIcon = screen
+      .getAllByRole('img', { hidden: true })
+      .find((icon) => icon.classList.contains('opacity-100'))
     expect(checkIcon).toBeInTheDocument()
   })
 

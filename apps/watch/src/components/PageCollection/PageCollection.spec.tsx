@@ -35,7 +35,9 @@ jest.mock('../LanguageFilterDropdown', () => ({
 
 jest.mock('../../libs/useLanguages')
 
-const mockUseLanguages = useLanguages as jest.MockedFunction<typeof useLanguages>
+const mockUseLanguages = useLanguages as jest.MockedFunction<
+  typeof useLanguages
+>
 
 const collectionVideo: VideoContentFields = {
   ...videos[0],

@@ -50,9 +50,7 @@ function PageMainBody({ languageId }: PageMainProps): ReactElement {
 
   return (
     <div>
-      <Header
-        themeMode={ThemeMode.dark}
-      />
+      <Header themeMode={ThemeMode.dark} />
       <Index indexName={indexName}>
         <SearchComponent languageId={languageId} />
       </Index>

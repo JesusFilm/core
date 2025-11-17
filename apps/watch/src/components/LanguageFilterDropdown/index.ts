@@ -1,4 +1,2 @@
-export {
-  LanguageFilterDropdown
-} from './LanguageFilterDropdown'
+export { LanguageFilterDropdown } from './LanguageFilterDropdown'
 export type { LanguageFilterOption } from './LanguageFilterDropdown'

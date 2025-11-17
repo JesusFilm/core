@@ -1,7 +1,10 @@
 import dynamic from 'next/dynamic'
 import { type ReactElement } from 'react'
 
-import { collectionShowcaseSources, christmasAdventShowcaseSources } from '../PageCollections/collectionShowcaseConfig'
+import {
+  collectionShowcaseSources,
+  christmasAdventShowcaseSources
+} from '../PageCollections/collectionShowcaseConfig'
 
 const SectionVideoCarousel = dynamic(
   () =>
@@ -92,7 +95,6 @@ export function CollectionsRail({
         primaryCollectionId="7_Origins2Worth"
         subtitleOverride="Worth Series"
         titleOverride="NUA Worth"
-        
         languageId={languageId}
       />
     </>

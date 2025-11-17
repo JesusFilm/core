@@ -33,10 +33,7 @@ const muxInsertSchema = z.object({
   enabled: z.boolean().default(true),
   source: z.literal('mux'),
   playbackIds: z.tuple([z.string().min(1)]).rest(z.string().min(1)),
-  duration: z
-    .number()
-    .positive('duration must be positive')
-    .optional(),
+  duration: z.number().positive('duration must be positive').optional(),
   overlay: overlaySchema,
   trigger: triggerSchema,
   posterOverride: z.string().min(1).optional()
