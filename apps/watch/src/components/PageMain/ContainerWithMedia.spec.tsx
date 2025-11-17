@@ -101,5 +101,3 @@ describe('ContainerWithMedia', () => {
     expect(screen.getByTestId('VideoCarousel')).toBeInTheDocument()
   })
 })
-
-

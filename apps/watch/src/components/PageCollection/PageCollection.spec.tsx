@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import mockRouter from 'next-router-mock'
-import { SnackbarProvider } from 'notistack'
 import userEvent from '@testing-library/user-event'
+import { SnackbarProvider } from 'notistack'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { PlayerProvider } from '../../libs/playerContext'

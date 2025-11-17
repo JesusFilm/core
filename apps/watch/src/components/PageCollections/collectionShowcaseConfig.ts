@@ -21,12 +21,10 @@ export const christmasAdventShowcaseSources: SectionVideoCollectionCarouselSourc
     { type: 'video', id: '1_jf6102-0-0' },
     { type: 'video', id: '1_riv_11-0-0' },
     { type: 'video', id: '1_wl604410-0-0' },
-    
     { type: 'video', id: '6_GOLuke2601' },
     { type: 'video', id: '6_GOLuke2602' },
     { type: 'video', id: '6_GOMatt2501' },
   ]
-
 
 export const nuaChristmasSources: SectionVideoCollectionCarouselSource[] =
   [

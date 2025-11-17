@@ -119,5 +119,3 @@ describe('HeroVideo', () => {
     expect(videoElement).toHaveStyle({ height: '100%' })
   })
 })
-
-

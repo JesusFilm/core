@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
+import { VideoLabel } from '../../../__generated__/globalTypes'
 import { usePlayer } from '../../libs/playerContext'
 import { UnifiedCardData } from '../../types/inserts'
 import { videos } from '../../Videos/__generated__/testData'
@@ -36,7 +37,7 @@ const mockVideoData: UnifiedCardData = {
   title: [{ value: 'Test Video' }],
   images: [{ mobileCinematicHigh: 'test-image.jpg' }],
   imageAlt: [{ value: 'Test video alt' }],
-  label: 'chapter',
+  label: VideoLabel.segment,
   slug: 'test-video',
   variant: { slug: 'test-video' }
 }

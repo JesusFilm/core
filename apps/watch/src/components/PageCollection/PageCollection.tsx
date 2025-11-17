@@ -1,24 +1,16 @@
 import last from 'lodash/last'
-import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import {
-  ReactElement,
-  useCallback,
-  useMemo,
-  useState
-} from 'react'
+import { ReactElement, useCallback, useMemo, useState } from 'react'
 
 import { ThemeMode } from '@core/shared/ui/themes'
 
 import { useLanguages } from '../../libs/useLanguages'
+import { useVariantLanguagesIdAndSlugQuery } from '../../libs/useVariantLanguagesIdAndSlugQuery'
 import { useVideo } from '../../libs/videoContext'
 import { ContentPageBlurFilter } from '../ContentPageBlurFilter'
 import { DialogShare } from '../DialogShare'
-import {
-  LanguageFilterDropdown,
-  type LanguageFilterOption
-} from '../LanguageFilterDropdown'
+import { type LanguageFilterOption } from '../LanguageFilterDropdown'
 import { PageWrapper } from '../PageWrapper'
 import { SectionVideoGrid } from '../SectionVideoGrid'
 
@@ -31,7 +23,6 @@ function normalizeParam(param?: string | string[]): string | undefined {
 }
 
 export function PageCollection(): ReactElement {
-  const { t } = useTranslation('apps-watch')
   const router = useRouter()
   const [showShare, setShowShare] = useState(false)
   const {
@@ -44,7 +35,12 @@ export function PageCollection(): ReactElement {
     label,
     childrenCount
   } = useVideo()
-  const { languages, isLoading: languagesLoading } = useLanguages()
+  const { languages: allLanguages } = useLanguages()
+  const { data: variantLanguagesData, loading: collectionLanguagesLoading } =
+    useVariantLanguagesIdAndSlugQuery({
+      variables: { id: id },
+      skip: id == null
+    })
 
   const collectionSegment = normalizeParam(router.query.part1)
   const rawLanguageParam = normalizeParam(router.query.part2)
@@ -52,16 +48,27 @@ export function PageCollection(): ReactElement {
     rawLanguageParam?.replace('.html', '') ?? 'english'
 
   const languageOptions = useMemo<LanguageFilterOption[]>(() => {
-    return languages.map((language) => ({
+    // Get available language slugs from collection variant languages
+    const availableLanguageSlugs =
+      variantLanguagesData?.video?.variantLanguages?.map(
+        (variantLang) => variantLang.slug
+      ) ?? []
+
+    // Filter languages to only include those available for this collection
+    const filteredLanguages = allLanguages.filter((language) =>
+      availableLanguageSlugs.includes(language.slug)
+    )
+
+    return filteredLanguages.map((language) => ({
       value: language.slug,
       englishName: language.englishName?.value ?? language.displayName,
       nativeName: language.nativeName?.value ?? language.displayName
     }))
-  }, [languages])
+  }, [allLanguages, variantLanguagesData])
 
   const selectedLanguage = useMemo(
-    () => languages.find((lang) => lang.slug === selectedLanguageSlug),
-    [languages, selectedLanguageSlug]
+    () => allLanguages.find((lang) => lang.slug === selectedLanguageSlug),
+    [allLanguages, selectedLanguageSlug]
   )
 
   const handleLanguageSelect = useCallback(
@@ -76,8 +83,7 @@ export function PageCollection(): ReactElement {
     [collectionSegment, router]
   )
 
-  const languageSegment =
-    rawLanguageParam ?? `${selectedLanguageSlug}.html`
+  const languageSegment = rawLanguageParam ?? `${selectedLanguageSlug}.html`
   const watchUrlBase =
     process.env.NEXT_PUBLIC_WATCH_URL ?? 'https://watch-jesusfilm.vercel.app'
   const canonicalSegments = ['watch']
@@ -126,41 +132,40 @@ export function PageCollection(): ReactElement {
         }}
       />
       <PageWrapper
-        hero={<CollectionHero languageSlug={selectedLanguageSlug} />}
+        hero={
+          <CollectionHero
+            languageSlug={selectedLanguageSlug}
+            onShare={() => setShowShare(true)}
+          />
+        }
         headerThemeMode={ThemeMode.dark}
         hideHeader
         hideFooter
       >
         <ContentPageBlurFilter>
-          <div className="flex flex-col gap-20 py-14 z-10 responsive-container">
-            <div className="grid grid-cols-1 xl:grid-cols-[3fr_2fr] z-10 gap-20">
+          <div className="z-10 flex flex-col gap-0 py-14">
+            <div className="z-10 flex flex-col gap-6">
               <CollectionMetadata
                 title={titleText}
                 description={descriptionText}
                 snippet={snippetText}
                 label={label}
                 childCount={childrenCount}
-                onShare={() => setShowShare(true)}
+                languageOptions={languageOptions}
+                languagesLoading={collectionLanguagesLoading}
+                selectedLanguageSlug={selectedLanguageSlug}
+                onLanguageSelect={handleLanguageSelect}
               />
-              <div className="space-y-3">
-                <p className="text-sm font-semibold tracking-wider uppercase text-red-100/70">
-                  {t('Languages')}
-                </p>
-                <LanguageFilterDropdown
-                  options={languageOptions}
-                  loading={languagesLoading}
-                  selectedValue={selectedLanguageSlug}
-                  placeholder={t('Search languages...')}
-                  emptyLabel={t('No languages found.')}
-                  loadingLabel={t('Loading languages...')}
-                  onSelect={handleLanguageSelect}
-                />
-              </div>
             </div>
             <SectionVideoGrid
               id="collection-video-grid"
               primaryCollectionId={id}
               languageId={selectedLanguage?.id}
+              subtitleOverride={false}
+              titleOverride={false}
+              descriptionOverride={false}
+              ctaHrefOverride={false}
+              ctaLabelOverride={false}
             />
           </div>
           <DialogShare open={showShare} onClose={() => setShowShare(false)} />

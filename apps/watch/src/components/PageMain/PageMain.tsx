@@ -52,10 +52,6 @@ function PageMainBody({ languageId }: PageMainProps): ReactElement {
     <div>
       <Header
         themeMode={ThemeMode.dark}
-        hideTopAppBar
-        hideBottomAppBar
-        hideSpacer
-        showLanguageSwitcher
       />
       <Index indexName={indexName}>
         <SearchComponent languageId={languageId} />

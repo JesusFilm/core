@@ -1,10 +1,11 @@
-import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
+import { useTranslation } from 'next-i18next'
 
-import LinkExternal from '@core/shared/ui/icons/LinkExternal'
-
-import { VideoLabel } from '../../../../__generated__/globalTypes'
-import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
+import { VideoLabel } from '../../../__generated__/globalTypes'
+import {
+  LanguageFilterDropdown,
+  type LanguageFilterOption
+} from '../LanguageFilterDropdown'
 
 interface CollectionMetadataProps {
   title: string
@@ -12,7 +13,10 @@ interface CollectionMetadataProps {
   snippet?: string
   label: VideoLabel
   childCount: number
-  onShare: () => void
+  languageOptions: LanguageFilterOption[]
+  languagesLoading: boolean
+  selectedLanguageSlug: string
+  onLanguageSelect: (slug: string) => void
 }
 
 export function CollectionMetadata({
@@ -21,43 +25,39 @@ export function CollectionMetadata({
   snippet,
   label,
   childCount,
-  onShare
+  languageOptions,
+  languagesLoading,
+  selectedLanguageSlug,
+  onLanguageSelect
 }: CollectionMetadataProps): ReactElement {
   const { t } = useTranslation('apps-watch')
-  const { label: labelText, childCountLabel } = getLabelDetails(
-    t,
-    label,
-    childCount
-  )
 
   return (
-    <div className="relative z-10 space-y-4" data-testid="CollectionMetadata">
-      <div className="space-y-3">
-        <div>
-          <p className="text-sm font-semibold tracking-wider text-red-100/70 uppercase">
-            {labelText}
-            {childCountLabel != null
-              ? ` • ${childCountLabel.toLowerCase()}`
-              : null}
+    <div
+      className="responsive-container relative z-10 space-y-4"
+      data-testid="CollectionMetadata"
+    >
+      <div className="flex items-center gap-8">
+        <div className="flex-1 space-y-3">
+          <p className="text-lg leading-relaxed text-stone-200/80 xl:text-xl">
+            {description}
           </p>
-          <h2 className="text-2xl xl:text-4xl font-bold">{title}</h2>
         </div>
-        {snippet != null && snippet !== '' && (
-          <p className="text-xs uppercase tracking-widest text-red-100/80">
-            {snippet}
+        <div className="w-80 flex-shrink-0 space-y-3">
+          <p className="text-sm font-semibold tracking-wider text-red-100/70 uppercase">
+            {t('Languages')}
           </p>
-        )}
-        <p className="text-lg xl:text-xl leading-relaxed text-stone-200/80">
-          {description}
-        </p>
+          <LanguageFilterDropdown
+            options={languageOptions}
+            loading={languagesLoading}
+            selectedValue={selectedLanguageSlug}
+            placeholder={t('Search languages...')}
+            emptyLabel={t('No languages found.')}
+            loadingLabel={t('Loading languages...')}
+            onSelect={onLanguageSelect}
+          />
+        </div>
       </div>
-      <button
-        onClick={onShare}
-        className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-gray-900 font-bold uppercase tracking-wider bg-white hover:bg-[#cb333b] hover:text-white transition-colors duration-200 text-sm cursor-pointer"
-      >
-        <LinkExternal className="w-4 h-4" />
-        {t('Share')}
-      </button>
     </div>
   )
 }
