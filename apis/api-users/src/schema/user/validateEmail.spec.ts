@@ -44,6 +44,15 @@ describe('validateEmail', () => {
     const token = 'token'
     const userEmail = 'user@email.com'
 
+    // Ensure $transaction executes the callback with the mocked client
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(prismaMock.$transaction as any).mockImplementation(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      async (fn: (tx: typeof prismaMock) => Promise<unknown>) => {
+        return await fn(prismaMock)
+      }
+    )
+
     prismaMock.user.update.mockResolvedValue({} as any)
     expect(await validateEmail(userId, userEmail, token)).toBe(true)
     expect(prismaMock.user.update).toHaveBeenCalledWith({
@@ -66,6 +75,15 @@ describe('validateEmail', () => {
     const userId = 'bypassUser'
     const userEmail = 'playwrightuser@example.com'
     const token = 'example-token'
+
+    // Ensure $transaction executes the callback with the mocked client
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(prismaMock.$transaction as any).mockImplementation(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      async (fn: (tx: typeof prismaMock) => Promise<unknown>) => {
+        return await fn(prismaMock)
+      }
+    )
 
     const result = await validateEmail(userId, userEmail, token)
     expect(result).toBe(true)
