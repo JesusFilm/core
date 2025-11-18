@@ -15,8 +15,8 @@ test.describe('Feature film', () => {
     // Set longer timeout for CI environments
     test.setTimeout(4 * 60 * 1000)
 
-    // Navigate to the resources page using daily-e2e deployment
-    await page.goto('/resources')
+    // Navigate to the watch page using daily-e2e deployment
+    await page.goto('/watch')
 
     // Wait for the page to be fully loaded
     await page.waitForLoadState('domcontentloaded')
@@ -32,7 +32,7 @@ test.describe('Feature film', () => {
     await page.waitForURL('**/jesus.html/**', { timeout: 60000 })
 
     // Wait for navigation and verify URL with longer timeout
-    await expect(page).toHaveURL('/resources/jesus.html/english.html', {
+    await expect(page).toHaveURL('/watch/jesus.html/english.html', {
       timeout: 60000
     })
 
@@ -68,7 +68,7 @@ test.describe('Feature film', () => {
 
     // Verify URL changed to Birth of Jesus chapter
     await expect(page).toHaveURL(
-      '/resources/jesus.html/birth-of-jesus/english.html',
+      '/watch/jesus.html/birth-of-jesus/english.html',
       { timeout: 60000 }
     )
   })

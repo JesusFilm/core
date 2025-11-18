@@ -9,7 +9,7 @@ Select 'Telugu' audion & 'English' subtitles
 Check the URL has correct parameters
 */
 test('Filters', async ({ page }) => {
-  await page.goto('/resources')
+  await page.goto('/watch')
 
   await page.getByTestId('SeeAllVideos').click()
 
@@ -57,6 +57,6 @@ test('Filters', async ({ page }) => {
   await page.waitForURL(/configure.*languageId.*subtitles/, { timeout: 20000 })
 
   await expect(page).toHaveURL(
-    '/resources/videos?configure%5BruleContexts%5D%5B0%5D=all_videos_page&menu%5BlanguageId%5D=5848&menu%5Bsubtitles%5D=529'
+    '/watch/videos?configure%5BruleContexts%5D%5B0%5D=all_videos_page&menu%5BlanguageId%5D=5848&menu%5Bsubtitles%5D=529'
   )
 })
