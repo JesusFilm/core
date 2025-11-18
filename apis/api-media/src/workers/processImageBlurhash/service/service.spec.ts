@@ -113,9 +113,10 @@ describe('processImageBlurhash service', () => {
         where: {
           blurhash: null,
           uploaded: true,
-          blurhashAttemptedAt: {
-            lt: expect.any(Date)
-          }
+          OR: [
+            { blurhashAttemptedAt: null },
+            { blurhashAttemptedAt: { lt: expect.any(Date) } }
+          ]
         },
         take: 50,
         select: { id: true }

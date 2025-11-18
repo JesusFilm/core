@@ -71,9 +71,14 @@ async function processBatch(logger?: Logger): Promise<void> {
       where: {
         blurhash: null,
         uploaded: true,
-        blurhashAttemptedAt: {
-          lt: new Date(Date.now() - 1000 * 60 * 60 * 24) // 24 hours ago
-        }
+        OR: [
+          { blurhashAttemptedAt: null },
+          {
+            blurhashAttemptedAt: {
+              lt: new Date(Date.now() - 1000 * 60 * 60 * 24)
+            }
+          }
+        ]
       },
       take: BATCH_SIZE,
       select: {
