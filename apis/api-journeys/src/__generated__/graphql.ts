@@ -649,6 +649,11 @@ export type GoogleSheetsSync = {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+export type GoogleSheetsSyncsFilter = {
+  integrationId?: InputMaybe<Scalars['ID']['input']>;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
+};
+
 export enum GridAlignItems {
   Baseline = 'baseline',
   Center = 'center',
@@ -3495,6 +3500,7 @@ export type Query = {
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
   getUserRole?: Maybe<UserRole>;
+  googleSheetsSyncs: Array<GoogleSheetsSync>;
   hosts: Array<Host>;
   integrationGooglePickerToken: Scalars['String']['output'];
   integrations: Array<Integration>;
@@ -3705,6 +3711,11 @@ export type QueryGetMyMuxVideoArgs = {
 export type QueryGetMyMuxVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGoogleSheetsSyncsArgs = {
+  filter: GoogleSheetsSyncsFilter;
 };
 
 

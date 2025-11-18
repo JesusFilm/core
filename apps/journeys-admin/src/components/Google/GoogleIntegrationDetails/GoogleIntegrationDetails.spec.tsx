@@ -8,7 +8,10 @@ import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
 import { useIntegrationQuery } from '../../../libs/useIntegrationQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvitesQuery'
 
-import { GoogleIntegrationDetails } from './GoogleIntegrationDetails'
+import {
+  GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION,
+  GoogleIntegrationDetails
+} from './GoogleIntegrationDetails'
 
 import '../../../../test/i18n'
 
@@ -28,13 +31,19 @@ jest.mock('../../../libs/useUserTeamsAndInvitesQuery', () => ({
   useUserTeamsAndInvitesQuery: jest.fn()
 }))
 
-jest.mock('./GoogleIntegrationRemoveDialog/GoogleIntegrationRemoveDialog', () => ({
-  GoogleIntegrationRemoveDialog: () => <div>Remove Dialog</div>
-}))
+jest.mock(
+  './GoogleIntegrationRemoveDialog/GoogleIntegrationRemoveDialog',
+  () => ({
+    GoogleIntegrationRemoveDialog: () => <div>Remove Dialog</div>
+  })
+)
 
-jest.mock('./GoogleIntegrationDeleteSyncDialog/GoogleIntegrationDeleteSyncDialog', () => ({
-  GoogleIntegrationDeleteSyncDialog: () => <div>Delete Sync Dialog</div>
-}))
+jest.mock(
+  './GoogleIntegrationDeleteSyncDialog/GoogleIntegrationDeleteSyncDialog',
+  () => ({
+    GoogleIntegrationDeleteSyncDialog: () => <div>Delete Sync Dialog</div>
+  })
+)
 
 describe('GoogleIntegrationDetails', () => {
   beforeEach(() => {
@@ -64,21 +73,18 @@ describe('GoogleIntegrationDetails', () => {
         integrationId: 'integrationId'
       }
     })
-
     ;(useIntegrationQuery as jest.Mock).mockReturnValue({
       data: {
         integrations
       },
       loading: false
     })
-
     ;(useCurrentUserLazyQuery as jest.Mock).mockReturnValue({
       loadUser: jest.fn(),
       data: {
         id: 'userId'
       }
     })
-
     ;(useUserTeamsAndInvitesQuery as jest.Mock).mockReturnValue({
       data: {
         userTeams: canManageSyncs
@@ -128,7 +134,7 @@ describe('GoogleIntegrationDetails', () => {
 
     const googleSheetsSyncsMock: MockedResponse = {
       request: {
-        query: expect.any(Object)
+        query: GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION
       },
       result: {
         data: {
@@ -160,9 +166,7 @@ describe('GoogleIntegrationDetails', () => {
     )
 
     await waitFor(() =>
-      expect(
-        getByRole('button', { name: 'Delete sync' })
-      ).toBeInTheDocument()
+      expect(getByRole('button', { name: 'Delete sync' })).toBeInTheDocument()
     )
 
     fireEvent.click(getByRole('button', { name: 'Delete sync' }))
@@ -172,4 +176,3 @@ describe('GoogleIntegrationDetails', () => {
     )
   })
 })
-

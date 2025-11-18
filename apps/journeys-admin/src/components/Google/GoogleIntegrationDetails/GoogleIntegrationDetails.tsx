@@ -28,7 +28,7 @@ import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvite
 import { GoogleIntegrationDeleteSyncDialog } from './GoogleIntegrationDeleteSyncDialog/GoogleIntegrationDeleteSyncDialog'
 import { GoogleIntegrationRemoveDialog } from './GoogleIntegrationRemoveDialog/GoogleIntegrationRemoveDialog'
 
-const GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION = gql`
+export const GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION = gql`
   query GoogleSheetsSyncsByIntegration($filter: GoogleSheetsSyncsFilter!) {
     googleSheetsSyncs(filter: $filter) {
       id
