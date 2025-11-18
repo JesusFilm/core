@@ -3,7 +3,11 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { sendEventsEmail, validateBlockEvent } from '../utils'
+import {
+  appendEventToGoogleSheets,
+  sendEventsEmail,
+  validateBlockEvent
+} from '../utils'
 
 import { ChatOpenEventRef } from './chatOpenEvent'
 import { ChatOpenEventCreateInput } from './inputs'
@@ -28,7 +32,7 @@ builder.mutationField('chatOpenEventCreate', (t) =>
         })
       }
 
-      const { visitor, journeyId } = await validateBlockEvent(
+      const { visitor, journeyId, teamId } = await validateBlockEvent(
         userId,
         input.blockId,
         input.stepId
@@ -70,6 +74,25 @@ builder.mutationField('chatOpenEventCreate', (t) =>
       ])
 
       await sendEventsEmail(journeyId, visitor.id)
+
+      // live sync to Google Sheets (fire and forget)
+      if (teamId) {
+        appendEventToGoogleSheets({
+          journeyId,
+          teamId,
+          row: [
+            visitor.id,
+            event.createdAt.toISOString(),
+            '',
+            '',
+            '',
+            input.blockId ?? '',
+            input.value ?? ''
+          ]
+        }).catch((error) => {
+          console.error('Failed to append event to Google Sheets:', error)
+        })
+      }
 
       return event
     }

@@ -41,7 +41,6 @@ builder.queryField('googleSheetsSyncs', (t) =>
             where: { id: filter.journeyId },
             include: { team: { include: { userTeams: true } } }
           })
-
           if (journey == null) {
             throw new GraphQLError('Journey not found', {
               extensions: { code: 'NOT_FOUND' }
