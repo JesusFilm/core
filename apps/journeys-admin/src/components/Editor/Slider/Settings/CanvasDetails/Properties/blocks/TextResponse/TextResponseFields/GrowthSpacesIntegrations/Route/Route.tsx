@@ -74,6 +74,11 @@ export function Route(): ReactElement {
     isMatchingGrowthSpacesIntegration
   )
 
+  const growthSpacesIntegration =
+    selectedIntegration?.__typename === 'IntegrationGrowthSpaces'
+      ? selectedIntegration
+      : null
+
   const options =
     selectedIntegration?.routes?.reduce<
       Array<{ value: string; label: string }>

@@ -23,6 +23,14 @@ export const GET_INTEGRATION = gql`
           name
         }
       }
+      ... on IntegrationGoogle {
+        id
+        type
+        user {
+          id
+        }
+        accountEmail
+      }
     }
   }
 `

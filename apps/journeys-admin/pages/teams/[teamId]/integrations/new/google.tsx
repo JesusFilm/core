@@ -1,34 +1,29 @@
 import Stack from '@mui/material/Stack'
-import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
   withUser,
   withUserTokenSSR
 } from 'next-firebase-auth'
-import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement, Suspense } from 'react'
+import { ReactElement } from 'react'
+// eslint-disable-next-line no-restricted-imports
+import { useTranslation } from 'react-i18next'
 
-import { GoogleIntegrationDetails } from '../../../../src/components/Google'
-import { GrowthSpacesIntegrationDetails } from '../../../../src/components/GrowthSpaces'
-import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
-import { PageWrapper } from '../../../../src/components/PageWrapper'
-import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
-import { useIntegrationQuery } from '../../../../src/libs/useIntegrationQuery'
+import { GoogleCreateIntegration } from '../../../../../src/components/Google'
+import { HelpScoutBeacon } from '../../../../../src/components/HelpScoutBeacon'
+import { PageWrapper } from '../../../../../src/components/PageWrapper'
+import { initAndAuthApp } from '../../../../../src/libs/initAndAuthApp'
 
-function IntegrationPage(): ReactElement {
+function GoogleConfigPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const user = useUser()
-  const { query } = useRouter()
-  const { data } = useIntegrationQuery({ teamId: query.teamId as string })
-  const selected = data?.integrations.find((i) => i.id === query.integrationId)
 
   return (
     <>
-      <NextSeo title={t('Integration')} />
+      <NextSeo title={t('Google')} />
       <PageWrapper
-        title={t('Integration')}
+        title={t('Google')}
         user={user}
         backHrefHistory
         mainHeaderChildren={
@@ -54,15 +49,7 @@ function IntegrationPage(): ReactElement {
           </Stack>
         }
       >
-        {selected != null && (
-          <>
-            {selected?.type === 'google' ? (
-              <GoogleIntegrationDetails />
-            ) : (
-              <GrowthSpacesIntegrationDetails />
-            )}
-          </>
-        )}
+        <GoogleCreateIntegration />
       </PageWrapper>
     </>
   )
@@ -102,4 +89,4 @@ export const getServerSideProps = withUserTokenSSR({
 
 export default withUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(IntegrationPage)
+})(GoogleConfigPage)
