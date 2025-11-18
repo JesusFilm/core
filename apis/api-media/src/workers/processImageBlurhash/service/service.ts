@@ -12,10 +12,10 @@ interface ProcessImageBlurhashJobData {
 }
 
 export async function service(
-  job: Job<ProcessImageBlurhashJobData>,
+  job?: Job<ProcessImageBlurhashJobData>,
   logger?: Logger
 ): Promise<void> {
-  const { imageId } = job.data
+  const { imageId } = job?.data ?? { imageId: undefined }
 
   if (imageId != null) {
     await processSingleImage(imageId, logger)

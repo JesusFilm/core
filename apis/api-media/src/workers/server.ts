@@ -8,17 +8,15 @@ import { logger } from './lib/logger'
 const ONE_HOUR = 3600
 const ONE_DAY = 86_400
 
-function run({
-  service,
-  queueName,
-  jobName,
-  repeat
-}: {
-  service: (logger?: Logger) => Promise<void>
-  queueName: string
-  jobName: string
-  repeat?: string
-}): void {
+type ServiceOneArg = (logger?: Logger) => Promise<void>
+type ServiceTwoArg = (job?: Job, logger?: Logger) => Promise<void>
+type Service = ServiceOneArg | ServiceTwoArg
+
+function isTwoArgService(service: Service): service is ServiceTwoArg {
+  return service.length === 2
+}
+
+function run({ service, queueName, jobName, repeat }: { service: Service; queueName: string; jobName: string; repeat?: string }): void {
   // eslint-disable-next-line no-new
   new Worker(queueName, job, {
     connection
@@ -33,7 +31,11 @@ function run({
     })
 
     childLogger.info('started job')
-    await service(childLogger)
+    if(isTwoArgService(service)) {
+      await service(job, childLogger)
+    } else {
+      await service(childLogger)
+    }
     childLogger.info('finished job')
   }
 
@@ -77,6 +79,12 @@ async function main(): Promise<void> {
         await import(
           /* webpackChunkName: "video-children" */
           './videoChildren'
+        )
+      )
+      run(
+        await import(
+          /* webpackChunkName: "process-image-blurhash" */
+          './processImageBlurhash'
         )
       )
     })
