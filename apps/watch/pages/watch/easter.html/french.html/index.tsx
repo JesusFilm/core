@@ -20,7 +20,7 @@ export default function EasterPage(): ReactElement {
             "Et si tout ce que vous pensiez savoir sur Pâques n'était que la moitié de l'histoire ?",
           description:
             "Explorez l'autre côté de Pâques — une histoire de trahison, d'espérance et d'une affirmation qui a changé le monde.",
-          url: 'https://www.jesusfilm.org/watch/easter/french',
+          url: 'https://watch.jesusfilm.org/watch/easter/french',
           type: 'website',
           locale: 'fr_FR',
           images: [
