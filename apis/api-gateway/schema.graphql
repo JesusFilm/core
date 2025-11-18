@@ -401,10 +401,11 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   buttonClickEventCreate(input: ButtonClickEventCreateInput!) : ButtonClickEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   chatOpenEventCreate(input: ChatOpenEventCreateInput!) : ChatOpenEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!) : MultiselectSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  journeySimpleUpdate(id: ID!, journey: Json!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
+  googleSheetsSyncDelete(id: ID!) : GoogleSheetsSync! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationDelete(id: ID!) : Integration! @join__field(graph: API_JOURNEYS_MODERN) 
-  journeySimpleUpdate(id: ID!, journey: Json!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -786,8 +787,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   visitor(id: ID!) : Visitor! @join__field(graph: API_JOURNEYS) 
   node(id: ID!) : Node @join__field(graph: API_JOURNEYS_MODERN) 
   nodes(ids: [ID!]!) : [Node]! @join__field(graph: API_JOURNEYS_MODERN) 
-  integrationGooglePickerToken(integrationId: ID!) : String! @join__field(graph: API_JOURNEYS_MODERN) 
   journeySimpleGet(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
+  integrationGooglePickerToken(integrationId: ID!) : String! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
   """
@@ -2420,6 +2421,22 @@ type Translation @join__type(graph: API_JOURNEYS)  {
   value: String!
   language: Language!
   primary: Boolean!
+}
+
+type GoogleSheetsSync @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID!
+  teamId: String
+  journeyId: String!
+  integrationId: ID
+  spreadsheetId: ID!
+  sheetName: String
+  folderId: String
+  email: String
+  deletedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  integration: Integration
+  journey: Journey!
 }
 
 type JourneyAiTranslateProgress @join__type(graph: API_JOURNEYS_MODERN)  {
