@@ -2434,8 +2434,8 @@ type Translation @join__type(graph: API_JOURNEYS)  {
 
 type GoogleSheetsSync @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
-  teamId: String
-  journeyId: String!
+  teamId: ID!
+  journeyId: ID!
   integrationId: ID
   spreadsheetId: ID!
   sheetName: String
