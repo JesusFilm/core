@@ -567,7 +567,7 @@ describe('journeyVisitorExportToGoogleSheet', () => {
         })
       })
     )
-    expect(result.data?.journeyVisitorExportToGoogleSheet).toBeDefined()
+    expect(result).toHaveProperty('data.journeyVisitorExportToGoogleSheet')
   })
 
   it('should throw error when spreadsheetTitle is empty string in create mode', async () => {

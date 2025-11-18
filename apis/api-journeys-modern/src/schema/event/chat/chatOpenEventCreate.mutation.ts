@@ -75,6 +75,7 @@ builder.mutationField('chatOpenEventCreate', (t) =>
 
       await sendEventsEmail(journeyId, visitor.id)
 
+      // live sync to Google Sheets (fire and forget)
       if (teamId) {
         appendEventToGoogleSheets({
           journeyId,
