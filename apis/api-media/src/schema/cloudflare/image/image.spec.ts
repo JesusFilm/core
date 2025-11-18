@@ -91,7 +91,8 @@ describe('cloudflareImage', () => {
             updatedAt: new Date(),
             aspectRatio: ImageAspectRatio.hd,
             videoId: null,
-            blurhash: 'testBlurhash'
+            blurhash: 'testBlurhash',
+            blurhashAttemptedAt: null
           }
         ])
         const result = await authClient({
@@ -138,7 +139,8 @@ describe('cloudflareImage', () => {
             updatedAt: new Date(),
             aspectRatio: ImageAspectRatio.banner,
             videoId: null,
-            blurhash: null
+            blurhash: null,
+            blurhashAttemptedAt: null
           }
         ])
         const result = await authClient({
@@ -205,7 +207,8 @@ describe('cloudflareImage', () => {
           updatedAt: new Date(),
           aspectRatio: null,
           videoId: null,
-          blurhash: 'testBlurhash'
+          blurhash: 'testBlurhash',
+          blurhashAttemptedAt: null
         })
         const result = await authClient({
           document: GET_MY_CLOUDFLARE_IMAGE_QUERY
@@ -256,7 +259,8 @@ describe('cloudflareImage', () => {
           updatedAt: new Date(),
           aspectRatio: ImageAspectRatio.hd,
           videoId: 'videoId',
-          blurhash: null
+          blurhash: null,
+          blurhashAttemptedAt: null
         })
         const result = await authClient({
           document: CREATE_CLOUDFLARE_UPLOAD_BY_FILE_MUTATION,
@@ -317,7 +321,8 @@ describe('cloudflareImage', () => {
           updatedAt: new Date(),
           aspectRatio: ImageAspectRatio.banner,
           videoId: 'videoId',
-          blurhash: null
+          blurhash: null,
+          blurhashAttemptedAt: null
         })
         const result = await authClient({
           document: CREATE_CLOUDFLARE_UPLOAD_BY_URL_MUTATION,
@@ -386,7 +391,8 @@ describe('cloudflareImage', () => {
           updatedAt: new Date(),
           aspectRatio: ImageAspectRatio.hd,
           videoId: 'videoId',
-          blurhash: null
+          blurhash: null,
+          blurhashAttemptedAt: null
         })
         const result = await authClient({
           document: CREATE_CLOUDFLARE_IMAGE_FROM_PROMPT_MUTATION,
