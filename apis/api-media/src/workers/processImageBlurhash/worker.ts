@@ -24,7 +24,7 @@ async function processJob(
   })
 
   childLogger.info(`started job: ${job.name}`)
-  await service(job, childLogger)
+  await service(childLogger, job)
   childLogger.info(`finished job: ${job.name}`)
 }
 
