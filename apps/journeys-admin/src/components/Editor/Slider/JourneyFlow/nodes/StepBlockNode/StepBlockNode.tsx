@@ -7,6 +7,7 @@ import { NodeProps, useUpdateNodeInternals } from 'reactflow'
 
 import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
 import { filterActionBlocks } from '@core/journeys/ui/filterActionBlocks'
+import { StepBlockNodeCard } from './StepBlockNodeCard'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
 import { BaseNode, HandleVariant } from '../BaseNode'
@@ -14,7 +15,6 @@ import { BaseNode, HandleVariant } from '../BaseNode'
 import { ActionButton } from './ActionButton'
 import { STEP_NODE_WIDTH } from './libs/sizes'
 import { StepBlockNodeAnalytics } from './StepBlockNodeAnalytics'
-import { StepBlockNodeCard } from './StepBlockNodeCard'
 import { StepBlockNodeMenu } from './StepBlockNodeMenu'
 
 export function StepBlockNode({
@@ -74,10 +74,13 @@ export function StepBlockNode({
       {showCardSlug && (
         <Typography
           sx={{
-            maxWidth: STEP_NODE_WIDTH,
+            maxWidth: `calc(${STEP_NODE_WIDTH}px - 14px)`,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap'
+            whiteSpace: 'nowrap',
+            mx: '7px',
+            fontSize: '10px',
+            color: isSelected ? 'default' : 'secondary.light'
           }}
         >
           {step.slug}
