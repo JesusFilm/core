@@ -262,7 +262,7 @@ describe('ClientLayout', () => {
     fireEvent.click(previewButtons[0]) // Click first (published) variant
 
     expect(mockWindowOpen).toHaveBeenCalledWith(
-      'https://watch.jesusfilm.org/watch/test-video.html/english.html',
+      'https://www.jesusfilm.org/watch/test-video.html/english.html',
       '_blank',
       'noopener,noreferrer'
     )
