@@ -12,7 +12,9 @@ import '../../../../../test/i18n'
 
 describe('GoogleIntegrationDeleteSyncDialog', () => {
   const syncsQueryDocument = gql`
-    query GoogleSheetsSyncsByIntegrationTest($filter: GoogleSheetsSyncsFilter!) {
+    query GoogleSheetsSyncsByIntegrationTest(
+      $filter: GoogleSheetsSyncsFilter!
+    ) {
       googleSheetsSyncs(filter: $filter) {
         id
       }
@@ -93,4 +95,3 @@ describe('GoogleIntegrationDeleteSyncDialog', () => {
     await waitFor(() => expect(handleClose).not.toHaveBeenCalled())
   })
 })
-
