@@ -25,6 +25,9 @@ describe('chatOpenEventCreate', () => {
       id: 'blockId',
       journeyId: 'journeyId'
     } as any)
+    prismaMock.journey.findUnique.mockResolvedValue({
+      id: 'journeyId'
+    } as any)
 
     prismaMock.block.findFirst.mockResolvedValue({
       id: 'blockId',

@@ -52,7 +52,8 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apis/api-journeys-modern"],
       "options": {
-        "jestConfig": "apis/api-journeys-modern/jest.config.ts"
+        "jestConfig": "apis/api-journeys-modern/jest.config.ts",
+        "runInBand": true
       }
     },
     "generate-graphql": {
