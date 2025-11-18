@@ -80,7 +80,7 @@ export function StepBlockNode({
             whiteSpace: 'nowrap',
             mx: '7px',
             fontSize: '10px',
-            color: isSelected ? 'default' : 'secondary.light'
+            color: isSelected ? 'secondary.dark' : 'secondary.light'
           }}
         >
           {step.slug}

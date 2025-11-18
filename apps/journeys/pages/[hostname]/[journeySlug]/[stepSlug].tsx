@@ -121,7 +121,8 @@ export const getStaticProps: GetStaticProps<StepPageProps> = async (
         redirect: {
           permanent: false,
           destination: `/${data.journey.slug}`
-        }
+        },
+        revalidate: 1
       }
     }
 
