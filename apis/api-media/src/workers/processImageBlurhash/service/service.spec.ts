@@ -59,7 +59,7 @@ describe('processImageBlurhash service', () => {
         blurhashAttemptedAt: new Date()
       } as CloudflareImage)
 
-      await service(mockJob, mockLogger as Logger)
+      await service(mockLogger as Logger, mockJob)
 
       expect(prismaMock.cloudflareImage.findUnique).toHaveBeenCalledWith({
         where: { id: imageId },
@@ -107,7 +107,7 @@ describe('processImageBlurhash service', () => {
           blurhashAttemptedAt: new Date()
         } as CloudflareImage)
 
-      await service(mockJob, mockLogger as Logger)
+      await service(mockLogger as Logger, mockJob)
 
       expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledWith({
         where: {
@@ -137,7 +137,7 @@ describe('processImageBlurhash service', () => {
 
       prismaMock.cloudflareImage.findUnique.mockResolvedValue(null)
 
-      await service(mockJob, mockLogger as Logger)
+      await service(mockLogger as Logger, mockJob)
 
       expect(mockLogger.warn).toHaveBeenCalledWith(
         { imageId },
@@ -156,7 +156,7 @@ describe('processImageBlurhash service', () => {
         blurhash: null
       } as CloudflareImage)
 
-      await service(mockJob, mockLogger as Logger)
+      await service(mockLogger as Logger, mockJob)
 
       expect(mockLogger.warn).toHaveBeenCalledWith(
         { imageId },
@@ -175,7 +175,7 @@ describe('processImageBlurhash service', () => {
         blurhash: 'existing-blurhash'
       } as CloudflareImage)
 
-      await service(mockJob, mockLogger as Logger)
+      await service(mockLogger as Logger, mockJob)
 
       expect(mockLogger.info).toHaveBeenCalledWith(
         { imageId },
@@ -200,7 +200,7 @@ describe('processImageBlurhash service', () => {
         blurhashAttemptedAt: new Date()
       } as CloudflareImage)
 
-      await service(mockJob, mockLogger as Logger)
+      await service(mockLogger as Logger, mockJob)
 
       expect(mockGenerateBlurhash).toHaveBeenCalledWith(imageId)
       expect(prismaMock.cloudflareImage.update).toHaveBeenCalledWith({
@@ -226,7 +226,7 @@ describe('processImageBlurhash service', () => {
 
       mockGenerateBlurhash.mockRejectedValue(error)
 
-      await service(mockJob, mockLogger as Logger)
+      await service(mockLogger as Logger, mockJob)
 
       expect(mockLogger.error).toHaveBeenCalledWith(
         { imageId, error },
@@ -260,7 +260,7 @@ describe('processImageBlurhash service', () => {
         blurhashAttemptedAt: new Date()
       } as CloudflareImage)
 
-      await service(mockJob, mockLogger as Logger)
+      await service(mockLogger as Logger, mockJob)
 
       expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledTimes(3)
       expect(mockGenerateBlurhash).toHaveBeenCalledTimes(3)
@@ -303,7 +303,7 @@ describe('processImageBlurhash service', () => {
           blurhashAttemptedAt: new Date()
         } as CloudflareImage)
 
-      await service(mockJob, mockLogger as Logger)
+      await service(mockLogger as Logger, mockJob)
 
       expect(mockGenerateBlurhash).toHaveBeenCalledTimes(3)
       expect(prismaMock.cloudflareImage.update).toHaveBeenCalledTimes(3)
@@ -322,7 +322,7 @@ describe('processImageBlurhash service', () => {
 
       prismaMock.cloudflareImage.findMany.mockResolvedValueOnce([])
 
-      await service(mockJob, mockLogger as Logger)
+      await service(mockLogger as Logger, mockJob)
 
       expect(prismaMock.cloudflareImage.findMany).toHaveBeenCalledTimes(1)
       expect(mockGenerateBlurhash).not.toHaveBeenCalled()
@@ -351,7 +351,7 @@ describe('processImageBlurhash service', () => {
         blurhashAttemptedAt: new Date()
       } as CloudflareImage)
 
-      await service(mockJob, mockLogger as Logger)
+      await service(mockLogger as Logger, mockJob)
 
       expect(prismaMock.cloudflareImage.update).toHaveBeenCalledWith({
         where: { id: imageId },
@@ -378,7 +378,7 @@ describe('processImageBlurhash service', () => {
         blurhashAttemptedAt: new Date()
       } as CloudflareImage)
 
-      await service(mockJob, mockLogger as Logger)
+      await service(mockLogger as Logger, mockJob)
 
       expect(prismaMock.cloudflareImage.update).toHaveBeenCalledWith({
         where: { id: imageId },

@@ -8,21 +8,13 @@ import { logger } from './lib/logger'
 const ONE_HOUR = 3600
 const ONE_DAY = 86_400
 
-type ServiceOneArg = (logger?: Logger) => Promise<void>
-type ServiceTwoArg = (job?: Job, logger?: Logger) => Promise<void>
-type Service = ServiceOneArg | ServiceTwoArg
-
-function isTwoArgService(service: Service): service is ServiceTwoArg {
-  return service.length === 2
-}
-
 function run({
   service,
   queueName,
   jobName,
   repeat
 }: {
-  service: Service
+  service: (logger?: Logger, job?: Job) => Promise<void>
   queueName: string
   jobName: string
   repeat?: string
@@ -41,11 +33,7 @@ function run({
     })
 
     childLogger.info('started job')
-    if (isTwoArgService(service)) {
-      await service(job, childLogger)
-    } else {
-      await service(childLogger)
-    }
+    await service(childLogger, job)
     childLogger.info('finished job')
   }
 

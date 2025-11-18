@@ -12,8 +12,8 @@ export interface ProcessImageBlurhashJobData {
 }
 
 export async function service(
-  job?: Job<ProcessImageBlurhashJobData>,
-  logger?: Logger
+  logger?: Logger,
+  job?: Job<ProcessImageBlurhashJobData>
 ): Promise<void> {
   const { imageId } = job?.data ?? { imageId: undefined }
 
