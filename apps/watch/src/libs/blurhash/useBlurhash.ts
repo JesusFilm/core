@@ -17,7 +17,9 @@ interface UseBlurhashReturn {
  * @param imageUrl - The image URL to generate blurhash for, or null/undefined
  * @returns Object containing blurhash, dominantColor, loading state, and error
  */
-export function useBlurhash(imageUrl: string | null | undefined): UseBlurhashReturn {
+export function useBlurhash(
+  imageUrl: string | null | undefined
+): UseBlurhashReturn {
   const { data, isLoading, error } = useSWR<BlurhashResult | null>(
     imageUrl ? `blurhash:${imageUrl}` : null,
     async () => {
@@ -29,7 +31,7 @@ export function useBlurhash(imageUrl: string | null | undefined): UseBlurhashRet
       revalidateOnReconnect: false,
       dedupingInterval: 300000, // 5 minutes - blurhash data doesn't change often
       errorRetryCount: 2, // Retry failed requests up to 2 times
-      errorRetryInterval: 1000, // Wait 1 second between retries
+      errorRetryInterval: 1000 // Wait 1 second between retries
     }
   )
 
@@ -37,6 +39,6 @@ export function useBlurhash(imageUrl: string | null | undefined): UseBlurhashRet
     blurhash: data?.blurhash ?? null,
     dominantColor: data?.dominantColor ?? null,
     isLoading,
-    error: error as Error | null,
+    error: error as Error | null
   }
 }

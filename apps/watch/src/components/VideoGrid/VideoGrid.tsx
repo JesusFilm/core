@@ -1,6 +1,6 @@
 import { FishOff, Plus } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
-import type { ComponentProps, MouseEvent, ReactElement } from 'react'
+import type { MouseEvent, ReactElement } from 'react'
 
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { VideoCard } from '../VideoCard'
@@ -17,7 +17,9 @@ export interface VideoGridProps {
   onCardClick?: (videoId?: string) => (event: MouseEvent) => void
   analyticsTag?: string
   showSequenceNumbers?: boolean
-  onCardHoverChange?: (imageUrl?: string | null) => void
+  onCardHoverChange?: (
+    data?: { imageUrl: string; blurhash: string; dominantColor: string } | null
+  ) => void
   fallbackVideos?: VideoChildFields[]
   fallbackLoading?: boolean
   onClearSearch?: () => void
@@ -163,7 +165,7 @@ export function VideoGrid({
                 </div>
                 <div className={`grid gap-4 ${fallbackGridColumns}`}>
                   {(fallbackLoading
-                    ? Array.from({ length: fallbackSkeletonCount })
+                    ? Array.from({ length: fallbackSkeletonCount }, () => undefined)
                     : fallbackVideos
                   ).map((video, index) => (
                     <div key={index} className="w-full">

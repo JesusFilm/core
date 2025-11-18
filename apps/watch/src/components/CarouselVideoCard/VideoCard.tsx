@@ -47,7 +47,9 @@ function CardContent({
 
   // Use blurhash for better loading UX
   const { blurhash, dominantColor } = useBlurhash(imageSrc)
-  const blurDataURL = blurhash ? blurImage(blurhash, dominantColor ?? '#000000') : undefined
+  const blurDataURL = blurhash
+    ? blurImage(blurhash, dominantColor ?? '#000000')
+    : undefined
 
   const ContainerElement = interactive ? 'button' : 'div'
   const ContentElement = interactive ? 'div' : 'div'
@@ -90,7 +92,9 @@ function CardContent({
                   maskSize: 'cover',
                   pointerEvents: 'none'
                 }}
-                {...(blurDataURL != null ? { placeholder: 'blur' as const, blurDataURL } : {})}
+                {...(blurDataURL != null
+                  ? { placeholder: 'blur' as const, blurDataURL }
+                  : {})}
               />
             )}
           </div>

@@ -8,9 +8,9 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
+import { blurImage, useBlurhash } from '../../libs/blurhash'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 import type { CarouselVideo } from '../VideoHero/libs/useCarouselVideos'
-import { useBlurhash, blurImage } from '../../libs/blurhash'
 
 interface VideoCardProps {
   video?: VideoChildFields | CarouselVideo
@@ -22,7 +22,9 @@ interface VideoCardProps {
   onClick?: (videoId?: string) => (event: MouseEvent) => void
   analyticsTag?: string
   showSequenceNumber?: boolean
-  onHoverImageChange?: (imageUrl?: string | null) => void
+  onHoverImageChange?: (
+    data?: { imageUrl: string; blurhash: string; dominantColor: string } | null
+  ) => void
   variant?: string
 }
 
@@ -57,12 +59,12 @@ export function VideoCard({
 }: VideoCardProps): ReactElement {
   const { t } = useTranslation('apps-watch')
 
-  const { label, color, childCountLabel } = getLabelDetails(
+  const { label, childCountLabel } = getLabelDetails(
     t,
-    video?.label,
+    video?.label as VideoLabel | undefined,
     video?.childrenCount ?? 0
   )
-  const href = getSlug(containerSlug, video?.label, video?.variant?.slug)
+  const href = getSlug(containerSlug, video?.label as VideoLabel | undefined, video?.variant?.slug)
 
   // Compute safe image src and alt with proper guards
   const imageSrc = last(video?.images)?.mobileCinematicHigh
@@ -71,7 +73,10 @@ export function VideoCard({
 
   // Generate blurhash data for image placeholder
   const { blurhash, dominantColor } = useBlurhash(imageSrc)
-  const blurDataURL = blurhash != null ? blurImage(blurhash, dominantColor ?? '#000000') : undefined
+  const blurDataURL =
+    blurhash != null
+      ? blurImage(blurhash, dominantColor ?? '#000000')
+      : undefined
 
   return (
     <a
@@ -91,7 +96,21 @@ export function VideoCard({
           type="button"
           disabled={video == null}
           className={`group relative overflow-hidden rounded-lg ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} beveled transition-transform duration-300 hover:scale-102 focus-visible:scale-102 ${imageClassName || ''} cursor-pointer disabled:cursor-default`}
-          onMouseEnter={() => onHoverImageChange?.(imageSrc)}
+          onMouseEnter={() => {
+            if (imageSrc && blurhash && dominantColor) {
+              onHoverImageChange?.({
+                imageUrl: imageSrc,
+                blurhash,
+                dominantColor
+              })
+            } else if (imageSrc) {
+              onHoverImageChange?.({
+                imageUrl: imageSrc,
+                blurhash: '',
+                dominantColor: '#000000'
+              })
+            }
+          }}
           onMouseLeave={() => onHoverImageChange?.(null)}
         >
           {sequenceLabel != null && (
@@ -124,12 +143,16 @@ export function VideoCard({
                 fill
                 sizes="100vw"
                 className="poster-hover-zoom"
-                {...(blurDataURL != null ? { placeholder: 'blur' as const, blurDataURL } : {})}
+                {...(blurDataURL != null
+                  ? { placeholder: 'blur' as const, blurDataURL }
+                  : {})}
                 style={{
                   objectFit: 'cover',
                   objectPosition: 'left top',
-                  maskImage: 'linear-gradient(to top, transparent 0%,  rgba(0,0,0,.4) 30% ,black 42%)',
-                  WebkitMaskImage: 'linear-gradient(to top, transparent 0%,  rgba(0,0,0,.4) 30% ,black 42%)'
+                  maskImage:
+                    'linear-gradient(to top, transparent 0%,  rgba(0,0,0,.4) 30% ,black 42%)',
+                  WebkitMaskImage:
+                    'linear-gradient(to top, transparent 0%,  rgba(0,0,0,.4) 30% ,black 42%)'
                 }}
               />
             ) : (
@@ -144,7 +167,7 @@ export function VideoCard({
           <div className="gradient-contained absolute inset-0 rounded-lg opacity-15 shadow-[inset_0px_0px_0px_1px_rgba(255,255,255,0.12)] transition-opacity duration-300 hover:opacity-50" />
           {/* Duration/Chapters Indicator - Top Right */}
           <div
-            className={`absolute top-2 right-2 flex flex-shrink-0 flex-row items-center gap-1 rounded py-1 px-2 text-white z-10 ${
+            className={`absolute top-2 right-2 z-10 flex flex-shrink-0 flex-row items-center gap-1 rounded px-2 py-1 text-white ${
               active === true ? 'bg-primary' : 'bg-black/30'
             }`}
           >
@@ -187,9 +210,7 @@ export function VideoCard({
 
           <div className="absolute inset-0 flex flex-col justify-end gap-0 p-4">
             <div className="flex min-w-0 flex-row items-end justify-between gap-90">
-              <div
-                className="truncate text-xs font-semibold leading-8 tracking-wider uppercase text-stone-300/70 mix-blend-screen"
-              >
+              <div className="truncate text-xs leading-8 font-semibold tracking-wider text-stone-300/70 uppercase mix-blend-screen">
                 {video != null ? (
                   label
                 ) : (

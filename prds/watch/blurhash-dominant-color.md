@@ -7,6 +7,7 @@
 Add server-side blurhash and dominant color generation for video images in the watch app. Generate blurhash strings and dominant color hex values from image URLs using Sharp, expose via API route, and integrate into all image components for better loading UX and dynamic theming.
 
 **Performance Features:**
+
 - Next.js unstable_cache for server-side caching (24-hour revalidation)
 - Request deduplication with in-memory processing cache
 - HTTP cache headers for client-side and CDN caching
@@ -14,6 +15,7 @@ Add server-side blurhash and dominant color generation for video images in the w
 - SWR-based client caching with automatic revalidation
 
 **Error Handling:**
+
 - Comprehensive error handling at API and component levels
 - Graceful fallbacks ensure images always render
 - Domain whitelisting for security
@@ -29,6 +31,7 @@ Add server-side blurhash and dominant color generation for video images in the w
 **Status**: ✅ **IMPLEMENTED AND TESTED**
 
 **Implementation Details:**
+
 - ✅ Next.js API route handler with proper TypeScript types
 - ✅ Accepts `imageUrl` query parameter with validation
 - ✅ Fetches images using `fetch` with 10-second timeout protection
@@ -45,6 +48,7 @@ Add server-side blurhash and dominant color generation for video images in the w
 - ✅ Testing verified: successful blurhash/color generation and error handling
 
 **Example API Response:**
+
 ```json
 {
   "blurhash": "UWE2^XE2M{t7~XIoaeofS%n}s:S4A0xZj[R*",
@@ -59,6 +63,7 @@ Add server-side blurhash and dominant color generation for video images in the w
 **Status**: ✅ **IMPLEMENTED**
 
 **Implementation Details:**
+
 - ✅ Exported `BlurhashResult` interface: `{ blurhash: string, dominantColor: string }`
 - ✅ Exported `BlurhashResponse` and `BlurhashErrorResponse` interfaces for API responses
 - ✅ Exported `BlurhashApiResponse` union type for API route typing
@@ -72,6 +77,7 @@ Add server-side blurhash and dominant color generation for video images in the w
 **Status**: ✅ **IMPLEMENTED**
 
 **Implementation Details:**
+
 - ✅ Exported `generateBlurhashFromUrl(imageUrl: string): Promise<BlurhashResult | null>`
 - ✅ Calls `/api/blurhash?imageUrl=...` with proper URL encoding
 - ✅ Comprehensive error handling with console warnings/errors
@@ -86,6 +92,7 @@ Add server-side blurhash and dominant color generation for video images in the w
 **Status**: ✅ **IMPLEMENTED**
 
 **Implementation Details:**
+
 - ✅ Created React hook `useBlurhash(imageUrl: string | null | undefined)`
 - ✅ Uses SWR for automatic caching, deduplication, and revalidation
 - ✅ Returns `{ blurhash: string | null, dominantColor: string | null, isLoading: boolean, error: Error | null }`
@@ -93,13 +100,12 @@ Add server-side blurhash and dominant color generation for video images in the w
 - ✅ Proper TypeScript typing with custom return interface
 - ✅ Handles null/undefined imageUrl gracefully
 
-
-
 **File**: `apps/watch/src/libs/blurhash/blurImage.ts` **[COMPLETED]**
 
 **Status**: ✅ **IMPLEMENTED**
 
 **Implementation Details:**
+
 - ✅ Adapted from `libs/journeys/ui/src/libs/blurImage/blurImage.ts`
 - ✅ Exported `blurImage(blurhash: string, hexBackground: string): string | undefined`
 - ✅ Converts blurhash string to base64 WebP data URL for Next.js Image component
@@ -114,6 +120,7 @@ Add server-side blurhash and dominant color generation for video images in the w
 **Status**: ✅ **IMPLEMENTED**
 
 **Implementation Details:**
+
 - ✅ Imported `useBlurhash` hook and `blurImage` utility from blurhash library
 - ✅ Called `useBlurhash(imageSrc)` to get blurhash and dominantColor data
 - ✅ Generated `blurDataURL` using `blurImage(blurhash, dominantColor ?? '#000000')` when blurhash is available
@@ -129,6 +136,7 @@ Add server-side blurhash and dominant color generation for video images in the w
 **Status**: ✅ **IMPLEMENTED**
 
 **Implementation Details:**
+
 - ✅ Imported `useBlurhash` hook and `blurImage` utility from blurhash library
 - ✅ Called `useBlurhash(src)` to get blurhash and dominantColor data from image URL
 - ✅ Generated `blurDataURL` using `blurImage(blurhash, dominantColor ?? '#000000')` when blurhash is available
@@ -145,6 +153,7 @@ Add server-side blurhash and dominant color generation for video images in the w
 **Implementation Details:**
 
 **CollectionHero Component** (`apps/watch/src/components/PageCollection/CollectionHero.tsx`):
+
 - ✅ Imported `blurImage` and `useBlurhash` from blurhash library
 - ✅ Added blurhash hook usage with `const { blurhash, dominantColor } = useBlurhash(heroImage)`
 - ✅ Generated `blurDataURL` using `blurImage(blurhash, dominantColor ?? '#000000')` when blurhash available
@@ -153,6 +162,7 @@ Add server-side blurhash and dominant color generation for video images in the w
 - ✅ Dominant color extracted for future theming enhancements but not yet applied to UI
 
 **ContainerHero Component** (`apps/watch/src/components/PageVideoContainer/ContainerHero/ContainerHero.tsx`):
+
 - ✅ Imported `blurImage` and `useBlurhash` from blurhash library
 - ✅ Added blurhash hook usage with hero image URL from `last(images)?.mobileCinematicHigh`
 - ✅ Generated `blurDataURL` with dominant color fallback for better placeholder appearance
@@ -161,6 +171,7 @@ Add server-side blurhash and dominant color generation for video images in the w
 - ✅ No conflicts with existing HeroOverlay or content positioning
 
 **CarouselVideoCard/VideoCard Component** (`apps/watch/src/components/CarouselVideoCard/VideoCard.tsx`):
+
 - ✅ Imported blurhash utilities in CardContent component function
 - ✅ Added blurhash generation for `data.images?.[0]?.mobileCinematicHigh` image source
 - ✅ Integrated blurDataURL generation within CardContent for proper scoping
@@ -169,6 +180,7 @@ Add server-side blurhash and dominant color generation for video images in the w
 - ✅ Dominant color available for potential future card theming features
 
 **Key Implementation Patterns:**
+
 - All components follow identical pattern: import → hook usage → blurDataURL generation → Image props
 - Graceful degradation when blurhash generation fails (undefined blurDataURL falls back to Next.js defaults)
 - Dominant colors extracted but reserved for future UI enhancements
@@ -181,6 +193,7 @@ Add server-side blurhash and dominant color generation for video images in the w
 **Status**: ✅ **VERIFIED AND IMPLEMENTED**
 
 **Implementation Details:**
+
 - ✅ **API Route Error Handling**: Comprehensive error handling with specific HTTP status codes (400, 408, 500) and descriptive error messages
 - ✅ **URL Validation**: Domain whitelist validation prevents unauthorized image fetching
 - ✅ **Timeout Protection**: 10-second timeout prevents hanging requests
@@ -199,26 +212,31 @@ Add server-side blurhash and dominant color generation for video images in the w
 **Implementation Details:**
 
 **Request Deduplication:**
+
 - ✅ **SWR Deduplication**: Client-side deduplication with 5-minute interval prevents duplicate API calls
 - ✅ **In-Memory Processing Cache**: Server-side deduplication prevents concurrent processing of same image
 - ✅ **Promise Reuse**: Multiple concurrent requests for same image share single processing promise
 
 **Server-Side Caching:**
+
 - ✅ **Next.js unstable_cache**: Implemented with 24-hour revalidation period
 - ✅ **Cache Tags**: Tagged with 'blurhash' for selective cache invalidation
 - ✅ **Server-Side Persistence**: Cached results survive server restarts and scale across instances
 
 **Client-Side Caching:**
+
 - ✅ **HTTP Cache Headers**: 24-hour public cache with stale-while-revalidate
 - ✅ **SWR Caching**: Automatic client-side caching with background revalidation
 - ✅ **CDN Compatibility**: Cache headers designed for CDN and browser caching
 
 **Concurrency Limiting:**
+
 - ✅ **Processing Cache**: Prevents multiple simultaneous blurhash generations for same image
 - ✅ **Memory Management**: Automatic cleanup of processing promises after completion
 - ✅ **Resource Protection**: Limits server resource usage during peak loads
 
 **Optimization Features:**
+
 - ✅ **Dominant Color Caching**: Color extraction cached alongside blurhash generation
 - ✅ **Efficient Processing**: 32x32 blurhash + 100x100 color extraction with optimized algorithms
 - ✅ **Early Termination**: Failed requests don't block other processing
@@ -231,6 +249,7 @@ Add server-side blurhash and dominant color generation for video images in the w
 **Implementation Details:**
 
 **API Route Tests** (`pages/api/blurhash.spec.ts`):
+
 - ✅ Created comprehensive Jest test suite for blurhash API route
 - ✅ Tests HTTP method validation (405 for non-GET requests)
 - ✅ Tests parameter validation (missing/invalid imageUrl)
@@ -243,6 +262,7 @@ Add server-side blurhash and dominant color generation for video images in the w
 - ✅ Covers all major code paths and edge cases
 
 **Test Coverage Areas:**
+
 - Parameter validation and sanitization
 - Domain whitelist security validation
 - Image processing and blurhash generation

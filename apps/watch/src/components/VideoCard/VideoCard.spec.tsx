@@ -9,6 +9,15 @@ import { VideoCard } from '.'
 
 jest.mock('react-instantsearch')
 jest.mock('@core/journeys/ui/algolia/useAlgoliaVideos')
+jest.mock('../../libs/blurhash', () => ({
+  useBlurhash: jest.fn(() => ({
+    blurhash: 'test-blurhash',
+    dominantColor: '#000000',
+    isLoading: false,
+    error: null
+  })),
+  blurImage: jest.fn(() => 'data:image/webp;base64,test')
+}))
 
 const mockedUseAlgoliaVideos = useAlgoliaVideos as jest.MockedFunction<
   typeof useAlgoliaVideos
@@ -254,7 +263,7 @@ describe('VideoCard', () => {
   })
 
   describe('hover functionality', () => {
-    it('should call onHoverImageChange with image URL on mouse enter', () => {
+    it('should call onHoverImageChange with image data object on mouse enter', () => {
       const onHoverImageChange = jest.fn()
       const { getByRole } = render(
         <VideoCard video={videos[0]} onHoverImageChange={onHoverImageChange} />
@@ -263,9 +272,11 @@ describe('VideoCard', () => {
       const button = getByRole('button')
       fireEvent.mouseEnter(button)
 
-      expect(onHoverImageChange).toHaveBeenCalledWith(
-        videos[0].images[0].mobileCinematicHigh
-      )
+      expect(onHoverImageChange).toHaveBeenCalledWith({
+        imageUrl: videos[0].images[0].mobileCinematicHigh,
+        blurhash: 'test-blurhash',
+        dominantColor: '#000000'
+      })
     })
 
     it('should call onHoverImageChange with null on mouse leave', () => {

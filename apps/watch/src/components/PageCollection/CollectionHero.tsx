@@ -34,7 +34,9 @@ export function CollectionHero({
 
   // Use blurhash for better loading UX
   const { blurhash, dominantColor } = useBlurhash(heroImage)
-  const blurDataURL = blurhash ? blurImage(blurhash, dominantColor ?? '#000000') : undefined
+  const blurDataURL = blurhash
+    ? blurImage(blurhash, dominantColor ?? '#000000')
+    : undefined
 
   return (
     <div
@@ -50,7 +52,9 @@ export function CollectionHero({
             priority
             sizes="100vw"
             className="object-cover"
-            {...(blurDataURL != null ? { placeholder: 'blur' as const, blurDataURL } : {})}
+            {...(blurDataURL != null
+              ? { placeholder: 'blur' as const, blurDataURL }
+              : {})}
           />
         )}
         <HeroOverlay />

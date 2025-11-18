@@ -3,7 +3,10 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { unstable_cache } from 'next/cache'
 import sharp from 'sharp'
 
-import { BlurhashApiResponse, BlurhashResult } from '../../src/libs/blurhash/types'
+import {
+  BlurhashApiResponse,
+  BlurhashResult
+} from '../../src/libs/blurhash/types'
 
 // Allowed domains for security - these should be configurable
 const ALLOWED_DOMAINS = [
@@ -14,7 +17,7 @@ const ALLOWED_DOMAINS = [
   'image.mux.com',
   'imagedelivery.net',
   'localhost',
-  '127.0.0.1',
+  '127.0.0.1'
   // Add more domains as needed based on your image sources
 ]
 
@@ -24,15 +27,19 @@ function isValidUrl(urlString: string): boolean {
     const domain = url.hostname
 
     // Check if domain is in allowed list
-    return ALLOWED_DOMAINS.some(allowedDomain =>
-      domain === allowedDomain || domain.endsWith('.' + allowedDomain)
+    return ALLOWED_DOMAINS.some(
+      (allowedDomain) =>
+        domain === allowedDomain || domain.endsWith('.' + allowedDomain)
     )
   } catch {
     return false
   }
 }
 
-async function fetchImageWithTimeout(url: string, timeoutMs: number = 10000): Promise<ArrayBuffer> {
+async function fetchImageWithTimeout(
+  url: string,
+  timeoutMs: number = 10000
+): Promise<ArrayBuffer> {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
@@ -76,7 +83,10 @@ async function extractDominantColor(imageBuffer: Buffer): Promise<string> {
     .toBuffer()
 
   const pixelCount = resizedBuffer.length / 3 // RGB components
-  const colorCounts: Map<string, { count: number; rgb: [number, number, number] }> = new Map()
+  const colorCounts: Map<
+    string,
+    { count: number; rgb: [number, number, number] }
+  > = new Map()
 
   // Sample pixels and count frequencies
   for (let i = 0; i < pixelCount; i++) {
@@ -85,7 +95,7 @@ async function extractDominantColor(imageBuffer: Buffer): Promise<string> {
     const b = resizedBuffer[i * 3 + 2]
 
     // Skip very dark/light colors (optional filtering)
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b)
+    const luminance = 0.299 * r + 0.587 * g + 0.114 * b
     if (luminance < 20 || luminance > 240) {
       continue
     }
@@ -100,12 +110,18 @@ async function extractDominantColor(imageBuffer: Buffer): Promise<string> {
     if (existing) {
       existing.count++
     } else {
-      colorCounts.set(key, { count: 1, rgb: [quantizedR, quantizedG, quantizedB] })
+      colorCounts.set(key, {
+        count: 1,
+        rgb: [quantizedR, quantizedG, quantizedB]
+      })
     }
   }
 
   // Find the most frequent color
-  let dominantColor = { count: 0, rgb: [128, 128, 128] as [number, number, number] }
+  let dominantColor = {
+    count: 0,
+    rgb: [128, 128, 128] as [number, number, number]
+  }
 
   for (const [, data] of colorCounts) {
     if (data.count > dominantColor.count) {
@@ -135,7 +151,13 @@ async function generateBlurhash(imageBuffer: Buffer): Promise<BlurhashResult> {
   const { width, height } = info
 
   // Generate blurhash
-  const blurhashString = encode(new Uint8ClampedArray(data), width, height, 4, 4)
+  const blurhashString = encode(
+    new Uint8ClampedArray(data),
+    width,
+    height,
+    4,
+    4
+  )
 
   // Extract dominant color
   const dominantColor = await extractDominantColor(imageBuffer)
@@ -215,33 +237,43 @@ export default async function handler(
     const result = await generateBlurhashCached(imageUrl)
 
     // Set cache headers for performance (client-side caching)
-    res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=86400') // 24 hours
+    res.setHeader(
+      'Cache-Control',
+      'public, max-age=86400, stale-while-revalidate=86400'
+    ) // 24 hours
     res.status(200).json(result)
-
   } catch (error) {
     console.error('Blurhash generation error:', error)
 
     if (error instanceof Error) {
       // Handle specific error types
       if (error.message.includes('timeout')) {
-        res.status(408).json({ error: 'Request timeout - image took too long to fetch' })
+        res
+          .status(408)
+          .json({ error: 'Request timeout - image took too long to fetch' })
         return
       }
       if (error.message.includes('HTTP')) {
-        res.status(400).json({ error: `Failed to fetch image: ${error.message}` })
+        res
+          .status(400)
+          .json({ error: `Failed to fetch image: ${error.message}` })
         return
       }
       if (error.message.includes('Invalid content type')) {
         res.status(400).json({ error: 'URL does not point to a valid image' })
         return
       }
-      if (error.message.includes('Input buffer contains unsupported image format')) {
+      if (
+        error.message.includes('Input buffer contains unsupported image format')
+      ) {
         res.status(400).json({ error: 'Unsupported image format' })
         return
       }
     }
 
     // Generic error
-    res.status(500).json({ error: 'Failed to generate blurhash and dominant color' })
+    res
+      .status(500)
+      .json({ error: 'Failed to generate blurhash and dominant color' })
   }
 }

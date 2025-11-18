@@ -28,7 +28,10 @@ export function LazyImage({
 
   // Generate blurhash data for image placeholder
   const { blurhash, dominantColor } = useBlurhash(src)
-  const blurDataURL = blurhash != null ? blurImage(blurhash, dominantColor ?? '#000000') : undefined
+  const blurDataURL =
+    blurhash != null
+      ? blurImage(blurhash, dominantColor ?? '#000000')
+      : undefined
 
   useEffect(() => {
     if (priority) return // Skip intersection observer for priority images
@@ -73,7 +76,9 @@ export function LazyImage({
           onLoad={() => setIsLoaded(true)}
           onError={() => setIsLoaded(true)} // Show even if error occurs
           loading={priority ? 'eager' : 'lazy'}
-          {...(blurDataURL != null ? { placeholder: 'blur' as const, blurDataURL } : {})}
+          {...(blurDataURL != null
+            ? { placeholder: 'blur' as const, blurDataURL }
+            : {})}
         />
       )}
       {!isLoaded && isInView && (

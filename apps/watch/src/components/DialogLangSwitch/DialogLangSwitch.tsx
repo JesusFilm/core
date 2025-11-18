@@ -8,7 +8,7 @@ import {
   DialogPortal
 } from '@core/shared/uimodern/components/dialog'
 
-import { useLanguageActions , useWatch } from '../../libs/watchContext'
+import { useLanguageActions, useWatch } from '../../libs/watchContext'
 
 import { AudioTrackSelect } from './AudioTrackSelect'
 import { SubtitlesSelect } from './SubtitlesSelect'

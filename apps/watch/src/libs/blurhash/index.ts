@@ -3,7 +3,7 @@ export type {
   BlurhashResult,
   BlurhashResponse,
   BlurhashErrorResponse,
-  BlurhashApiResponse,
+  BlurhashApiResponse
 } from './types'
 
 // Utilities

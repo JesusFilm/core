@@ -33,7 +33,9 @@ export function ContainerHero({
   // Use blurhash for better loading UX
   const heroImage = last(images)?.mobileCinematicHigh
   const { blurhash, dominantColor } = useBlurhash(heroImage)
-  const blurDataURL = blurhash ? blurImage(blurhash, dominantColor ?? '#000000') : undefined
+  const blurDataURL = blurhash
+    ? blurImage(blurhash, dominantColor ?? '#000000')
+    : undefined
 
   return (
     <Box
@@ -55,7 +57,9 @@ export function ContainerHero({
           style={{
             objectFit: 'cover'
           }}
-          {...(blurDataURL != null ? { placeholder: 'blur' as const, blurDataURL } : {})}
+          {...(blurDataURL != null
+            ? { placeholder: 'blur' as const, blurDataURL }
+            : {})}
         />
       )}
       <HeroOverlay />

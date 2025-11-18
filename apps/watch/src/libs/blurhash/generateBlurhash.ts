@@ -7,7 +7,9 @@ import { BlurhashResult } from './types'
  * @param imageUrl - The URL of the image to process
  * @returns Promise<BlurhashResult | null> - The blurhash and dominant color, or null if generation failed
  */
-export async function generateBlurhashFromUrl(imageUrl: string): Promise<BlurhashResult | null> {
+export async function generateBlurhashFromUrl(
+  imageUrl: string
+): Promise<BlurhashResult | null> {
   if (!imageUrl || typeof imageUrl !== 'string') {
     console.warn('generateBlurhashFromUrl: Invalid imageUrl provided')
     return null
@@ -18,7 +20,9 @@ export async function generateBlurhashFromUrl(imageUrl: string): Promise<Blurhas
     const response = await fetch(apiUrl)
 
     if (!response.ok) {
-      console.warn(`generateBlurhashFromUrl: API request failed with status ${response.status}`)
+      console.warn(
+        `generateBlurhashFromUrl: API request failed with status ${response.status}`
+      )
       return null
     }
 
@@ -26,13 +30,18 @@ export async function generateBlurhashFromUrl(imageUrl: string): Promise<Blurhas
 
     // Basic validation of response
     if (!data.blurhash || !data.dominantColor) {
-      console.warn('generateBlurhashFromUrl: Invalid API response - missing blurhash or dominantColor')
+      console.warn(
+        'generateBlurhashFromUrl: Invalid API response - missing blurhash or dominantColor'
+      )
       return null
     }
 
     return data
   } catch (error) {
-    console.error('generateBlurhashFromUrl: Error fetching blurhash data:', error)
+    console.error(
+      'generateBlurhashFromUrl: Error fetching blurhash data:',
+      error
+    )
     return null
   }
 }

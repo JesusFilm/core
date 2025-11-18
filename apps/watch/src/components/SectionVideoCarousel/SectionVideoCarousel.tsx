@@ -9,7 +9,6 @@ import { cn } from '@core/shared/uimodern/utils'
 import { VideoCard } from '../VideoCard'
 
 import {
-  SectionVideoCollectionCarouselSlide,
   SectionVideoCollectionCarouselSource,
   useSectionVideoCollectionCarouselContent
 } from './useSectionVideoCollectionCarouselContent'
@@ -77,10 +76,10 @@ export function SectionVideoCarousel({
   }, [])
 
   const handleCardHoverChange = useCallback(
-    (imageUrl?: string | null) => {
+    (data?: { imageUrl: string; blurhash: string; dominantColor: string } | null) => {
       clearTimers()
 
-      if (imageUrl == null || imageUrl === '') {
+      if (data == null || data.imageUrl == null || data.imageUrl === '') {
         setIsBackgroundVisible(false)
         hideTimeoutRef.current = setTimeout(() => {
           setHoverBackground(null)
@@ -91,7 +90,7 @@ export function SectionVideoCarousel({
       setIsBackgroundVisible(false)
 
       showTimeoutRef.current = setTimeout(() => {
-        setHoverBackground(imageUrl)
+        setHoverBackground(data.imageUrl)
         setIsBackgroundVisible(true)
       }, 40)
     },
@@ -123,7 +122,7 @@ export function SectionVideoCarousel({
         }
         aria-hidden="true"
       />
-      <div className="absolute inset-0 z-1 bg-[url(/watch/assets/overlay.svg)] bg-repeat mix-blend-multiply" />
+      <div className="absolute inset-0 z-1 bg-[url(/assets/overlay.svg)] bg-repeat mix-blend-multiply" />
       <div className="padded relative z-2 pb-6">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-1">

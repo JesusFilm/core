@@ -37,7 +37,10 @@ describe('Blurhash API', () => {
     jest.clearAllMocks()
   })
 
-  const createMockRequest = (method: string, query?: Record<string, string | string[]>): NextApiRequest =>
+  const createMockRequest = (
+    method: string,
+    query?: Record<string, string | string[]>
+  ): NextApiRequest =>
     ({
       method,
       query: query || {}
@@ -65,7 +68,9 @@ describe('Blurhash API', () => {
     })
 
     it('should allow GET method', async () => {
-      const req = createMockRequest('GET', { imageUrl: 'https://images.unsplash.com/photo-123' })
+      const req = createMockRequest('GET', {
+        imageUrl: 'https://images.unsplash.com/photo-123'
+      })
       const res = createMockResponse()
 
       // Mock successful fetch and sharp processing
@@ -108,7 +113,9 @@ describe('Blurhash API', () => {
       await handler(req, res)
 
       expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Missing or invalid imageUrl parameter' })
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Missing or invalid imageUrl parameter'
+      })
     })
 
     it('should return 400 for empty imageUrl parameter', async () => {
@@ -118,7 +125,9 @@ describe('Blurhash API', () => {
       await handler(req, res)
 
       expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Missing or invalid imageUrl parameter' })
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Missing or invalid imageUrl parameter'
+      })
     })
 
     it('should return 400 for non-string imageUrl parameter', async () => {
@@ -128,7 +137,9 @@ describe('Blurhash API', () => {
       await handler(req, res)
 
       expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Missing or invalid imageUrl parameter' })
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Missing or invalid imageUrl parameter'
+      })
     })
   })
 
@@ -140,21 +151,29 @@ describe('Blurhash API', () => {
       await handler(req, res)
 
       expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Invalid or disallowed image URL' })
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Invalid or disallowed image URL'
+      })
     })
 
     it('should return 400 for disallowed domain', async () => {
-      const req = createMockRequest('GET', { imageUrl: 'https://malicious-site.com/image.jpg' })
+      const req = createMockRequest('GET', {
+        imageUrl: 'https://malicious-site.com/image.jpg'
+      })
       const res = createMockResponse()
 
       await handler(req, res)
 
       expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Invalid or disallowed image URL' })
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Invalid or disallowed image URL'
+      })
     })
 
     it('should allow images.unsplash.com', async () => {
-      const req = createMockRequest('GET', { imageUrl: 'https://images.unsplash.com/photo-123' })
+      const req = createMockRequest('GET', {
+        imageUrl: 'https://images.unsplash.com/photo-123'
+      })
       const res = createMockResponse()
 
       mockFetch.mockResolvedValueOnce({
@@ -188,7 +207,9 @@ describe('Blurhash API', () => {
     })
 
     it('should allow cdn.sanity.io', async () => {
-      const req = createMockRequest('GET', { imageUrl: 'https://cdn.sanity.io/images/project/image.jpg' })
+      const req = createMockRequest('GET', {
+        imageUrl: 'https://cdn.sanity.io/images/project/image.jpg'
+      })
       const res = createMockResponse()
 
       mockFetch.mockResolvedValueOnce({
@@ -222,7 +243,9 @@ describe('Blurhash API', () => {
     })
 
     it('should allow localhost', async () => {
-      const req = createMockRequest('GET', { imageUrl: 'http://localhost:3000/image.jpg' })
+      const req = createMockRequest('GET', {
+        imageUrl: 'http://localhost:3000/image.jpg'
+      })
       const res = createMockResponse()
 
       mockFetch.mockResolvedValueOnce({
@@ -258,7 +281,9 @@ describe('Blurhash API', () => {
 
   describe('Image Fetching', () => {
     it('should return 408 for request timeout', async () => {
-      const req = createMockRequest('GET', { imageUrl: 'https://images.unsplash.com/photo-123' })
+      const req = createMockRequest('GET', {
+        imageUrl: 'https://images.unsplash.com/photo-123'
+      })
       const res = createMockResponse()
 
       mockFetch.mockImplementationOnce(() => {
@@ -270,11 +295,15 @@ describe('Blurhash API', () => {
       await handler(req, res)
 
       expect(res.status).toHaveBeenCalledWith(408)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Request timeout - image took too long to fetch' })
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Request timeout - image took too long to fetch'
+      })
     })
 
     it('should return 400 for HTTP error responses', async () => {
-      const req = createMockRequest('GET', { imageUrl: 'https://images.unsplash.com/photo-123' })
+      const req = createMockRequest('GET', {
+        imageUrl: 'https://images.unsplash.com/photo-123'
+      })
       const res = createMockResponse()
 
       mockFetch.mockResolvedValueOnce({
@@ -286,11 +315,15 @@ describe('Blurhash API', () => {
       await handler(req, res)
 
       expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Failed to fetch image: HTTP 404: Not Found' })
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Failed to fetch image: HTTP 404: Not Found'
+      })
     })
 
     it('should return 400 for non-image content types', async () => {
-      const req = createMockRequest('GET', { imageUrl: 'https://images.unsplash.com/photo-123' })
+      const req = createMockRequest('GET', {
+        imageUrl: 'https://images.unsplash.com/photo-123'
+      })
       const res = createMockResponse()
 
       mockFetch.mockResolvedValueOnce({
@@ -302,13 +335,17 @@ describe('Blurhash API', () => {
       await handler(req, res)
 
       expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ error: 'URL does not point to a valid image' })
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'URL does not point to a valid image'
+      })
     })
   })
 
   describe('Blurhash Generation', () => {
     it('should return successful blurhash and dominant color', async () => {
-      const req = createMockRequest('GET', { imageUrl: 'https://images.unsplash.com/photo-123' })
+      const req = createMockRequest('GET', {
+        imageUrl: 'https://images.unsplash.com/photo-123'
+      })
       const res = createMockResponse()
 
       mockFetch.mockResolvedValueOnce({
@@ -343,11 +380,16 @@ describe('Blurhash API', () => {
         blurhash: 'UWE2^XE2M{t7~XIoaeofS%n}s:S4A0xZj[R*',
         dominantColor: '#808080' // Expected from the mock color extraction
       })
-      expect(res.setHeader).toHaveBeenCalledWith('Cache-Control', 'public, max-age=86400, stale-while-revalidate=86400')
+      expect(res.setHeader).toHaveBeenCalledWith(
+        'Cache-Control',
+        'public, max-age=86400, stale-while-revalidate=86400'
+      )
     })
 
     it('should return 400 for unsupported image format', async () => {
-      const req = createMockRequest('GET', { imageUrl: 'https://images.unsplash.com/photo-123' })
+      const req = createMockRequest('GET', {
+        imageUrl: 'https://images.unsplash.com/photo-123'
+      })
       const res = createMockResponse()
 
       mockFetch.mockResolvedValueOnce({
@@ -355,7 +397,6 @@ describe('Blurhash API', () => {
         headers: { get: () => 'image/jpeg' },
         arrayBuffer: () => Promise.resolve(new ArrayBuffer(100))
       })
-
       ;(sharp as jest.Mock).mockImplementationOnce(() => {
         throw new Error('Input buffer contains unsupported image format')
       })
@@ -363,11 +404,15 @@ describe('Blurhash API', () => {
       await handler(req, res)
 
       expect(res.status).toHaveBeenCalledWith(400)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Unsupported image format' })
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Unsupported image format'
+      })
     })
 
     it('should return 500 for generic errors', async () => {
-      const req = createMockRequest('GET', { imageUrl: 'https://images.unsplash.com/photo-123' })
+      const req = createMockRequest('GET', {
+        imageUrl: 'https://images.unsplash.com/photo-123'
+      })
       const res = createMockResponse()
 
       mockFetch.mockRejectedValueOnce(new Error('Network error'))
@@ -375,13 +420,17 @@ describe('Blurhash API', () => {
       await handler(req, res)
 
       expect(res.status).toHaveBeenCalledWith(500)
-      expect(res.json).toHaveBeenCalledWith({ error: 'Failed to generate blurhash and dominant color' })
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Failed to generate blurhash and dominant color'
+      })
     })
   })
 
   describe('Cache Headers', () => {
     it('should set correct cache headers for successful responses', async () => {
-      const req = createMockRequest('GET', { imageUrl: 'https://images.unsplash.com/photo-123' })
+      const req = createMockRequest('GET', {
+        imageUrl: 'https://images.unsplash.com/photo-123'
+      })
       const res = createMockResponse()
 
       mockFetch.mockResolvedValueOnce({
@@ -411,7 +460,10 @@ describe('Blurhash API', () => {
 
       await handler(req, res)
 
-      expect(res.setHeader).toHaveBeenCalledWith('Cache-Control', 'public, max-age=86400, stale-while-revalidate=86400')
+      expect(res.setHeader).toHaveBeenCalledWith(
+        'Cache-Control',
+        'public, max-age=86400, stale-while-revalidate=86400'
+      )
     })
   })
 })

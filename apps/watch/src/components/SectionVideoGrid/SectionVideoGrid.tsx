@@ -11,6 +11,8 @@ import {
 import { Icon } from '@core/shared/ui/icons/Icon'
 import { cn } from '@core/shared/uimodern/utils'
 
+import { blurImage } from '../../libs/blurhash'
+
 import {
   SectionVideoCollectionCarouselSource,
   useSectionVideoCollectionCarouselContent
@@ -88,10 +90,10 @@ export function SectionVideoGrid({
 }: SectionVideoGridProps): ReactElement | null {
   const { t } = useTranslation('apps-watch')
 
-  const resolvedSources = useMemo(() => {
+  const resolvedSources = useMemo((): SectionVideoGridSource[] => {
     if (sources != null) return sources
     if (primaryCollectionId != null) {
-      return [{ type: 'collection', id: primaryCollectionId, limitChildren }]
+      return [{ type: 'collection' as const, id: primaryCollectionId, limitChildren }]
     }
     return []
   }, [sources, primaryCollectionId, limitChildren])
@@ -100,11 +102,11 @@ export function SectionVideoGrid({
     useSectionVideoCollectionCarouselContent({
       sources: resolvedSources,
       primaryCollectionId,
-      subtitleOverride: subtitleOverride || undefined,
-      titleOverride: titleOverride || undefined,
-      descriptionOverride: descriptionOverride || undefined,
-      ctaLabelOverride: ctaLabelOverride || undefined,
-      ctaHrefOverride,
+      subtitleOverride: subtitleOverride === false ? undefined : subtitleOverride || undefined,
+      titleOverride: titleOverride === false ? undefined : titleOverride || undefined,
+      descriptionOverride: descriptionOverride === false ? undefined : descriptionOverride || undefined,
+      ctaLabelOverride: ctaLabelOverride === false ? undefined : ctaLabelOverride || undefined,
+      ctaHrefOverride: ctaHrefOverride === false ? undefined : ctaHrefOverride || undefined,
       defaultCtaLabel: t('Watch'),
       languageId
     })
@@ -112,6 +114,9 @@ export function SectionVideoGrid({
   const videos = useMemo(() => slides.map((slide) => slide.video), [slides])
 
   const [hoverBackground, setHoverBackground] = useState<string | null>(null)
+  const [hoverBlurhash, setHoverBlurhash] = useState<string | null>(null)
+  const [hoverDominantColor, setHoverDominantColor] =
+    useState<string>('#000000')
   const [isBackgroundVisible, setIsBackgroundVisible] = useState(false)
   const showTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -128,13 +133,21 @@ export function SectionVideoGrid({
   }, [])
 
   const handleCardHoverChange = useCallback(
-    (imageUrl?: string | null) => {
+    (
+      data?: {
+        imageUrl: string
+        blurhash: string
+        dominantColor: string
+      } | null
+    ) => {
       clearTimers()
 
-      if (imageUrl == null || imageUrl === '') {
+      if (data == null || data.imageUrl == null || data.imageUrl === '') {
         setIsBackgroundVisible(false)
         hideTimeoutRef.current = setTimeout(() => {
           setHoverBackground(null)
+          setHoverBlurhash(null)
+          setHoverDominantColor('#000000')
         }, 200)
         return
       }
@@ -142,12 +155,20 @@ export function SectionVideoGrid({
       setIsBackgroundVisible(false)
 
       showTimeoutRef.current = setTimeout(() => {
-        setHoverBackground(imageUrl)
+        setHoverBackground(data.imageUrl)
+        setHoverBlurhash(data.blurhash || null)
+        setHoverDominantColor(data.dominantColor || '#000000')
         setIsBackgroundVisible(true)
       }, 40)
     },
     [clearTimers]
   )
+
+  // Generate blurDataURL from blurhash
+  const blurDataURL =
+    hoverBlurhash != null
+      ? blurImage(hoverBlurhash, hoverDominantColor)
+      : undefined
 
   useEffect(() => () => clearTimers(), [clearTimers])
 
@@ -157,11 +178,27 @@ export function SectionVideoGrid({
     <section
       id={id}
       className={cn(
-        'scroll-snap-start-always relative overflow-hidden bg-linear-to-tr from-blue-950/10 via-purple-950/10 to-[#91214A]/90 py-16',
+        'scroll-snap-start-always relative overflow-hidden py-16',
         backgroundClassName
       )}
       data-testid="SectionVideoGrid"
     >
+      {/* Blurhash Layer - Behind everything */}
+      {blurDataURL && (
+        <div
+          className={cn(
+            'absolute inset-0 z-0 bg-cover bg-center bg-no-repeat transition-opacity duration-500 ease-in-out',
+            isBackgroundVisible ? 'opacity-40' : 'opacity-0'
+          )}
+          style={{
+            backgroundImage: `url(${blurDataURL})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+          aria-hidden="true"
+        />
+      )}
+      {/* First Background Image Layer */}
       <div
         className={cn(
           'sepia-off absolute inset-0 z-0 bg-cover bg-center bg-no-repeat mix-blend-overlay blur-md filter transition-opacity duration-500 ease-in-out',
@@ -176,6 +213,7 @@ export function SectionVideoGrid({
         }
         aria-hidden="true"
       />
+      {/* Second Background Image Layer */}
       <div
         className={cn(
           'sepia-off animate-background-pan-zoom absolute inset-0 z-0 bg-no-repeat mix-blend-overlay blur-xl brightness-[.5] saturate-2 filter',
@@ -192,7 +230,13 @@ export function SectionVideoGrid({
         }
         aria-hidden="true"
       />
-      <div className="absolute inset-0 bg-[url(/watch/assets/overlay.svg)] bg-repeat mix-blend-multiply" />
+      <div
+        className={
+          'absolute inset-0 z-0 bg-linear-to-tr from-purple-950/10 via-purple-950/10 to-stone-950/90 mix-blend-multiply'
+        }
+      />
+
+      <div className="absolute inset-0 bg-[url(/assets/overlay.svg)] bg-repeat opacity-70 mix-blend-multiply" />
       {hasHeaderContent(
         subtitle,
         title,
@@ -270,7 +314,7 @@ export function SectionVideoGrid({
       {!isValueDisabled(descriptionOverride) &&
         description != null &&
         description !== '' && (
-          <div className="padded space-y-6">
+          <div className="padded relative z-1 space-y-6">
             <p
               className="mt-8 text-lg leading-relaxed text-stone-200/80 xl:text-xl"
               data-testid="SectionVideoGridDescription"
