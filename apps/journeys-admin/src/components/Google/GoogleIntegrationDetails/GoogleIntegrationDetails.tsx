@@ -453,15 +453,15 @@ export function GoogleIntegrationDetails(): ReactElement {
         handleClose={() => setConfirmOpen(false)}
       />
 
-      <GoogleIntegrationDeleteSyncDialog
-        open={syncPendingDelete != null}
-        syncId={syncPendingDelete}
-        integrationId={
-          typeof integrationId === 'string' ? integrationId : undefined
-        }
-        syncsQueryDocument={GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION}
-        handleClose={handleCloseDeleteDialog}
-      />
+      {typeof integrationId === 'string' && (
+        <GoogleIntegrationDeleteSyncDialog
+          open={syncPendingDelete != null}
+          syncId={syncPendingDelete}
+          integrationId={integrationId}
+          syncsQueryDocument={GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION}
+          handleClose={handleCloseDeleteDialog}
+        />
+      )}
     </Stack>
   )
 }

@@ -20,7 +20,7 @@ export const DELETE_GOOGLE_SHEETS_SYNC = gql`
 export interface GoogleIntegrationDeleteSyncDialogProps {
   open: boolean
   syncId: string | null
-  integrationId?: string
+  integrationId: string
   syncsQueryDocument: DocumentNode
   handleClose: () => void
 }
@@ -40,7 +40,7 @@ export function GoogleIntegrationDeleteSyncDialog({
   )
 
   async function handleConfirm(): Promise<void> {
-    if (syncId == null || integrationId == null || isProcessing) return
+    if (syncId == null || isProcessing) return
 
     try {
       await deleteSync({

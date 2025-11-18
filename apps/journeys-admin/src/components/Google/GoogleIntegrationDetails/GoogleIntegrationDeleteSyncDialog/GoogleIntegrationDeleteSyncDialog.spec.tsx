@@ -82,7 +82,7 @@ describe('GoogleIntegrationDeleteSyncDialog', () => {
           <GoogleIntegrationDeleteSyncDialog
             open
             syncId={null}
-            integrationId={undefined}
+            integrationId="integrationId"
             syncsQueryDocument={syncsQueryDocument}
             handleClose={handleClose}
           />
