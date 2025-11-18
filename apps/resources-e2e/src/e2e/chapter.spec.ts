@@ -11,7 +11,7 @@ test('Chapter', async ({ page }) => {
   // Set test time out as it has video
   test.setTimeout(3 * 60 * 1000)
 
-  await page.goto('/resources')
+  await page.goto('/watch')
 
   const jesusCalmsStormButton = page.getByRole('button', {
     name: 'Jesus Calms the Storm Jesus Calms the Storm Chapter 1:59'
@@ -28,7 +28,7 @@ test('Chapter', async ({ page }) => {
 
   // check it's navigated to the correct URL
   await expect(page).toHaveURL(
-    '/resources/jesus-calms-the-storm.html/english.html',
+    '/watch/jesus-calms-the-storm.html/english.html',
     {
       timeout: 60000
     }

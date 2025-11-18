@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 /**
  * @check
- * @name Resources Video Monitoring
+ * @name Watch Video Monitoring
  * @retries 8 // Retry up to 8 times for network flakiness
  * @retryInterval 10 // Wait 10 seconds between retries
  * @maxRetryTime 600 // Stop retrying after 10 minutes total
@@ -199,12 +199,12 @@ test('Video playback and MUX network connectivity monitoring', async ({
     }
   })
 
-  // Navigate to the main resources page
-  const response = await page.goto('https://www.jesusfilm.org/resources')
+  // Navigate to the main watch page
+  const response = await page.goto('https://www.jesusfilm.org/watch')
   expect(response?.status()).toEqual(200)
 
   // Wait for the page to be ready by checking for the title and main content
-  await expect(page).toHaveTitle('Resources | Jesus Film Project')
+  await expect(page).toHaveTitle('Watch | Jesus Film Project')
 
   // Wait for the main content to be loaded by looking for video elements
   await page.waitForSelector('[data-testid="VideoCard"], [role="button"]', {
@@ -221,7 +221,7 @@ test('Video playback and MUX network connectivity monitoring', async ({
   await videoTitle.click()
 
   // Wait for navigation to complete by checking for video page elements
-  await page.waitForURL('**/resources/**', { timeout: 10000 })
+  await page.waitForURL('**/watch/**', { timeout: 10000 })
 
   // Wait for video page to be ready by looking for video player elements
   await page.waitForSelector(
