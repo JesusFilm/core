@@ -149,7 +149,9 @@ export function GoogleIntegrationDetails(): ReactElement {
           .filter((i) => i.id === integrationId)
           .map((i) => (
             <Stack key={i.id} direction="row" justifyContent="space-between">
-              <span>{t('Connected Google Account')}</span>
+              <Typography variant="body1" component="span">
+                {t('Connected Google Account')}
+              </Typography>
               {
                 // @ts-expect-error union narrowing not applied
                 i.accountEmail ?? t('Unknown')
