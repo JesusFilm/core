@@ -5,8 +5,8 @@ import { JourneyRef } from '../journey/journey'
 export const GoogleSheetsSync = builder.prismaObject('GoogleSheetsSync', {
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
-    teamId: t.exposeString('teamId'),
-    journeyId: t.exposeString('journeyId', { nullable: false }),
+    teamId: t.exposeID('teamId', { nullable: false }),
+    journeyId: t.exposeID('journeyId', { nullable: false }),
     integrationId: t.exposeID('integrationId', { nullable: true }),
     spreadsheetId: t.exposeID('spreadsheetId', { nullable: false }),
     sheetName: t.exposeString('sheetName'),
