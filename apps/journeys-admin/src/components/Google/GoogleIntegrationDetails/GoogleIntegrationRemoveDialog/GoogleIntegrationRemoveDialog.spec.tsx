@@ -7,7 +7,8 @@ import { GET_INTEGRATION } from '../../../../libs/useIntegrationQuery'
 
 import {
   GoogleIntegrationRemoveDialog,
-  GoogleIntegrationRemoveDialogProps
+  GoogleIntegrationRemoveDialogProps,
+  INTEGRATION_DELETE
 } from './GoogleIntegrationRemoveDialog'
 
 import '../../../../../test/i18n'
@@ -19,7 +20,7 @@ jest.mock('next/router', () => ({
 describe('GoogleIntegrationRemoveDialog', () => {
   const integrationDeleteMock: MockedResponse = {
     request: {
-      query: expect.anything(),
+      query: INTEGRATION_DELETE,
       variables: { id: 'integrationId' }
     },
     result: {
@@ -74,4 +75,3 @@ describe('GoogleIntegrationRemoveDialog', () => {
     await waitFor(() => expect(handleClose).toHaveBeenCalled())
   })
 })
-

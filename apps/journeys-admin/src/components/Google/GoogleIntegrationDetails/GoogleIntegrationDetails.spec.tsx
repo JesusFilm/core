@@ -134,7 +134,10 @@ describe('GoogleIntegrationDetails', () => {
 
     const googleSheetsSyncsMock: MockedResponse = {
       request: {
-        query: GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION
+        query: GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION,
+        variables: {
+          filter: { integrationId: 'integrationId' }
+        }
       },
       result: {
         data: {

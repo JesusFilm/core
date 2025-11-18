@@ -11,7 +11,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 
 import { GET_INTEGRATION } from '../../../../libs/useIntegrationQuery'
 
-const INTEGRATION_DELETE = gql`
+export const INTEGRATION_DELETE = gql`
   mutation IntegrationDelete($id: ID!) {
     integrationDelete(id: $id) {
       id

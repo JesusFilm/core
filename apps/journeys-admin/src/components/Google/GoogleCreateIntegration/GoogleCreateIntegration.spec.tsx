@@ -3,7 +3,10 @@ import { fireEvent, render, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
-import { GoogleCreateIntegration, INTEGRATION_GOOGLE_CREATE } from './GoogleCreateIntegration'
+import {
+  GoogleCreateIntegration,
+  INTEGRATION_GOOGLE_CREATE
+} from './GoogleCreateIntegration'
 
 import '../../../../test/i18n'
 
@@ -12,18 +15,24 @@ jest.mock('next/router', () => ({
 }))
 
 jest.mock('notistack', () => ({
+  __esModule: true,
+  SnackbarProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
   useSnackbar: () => ({
     enqueueSnackbar: jest.fn()
   })
 }))
 
 jest.mock('../../../libs/googleOAuthUrl', () => ({
-  getGoogleOAuthUrl: jest.fn((teamId: string) => `https://example.com/oauth?teamId=${teamId}`)
+  getGoogleOAuthUrl: jest.fn(
+    (teamId: string) => `https://example.com/oauth?teamId=${teamId}`
+  )
 }))
 
 describe('GoogleCreateIntegration', () => {
   function renderComponent(): ReturnType<typeof render> {
-    (useRouter as jest.Mock).mockReturnValue({
+    ;(useRouter as jest.Mock).mockReturnValue({
       query: { teamId: 'teamId' },
       push: jest.fn()
     })
@@ -40,7 +49,7 @@ describe('GoogleCreateIntegration', () => {
   it('renders the connect button enabled when oauth url is available', () => {
     const { getByRole } = renderComponent()
 
-    const button = getByRole('button', { name: 'Connect with Google' })
+    const button = getByRole('link', { name: 'Connect with Google' })
     expect(button).toBeInTheDocument()
     expect(button).not.toBeDisabled()
   })
@@ -55,8 +64,8 @@ describe('GoogleCreateIntegration', () => {
           variables: {
             input: {
               teamId: 'teamId',
-              code: undefined,
-              redirectUri: undefined
+              code: 'auth-code',
+              redirectUri: 'http://localhost/api/integrations/google/callback'
             }
           }
         },
@@ -75,11 +84,11 @@ describe('GoogleCreateIntegration', () => {
     ]
 
     ;(useRouter as jest.Mock).mockReturnValue({
-      query: { teamId: 'teamId' },
+      query: { teamId: 'teamId', code: 'auth-code' },
       push: jest.fn()
     })
 
-    const { getByRole } = render(
+    render(
       <MockedProvider mocks={mocks} addTypename={false}>
         <SnackbarProvider>
           <GoogleCreateIntegration />
@@ -87,13 +96,6 @@ describe('GoogleCreateIntegration', () => {
       </MockedProvider>
     )
 
-    const button = getByRole('button', { name: 'Connect with Google' })
-
-    fireEvent.click(button)
-
-    expect(button).toBeDisabled()
-
     await waitFor(() => expect(mutationCalled.called).toBe(true))
   })
 })
-

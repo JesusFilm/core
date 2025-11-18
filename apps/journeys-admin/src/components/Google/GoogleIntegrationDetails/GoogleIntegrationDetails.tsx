@@ -121,7 +121,10 @@ export function GoogleIntegrationDetails(): ReactElement {
   const integrationOwner = data?.integrations.find(
     (integration) => integration.id === integrationId
   )
-  const integrationOwnerId = integrationOwner?.user?.id
+  const integrationOwnerId =
+    integrationOwner?.__typename === 'IntegrationGoogle'
+      ? integrationOwner.user?.id
+      : undefined
 
   const isIntegrationOwner =
     integrationOwnerId != null &&

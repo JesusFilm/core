@@ -1,3 +1,4 @@
+import { gql } from '@apollo/client'
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -10,7 +11,13 @@ import {
 import '../../../../../test/i18n'
 
 describe('GoogleIntegrationDeleteSyncDialog', () => {
-  const syncsQueryDocument = {} as any
+  const syncsQueryDocument = gql`
+    query GoogleSheetsSyncsByIntegrationTest($filter: GoogleSheetsSyncsFilter!) {
+      googleSheetsSyncs(filter: $filter) {
+        id
+      }
+    }
+  `
 
   const baseMock: MockedResponse = {
     request: {
@@ -28,11 +35,25 @@ describe('GoogleIntegrationDeleteSyncDialog', () => {
     }
   }
 
+  const syncsQueryMock: MockedResponse = {
+    request: {
+      query: syncsQueryDocument,
+      variables: {
+        filter: { integrationId: 'integrationId' }
+      }
+    },
+    result: {
+      data: {
+        googleSheetsSyncs: []
+      }
+    }
+  }
+
   it('calls delete mutation and closes on confirm', async () => {
     const handleClose = jest.fn()
 
     const { getByRole } = render(
-      <MockedProvider mocks={[baseMock]} addTypename={false}>
+      <MockedProvider mocks={[baseMock, syncsQueryMock]} addTypename={false}>
         <SnackbarProvider>
           <GoogleIntegrationDeleteSyncDialog
             open
