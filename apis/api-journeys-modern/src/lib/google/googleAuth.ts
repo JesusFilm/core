@@ -92,6 +92,7 @@ async function refreshGoogleToken(
     )
   }
 
+  // Fallback: treat secret as access_token
   throw new Error(
     'Failed to refresh Google OAuth token. Re-authorization is required to continue. Please reconnect your Google account.'
   )
