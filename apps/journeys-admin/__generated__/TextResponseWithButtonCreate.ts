@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { TextResponseBlockCreateInput, ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, ButtonAlignment, IconName, IconSize, IconColor } from "./globalTypes";
+import { TextResponseBlockCreateInput, ButtonBlockCreateInput, IconBlockCreateInput, ButtonBlockUpdateInput, TextResponseType, ButtonVariant, ButtonColor, ButtonSize, ContactActionType, ButtonAlignment, IconName, IconSize, IconColor } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: TextResponseWithButtonCreate
@@ -22,12 +22,7 @@ export interface TextResponseWithButtonCreate_textResponse {
   type: TextResponseType | null;
   routeId: string | null;
   integrationId: string | null;
-}
-
-export interface TextResponseWithButtonCreate_button_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
+  hideLabel: boolean | null;
 }
 
 export interface TextResponseWithButtonCreate_button_action_NavigateToBlockAction {
@@ -55,7 +50,25 @@ export interface TextResponseWithButtonCreate_button_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type TextResponseWithButtonCreate_button_action = TextResponseWithButtonCreate_button_action_PhoneAction | TextResponseWithButtonCreate_button_action_NavigateToBlockAction | TextResponseWithButtonCreate_button_action_LinkAction | TextResponseWithButtonCreate_button_action_EmailAction;
+export interface TextResponseWithButtonCreate_button_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface TextResponseWithButtonCreate_button_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type TextResponseWithButtonCreate_button_action = TextResponseWithButtonCreate_button_action_NavigateToBlockAction | TextResponseWithButtonCreate_button_action_LinkAction | TextResponseWithButtonCreate_button_action_EmailAction | TextResponseWithButtonCreate_button_action_ChatAction | TextResponseWithButtonCreate_button_action_PhoneAction;
 
 export interface TextResponseWithButtonCreate_button_settings {
   __typename: "ButtonBlockSettings";
@@ -101,12 +114,6 @@ export interface TextResponseWithButtonCreate_endIcon {
   iconColor: IconColor | null;
 }
 
-export interface TextResponseWithButtonCreate_buttonUpdate_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface TextResponseWithButtonCreate_buttonUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -132,7 +139,25 @@ export interface TextResponseWithButtonCreate_buttonUpdate_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type TextResponseWithButtonCreate_buttonUpdate_action = TextResponseWithButtonCreate_buttonUpdate_action_PhoneAction | TextResponseWithButtonCreate_buttonUpdate_action_NavigateToBlockAction | TextResponseWithButtonCreate_buttonUpdate_action_LinkAction | TextResponseWithButtonCreate_buttonUpdate_action_EmailAction;
+export interface TextResponseWithButtonCreate_buttonUpdate_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface TextResponseWithButtonCreate_buttonUpdate_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+}
+
+export type TextResponseWithButtonCreate_buttonUpdate_action = TextResponseWithButtonCreate_buttonUpdate_action_NavigateToBlockAction | TextResponseWithButtonCreate_buttonUpdate_action_LinkAction | TextResponseWithButtonCreate_buttonUpdate_action_EmailAction | TextResponseWithButtonCreate_buttonUpdate_action_ChatAction | TextResponseWithButtonCreate_buttonUpdate_action_PhoneAction;
 
 export interface TextResponseWithButtonCreate_buttonUpdate_settings {
   __typename: "ButtonBlockSettings";

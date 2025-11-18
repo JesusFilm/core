@@ -63,7 +63,9 @@ import { useDeleteEdge } from './libs/useDeleteEdge'
 import { useDeleteOnKeyPress } from './libs/useDeleteOnKeyPress'
 import { useUpdateEdge } from './libs/useUpdateEdge'
 import { NewStepButton } from './NewStepButton'
+import { ChatNode } from './nodes/ChatNode'
 import { LinkNode } from './nodes/LinkNode'
+import { PhoneNode } from './nodes/PhoneNode'
 import { ReferrerNode } from './nodes/ReferrerNode'
 import { SocialPreviewNode } from './nodes/SocialPreviewNode'
 import {
@@ -555,6 +557,8 @@ export function JourneyFlow(): ReactElement {
       StepBlock: StepBlockNode,
       SocialPreview: SocialPreviewNode,
       Link: LinkNode,
+      Chat: ChatNode,
+      Phone: PhoneNode,
       Referrer: ReferrerNode
     }),
     []

@@ -1,6 +1,7 @@
 import { useLazyQuery } from '@apollo/client'
-import { graphql, VariablesOf } from '@core/shared/gql'
 import { useTranslation } from 'next-i18next'
+
+import { VariablesOf, graphql } from '@core/shared/gql'
 
 import { downloadCsv } from './utils/processContactsCsv/processContactsCsv'
 
@@ -9,11 +10,13 @@ export const GET_JOURNEY_VISITOR_EXPORT = graphql(`
     $journeyId: ID!
     $filter: JourneyEventsFilter
     $select: JourneyVisitorExportSelect
+    $timezone: String
   ) {
     csv: journeyVisitorExport(
       journeyId: $journeyId
       filter: $filter
       select: $select
+      timezone: $timezone
     )
   }
 `)
@@ -21,7 +24,6 @@ export const GET_JOURNEY_VISITOR_EXPORT = graphql(`
 export interface ExportJourneyContactsParams {
   journeyId: string
   filter: VariablesOf<typeof GET_JOURNEY_VISITOR_EXPORT>['filter']
-  select: VariablesOf<typeof GET_JOURNEY_VISITOR_EXPORT>['select']
 }
 
 export function useJourneyContactsExport(): {
@@ -39,15 +41,17 @@ export function useJourneyContactsExport(): {
 
   async function exportJourneyContacts({
     journeyId,
-    filter,
-    select
+    filter
   }: ExportJourneyContactsParams): Promise<void> {
     try {
+      // Get user's timezone to format dates consistently with frontend display
+      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+
       const { data, error } = await getJourneyVisitorExport({
         variables: {
           journeyId,
           filter,
-          select
+          timezone: userTimezone
         }
       })
 

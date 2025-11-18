@@ -1,9 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "outDir": "../../dist/out-tsc",
-    "module": "commonjs",
+    "strict": true,
     "types": [
       "node",
       "@nx/react/typings/cssmodule.d.ts",
@@ -11,6 +9,11 @@
     ],
     "target": "es2021"
   },
-  "exclude": ["**/*.spec.ts", "jest.config.ts"],
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "jest.config.ts",
+    "test/**/*.ts"
+  ],
   "include": ["**/*.ts", "**/*.tsx"]
 }

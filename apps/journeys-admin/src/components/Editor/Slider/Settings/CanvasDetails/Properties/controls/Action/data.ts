@@ -5,6 +5,7 @@ import {
   ButtonColor,
   ButtonSize,
   ButtonVariant,
+  ContactActionType,
   TypographyVariant
 } from '../../../../../../../../../__generated__/globalTypes'
 
@@ -209,6 +210,29 @@ export const steps: Array<TreeBlock<StepBlock>> = [
               email: 'imissedmondshen@gmail.com',
               customizable: false,
               parentStepId: null
+            },
+            children: [],
+            settings: null
+          },
+          {
+            __typename: 'ButtonBlock',
+            id: 'button3.id',
+            parentBlockId: 'card1.id',
+            parentOrder: 5,
+            label: 'Call Us',
+            buttonVariant: ButtonVariant.contained,
+            buttonColor: ButtonColor.primary,
+            size: ButtonSize.large,
+            startIconId: null,
+            endIconId: null,
+            submitEnabled: null,
+            action: {
+              parentBlockId: 'button3.id',
+              __typename: 'PhoneAction',
+              gtmEventName: 'gtmEventName',
+              phone: '+1234567890',
+              countryCode: 'US',
+              contactAction: ContactActionType.call
             },
             children: [],
             settings: null

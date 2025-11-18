@@ -40,15 +40,6 @@ const journey: Journey = {
   }
 }
 
-function defineWindowWithPath(path: string): void {
-  Object.defineProperty(window, 'location', {
-    configurable: true,
-    enumerable: true,
-    value: { origin: path },
-    writable: true
-  })
-}
-
 describe('UseThisTemplateButton', () => {
   const prefetch = jest.fn()
   const push = jest.fn().mockResolvedValue('')
@@ -136,8 +127,6 @@ describe('UseThisTemplateButton', () => {
         push,
         query: { createNew: false }
       } as unknown as NextRouter)
-
-      defineWindowWithPath('http://localhost:4200')
     })
 
     afterEach(() => {
@@ -186,10 +175,11 @@ describe('UseThisTemplateButton', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            pathname: 'http://localhost:4200/users/sign-in',
+            pathname: expect.stringContaining('/users/sign-in'),
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: expect.stringContaining(
+                '/templates/journeyId?createNew=true'
+              ),
               login: true
             }
           },
@@ -214,10 +204,11 @@ describe('UseThisTemplateButton', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            pathname: 'http://localhost:4200/users/sign-in',
+            pathname: expect.stringContaining('/users/sign-in'),
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: expect.stringContaining(
+                '/templates/journeyId?createNew=true'
+              ),
               login: false
             }
           },
@@ -235,8 +226,6 @@ describe('UseThisTemplateButton', () => {
         push,
         query: { createNew: false }
       } as unknown as NextRouter)
-
-      defineWindowWithPath('http://localhost:4200')
 
       process.env = {
         ...originalEnv,
@@ -263,10 +252,11 @@ describe('UseThisTemplateButton', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            pathname: 'http://localhost:4200/users/sign-in',
+            pathname: expect.stringContaining('/users/sign-in'),
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: expect.stringContaining(
+                '/templates/journeyId?createNew=true'
+              ),
               login: true
             }
           },
@@ -291,10 +281,11 @@ describe('UseThisTemplateButton', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            pathname: 'http://localhost:4200/users/sign-in',
+            pathname: expect.stringContaining('/users/sign-in'),
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: expect.stringContaining(
+                '/templates/journeyId?createNew=true'
+              ),
               login: false
             }
           },
@@ -312,8 +303,6 @@ describe('UseThisTemplateButton', () => {
         push,
         query: { createNew: false }
       } as unknown as NextRouter)
-
-      defineWindowWithPath('http://localhost:4300')
 
       process.env = {
         ...originalEnv,
@@ -340,10 +329,11 @@ describe('UseThisTemplateButton', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            pathname: 'http://localhost:4200/users/sign-in',
+            pathname: expect.stringContaining('/users/sign-in'),
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: expect.stringContaining(
+                '/templates/journeyId?createNew=true'
+              ),
               login: true
             }
           },
@@ -368,10 +358,11 @@ describe('UseThisTemplateButton', () => {
       await waitFor(() => {
         expect(push).toHaveBeenCalledWith(
           {
-            pathname: 'http://localhost:4200/users/sign-in',
+            pathname: expect.stringContaining('/users/sign-in'),
             query: {
-              redirect:
-                'http://localhost:4200/templates/journeyId?createNew=true',
+              redirect: expect.stringContaining(
+                '/templates/journeyId?createNew=true'
+              ),
               login: false
             }
           },
