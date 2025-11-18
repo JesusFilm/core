@@ -110,7 +110,13 @@ export function VideoDetails({
   }
 
   return (
-    <Drawer title={t('Video Details')} open={open} onClose={onClose}>
+    <Drawer
+      title={t('Video Details')}
+      open={open}
+      onClose={() => {
+        onClose(true)
+      }}
+    >
       <Stack sx={{ display: 'flex', justifyContent: 'center' }}>
         {activeVideoBlock != null && (
           <Stack

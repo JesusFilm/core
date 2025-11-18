@@ -1,0 +1,6 @@
+import './google'
+import './googleCreate.mutation'
+import './googleUpdate.mutation'
+import './inputs/integrationGoogleCreateInput'
+import './inputs/integrationGoogleUpdateInput'
+import './googlePickerToken.query'

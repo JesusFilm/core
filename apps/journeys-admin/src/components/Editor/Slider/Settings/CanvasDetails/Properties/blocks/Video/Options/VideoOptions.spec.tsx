@@ -19,6 +19,7 @@ import {
   VideoBlockObjectFit,
   VideoBlockSource
 } from '../../../../../../../../../../__generated__/globalTypes'
+import { MuxVideoUploadProvider } from '../../../../../../../../MuxVideoUploadProvider'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import { videoItems } from '../../../../../Drawer/VideoLibrary/data'
@@ -205,16 +206,18 @@ describe('VideoOptions', () => {
           }
         ]}
       >
-        <EditorProvider
-          initialState={{
-            selectedBlock: { ...video, videoId: null },
-            selectedAttributeId: video.id
-          }}
-        >
-          <ThemeProvider>
-            <VideoOptions />
-          </ThemeProvider>
-        </EditorProvider>
+        <MuxVideoUploadProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: { ...video, videoId: null },
+              selectedAttributeId: video.id
+            }}
+          >
+            <ThemeProvider>
+              <VideoOptions />
+            </ThemeProvider>
+          </EditorProvider>
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -286,17 +289,19 @@ describe('VideoOptions', () => {
           }
         ]}
       >
-        <EditorProvider
-          initialState={{
-            selectedBlock: { ...video, videoId: null },
-            selectedAttributeId: video.id
-          }}
-        >
-          <ThemeProvider>
-            <CommandUndoItem variant="button" />
-            <VideoOptions />
-          </ThemeProvider>
-        </EditorProvider>
+        <MuxVideoUploadProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: { ...video, videoId: null },
+              selectedAttributeId: video.id
+            }}
+          >
+            <ThemeProvider>
+              <CommandUndoItem variant="button" />
+              <VideoOptions />
+            </ThemeProvider>
+          </EditorProvider>
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     await waitFor(() =>
@@ -349,16 +354,18 @@ describe('VideoOptions', () => {
           }
         ]}
       >
-        <EditorProvider
-          initialState={{
-            selectedBlock: { ...video, videoId: null },
-            selectedAttributeId: video.id
-          }}
-        >
-          <ThemeProvider>
-            <VideoOptions />
-          </ThemeProvider>
-        </EditorProvider>
+        <MuxVideoUploadProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: { ...video, videoId: null },
+              selectedAttributeId: video.id
+            }}
+          >
+            <ThemeProvider>
+              <VideoOptions />
+            </ThemeProvider>
+          </EditorProvider>
+        </MuxVideoUploadProvider>
       </MockedProvider>
     )
     await waitFor(() =>
