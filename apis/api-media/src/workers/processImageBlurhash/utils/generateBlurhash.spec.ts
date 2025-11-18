@@ -75,6 +75,28 @@ describe('generateBlurhash', () => {
     expect(result).toBeNull()
   })
 
+  it('returns null when HTTP response status is not ok (404)', async () => {
+    server.use(
+      http.get('https://imagedelivery.net/testAccount/test-image-id', () => {
+        return HttpResponse.json({ error: 'Not found' }, { status: 404 })
+      })
+    )
+
+    const result = await generateBlurhash('test-image-id')
+    expect(result).toBeNull()
+  })
+
+  it('returns null when HTTP response status is not ok (403)', async () => {
+    server.use(
+      http.get('https://imagedelivery.net/testAccount/test-image-id', () => {
+        return HttpResponse.json({ error: 'Forbidden' }, { status: 403 })
+      })
+    )
+
+    const result = await generateBlurhash('test-image-id')
+    expect(result).toBeNull()
+  })
+
   it('returns null when image has zero width', async () => {
     server.use(
       http.get('https://imagedelivery.net/testAccount/test-image-id', () => {

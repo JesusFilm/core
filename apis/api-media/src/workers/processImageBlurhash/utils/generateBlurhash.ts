@@ -9,6 +9,7 @@ export async function generateBlurhash(
   try {
     const imageUrl = baseUrl(imageId)
     const response = await fetch(imageUrl)
+    if (!response.ok) return null
     const arrayBuffer = await response.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)
     const sharpImage = sharp(buffer)
