@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, ChatButton, Event, Visitor, Host, JourneyVisitor, Team, Integration, UserTeam, UserTeamInvite, UserJourney, JourneyTag, Journey, UserRole, JourneyProfile, UserInvite, Block, Action, JourneysEmailPreference, JourneyNotification, CustomDomain, JourneyCollection, JourneyCollectionJourneys, QrCode, JourneyEventsExportLog, JourneyTheme, JourneyCustomizationField } from ".prisma/api-journeys-client/index.js";
+import type { Prisma, ChatButton, Event, Visitor, Host, JourneyVisitor, Team, Integration, GoogleSheetsSync, UserTeam, UserTeamInvite, UserJourney, JourneyTag, Journey, UserRole, JourneyProfile, UserInvite, Block, Action, JourneysEmailPreference, JourneyNotification, CustomDomain, JourneyCollection, JourneyCollectionJourneys, QrCode, JourneyEventsExportLog, JourneyTheme, JourneyCustomizationField } from ".prisma/api-journeys-client/index.js";
 export default interface PrismaTypes {
     ChatButton: {
         Name: "ChatButton";
@@ -146,8 +146,8 @@ export default interface PrismaTypes {
         Where: Prisma.TeamWhereInput;
         Create: {};
         Update: {};
-        RelationName: "visitors" | "userTeams" | "journeys" | "hosts" | "UserTeamInvites" | "journeyCollections" | "customDomains" | "integrations" | "qrCodes";
-        ListRelations: "visitors" | "userTeams" | "journeys" | "hosts" | "UserTeamInvites" | "journeyCollections" | "customDomains" | "integrations" | "qrCodes";
+        RelationName: "visitors" | "userTeams" | "journeys" | "hosts" | "UserTeamInvites" | "journeyCollections" | "customDomains" | "integrations" | "qrCodes" | "googleSheetsSync";
+        ListRelations: "visitors" | "userTeams" | "journeys" | "hosts" | "UserTeamInvites" | "journeyCollections" | "customDomains" | "integrations" | "qrCodes" | "googleSheetsSync";
         Relations: {
             visitors: {
                 Shape: Visitor[];
@@ -194,6 +194,11 @@ export default interface PrismaTypes {
                 Name: "QrCode";
                 Nullable: false;
             };
+            googleSheetsSync: {
+                Shape: GoogleSheetsSync[];
+                Name: "GoogleSheetsSync";
+                Nullable: false;
+            };
         };
     };
     Integration: {
@@ -206,9 +211,44 @@ export default interface PrismaTypes {
         Where: Prisma.IntegrationWhereInput;
         Create: {};
         Update: {};
-        RelationName: "team";
+        RelationName: "googleSheetsSyncs" | "team";
+        ListRelations: "googleSheetsSyncs";
+        Relations: {
+            googleSheetsSyncs: {
+                Shape: GoogleSheetsSync[];
+                Name: "GoogleSheetsSync";
+                Nullable: false;
+            };
+            team: {
+                Shape: Team;
+                Name: "Team";
+                Nullable: false;
+            };
+        };
+    };
+    GoogleSheetsSync: {
+        Name: "GoogleSheetsSync";
+        Shape: GoogleSheetsSync;
+        Include: Prisma.GoogleSheetsSyncInclude;
+        Select: Prisma.GoogleSheetsSyncSelect;
+        OrderBy: Prisma.GoogleSheetsSyncOrderByWithRelationInput;
+        WhereUnique: Prisma.GoogleSheetsSyncWhereUniqueInput;
+        Where: Prisma.GoogleSheetsSyncWhereInput;
+        Create: {};
+        Update: {};
+        RelationName: "integration" | "journey" | "team";
         ListRelations: never;
         Relations: {
+            integration: {
+                Shape: Integration | null;
+                Name: "Integration";
+                Nullable: true;
+            };
+            journey: {
+                Shape: Journey;
+                Name: "Journey";
+                Nullable: false;
+            };
             team: {
                 Shape: Team;
                 Name: "Team";
@@ -316,8 +356,8 @@ export default interface PrismaTypes {
         Where: Prisma.JourneyWhereInput;
         Create: {};
         Update: {};
-        RelationName: "userJourneys" | "team" | "userInvites" | "blocks" | "chatButtons" | "host" | "journeyTags" | "actions" | "primaryImageBlock" | "creatorImageBlock" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications" | "logoImageBlock" | "menuStepBlock" | "qrCode" | "Event" | "journeyEventsExportLogs" | "journeyTheme" | "journeyCustomizationFields";
-        ListRelations: "userJourneys" | "userInvites" | "blocks" | "chatButtons" | "journeyTags" | "actions" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications" | "qrCode" | "Event" | "journeyEventsExportLogs" | "journeyCustomizationFields";
+        RelationName: "userJourneys" | "team" | "userInvites" | "blocks" | "chatButtons" | "host" | "journeyTags" | "actions" | "primaryImageBlock" | "creatorImageBlock" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications" | "logoImageBlock" | "menuStepBlock" | "qrCode" | "Event" | "journeyEventsExportLogs" | "journeyTheme" | "journeyCustomizationFields" | "googleSheetsSync";
+        ListRelations: "userJourneys" | "userInvites" | "blocks" | "chatButtons" | "journeyTags" | "actions" | "journeyVisitors" | "journeyCollectionJourneys" | "journeyNotifications" | "qrCode" | "Event" | "journeyEventsExportLogs" | "journeyCustomizationFields" | "googleSheetsSync";
         Relations: {
             userJourneys: {
                 Shape: UserJourney[];
@@ -417,6 +457,11 @@ export default interface PrismaTypes {
             journeyCustomizationFields: {
                 Shape: JourneyCustomizationField[];
                 Name: "JourneyCustomizationField";
+                Nullable: false;
+            };
+            googleSheetsSync: {
+                Shape: GoogleSheetsSync[];
+                Name: "GoogleSheetsSync";
                 Nullable: false;
             };
         };

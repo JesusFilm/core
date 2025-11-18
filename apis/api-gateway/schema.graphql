@@ -285,7 +285,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   hostDelete(id: ID!, teamId: ID!) : Host! @join__field(graph: API_JOURNEYS) 
   integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!) : IntegrationGrowthSpaces! @join__field(graph: API_JOURNEYS) 
   integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!) : IntegrationGrowthSpaces! @join__field(graph: API_JOURNEYS) 
-  integrationDelete(id: ID!) : Integration! @join__field(graph: API_JOURNEYS) 
   journeyCreate(input: JourneyCreateInput!, teamId: ID!) : Journey! @join__field(graph: API_JOURNEYS) 
   journeyDuplicate(id: ID!, teamId: ID!) : Journey! @join__field(graph: API_JOURNEYS) 
   journeyUpdate(id: ID!, input: JourneyUpdateInput!) : Journey! @join__field(graph: API_JOURNEYS) 
@@ -1253,7 +1252,7 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   """
   objectFit: VideoBlockObjectFit
   subtitleLanguage: Language
-  showGeneratedSubtitles: Boolean @join__field(graph: API_JOURNEYS_MODERN) 
+  showGeneratedSubtitles: Boolean
   mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
@@ -1768,12 +1767,20 @@ type Host @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODE
   src2: String
 }
 
+type IntegrationGoogle implements Integration @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Integration")  {
+  id: ID!
+  team: Team!
+  type: IntegrationType!
+  user: User
+  accountEmail: String
+}
+
 type IntegrationGrowthSpaces implements Integration @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Integration")  {
   id: ID!
   team: Team!
   type: IntegrationType!
-  accessId: String!
-  accessSecretPart: String!
+  accessId: String
+  accessSecretPart: String
   routes: [IntegrationGrowthSpacesRoute!]!
 }
 
@@ -3407,6 +3414,7 @@ enum ButtonAction @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURN
 }
 
 enum IntegrationType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  google @join__enumValue(graph: API_JOURNEYS) 
   growthSpaces @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 

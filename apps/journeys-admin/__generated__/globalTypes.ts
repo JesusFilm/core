@@ -114,6 +114,7 @@ export enum IdType {
 }
 
 export enum IntegrationType {
+  google = "google",
   growthSpaces = "growthSpaces",
 }
 
@@ -416,6 +417,11 @@ export interface EmailActionInput {
   parentStepId?: string | null;
 }
 
+export interface GenerateSubtitlesInput {
+  languageCode: string;
+  languageName: string;
+}
+
 export interface HostCreateInput {
   title: string;
   location?: string | null;
@@ -506,6 +512,7 @@ export interface JourneyEventsFilter {
   typenames?: string[] | null;
   periodRangeStart?: any | null;
   periodRangeEnd?: any | null;
+  includeUnconnectedCards?: boolean | null;
 }
 
 export interface JourneyNotificationUpdateInput {
