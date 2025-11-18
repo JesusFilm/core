@@ -741,6 +741,11 @@ type Journey
   plausibleToken: String
   fromTemplateId: String
   journeyTheme: JourneyTheme
+
+  """
+  Distinct block typenames present on this journey (non-deleted blocks only)
+  """
+  blockTypenames: [String!]!
   journeyCollections: [JourneyCollection!]!
 }
 
@@ -848,6 +853,7 @@ input JourneyEventsFilter {
   typenames: [String!]
   periodRangeStart: DateTime
   periodRangeEnd: DateTime
+  includeUnconnectedCards: Boolean
 }
 
 enum JourneyMenuButtonIcon {
@@ -1419,7 +1425,16 @@ type Query {
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
   """
-  journeyVisitorExport(journeyId: ID!, filter: JourneyEventsFilter, select: JourneyVisitorExportSelect): String
+  journeyVisitorExport(
+    journeyId: ID!
+    filter: JourneyEventsFilter
+    select: JourneyVisitorExportSelect
+
+    """
+    IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.
+    """
+    timezone: String
+  ): String
 }
 
 type RadioOptionBlock implements Block
