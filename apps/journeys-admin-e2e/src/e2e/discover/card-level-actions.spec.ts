@@ -179,7 +179,7 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.verifySpacerAddedToCard() // verify Spacer is added to the card
     const beforeChange =
       await cardLevelActionPage.getSpacerHeightPixelBeforeChange() //Get Spacer Height pixels before moving the slider
-    await cardLevelActionPage.moveSpacerHeightTo() //Move Slider thumb to 50% of the Slider size
+    await cardLevelActionPage.moveSpacerHeightTo() //Move Slider thumb to 70% of the Slider size
     await cardLevelActionPage.validateSpacerHeightPixelGotChange(beforeChange) // validate that space height pixels got increased
     await cardLevelActionPage.clickDeleteBtnInToolTipBar() //Clicking delete button in the tooltip bar to delete the Spacer from the card
     await cardLevelActionPage.verifySpacerRemovedFromCard() //validate spacer got removed from the card after delete

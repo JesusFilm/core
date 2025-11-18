@@ -2,10 +2,12 @@ import dayjs from 'dayjs'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config()
 
+type Credentials = { email?: string; password?: string }
+
 async function getCredentials(
   accountKey: string
 ): Promise<{ email: string; password: string }> {
-  const credentialsConfig = {
+  const credentialsConfig: Record<string, Credentials> = {
     admin: {
       email: process.env.PLAYWRIGHT_EMAIL,
       password: process.env.PLAYWRIGHT_PASSWORD
@@ -27,7 +29,13 @@ async function getCredentials(
       password: process.env.PLAYWRIGHT_PASSWORD5
     }
   }
-  return credentialsConfig[accountKey] || credentialsConfig.admin
+  const creds = credentialsConfig[accountKey] ?? credentialsConfig.admin
+  if (!creds || !creds.email || !creds.password) {
+    throw new Error(
+      `Credentials for account "${accountKey}" are incomplete or missing`
+    )
+  }
+  return { email: creds.email, password: creds.password }
 }
 
 export async function getEmail(accountKey: string = 'admin'): Promise<string> {
