@@ -655,10 +655,10 @@ export type GoogleSheetsSync = {
   integration?: Maybe<Integration>;
   integrationId?: Maybe<Scalars['ID']['output']>;
   journey: Journey;
-  journeyId: Scalars['String']['output'];
+  journeyId: Scalars['ID']['output'];
   sheetName?: Maybe<Scalars['String']['output']>;
   spreadsheetId: Scalars['ID']['output'];
-  teamId?: Maybe<Scalars['String']['output']>;
+  teamId: Scalars['ID']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
 
