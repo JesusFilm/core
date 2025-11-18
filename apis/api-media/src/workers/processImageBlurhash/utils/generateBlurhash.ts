@@ -8,7 +8,10 @@ export async function generateBlurhash(
 ): Promise<string | null> {
   try {
     const imageUrl = baseUrl(imageId)
-    const response = await fetch(imageUrl)
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 seconds
+    const response = await fetch(imageUrl, { signal: controller.signal })
+    clearTimeout(timeoutId)
     if (!response.ok) return null
     const arrayBuffer = await response.arrayBuffer()
     const buffer = Buffer.from(arrayBuffer)

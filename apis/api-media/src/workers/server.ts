@@ -31,7 +31,7 @@ function run({ service, queueName, jobName, repeat }: { service: Service; queueN
     })
 
     childLogger.info('started job')
-    if(isTwoArgService(service)) {
+    if (isTwoArgService(service)) {
       await service(job, childLogger)
     } else {
       await service(childLogger)
