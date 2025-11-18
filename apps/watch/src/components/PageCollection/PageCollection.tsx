@@ -1,6 +1,6 @@
 import last from 'lodash/last'
-import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
+import { NextSeo } from 'next-seo'
 import { ReactElement, useCallback, useMemo, useState } from 'react'
 
 import { ThemeMode } from '@core/shared/ui/themes'

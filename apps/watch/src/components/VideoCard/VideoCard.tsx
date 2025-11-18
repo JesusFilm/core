@@ -10,6 +10,7 @@ import { VideoLabel } from '../../../__generated__/globalTypes'
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 import type { CarouselVideo } from '../VideoHero/libs/useCarouselVideos'
+import { useBlurhash, blurImage } from '../../libs/blurhash'
 
 interface VideoCardProps {
   video?: VideoChildFields | CarouselVideo
@@ -68,6 +69,10 @@ export function VideoCard({
   const imageAlt = last(video?.imageAlt)?.value ?? ''
   const sequenceLabel = showSequenceNumber && index != null ? index + 1 : null
 
+  // Generate blurhash data for image placeholder
+  const { blurhash, dominantColor } = useBlurhash(imageSrc)
+  const blurDataURL = blurhash != null ? blurImage(blurhash, dominantColor ?? '#000000') : undefined
+
   return (
     <a
       href={href}
@@ -99,6 +104,19 @@ export function VideoCard({
             </span>
           )}
           <div className="absolute inset-0 overflow-hidden rounded-lg bg-black/50 transition-transform duration-300">
+            {/* Blurhash Layer */}
+            {blurDataURL && (
+              <div
+                className="absolute inset-0 rounded-lg"
+                style={{
+                  backgroundImage: `url(${blurDataURL})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'left top',
+                  filter: 'brightness(0.85)'
+                }}
+                data-testid="VideoCardBlurhash"
+              />
+            )}
             {imageSrc ? (
               <Image
                 src={imageSrc}
@@ -106,9 +124,12 @@ export function VideoCard({
                 fill
                 sizes="100vw"
                 className="poster-hover-zoom"
+                {...(blurDataURL != null ? { placeholder: 'blur' as const, blurDataURL } : {})}
                 style={{
                   objectFit: 'cover',
-                  objectPosition: 'left top'
+                  objectPosition: 'left top',
+                  maskImage: 'linear-gradient(to top, transparent 0%,  rgba(0,0,0,.4) 30% ,black 42%)',
+                  WebkitMaskImage: 'linear-gradient(to top, transparent 0%,  rgba(0,0,0,.4) 30% ,black 42%)'
                 }}
               />
             ) : (
@@ -121,26 +142,53 @@ export function VideoCard({
             )}
           </div>
           <div className="gradient-contained absolute inset-0 rounded-lg opacity-15 shadow-[inset_0px_0px_0px_1px_rgba(255,255,255,0.12)] transition-opacity duration-300 hover:opacity-50" />
-          <div className="absolute inset-0 flex flex-col justify-end p-4">
-            <h3 className="text-shadow-strong text-left text-xl leading-tight font-bold text-white">
-              {video != null ? (
-                last(video?.title)?.value
-              ) : (
-                <div
-                  className="h-5 w-3/5 animate-pulse bg-gray-400"
-                  data-testid="VideoTitleSkeleton"
-                />
-              )}
-            </h3>
-            <div className="flex min-w-0 flex-row items-end justify-between gap-2">
+          {/* Duration/Chapters Indicator - Top Right */}
+          <div
+            className={`absolute top-2 right-2 flex flex-shrink-0 flex-row items-center gap-1 rounded py-1 px-2 text-white z-10 ${
+              active === true ? 'bg-primary' : 'bg-black/30'
+            }`}
+          >
+            {active === true ? (
+              <>
+                <Play className="h-4 w-4" />
+                <span className="text-sm font-semibold">
+                  {t('Playing now')}
+                </span>
+              </>
+            ) : (
+              <>
+                {video == null && (
+                  <>
+                    <Play className="h-4 w-4" />
+                    <div
+                      className="h-4 w-5 animate-pulse bg-gray-400"
+                      data-testid="VideoVariantDurationSkeleton"
+                    />
+                  </>
+                )}
+                {video?.childrenCount === 0 && (
+                  <>
+                    <Play className="h-4 w-4" />
+                    <span className="text-sm font-semibold">
+                      {secondsToTimeFormat(video?.variant?.duration ?? 0, {
+                        trimZeroes: true
+                      })}
+                    </span>
+                  </>
+                )}
+                {(video?.childrenCount ?? 0) > 0 && (
+                  <span className="text-sm font-semibold">
+                    {childCountLabel.toLowerCase()}
+                  </span>
+                )}
+              </>
+            )}
+          </div>
+
+          <div className="absolute inset-0 flex flex-col justify-end gap-0 p-4">
+            <div className="flex min-w-0 flex-row items-end justify-between gap-90">
               <div
-                className={`truncate text-xs leading-8 tracking-wider uppercase ${
-                  color === 'primary.main'
-                    ? 'text-primary'
-                    : color === 'secondary.main'
-                      ? 'text-secondary'
-                      : 'text-gray-600'
-                }`}
+                className="truncate text-xs font-semibold leading-8 tracking-wider uppercase text-stone-300/70 mix-blend-screen"
               >
                 {video != null ? (
                   label
@@ -151,49 +199,17 @@ export function VideoCard({
                   />
                 )}
               </div>
-
-              <div
-                className={`flex h-7 flex-shrink-0 flex-row items-center gap-1 rounded p-2 text-white ${
-                  active === true ? 'bg-primary' : 'bg-black/50'
-                }`}
-              >
-                {active === true ? (
-                  <>
-                    <Play className="h-4 w-4" />
-                    <span className="text-sm font-semibold">
-                      {t('Playing now')}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    {video == null && (
-                      <>
-                        <Play className="h-4 w-4" />
-                        <div
-                          className="h-4 w-5 animate-pulse bg-gray-400"
-                          data-testid="VideoVariantDurationSkeleton"
-                        />
-                      </>
-                    )}
-                    {video?.childrenCount === 0 && (
-                      <>
-                        <Play className="h-4 w-4" />
-                        <span className="text-sm font-semibold">
-                          {secondsToTimeFormat(video?.variant?.duration ?? 0, {
-                            trimZeroes: true
-                          })}
-                        </span>
-                      </>
-                    )}
-                    {(video?.childrenCount ?? 0) > 0 && (
-                      <span className="text-sm font-semibold">
-                        {childCountLabel.toLowerCase()}
-                      </span>
-                    )}
-                  </>
-                )}
-              </div>
             </div>
+            <h3 className="text-shadow-light -mt-1 text-left text-xl leading-tight font-bold text-white">
+              {video != null ? (
+                last(video?.title)?.value
+              ) : (
+                <div
+                  className="h-5 w-3/5 animate-pulse bg-gray-400"
+                  data-testid="VideoTitleSkeleton"
+                />
+              )}
+            </h3>
           </div>
         </button>
       </div>

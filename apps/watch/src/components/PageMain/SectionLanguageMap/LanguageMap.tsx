@@ -6,10 +6,10 @@ import type { Feature, FeatureCollection, MultiPolygon, Polygon } from 'geojson'
 import maplibregl, {
   type GeoJSONSource,
   type LngLatBoundsLike,
+  type MapGeoJSONFeature,
   Map as MapInstance,
   type MapLayerMouseEvent,
-  type MapMouseEvent,
-  type MapGeoJSONFeature
+  type MapMouseEvent
 } from 'maplibre-gl'
 import { useEffect, useMemo, useRef, useState } from 'react'
 

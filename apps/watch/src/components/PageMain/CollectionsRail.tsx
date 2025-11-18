@@ -2,8 +2,8 @@ import dynamic from 'next/dynamic'
 import { type ReactElement } from 'react'
 
 import {
-  collectionShowcaseSources,
-  christmasAdventShowcaseSources
+  christmasAdventShowcaseSources,
+  collectionShowcaseSources
 } from '../PageCollections/collectionShowcaseConfig'
 
 const SectionVideoCarousel = dynamic(

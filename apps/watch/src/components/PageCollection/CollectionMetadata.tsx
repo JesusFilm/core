@@ -1,5 +1,5 @@
-import { ReactElement } from 'react'
 import { useTranslation } from 'next-i18next'
+import { ReactElement } from 'react'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import {

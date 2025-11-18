@@ -1,6 +1,8 @@
 import Image from 'next/image'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
+import { useBlurhash, blurImage } from '../../libs/blurhash'
+
 interface LazyImageProps {
   src: string
   alt: string
@@ -23,6 +25,10 @@ export function LazyImage({
   const [isLoaded, setIsLoaded] = useState(false)
   const [isInView, setIsInView] = useState(priority) // Load immediately if priority
   const imgRef = useRef<HTMLDivElement>(null)
+
+  // Generate blurhash data for image placeholder
+  const { blurhash, dominantColor } = useBlurhash(src)
+  const blurDataURL = blurhash != null ? blurImage(blurhash, dominantColor ?? '#000000') : undefined
 
   useEffect(() => {
     if (priority) return // Skip intersection observer for priority images
@@ -67,8 +73,7 @@ export function LazyImage({
           onLoad={() => setIsLoaded(true)}
           onError={() => setIsLoaded(true)} // Show even if error occurs
           loading={priority ? 'eager' : 'lazy'}
-          placeholder="blur"
-          blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyxxkNzjvqiuXelypBvGOvZbTOaRLKOZccLm2IlwWX5vqs6UZUsgEV6VpYpTVQrfAKrTKMYJ8wjBD21IfvMKR4PnJPPqmDw3lDIW/Zm1sjSMQ9n8lLNbNaM0lMGrEUrLR1K7dFe7hXwmV7zK4+bgrXpRzaZ"
+          {...(blurDataURL != null ? { placeholder: 'blur' as const, blurDataURL } : {})}
         />
       )}
       {!isLoaded && isInView && (

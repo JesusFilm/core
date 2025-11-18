@@ -9,6 +9,7 @@ import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
+import { useBlurhash, blurImage } from '../../../libs/blurhash'
 import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'
 import { useVideo } from '../../../libs/videoContext'
 import { HeroOverlay } from '../../HeroOverlay'
@@ -29,6 +30,11 @@ export function ContainerHero({
     childrenCount
   )
 
+  // Use blurhash for better loading UX
+  const heroImage = last(images)?.mobileCinematicHigh
+  const { blurhash, dominantColor } = useBlurhash(heroImage)
+  const blurDataURL = blurhash ? blurImage(blurhash, dominantColor ?? '#000000') : undefined
+
   return (
     <Box
       sx={{
@@ -40,15 +46,16 @@ export function ContainerHero({
       }}
       data-testid="ContainerHero"
     >
-      {last(images)?.mobileCinematicHigh != null && (
+      {heroImage != null && (
         <Image
-          src={last(images)?.mobileCinematicHigh ?? ''}
+          src={heroImage}
           alt="Home Hero"
           fill
           sizes="100vw"
           style={{
             objectFit: 'cover'
           }}
+          {...(blurDataURL != null ? { placeholder: 'blur' as const, blurDataURL } : {})}
         />
       )}
       <HeroOverlay />

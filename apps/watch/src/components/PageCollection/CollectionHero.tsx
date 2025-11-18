@@ -5,6 +5,7 @@ import { ReactElement } from 'react'
 
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 
+import { useBlurhash, blurImage } from '../../libs/blurhash'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 import { useVideo } from '../../libs/videoContext'
 import { ContentHeader } from '../ContentHeader'
@@ -31,6 +32,10 @@ export function CollectionHero({
   const heroAlt =
     last(imageAlt)?.value ?? last(title)?.value ?? 'Collection hero'
 
+  // Use blurhash for better loading UX
+  const { blurhash, dominantColor } = useBlurhash(heroImage)
+  const blurDataURL = blurhash ? blurImage(blurhash, dominantColor ?? '#000000') : undefined
+
   return (
     <div
       className="relative z-[1] flex aspect-[var(--ratio-sm-expanded)] w-full items-end overflow-hidden bg-[#000] md:aspect-[var(--ratio-md-expanded)]"
@@ -45,6 +50,7 @@ export function CollectionHero({
             priority
             sizes="100vw"
             className="object-cover"
+            {...(blurDataURL != null ? { placeholder: 'blur' as const, blurDataURL } : {})}
           />
         )}
         <HeroOverlay />

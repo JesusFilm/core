@@ -6,6 +6,7 @@ import { ReactElement, useState } from 'react'
 
 import Play3 from '@core/shared/ui/icons/Play3'
 
+import { useBlurhash, blurImage } from '../../libs/blurhash'
 import { usePlayer } from '../../libs/playerContext'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
@@ -43,6 +44,10 @@ function CardContent({
   // Compute safe image src and alt with proper guards
   const imageSrc = data.images?.[0]?.mobileCinematicHigh
   const imageAlt = data.imageAlt?.[0]?.value ?? ''
+
+  // Use blurhash for better loading UX
+  const { blurhash, dominantColor } = useBlurhash(imageSrc)
+  const blurDataURL = blurhash ? blurImage(blurhash, dominantColor ?? '#000000') : undefined
 
   const ContainerElement = interactive ? 'button' : 'div'
   const ContentElement = interactive ? 'div' : 'div'
@@ -85,6 +90,7 @@ function CardContent({
                   maskSize: 'cover',
                   pointerEvents: 'none'
                 }}
+                {...(blurDataURL != null ? { placeholder: 'blur' as const, blurDataURL } : {})}
               />
             )}
           </div>
