@@ -11,6 +11,8 @@ import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { blurImage, useBlurhash } from '../../libs/blurhash'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 import type { CarouselVideo } from '../VideoHero/libs/useCarouselVideos'
+import { useThumbnailUrl } from '../../libs/thumbnail'
+import { useWatch } from '../../libs/watchContext'
 
 interface VideoCardProps {
   video?: VideoChildFields | CarouselVideo
@@ -58,6 +60,7 @@ export function VideoCard({
   onHoverImageChange
 }: VideoCardProps): ReactElement {
   const { t } = useTranslation('apps-watch')
+  const { state: watchState } = useWatch()
 
   const { label, childCountLabel } = getLabelDetails(
     t,
@@ -71,8 +74,22 @@ export function VideoCard({
   const imageAlt = last(video?.imageAlt)?.value ?? ''
   const sequenceLabel = showSequenceNumber && index != null ? index + 1 : null
 
-  // Generate blurhash data for image placeholder
-  const { blurhash, dominantColor } = useBlurhash(imageSrc)
+  // Get thumbnail URL (local override or original) with enhanced specificity
+  const { thumbnailUrl } = useThumbnailUrl(video?.id, imageSrc, {
+    orientation,
+    containerSlug,
+    variantSlug: video?.variant?.slug,
+    languageId: watchState.audioLanguageId
+  })
+
+  // Generate blurhash from the actual image that will be displayed
+  // Use thumbnailUrl if it's different from imageSrc (indicating local thumbnail)
+  // Otherwise use original imageSrc for blurhash generation
+  // Strip query parameters for local thumbnails since blurhash API reads from disk
+  const blurhashImageUrl = thumbnailUrl !== imageSrc
+    ? thumbnailUrl.split('?')[0]  // Remove cache-busting parameters for blurhash generation
+    : imageSrc
+  const { blurhash, dominantColor } = useBlurhash(blurhashImageUrl)
   const blurDataURL =
     blurhash != null
       ? blurImage(blurhash, dominantColor ?? '#000000')
@@ -136,9 +153,9 @@ export function VideoCard({
                 data-testid="VideoCardBlurhash"
               />
             )}
-            {imageSrc ? (
+            {thumbnailUrl ? (
               <Image
-                src={imageSrc}
+                src={thumbnailUrl}
                 alt={imageAlt}
                 fill
                 sizes="100vw"

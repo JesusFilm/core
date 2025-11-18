@@ -1,12 +1,10 @@
 import { useQuery } from '@apollo/client'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next'
 import { useEffect, useMemo } from 'react'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { getLanguageIdFromLocale } from '../../libs/getLanguageIdFromLocale'
-import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 
 import { GET_COLLECTION_SHOWCASE_CONTENT } from './queries'
@@ -292,7 +290,7 @@ function flattenCollection(
 }
 
 export interface UseSectionVideoCollectionCarouselContentOptions {
-  sources?: SectionVideoCollectionCarouselSource[]
+  sources: SectionVideoCollectionCarouselSource[]
   primaryCollectionId?: string
   subtitleOverride?: string
   titleOverride?: string
@@ -316,26 +314,23 @@ export function useSectionVideoCollectionCarouselContent({
 }: UseSectionVideoCollectionCarouselContentOptions): SectionVideoCollectionCarouselContentResult {
   const { locale } = useRouter()
   const languageId = providedLanguageId ?? getLanguageIdFromLocale(locale)
-  const { t } = useTranslation('apps-watch')
 
   useEffect(() => {
-    if (sources != null) {
-      const slugSources = sources.filter((source) => source.idType === 'slug')
-      if (slugSources.length > 0) {
-        console.warn(
-          'SectionVideoCollectionCarousel currently expects databaseId values; slug idType is not fully supported yet.',
-          slugSources
-        )
-      }
+    const slugSources = sources.filter((source) => source.idType === 'slug')
+    if (slugSources.length > 0) {
+      console.warn(
+        'SectionVideoCollectionCarousel currently expects databaseId values; slug idType is not fully supported yet.',
+        slugSources
+      )
     }
   }, [sources])
 
   const collectionSources = useMemo(
-    () => (sources ?? []).filter((source) => source.type === 'collection'),
+    () => sources.filter((source) => source.type === 'collection'),
     [sources]
   )
   const videoSources = useMemo(
-    () => (sources ?? []).filter((source) => source.type === 'video'),
+    () => sources.filter((source) => source.type === 'video'),
     [sources]
   )
 
@@ -343,9 +338,7 @@ export function useSectionVideoCollectionCarouselContent({
     collectionIds:
       collectionSources.length > 0
         ? collectionSources.map((source) => source.id)
-        : primaryCollectionId != null
-          ? [primaryCollectionId]
-          : undefined,
+        : undefined,
     videoIds:
       videoSources.length > 0
         ? videoSources.map((source) => source.id)
@@ -358,10 +351,7 @@ export function useSectionVideoCollectionCarouselContent({
     CollectionShowcaseQueryVars
   >(GET_COLLECTION_SHOWCASE_CONTENT, {
     variables: queryVariables,
-    skip:
-      collectionSources.length === 0 &&
-      videoSources.length === 0 &&
-      primaryCollectionId == null
+    skip: collectionSources.length === 0 && videoSources.length === 0
   })
 
   const slides = useMemo(() => {
@@ -377,44 +367,12 @@ export function useSectionVideoCollectionCarouselContent({
       (data.videos ?? []).map((video) => [video.id, video])
     )
 
-    // Process sources if provided
-    if (sources != null) {
-      for (const source of sources) {
-        if (source.type === 'collection') {
-          const collection = collectionsById.get(source.id)
-          if (collection == null) continue
-          const flattened = flattenCollection(collection, {
-            limit: source.limitChildren
-          })
-          for (const slide of flattened) {
-            if (slide == null) continue
-            const key = slide.href
-            if (seen.has(key)) continue
-            seen.add(key)
-            slideAccumulator.push(slide)
-          }
-        } else {
-          const video = videosById.get(source.id)
-          if (video == null) continue
-          const slide = buildSlide(video)
-          if (slide == null) continue
-          const key = slide.href
-          if (seen.has(key)) continue
-          seen.add(key)
-          slideAccumulator.push(slide)
-        }
-      }
-    }
-
-    // Process primaryCollectionId if no sources were provided or if it's not already included
-    if (
-      (sources == null || sources.length === 0) &&
-      primaryCollectionId != null
-    ) {
-      const collection = collectionsById.get(primaryCollectionId)
-      if (collection != null) {
+    for (const source of sources) {
+      if (source.type === 'collection') {
+        const collection = collectionsById.get(source.id)
+        if (collection == null) continue
         const flattened = flattenCollection(collection, {
-          limit: undefined // No limit when using primaryCollectionId directly
+          limit: source.limitChildren
         })
         for (const slide of flattened) {
           if (slide == null) continue
@@ -423,11 +381,20 @@ export function useSectionVideoCollectionCarouselContent({
           seen.add(key)
           slideAccumulator.push(slide)
         }
+      } else {
+        const video = videosById.get(source.id)
+        if (video == null) continue
+        const slide = buildSlide(video)
+        if (slide == null) continue
+        const key = slide.href
+        if (seen.has(key)) continue
+        seen.add(key)
+        slideAccumulator.push(slide)
       }
     }
 
     return slideAccumulator
-  }, [data, sources, primaryCollectionId])
+  }, [data, sources])
 
   const primaryCollection = useMemo(() => {
     if (data?.collections == null || data.collections.length === 0)
@@ -446,13 +413,7 @@ export function useSectionVideoCollectionCarouselContent({
     return data.collections[0]
   }, [collectionSources, data, primaryCollectionId])
 
-  const typeSubtitle =
-    primaryCollection != null
-      ? getLabelDetails(t, primaryCollection.label).label
-      : undefined
-
-  const subtitle =
-    subtitleOverride ?? typeSubtitle ?? primaryCollection?.snippet?.[0]?.value
+  const subtitle = subtitleOverride ?? primaryCollection?.snippet?.[0]?.value
   const title = titleOverride ?? primaryCollection?.title?.[0]?.value
 
   const description =

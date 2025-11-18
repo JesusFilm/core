@@ -10,6 +10,8 @@ import { useBlurhash, blurImage } from '../../libs/blurhash'
 import { usePlayer } from '../../libs/playerContext'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
+import { useThumbnailUrl } from '../../libs/thumbnail'
+import { useWatch } from '../../libs/watchContext'
 import { UnifiedCardData } from '../../types/inserts'
 
 interface VideoCardProps {
@@ -29,6 +31,8 @@ interface CardContentProps {
   label: string
   playerProgress: number
   interactive?: boolean
+  orientation?: 'horizontal' | 'vertical'
+  containerSlug?: string
 }
 
 function CardContent({
@@ -39,14 +43,32 @@ function CardContent({
   onMouseLeave,
   label,
   playerProgress,
-  interactive = false
+  interactive = false,
+  orientation = 'horizontal',
+  containerSlug
 }: CardContentProps): ReactElement {
+  const { state: watchState } = useWatch()
+
   // Compute safe image src and alt with proper guards
   const imageSrc = data.images?.[0]?.mobileCinematicHigh
   const imageAlt = data.imageAlt?.[0]?.value ?? ''
 
-  // Use blurhash for better loading UX
-  const { blurhash, dominantColor } = useBlurhash(imageSrc)
+  // Get thumbnail URL (local override or original) with enhanced specificity
+  const { thumbnailUrl } = useThumbnailUrl(data.id, imageSrc, {
+    orientation,
+    containerSlug,
+    variantSlug: data.variant?.slug,
+    languageId: watchState.audioLanguageId
+  })
+
+  // Generate blurhash from the actual image that will be displayed
+  // Use thumbnailUrl if it's different from imageSrc (indicating local thumbnail)
+  // Otherwise use original imageSrc for blurhash generation
+  // Strip query parameters for local thumbnails since blurhash API reads from disk
+  const blurhashImageUrl = thumbnailUrl !== imageSrc
+    ? thumbnailUrl.split('?')[0]  // Remove cache-busting parameters for blurhash generation
+    : imageSrc
+  const { blurhash, dominantColor } = useBlurhash(blurhashImageUrl)
   const blurDataURL = blurhash
     ? blurImage(blurhash, dominantColor ?? '#000000')
     : undefined
@@ -78,12 +100,12 @@ function CardContent({
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
-          {/* Image Layer with Lazy Loading - Only render when imageSrc is available */}
+          {/* Image Layer with Lazy Loading - Only render when thumbnailUrl is available */}
           <div className="absolute top-0 right-0 bottom-0 left-0 overflow-hidden rounded-lg">
-            {imageSrc && (
+            {thumbnailUrl && (
               <Image
                 fill
-                src={imageSrc}
+                src={thumbnailUrl}
                 alt={imageAlt}
                 priority={active}
                 style={{
@@ -186,6 +208,8 @@ export function VideoCard({
       label={label}
       playerProgress={playerState.progress}
       interactive={!!onVideoSelect}
+      orientation="horizontal"
+      containerSlug={containerSlug}
     />
   )
 

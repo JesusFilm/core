@@ -2,6 +2,8 @@ import { encode } from 'blurhash'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { unstable_cache } from 'next/cache'
 import sharp from 'sharp'
+import { readFileSync } from 'fs'
+import { join } from 'path'
 
 import {
   BlurhashApiResponse,
@@ -22,6 +24,11 @@ const ALLOWED_DOMAINS = [
 ]
 
 function isValidUrl(urlString: string): boolean {
+  // Allow local thumbnail URLs (relative paths to thumbnails directory)
+  if (urlString.startsWith('/assets/thumbnails/')) {
+    return true
+  }
+
   try {
     const url = new URL(urlString)
     const domain = url.hostname
@@ -44,6 +51,14 @@ async function fetchImageWithTimeout(
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
   try {
+    // Handle local thumbnail files by reading from disk
+    if (url.startsWith('/assets/thumbnails/')) {
+      const filePath = join(process.cwd(), 'public', url)
+      const buffer = readFileSync(filePath)
+      clearTimeout(timeoutId)
+      return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength)
+    }
+
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
@@ -77,12 +92,14 @@ async function fetchImageWithTimeout(
 
 async function extractDominantColor(imageBuffer: Buffer): Promise<string> {
   // Resize to 100x100 for color extraction (larger than blurhash for better accuracy)
-  const resizedBuffer = await sharp(imageBuffer)
+  const { data, info } = await sharp(imageBuffer)
     .resize(100, 100, { fit: 'inside' })
+    .ensureAlpha()
     .raw()
-    .toBuffer()
+    .toBuffer({ resolveWithObject: true })
 
-  const pixelCount = resizedBuffer.length / 3 // RGB components
+  const { width, height, channels } = info
+  const pixelCount = width * height
   const colorCounts: Map<
     string,
     { count: number; rgb: [number, number, number] }
@@ -90,9 +107,16 @@ async function extractDominantColor(imageBuffer: Buffer): Promise<string> {
 
   // Sample pixels and count frequencies
   for (let i = 0; i < pixelCount; i++) {
-    const r = resizedBuffer[i * 3]
-    const g = resizedBuffer[i * 3 + 1]
-    const b = resizedBuffer[i * 3 + 2]
+    const offset = i * channels
+    const r = data[offset]
+    const g = data[offset + 1]
+    const b = data[offset + 2]
+    const a = data[offset + 3]
+
+    // Skip transparent pixels
+    if (a < 128) {
+      continue
+    }
 
     // Skip very dark/light colors (optional filtering)
     const luminance = 0.299 * r + 0.587 * g + 0.114 * b
@@ -140,9 +164,9 @@ async function extractDominantColor(imageBuffer: Buffer): Promise<string> {
 const processingCache = new Map<string, Promise<BlurhashResult>>()
 
 async function generateBlurhash(imageBuffer: Buffer): Promise<BlurhashResult> {
-  // Process image for blurhash (32x32)
+  // Process image for blurhash (32x32) - ensure exact dimensions
   const blurhashImage = await sharp(imageBuffer)
-    .resize(32, 32, { fit: 'inside', withoutEnlargement: true })
+    .resize(32, 32, { fit: 'cover', position: 'center' })
     .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true })
@@ -150,7 +174,7 @@ async function generateBlurhash(imageBuffer: Buffer): Promise<BlurhashResult> {
   const { data, info } = blurhashImage
   const { width, height } = info
 
-  // Generate blurhash
+  // Generate blurhash - try with RGBA data as the original code did
   const blurhashString = encode(
     new Uint8ClampedArray(data),
     width,
@@ -171,34 +195,34 @@ async function generateBlurhash(imageBuffer: Buffer): Promise<BlurhashResult> {
 // Cached version with deduplication for concurrent requests
 const generateBlurhashCached = unstable_cache(
   async (imageUrl: string): Promise<BlurhashResult> => {
-    // Check if we're already processing this image
-    const cacheKey = `blurhash:${imageUrl}`
-    const existingPromise = processingCache.get(cacheKey)
+  // Check if we're already processing this image
+  const cacheKey = `blurhash:${imageUrl}`
+  const existingPromise = processingCache.get(cacheKey)
 
-    if (existingPromise) {
-      console.log(`Reusing existing blurhash generation for: ${imageUrl}`)
-      return existingPromise
+  if (existingPromise) {
+    console.log(`Reusing existing blurhash generation for: ${imageUrl}`)
+    return existingPromise
+  }
+
+  // Start processing and cache the promise
+  const processingPromise = (async () => {
+    try {
+      // Fetch image with timeout
+      const imageBuffer = await fetchImageWithTimeout(imageUrl, 10000)
+      const buffer = Buffer.from(imageBuffer)
+
+      // Generate blurhash and dominant color
+      const result = await generateBlurhash(buffer)
+
+      return result
+    } finally {
+      // Clean up cache after processing completes (success or failure)
+      processingCache.delete(cacheKey)
     }
+  })()
 
-    // Start processing and cache the promise
-    const processingPromise = (async () => {
-      try {
-        // Fetch image with timeout
-        const imageBuffer = await fetchImageWithTimeout(imageUrl, 10000)
-        const buffer = Buffer.from(imageBuffer)
-
-        // Generate blurhash and dominant color
-        const result = await generateBlurhash(buffer)
-
-        return result
-      } finally {
-        // Clean up cache after processing completes (success or failure)
-        processingCache.delete(cacheKey)
-      }
-    })()
-
-    processingCache.set(cacheKey, processingPromise)
-    return processingPromise
+  processingCache.set(cacheKey, processingPromise)
+  return processingPromise
   },
   ['blurhash-generation'],
   {
