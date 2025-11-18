@@ -35,12 +35,13 @@ builder.queryField('googleSheetsSyncs', (t) =>
 
         const where: { journeyId?: string; integrationId?: string } = {}
 
+        // Filter by journey - check export permission
         if (filter.journeyId != null) {
-          // Filter by journey - check export permission
           const journey = await prisma.journey.findUnique({
             where: { id: filter.journeyId },
             include: { team: { include: { userTeams: true } } }
           })
+
           if (journey == null) {
             throw new GraphQLError('Journey not found', {
               extensions: { code: 'NOT_FOUND' }
@@ -57,8 +58,9 @@ builder.queryField('googleSheetsSyncs', (t) =>
 
           where.journeyId = filter.journeyId
         }
+
+        // Filter by integration - check team membership
         if (filter.integrationId != null) {
-          // Filter by integration - check team membership
           const integration = await prisma.integration.findUnique({
             where: { id: filter.integrationId },
             include: { team: { include: { userTeams: true } } }

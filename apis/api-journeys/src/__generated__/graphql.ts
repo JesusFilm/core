@@ -642,11 +642,16 @@ export type GoogleSheetsSync = {
   integration?: Maybe<Integration>;
   integrationId?: Maybe<Scalars['ID']['output']>;
   journey: Journey;
-  journeyId: Scalars['String']['output'];
+  journeyId: Scalars['ID']['output'];
   sheetName?: Maybe<Scalars['String']['output']>;
   spreadsheetId: Scalars['ID']['output'];
-  teamId?: Maybe<Scalars['String']['output']>;
+  teamId: Scalars['ID']['output'];
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type GoogleSheetsSyncsFilter = {
+  integrationId?: InputMaybe<Scalars['ID']['input']>;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export enum GridAlignItems {
@@ -3495,6 +3500,7 @@ export type Query = {
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
   getUserRole?: Maybe<UserRole>;
+  googleSheetsSyncs: Array<GoogleSheetsSync>;
   hosts: Array<Host>;
   integrationGooglePickerToken: Scalars['String']['output'];
   integrations: Array<Integration>;
@@ -3705,6 +3711,11 @@ export type QueryGetMyMuxVideoArgs = {
 export type QueryGetMyMuxVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGoogleSheetsSyncsArgs = {
+  filter: GoogleSheetsSyncsFilter;
 };
 
 
