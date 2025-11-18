@@ -16,7 +16,17 @@ function isTwoArgService(service: Service): service is ServiceTwoArg {
   return service.length === 2
 }
 
-function run({ service, queueName, jobName, repeat }: { service: Service; queueName: string; jobName: string; repeat?: string }): void {
+function run({
+  service,
+  queueName,
+  jobName,
+  repeat
+}: {
+  service: Service
+  queueName: string
+  jobName: string
+  repeat?: string
+}): void {
   // eslint-disable-next-line no-new
   new Worker(queueName, job, {
     connection

@@ -3,4 +3,3 @@ export function baseUrl(id: string): string {
     process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
   }/${id}`
 }
-
