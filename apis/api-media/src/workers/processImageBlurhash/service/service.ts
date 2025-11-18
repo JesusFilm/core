@@ -7,7 +7,7 @@ import { generateBlurhash } from '../utils/generateBlurhash'
 
 const BATCH_SIZE = 50
 
-interface ProcessImageBlurhashJobData {
+export interface ProcessImageBlurhashJobData {
   imageId?: string
 }
 

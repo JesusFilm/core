@@ -5,12 +5,19 @@ import { logger } from '../lib/logger'
 
 import { queueName } from './config'
 import { service } from './service'
+import type { ProcessImageBlurhashJobData } from './service/service'
 
-export const worker = new Worker(queueName, processJob, {
-  connection
-})
+export const worker = new Worker<ProcessImageBlurhashJobData>(
+  queueName,
+  processJob,
+  {
+    connection
+  }
+)
 
-async function processJob(job: Job): Promise<void> {
+async function processJob(
+  job: Job<ProcessImageBlurhashJobData>
+): Promise<void> {
   const childLogger = logger.child({
     queue: queueName,
     jobId: job.id

@@ -1,7 +1,7 @@
 import { encode } from 'blurhash'
 import sharp from 'sharp'
 
-import { baseUrl } from './baseUrl'
+import { baseUrl } from '../../../schema/cloudflare/image/utils/baseUrl'
 
 export async function generateBlurhash(
   imageId: string
