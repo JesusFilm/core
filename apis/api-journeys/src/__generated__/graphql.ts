@@ -632,6 +632,28 @@ export type GenerateSubtitlesInput = {
   languageName: Scalars['String']['input'];
 };
 
+export type GoogleSheetsSync = {
+  __typename?: 'GoogleSheetsSync';
+  createdAt: Scalars['DateTime']['output'];
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  folderId?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  integration?: Maybe<Integration>;
+  integrationId?: Maybe<Scalars['ID']['output']>;
+  journey: Journey;
+  journeyId: Scalars['ID']['output'];
+  sheetName?: Maybe<Scalars['String']['output']>;
+  spreadsheetId: Scalars['ID']['output'];
+  teamId: Scalars['ID']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type GoogleSheetsSyncsFilter = {
+  integrationId?: InputMaybe<Scalars['ID']['input']>;
+  journeyId?: InputMaybe<Scalars['ID']['input']>;
+};
+
 export enum GridAlignItems {
   Baseline = 'baseline',
   Center = 'center',
@@ -1640,6 +1662,7 @@ export type Mutation = {
   deleteMuxVideo: Scalars['Boolean']['output'];
   enableMuxDownload?: Maybe<MuxVideo>;
   fixVideoLanguages: Scalars['Boolean']['output'];
+  googleSheetsSyncDelete: GoogleSheetsSync;
   hostCreate: Host;
   hostDelete: Host;
   hostUpdate: Host;
@@ -2093,6 +2116,11 @@ export type MutationEnableMuxDownloadArgs = {
 
 export type MutationFixVideoLanguagesArgs = {
   videoId: Scalars['ID']['input'];
+};
+
+
+export type MutationGoogleSheetsSyncDeleteArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -3476,6 +3504,7 @@ export type Query = {
   getMyMuxVideo: MuxVideo;
   getMyMuxVideos: Array<MuxVideo>;
   getUserRole?: Maybe<UserRole>;
+  googleSheetsSyncs: Array<GoogleSheetsSync>;
   hosts: Array<Host>;
   integrationGooglePickerToken: Scalars['String']['output'];
   integrations: Array<Integration>;
@@ -3686,6 +3715,11 @@ export type QueryGetMyMuxVideoArgs = {
 export type QueryGetMyMuxVideosArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGoogleSheetsSyncsArgs = {
+  filter: GoogleSheetsSyncsFilter;
 };
 
 
