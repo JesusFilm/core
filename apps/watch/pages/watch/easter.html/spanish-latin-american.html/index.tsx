@@ -20,7 +20,7 @@ export default function EasterPage(): ReactElement {
             '¿Y si todo lo que pensabas sobre la Pascua es solo la mitad de la historia?',
           description:
             'Explora el otro lado de la Pascua — lleno de traición, esperanza y una afirmación que cambió el mundo.',
-          url: 'https://watch.jesusfilm.org/watch/easter/spanish-latin-american',
+          url: 'https://www.jesusfilm.org/watch/easter/spanish-latin-american',
           type: 'website',
           locale: 'es_LA',
           images: [

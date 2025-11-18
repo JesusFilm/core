@@ -20,7 +20,7 @@ export default function EasterPage(): ReactElement {
             'E se tudo o que você pensava sobre a Páscoa fosse apenas metade da história?',
           description:
             'Explore o outro lado da Páscoa — repleto de traição, esperança e uma afirmação que mudou o mundo.',
-          url: 'https://watch.jesusfilm.org/watch/easter/portuguese-brazil',
+          url: 'https://www.jesusfilm.org/watch/easter/portuguese-brazil',
           type: 'website',
           locale: 'pt_BR',
           images: [

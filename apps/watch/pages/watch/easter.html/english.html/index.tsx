@@ -20,7 +20,7 @@ export default function EasterPage(): ReactElement {
             'What If Everything You Thought About Easter Is Only Half the Story?',
           description:
             'Explore the other side of Easter — one filled with betrayal, hope, and a claim that changed the world.',
-          url: 'https://watch.jesusfilm.org/watch/easter/english',
+          url: 'https://www.jesusfilm.org/watch/easter/english',
           type: 'website',
           locale: 'en_US',
           images: [
