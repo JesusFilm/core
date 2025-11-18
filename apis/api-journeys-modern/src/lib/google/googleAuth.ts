@@ -38,11 +38,6 @@ async function refreshGoogleToken(
   }
 
   const encryptionSecret = env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
-  if (encryptionSecret == null || encryptionSecret.trim() === '') {
-    throw new Error(
-      'INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET environment variable is not configured. This variable is required to decrypt integration access keys for Google OAuth tokens.'
-    )
-  }
 
   const secret = await decryptSymmetric(
     integration.accessSecretCipherText,
@@ -98,7 +93,9 @@ async function refreshGoogleToken(
   }
 
   // Fallback: treat secret as access_token
-  return { accessToken: secret, accountEmail: integration.accountEmail }
+  throw new Error(
+    'Failed to refresh Google OAuth token. Re-authorization is required to continue. Please reconnect your Google account.'
+  )
 }
 
 export async function getTeamGoogleAccessToken(

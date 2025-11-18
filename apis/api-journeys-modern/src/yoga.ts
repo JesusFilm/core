@@ -82,6 +82,7 @@ export const yoga = createYoga<
           session: () => null,
           cache,
           ttlPerSchemaCoordinate: {
+            'Journey.blockTypenames': 0,
             'Query.googleSheetsSyncs': 0
           }
         })

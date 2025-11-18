@@ -775,6 +775,11 @@ type Journey
   plausibleToken: String
   fromTemplateId: String
   journeyTheme: JourneyTheme
+
+  """
+  Distinct block typenames present on this journey (non-deleted blocks only)
+  """
+  blockTypenames: [String!]!
   journeyCollections: [JourneyCollection!]!
 }
 
@@ -882,6 +887,7 @@ input JourneyEventsFilter {
   typenames: [String!]
   periodRangeStart: DateTime
   periodRangeEnd: DateTime
+  includeUnconnectedCards: Boolean
 }
 
 enum JourneyMenuButtonIcon {
@@ -1313,6 +1319,9 @@ type Mutation {
   buttonClickEventCreate(input: ButtonClickEventCreateInput!): ButtonClickEvent!
   chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent! @override(from: "api-journeys")
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!): MultiselectSubmissionEvent! @override(from: "api-journeys")
+  integrationGoogleCreate(input: IntegrationGoogleCreateInput!): IntegrationGoogle!
+  integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!): IntegrationGoogle!
+  integrationDelete(id: ID!): Integration!
   journeySimpleUpdate(id: ID!, journey: Json!): Json
   googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!): GoogleSheetsSync!
   googleSheetsSyncDelete(id: ID!): GoogleSheetsSync!
@@ -1477,6 +1486,7 @@ input QrCodesFilter {
 type Query {
   node(id: ID!): Node
   nodes(ids: [ID!]!): [Node]!
+  integrationGooglePickerToken(integrationId: ID!): String!
   journeySimpleGet(id: ID!): Json
   googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!): [GoogleSheetsSync!]!
   integrationGooglePickerToken(integrationId: ID!): String!
@@ -1484,7 +1494,16 @@ type Query {
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
   """
-  journeyVisitorExport(journeyId: ID!, filter: JourneyEventsFilter, select: JourneyVisitorExportSelect): String
+  journeyVisitorExport(
+    journeyId: ID!
+    filter: JourneyEventsFilter
+    select: JourneyVisitorExportSelect
+
+    """
+    IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.
+    """
+    timezone: String
+  ): String
 }
 
 type RadioOptionBlock implements Block

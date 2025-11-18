@@ -12,7 +12,3 @@ interface Integration {
 extend type Query {
   integrations(teamId: ID!): [Integration!]!
 }
-
-extend type Mutation {
-  integrationDelete(id: ID!): Integration!
-}

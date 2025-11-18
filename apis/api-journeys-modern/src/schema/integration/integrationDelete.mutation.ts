@@ -11,6 +11,7 @@ export const IntegrationDelete = builder.mutationField(
   'integrationDelete',
   (t) =>
     t.withAuth({ isAuthenticated: true }).prismaField({
+      // integration & team auth not handled here to reduce queries
       type: IntegrationRef,
       nullable: false,
       args: { id: t.arg.id({ required: true }) },

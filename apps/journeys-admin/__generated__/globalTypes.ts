@@ -533,6 +533,7 @@ export interface JourneyEventsFilter {
   typenames?: string[] | null;
   periodRangeStart?: any | null;
   periodRangeEnd?: any | null;
+  includeUnconnectedCards?: boolean | null;
 }
 
 export interface JourneyNotificationUpdateInput {
