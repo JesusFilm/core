@@ -2,7 +2,10 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
-import { GoogleIntegrationDeleteSyncDialog } from './GoogleIntegrationDeleteSyncDialog'
+import {
+  DELETE_GOOGLE_SHEETS_SYNC,
+  GoogleIntegrationDeleteSyncDialog
+} from './GoogleIntegrationDeleteSyncDialog'
 
 import '../../../../../test/i18n'
 
@@ -11,7 +14,7 @@ describe('GoogleIntegrationDeleteSyncDialog', () => {
 
   const baseMock: MockedResponse = {
     request: {
-      query: expect.anything(),
+      query: DELETE_GOOGLE_SHEETS_SYNC,
       variables: {
         id: 'syncId'
       }
@@ -69,5 +72,4 @@ describe('GoogleIntegrationDeleteSyncDialog', () => {
     await waitFor(() => expect(handleClose).not.toHaveBeenCalled())
   })
 })
-
 

@@ -14,18 +14,19 @@ import TableRow from '@mui/material/TableRow'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { format } from 'date-fns'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
+import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useState } from 'react'
 
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
-import { useIntegrationQuery } from '../../../libs/useIntegrationQuery'
 import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
+import { useIntegrationQuery } from '../../../libs/useIntegrationQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvitesQuery'
-import { GoogleIntegrationRemoveDialog } from './GoogleIntegrationRemoveDialog/GoogleIntegrationRemoveDialog'
+
 import { GoogleIntegrationDeleteSyncDialog } from './GoogleIntegrationDeleteSyncDialog/GoogleIntegrationDeleteSyncDialog'
+import { GoogleIntegrationRemoveDialog } from './GoogleIntegrationRemoveDialog/GoogleIntegrationRemoveDialog'
 
 const GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION = gql`
   query GoogleSheetsSyncsByIntegration($filter: GoogleSheetsSyncsFilter!) {
@@ -117,11 +118,10 @@ export function GoogleIntegrationDetails(): ReactElement {
 
   const currentUserId = currentUser?.id
 
-  const integrationOwnerId = (
-    data?.integrations.find(
-      (integration) => integration.id === integrationId
-    ) as any
-  )?.user?.id
+  const integrationOwner = data?.integrations.find(
+    (integration) => integration.id === integrationId
+  )
+  const integrationOwnerId = integrationOwner?.user?.id
 
   const isIntegrationOwner =
     integrationOwnerId != null &&

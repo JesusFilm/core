@@ -1,4 +1,5 @@
 import Stack from '@mui/material/Stack'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
@@ -11,11 +12,10 @@ import { ReactElement, Suspense } from 'react'
 
 import { GoogleIntegrationDetails } from '../../../../src/components/Google'
 import { GrowthSpacesIntegrationDetails } from '../../../../src/components/GrowthSpaces'
-import { useIntegrationQuery } from '../../../../src/libs/useIntegrationQuery'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
-import { useRouter } from 'next/router'
+import { useIntegrationQuery } from '../../../../src/libs/useIntegrationQuery'
 
 function IntegrationPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')

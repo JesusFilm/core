@@ -1,11 +1,11 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
 import { useRouter } from 'next/router'
+import { SnackbarProvider } from 'notistack'
 
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
-import { useIntegrationQuery } from '../../../libs/useIntegrationQuery'
 import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
+import { useIntegrationQuery } from '../../../libs/useIntegrationQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvitesQuery'
 
 import { GoogleIntegrationDetails } from './GoogleIntegrationDetails'
@@ -172,5 +172,4 @@ describe('GoogleIntegrationDetails', () => {
     )
   })
 })
-
 

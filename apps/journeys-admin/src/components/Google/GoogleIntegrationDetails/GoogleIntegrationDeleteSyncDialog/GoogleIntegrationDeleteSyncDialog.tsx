@@ -1,15 +1,15 @@
 import { gql, useMutation } from '@apollo/client'
-import { DocumentNode } from 'graphql'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { DocumentNode } from 'graphql'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
-const DELETE_GOOGLE_SHEETS_SYNC = gql`
+export const DELETE_GOOGLE_SHEETS_SYNC = gql`
   mutation GoogleIntegrationDetailsSyncDelete($id: ID!) {
     googleSheetsSyncDelete(id: $id) {
       id

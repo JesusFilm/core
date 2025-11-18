@@ -1,9 +1,9 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
 import { useRouter } from 'next/router'
+import { SnackbarProvider } from 'notistack'
 
-import { INTEGRATION_GOOGLE_CREATE, GoogleCreateIntegration } from './GoogleCreateIntegration'
+import { GoogleCreateIntegration, INTEGRATION_GOOGLE_CREATE } from './GoogleCreateIntegration'
 
 import '../../../../test/i18n'
 
@@ -96,5 +96,4 @@ describe('GoogleCreateIntegration', () => {
     await waitFor(() => expect(mutationCalled.called).toBe(true))
   })
 })
-
 

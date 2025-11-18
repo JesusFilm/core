@@ -1,7 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
-import { SnackbarProvider } from 'notistack'
 import { useRouter } from 'next/router'
+import { SnackbarProvider } from 'notistack'
 
 import { GET_INTEGRATION } from '../../../../libs/useIntegrationQuery'
 
@@ -74,5 +74,4 @@ describe('GoogleIntegrationRemoveDialog', () => {
     await waitFor(() => expect(handleClose).toHaveBeenCalled())
   })
 })
-
 
