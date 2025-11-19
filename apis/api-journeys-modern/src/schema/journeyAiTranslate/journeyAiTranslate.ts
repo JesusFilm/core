@@ -368,7 +368,7 @@ Return in this format:
                     fieldInfo = `Label: "${block.label || ''}"`
                     break
                   case 'TextResponseBlock':
-                    fieldInfo = `Label: "${block.label || ''}", Placeholder: "${(block as any).placeholder || ''}"`
+                    fieldInfo = `Label: "${block.label || ''}", Placeholder: "${(block as any).placeholder || ''}", Hint: "${(block as any).hint || ''}"`
                     break
                 }
 
@@ -401,7 +401,7 @@ Field names to translate per block type:
 - TypographyBlock: "content" field
 - ButtonBlock: "label" field
 - RadioOptionBlock: "label" field
-- TextResponseBlock: "label" and "placeholder" fields
+- TextResponseBlock: "label", "placeholder", and "hint" fields
 
 Ensure translations maintain the meaning while being culturally appropriate for ${input.textLanguageName}.
 Keep translations concise and effective for UI context (e.g., button labels should remain short).
@@ -851,7 +851,7 @@ Return in this format:
                       fieldInfo = `Label: "${block.label || ''}"`
                       break
                     case 'TextResponseBlock':
-                      fieldInfo = `Label: "${block.label || ''}", Placeholder: "${(block as any).placeholder || ''}"`
+                      fieldInfo = `Label: "${block.label || ''}", Placeholder: "${(block as any).placeholder || ''}", Hint: "${(block as any).hint || ''}"`
                       break
                   }
 
@@ -885,7 +885,7 @@ Field names to translate per block type:
 - TypographyBlock: "content" field
 - ButtonBlock: "label" field
 - RadioOptionBlock: "label" field
-- TextResponseBlock: "label" and "placeholder" fields
+- TextResponseBlock: "label", "placeholder", and "hint" fields
 
 Ensure translations maintain the meaning while being culturally appropriate for ${hardenPrompt(requestedLanguageName)}.
 Keep translations concise and effective for UI context (e.g., button labels should remain short).
