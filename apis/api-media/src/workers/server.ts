@@ -14,7 +14,7 @@ function run({
   jobName,
   repeat
 }: {
-  service: (logger?: Logger) => Promise<void>
+  service: (logger?: Logger, job?: Job) => Promise<void>
   queueName: string
   jobName: string
   repeat?: string
@@ -33,7 +33,7 @@ function run({
     })
 
     childLogger.info('started job')
-    await service(childLogger)
+    await service(childLogger, job)
     childLogger.info('finished job')
   }
 
@@ -77,6 +77,12 @@ async function main(): Promise<void> {
         await import(
           /* webpackChunkName: "video-children" */
           './videoChildren'
+        )
+      )
+      run(
+        await import(
+          /* webpackChunkName: "process-image-blurhash" */
+          './processImageBlurhash'
         )
       )
     })

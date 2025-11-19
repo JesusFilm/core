@@ -271,7 +271,9 @@ describe('video', () => {
           uploadUrl: 'testUrl',
           createdAt: new Date(),
           updatedAt: new Date(),
-          videoId: null
+          videoId: null,
+          blurhash: null,
+          blurhashAttemptedAt: null
         }
       ],
       cloudflareAssets: [

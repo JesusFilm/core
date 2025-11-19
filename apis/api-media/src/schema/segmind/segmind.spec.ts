@@ -56,7 +56,9 @@ describe('segmind', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         aspectRatio: null,
-        videoId: null
+        videoId: null,
+        blurhash: null,
+        blurhashAttemptedAt: null
       })
       const result = await authClient({
         document: CREATE_IMAGE_BY_SEGMIND_PROMPT_MUTATION,

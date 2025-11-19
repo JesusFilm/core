@@ -1,5 +1,7 @@
 import { Prisma, prisma } from '@core/prisma/media/client'
 
+import { jobName as processImageBlurhashJobName } from '../../../workers/processImageBlurhash/config'
+import { queue as processImageBlurhashQueue } from '../../../workers/processImageBlurhash/queue'
 import { builder } from '../../builder'
 
 import { ImageAspectRatio } from './enums'
@@ -11,12 +13,7 @@ import {
   createImageFromUrl,
   deleteImage
 } from './service'
-
-function baseUrl(id: string): string {
-  return `https://imagedelivery.net/${
-    process.env.CLOUDFLARE_IMAGE_ACCOUNT ?? 'testAccount'
-  }/${id}`
-}
+import { baseUrl } from './utils/baseUrl'
 
 builder.prismaObject('CloudflareImage', {
   fields: (t) => ({
@@ -64,7 +61,8 @@ builder.prismaObject('CloudflareImage', {
       type: 'String',
       resolve: ({ id, aspectRatio }) =>
         aspectRatio === 'hd' ? `${baseUrl(id)}/f=jpg,w=1920,h=1080,q=95` : null
-    })
+    }),
+    blurhash: t.exposeString('blurhash', { nullable: true })
   })
 })
 
@@ -135,8 +133,7 @@ builder.mutationFields((t) => ({
       },
       resolve: async (query, _root, { url, input }, { user }: any) => {
         const { id } = await createImageFromUrl(url)
-
-        return await prisma.cloudflareImage.create({
+        const image = await prisma.cloudflareImage.create({
           ...query,
           data: {
             id,
@@ -146,6 +143,12 @@ builder.mutationFields((t) => ({
             videoId: input?.videoId ?? undefined
           }
         })
+
+        await processImageBlurhashQueue.add(processImageBlurhashJobName, {
+          imageId: image.id
+        })
+
+        return image
       }
     }),
   createCloudflareImageFromPrompt: t
@@ -162,7 +165,7 @@ builder.mutationFields((t) => ({
           await createImageFromText(prompt)
         )
 
-        return await prisma.cloudflareImage.create({
+        const createdImage = await prisma.cloudflareImage.create({
           ...query,
           data: {
             id: image.id,
@@ -172,6 +175,12 @@ builder.mutationFields((t) => ({
             videoId: input?.videoId ?? undefined
           }
         })
+
+        await processImageBlurhashQueue.add(processImageBlurhashJobName, {
+          imageId: createdImage.id
+        })
+
+        return createdImage
       }
     }),
   deleteCloudflareImage: t.withAuth({ isAuthenticated: true }).boolean({
@@ -204,6 +213,10 @@ builder.mutationFields((t) => ({
       await prisma.cloudflareImage.update({
         where: { id, userId: user.id },
         data: { uploaded: true }
+      })
+
+      await processImageBlurhashQueue.add(processImageBlurhashJobName, {
+        imageId: id
       })
 
       return true

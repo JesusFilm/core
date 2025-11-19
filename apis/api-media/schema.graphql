@@ -58,6 +58,7 @@ type CloudflareImage {
   mobileCinematicVeryLow: String
   thumbnail: String
   videoStill: String
+  blurhash: String
 }
 
 type CloudflareR2 {
