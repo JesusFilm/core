@@ -1,0 +1,1 @@
+export { translateCustomizationFields } from './translateCustomizationFields'
