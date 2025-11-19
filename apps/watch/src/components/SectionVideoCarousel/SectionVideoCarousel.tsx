@@ -98,8 +98,7 @@ export function SectionVideoCarousel({
   )
 
   useEffect(() => () => clearTimers(), [clearTimers])
-
-  if (!loading && slides.length === 0) return null
+  const hasNoResults = !loading && slides.length === 0
 
   return (
     <section
@@ -164,42 +163,55 @@ export function SectionVideoCarousel({
       </div>
 
       <div className="relative">
-        <Swiper
-          modules={[Mousewheel, FreeMode, A11y]}
-          mousewheel={{ forceToAxis: true }}
-          observeParents
-          slidesPerView="auto"
-          spaceBetween={20}
-          slidesOffsetAfter={40}
-          pagination={{ clickable: true }}
-          className="w-full"
-          data-testid="SectionVideoCarouselSwiper"
-        >
-          {loading
-            ? Array.from({ length: 4 }).map((_, index) => (
-                <SwiperSlide
-                  key={`skeleton-${index}`}
-                  className={`max-w-[200px] ${index === 0 ? 'padded-l' : ''}`}
-                >
-                  <div className="h-[330px] w-[220px] animate-pulse rounded-lg bg-white/10" />
-                </SwiperSlide>
-              ))
-            : slides.map((slide, index) => (
-                <SwiperSlide
-                  key={slide.id}
-                  className={`max-w-[200px] py-1 ${index === 0 ? 'padded-l' : ''}`}
-                  data-testid={`SectionVideoCarouselSlide-${slide.id}`}
-                >
-                  <VideoCard
-                    video={slide.video}
-                    orientation="vertical"
-                    containerSlug={slide.containerSlug}
-                    analyticsTag={analyticsTag}
-                    onHoverImageChange={handleCardHoverChange}
-                  />
-                </SwiperSlide>
-              ))}
-        </Swiper>
+        {hasNoResults ? (
+          <div className="padded relative z-2">
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-center text-stone-100 shadow-lg shadow-black/30">
+              <p className="text-sm font-semibold uppercase tracking-wide text-red-100/80">
+                {t('No videos found')}
+              </p>
+              <p className="mt-2 text-lg text-stone-100/80">
+                {t('More content coming soon')}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <Swiper
+            modules={[Mousewheel, FreeMode, A11y]}
+            mousewheel={{ forceToAxis: true }}
+            observeParents
+            slidesPerView="auto"
+            spaceBetween={20}
+            slidesOffsetAfter={40}
+            pagination={{ clickable: true }}
+            className="w-full"
+            data-testid="SectionVideoCarouselSwiper"
+          >
+            {loading
+              ? Array.from({ length: 4 }).map((_, index) => (
+                  <SwiperSlide
+                    key={`skeleton-${index}`}
+                    className={`max-w-[200px] ${index === 0 ? 'padded-l' : ''}`}
+                  >
+                    <div className="h-[330px] w-[220px] animate-pulse rounded-lg bg-white/10" />
+                  </SwiperSlide>
+                ))
+              : slides.map((slide, index) => (
+                  <SwiperSlide
+                    key={slide.id}
+                    className={`max-w-[200px] py-1 ${index === 0 ? 'padded-l' : ''}`}
+                    data-testid={`SectionVideoCarouselSlide-${slide.id}`}
+                  >
+                    <VideoCard
+                      video={slide.video}
+                      orientation="vertical"
+                      containerSlug={slide.containerSlug}
+                      analyticsTag={analyticsTag}
+                      onHoverImageChange={handleCardHoverChange}
+                    />
+                  </SwiperSlide>
+                ))}
+          </Swiper>
+        )}
       </div>
 
       <div className="padded space-y-6">

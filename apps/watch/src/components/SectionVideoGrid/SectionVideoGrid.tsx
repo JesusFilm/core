@@ -170,9 +170,9 @@ export function SectionVideoGrid({
       ? blurImage(hoverBlurhash, hoverDominantColor)
       : undefined
 
-  useEffect(() => () => clearTimers(), [clearTimers])
+  const hasNoResults = !loading && slides.length === 0
 
-  if (!loading && slides.length === 0) return null
+  useEffect(() => () => clearTimers(), [clearTimers])
 
   return (
     <section
@@ -304,6 +304,7 @@ export function SectionVideoGrid({
           videos={videos}
           loading={loading}
           orientation={orientation}
+          hasNoResults={hasNoResults}
           analyticsTag={analyticsTag}
           showSequenceNumbers={showSequenceNumbers}
           onCardHoverChange={handleCardHoverChange}

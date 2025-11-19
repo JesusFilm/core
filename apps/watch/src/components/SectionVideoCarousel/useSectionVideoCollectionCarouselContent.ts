@@ -228,15 +228,30 @@ function buildVideoSnapshot(
 
 function buildSlide(
   node: VideoNode,
-  parentId?: string
+  parentId?: string,
+  debugContext?: { collectionId?: string; isLumoSection?: boolean }
 ): SectionVideoCollectionCarouselSlide | null {
   const variantSlug = node.variant?.slug
-  if (variantSlug == null || variantSlug === '') return null
+  if (variantSlug == null || variantSlug === '') {
+    if (debugContext?.isLumoSection) {
+      console.warn(
+        `⚠️ [Scripture Section] buildSlide: No variant for ${node.id} (${node.title?.[0]?.value ?? 'no title'})`
+      )
+    }
+    return null
+  }
 
   const containerSlug = getContainerSlug(node)
   const href = getWatchUrl(containerSlug, node.label, variantSlug)
   const imageUrl = selectImageUrl(node)
-  if (imageUrl == null) return null
+  if (imageUrl == null) {
+    if (debugContext?.isLumoSection) {
+      console.warn(
+        `⚠️ [Scripture Section] buildSlide: No imageUrl for ${node.id} (${node.title?.[0]?.value ?? 'no title'})`
+      )
+    }
+    return null
+  }
 
   const title = node.title?.[0]?.value ?? ''
   const alt = selectAltText(node) ?? title
@@ -258,11 +273,26 @@ function buildSlide(
 
 function flattenCollection(
   collection: CollectionNode,
-  options?: FlattenOptions
+  options?: FlattenOptions,
+  debugContext?: { isLumoSection?: boolean }
 ): (SectionVideoCollectionCarouselSlide | null)[] {
   const children = collection.children ?? []
   const slides: (SectionVideoCollectionCarouselSlide | null)[] = []
   const limit = options?.limit ?? children.length
+
+  if (debugContext?.isLumoSection) {
+    console.log(`🔍 [Scripture Section] flattenCollection for ${collection.id}:`, {
+      totalChildren: children.length,
+      limit,
+      childrenLabels: children.map((c) => ({
+        id: c?.id,
+        label: c?.label,
+        hasVariant: c?.variant != null,
+        variantSlug: c?.variant?.slug,
+        childrenCount: c?.children?.length ?? 0
+      }))
+    })
+  }
 
   for (const child of children) {
     if (slides.length >= limit) break
@@ -270,16 +300,27 @@ function flattenCollection(
     if (child == null) continue
 
     if (child.label === VideoLabel.collection && child.children != null) {
+      if (debugContext?.isLumoSection) {
+        console.log(
+          `📁 [Scripture Section] Child ${child.id} is a collection with ${child.children.length} grandchildren`
+        )
+      }
       for (const grandchild of child.children) {
         if (slides.length >= limit) break
         if (grandchild == null) continue
-        const slide = buildSlide(grandchild, child.id)
+        const slide = buildSlide(grandchild, child.id, {
+          collectionId: collection.id,
+          isLumoSection: debugContext?.isLumoSection
+        })
         if (slide != null) {
           slides.push(slide)
         }
       }
     } else {
-      const slide = buildSlide(child, collection.id)
+      const slide = buildSlide(child, collection.id, {
+        collectionId: collection.id,
+        isLumoSection: debugContext?.isLumoSection
+      })
       if (slide != null) {
         slides.push(slide)
       }
@@ -351,7 +392,13 @@ export function useSectionVideoCollectionCarouselContent({
     CollectionShowcaseQueryVars
   >(GET_COLLECTION_SHOWCASE_CONTENT, {
     variables: queryVariables,
-    skip: collectionSources.length === 0 && videoSources.length === 0
+    skip: collectionSources.length === 0 && videoSources.length === 0,
+    // Use cache-and-network to prevent cache collisions
+    // When queries with specific IDs are made, other queries that fetch all items
+    // might overwrite the cache. Using cache-and-network ensures we always get
+    // the correct results from the network when needed.
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first'
   })
 
   const slides = useMemo(() => {
@@ -367,13 +414,70 @@ export function useSectionVideoCollectionCarouselContent({
       (data.videos ?? []).map((video) => [video.id, video])
     )
 
+    // Debug logging for "Scripture, Spoken Exactly as Written" section
+    const isLumoSection = sources.some(
+      (s) => s.type === 'collection' && s.id === 'LUMOCollection'
+    )
+    // Debug logging for "Christmas Advent Countdown" section
+    const isChristmasAdventSection = sources.some(
+      (s) => s.type === 'video' && s.id === '2_0-ConsideringChristmas'
+    )
+    
+    if (isLumoSection) {
+      console.log('🔍 [Scripture Section] Query data:', {
+        collectionsCount: data.collections?.length ?? 0,
+        videosCount: data.videos?.length ?? 0,
+        requestedCollectionIds: sources
+          .filter((s) => s.type === 'collection')
+          .map((s) => s.id),
+        foundCollectionIds: Array.from(collectionsById.keys())
+      })
+    }
+    
+    if (isChristmasAdventSection) {
+      console.log('🎄 [Christmas Advent Section] Query data:', {
+        collectionsCount: data.collections?.length ?? 0,
+        videosCount: data.videos?.length ?? 0,
+        requestedVideoIds: sources
+          .filter((s) => s.type === 'video')
+          .map((s) => s.id),
+        foundVideoIds: Array.from(videosById.keys()),
+        missingVideoIds: sources
+          .filter((s) => s.type === 'video')
+          .map((s) => s.id)
+          .filter((id) => !videosById.has(id))
+      })
+    }
+
     for (const source of sources) {
       if (source.type === 'collection') {
         const collection = collectionsById.get(source.id)
-        if (collection == null) continue
-        const flattened = flattenCollection(collection, {
-          limit: source.limitChildren
-        })
+        if (collection == null) {
+          if (isLumoSection) {
+            console.warn(`🚨 [Scripture Section] Collection not found: ${source.id}`)
+          }
+          continue
+        }
+        if (isLumoSection) {
+          console.log(`✅ [Scripture Section] Found collection ${source.id}:`, {
+            childrenCount: collection.children?.length ?? 0,
+            limitChildren: source.limitChildren
+          })
+        }
+        const flattened = flattenCollection(
+          collection,
+          {
+            limit: source.limitChildren
+          },
+          { isLumoSection }
+        )
+        if (isLumoSection) {
+          console.log(`📊 [Scripture Section] Flattened ${source.id}:`, {
+            totalFlattened: flattened.length,
+            validSlides: flattened.filter((s) => s != null).length,
+            nullSlides: flattened.filter((s) => s == null).length
+          })
+        }
         for (const slide of flattened) {
           if (slide == null) continue
           const key = slide.href
@@ -383,14 +487,50 @@ export function useSectionVideoCollectionCarouselContent({
         }
       } else {
         const video = videosById.get(source.id)
-        if (video == null) continue
-        const slide = buildSlide(video)
-        if (slide == null) continue
+        if (video == null) {
+          if (isChristmasAdventSection) {
+            console.warn(`🚨 [Christmas Advent Section] Video not found: ${source.id}`)
+          }
+          continue
+        }
+        if (isChristmasAdventSection) {
+          console.log(`✅ [Christmas Advent Section] Found video ${source.id}:`, {
+            title: video.title?.[0]?.value ?? 'no title',
+            hasVariant: video.variant != null,
+            variantSlug: video.variant?.slug,
+            hasImage: selectImageUrl(video) != null
+          })
+        }
+        const slide = buildSlide(video, undefined, {
+          isLumoSection: isChristmasAdventSection
+        })
+        if (slide == null) {
+          if (isChristmasAdventSection) {
+            console.warn(`⚠️ [Christmas Advent Section] buildSlide returned null for ${source.id}`)
+          }
+          continue
+        }
         const key = slide.href
-        if (seen.has(key)) continue
+        if (seen.has(key)) {
+          if (isChristmasAdventSection) {
+            console.warn(`⚠️ [Christmas Advent Section] Duplicate slide skipped: ${source.id} (href: ${key})`)
+          }
+          continue
+        }
         seen.add(key)
         slideAccumulator.push(slide)
       }
+    }
+
+    if (isLumoSection) {
+      console.log(`🎯 [Scripture Section] Final slides count: ${slideAccumulator.length}`)
+    }
+    
+    if (isChristmasAdventSection) {
+      console.log(`🎯 [Christmas Advent Section] Final slides count: ${slideAccumulator.length}`, {
+        slideIds: slideAccumulator.map((s) => s.id),
+        slideTitles: slideAccumulator.map((s) => s.title)
+      })
     }
 
     return slideAccumulator

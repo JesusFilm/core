@@ -3,7 +3,8 @@ import { type ReactElement } from 'react'
 
 import {
   christmasAdventShowcaseSources,
-  collectionShowcaseSources
+  collectionShowcaseSources,
+  collectionLumo
 } from '../PageCollections/collectionShowcaseConfig'
 
 const SectionVideoCarousel = dynamic(
@@ -51,17 +52,17 @@ export function CollectionsRail({
         sources={collectionShowcaseSources}
         primaryCollectionId="LUMOCollection"
         subtitleOverride="Video Bible Collection"
-        titleOverride="Discover the full story (Grid View)"
+        titleOverride="Scripture Told Through Film"
         descriptionOverride="Explore our collection of videos and resources that bring the Bible to life through engaging stories and teachings."
         languageId={languageId}
         showSequenceNumbers={true}
       />
       <SectionVideoGrid
         id="home-collection-showcase-grid-vertical"
-        sources={collectionShowcaseSources}
-        primaryCollectionId="LUMOCollection"
-        subtitleOverride="Scripture Told Through Film"
-        titleOverride="Every Gospel, Told on Video"
+        sources={collectionLumo}
+        // primaryCollectionId="LUMOCollection"
+        subtitleOverride="Every Gospel, Told on Video"
+        titleOverride="Scripture, Spoken Exactly as Written"
         descriptionOverride="Explore our collection of videos and resources that bring the Bible to life through engaging stories and teachings."
         orientation="vertical"
         languageId={languageId}

@@ -6,7 +6,18 @@ export const collectionShowcaseSources: SectionVideoCollectionCarouselSource[] =
     { type: 'video', id: '2_GOJ-0-0' },
     { type: 'collection', id: 'LUMOCollection', limitChildren: 1 },
     { type: 'collection', id: 'GOMarkCollection', limitChildren: 1 },
-    { type: 'collection', id: 'GOLukeCollection', limitChildren: 1 }
+    { type: 'collection', id: 'GOLukeCollection', limitChildren: 1 },
+    { type: 'collection', id: 'GOJohnCollection', limitChildren: 1 }
+    
+    
+  ]
+
+export const collectionLumo: SectionVideoCollectionCarouselSource[] =
+  [
+    { type: 'collection', id: 'LUMOCollection', limitChildren: 1 },
+    { type: 'collection', id: 'GOMarkCollection', limitChildren: 1 },
+    { type: 'collection', id: 'GOLukeCollection', limitChildren: 1 },
+    { type: 'collection', id: 'GOJohnCollection', limitChildren: 1 }
     
     
   ]

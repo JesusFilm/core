@@ -43,7 +43,7 @@ export const GET_COLLECTION_SHOWCASE_CONTENT = gql`
     $languageId: ID!
   ) {
     collections: videos(
-      where: { ids: $collectionIds, availableVariantLanguageIds: [$languageId] }
+      where: { ids: $collectionIds }
     ) {
       ...CollectionShowcaseVideoFields
       description(languageId: $languageId, primary: true) {
@@ -57,7 +57,7 @@ export const GET_COLLECTION_SHOWCASE_CONTENT = gql`
       }
     }
     videos: videos(
-      where: { ids: $videoIds, availableVariantLanguageIds: [$languageId] }
+      where: { ids: $videoIds }
     ) {
       ...CollectionShowcaseVideoFields
     }
