@@ -143,7 +143,8 @@ describe('journeyAiTranslateCreate mutation', () => {
         typename: 'TextResponseBlock',
         parentBlockId: 'card1',
         label: 'Enter text',
-        placeholder: 'Type here'
+        placeholder: 'Type here',
+        hint: 'Enter your response here'
       }
     ],
     userJourneys: [],
@@ -183,7 +184,8 @@ describe('journeyAiTranslateCreate mutation', () => {
       blockId: 'text1',
       updates: {
         label: 'Ingrese texto',
-        placeholder: 'Escriba aquí'
+        placeholder: 'Escriba aquí',
+        hint: 'Ingrese su respuesta aquí'
       }
     }
   ]
@@ -767,7 +769,8 @@ describe('journeyAiTranslateCreateSubscription', () => {
         typename: 'TextResponseBlock',
         parentBlockId: 'card1',
         label: 'Enter text',
-        placeholder: 'Type here'
+        placeholder: 'Type here',
+        hint: 'Enter your response here'
       }
     ],
     userJourneys: [],
