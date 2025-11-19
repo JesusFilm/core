@@ -14,20 +14,81 @@ import {
 import { builder } from '../builder'
 import { JourneyEventsFilter } from '../event/journey/inputs'
 
+import {
+  getAncestorByType as getAncestorByTypeHelper,
+  getCardHeading as getCardHeadingHelper
+} from './export/headings'
+import {
+  type SimpleBlock,
+  buildRenderTree,
+  computeOrderIndex
+} from './export/order'
 import { JourneyVisitorExportSelect } from './inputs'
+
+// Sanitize CSV cell while preserving leading whitespace and neutralizing formulas
+function sanitizeCSVCell(value: string): string {
+  if (value == null) return ''
+  const str = typeof value === 'string' ? value : String(value)
+
+  // Preserve leading whitespace; inspect first non-whitespace character
+  const leadingMatch = str.match(/^\s*/)
+  const leadingWhitespace = leadingMatch != null ? leadingMatch[0] : ''
+  const rest = str.slice(leadingWhitespace.length)
+
+  if (rest.length === 0) return str
+  // If already explicitly text (leading apostrophe), leave unchanged
+  if (rest[0] === "'") return str
+  const first = rest[0]
+  if (first === '=' || first === '+' || first === '-' || first === '@') {
+    return `${leadingWhitespace}'${rest}`
+  }
+  // Heuristic: treat phone-like numeric strings as text to preserve leading zeros
+  // Strip common formatting characters and check if remaining are digits (optionally prefixed by '+')
+  const compact = rest.replace(/[\s().-]/g, '')
+  const isNumericLike = /^\+?\d{7,}$/.test(compact)
+  if (isNumericLike) {
+    return `${leadingWhitespace}'${rest}`
+  }
+  return str
+}
+
+// Format a Date as YYYY-MM-DD for a specific IANA timezone
+function formatDateYmdInTimeZone(date: Date, timeZone: string): string {
+  try {
+    return date.toLocaleDateString('en-CA', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    })
+  } catch {
+    return date.toISOString().slice(0, 10)
+  }
+}
+
+const journeyBlockSelect = {
+  id: true,
+  typename: true,
+  parentBlockId: true,
+  parentOrder: true,
+  nextBlockId: true,
+  action: true,
+  content: true,
+  x: true,
+  y: true,
+  deletedAt: true
+} as const
 
 interface JourneyVisitorExportRow {
   visitorId: string
-  createdAt: string
-  name: string
-  email: string
-  phone: string
+  date: string
   [key: string]: string
 }
 
 async function* getJourneyVisitors(
   journeyId: string,
   eventWhere: Prisma.EventWhereInput,
+  timezone: string,
   batchSize: number = 1000
 ): AsyncGenerator<JourneyVisitorExportRow> {
   let offset = 0
@@ -51,10 +112,7 @@ async function* getJourneyVisitors(
         createdAt: true,
         visitor: {
           select: {
-            id: true,
-            name: true,
-            email: true,
-            phone: true
+            id: true
           }
         },
         events: {
@@ -62,7 +120,8 @@ async function* getJourneyVisitors(
           select: {
             blockId: true,
             label: true,
-            value: true
+            value: true,
+            typename: true
           },
           orderBy: {
             createdAt: 'asc'
@@ -77,29 +136,29 @@ async function* getJourneyVisitors(
     }
 
     for (const journeyVisitor of journeyVisitors) {
+      // Format date in user's timezone to match frontend display
+      const date = formatDateYmdInTimeZone(journeyVisitor.createdAt, timezone)
       const row: JourneyVisitorExportRow = {
         visitorId: journeyVisitor.visitor.id,
-        createdAt: journeyVisitor.createdAt.toISOString(),
-        name: journeyVisitor.visitor.name || '',
-        email: journeyVisitor.visitor.email || '',
-        phone: journeyVisitor.visitor.phone || ''
+        date
       }
-
+      // Group events by blockId-label key and collect values deterministically
+      const eventValuesByKey = new Map<string, string[]>()
       journeyVisitor.events.forEach((event) => {
-        if (event.blockId && event.label && event.value != null) {
-          const val = String(event.value)
-          if (val === '') {
-            return
-          }
+        if (event.blockId && event.label) {
           const key = `${event.blockId}-${event.label}`
-          if (row[key]) {
-            row[key] += `; ${val}`
-          } else {
-            row[key] = val
+          const eventValue = event.value ?? ''
+          if (!eventValuesByKey.has(key)) {
+            eventValuesByKey.set(key, [])
           }
+          eventValuesByKey.get(key)!.push(eventValue)
         }
       })
-
+      // Join values with a fixed separator and sanitize for CSV
+      eventValuesByKey.forEach((values, key) => {
+        const sanitizedValues = values.map((value) => sanitizeCSVCell(value))
+        row[key] = sanitizedValues.join('; ')
+      })
       yield row
     }
 
@@ -160,19 +219,29 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       filter: t.arg({ type: JourneyEventsFilter, required: false }),
       select: t.arg({ type: JourneyVisitorExportSelect, required: false }),
       destination: t.arg({ type: ExportDestinationInput, required: true }),
-      integrationId: t.arg.id({ required: true })
+      integrationId: t.arg.id({ required: true }),
+      timezone: t.arg.string({
+        required: false,
+        description:
+          'IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.'
+      })
     },
     resolve: async (
       _parent,
-      { journeyId, filter, select, destination, integrationId },
+      { journeyId, filter, select, destination, integrationId, timezone },
       context
     ) => {
+      // Use user's timezone or default to UTC
+      const userTimezone = timezone ?? 'UTC'
       const journey = await prisma.journey.findUnique({
         where: { id: journeyId },
         include: {
           team: { include: { userTeams: true } },
           userJourneys: true,
-          blocks: { select: { id: true }, orderBy: { updatedAt: 'asc' } }
+          blocks: {
+            select: journeyBlockSelect,
+            orderBy: { updatedAt: 'asc' }
+          }
         }
       })
 
@@ -188,6 +257,19 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         })
       }
 
+      // Build a map of blocks (non-deleted only) and compute renderer-aligned order
+      const journeyBlocks = journey.blocks.filter((b) => b.deletedAt == null)
+      const idToBlock = new Map(journeyBlocks.map((b) => [b.id, b]))
+
+      const simpleBlocks: SimpleBlock[] = journeyBlocks.map((b) => ({
+        id: b.id,
+        typename: b.typename,
+        parentBlockId: b.parentBlockId ?? null,
+        parentOrder: b.parentOrder ?? null
+      }))
+      const treeRoots = buildRenderTree(simpleBlocks)
+      const orderIndex = computeOrderIndex(treeRoots)
+
       const eventWhere: Prisma.EventWhereInput = {
         journeyId: journeyId,
         blockId: { not: null },
@@ -198,42 +280,158 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       }
       if (filter?.periodRangeStart || filter?.periodRangeEnd) {
         eventWhere.createdAt = {}
-        if (filter.periodRangeStart)
-          eventWhere.createdAt.gte = filter.periodRangeStart
-        if (filter.periodRangeEnd)
-          eventWhere.createdAt.lte = filter.periodRangeEnd
+        if (filter.periodRangeStart) {
+          // Parse timezone-aware date if needed
+          const startDate =
+            filter.periodRangeStart instanceof Date
+              ? filter.periodRangeStart
+              : new Date(filter.periodRangeStart)
+          eventWhere.createdAt.gte = startDate
+        }
+        if (filter.periodRangeEnd) {
+          const endDate =
+            filter.periodRangeEnd instanceof Date
+              ? filter.periodRangeEnd
+              : new Date(filter.periodRangeEnd)
+          eventWhere.createdAt.lte = endDate
+        }
       }
 
+      // Get unique blockId_label combinations for headers using Prisma
       const blockHeadersResult = await prisma.event.findMany({
         where: eventWhere,
-        select: { blockId: true, label: true },
+        select: {
+          blockId: true,
+          label: true
+        },
         distinct: ['blockId', 'label']
       })
 
-      const blockIds = journey.blocks.map((b) => b.id)
+      const getAncestorByType = (
+        blockId: string | null | undefined,
+        type: string
+      ) => getAncestorByTypeHelper(idToBlock as any, blockId, type)
+      const getCardHeading = (blockId: string | null | undefined) =>
+        getCardHeadingHelper(idToBlock as any, journeyBlocks as any, blockId)
+
+      function compareHeaders(
+        a: { blockId: string | null },
+        b: { blockId: string | null }
+      ): number {
+        const aOrder =
+          a.blockId != null
+            ? (orderIndex.get(a.blockId) ?? Number.MAX_SAFE_INTEGER)
+            : Number.MAX_SAFE_INTEGER
+        const bOrder =
+          b.blockId != null
+            ? (orderIndex.get(b.blockId) ?? Number.MAX_SAFE_INTEGER)
+            : Number.MAX_SAFE_INTEGER
+        if (aOrder !== bOrder) return aOrder - bOrder
+        return (a.blockId ?? '').localeCompare(b.blockId ?? '')
+      }
+      // Build headers: visitorId + date + dynamic block columns grouped by Card and ordered by position
       const blockHeaders = blockHeadersResult
-        .sort(
-          (a, b) =>
-            blockIds.findIndex((id) => id === a.blockId) -
-            blockIds.findIndex((id) => id === b.blockId)
-        )
+        .sort(compareHeaders)
         .map((item) => ({
           key: `${item.blockId!}-${item.label!}`,
-          header: item.label!
+          label: item.label!,
+          blockId: item.blockId!,
+          typename:
+            journeyBlocks.find((b) => b.id === item.blockId)?.typename ?? ''
         }))
-
       const columns = [
-        { key: 'visitorId' },
-        select?.createdAt !== false ? { key: 'createdAt' } : null,
-        select?.name !== false ? { key: 'name' } : null,
-        select?.email !== false ? { key: 'email' } : null,
-        select?.phone !== false ? { key: 'phone' } : null,
+        { key: 'visitorId', label: 'Visitor ID', blockId: null, typename: '' },
+        { key: 'date', label: 'Date', blockId: null, typename: '' },
         ...(filter?.typenames == null || filter.typenames.length > 0
           ? blockHeaders
           : [])
-      ].filter((v) => v != null) as Array<{ key: string }>
+      ].filter((value) => value != null)
 
-      // Compute the desired header row for this export
+      // Build header rows
+      // Row 1: Card Heading
+      // Row 2: Label/Type (Poll, Name, Response, etc)
+      // First, count polls and multiselects per card for numbering
+      const cardPollCounts = new Map<
+        string,
+        { pollCount: number; multiselectCount: number }
+      >()
+
+      blockHeaders.forEach((header) => {
+        const cardBlock = getAncestorByType(header.blockId, 'CardBlock')
+        if (cardBlock) {
+          const cardId = cardBlock.id
+          if (!cardPollCounts.has(cardId)) {
+            cardPollCounts.set(cardId, { pollCount: 0, multiselectCount: 0 })
+          }
+          const counts = cardPollCounts.get(cardId)!
+          if (header.typename === 'RadioQuestionBlock') {
+            counts.pollCount++
+          } else if (header.typename === 'MultiselectBlock') {
+            counts.multiselectCount++
+          }
+        }
+      })
+
+      // Track current counts for each card as we build the label row
+      const currentCardCounts = new Map<
+        string,
+        { pollCount: number; multiselectCount: number }
+      >()
+
+      const labelRow = columns.map((col) => {
+        if (col.key === 'visitorId') return 'Visitor ID'
+        if (col.key === 'date')
+          return userTimezone !== 'UTC' && userTimezone !== ''
+            ? `Date (${userTimezone})`
+            : 'Date'
+
+        const cardBlock = getAncestorByType(col.blockId, 'CardBlock')
+        if (
+          cardBlock &&
+          (col.typename === 'RadioQuestionBlock' ||
+            col.typename === 'MultiselectBlock')
+        ) {
+          const cardId = cardBlock.id
+          if (!currentCardCounts.has(cardId)) {
+            currentCardCounts.set(cardId, {
+              pollCount: 0,
+              multiselectCount: 0
+            })
+          }
+
+          const counts = currentCardCounts.get(cardId)!
+          const totalCounts = cardPollCounts.get(cardId)!
+
+          if (col.typename === 'RadioQuestionBlock') {
+            counts.pollCount++
+            // Only add number if there are multiple polls on this card
+            return totalCounts.pollCount > 1
+              ? `Poll ${counts.pollCount}`
+              : 'Poll'
+          } else if (col.typename === 'MultiselectBlock') {
+            counts.multiselectCount++
+            // Only add number if there are multiple multiselects on this card
+            return totalCounts.multiselectCount > 1
+              ? `Multiselect ${counts.multiselectCount}`
+              : 'Multiselect'
+          }
+        }
+
+        // Use the label from the event (e.g., "What is your name?")
+        return col.label
+      })
+
+      const cardHeadingRow = columns.map((col) => {
+        if (col.key === 'visitorId') return 'Visitor ID'
+        if (col.key === 'date')
+          return userTimezone !== 'UTC' && userTimezone !== ''
+            ? `Date (${userTimezone})`
+            : 'Date'
+        // Get the highest order heading of the card
+        return getCardHeading(col.blockId)
+      })
+
+      // Compute the desired header keys for this export
       const desiredHeader = columns.map((c) => c.key)
 
       const accessToken = (await getIntegrationGoogleAccessToken(integrationId))
@@ -325,23 +523,43 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
 
       // Read existing header (for existing sheets) and merge to preserve/extend columns
       let finalHeader = desiredHeader
+      let finalCardHeadingRow = cardHeadingRow
+      let finalLabelRow = labelRow
       if (destination.mode === 'existing') {
         await ensureSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
+        // Read first two rows (card heading and label rows)
         const headerRes = await readValues({
           accessToken,
           spreadsheetId,
-          range: `${sheetName}!A1:ZZ1`
+          range: `${sheetName}!A1:ZZ2`
         })
-        const existingHeader: string[] = (headerRes[0] ?? []).map(
+        const existingCardHeadingRow: string[] = (headerRes[0] ?? []).map(
           (v) => v ?? ''
         )
-        if (existingHeader.length > 0) {
-          // Ensure base headers exist in the correct order at start, respecting select preferences
-          const base: string[] = ['visitorId']
-          if (select?.createdAt !== false) base.push('createdAt')
-          if (select?.name !== false) base.push('name')
-          if (select?.email !== false) base.push('email')
-          if (select?.phone !== false) base.push('phone')
+        const existingLabelRow: string[] = (headerRes[1] ?? []).map(
+          (v) => v ?? ''
+        )
+        if (existingLabelRow.length > 0) {
+          // Extract keys from existing label row
+          // The label row contains display labels, we need to map them back to column keys
+          // For standard columns (visitorId, date), match by label
+          // For dynamic columns, try to match by label or use the label as key if it matches blockId-label pattern
+          const existingHeader: string[] = existingLabelRow.map((label) => {
+            // Try to find matching column by label
+            const matchingCol = columns.find((c) => c.label === label)
+            if (matchingCol) return matchingCol.key
+            // Check if it's a standard column label
+            if (label === 'Visitor ID') return 'visitorId'
+            if (label.startsWith('Date')) return 'date'
+            // If not found, check if it's a key directly
+            if (desiredHeader.includes(label)) return label
+            // For existing columns not in current export, use label as key
+            // This handles legacy columns that may not match current structure
+            return label
+          })
+
+          // Ensure base headers exist in the correct order at start
+          const base: string[] = ['visitorId', 'date']
           const merged: string[] = []
           for (const b of base) if (!merged.includes(b)) merged.push(b)
           for (const h of existingHeader)
@@ -349,13 +567,135 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           for (const h of desiredHeader)
             if (h !== '' && !merged.includes(h)) merged.push(h)
           finalHeader = merged
+
+          // Rebuild header rows for merged columns
+          const mergedColumns = finalHeader.map((key) => {
+            const existingCol = columns.find((c) => c.key === key)
+            if (existingCol) return existingCol
+            // For columns not in current export, create placeholder
+            return {
+              key,
+              label: key,
+              blockId: null,
+              typename: ''
+            }
+          })
+
+          // Rebuild card heading and label rows for merged columns
+          const mergedCardPollCounts = new Map<
+            string,
+            { pollCount: number; multiselectCount: number }
+          >()
+          mergedColumns.forEach((col) => {
+            if (col.blockId) {
+              const cardBlock = getAncestorByType(col.blockId, 'CardBlock')
+              if (cardBlock) {
+                const cardId = cardBlock.id
+                if (!mergedCardPollCounts.has(cardId)) {
+                  mergedCardPollCounts.set(cardId, {
+                    pollCount: 0,
+                    multiselectCount: 0
+                  })
+                }
+                const counts = mergedCardPollCounts.get(cardId)!
+                if (col.typename === 'RadioQuestionBlock') {
+                  counts.pollCount++
+                } else if (col.typename === 'MultiselectBlock') {
+                  counts.multiselectCount++
+                }
+              }
+            }
+          })
+
+          const mergedCurrentCardCounts = new Map<
+            string,
+            { pollCount: number; multiselectCount: number }
+          >()
+
+          finalLabelRow = mergedColumns.map((col) => {
+            if (col.key === 'visitorId') return 'Visitor ID'
+            if (col.key === 'date')
+              return userTimezone !== 'UTC' && userTimezone !== ''
+                ? `Date (${userTimezone})`
+                : 'Date'
+
+            const cardBlock = getAncestorByType(col.blockId, 'CardBlock')
+            if (
+              cardBlock &&
+              (col.typename === 'RadioQuestionBlock' ||
+                col.typename === 'MultiselectBlock')
+            ) {
+              const cardId = cardBlock.id
+              if (!mergedCurrentCardCounts.has(cardId)) {
+                mergedCurrentCardCounts.set(cardId, {
+                  pollCount: 0,
+                  multiselectCount: 0
+                })
+              }
+
+              const counts = mergedCurrentCardCounts.get(cardId)!
+              const totalCounts = mergedCardPollCounts.get(cardId)!
+
+              if (col.typename === 'RadioQuestionBlock') {
+                counts.pollCount++
+                return totalCounts.pollCount > 1
+                  ? `Poll ${counts.pollCount}`
+                  : 'Poll'
+              } else if (col.typename === 'MultiselectBlock') {
+                counts.multiselectCount++
+                return totalCounts.multiselectCount > 1
+                  ? `Multiselect ${counts.multiselectCount}`
+                  : 'Multiselect'
+              }
+            }
+
+            return col.label
+          })
+
+          finalCardHeadingRow = mergedColumns.map((col, index) => {
+            // Use existing card heading if available and column matches
+            if (index < existingCardHeadingRow.length) {
+              const existingHeading = existingCardHeadingRow[index]
+              // Only use existing heading if it's not empty and column is not a standard column
+              if (
+                existingHeading !== '' &&
+                col.key !== 'visitorId' &&
+                col.key !== 'date'
+              ) {
+                return existingHeading
+              }
+            }
+            // Otherwise generate new heading
+            if (col.key === 'visitorId') return 'Visitor ID'
+            if (col.key === 'date')
+              return userTimezone !== 'UTC' && userTimezone !== ''
+                ? `Date (${userTimezone})`
+                : 'Date'
+            return getCardHeading(col.blockId)
+          })
         }
       }
 
-      // Build data rows aligned to finalHeader
-      const values: (string | null)[][] = [finalHeader]
-      for await (const row of getJourneyVisitors(journeyId, eventWhere)) {
-        const aligned = finalHeader.map((k) => row[k] ?? '')
+      // Build data rows aligned to finalHeader with sanitization
+      const sanitizedCardHeadingRow = finalCardHeadingRow.map((cell) =>
+        sanitizeCSVCell(cell)
+      )
+      const sanitizedLabelRow = finalLabelRow.map((cell) =>
+        sanitizeCSVCell(cell)
+      )
+      const values: (string | null)[][] = [
+        sanitizedCardHeadingRow,
+        sanitizedLabelRow
+      ]
+      for await (const row of getJourneyVisitors(
+        journeyId,
+        eventWhere,
+        userTimezone
+      )) {
+        const aligned = finalHeader.map((k) => {
+          const value = row[k] ?? ''
+          return sanitizeCSVCell(value)
+        })
         values.push(aligned)
       }
 
