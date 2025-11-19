@@ -124,12 +124,12 @@ export class CardLevelActionPage {
       createdOrRenamed === 'created' ? this.journeyName : this.renameJourmeyName
     const iframes = this.page.locator(this.journeyCardFrame)
     const frame = await iframes.first().contentFrame()
-    await frame
-      .locator(
-        'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]',
-        { hasText: text }
-      )
-      .dblclick({ delay: 3000 })
+    const textElement = frame.locator(
+      'div[data-testid="CardOverlayContent"] div[data-testid*="SelectableWrapper"]',
+      { hasText: text }
+    )
+    await expect(textElement).toBeVisible({ timeout: sixtySecondsTimeout })
+    await textElement.dblclick({ delay: 1000, timeout: sixtySecondsTimeout })
   }
 
   async editTextInJourneyCard() {
@@ -137,11 +137,11 @@ export class CardLevelActionPage {
       testData.journey.renameJourneyName + this.randomNumber
     const iframes = this.page.locator(this.journeyCardFrame)
     const frame = await iframes.first().contentFrame()
-    await frame
-      .locator(
-        'div[data-testid*="SelectableWrapper"] textarea[placeholder*="Add your text here"]'
-      )
-      .fill(this.renameJourmeyName)
+    const textarea = frame.locator(
+      'div[data-testid*="SelectableWrapper"] textarea[placeholder*="Add your text here"]'
+    )
+    await expect(textarea).toBeVisible({ timeout: sixtySecondsTimeout })
+    await textarea.fill(this.renameJourmeyName)
   }
 
   async verifyTextUpdatedInJourneyCard() {
@@ -582,7 +582,7 @@ export class CardLevelActionPage {
         )
         .click()
     }
-    await frame
+    await this.page
       .locator('div[data-testid="Action"] div[aria-haspopup="listbox"]')
       .click()
   }

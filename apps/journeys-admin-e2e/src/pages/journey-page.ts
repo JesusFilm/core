@@ -1245,7 +1245,7 @@ export class JourneyPage {
     await expect(dropdownBtn).toBeEnabled({ timeout: thirtySecondsTimeout })
     await dropdownBtn.click()
     const menuItem = this.page
-      .locator('div.MuiDialogContent-root div[role="tooltip"]')
+      .locator('div.MuiDialogContent-root ul[role="menu"]')
       .getByRole('menuitem', { name: 'Copy Short Link' })
     await expect(menuItem).toBeVisible({ timeout: thirtySecondsTimeout })
     await menuItem.click()

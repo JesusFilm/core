@@ -51,6 +51,7 @@ test.describe('verify card level actions', () => {
     ) // clicking on created typography text in the journey card
     await cardLevelActionPage.editTextInJourneyCard() // editing the created typography text in the journey card
     await cardLevelActionPage.changeFontStyleInJourneyCardText('Display') // choosing the font size for edited typography text in the journey card
+    await cardLevelActionPage.clickOnJourneyCard() // clicking on journey card to exit edit mode
     await cardLevelActionPage.clickAddBlockBtn() // clicking on done button
     await cardLevelActionPage.verifyTextUpdatedInJourneyCard() // verifying the edited text is updated in the journey card
     await cardLevelActionPage.verifyTextStyleChangedInJourneyCard() // verifying the font size is changed to according to the choosen one.
@@ -108,7 +109,7 @@ test.describe('verify card level actions', () => {
   })
 
   // Poll - create, update & delete
-  test.fixme('Poll - create, update & delete', async ({ page }) => {
+  test('Poll - create, update & delete', async ({ page }) => {
     const cardLevelActionPage = new CardLevelActionPage(page)
     await cardLevelActionPage.clickAddBlockBtn() // clicking on add block button
     await cardLevelActionPage.clickBtnInAddBlockDrawer('Poll') // clicking on poll button in add block drawer
