@@ -542,34 +542,70 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         if (existingLabelRow.length > 0) {
           // Extract keys from existing label row
           // The label row contains display labels, we need to map them back to column keys
-          // For standard columns (visitorId, date), match by label
-          // For dynamic columns, try to match by label or use the label as key if it matches blockId-label pattern
+          // Note: labels in the sheet were written through sanitizeCSVCell, so we need to
+          // compare against both raw and sanitized labels to match correctly
           const existingHeader: string[] = existingLabelRow.map((label) => {
-            // Try to find matching column by label
-            const matchingCol = columns.find((c) => c.label === label)
+            // Skip empty labels (no header columns)
+            if (label.trim() === '') return ''
+
+            // Try to find matching column by raw label first
+            let matchingCol = columns.find((c) => c.label === label)
+            // If not found, try matching against sanitized label (since sheet labels were sanitized)
+            if (!matchingCol) {
+              matchingCol = columns.find(
+                (c) => sanitizeCSVCell(c.label) === label
+              )
+            }
             if (matchingCol) return matchingCol.key
-            // Check if it's a standard column label
-            if (label === 'Visitor ID') return 'visitorId'
-            if (label.startsWith('Date')) return 'date'
+
+            // Check if it's a standard column label (handle sanitized versions too)
+            const sanitizedVisitorId = sanitizeCSVCell('Visitor ID')
+            if (label === 'Visitor ID' || label === sanitizedVisitorId) {
+              return 'visitorId'
+            }
+            // Date labels may have timezone suffix, check if it starts with sanitized "Date"
+            const sanitizedDate = sanitizeCSVCell('Date')
+            if (
+              label === 'Date' ||
+              label.startsWith('Date') ||
+              label === sanitizedDate ||
+              label.startsWith(sanitizedDate)
+            ) {
+              return 'date'
+            }
+
             // If not found, check if it's a key directly
             if (desiredHeader.includes(label)) return label
+
             // For existing columns not in current export, use label as key
             // This handles legacy columns that may not match current structure
             return label
           })
 
           // Ensure base headers exist in the correct order at start
+          // Filter out empty strings (no header columns) before merging
           const base: string[] = ['visitorId', 'date']
           const merged: string[] = []
           for (const b of base) if (!merged.includes(b)) merged.push(b)
           for (const h of existingHeader)
-            if (h !== '' && !merged.includes(h)) merged.push(h)
+            if (h !== '' && h.trim() !== '' && !merged.includes(h))
+              merged.push(h)
           for (const h of desiredHeader)
-            if (h !== '' && !merged.includes(h)) merged.push(h)
+            if (h !== '' && h.trim() !== '' && !merged.includes(h))
+              merged.push(h)
           finalHeader = merged
 
           // Rebuild header rows for merged columns
           const mergedColumns = finalHeader.map((key) => {
+            // Handle empty header columns (no header columns)
+            if (key === '' || key.trim() === '') {
+              return {
+                key: '',
+                label: '',
+                blockId: null,
+                typename: ''
+              }
+            }
             const existingCol = columns.find((c) => c.key === key)
             if (existingCol) return existingCol
             // For columns not in current export, create placeholder
@@ -613,6 +649,8 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           >()
 
           finalLabelRow = mergedColumns.map((col) => {
+            // Handle empty header columns
+            if (col.key === '' || col.key.trim() === '') return ''
             if (col.key === 'visitorId') return 'Visitor ID'
             if (col.key === 'date')
               return userTimezone !== 'UTC' && userTimezone !== ''
@@ -653,6 +691,8 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           })
 
           finalCardHeadingRow = mergedColumns.map((col, index) => {
+            // Handle empty header columns
+            if (col.key === '' || col.key.trim() === '') return ''
             // Use existing card heading if available and column matches
             if (index < existingCardHeadingRow.length) {
               const existingHeading = existingCardHeadingRow[index]
@@ -693,6 +733,8 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         userTimezone
       )) {
         const aligned = finalHeader.map((k) => {
+          // Handle empty header columns (no header columns)
+          if (k === '' || k.trim() === '') return ''
           const value = row[k] ?? ''
           return sanitizeCSVCell(value)
         })
