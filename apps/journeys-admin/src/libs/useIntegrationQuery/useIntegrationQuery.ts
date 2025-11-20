@@ -28,6 +28,7 @@ export const GET_INTEGRATION = gql`
         type
         user {
           id
+          email # to force federation for user id
         }
         accountEmail
       }
