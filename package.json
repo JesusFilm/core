@@ -420,6 +420,24 @@
     "react-is": "^19.0.0",
     "html-tokenize": {
       "readable-stream": "^3.6.0"
+    },
+    "polotno>react": "^19.0.0",
+    "polotno>react-dom": "^19.0.0",
+    "polotno>react-konva": "^19.2.0",
+    "react-konva": "^19.2.0",
+    "react-konva>react": "^19.0.0",
+    "react-konva>react-dom": "^19.0.0",
+    "react-konva>react-reconciler": "^0.33.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "polotno>react": "^19.0.0",
+      "polotno>react-dom": "^19.0.0",
+      "polotno>react-konva": "^19.2.0",
+      "react-konva": "^19.2.0",
+      "react-konva>react": "^19.0.0",
+      "react-konva>react-dom": "^19.0.0",
+      "react-konva>react-reconciler": "^0.33.0"
     }
   }
 }

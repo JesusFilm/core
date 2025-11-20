@@ -542,32 +542,33 @@ const handleOpenRouterStream = async (
   let partCount = 0
   try {
     for await (const part of result.fullStream) {
-    partCount++
-    if (part.type === 'text-delta') {
-      if (part.textDelta) {
-        accumulatedText += part.textDelta
-        sendSSEEvent(res, 'delta', { text: part.textDelta })
-      }
-    } else if (part.type === 'object' && part.object) {
-      mergedPartial = mergeDeep(mergedPartial, part.object) as DefaultStepsSchema | null
-      const stepsPayload =
-        mergedPartial != null && typeof mergedPartial === 'object'
-          ? (mergedPartial as DefaultStepsSchema).steps
-          : undefined
-      if (stepsPayload && Array.isArray(stepsPayload)) {
-        sendSSEEvent(res, 'steps', { steps: stepsPayload })
-      }
-    } else if (part.type === 'error') {
-      console.log(`[AI Stream] Error part:`, part.error)
+      partCount++
+      if (part.type === 'text-delta') {
+        if (part.textDelta) {
+          accumulatedText += part.textDelta
+          sendSSEEvent(res, 'delta', { text: part.textDelta })
+        }
+      } else if (part.type === 'object' && part.object) {
+        mergedPartial = mergeDeep(mergedPartial, part.object) as DefaultStepsSchema | null
+        const stepsPayload =
+          mergedPartial != null && typeof mergedPartial === 'object'
+            ? (mergedPartial as DefaultStepsSchema).steps
+            : undefined
+        if (stepsPayload && Array.isArray(stepsPayload)) {
+          sendSSEEvent(res, 'steps', { steps: stepsPayload })
+        }
+      } else if (part.type === 'error') {
+        console.log(`[AI Stream] Error part:`, part.error)
 
-      // Convert to structured error
-      const structuredError = toStructuredError(part.error, 'openrouter')
+        // Convert to structured error
+        const structuredError = toStructuredError(part.error, 'openrouter')
         sendSSEEvent(res, 'error', structuredError)
-      // Continue processing to let the stream end gracefully
-    } else if (part.type === 'finish') {
-      if (part.usage && !usageSent) {
-        sendSSEEvent(res, 'usage', mapUsage(part.usage))
-        usageSent = true
+        // Continue processing to let the stream end gracefully
+      } else if (part.type === 'finish') {
+        if (part.usage && !usageSent) {
+          sendSSEEvent(res, 'usage', mapUsage(part.usage))
+          usageSent = true
+        }
       }
     }
     clearTimeout(streamTimeout)
@@ -668,30 +669,31 @@ const handleOpenRouterConversationStream = async (
   let partCount = 0
   try {
     for await (const part of result.fullStream) {
-    partCount++
-    if (part.type === 'text-delta') {
-      if (part.textDelta) {
-        accumulatedText += part.textDelta
-        sendSSEEvent(res, 'delta', { text: part.textDelta })
-      }
-    } else if (part.type === 'object' && part.object) {
-      mergedPartial = mergeDeep(mergedPartial, part.object) as ConversationSchemaObject | null
-      const conversationPayload = mergedPartial?.conversationMap
-      if (conversationPayload) {
-        sendSSEEvent(res, 'conversation', conversationPayload)
-      }
-    } else if (part.type === 'error') {
-      console.log(`[AI Stream] CONVERSATION MODE: Error part:`, part.error)
+      partCount++
+      if (part.type === 'text-delta') {
+        if (part.textDelta) {
+          accumulatedText += part.textDelta
+          sendSSEEvent(res, 'delta', { text: part.textDelta })
+        }
+      } else if (part.type === 'object' && part.object) {
+        mergedPartial = mergeDeep(mergedPartial, part.object) as ConversationSchemaObject | null
+        const conversationPayload = mergedPartial?.conversationMap
+        if (conversationPayload) {
+          sendSSEEvent(res, 'conversation', conversationPayload)
+        }
+      } else if (part.type === 'error') {
+        console.log(`[AI Stream] CONVERSATION MODE: Error part:`, part.error)
 
-      // Convert to structured error
-      const structuredError = toStructuredError(part.error, 'openrouter')
-      sendSSEEvent(res, 'error', structuredError)
-      // Continue processing to let the stream end gracefully
-    } else if (part.type === 'finish') {
-      // Usage is handled after the loop
-      if (part.usage && !usageSent) {
-        sendSSEEvent(res, 'usage', mapUsage(part.usage))
-        usageSent = true
+        // Convert to structured error
+        const structuredError = toStructuredError(part.error, 'openrouter')
+        sendSSEEvent(res, 'error', structuredError)
+        // Continue processing to let the stream end gracefully
+      } else if (part.type === 'finish') {
+        // Usage is handled after the loop
+        if (part.usage && !usageSent) {
+          sendSSEEvent(res, 'usage', mapUsage(part.usage))
+          usageSent = true
+        }
       }
     }
     clearTimeout(streamTimeout)

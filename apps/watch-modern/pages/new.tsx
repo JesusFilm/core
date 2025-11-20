@@ -853,14 +853,16 @@ const createOverlayElement = ({
   cornerRadius: 0
 })
 
-const createPolotnoDesignFromContent = ({
+const createPolotnoDesignFromContent = async ({
   rawContent,
   selectedOutputs,
-  steps = []
+  steps = [],
+  searchUnsplash
 }: {
   rawContent: string
   selectedOutputs: SelectedOutputsMap
   steps?: GeneratedStepContent[]
+  searchUnsplash?: (query: string, perPage?: number) => Promise<string[]>
 }) => {
   const primarySelection = getPrimaryOutputSelection(selectedOutputs)
   const { width, height } = parseDimensionsFromLabel(primarySelection)
@@ -929,77 +931,107 @@ const createPolotnoDesignFromContent = ({
   const hasStructuredSteps = normalizedSteps.length > 0
 
   const pages = hasStructuredSteps
-    ? normalizedSteps.map((step, index) => {
-        const headingElement = createTextElement({
-          id: generateElementId('heading'),
-          text: step.heading,
-          x: width * 0.1,
-          y: height * 0.12,
-          width: width * 0.8,
-          height: Math.max(200, height * 0.25),
-          fontSize: Math.min(Math.max(width * 0.08, 56), 100),
-          align: 'center',
-          fontFamily: 'Playfair Display',
-          fontWeight: 'bold',
-          fill: '#ffffff',
-          lineHeight: 1.2
+    ? await Promise.all(
+        normalizedSteps.map(async (step, index) => {
+          const headingElement = createTextElement({
+            id: generateElementId('heading'),
+            text: step.heading,
+            x: width * 0.1,
+            y: height * 0.12,
+            width: width * 0.8,
+            height: Math.max(200, height * 0.25),
+            fontSize: Math.min(Math.max(width * 0.12, 72), 120),
+            align: 'center',
+            fontFamily: 'Inter',
+            fontWeight: 'bold',
+            fill: '#ffffff',
+            lineHeight: 1.2
+          })
+
+          const elements: DesignElement[] = []
+
+          const mediaUrl = step.selectedVideoUrl ?? step.selectedImageUrl
+          if (mediaUrl) {
+            elements.push(
+              createMediaElement({
+                id: generateElementId('media'),
+                src: mediaUrl,
+                width,
+                height,
+                type: step.selectedVideoUrl ? 'video' : 'image'
+              })
+            )
+            elements.push(
+              createOverlayElement({
+                id: generateElementId('overlay'),
+                width,
+                height
+              })
+            )
+          }
+
+          elements.push(headingElement)
+
+          if (step.content) {
+            elements.push(
+              createTextElement({
+                id: generateElementId('body'),
+                text: step.body || step.content,
+                x: width * 0.1,
+                y: height * 0.35,
+                width: width * 0.8,
+                height: height * 0.45,
+                fontSize: Math.max(48, width * 0.06),
+                align: 'left',
+                fontFamily: 'Inter',
+                fontWeight: 'normal',
+                fill: '#ffffff',
+                lineHeight: 1.4
+              })
+            )
+          }
+
+          // Fetch background image from Unsplash using mediaPrompt or keywords
+          let background = 'linear-gradient(0deg, rgba(0,0,0,1) 0%,rgba(70,65,65,1) 100%)'
+          let hasBackgroundImage = false
+          if (searchUnsplash) {
+            try {
+              const searchQuery = step.mediaPrompt || (step.keywords.length > 0 ? step.keywords[0] : null)
+              if (searchQuery) {
+                const backgroundImages = await searchUnsplash(searchQuery, 1)
+                if (backgroundImages.length > 0) {
+                  background = `url("${backgroundImages[0]}")`
+                  hasBackgroundImage = true
+                }
+              }
+            } catch (error) {
+              console.error('Failed to fetch background image from Unsplash:', error)
+            }
+          }
+
+          // Add overlay for text readability when we have a background image but no media element
+          if (hasBackgroundImage && !mediaUrl) {
+            elements.unshift(
+              createOverlayElement({
+                id: generateElementId('overlay'),
+                width,
+                height
+              })
+            )
+          }
+
+          return {
+            id: generateElementId('page'),
+            name: step.heading.slice(0, 40) || `Step ${index + 1}`,
+            children: elements,
+            background,
+            bleed: 0,
+            duration: 5000,
+            width,
+            height
+          }
         })
-
-        const elements: DesignElement[] = []
-
-        const mediaUrl = step.selectedVideoUrl ?? step.selectedImageUrl
-        if (mediaUrl) {
-          elements.push(
-            createMediaElement({
-              id: generateElementId('media'),
-              src: mediaUrl,
-              width,
-              height,
-              type: step.selectedVideoUrl ? 'video' : 'image'
-            })
-          )
-          elements.push(
-            createOverlayElement({
-              id: generateElementId('overlay'),
-              width,
-              height
-            })
-          )
-        }
-
-        elements.push(headingElement)
-
-        if (step.content) {
-          elements.push(
-            createTextElement({
-              id: generateElementId('body'),
-              text: step.body || step.content,
-              x: width * 0.1,
-              y: height * 0.35,
-              width: width * 0.8,
-              height: height * 0.45,
-              fontSize: Math.max(32, width * 0.042),
-              align: 'left',
-              fontFamily: 'Inter',
-              fontWeight: 'normal',
-              fill: '#ffffff',
-              lineHeight: 1.4
-            })
-          )
-        }
-
-        return {
-          id: generateElementId('page'),
-          name: step.heading.slice(0, 40) || `Step ${index + 1}`,
-          children: elements,
-          // background: '#0f172a',
-          background:'linear-gradient(0deg, rgba(31,29,29,1) 0%,rgba(255,0,0,1) 100%)',
-          bleed: 0,
-          duration: 5000,
-          width,
-          height
-        }
-      })
+      )
     : (() => {
         const sections = splitContentIntoSections(rawContent)
         const normalizedSections = sections.length > 0 ? sections : [rawContent]
@@ -1016,7 +1048,7 @@ const createPolotnoDesignFromContent = ({
             y: height * 0.12,
             width: width * 0.8,
             height: Math.max(200, height * 0.25),
-            fontSize: Math.min(Math.max(width * 0.08, 56), 100),
+            fontSize: Math.min(Math.max(width * 0.12, 72), 120),
             align: 'center',
             fontFamily: 'Playfair Display',
             fontWeight: 'bold',
@@ -1035,7 +1067,7 @@ const createPolotnoDesignFromContent = ({
                 y: height * 0.35,
                 width: width * 0.8,
                 height: height * 0.5,
-                fontSize: Math.max(34, width * 0.044),
+                fontSize: Math.max(48, width * 0.06),
                 align: 'left',
                 fontFamily: 'Inter',
                 fontWeight: 'normal',
@@ -1708,6 +1740,16 @@ export default function NewPage() {
     updateTokens(currentSessionId, newTokens)
   }
 
+  const {
+    isStreaming,
+    text: streamingText,
+    usage: streamingUsage,
+    error: streamingError,
+    conversationMap: streamingConversationMap,
+    steps: streamingSteps,
+    startStream
+  } = useAiStream()
+
   const handleAiError = useCallback(
     (
       _error: unknown,
@@ -1730,16 +1772,6 @@ export default function NewPage() {
     },
     [setAiError, streamingError]
   )
-
-  const {
-    isStreaming,
-    text: streamingText,
-    usage: streamingUsage,
-    error: streamingError,
-    conversationMap: streamingConversationMap,
-    steps: streamingSteps,
-    startStream
-  } = useAiStream()
 
   // Handle streaming updates and completion
   useEffect(() => {
@@ -1896,7 +1928,7 @@ export default function NewPage() {
     prompt: IMAGE_ANALYSIS_PROMPT
   })
 
-  const { loadUnsplashImagesForStep, testUnsplashAPI } =
+  const { searchUnsplash, loadUnsplashImagesForStep, testUnsplashAPI } =
     useUnsplashMedia({
       unsplashApiKey,
       unsplashImages,
@@ -2105,10 +2137,11 @@ export default function NewPage() {
     setIsGeneratingDesign(true)
 
     try {
-      const { design, meta } = createPolotnoDesignFromContent({
+      const { design, meta } = await createPolotnoDesignFromContent({
         rawContent: baseContent,
         selectedOutputs,
-        steps: editableSteps
+        steps: editableSteps,
+        searchUnsplash
       })
       const timestamp = new Date().toISOString()
       const previewSource =

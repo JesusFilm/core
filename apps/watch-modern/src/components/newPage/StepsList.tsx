@@ -112,7 +112,7 @@ const StepContentRenderer = ({
           return (
             <h1
               key={`h1-${index}`}
-              className="text-3xl font-bold mb-2 mt-4 first:mt-0"
+              className="text-xl font-bold mb-2 mt-4 first:mt-0"
             >
               {line.substring(2)}
             </h1>
@@ -187,12 +187,12 @@ const StepContentRenderer = ({
           value={localContent}
           onChange={(event) => setLocalContent(event.target.value)}
           onBlur={handleBlur}
-          className="min-h-[160px] whitespace-pre-wrap bg-white border-none outline-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-sm font-mono px-6 py-6 rounded-bl-none rounded-br-none"
+          className="min-h-[160px] whitespace-pre-wrap bg-white border-none outline-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 text-sm  px-6 py-6 rounded-lg"
           data-step-index={stepIndex}
         />
       ) : (
         <div
-          className="min-h-[160px] text-sm font-mono whitespace-pre-wrap bg-white border-none shadow-sm outline-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 px-6 py-6 rounded-tl rounded-tr-md"
+          className="min-h-[160px] text-sm  whitespace-pre-wrap bg-white border-none shadow-sm outline-none focus:outline-none focus:ring-0 focus:border-transparent focus-visible:ring-0 overflow-hidden pt-4 px-6 py-6 rounded-lg"
           onClick={() => onFocus?.()}
           tabIndex={0}
           onKeyDown={(event) => {
@@ -255,8 +255,8 @@ export const StepsList = ({
 
     return (
       <div ref={cardRef}>
-        <Card className="bg-transparent shadow-none">
-          <CardContent className="space-y-4">
+        <Card className="bg-transparent shadow-none mb-6">
+          <CardContent className="pb-0">
             <div className="space-y-2">
               <StepContentRenderer
                 content={step.content}

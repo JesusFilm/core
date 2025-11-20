@@ -5,6 +5,7 @@ import path from 'node:path'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+import { existsSync } from 'node:fs'
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import { composePlugins, withNx } from '@nx/next'
 import { createJiti } from 'jiti'
@@ -92,6 +93,36 @@ const nextConfig = {
         permanent: false
       }
     ]
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // Force webpack to resolve to the correct versions of react-konva and react-reconciler
+      // This ensures compatibility with React 19 by pointing to the specific versioned directories
+      const rootDir = path.resolve(__dirname, '../..')
+      const reactKonvaPath = path.resolve(
+        rootDir,
+        'node_modules/.pnpm/react-konva@19.2.0_@types+react@19.0.0_konva@10.0.8_react-dom@19.0.0_react@19.0.0__react@19.0.0/node_modules/react-konva'
+      )
+      const reactReconcilerPath = path.resolve(
+        rootDir,
+        'node_modules/.pnpm/react-reconciler@0.33.0_react@19.0.0/node_modules/react-reconciler'
+      )
+      
+      // Only add aliases if the paths exist
+      if (existsSync(reactKonvaPath)) {
+        config.resolve.alias = {
+          ...config.resolve.alias,
+          'react-konva': reactKonvaPath
+        }
+      }
+      if (existsSync(reactReconcilerPath)) {
+        config.resolve.alias = {
+          ...config.resolve.alias,
+          'react-reconciler': reactReconcilerPath
+        }
+      }
+    }
+    return config
   }
 }
 
