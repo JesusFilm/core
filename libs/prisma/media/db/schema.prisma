@@ -31,17 +31,20 @@ enum ImageAspectRatio {
 }
 
 model CloudflareImage {
-  id          String            @id @default(uuid())
-  uploadUrl   String?
-  userId      String
-  createdAt   DateTime          @default(now())
-  uploaded    Boolean           @default(false)
-  updatedAt   DateTime          @default(now()) @updatedAt
-  aspectRatio ImageAspectRatio?
-  videoId     String?
-  video       Video?            @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  id                  String            @id @default(uuid())
+  uploadUrl           String?
+  userId              String
+  createdAt           DateTime          @default(now())
+  uploaded            Boolean           @default(false)
+  updatedAt           DateTime          @default(now()) @updatedAt
+  aspectRatio         ImageAspectRatio?
+  videoId             String?
+  video               Video?            @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  blurhash            String?
+  blurhashAttemptedAt DateTime?
 
   @@index([userId])
+  @@index([blurhashAttemptedAt])
 }
 
 model MuxVideo {
