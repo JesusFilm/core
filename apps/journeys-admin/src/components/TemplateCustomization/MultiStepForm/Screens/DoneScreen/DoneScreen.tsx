@@ -25,55 +25,65 @@ export function DoneScreen({
   const router = useRouter()
   const journeyPath = `/api/preview?slug=${journey?.slug}`
   const href = journey?.slug != null ? journeyPath : undefined
+  const BUTTON_STACK_WIDTH = 200
 
   function handleContinueEditing(): void {
     if (journey?.id != null) void router.push(`/journeys/${journey.id}`)
   }
 
   return (
-    <Stack alignItems="center" sx={{ pb: 4, px: { xs: 4, sm: 18 } }}>
-      <Typography
-        variant="h4"
-        gutterBottom
-        display={{ xs: 'none', sm: 'block' }}
-        sx={{ mb: { xs: 0, sm: 2 } }}
-      >
-        {t("It's Ready!")}
-      </Typography>
-      <Typography
-        variant="h6"
-        display={{ xs: 'block', sm: 'none' }}
-        gutterBottom
-        sx={{ mb: { xs: 0, sm: 2 } }}
-      >
-        {t("It's Ready!")}
-      </Typography>
-      <Typography
-        color="text.secondary"
-        align="center"
-        variant="subtitle2"
-        display={{ xs: 'none', sm: 'block' }}
-        sx={{
-          maxWidth: { xs: '100%', sm: '90%' }
-        }}
-      >
-        {t(
-          'If you’re happy with it, preview and share now. Want to update images or videos? Keep customising.'
-        )}
-      </Typography>
-      <Typography
-        color="text.secondary"
-        align="center"
-        variant="body2"
-        display={{ xs: 'block', sm: 'none' }}
-        sx={{
-          maxWidth: { xs: '100%', sm: '90%' }
-        }}
-      >
-        {t(
-          'If you’re happy with it, preview and share now. Want to update images or videos? Keep customising.'
-        )}
-      </Typography>
+    <Stack
+      alignItems="center"
+      gap={{ xs: 0, sm: 4 }}
+      sx={{
+        pb: { xs: 4, sm: 0 },
+        px: { xs: 4, sm: 13 }
+      }}
+    >
+      <Stack alignItems="center">
+        <Typography
+          variant="h3"
+          gutterBottom
+          display={{ xs: 'none', sm: 'block' }}
+          sx={{ mb: { xs: 0, sm: 2 } }}
+        >
+          {t("It's Ready!")}
+        </Typography>
+        <Typography
+          variant="h6"
+          display={{ xs: 'block', sm: 'none' }}
+          gutterBottom
+          sx={{ mb: { xs: 0, sm: 2 } }}
+        >
+          {t("It's Ready!")}
+        </Typography>
+        <Typography
+          color="text.secondary"
+          align="center"
+          variant="subtitle2"
+          display={{ xs: 'none', sm: 'block' }}
+          sx={{
+            maxWidth: { xs: '100%', sm: '90%' }
+          }}
+        >
+          {t(
+            'If you’re happy with it, preview and share now. Want to update images or videos? Keep customising.'
+          )}
+        </Typography>
+        <Typography
+          color="text.secondary"
+          align="center"
+          variant="body2"
+          display={{ xs: 'block', sm: 'none' }}
+          sx={{
+            maxWidth: { xs: '100%', sm: '90%' }
+          }}
+        >
+          {t(
+            'If you’re happy with it, preview and share now. Want to update images or videos? Keep customising.'
+          )}
+        </Typography>
+      </Stack>
       <Box
         sx={{
           width: 300,
@@ -128,11 +138,10 @@ export function DoneScreen({
           </Typography>
         </Stack>
       </Box>
-
       <Stack
-        gap={4}
+        gap={5}
         sx={{
-          width: { xs: '100%', sm: 300 },
+          width: { xs: '100%', sm: BUTTON_STACK_WIDTH },
           mt: 6
         }}
       >
@@ -149,9 +158,8 @@ export function DoneScreen({
             height: '41px'
           }}
         >
-          <Typography variant="subtitle2">{t('Preview in New Tab')}</Typography>
+          <Typography variant="subtitle2">{t('Preview')}</Typography>
         </Button>
-
         <Box
           sx={{
             width: '100%',

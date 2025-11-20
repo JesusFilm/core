@@ -137,15 +137,15 @@ export function LinksScreen({
   return (
     <Stack
       alignItems="center"
-      gap={6}
+      gap={10}
       sx={{
-        px: { xs: 2, sm: 18 },
+        px: { xs: 2, sm: 13 },
         width: '100%'
       }}
     >
       <Stack alignItems="center" sx={{ pb: 1 }}>
         <Typography
-          variant="h4"
+          variant="h3"
           display={{ xs: 'none', sm: 'block' }}
           gutterBottom
           sx={{

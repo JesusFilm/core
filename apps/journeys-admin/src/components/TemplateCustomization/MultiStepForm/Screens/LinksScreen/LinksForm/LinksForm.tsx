@@ -57,7 +57,7 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <Typography variant="h6" color="text.primary">
+                <Typography variant="subtitle1" color="text.primary">
                   {link.label}
                 </Typography>
                 <IconButton
