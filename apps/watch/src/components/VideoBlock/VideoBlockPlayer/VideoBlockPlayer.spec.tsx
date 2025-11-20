@@ -1,23 +1,38 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 
-import { PlayerProvider } from '../../../../libs/playerContext/PlayerContext'
-import { VideoProvider } from '../../../../libs/videoContext'
-import { WatchProvider } from '../../../../libs/watchContext'
-import { videos } from '../../../Videos/__generated__/testData'
+import { PlayerProvider } from '../../../libs/playerContext/PlayerContext'
+import { VideoProvider } from '../../../libs/videoContext'
+import { WatchProvider } from '../../../libs/watchContext'
+import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoBlockPlayer } from './VideoBlockPlayer'
 
+const mockSubtitleUpdate = jest.fn()
+
 jest.mock('video.js', () => {
+  const createMockTextTracks = () => {
+    const tracks: any = []
+    tracks.addEventListener = jest.fn()
+    tracks.removeEventListener = jest.fn()
+    return tracks
+  }
+
   const mockPlayer = {
     on: jest.fn(),
     off: jest.fn(),
     dispose: jest.fn(),
     muted: jest.fn(),
+    paused: jest.fn().mockReturnValue(false),
     play: jest.fn(),
     pause: jest.fn(),
     currentTime: jest.fn(),
     volume: jest.fn(),
-    userActive: jest.fn()
+    userActive: jest.fn(),
+    ready: jest.fn((cb?: () => void) => cb?.()),
+    src: jest.fn(),
+    textTracks: jest.fn(() => createMockTextTracks()),
+    el: jest.fn(() => ({ classList: { add: jest.fn() } })),
+    addRemoteTextTrack: jest.fn()
   }
   return jest.fn(() => mockPlayer)
 })
@@ -31,6 +46,13 @@ jest.mock('./HeroSubtitleOverlay', () => ({
   HeroSubtitleOverlay: () => (
     <div data-testid="HeroSubtitleOverlay">HeroSubtitleOverlay</div>
   )
+}))
+
+jest.mock('../../../libs/watchContext/useSubtitleUpdate', () => ({
+  useSubtitleUpdate: () => ({
+    subtitleUpdate: mockSubtitleUpdate,
+    subtitlesLoading: false
+  })
 }))
 
 describe('VideoBlockPlayer', () => {
@@ -136,5 +158,23 @@ describe('VideoBlockPlayer', () => {
     )
     expect(videoElement).toBeInTheDocument()
     expect(videoElement).toHaveStyle({ height: '100%' })
+  })
+
+  it('respects the subtitle preference when subtitles are off', async () => {
+    render(
+      <VideoProvider value={{ content: videos[0] }}>
+        <PlayerProvider>
+          <WatchProvider initialState={{ subtitleOn: false }}>
+            <VideoBlockPlayer {...defaultProps} />
+          </WatchProvider>
+        </PlayerProvider>
+      </VideoProvider>
+    )
+
+    await waitFor(() => expect(mockSubtitleUpdate).toHaveBeenCalled())
+
+    expect(mockSubtitleUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({ subtitleOn: false })
+    )
   })
 })
