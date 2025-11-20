@@ -3,8 +3,9 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { printSubgraphSchema } from '@apollo/subgraph'
 import { lexicographicSortSchema } from 'graphql'
 
-import { logger } from './logger.ts'
-import { schema } from './schema.ts'
+import { logger } from './logger'
+
+import { schema } from '.'
 
 const filename = 'apis/api-journeys-modern/schema.graphql'
 export function generate(): void {

@@ -1,6 +1,6 @@
-import { generate } from './generate.ts'
+import { generate } from './generate'
 
-export { schema } from './schema.ts'
+export { schema } from './schema'
 
 if (
   (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') ||
