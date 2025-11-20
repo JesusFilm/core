@@ -93,6 +93,7 @@ export function SocialPreview(): ReactElement {
             slideToClickedSlide
             pagination={{ clickable: true }}
             spaceBetween={80}
+            style={{ paddingBottom: '20px' }}
           >
             <SwiperSlide
               key={0}

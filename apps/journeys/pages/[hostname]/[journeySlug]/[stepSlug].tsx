@@ -115,6 +115,17 @@ export const getStaticProps: GetStaticProps<StepPageProps> = async (
         }
       }
     })
+
+    if (data.journey.website !== true) {
+      return {
+        redirect: {
+          permanent: false,
+          destination: `/${data.journey.slug}`
+        },
+        revalidate: 1
+      }
+    }
+
     const { rtl, locale } = getJourneyRTL(data.journey)
 
     const stepBlock = data.journey?.blocks?.find(

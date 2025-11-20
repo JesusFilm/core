@@ -40,8 +40,8 @@ export function JourneyCardInfo({
       data-testid="JourneyCardInfo"
     >
       <Stack flexDirection="row" gap={1} sx={{ mt: 1 }}>
-        <AnalyticsItem variant="icon-button" fromJourneyList={true} />
         <ResponsesItem variant="icon-button" fromJourneyList={true} />
+        <AnalyticsItem variant="icon-button" fromJourneyList={true} />
       </Stack>
       <AccessAvatars
         journeyId={journey.id}

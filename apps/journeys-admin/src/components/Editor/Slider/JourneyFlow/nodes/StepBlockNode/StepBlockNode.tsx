@@ -1,6 +1,7 @@
 import Fade from '@mui/material/Fade'
 import Stack from '@mui/material/Stack'
 import { alpha } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 import { NodeProps, useUpdateNodeInternals } from 'reactflow'
 
@@ -41,6 +42,9 @@ export function StepBlockNode({
 
   const isMenuCard = journey?.menuStepBlock?.id === id
 
+  const showCardSlug =
+    journey?.website === true && step?.slug != null && step?.slug !== ''
+
   const targetHandleVariant = isMenuCard
     ? HandleVariant.None
     : showAnalytics === true
@@ -67,6 +71,21 @@ export function StepBlockNode({
           <StepBlockNodeAnalytics stepId={step.id} />
         </div>
       </Fade>
+      {showCardSlug && (
+        <Typography
+          sx={{
+            maxWidth: `calc(${STEP_NODE_WIDTH}px - 14px)`,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            mx: '7px',
+            fontSize: '10px',
+            color: isSelected ? 'secondary.dark' : 'secondary.light'
+          }}
+        >
+          {step.slug}
+        </Typography>
+      )}
       <Stack
         data-testid={`StepBlockNode-${step.id}`}
         direction="column"

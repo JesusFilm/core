@@ -401,4 +401,56 @@ describe('Canvas', () => {
       expect(el).toBeTruthy()
     })
   })
+
+  it('should show card slug edit', () => {
+    const step: TreeBlock<StepBlock> = {
+      id: 'stepSlug.id',
+      __typename: 'StepBlock',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      slug: 'my-card-slug',
+      children: []
+    }
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journeyId',
+                  website: true,
+                  themeMode: ThemeMode.dark,
+                  themeName: ThemeName.base,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    bcp47: 'en',
+                    iso3: 'eng'
+                  }
+                } as unknown as Journey,
+                variant: 'admin'
+              }}
+            >
+              <EditorProvider
+                initialState={{
+                  steps: [step],
+                  selectedStep: step,
+                  activeSlide: ActiveSlide.Content,
+                  activeContent: ActiveContent.Canvas
+                }}
+              >
+                <Canvas />
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByDisplayValue('my-card-slug')).toBeInTheDocument()
+  })
 })
