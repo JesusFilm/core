@@ -421,8 +421,8 @@ enum GoogleSheetExportMode {
 
 type GoogleSheetsSync {
   id: ID!
-  teamId: String
-  journeyId: String!
+  teamId: ID!
+  journeyId: ID!
   integrationId: ID
   spreadsheetId: ID!
   sheetName: String
