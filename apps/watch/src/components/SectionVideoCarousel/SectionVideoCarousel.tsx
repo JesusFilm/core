@@ -100,6 +100,8 @@ export function SectionVideoCarousel({
   useEffect(() => () => clearTimers(), [clearTimers])
   const hasNoResults = !loading && slides.length === 0
 
+  if (hasNoResults) return null
+
   return (
     <section
       id={id}

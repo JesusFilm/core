@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
+import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 
 import { GET_COLLECTION_SHOWCASE_CONTENT } from './queries'
 import { SectionVideoCarousel } from './SectionVideoCarousel'
@@ -377,6 +378,13 @@ describe('SectionVideoCarousel', () => {
     expect(
       screen.getByTestId('SectionVideoCarouselDescription')
     ).toHaveTextContent('Our mission is to reach everyone. Secondary sentence.')
+
+    const carouselCta = screen.getByTestId('SectionVideoCarouselCTA')
+    expect(
+      (carouselCta.closest('a') as HTMLAnchorElement).getAttribute('href')
+    ).toBe(
+      getWatchUrl('collection-slug', VideoLabel.featureFilm, 'child-one/en')
+    )
   })
 
   it('respects override props for copy and CTA', async () => {

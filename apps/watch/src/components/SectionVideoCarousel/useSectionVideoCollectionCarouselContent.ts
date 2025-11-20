@@ -559,15 +559,26 @@ export function useSectionVideoCollectionCarouselContent({
   const description =
     descriptionOverride ?? primaryCollection?.description?.[0]?.value
 
-  const ctaHref =
-    ctaHrefOverride ??
-    (primaryCollection?.variant?.slug != null
+  const primaryCollectionFirstSlide = useMemo(() => {
+    if (primaryCollection == null) return undefined
+
+    const [firstSlide] = flattenCollection(primaryCollection, { limit: 1 }) ?? []
+
+    return firstSlide ?? undefined
+  }, [primaryCollection])
+
+  const firstSlideHref = primaryCollectionFirstSlide?.href ?? slides[0]?.href
+
+  const fallbackCtaHref =
+    primaryCollection?.variant?.slug != null
       ? getWatchUrl(
           primaryCollection.slug,
           primaryCollection.label,
           primaryCollection.variant.slug
         )
-      : '/watch')
+      : '/watch'
+
+  const ctaHref = ctaHrefOverride ?? firstSlideHref ?? fallbackCtaHref
 
   const ctaLabel = ctaLabelOverride ?? defaultCtaLabel
 
