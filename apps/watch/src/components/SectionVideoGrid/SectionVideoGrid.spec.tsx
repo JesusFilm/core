@@ -2,6 +2,7 @@ import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { render, screen, waitFor } from '@testing-library/react'
 
 import { VideoLabel } from '../../../__generated__/globalTypes'
+import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { GET_COLLECTION_SHOWCASE_CONTENT } from '../SectionVideoCarousel/queries'
 import type { SectionVideoCollectionCarouselSlide } from '../SectionVideoCarousel/useSectionVideoCollectionCarouselContent'
 // eslint-disable-next-line import/no-namespace
@@ -375,6 +376,13 @@ describe('SectionVideoGrid', () => {
     expect(screen.getByTestId('SectionVideoGridCTA')).toHaveTextContent('Watch')
     expect(screen.getByTestId('SectionVideoGridDescription')).toHaveTextContent(
       'Our mission is to reach everyone. Secondary sentence.'
+    )
+
+    const gridCta = screen.getByTestId('SectionVideoGridCTA')
+    expect(
+      (gridCta.closest('a') as HTMLAnchorElement).getAttribute('href')
+    ).toBe(
+      getWatchUrl('collection-slug', VideoLabel.featureFilm, 'child-one/en')
     )
   })
 

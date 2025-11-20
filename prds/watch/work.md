@@ -19,6 +19,7 @@
 ## Test Coverage
 
 - `pnpm dlx nx test watch --testFile apps/watch/src/components/DialogLangSwitch/DialogLangSwitch.spec.tsx`
+- `NODE_PATH=/workspace pnpm exec jest --config apps/watch/jest.config.ts --runTestsByPath apps/watch/src/components/SectionVideoCarousel/SectionVideoCarousel.spec.tsx apps/watch/src/components/SectionVideoGrid/SectionVideoGrid.spec.tsx`
 
 ## User Flow
 
@@ -34,3 +35,4 @@
 - [x] Replace the legacy collection experience with a new `PageCollection` template that mirrors the modern single-video layout while using collection metadata and artwork.
 - [x] Swap the video player hero for a collection thumbnail hero and remove the Bible quotes + discussion widgets from collection views.
 - [x] Surface collection children directly beneath the description via `SectionVideoGrid` and expose the search modal language filter UI for switching languages.
+- [x] Point collection watch CTAs to the first playable child video and hide empty collection sections when no content is available.

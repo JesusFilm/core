@@ -174,6 +174,8 @@ export function SectionVideoGrid({
 
   useEffect(() => () => clearTimers(), [clearTimers])
 
+  if (hasNoResults) return null
+
   return (
     <section
       id={id}
