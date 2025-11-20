@@ -40,8 +40,8 @@ export function CardSlugEdit({
   const slug = selectedStep?.slug
 
   function handleUpdate(value?: string): void {
-    if (selectedStep == null || value == null || value === '') return
-    const newSlug = value
+    if (selectedStep == null || value == null) return
+    const newSlug = value === '' ? null : value
 
     add({
       parameters: {

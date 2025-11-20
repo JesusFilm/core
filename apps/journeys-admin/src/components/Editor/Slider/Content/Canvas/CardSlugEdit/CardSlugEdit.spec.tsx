@@ -152,6 +152,64 @@ describe('CardSlugEdit', () => {
     )
   })
 
+  it('should set slug as null if empty string', async () => {
+    const step: TreeBlock<StepBlock> = {
+      __typename: 'StepBlock',
+      id: 'step',
+      parentBlockId: null,
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      slug: 'existing-slug',
+      children: []
+    }
+
+    const nullSlugMock: MockedResponse<
+      StepBlockSlugUpdate,
+      StepBlockSlugUpdateVariables
+    > = {
+      request: {
+        query: STEP_BLOCK_SLUG_UPDATE,
+        variables: { id: step.id, input: { slug: null } }
+      },
+      result: jest.fn(() => ({
+        data: {
+          stepBlockUpdate: {
+            __typename: 'StepBlock',
+            id: step.id,
+            slug: null
+          }
+        }
+      }))
+    }
+
+    render(
+      <MockedProvider mocks={[nullSlugMock]}>
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey: { id: 'journeyId' } as any }}>
+            <EditorProvider
+              initialState={{
+                steps: [step],
+                selectedStep: step,
+                activeContent: ActiveContent.Canvas
+              }}
+            >
+              <CardSlugEdit />
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const input = screen.getByDisplayValue('existing-slug')
+    fireEvent.change(input, { target: { value: '' } })
+    fireEvent.blur(input)
+
+    await waitFor(() =>
+      expect(nullSlugMock.result as jest.Mock).toHaveBeenCalled()
+    )
+  })
+
   it('should throw error if invalid slug and reset input', async () => {
     const step: TreeBlock<StepBlock> = {
       __typename: 'StepBlock',
