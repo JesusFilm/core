@@ -1,5 +1,5 @@
 # when updating router version you'll need to:
-# - update Dockerfile image version (ghcr.io/ardatan/hive-gateway:X.X.X)
+# - update Dockerfile image version (ghcr.io/graphql-hive/hive-gateway:X.X.X)
 # - update package.json ("@graphql-hive/gateway": "^X.X.X")
 # - inform all developers to run npm i
 FROM  ghcr.io/graphql-hive/gateway:1.16.5
