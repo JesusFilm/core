@@ -45,7 +45,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE: z.string(),
+    NEXT_PUBLIC_CLOUDFLARE_STREAM_CUSTOMER_CODE: z.string().default(''),
     NEXT_PUBLIC_DATADOG_APPLICATION_ID: z.string().optional(),
     NEXT_PUBLIC_DATADOG_CLIENT_TOKEN: z.string().optional(),
     NEXT_PUBLIC_DATADOG_ENV: z.string().default('development'),
