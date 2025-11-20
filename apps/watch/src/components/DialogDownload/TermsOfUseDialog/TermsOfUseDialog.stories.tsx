@@ -23,7 +23,9 @@ const Template: StoryObj<typeof TermsOfUseDialog> = {
 export const Default = {
   ...Template,
   args: {
-    open: true
+    open: true,
+    onClose: () => {},
+    onSubmit: () => {}
   }
 }
 

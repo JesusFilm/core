@@ -36,33 +36,33 @@ describe('DialogDownload', () => {
     })
   })
 
-  it('closes the modal and cancels download on cancel icon click', () => {
-    const { getByTestId } = render(
-      <VideoProvider value={{ content: video }}>
+  const renderDialog = (dialogVideo: VideoContentFields = video) =>
+    render(
+      <VideoProvider value={{ content: dialogVideo }}>
         <DialogDownload open onClose={onClose} />
       </VideoProvider>
     )
+
+  it('closes the modal and cancels download on cancel icon click', () => {
+    const { getByTestId } = renderDialog()
+
     fireEvent.click(getByTestId('dialog-close-button'))
     expect(onClose).toHaveBeenCalled()
     expect(onCancel).toHaveBeenCalled()
   })
 
-  it('downloads low quality videos', async () => {
-    const { getByRole } = render(
-      <VideoProvider value={{ content: video }}>
-        <DialogDownload open onClose={onClose} />
-      </VideoProvider>
-    )
+  it('downloads selected videos after accepting terms', async () => {
+    renderDialog()
 
-    const downloadButton = getByRole('button', { name: 'Download' })
+    const downloadButton = screen.getByRole('button', { name: 'Download' })
 
     expect(downloadButton).toBeDisabled()
 
-    fireEvent.click(getByRole('checkbox'))
+    fireEvent.click(screen.getByLabelText('I agree to the'))
 
     expect(downloadButton).not.toBeDisabled()
 
-    fireEvent.click(getByRole('button', { name: 'Download' }))
+    fireEvent.click(downloadButton)
 
     await waitFor(() => {
       expect(onDownload).toHaveBeenCalledWith(
@@ -72,29 +72,18 @@ describe('DialogDownload', () => {
     })
   })
 
-  it('downloads high quality videos', async () => {
-    const { getByRole } = render(
-      <VideoProvider value={{ content: video }}>
-        <DialogDownload open onClose={onClose} />
-      </VideoProvider>
-    )
+  it('downloads a different quality when selected', async () => {
+    renderDialog()
 
-    const downloadButton = getByRole('button', { name: 'Download' })
+    fireEvent.click(screen.getByRole('combobox'))
+    fireEvent.click(screen.getByRole('option', { name: /Low/ }))
 
-    fireEvent.mouseDown(getByRole('combobox'))
-    fireEvent.click(getByRole('option', { name: 'High (2.2 GB)' }), {
-      name: 'High'
-    })
-
-    fireEvent.click(getByRole('checkbox'))
-
-    expect(downloadButton).not.toBeDisabled()
-
-    fireEvent.click(getByRole('button', { name: 'Download' }))
+    fireEvent.click(screen.getByLabelText('I agree to the'))
+    fireEvent.click(screen.getByRole('button', { name: 'Download' }))
 
     await waitFor(() => {
       expect(onDownload).toHaveBeenCalledWith(
-        video.variant?.downloads[0].url,
+        video.variant?.downloads[1].url,
         `${video.title[0].value}.mp4`
       )
     })
@@ -108,30 +97,24 @@ describe('DialogDownload', () => {
         downloads: []
       } as unknown as Variant
     }
-    render(
-      <VideoProvider value={{ content: noDownloadsVideo }}>
-        <DialogDownload open onClose={onClose} />
-      </VideoProvider>
-    )
+    renderDialog(noDownloadsVideo)
     await waitFor(() =>
-      expect(screen.getByText('No Downloads Available')).toBeInTheDocument()
+      expect(
+        screen.getByText('No Downloads Available', { selector: 'p' })
+      ).toBeInTheDocument()
     )
   })
 
   it('changes checkbox when submit or close', async () => {
-    const { getByText, getByLabelText, queryByText } = render(
-      <VideoProvider value={{ content: video }}>
-        <DialogDownload open onClose={onClose} />
-      </VideoProvider>
-    )
-    fireEvent.click(getByText('Terms of Use'))
-    fireEvent.click(getByText('Accept'))
-    await waitFor(() => expect(queryByText('Accept')).not.toBeInTheDocument())
-    expect(getByLabelText('I agree to the')).toBeChecked()
-    fireEvent.click(getByText('Terms of Use'))
-    fireEvent.click(getByText('Cancel'))
-    await waitFor(() => expect(queryByText('Cancel')).not.toBeInTheDocument())
-    expect(getByLabelText('I agree to the')).not.toBeChecked()
+    renderDialog()
+    fireEvent.click(screen.getByText('Terms of Use'))
+    fireEvent.click(screen.getByText('Accept'))
+    await waitFor(() => expect(screen.queryByText('Accept')).not.toBeInTheDocument())
+    expect(screen.getByLabelText('I agree to the')).toBeChecked()
+    fireEvent.click(screen.getByText('Terms of Use'))
+    fireEvent.click(screen.getByText('Cancel'))
+    await waitFor(() => expect(screen.queryByText('Cancel')).not.toBeInTheDocument())
+    expect(screen.getByLabelText('I agree to the')).not.toBeChecked()
   })
 
   it('should render Mux stream URLs as direct links instead of form submissions', () => {
@@ -148,22 +131,16 @@ describe('DialogDownload', () => {
       }
     } as VideoContentFields
 
-    render(
-      <VideoProvider value={{ content: muxVideo }}>
-        <DialogDownload open onClose={onClose} />
-      </VideoProvider>
-    )
+    renderDialog(muxVideo)
 
-    const termsCheckbox = screen.getByRole('checkbox')
+    const termsCheckbox = screen.getByLabelText('I agree to the')
     fireEvent.click(termsCheckbox)
 
-    // For Mux streams, should show download button with href attribute (direct link)
     const downloadButton = screen.getByRole('link', { name: 'Download' })
     expect(downloadButton).toHaveAttribute('href')
-    expect(downloadButton).not.toHaveAttribute('type', 'submit')
   })
 
-  it('should render regular URLs as form submissions', () => {
+  it('should render regular URLs as button downloads', () => {
     const regularVideo = {
       ...video,
       variant: {
@@ -177,36 +154,24 @@ describe('DialogDownload', () => {
       }
     } as VideoContentFields
 
-    render(
-      <VideoProvider value={{ content: regularVideo }}>
-        <DialogDownload open onClose={onClose} />
-      </VideoProvider>
-    )
+    renderDialog(regularVideo)
 
-    const termsCheckbox = screen.getByRole('checkbox')
+    const termsCheckbox = screen.getByLabelText('I agree to the')
     fireEvent.click(termsCheckbox)
 
-    // For regular URLs, should show submit button (form submission)
     const downloadButton = screen.getByRole('button', { name: 'Download' })
-    expect(downloadButton).toHaveAttribute('type', 'submit')
     expect(downloadButton).not.toHaveAttribute('href')
   })
 
   it('should display download quality options in correct order (highest, high, low)', () => {
-    render(
-      <VideoProvider value={{ content: video }}>
-        <DialogDownload open onClose={onClose} />
-      </VideoProvider>
-    )
+    renderDialog()
 
-    const qualitySelect = screen.getByRole('combobox')
-    fireEvent.mouseDown(qualitySelect)
+    fireEvent.click(screen.getByRole('combobox'))
 
     const options = screen.getAllByRole('option')
     const optionTexts = options.map((option) => option.textContent)
 
-    // Should be ordered: Highest, High, Low
-    expect(optionTexts[0]).toContain('High (2.2 GB)')
-    expect(optionTexts[1]).toContain('Low (197.55 MB)')
+    expect(optionTexts[0]).toContain('High')
+    expect(optionTexts[1]).toContain('Low')
   })
 })

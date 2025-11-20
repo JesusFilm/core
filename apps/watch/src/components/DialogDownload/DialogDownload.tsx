@@ -1,36 +1,40 @@
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
-import LanguageIcon from '@mui/icons-material/Language'
-import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import Checkbox from '@mui/material/Checkbox'
-import CircularProgress from '@mui/material/CircularProgress'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import FormGroup from '@mui/material/FormGroup'
-import Link from '@mui/material/Link'
-import MenuItem from '@mui/material/MenuItem'
-import Stack from '@mui/material/Stack'
-import { useTheme } from '@mui/material/styles'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
-import { Form, Formik } from 'formik'
-import last from 'lodash/last'
+import { Download as DownloadIcon, Globe2, Play, X } from 'lucide-react'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
-import { ComponentProps, ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import useDownloader from 'react-use-downloader'
-import { object, string } from 'yup'
 
-import { Dialog } from '@core/shared/ui/Dialog'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle
+} from '@core/shared/uimodern/components/dialog'
+import { Button } from '@core/shared/uimodern/components/button'
+import { Checkbox } from '@core/shared/uimodern/components/checkbox'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@core/shared/uimodern/components/select'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { VideoVariantDownloadQuality } from '../../../__generated__/globalTypes'
 import { useVideo } from '../../libs/videoContext'
 
 import { TermsOfUseDialog } from './TermsOfUseDialog'
+import last from 'lodash/last'
 
-interface DialogDownloadProps
-  extends Pick<ComponentProps<typeof Dialog>, 'open' | 'onClose'> {}
+interface DialogDownloadProps {
+  open?: boolean
+  onClose?: () => void
+  testId?: string
+}
 
 function formatBytes(bytes: number, decimals = 2): string {
   if ((bytes ?? 0) <= 0) return '0 Bytes'
@@ -46,15 +50,24 @@ function formatBytes(bytes: number, decimals = 2): string {
   }`
 }
 
+const qualityEnumToOrder = {
+  [VideoVariantDownloadQuality.highest]: 0,
+  [VideoVariantDownloadQuality.high]: 1,
+  [VideoVariantDownloadQuality.low]: 2
+}
+
 export function DialogDownload({
-  open,
-  onClose
+  open = false,
+  onClose,
+  testId = 'DialogDownload'
 }: DialogDownloadProps): ReactElement {
-  const theme = useTheme()
   const { title, images, imageAlt, variant } = useVideo()
   const { percentage, download, cancel, isInProgress } = useDownloader()
   const [openTerms, setOpenTerms] = useState<boolean>(false)
+  const [selectedFile, setSelectedFile] = useState('')
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
   const { t } = useTranslation('apps-watch')
+
   const downloads = variant?.downloads ?? []
   const language = variant?.language ?? {
     __typename: 'Language',
@@ -63,31 +76,40 @@ export function DialogDownload({
   }
   const time = secondsToTimeFormat(variant?.duration ?? 0)
 
+  const filteredDownloads = useMemo(
+    () =>
+      downloads.filter(({ quality }) =>
+        Object.keys(qualityEnumToOrder).includes(quality)
+      ) as (typeof downloads)[number] & {
+        quality: keyof typeof qualityEnumToOrder
+      }[],
+    [downloads]
+  )
+
+  const sortedDownloads = useMemo(
+    () =>
+      [...filteredDownloads].sort(
+        (a, b) =>
+          qualityEnumToOrder[a.quality as keyof typeof qualityEnumToOrder] -
+          qualityEnumToOrder[b.quality as keyof typeof qualityEnumToOrder]
+      ),
+    [filteredDownloads]
+  )
+
+  useEffect(() => {
+    if (open) {
+      setSelectedFile(sortedDownloads[0]?.url ?? '')
+      setAgreedToTerms(false)
+    }
+  }, [open, sortedDownloads])
+
   useEffect(() => {
     if (percentage === 100) {
       onClose?.()
     }
   }, [percentage, onClose])
 
-  const validationSchema = object().shape({
-    file: string().test('no-downloads', t('No Downloads Available'), (file) => {
-      if (file == null || file === '') {
-        // fail validation
-        return false
-      } else {
-        // pass validation
-        return true
-      }
-    })
-  })
-
-  const qualityEnumToOrder = {
-    [VideoVariantDownloadQuality.highest]: 0,
-    [VideoVariantDownloadQuality.high]: 1,
-    [VideoVariantDownloadQuality.low]: 2
-  }
-
-  function getQualityLabel(quality: keyof typeof qualityEnumToOrder): string {
+  const getQualityLabel = (quality: keyof typeof qualityEnumToOrder): string => {
     switch (quality) {
       case VideoVariantDownloadQuality.highest:
         return t('Highest')
@@ -98,210 +120,241 @@ export function DialogDownload({
     }
   }
 
-  function getDownloadUrl(file: string): string {
+  const titleText = last(title)?.value ?? ''
+  const fileName = `${titleText || 'video'}.mp4`
+  const imageSrc = images[0]?.mobileCinematicHigh
+  const imageAltText = imageAlt?.[0]?.value ?? titleText ?? t('Download Video')
+  const duration = time.startsWith('00:') ? time.slice(3) : time
+
+  const getDownloadUrl = (file: string): string => {
     const url = new URL(file)
-    url.searchParams.set('download', `${title[0].value}.mp4`)
+    url.searchParams.set('download', fileName)
     return url.toString()
   }
 
-  type Download = (typeof downloads)[number] & {
-    quality: keyof typeof qualityEnumToOrder
+  const handleClose = (): void => {
+    cancel()
+    setAgreedToTerms(false)
+    setOpenTerms(false)
+    onClose?.()
   }
 
-  const filteredDownloads = downloads.filter(({ quality }) =>
-    Object.keys(qualityEnumToOrder).includes(quality)
-  ) as Download[]
+  const handleDownload = (): void => {
+    if (!selectedFile || !agreedToTerms) return
 
-  const initialValues = {
-    file: filteredDownloads[0]?.url ?? '',
-    terms: false
+    const isMuxStream = selectedFile.startsWith('https://stream.mux.com/')
+
+    if (isMuxStream) {
+      window.location.assign(getDownloadUrl(selectedFile))
+      handleClose()
+      return
+    }
+
+    void download(selectedFile, fileName)
+  }
+
+  const canDownload = agreedToTerms && selectedFile !== ''
+  const isMuxStream = selectedFile.startsWith('https://stream.mux.com/')
+
+  const renderDownloadControl = (): ReactElement => {
+    if (isMuxStream && canDownload) {
+      return (
+        <Button
+          asChild
+          className="inline-flex max-h-10 cursor-pointer items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-bold tracking-wider text-gray-900 uppercase transition-colors duration-200 hover:bg-[#cb333b] hover:text-white"
+        >
+          <a
+            href={getDownloadUrl(selectedFile)}
+            download={fileName}
+            onClick={handleClose}
+          >
+            <DownloadIcon className="h-4 w-4" />
+            {t('Download')}
+          </a>
+        </Button>
+      )
+    }
+
+    return (
+      <Button
+        type="button"
+        onClick={handleDownload}
+        disabled={!canDownload}
+        className="inline-flex max-h-10 cursor-pointer items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-bold tracking-wider text-gray-900 uppercase transition-colors duration-200 hover:bg-[#cb333b] hover:text-white disabled:cursor-not-allowed disabled:bg-white/20 disabled:text-white/60"
+      >
+        {isInProgress ? (
+          <svg
+            className="h-4 w-4 animate-spin"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            />
+          </svg>
+        ) : (
+          <DownloadIcon className="h-4 w-4" />
+        )}
+        {t('Download')}
+      </Button>
+    )
   }
 
   return (
-    <Dialog
-      open={open}
-      onClose={() => {
-        cancel()
-        onClose?.()
-      }}
-      dialogTitle={{
-        title: t('Download Video'),
-        closeButton: true
-      }}
-      testId="DialogDownload"
-    >
-      <>
-        <Stack
-          direction={{ xs: 'column-reverse', sm: 'row' }}
-          spacing={4}
-          alignItems="flex-start"
-          sx={{ mt: { xs: 0, sm: 1 }, mb: { xs: 0, sm: 5 } }}
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
+      <DialogPortal>
+        <DialogOverlay className="blured-bg z-[100] bg-stone-900/40" />
+        <DialogContent
+          showCloseButton={false}
+          data-testid={testId}
+          className="fixed left-1/2 top-1/2 z-[101] w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-hidden border border-white/10 bg-gradient-to-b from-[#0f1117] to-[#0b0c10] text-white shadow-2xl outline-none [&>button]:focus-visible:outline-none"
         >
-          {images[0]?.mobileCinematicHigh != null && (
-            <>
-              <Box
-                sx={{
-                  display: { xs: 'none', sm: 'flex' },
-                  justifyContent: 'end',
-                  alignItems: 'end'
-                }}
-              >
-                <Image
-                  src={images[0].mobileCinematicHigh}
-                  alt={imageAlt[0].value}
-                  width={240}
-                  height={115}
-                  style={{
-                    borderRadius: theme.spacing(2),
-                    maxWidth: '100%',
-                    height: 'auto',
-                    objectFit: 'cover'
-                  }}
-                />
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  sx={{
-                    position: 'absolute',
-                    color: 'primary.contrastText',
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    padding: '5px 9px',
-                    borderRadius: 2,
-                    m: 1
-                  }}
-                >
-                  <PlayArrowRoundedIcon />
-                  <Typography>{`${time.split(':')[0]}${time.slice(
-                    2
-                  )}`}</Typography>
-                </Stack>
-              </Box>
-            </>
-          )}
-          <Stack>
-            <Typography variant="h6" sx={{ mb: 1 }}>
-              {last(title)?.value}
-            </Typography>
-            <Stack direction="row" alignItems="center">
-              <LanguageIcon fontSize="small" sx={{ mr: 1 }} />
-              <Typography variant="body1">{language.name[0].value}</Typography>
-            </Stack>
-          </Stack>
-        </Stack>
-        <Formik
-          initialValues={initialValues}
-          onSubmit={(values) => {
-            void download(values.file, `${title[0].value}.mp4`)
-          }}
-          validationSchema={validationSchema}
-          validateOnMount
-        >
-          {({ values, errors, handleChange, handleBlur, setFieldValue }) => (
-            <Form>
-              <TextField
-                name="file"
-                label={t('Select a file size')}
-                fullWidth
-                value={values.file}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                helperText={errors.file}
-                error={errors.file != null}
-                disabled={values.file === ''}
-                select
-              >
-                {filteredDownloads
-                  .sort((a, b) => {
-                    return (
-                      qualityEnumToOrder[a.quality] -
-                      qualityEnumToOrder[b.quality]
-                    )
-                  })
-                  .map((download) => (
-                    <MenuItem key={download.quality} value={download.url}>
-                      {getQualityLabel(download.quality)} (
-                      {formatBytes(download.size)})
-                    </MenuItem>
-                  ))}
-              </TextField>
-              <Stack
-                direction={{ xs: 'column', sm: 'row' }}
-                justifyContent="space-between"
-                gap={3}
-                sx={{ mt: 6 }}
-              >
-                <FormGroup sx={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <FormControlLabel
-                    sx={{ marginRight: '4px' }}
-                    control={
-                      <Checkbox
-                        name="terms"
-                        disabled={isInProgress}
-                        checked={values.terms}
-                        onChange={handleChange}
-                      />
-                    }
-                    label={t('I agree to the')}
+          <DialogClose
+            data-testid="dialog-close-button"
+            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-none"
+          >
+            <X className="h-4 w-4" />
+            <span className="sr-only">{t('Close')}</span>
+          </DialogClose>
+          <DialogTitle className="sr-only">{t('Download Video')}</DialogTitle>
+          <DialogDescription className="sr-only">
+            {t('Select a file size')}
+          </DialogDescription>
+          <div className="flex flex-col gap-6 p-6 sm:p-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+              {imageSrc != null && (
+                <div className="relative w-full overflow-hidden rounded-2xl border border-white/10 bg-black/40 sm:w-72">
+                  <Image
+                    src={imageSrc}
+                    alt={imageAltText}
+                    width={320}
+                    height={180}
+                    className="h-full w-full object-cover"
                   />
-                  <Link
-                    underline="none"
-                    sx={{ cursor: 'pointer' }}
-                    onClick={() => setOpenTerms(true)}
-                  >
-                    {t('Terms of Use')}
-                  </Link>
-                </FormGroup>
-                {values.terms === true &&
-                values.file?.startsWith('https://stream.mux.com/') ? (
-                  <Button
-                    variant="contained"
-                    size="small"
-                    startIcon={<ArrowDownwardIcon />}
-                    onClick={() => {
-                      onClose?.()
-                    }}
-                    href={getDownloadUrl(values.file)}
-                  >
-                    {t('Download')}
-                  </Button>
-                ) : (
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    size="small"
-                    disabled={!values.terms}
-                    startIcon={<ArrowDownwardIcon />}
-                    loading={isInProgress}
-                    loadingPosition="start"
-                    loadingIndicator={
-                      <CircularProgress
-                        variant="determinate"
-                        value={Math.max(10, percentage)}
-                        sx={{ color: 'action.disabled', ml: 1 }}
-                        // Mui has style that overrides sx. Use style
-                        style={{ width: '20px', height: '20px' }}
-                      />
-                    }
-                  >
-                    {t('Download')}
-                  </Button>
-                )}
-              </Stack>
-              <TermsOfUseDialog
-                open={openTerms}
-                onClose={async () => {
-                  await setFieldValue('terms', false)
-                  setOpenTerms(false)
-                }}
-                onSubmit={async () => {
-                  await setFieldValue('terms', true)
-                  setOpenTerms(false)
-                }}
-              />
-            </Form>
-          )}
-        </Formik>
-      </>
+                  <div className="absolute bottom-3 right-3 flex items-center gap-2 rounded-full bg-black/70 px-3 py-1 text-xs font-semibold">
+                    <Play className="h-3 w-3" />
+                    <span>{duration}</span>
+                  </div>
+                </div>
+              )}
+              <div className="flex-1 space-y-3 text-left">
+                <p className="text-sm font-semibold tracking-widest text-red-100/70 uppercase">
+                  {t('Download Video')}
+                </p>
+                <h3 className="text-2xl font-bold leading-tight sm:text-3xl">
+                  {titleText}
+                </h3>
+                <div className="flex flex-wrap items-center gap-3 text-sm text-stone-200/80">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1">
+                    <Globe2 className="h-4 w-4" />
+                    <span className="font-semibold text-white">
+                      {language.name[0].value}
+                    </span>
+                  </div>
+                  <div className="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-stone-200">
+                    {t('Select a file size')}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <label className="text-sm font-semibold tracking-wide text-stone-200">
+                {t('Select a file size')}
+              </label>
+              <Select
+                value={selectedFile}
+                onValueChange={(value) => setSelectedFile(value)}
+                disabled={sortedDownloads.length === 0}
+              >
+                <SelectTrigger
+                  className="h-12 w-full rounded-xl border border-white/10 bg-white/5 text-base font-semibold text-white shadow-inner backdrop-blur-md"
+                  aria-label={t('Select a file size')}
+                  role="combobox"
+                >
+                  <SelectValue
+                    placeholder={t('No Downloads Available')}
+                    aria-label={selectedFile}
+                  />
+                </SelectTrigger>
+                <SelectContent className="border-white/10 bg-[#0f1117] text-white shadow-2xl">
+                  {sortedDownloads.map((downloadOption) => (
+                    <SelectItem
+                      key={downloadOption.quality}
+                      value={downloadOption.url}
+                      className="flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white hover:bg-white/10"
+                    >
+                      <span>{getQualityLabel(downloadOption.quality)}</span>
+                      <span className="text-white/70">
+                        ({formatBytes(downloadOption.size)})
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {sortedDownloads.length === 0 && (
+                <p className="text-sm font-semibold text-[#f87171]">
+                  {t('No Downloads Available')}
+                </p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3 text-sm text-stone-200">
+                <Checkbox
+                  id="terms"
+                  aria-label={t('I agree to the')}
+                  checked={agreedToTerms}
+                  disabled={sortedDownloads.length === 0}
+                  onCheckedChange={(checked) =>
+                    setAgreedToTerms(checked === true)
+                  }
+                  className="mt-1 border-white/50 data-[state=checked]:bg-white data-[state=checked]:text-gray-900"
+                />
+                <div>
+                  <div className="text-sm text-stone-200">
+                    {t('I agree to the')}{' '}
+                    <button
+                      type="button"
+                      onClick={() => setOpenTerms(true)}
+                      className="font-semibold text-[#cb333b] underline underline-offset-4 hover:text-white"
+                    >
+                      {t('Terms of Use')}
+                    </button>
+                  </div>
+                  <p className="mt-1 text-xs text-stone-400">
+                    {t('Download Video')}
+                  </p>
+                </div>
+              </div>
+              {renderDownloadControl()}
+            </div>
+          </div>
+        </DialogContent>
+      </DialogPortal>
+
+      <TermsOfUseDialog
+        open={openTerms}
+        onClose={() => {
+          setAgreedToTerms(false)
+          setOpenTerms(false)
+        }}
+        onSubmit={() => {
+          setAgreedToTerms(true)
+          setOpenTerms(false)
+        }}
+      />
     </Dialog>
   )
 }
