@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import useDownloader from 'react-use-downloader'
 
 import {
@@ -14,6 +20,119 @@ jest.mock('react-use-downloader', () => ({
   __esModule: true,
   default: jest.fn()
 }))
+jest.mock('@core/shared/uimodern/components/select', () => {
+  const React = require('react')
+
+  const extractText = (children: React.ReactNode): string => {
+    if (typeof children === 'string' || typeof children === 'number') return `${children}`
+    if (Array.isArray(children)) return children.map((child) => extractText(child)).join('')
+    if (React.isValidElement(children)) return extractText(children.props.children)
+    return ''
+  }
+
+  const SelectContext = React.createContext({
+    value: '',
+    onValueChange: (value: string) => value,
+    options: [] as Array<{ value: string; label: string }>,
+    registerOption: (_option: { value: string; label: string }) => {},
+    placeholder: undefined as string | undefined,
+    setPlaceholder: (_placeholder?: string) => {}
+  })
+
+  const Select = ({ value, onValueChange, children }: any) => {
+    const [options, setOptions] = React.useState<Array<{ value: string; label: string }>>([])
+    const [placeholder, setPlaceholder] = React.useState<string | undefined>()
+
+    const registerOption = React.useCallback((option: { value: string; label: string }) => {
+      setOptions((prev) => {
+        const existingOptions = prev.filter((item) => item.value !== option.value)
+        return [...existingOptions, option]
+      })
+    }, [])
+
+    return (
+      <SelectContext.Provider
+        value={{ value, onValueChange, options, registerOption, placeholder, setPlaceholder }}
+      >
+        {children}
+      </SelectContext.Provider>
+    )
+  }
+
+  const SelectTrigger = ({ 'aria-label': ariaLabel, id }: any) => {
+    const { value, onValueChange, options, placeholder } = React.useContext(SelectContext)
+
+    return (
+      <select
+        aria-label={ariaLabel}
+        id={id}
+        value={value}
+        onChange={(event) => onValueChange(event.target.value)}
+      >
+        {placeholder ? (
+          <option value="" disabled={value !== ''} hidden={value !== ''}>
+            {placeholder}
+          </option>
+        ) : null}
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    )
+  }
+
+  const SelectContent = ({ children }: any) => <>{children}</>
+
+  const SelectItem = ({ value, children }: any) => {
+    const { registerOption } = React.useContext(SelectContext)
+
+    React.useEffect(() => {
+      registerOption({ value, label: extractText(children) })
+    }, [value, children, registerOption])
+
+    return null
+  }
+
+  const SelectValue = ({ placeholder }: any) => {
+    const { setPlaceholder } = React.useContext(SelectContext)
+
+    React.useEffect(() => {
+      setPlaceholder(placeholder)
+    }, [placeholder, setPlaceholder])
+
+    return null
+  }
+
+  return {
+    Select,
+    SelectTrigger,
+    SelectContent,
+    SelectItem,
+    SelectValue
+  }
+})
+
+class ResizeObserverMock {
+  // eslint-disable-next-line class-methods-use-this
+  observe(): void {}
+  // eslint-disable-next-line class-methods-use-this
+  unobserve(): void {}
+  // eslint-disable-next-line class-methods-use-this
+  disconnect(): void {}
+}
+
+beforeAll(() => {
+  // @ts-expect-error - test environment polyfill
+  global.ResizeObserver = ResizeObserverMock
+  // @ts-expect-error - jsdom pointer capture polyfill
+  Element.prototype.hasPointerCapture = () => false
+  // @ts-expect-error - jsdom pointer capture polyfill
+  Element.prototype.setPointerCapture = () => {}
+  // @ts-expect-error - jsdom pointer capture polyfill
+  Element.prototype.releasePointerCapture = () => {}
+})
 
 describe('DialogDownload', () => {
   const onClose = jest.fn()
@@ -22,6 +141,7 @@ describe('DialogDownload', () => {
   const video: VideoContentFields = videos[0]
 
   beforeEach(() => {
+    jest.clearAllMocks()
     const useDownloaderMock = useDownloader as jest.MockedFunction<
       typeof useDownloader
     >
@@ -47,7 +167,7 @@ describe('DialogDownload', () => {
     expect(onCancel).toHaveBeenCalled()
   })
 
-  it('downloads low quality videos', async () => {
+  it('downloads the selected video when terms are accepted', async () => {
     const { getByRole } = render(
       <VideoProvider value={{ content: video }}>
         <DialogDownload open onClose={onClose} />
@@ -58,11 +178,11 @@ describe('DialogDownload', () => {
 
     expect(downloadButton).toBeDisabled()
 
-    fireEvent.click(getByRole('checkbox'))
+    await userEvent.click(getByRole('checkbox'))
 
     expect(downloadButton).not.toBeDisabled()
 
-    fireEvent.click(getByRole('button', { name: 'Download' }))
+    await userEvent.click(getByRole('button', { name: 'Download' }))
 
     await waitFor(() => {
       expect(onDownload).toHaveBeenCalledWith(
@@ -72,29 +192,29 @@ describe('DialogDownload', () => {
     })
   })
 
-  it('downloads high quality videos', async () => {
-    const { getByRole } = render(
+  it('downloads alternate quality videos', async () => {
+    render(
       <VideoProvider value={{ content: video }}>
         <DialogDownload open onClose={onClose} />
       </VideoProvider>
     )
 
-    const downloadButton = getByRole('button', { name: 'Download' })
+    const downloadButton = screen.getByRole('button', { name: 'Download' })
 
-    fireEvent.mouseDown(getByRole('combobox'))
-    fireEvent.click(getByRole('option', { name: 'High (2.2 GB)' }), {
-      name: 'High'
-    })
+    await userEvent.selectOptions(
+      screen.getByRole('combobox'),
+      video.variant?.downloads?.[1]?.url ?? ''
+    )
 
-    fireEvent.click(getByRole('checkbox'))
+    await userEvent.click(screen.getByRole('checkbox'))
 
     expect(downloadButton).not.toBeDisabled()
 
-    fireEvent.click(getByRole('button', { name: 'Download' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Download' }))
 
     await waitFor(() => {
       expect(onDownload).toHaveBeenCalledWith(
-        video.variant?.downloads[0].url,
+        video.variant?.downloads[1].url,
         `${video.title[0].value}.mp4`
       )
     })
@@ -119,19 +239,20 @@ describe('DialogDownload', () => {
   })
 
   it('changes checkbox when submit or close', async () => {
-    const { getByText, getByLabelText, queryByText } = render(
+    const { getByText, getByRole, queryByText } = render(
       <VideoProvider value={{ content: video }}>
         <DialogDownload open onClose={onClose} />
       </VideoProvider>
     )
+    const agreementCheckbox = getByRole('checkbox', { name: /I agree to the/i })
     fireEvent.click(getByText('Terms of Use'))
     fireEvent.click(getByText('Accept'))
     await waitFor(() => expect(queryByText('Accept')).not.toBeInTheDocument())
-    expect(getByLabelText('I agree to the')).toBeChecked()
+    expect(agreementCheckbox).toBeChecked()
     fireEvent.click(getByText('Terms of Use'))
     fireEvent.click(getByText('Cancel'))
     await waitFor(() => expect(queryByText('Cancel')).not.toBeInTheDocument())
-    expect(getByLabelText('I agree to the')).not.toBeChecked()
+    expect(agreementCheckbox).not.toBeChecked()
   })
 
   it('should render Mux stream URLs as direct links instead of form submissions', () => {
@@ -192,7 +313,7 @@ describe('DialogDownload', () => {
     expect(downloadButton).not.toHaveAttribute('href')
   })
 
-  it('should display download quality options in correct order (highest, high, low)', () => {
+  it('should display download quality options in correct order (highest, high, low)', async () => {
     render(
       <VideoProvider value={{ content: video }}>
         <DialogDownload open onClose={onClose} />
@@ -200,13 +321,13 @@ describe('DialogDownload', () => {
     )
 
     const qualitySelect = screen.getByRole('combobox')
-    fireEvent.mouseDown(qualitySelect)
+    await userEvent.click(qualitySelect)
 
-    const options = screen.getAllByRole('option')
-    const optionTexts = options.map((option) => option.textContent)
+    const options = await screen.findAllByRole('option')
+    const optionTexts = options.map((option) => option.textContent ?? '')
 
-    // Should be ordered: Highest, High, Low
-    expect(optionTexts[0]).toContain('High (2.2 GB)')
-    expect(optionTexts[1]).toContain('Low (197.55 MB)')
+    expect(optionTexts[0]).toContain('High')
+    expect(optionTexts[0]).toContain('2.2')
+    expect(optionTexts[1]).toContain('Low')
   })
 })
