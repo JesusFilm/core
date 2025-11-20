@@ -15,6 +15,7 @@
 ## Obstacles & Resolutions
 
 - **Portal styling**: The shared dialog component auto-renders its own overlay, so to customize it like the search modal we follow the same pattern—render an explicit `DialogPortal`/`DialogOverlay` before `DialogContent` and pass the desired Tailwind classes.
+- **Subtitle defaults**: The single video hero started adding subtitle tracks whenever the player was muted (the default state), which surfaced captions even when the user preference was off. We now gate subtitle updates strictly on the explicit `subtitleOn` flag so muted playback no longer forces captions on.
 
 ## Test Coverage
 
@@ -34,3 +35,4 @@
 - [x] Replace the legacy collection experience with a new `PageCollection` template that mirrors the modern single-video layout while using collection metadata and artwork.
 - [x] Swap the video player hero for a collection thumbnail hero and remove the Bible quotes + discussion widgets from collection views.
 - [x] Surface collection children directly beneath the description via `SectionVideoGrid` and expose the search modal language filter UI for switching languages.
+- [x] Keep subtitles hidden by default on the single video hero by respecting the stored subtitle preference instead of enabling captions whenever audio is muted.

@@ -452,16 +452,11 @@ export function VideoBlockPlayer({
     void subtitleUpdate({
       player,
       subtitleLanguageId: effectiveSubtitleLanguageId,
-      subtitleOn: mute || subtitleOn
+      subtitleOn: subtitleOn === true
     })
   }, [
-    playerRef,
     effectiveSubtitleLanguageId,
     subtitleOn,
-    variant,
-    mute,
-    subtitleUpdate,
-    playerReady,
     subtitleUpdate,
     playerReady
   ])
