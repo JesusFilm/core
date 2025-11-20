@@ -30,7 +30,10 @@ const createMockPlayer = (): Player & {
     textTracks: jest.fn(() => mockTracks),
     addRemoteTextTrack: mockAddRemoteTextTrack,
     addEventListener: jest.fn(),
-    removeEventListener: jest.fn()
+    removeEventListener: jest.fn(),
+    el_: {
+      parentNode: {}
+    }
   } as unknown as Player & {
     textTracks?: () => TextTrackList
     addRemoteTextTrack: jest.Mock
@@ -82,6 +85,13 @@ describe('useSubtitleUpdate', () => {
     await waitFor(() => {
       expect(getSubtitlesMockResults).toHaveBeenCalled()
     })
+
+    const tracks = mockPlayer.textTracks?.()
+
+    if (tracks) {
+      expect(tracks[0]?.mode).toBe('hidden')
+      expect(tracks[1]?.mode).toBe('disabled')
+    }
   })
 
   it('should disable all subtitle tracks when subtitles are off', async () => {

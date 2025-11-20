@@ -121,7 +121,10 @@ export function HeroSubtitleOverlay({
 
       for (let idx = 0; idx < currentTextTracks.length; idx++) {
         const track = currentTextTracks[idx]
-        if (track.kind === 'subtitles' && track.mode === 'showing') {
+        if (
+          track.kind === 'subtitles' &&
+          (track.mode === 'showing' || track.mode === 'hidden')
+        ) {
           activeTrack = track
           break
         }

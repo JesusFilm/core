@@ -98,7 +98,7 @@ export function useSubtitleUpdate() {
               kind: 'subtitles',
               srclang: selected.language.bcp47 ?? undefined,
               label: selected.language.name.at(0)?.value,
-              mode: 'showing',
+              mode: 'hidden',
               default: true
             },
             true
@@ -114,7 +114,7 @@ export function useSubtitleUpdate() {
             const track = updatedTracks[i]
             if (track.kind === 'subtitles') {
               if (track.id === subtitleLanguageId) {
-                track.mode = 'showing'
+                track.mode = 'hidden'
               } else {
                 track.mode = 'disabled'
               }
