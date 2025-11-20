@@ -21,7 +21,10 @@ type FieldProps = Pick<
   | 'inputProps'
   | 'sx'
   | 'type'
+  | 'size'
   | 'onFocus'
+  | 'slotProps'
+  | 'variant'
 >
 
 interface TextFieldFormProps extends FieldProps {
@@ -103,14 +106,14 @@ export function TextFieldForm({
         formikRef.current = { handleSubmit, ...formikProps }
 
         return (
-          <Form>
+          <Form style={{ width: '100%' }}>
             <TextField
               {...muiFieldProps}
               id={id}
+              fullWidth
               name={id}
               inputRef={textFieldRef}
-              variant="filled"
-              fullWidth
+              variant={muiFieldProps.variant ?? 'filled'}
               value={values[id]}
               error={Boolean(errors[id])}
               helperText={errors[id] != null ? errors[id] : helperText}
