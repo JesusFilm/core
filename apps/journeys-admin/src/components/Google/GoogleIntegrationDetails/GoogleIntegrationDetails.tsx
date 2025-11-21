@@ -167,7 +167,7 @@ export function GoogleIntegrationDetails(): ReactElement {
           {t('Remove')}
         </Button>
       </Stack>
-      <Stack gap={4}>
+      {/* <Stack gap={4}>
         <Typography variant="h6">{t('Google Sheets Syncs')}</Typography>
         {syncsLoading ? (
           <Box
@@ -440,7 +440,7 @@ export function GoogleIntegrationDetails(): ReactElement {
             </Stack>
           </>
         )}
-      </Stack>
+      </Stack> */}
 
       <GoogleIntegrationRemoveDialog
         open={confirmOpen}

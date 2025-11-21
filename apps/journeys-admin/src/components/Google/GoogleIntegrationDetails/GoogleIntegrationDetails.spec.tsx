@@ -129,7 +129,7 @@ describe('GoogleIntegrationDetails', () => {
     expect(getByRole('button', { name: 'Remove' })).toBeDisabled()
   })
 
-  it('opens delete sync dialog when delete action is clicked', async () => {
+  it.skip('opens delete sync dialog when delete action is clicked', async () => {
     setupMocks({})
 
     const googleSheetsSyncsMock: MockedResponse = {
