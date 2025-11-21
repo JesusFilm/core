@@ -12,7 +12,6 @@ import { ReactElement, Suspense } from 'react'
 
 import { GoogleIntegrationDetails } from '../../../../src/components/Google'
 import { GrowthSpacesIntegrationDetails } from '../../../../src/components/GrowthSpaces'
-import { useIntegrationQuery } from '../../../../src/libs/useIntegrationQuery'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
