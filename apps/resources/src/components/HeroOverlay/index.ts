@@ -1,0 +1,1 @@
+export { HeroOverlay } from './HeroOverlay'

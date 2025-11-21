@@ -1,0 +1,1 @@
+export { BibleQuotesCarouselHeader } from './BibleQuotesCarouselHeader'
