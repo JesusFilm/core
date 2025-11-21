@@ -38,6 +38,7 @@ export interface GetIntegration_integrations_IntegrationGoogle_team {
 export interface GetIntegration_integrations_IntegrationGoogle_user {
   __typename: "User";
   id: string;
+  email: string;
 }
 
 export interface GetIntegration_integrations_IntegrationGoogle {

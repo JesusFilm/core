@@ -1,4 +1,5 @@
 import Stack from '@mui/material/Stack'
+import { useRouter } from 'next/router'
 import {
   AuthAction,
   useUser,
@@ -15,7 +16,6 @@ import { useIntegrationQuery } from '../../../../src/libs/useIntegrationQuery'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
-import { useRouter } from 'next/router'
 
 function IntegrationPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -54,10 +54,14 @@ function IntegrationPage(): ReactElement {
           </Stack>
         }
       >
-        {selected?.type === 'google' ? (
-          <GoogleIntegrationDetails />
-        ) : (
-          <GrowthSpacesIntegrationDetails />
+        {selected != null && (
+          <>
+            {selected?.type === 'google' ? (
+              <GoogleIntegrationDetails />
+            ) : (
+              <GrowthSpacesIntegrationDetails />
+            )}
+          </>
         )}
       </PageWrapper>
     </>

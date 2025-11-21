@@ -1,4 +1,4 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
@@ -14,42 +14,21 @@ import TableRow from '@mui/material/TableRow'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { format } from 'date-fns'
-import { useTranslation } from 'next-i18next'
 import { useRouter } from 'next/router'
-import { useSnackbar } from 'notistack'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'next-i18next'
+import { ReactElement, useEffect, useState } from 'react'
 
-import { Dialog } from '@core/shared/ui/Dialog'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
 import { UserTeamRole } from '../../../../__generated__/globalTypes'
-import {
-  GET_INTEGRATION,
-  useIntegrationQuery
-} from '../../../libs/useIntegrationQuery'
 import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
+import { useIntegrationQuery } from '../../../libs/useIntegrationQuery'
 import { useUserTeamsAndInvitesQuery } from '../../../libs/useUserTeamsAndInvitesQuery'
 
-export const INTEGRATION_GOOGLE_UPDATE = gql`
-  mutation IntegrationGoogleUpdate(
-    $id: ID!
-    $input: IntegrationGoogleUpdateInput!
-  ) {
-    integrationGoogleUpdate(id: $id, input: $input) {
-      id
-    }
-  }
-`
+import { GoogleIntegrationDeleteSyncDialog } from './GoogleIntegrationDeleteSyncDialog/GoogleIntegrationDeleteSyncDialog'
+import { GoogleIntegrationRemoveDialog } from './GoogleIntegrationRemoveDialog/GoogleIntegrationRemoveDialog'
 
-export const INTEGRATION_DELETE = gql`
-  mutation IntegrationDelete($id: ID!) {
-    integrationDelete(id: $id) {
-      id
-    }
-  }
-`
-
-const GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION = gql`
+export const GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION = gql`
   query GoogleSheetsSyncsByIntegration($filter: GoogleSheetsSyncsFilter!) {
     googleSheetsSyncs(filter: $filter) {
       id
@@ -63,14 +42,6 @@ const GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION = gql`
         slug
         title
       }
-    }
-  }
-`
-
-const DELETE_GOOGLE_SHEETS_SYNC = gql`
-  mutation GoogleIntegrationDetailsSyncDelete($id: ID!) {
-    googleSheetsSyncDelete(id: $id) {
-      id
     }
   }
 `
@@ -93,12 +64,8 @@ interface GoogleSheetsSyncsByIntegrationQuery {
 
 export function GoogleIntegrationDetails(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
   const integrationId = router.query.integrationId
-  const [code, setCode] = useState<string | undefined>()
-  const [redirectUri, setRedirectUri] = useState<string | undefined>()
-  const [loading, setLoading] = useState<boolean>(false)
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false)
 
   const { data, loading: integrationLoading } = useIntegrationQuery({
@@ -113,10 +80,6 @@ export function GoogleIntegrationDetails(): ReactElement {
         }
       : undefined
   )
-
-  const [integrationGoogleUpdate] = useMutation(INTEGRATION_GOOGLE_UPDATE)
-  const [integrationDelete] = useMutation(INTEGRATION_DELETE)
-  const [deleteSync] = useMutation(DELETE_GOOGLE_SHEETS_SYNC)
 
   const { data: syncsData, loading: syncsLoading } =
     useQuery<GoogleSheetsSyncsByIntegrationQuery>(
@@ -135,7 +98,6 @@ export function GoogleIntegrationDetails(): ReactElement {
   const [syncPendingDelete, setSyncPendingDelete] = useState<string | null>(
     null
   )
-  const [deletingSyncId, setDeletingSyncId] = useState<string | null>(null)
 
   function getStartedByLabel(sync: (typeof googleSheetsSyncs)[number]): string {
     if (sync.email != null && sync.email !== '') return sync.email
@@ -147,198 +109,38 @@ export function GoogleIntegrationDetails(): ReactElement {
   }
 
   function handleCloseDeleteDialog(): void {
-    if (deletingSyncId != null) return
     setSyncPendingDelete(null)
-  }
-
-  async function handleConfirmDeleteSync(): Promise<void> {
-    if (syncPendingDelete == null) return
-
-    try {
-      setDeletingSyncId(syncPendingDelete)
-      await deleteSync({
-        variables: { id: syncPendingDelete },
-        refetchQueries: [
-          {
-            query: GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION,
-            variables: { filter: { integrationId } }
-          }
-        ],
-        awaitRefetchQueries: true
-      })
-      enqueueSnackbar(t('Sync removed'), { variant: 'success' })
-      setSyncPendingDelete(null)
-    } catch (error) {
-      if (error instanceof Error) {
-        enqueueSnackbar(error.message, { variant: 'error' })
-      }
-    } finally {
-      setDeletingSyncId(null)
-    }
   }
   useEffect(() => {
     void loadUser()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const isOwner = useMemo(() => {
-    const integration = data?.integrations.find((i) => i.id === integrationId)
-    // supports both union variants
-    // @ts-expect-error union narrowing not applied on fragmentless union here
-    const userId: string | undefined = integration?.user?.id
-    // @ts-expect-error accountEmail only on IntegrationGoogle
-    const emailFromIntegration: string | undefined = integration?.accountEmail
-    if (userId != null && userId === currentUser.id) return true
-    if (
-      emailFromIntegration != null &&
-      emailFromIntegration.length > 0 &&
-      currentUser.email.length > 0 &&
-      emailFromIntegration.toLowerCase() === currentUser.email.toLowerCase()
-    )
-      return true
-    return false
-  }, [data?.integrations, integrationId, currentUser.id])
+  const currentUserId = currentUser?.id
 
-  const isTeamManager = useMemo(() => {
-    return (
-      teamData?.userTeams.some(
-        (ut) =>
-          ut.user.id === currentUser.id && ut.role === UserTeamRole.manager
-      ) === true
-    )
-  }, [teamData?.userTeams, currentUser.id])
+  const integrationOwner = data?.integrations.find(
+    (integration) => integration.id === integrationId
+  )
+  const integrationOwnerId =
+    integrationOwner?.__typename === 'IntegrationGoogle'
+      ? integrationOwner.user?.id
+      : undefined
 
-  const canManageSyncs = isOwner || isTeamManager
+  const isIntegrationOwner =
+    integrationOwnerId != null &&
+    currentUserId != null &&
+    integrationOwnerId === currentUserId
 
-  const staticRedirectUri = useMemo(() => {
-    if (typeof window === 'undefined') return undefined
-    const origin = window.location.origin
-    return `${origin}/api/integrations/google/callback`
-  }, [])
+  const isTeamManager =
+    currentUserId != null &&
+    (teamData?.userTeams?.some(
+      (userTeam) =>
+        userTeam.user.id === currentUserId &&
+        userTeam.role === UserTeamRole.manager
+    ) ??
+      false)
 
-  const oauthUrl = useMemo(() => {
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
-    if (clientId == null || staticRedirectUri == null) return undefined
-    const state = JSON.stringify({
-      teamId: router.query.teamId as string,
-      returnTo: window.location.pathname
-    })
-    const params = new URLSearchParams({
-      client_id: clientId,
-      redirect_uri: staticRedirectUri,
-      response_type: 'code',
-      scope:
-        'openid email profile https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets',
-      access_type: 'offline',
-      include_granted_scopes: 'true',
-      prompt: 'consent',
-      state
-    })
-    return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`
-  }, [staticRedirectUri, router.query.teamId])
-
-  async function handleClick(): Promise<void> {
-    try {
-      setLoading(true)
-      const { data } = await integrationGoogleUpdate({
-        variables: {
-          id: integrationId,
-          input: {
-            code,
-            redirectUri
-          }
-        }
-      })
-      if (data?.integrationGoogleUpdate?.id != null) {
-        enqueueSnackbar(t('Google settings saved'), {
-          variant: 'success',
-          preventDuplicate: true
-        })
-      } else {
-        enqueueSnackbar(
-          t('Google settings failed. Reload the page or try again.'),
-          {
-            variant: 'error',
-            preventDuplicate: true
-          }
-        )
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    const authCode = router.query.code as string | undefined
-    if (authCode != null && staticRedirectUri != null) {
-      setCode(authCode)
-      setRedirectUri(staticRedirectUri)
-      void handleClick()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.query.code, staticRedirectUri])
-
-  async function handleDelete(): Promise<void> {
-    try {
-      setLoading(true)
-      const { data } = await integrationDelete({
-        variables: {
-          id: integrationId
-        },
-        refetchQueries: [
-          {
-            query: GET_INTEGRATION,
-            variables: { teamId: router.query.teamId as string }
-          }
-        ],
-        awaitRefetchQueries: true
-      })
-      if (data?.integrationDelete?.id != null) {
-        await router.push(
-          `/teams/${router.query.teamId as string}/integrations`
-        )
-        enqueueSnackbar(t('Google integration deleted'), {
-          variant: 'success',
-          preventDuplicate: true
-        })
-      } else {
-        enqueueSnackbar(
-          t('Google settings failed. Reload the page or try again.'),
-          {
-            variant: 'error',
-            preventDuplicate: true
-          }
-        )
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        enqueueSnackbar(error.message, {
-          variant: 'error',
-          preventDuplicate: true
-        })
-      }
-    } finally {
-      setLoading(false)
-      setConfirmOpen(false)
-    }
-  }
-
-  useEffect(() => {
-    const selectedIntegration = data?.integrations.find(
-      (integration) => integration.id === integrationId
-    )
-    if (selectedIntegration != null) {
-      setCode(undefined)
-      setRedirectUri(undefined)
-    }
-  }, [data?.integrations, integrationId])
+  const canManageSyncs = isIntegrationOwner || isTeamManager
 
   return (
     <Stack gap={4}>
@@ -347,69 +149,23 @@ export function GoogleIntegrationDetails(): ReactElement {
           .filter((i) => i.id === integrationId)
           .map((i) => (
             <Stack key={i.id} direction="row" justifyContent="space-between">
-              <span>{t('Connected Google Account')}</span>
-              {
-                // @ts-expect-error union narrowing not applied
-                i.accountEmail ?? t('Unknown')
-              }
+              <Typography variant="body1" component="span">
+                {t('Connected Google Account')}
+              </Typography>
+              {i.__typename === 'IntegrationGoogle'
+                ? (i.accountEmail ?? t('Unknown'))
+                : t('Unknown')}
             </Stack>
           ))}
       </Stack>
       <Stack direction="row" justifyContent="flex-end">
         <Button
-          variant="outlined"
-          href={oauthUrl}
-          disabled={
-            oauthUrl == null ||
-            loading ||
-            integrationLoading ||
-            isOwner !== true
-          }
-          aria-label={t('Reconnect with Google')}
-        >
-          {t('Reconnect with Google')}
-        </Button>
-        <Button
           onClick={() => setConfirmOpen(true)}
-          disabled={
-            loading || integrationLoading || (!isOwner && !isTeamManager)
-          }
+          disabled={integrationLoading || !canManageSyncs}
         >
           {t('Remove')}
         </Button>
       </Stack>
-      <Dialog
-        open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
-        dialogTitle={{
-          title: t('Remove Google Integration'),
-          closeButton: true
-        }}
-        dialogActionChildren={
-          <Stack direction="row" gap={2}>
-            <Button onClick={() => setConfirmOpen(false)} disabled={loading}>
-              {t('Cancel')}
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
-              onClick={handleDelete}
-              loading={loading}
-            >
-              {t('Remove Integration')}
-            </Button>
-          </Stack>
-        }
-      >
-        <Stack gap={2}>
-          <span>
-            {t(
-              'Removing this Google integration will mark all active Google Sheets syncs as removed and unlink them from this account. This cannot be undone.'
-            )}
-          </span>
-        </Stack>
-      </Dialog>
-
       <Stack gap={4}>
         <Typography variant="h6">{t('Google Sheets Syncs')}</Typography>
         {syncsLoading ? (
@@ -550,20 +306,11 @@ export function GoogleIntegrationDetails(): ReactElement {
                                   aria-label={t('Delete sync')}
                                   color="error"
                                   size="small"
-                                  disabled={deletingSyncId === sync.id}
                                   onClick={() =>
                                     handleRequestDeleteSync(sync.id)
                                   }
                                 >
-                                  {deletingSyncId === sync.id ? (
-                                    <CircularProgress
-                                      size={18}
-                                      color="inherit"
-                                      aria-label={t('Deleting sync')}
-                                    />
-                                  ) : (
-                                    <Trash2Icon width={18} height={18} />
-                                  )}
+                                  <Trash2Icon width={18} height={18} />
                                 </IconButton>
                               </TableCell>
                             )}
@@ -694,47 +441,28 @@ export function GoogleIntegrationDetails(): ReactElement {
         )}
       </Stack>
 
-      <Dialog
-        open={syncPendingDelete != null}
-        onClose={handleCloseDeleteDialog}
-        dialogTitle={{
-          title: t('Delete Google Sheets Sync'),
-          closeButton: true
-        }}
-        divider={false}
-        maxWidth="sm"
-        dialogActionChildren={
-          <Stack direction="row" gap={2}>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={handleCloseDeleteDialog}
-              disabled={deletingSyncId != null}
-            >
-              {t('Cancel')}
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
-              onClick={handleConfirmDeleteSync}
-              loading={deletingSyncId != null}
-            >
-              {t('Delete Sync')}
-            </Button>
-          </Stack>
+      <GoogleIntegrationRemoveDialog
+        open={confirmOpen}
+        integrationId={
+          typeof integrationId === 'string' ? integrationId : undefined
         }
-      >
-        <Stack gap={2}>
-          <Typography variant="body1">
-            {t(
-              "Data will no longer update in the associated Google Sheet if you delete this sync. Existing data will remain, but new updates won't be sent."
-            )}
-          </Typography>
-          <Typography variant="body1">
-            {t('You will have to start a new sync to re-start syncing.')}
-          </Typography>
-        </Stack>
-      </Dialog>
+        teamId={
+          typeof router.query.teamId === 'string'
+            ? router.query.teamId
+            : undefined
+        }
+        handleClose={() => setConfirmOpen(false)}
+      />
+
+      {typeof integrationId === 'string' && (
+        <GoogleIntegrationDeleteSyncDialog
+          open={syncPendingDelete != null}
+          syncId={syncPendingDelete}
+          integrationId={integrationId}
+          syncsQueryDocument={GET_GOOGLE_SHEETS_SYNCS_BY_INTEGRATION}
+          handleClose={handleCloseDeleteDialog}
+        />
+      )}
     </Stack>
   )
 }

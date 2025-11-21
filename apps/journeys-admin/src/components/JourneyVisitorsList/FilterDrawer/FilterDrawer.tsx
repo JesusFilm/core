@@ -207,7 +207,7 @@ export function FilterDrawer({
               >
                 <span>
                   <Button
-                    variant="contained"
+                    variant="outlined"
                     color="secondary"
                     sx={{ width: '100%' }}
                     aria-label={`${t('Export Data')} - ${t(
@@ -222,7 +222,7 @@ export function FilterDrawer({
               </Tooltip>
             ) : (
               <Button
-                variant="contained"
+                variant="outlined"
                 color="secondary"
                 sx={{ width: '100%' }}
                 onClick={() => setShowExportDialog(true)}

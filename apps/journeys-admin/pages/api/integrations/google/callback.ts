@@ -40,7 +40,7 @@ export default async function handler(
     parsed.teamId != null ? `/teams/${parsed.teamId}/integrations` : '/'
 
   const returnToPath = isSafeRelativePath(parsed.returnTo)
-    ? parsed.returnTo!
+    ? parsed.returnTo
     : fallbackPath
 
   const redirectUrl = new URL(returnToPath, origin)

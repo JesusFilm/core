@@ -25,6 +25,7 @@ export function GoogleCreateIntegration(): ReactElement {
   const [code, setCode] = useState<string | undefined>()
   const [redirectUri, setRedirectUri] = useState<string | undefined>()
   const [loading, setLoading] = useState<boolean>(false)
+  const [oauthUrl, setOauthUrl] = useState<string | undefined>()
 
   const [integrationGoogleCreate] = useMutation(INTEGRATION_GOOGLE_CREATE)
 
@@ -38,9 +39,14 @@ export function GoogleCreateIntegration(): ReactElement {
     return router.query.returnTo as string | undefined
   }, [router.query.returnTo])
 
-  const oauthUrl = useMemo(() => {
-    if (teamId == null) return undefined
-    return getGoogleOAuthUrl(teamId, returnTo)
+  useEffect(() => {
+    if (teamId == null) {
+      setOauthUrl(undefined)
+      return
+    }
+
+    const clientOAuthUrl = getGoogleOAuthUrl(teamId, returnTo)
+    setOauthUrl(clientOAuthUrl)
   }, [teamId, returnTo])
 
   useEffect(() => {
