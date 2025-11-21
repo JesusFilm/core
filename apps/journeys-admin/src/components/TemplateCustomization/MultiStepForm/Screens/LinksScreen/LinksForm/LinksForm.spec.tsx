@@ -333,4 +333,53 @@ describe('LinksForm', () => {
     fireEvent.change(input, { target: { value: 'example.com' } })
     expect(setFieldValue).toHaveBeenCalledWith('url-1', 'https://example.com')
   })
+
+  it('should focus next input on enter keypress in phone field', () => {
+    const links: JourneyLink[] = [
+      {
+        id: 'phone-1',
+        linkType: 'phone',
+        url: '+73333',
+        label: 'Phone Link',
+        parentStepId: null,
+        customizable: null,
+        contactAction: ContactActionType.call
+      },
+      {
+        id: 'url-1',
+        linkType: 'url',
+        url: 'https://example.com',
+        label: 'URL Link',
+        parentStepId: null,
+        customizable: null
+      }
+    ]
+
+    render(
+      <Formik
+        initialValues={{
+          'phone-1__cc': '+7',
+          'phone-1__local': '3333',
+          'url-1': ''
+        }}
+        onSubmit={jest.fn()}
+      >
+        {(formik) => (
+          <FormikProvider value={formik}>
+            <LinksForm links={links} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+
+    const phoneInput = screen.getByLabelText('Edit Phone Link Country')
+
+    phoneInput.focus()
+    expect(document.activeElement).toBe(phoneInput)
+
+    fireEvent.keyDown(phoneInput, { key: 'Enter' })
+
+    const phoneNumberInput = screen.getByLabelText('Edit Phone Link')
+    expect(document.activeElement).toBe(phoneNumberInput)
+  })
 })

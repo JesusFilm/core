@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -10,6 +11,9 @@ import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 
 import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
 import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
+import { PhoneField } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/PhoneField/PhoneField'
+import { getFullPhoneNumber } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/utils/getFullPhoneNumber'
+import { normalizeCallingCode } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/utils/normalizeCallingCode'
 
 interface LinksFormProps {
   links: JourneyLink[]
@@ -54,12 +58,6 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
     void setFieldValue(name, url)
   }
 
-  function handlePhoneChange(e: React.ChangeEvent<HTMLInputElement>): void {
-    const { name, value } = e.target
-    // For phone numbers, just store the value as-is without protocol modifications
-    void setFieldValue(name, value)
-  }
-
   return (
     <Form id="linksForm" style={{ width: '100%' }}>
       <Stack sx={{ width: '100%' }}>
@@ -67,8 +65,13 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
           const fieldName = link.id
           const hasError =
             link.linkType === 'phone'
-              ? Boolean(touched?.[`${fieldName}__cc`] && errors?.[`${fieldName}__cc`]) ||
-                Boolean(touched?.[`${fieldName}__local`] && errors?.[`${fieldName}__local`])
+              ? Boolean(
+                  touched?.[`${fieldName}__cc`] && errors?.[`${fieldName}__cc`]
+                ) ||
+                Boolean(
+                  touched?.[`${fieldName}__local`] &&
+                    errors?.[`${fieldName}__local`]
+                )
               : Boolean(touched?.[fieldName]) && Boolean(errors?.[fieldName])
           return (
             <Stack key={fieldName} sx={{ width: '100%' }}>
@@ -84,22 +87,22 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
                   aria-label={t('Open link in new tab')}
                   onClick={() => {
                     if (link.linkType === 'phone') {
-                      const cc = values?.[`${fieldName}__cc`] ?? ''
-                      const local = values?.[`${fieldName}__local`] ?? ''
-                      const normCc = cc === '' ? '' : cc.startsWith('+') ? cc : `+${cc}`
-                      const ccDigits = normCc.replace(/[^\d]/g, '')
-                      const localDigits = (local ?? '').replace(/[^\d]/g, '')
-                      const full = ccDigits === '' && localDigits === '' ? '' : `+${ccDigits}${localDigits}`
+                      const fullPhoneNumber = getFullPhoneNumber(
+                        values?.[`${fieldName}__cc`] ?? '',
+                        values?.[`${fieldName}__local`] ?? ''
+                      )
                       handleOpenLink(
-                        full,
+                        fullPhoneNumber,
                         'phone',
-                        (link as { contactAction?: ContactActionType | null })?.contactAction ?? null
+                        (link as { contactAction?: ContactActionType | null })
+                          ?.contactAction ?? null
                       )
                     } else {
                       handleOpenLink(
                         values?.[fieldName],
                         link.linkType,
-                        (link as { contactAction?: ContactActionType | null })?.contactAction ?? null
+                        (link as { contactAction?: ContactActionType | null })
+                          ?.contactAction ?? null
                       )
                     }
                   }}
@@ -110,54 +113,40 @@ export function LinksForm({ links }: LinksFormProps): ReactElement {
                 </IconButton>
               </Stack>
               {link.linkType === 'phone' ? (
-                <Stack direction="row" spacing={2} sx={{ width: '100%' }}>
-                  <TextField
-                    id={`${fieldName}__cc`}
-                    name={`${fieldName}__cc`}
-                    variant="filled"
-                    hiddenLabel
-                    type="text"
-                    sx={{ maxWidth: 120 }}
-                    placeholder="+123"
-                    value={values?.[`${fieldName}__cc`] ?? ''}
-                    onChange={handlePhoneChange}
-                    onBlur={handleBlur}
-                    error={
-                      Boolean(touched?.[`${fieldName}__cc`]) &&
-                      Boolean(errors?.[`${fieldName}__cc`])
+                <Box
+                  onKeyDown={(e) => {
+                    // Because of how Forms are nested, default pressing enter reloads the page.
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      // Move focus to next focusable element
+                      const focusableElements = Array.from(
+                        document.querySelectorAll<HTMLElement>(
+                          'input, button, textarea, select, a[href], [tabindex]:not([tabindex="-1"])'
+                        )
+                      )
+                      const currentIndex = focusableElements.indexOf(
+                        document.activeElement as HTMLElement
+                      )
+                      const nextElement = focusableElements[currentIndex + 1]
+                      if (nextElement) {
+                        nextElement.focus()
+                      }
                     }
-                    aria-label={`${t('Edit')} ${link.label} ${t('Country')}`}
-                    helperText={
-                      Boolean(touched?.[`${fieldName}__cc`]) &&
-                      errors?.[`${fieldName}__cc`]
-                        ? (errors?.[`${fieldName}__cc`] as string)
-                        : ' '
-                    }
+                  }}
+                >
+                  <PhoneField
+                    callingCode={values?.[`${fieldName}__cc`] ?? ''}
+                    phoneNumber={values?.[`${fieldName}__local`] ?? ''}
+                    handleCallingCodeChange={(val) => {
+                      const normalized = normalizeCallingCode(val ?? '')
+                      void setFieldValue(`${fieldName}__cc`, normalized)
+                    }}
+                    handlePhoneNumberChange={(val) => {
+                      const sanitized = (val ?? '').replace(/[^\d]/g, '')
+                      void setFieldValue(`${fieldName}__local`, sanitized)
+                    }}
                   />
-                  <TextField
-                    id={`${fieldName}__local`}
-                    name={`${fieldName}__local`}
-                    variant="filled"
-                    hiddenLabel
-                    fullWidth
-                    type="tel"
-                    placeholder="0000000000"
-                    value={values?.[`${fieldName}__local`] ?? ''}
-                    onChange={handlePhoneChange}
-                    onBlur={handleBlur}
-                    error={
-                      Boolean(touched?.[`${fieldName}__local`]) &&
-                      Boolean(errors?.[`${fieldName}__local`])
-                    }
-                    aria-label={`${t('Edit')} ${link.label}`}
-                    helperText={
-                      Boolean(touched?.[`${fieldName}__local`]) &&
-                      errors?.[`${fieldName}__local`]
-                        ? (errors?.[`${fieldName}__local`] as string)
-                        : ' '
-                    }
-                  />
-                </Stack>
+                </Box>
               ) : (
                 <TextField
                   id={fieldName}
