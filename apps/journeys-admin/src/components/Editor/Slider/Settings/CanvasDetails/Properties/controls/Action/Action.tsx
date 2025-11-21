@@ -128,7 +128,7 @@ export function Action(): ReactElement {
         {isChat && <ChatAction ref={chatActionRef} />}
         {isPhone && <PhoneAction />}
         {action === 'NavigateToBlockAction' && <NavigateToBlockAction />}
-        {(isLink || isEmail || isChat) && journey?.template && (
+        {(isLink || isEmail || isChat || isPhone) && journey?.template && (
           <CustomizationToggle />
         )}
       </Stack>

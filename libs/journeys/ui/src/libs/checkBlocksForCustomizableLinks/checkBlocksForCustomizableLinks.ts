@@ -42,6 +42,10 @@ function checkActionBlock(action: Action): boolean {
       return action.customizable === true
     case 'EmailAction':
       return action.customizable === true
+    case 'PhoneAction':
+      return action.customizable === true
+    case 'ChatAction':
+      return action.customizable === true
     default:
       return false
   }
