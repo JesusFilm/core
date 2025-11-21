@@ -8,7 +8,7 @@ import {
 } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { NextSeo } from 'next-seo'
-import { ReactElement } from 'react'
+import { ReactElement, Suspense } from 'react'
 
 import { GoogleIntegrationDetails } from '../../../../src/components/Google'
 import { GrowthSpacesIntegrationDetails } from '../../../../src/components/GrowthSpaces'
@@ -16,6 +16,7 @@ import { useIntegrationQuery } from '../../../../src/libs/useIntegrationQuery'
 import { HelpScoutBeacon } from '../../../../src/components/HelpScoutBeacon'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { initAndAuthApp } from '../../../../src/libs/initAndAuthApp'
+import { useIntegrationQuery } from '../../../../src/libs/useIntegrationQuery'
 
 function IntegrationPage(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
