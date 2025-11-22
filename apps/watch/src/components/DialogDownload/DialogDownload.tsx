@@ -22,6 +22,12 @@ import {
   SelectTrigger,
   SelectValue
 } from '@core/shared/uimodern/components/select'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '@core/shared/uimodern/components/tooltip'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { VideoVariantDownloadQuality } from '../../../__generated__/globalTypes'
@@ -98,7 +104,8 @@ export function DialogDownload({
 
   useEffect(() => {
     if (open) {
-      setSelectedFile(sortedDownloads[0]?.url ?? '')
+      const firstDownloadUrl = sortedDownloads[0]?.url ?? ''
+      setSelectedFile(firstDownloadUrl)
       setAgreedToTerms(false)
     }
   }, [open, sortedDownloads])
@@ -156,6 +163,19 @@ export function DialogDownload({
   const canDownload = agreedToTerms && selectedFile !== ''
   const isMuxStream = selectedFile.startsWith('https://stream.mux.com/')
 
+  const getDisabledTooltipMessage = (): string => {
+    if (!agreedToTerms && selectedFile === '') {
+      return t('Please agree to the Terms of Use and select a file size')
+    }
+    if (!agreedToTerms) {
+      return t('Please agree to the Terms of Use')
+    }
+    if (selectedFile === '') {
+      return t('Please select a file size')
+    }
+    return ''
+  }
+
   const renderDownloadControl = (): ReactElement => {
     if (isMuxStream && canDownload) {
       return (
@@ -175,7 +195,7 @@ export function DialogDownload({
       )
     }
 
-    return (
+    const button = (
       <Button
         type="button"
         onClick={handleDownload}
@@ -209,13 +229,34 @@ export function DialogDownload({
         {t('Download')}
       </Button>
     )
+
+    if (!canDownload) {
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="inline-flex cursor-not-allowed [&>button]:pointer-events-none">
+              {button}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent
+            className="bg-stone-800 text-white border-white/20 z-[200]"
+            side="top"
+          >
+            {getDisabledTooltipMessage()}
+          </TooltipContent>
+        </Tooltip>
+      )
+    }
+
+    return button
   }
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogPortal>
-        <DialogOverlay className="blured-bg z-[100] bg-stone-900/40" />
-        <DialogContent
+    <TooltipProvider>
+      <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
+        <DialogPortal>
+          <DialogOverlay className="blured-bg z-[100] bg-stone-900/40" />
+          <DialogContent
           showCloseButton={false}
           data-testid={testId}
           className="fixed left-1/2 top-1/2 z-[101] w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-hidden border border-white/10 bg-gradient-to-b from-[#0f1117] to-[#0b0c10] text-white shadow-2xl outline-none [&>button]:focus-visible:outline-none"
@@ -275,20 +316,25 @@ export function DialogDownload({
               </label>
               <Select
                 value={selectedFile}
-                onValueChange={(value) => setSelectedFile(value)}
-                disabled={sortedDownloads.length === 0}
+                onValueChange={setSelectedFile}
+                disabled={sortedDownloads.length === 0 || isInProgress}
               >
                 <SelectTrigger
-                  className="h-12 w-full rounded-xl border border-white/10 bg-white/5 text-base font-semibold text-white shadow-inner backdrop-blur-md"
+                  className="h-12 w-full rounded-xl border border-white/10 bg-white/5 text-base font-semibold text-white shadow-inner backdrop-blur-md disabled:cursor-not-allowed disabled:opacity-50"
                   aria-label={t('Select a file size')}
-                  role="combobox"
                 >
                   <SelectValue
-                    placeholder={t('No Downloads Available')}
-                    aria-label={selectedFile}
+                    placeholder={
+                      sortedDownloads.length === 0
+                        ? t('No Downloads Available')
+                        : t('Select a file size')
+                    }
                   />
                 </SelectTrigger>
-                <SelectContent className="border-white/10 bg-[#0f1117] text-white shadow-2xl">
+                <SelectContent
+                  className="!z-[102] border-white/10 bg-[#0f1117] text-white shadow-2xl"
+                  position="popper"
+                >
                   {sortedDownloads.map((downloadOption) => (
                     <SelectItem
                       key={downloadOption.quality}
@@ -333,9 +379,6 @@ export function DialogDownload({
                       {t('Terms of Use')}
                     </button>
                   </div>
-                  <p className="mt-1 text-xs text-stone-400">
-                    {t('Download Video')}
-                  </p>
                 </div>
               </div>
               {renderDownloadControl()}
@@ -343,18 +386,19 @@ export function DialogDownload({
           </div>
         </DialogContent>
       </DialogPortal>
-
-      <TermsOfUseDialog
-        open={openTerms}
-        onClose={() => {
-          setAgreedToTerms(false)
-          setOpenTerms(false)
-        }}
-        onSubmit={() => {
-          setAgreedToTerms(true)
-          setOpenTerms(false)
-        }}
-      />
     </Dialog>
+
+    <TermsOfUseDialog
+      open={openTerms}
+      onClose={() => {
+        setAgreedToTerms(false)
+        setOpenTerms(false)
+      }}
+      onSubmit={() => {
+        setAgreedToTerms(true)
+        setOpenTerms(false)
+      }}
+    />
+    </TooltipProvider>
   )
 }

@@ -2,12 +2,12 @@ import last from 'lodash/last'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, memo } from 'react'
 
 import Play3 from '@core/shared/ui/icons/Play3'
 
 import { useBlurhash, blurImage } from '../../libs/blurhash'
-import { usePlayer } from '../../libs/playerContext'
+import { usePlayer, useThrottledPlayerProgress } from '../../libs/playerContext'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
 import { useThumbnailUrl } from '../../libs/thumbnail'
@@ -35,7 +35,7 @@ interface CardContentProps {
   containerSlug?: string
 }
 
-function CardContent({
+const CardContent = memo(function CardContent({
   data,
   active,
   isHovered,
@@ -90,7 +90,7 @@ function CardContent({
         className="beveled relative h-full w-full cursor-pointer rounded-lg border-none bg-transparent p-0 text-left disabled:cursor-default"
       >
         <ContentElement
-          className="relative flex h-full w-full cursor-pointer flex-col justify-end rounded-xl bg-black"
+          className="relative flex h-full w-full cursor-pointer flex-col justify-end rounded-xl bg-black overflow-hidden"
           {...(interactive && {
             tabIndex: 0,
             role: 'button',
@@ -132,8 +132,12 @@ function CardContent({
           {/* Progress Bar Overlay */}
           {active && playerProgress >= 5 && (
             <div
-              className="pointer-events-none absolute top-0 bottom-0 left-0 rounded-l-lg bg-stone-100/30 mix-blend-hard-light transition-[width] duration-1200 ease-linear"
-              style={{ width: `${playerProgress}%` }}
+              className="pointer-events-none absolute top-0 bottom-0 left-0 bg-stone-100/30 mix-blend-hard-light will-change-transform"
+              style={{
+                width: '100%',
+                transform: `scale3d(${playerProgress / 100}, 1, 1)`,
+                transformOrigin: 'left center'
+              }}
               data-testid="ProgressOverlay"
             />
           )}
@@ -176,7 +180,7 @@ function CardContent({
       </ContainerElement>
     </div>
   )
-}
+})
 
 export function VideoCard({
   data,
@@ -189,7 +193,9 @@ export function VideoCard({
   const { label } = getLabelDetails(t, data.label)
   const href = getWatchUrl(containerSlug, data.label, data.variant?.slug)
   const [isHovered, setIsHovered] = useState(false)
-  const { state: playerState } = usePlayer()
+  // Only subscribe to progress updates for active cards to prevent unnecessary re-renders
+  // Throttle updates to ~10fps for smooth animation without excessive re-renders
+  const playerProgress = active ? useThrottledPlayerProgress(100) : 0
 
   const handleVideoSelect = (e: React.MouseEvent) => {
     if (onVideoSelect) {
@@ -206,7 +212,7 @@ export function VideoCard({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       label={label}
-      playerProgress={playerState.progress}
+      playerProgress={playerProgress}
       interactive={!!onVideoSelect}
       orientation="horizontal"
       containerSlug={containerSlug}
