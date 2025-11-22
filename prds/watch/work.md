@@ -15,14 +15,19 @@
 ## Obstacles & Resolutions
 
 - **Portal styling**: The shared dialog component auto-renders its own overlay, so to customize it like the search modal we follow the same pattern—render an explicit `DialogPortal`/`DialogOverlay` before `DialogContent` and pass the desired Tailwind classes.
+- **Locale import alias**: Jest could not resolve `core/libs/locales/en/apps-watch.json`; switched the test helper to a relative path so the locale bundle loads in isolated runs.
+- **Empty-state duplication**: Radix Select renders a visually hidden placeholder span, so empty download states triggered multiple "No Downloads Available" nodes; targeted the paragraph element in tests to avoid ambiguous queries.
 
 ## Test Coverage
 
 - `pnpm dlx nx test watch --testFile apps/watch/src/components/DialogLangSwitch/DialogLangSwitch.spec.tsx`
+- `pnpm dlx nx test watch --testFile apps/watch/src/components/DialogDownload/DialogDownload.spec.tsx`
+- `pnpm dlx nx test watch --testFile apps/watch/src/components/DownloadDialog/DownloadDialog.spec.tsx`
 
 ## User Flow
 
 - Open video player → tap the language icon → fullscreen overlay appears with blurred dark background and close icon → pick language/subtitle → close.
+- Tap Download → modal opens with video art, language chip, and size selector → pick quality → accept Terms of Use → download begins or links directly for Mux streams.
 
 ## Follow-up Ideas
 
@@ -34,3 +39,6 @@
 - [x] Replace the legacy collection experience with a new `PageCollection` template that mirrors the modern single-video layout while using collection metadata and artwork.
 - [x] Swap the video player hero for a collection thumbnail hero and remove the Bible quotes + discussion widgets from collection views.
 - [x] Surface collection children directly beneath the description via `SectionVideoGrid` and expose the search modal language filter UI for switching languages.
+- [x] Redesign the download dialog with shadcn primitives to match the Watch typography and card styling.
+- [x] Modernize the Terms of Use dialog and align the related stories and specs with the new UI flow.
+- [x] Fix Jest locale imports and update download dialog tests to account for multiple empty-state renderings.

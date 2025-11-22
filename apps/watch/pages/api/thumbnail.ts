@@ -1,6 +1,6 @@
-import { NextApiRequest, NextApiResponse } from 'next'
 import { existsSync, statSync } from 'fs'
 import { join } from 'path'
+import { NextApiRequest, NextApiResponse } from 'next'
 
 interface ThumbnailApiResponse {
   url: string
@@ -15,8 +15,8 @@ const SUPPORTED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif']
  */
 function getCacheVersion(filePath: string): string {
   try {
-    // Convert public URL path to filesystem path
-    const fullPath = filePath.replace('/assets/thumbnails/', 'public/assets/thumbnails/')
+    // Convert public URL path to filesystem path using absolute path
+    const fullPath = join(process.cwd(), filePath.replace('/assets/thumbnails/', 'public/assets/thumbnails/'))
     const stats = statSync(fullPath)
     return stats.mtime.getTime().toString()
   } catch (error) {

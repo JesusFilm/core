@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/nextjs'
 import noop from 'lodash/noop'
 import { ComponentProps } from 'react'
-import { screen, userEvent } from 'storybook/test'
+import { screen, userEvent } from '@storybook/test'
 
 import { VideoContentFields } from '../../../__generated__/VideoContentFields'
 import { watchConfig } from '../../libs/storybook'
@@ -15,7 +15,7 @@ const DownloadDialogStory: Meta<typeof DownloadDialog> = {
   component: DownloadDialog,
   title: 'Watch/DownloadDialog',
   parameters: {
-    theme: 'light'
+    theme: 'dark'
   }
 }
 
@@ -51,7 +51,7 @@ export const AcceptedTerms = {
     ...Default.args
   },
   play: async () => {
-    await userEvent.click(screen.getByRole('checkbox'))
+    await userEvent.click(screen.getByLabelText('I agree to the'))
   }
 }
 

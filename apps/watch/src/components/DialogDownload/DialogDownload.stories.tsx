@@ -15,7 +15,7 @@ const DialogDownloadStory: Meta<typeof DialogDownload> = {
   component: DialogDownload,
   title: 'Watch/DialogDownload',
   parameters: {
-    theme: 'light'
+    theme: 'dark'
   }
 }
 
@@ -51,7 +51,7 @@ export const AcceptedTerms = {
     ...Default.args
   },
   play: async () => {
-    await userEvent.click(screen.getByRole('checkbox'))
+    await userEvent.click(screen.getByLabelText('I agree to the'))
   }
 }
 
