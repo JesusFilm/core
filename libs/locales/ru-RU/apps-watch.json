@@ -95,5 +95,9 @@
   "Available in {{count}} languages._one": "Доступно на языке {{count}} .",
   "Available in {{count}} languages._few": "Доступно на {{count}} языках.",
   "Available in {{count}} languages._many": "Доступно на {{count}} языках.",
-  "Available in {{count}} languages._other": "Доступно на {{count}} языках."
+  "Available in {{count}} languages._other": "Доступно на {{count}} языках.",
+  "localeSuggestion": {
+    "message": "We noticed your browser prefers {{localeName}}. Would you like to view the site in this language?",
+    "action": "Switch to {{localeName}}"
+  }
 }

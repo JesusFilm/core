@@ -39,6 +39,8 @@
   "Subtitles are not available in {{language}}.": "Subtitles are not available in {{language}}.",
   "Subtitles": "Subtitles",
   "Show subtitles": "Show subtitles",
+  "localeSuggestion.message": "localeSuggestion.message",
+  "localeSuggestion.action": "localeSuggestion.action",
   "Read more...": "Read more...",
   "Related questions": "Related questions",
   "Ask a question": "Ask a question",
