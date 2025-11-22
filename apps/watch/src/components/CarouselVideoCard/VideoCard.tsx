@@ -193,9 +193,10 @@ export function VideoCard({
   const { label } = getLabelDetails(t, data.label)
   const href = getWatchUrl(containerSlug, data.label, data.variant?.slug)
   const [isHovered, setIsHovered] = useState(false)
-  // Only subscribe to progress updates for active cards to prevent unnecessary re-renders
+  // Always call the hook to maintain hook order, but only use progress for active cards
   // Throttle updates to ~10fps for smooth animation without excessive re-renders
-  const playerProgress = active ? useThrottledPlayerProgress(100) : 0
+  const playerProgressRaw = useThrottledPlayerProgress(100)
+  const playerProgress = active ? playerProgressRaw : 0
 
   const handleVideoSelect = (e: React.MouseEvent) => {
     if (onVideoSelect) {

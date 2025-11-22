@@ -265,17 +265,22 @@ export function usePlayerProgress(): number {
 
 export function useThrottledPlayerProgress(throttleMs: number = 100): number {
   const { state } = usePlayer()
-  const [throttledProgress, setThrottledProgress] = useState(state.progress)
+  const [throttledData, setThrottledData] = useState({
+    progress: state.progress,
+    lastUpdate: Date.now()
+  })
 
   useEffect(() => {
     const now = Date.now()
-    const timeSinceLastUpdate = now - (throttledProgress as any).__lastUpdate || 0
+    const timeSinceLastUpdate = now - throttledData.lastUpdate
 
-    if (timeSinceLastUpdate >= throttleMs || Math.abs(state.progress - throttledProgress) > 5) {
-      setThrottledProgress(state.progress)
-      ;(throttledProgress as any).__lastUpdate = now
+    if (timeSinceLastUpdate >= throttleMs || Math.abs(state.progress - throttledData.progress) > 5) {
+      setThrottledData({
+        progress: state.progress,
+        lastUpdate: now
+      })
     }
-  }, [state.progress, throttleMs, throttledProgress])
+  }, [state.progress, throttleMs, throttledData])
 
-  return throttledProgress
+  return throttledData.progress
 }
