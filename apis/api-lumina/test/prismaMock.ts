@@ -13,4 +13,3 @@ beforeEach(() => {
 })
 
 export const prismaMock = prisma as DeepMockProxy<PrismaClient>
-
