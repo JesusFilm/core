@@ -26,9 +26,9 @@ import { object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
-import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
+import FolderIcon from '@mui/icons-material/Folder'
 
 import { getGoogleOAuthUrl } from '../../../../libs/googleOAuthUrl'
 import { useIntegrationQuery } from '../../../../libs/useIntegrationQuery/useIntegrationQuery'
@@ -805,35 +805,62 @@ export function GoogleSheetsSyncDialog({
               resetForm()
             }}
             dialogTitle={{
-              title: t('Add Google Sheets Sync'),
+              title: t('Sync to Google Sheets'),
               closeButton: true
             }}
             divider={false}
+            maxWidth="sm"
             dialogActionChildren={
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => handleSubmit()}
-                loading={sheetsLoading}
-                disabled={
-                  values.integrationId === '' ||
-                  values.sheetName === '' ||
-                  (values.googleMode === 'create' &&
-                    values.spreadsheetTitle === '' &&
-                    (journeyData?.journey?.title ?? '') === '') ||
-                  (values.googleMode === 'existing' &&
-                    (values.existingSpreadsheetId == null ||
-                      values.existingSpreadsheetId === '')) ||
-                  (errors.integrationId != null &&
-                    touched.integrationId != null) ||
-                  (errors.sheetName != null && touched.sheetName != null) ||
-                  (values.googleMode === 'create' &&
-                    errors.spreadsheetTitle != null &&
-                    touched.spreadsheetTitle != null)
-                }
-              >
-                {t('Start Sync')}
-              </Button>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Button
+                  variant="text"
+                  color="primary"
+                  onClick={() => {
+                    setGoogleDialogOpen(false)
+                    resetForm()
+                  }}
+                  sx={{
+                    fontSize: '18px',
+                    fontWeight: 700,
+                    lineHeight: '20px',
+                    px: 2,
+                    py: '10px'
+                  }}
+                >
+                  {t('Cancel')}
+                </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => handleSubmit()}
+                  loading={sheetsLoading}
+                  disabled={
+                    values.integrationId === '' ||
+                    values.sheetName === '' ||
+                    (values.googleMode === 'create' &&
+                      values.spreadsheetTitle === '' &&
+                      (journeyData?.journey?.title ?? '') === '') ||
+                    (values.googleMode === 'existing' &&
+                      (values.existingSpreadsheetId == null ||
+                        values.existingSpreadsheetId === '')) ||
+                    (errors.integrationId != null &&
+                      touched.integrationId != null) ||
+                    (errors.sheetName != null && touched.sheetName != null) ||
+                    (values.googleMode === 'create' &&
+                      errors.spreadsheetTitle != null &&
+                      touched.spreadsheetTitle != null)
+                  }
+                  sx={{
+                    fontSize: '18px',
+                    fontWeight: 700,
+                    lineHeight: '20px',
+                    px: '12px',
+                    py: '10px'
+                  }}
+                >
+                  {t('Create Sync')}
+                </Button>
+              </Box>
             }
           >
             <Form>
@@ -860,8 +887,16 @@ export function GoogleSheetsSyncDialog({
                     touched.integrationId != null
                   }
                 >
-                  <Typography variant="subtitle2">
-                    {t('Integration Account')}
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontSize: '18px',
+                      fontWeight: 600,
+                      lineHeight: '24px',
+                      mb: 1
+                    }}
+                  >
+                    {t('Google Account')}
                   </Typography>
                   <Select
                     name="integrationId"
@@ -871,6 +906,7 @@ export function GoogleSheetsSyncDialog({
                     displayEmpty
                     inputProps={{ 'aria-label': t('Integration account') }}
                     IconComponent={ChevronDown}
+                    sx={{ mb: 1 }}
                     renderValue={(selected) => {
                       if (selected === '')
                         return t('Select integration account')
@@ -902,14 +938,14 @@ export function GoogleSheetsSyncDialog({
                       <Typography
                         variant="caption"
                         color="error"
-                        sx={{ mt: 0.5, ml: 1.75 }}
+                        sx={{ mt: 0.5, ml: 2 }}
                       >
                         {errors.integrationId as string}
                       </Typography>
                     )}
                   <Button
                     variant="text"
-                    startIcon={<GoogleIcon sizePx={16} />}
+                    color="primary"
                     href={(() => {
                       const teamId = journeyData?.journey?.team?.id
                       if (teamId == null) return undefined
@@ -926,96 +962,154 @@ export function GoogleSheetsSyncDialog({
                         googleCreateIntegrationPath
                       )
                     })()}
-                    sx={{ alignSelf: 'flex-start', mt: 1 }}
+                    sx={{
+                      alignSelf: 'flex-end',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      lineHeight: '16px',
+                      px: 1,
+                      py: 0.75
+                    }}
                     disabled={journeyData?.journey?.team?.id == null}
                   >
-                    {t('Add new Google integration')}
+                    {t('Add New Google Account')}
                   </Button>
                 </FormControl>
 
-                <FormControl fullWidth>
-                  <Typography variant="subtitle2">
-                    {t('Spreadsheet Setup')}
-                  </Typography>
-                  <Select
-                    name="googleMode"
-                    value={values.googleMode}
-                    onChange={handleChange}
-                    IconComponent={ChevronDown}
-                    inputProps={{ 'aria-label': t('Destination') }}
-                    displayEmpty
-                    renderValue={(selected) => {
-                      if (selected === '') return t('Select an option')
-                      if (selected === 'create')
-                        return t('Create new spreadsheet')
-                      if (selected === 'existing')
-                        return t('Use existing spreadsheet')
-                      return ''
-                    }}
-                  >
-                    <MenuItem value="" disabled>
-                      {t('Select an option')}
-                    </MenuItem>
-                    <MenuItem value="create">
-                      {t('Create new spreadsheet')}
-                    </MenuItem>
-                    <MenuItem value="existing">
-                      {t('Use existing spreadsheet')}
-                    </MenuItem>
-                  </Select>
-                </FormControl>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  <FormControl fullWidth>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontSize: '18px',
+                        fontWeight: 600,
+                        lineHeight: '24px',
+                        mb: 1
+                      }}
+                    >
+                      {t('Spreadsheet Setup')}
+                    </Typography>
+                    <Select
+                      name="googleMode"
+                      value={values.googleMode}
+                      onChange={handleChange}
+                      IconComponent={ChevronDown}
+                      inputProps={{ 'aria-label': t('Destination') }}
+                      displayEmpty
+                      renderValue={(selected) => {
+                        if (selected === '') return t('Select an option')
+                        if (selected === 'create') return t('Create new sheet')
+                        if (selected === 'existing')
+                          return t('Use existing spreadsheet')
+                        return ''
+                      }}
+                    >
+                      <MenuItem value="" disabled>
+                        {t('Select an option')}
+                      </MenuItem>
+                      <MenuItem value="create">
+                        {t('Create new sheet')}
+                      </MenuItem>
+                      <MenuItem value="existing">
+                        {t('Use existing spreadsheet')}
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
 
-                {values.googleMode !== '' && (
-                  <Box
-                    sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-                  >
-                    {values.googleMode === 'create' ? (
-                      <>
+                  {values.googleMode !== '' && (
+                    <Box
+                      sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}
+                    >
+                      {values.googleMode === 'create' ? (
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 0.5
+                          }}
+                        >
+                          <Button
+                            variant="outlined"
+                            color="secondary"
+                            startIcon={<FolderIcon />}
+                            onClick={() =>
+                              handleOpenDrivePicker(
+                                'folder',
+                                values.integrationId || undefined,
+                                setFieldValue
+                              )
+                            }
+                            sx={{
+                              fontSize: '15px',
+                              fontWeight: 600,
+                              lineHeight: '18px',
+                              justifyContent: 'flex-start',
+                              alignSelf: 'flex-start',
+                              px: '9px',
+                              py: '7px',
+                              borderWidth: 2,
+                              '&:hover': {
+                                borderWidth: 2
+                              }
+                            }}
+                          >
+                            {values.folderId
+                              ? (values.folderName ?? values.folderId)
+                              : t('Choose folder')}
+                          </Button>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontSize: '12px',
+                              lineHeight: '16px',
+                              color: '#444451',
+                              ml: 2
+                            }}
+                          >
+                            {t(
+                              'Optional: Choose a folder in Google Drive to store your new spreadsheet.'
+                            )}
+                          </Typography>
+                        </Box>
+                      ) : (
                         <Button
                           variant="outlined"
                           color="secondary"
                           onClick={() =>
                             handleOpenDrivePicker(
-                              'folder',
+                              'sheet',
                               values.integrationId || undefined,
                               setFieldValue
                             )
                           }
+                          sx={{
+                            fontSize: '15px',
+                            fontWeight: 600,
+                            lineHeight: '18px',
+                            justifyContent: 'flex-start',
+                            alignSelf: 'flex-start',
+                            px: '9px',
+                            py: '7px',
+                            borderWidth: 2,
+                            '&:hover': {
+                              borderWidth: 2
+                            }
+                          }}
                         >
-                          {values.folderId
-                            ? (values.folderName ?? values.folderId)
-                            : t('Choose Folder')}
+                          {values.existingSpreadsheetId
+                            ? t('Spreadsheet selected')
+                            : t('Choose Spreadsheet')}
                         </Button>
-                      </>
-                    ) : (
-                      <Button
-                        variant="outlined"
-                        onClick={() =>
-                          handleOpenDrivePicker(
-                            'sheet',
-                            values.integrationId || undefined,
-                            setFieldValue
-                          )
-                        }
-                      >
-                        {values.existingSpreadsheetId
-                          ? t('Spreadsheet selected')
-                          : t('Choose Spreadsheet')}
-                      </Button>
-                    )}
-                    {values.googleMode === 'create' && (
-                      <>
-                        <Typography variant="subtitle2">
-                          {t('Spreadsheet Name')}
-                        </Typography>
+                      )}
+                      {values.googleMode === 'create' && (
                         <TextField
                           name="spreadsheetTitle"
                           value={values.spreadsheetTitle}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          placeholder={t('Enter Spreadsheet name')}
+                          placeholder={t('Sheet name')}
                           inputProps={{ 'aria-label': t('Sheet title') }}
-                          size="small"
+                          fullWidth
                           required
                           error={
                             errors.spreadsheetTitle != null &&
@@ -1028,31 +1122,28 @@ export function GoogleSheetsSyncDialog({
                               : undefined
                           }
                         />
-                      </>
-                    )}
-                    <Typography variant="subtitle2">
-                      {t('Sheet Name')}
-                    </Typography>
-                    <TextField
-                      name="sheetName"
-                      value={values.sheetName}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      placeholder={t('Enter Sheet name')}
-                      inputProps={{ 'aria-label': t('Sheet tab name') }}
-                      size="small"
-                      required
-                      error={
-                        errors.sheetName != null && touched.sheetName != null
-                      }
-                      helperText={
-                        touched.sheetName != null && errors.sheetName != null
-                          ? (errors.sheetName as string)
-                          : undefined
-                      }
-                    />
-                  </Box>
-                )}
+                      )}
+                      <TextField
+                        name="sheetName"
+                        value={values.sheetName}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        placeholder={t('Sheet tab name')}
+                        inputProps={{ 'aria-label': t('Sheet tab name') }}
+                        fullWidth
+                        required
+                        error={
+                          errors.sheetName != null && touched.sheetName != null
+                        }
+                        helperText={
+                          touched.sheetName != null && errors.sheetName != null
+                            ? (errors.sheetName as string)
+                            : t('Data will sync in this tab.')
+                        }
+                      />
+                    </Box>
+                  )}
+                </Box>
               </Box>
             </Form>
           </Dialog>
