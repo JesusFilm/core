@@ -38,7 +38,7 @@ const commonConfig = [
     ]
   },
   eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
+  ...(isCI ? tseslint.configs.recommendedTypeChecked : tseslint.configs.recommended),
   i18next.configs['flat/recommended'],
   ...storybook.configs['flat/recommended'],
   {
