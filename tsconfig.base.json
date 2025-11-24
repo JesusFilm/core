@@ -43,5 +43,19 @@
       "@core/yoga/*": ["libs/yoga/src/*"]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [
+    "node_modules",
+    "tmp",
+    "dist",
+    ".next",
+    "out-tsc",
+    "coverage",
+    ".cache",
+    ".nx",
+    "test-results",
+    "playwright-report",
+    ".docusaurus",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ]
 }

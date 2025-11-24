@@ -12,6 +12,8 @@ import promisePlugin from 'eslint-plugin-promise'
 import storybook from 'eslint-plugin-storybook'
 import tseslint from 'typescript-eslint'
 
+const isCI = !!process.env.CI
+
 const commonConfig = [
   {
     ignores: [
@@ -19,7 +21,20 @@ const commonConfig = [
       '.next',
       '.docusaurus',
       '!.storybook',
-      '**/eslint.config.mjs'
+      '**/eslint.config.mjs',
+      '**/dist/**',
+      '**/coverage/**',
+      '**/.cache/**',
+      '**/.nx/**',
+      '**/out-tsc/**',
+      '**/test-results/**',
+      '**/playwright-report/**',
+      '**/playwright/.cache/**',
+      '**/tsconfig.tsbuildinfo',
+      '**/.tsbuildinfo',
+      '**/node_modules/**',
+      '**/.next/**',
+      '**/.docusaurus/**'
     ]
   },
   eslint.configs.recommended,
@@ -46,8 +61,8 @@ const commonConfig = [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: ['./tsconfig.*'],
-        projectService: true,
+        project: isCI ? ['./tsconfig.*'] : false,
+        projectService: isCI ? true : false,
         tsconfigRootDir: import.meta.dirname
       }
     },
