@@ -1,4 +1,4 @@
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, CircleCheck } from 'lucide-react'
 import Image from 'next/image'
 import { type FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -77,18 +77,18 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
       {
         href: 'https://www.jesusfilm.org/watch',
         label: 'Video Library',
-        description: 'Watch the story of Jesus in hundreds of languages.'
+        description: '/watch'
       },
       {
         label: 'Sharing Studio',
-        description: 'Grace and Salt for every conversation.',
+        description: '/studio',
         isSelected: true,
         onSelect: handleNavigateHome
       },
       {
         href: 'https://www.jesusfilm.org/resources/strategies/digital/jesus-film-project-app/',
         label: 'Mobile App',
-        description: 'Carry the Jesus Film experience wherever you go.'
+        description: '/app'
       }
     ],
     [handleNavigateHome]
@@ -99,7 +99,7 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
   }
 
   const baseMenuItemClasses =
-    'flex w-full flex-col items-start gap-1 rounded-md px-3 py-2 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer'
+    'flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background cursor-pointer'
 
   return (
     <div
@@ -108,8 +108,11 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
     >
       <button
         type="button"
-        onClick={handleNavigateHome}
-        className="flex items-center gap-2 cursor-pointer transition-opacity hover:opacity-80"
+        onClick={handleToggleSiteMenu}
+        aria-expanded={isSiteMenuOpen}
+        aria-haspopup="menu"
+        aria-controls="studio-site-menu"
+        className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Image
           src="/studio/jesusfilm-sign.svg"
@@ -119,17 +122,8 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
           className="h-6 w-auto"
         />
         <span className="text-2xl font-bold text-foreground">Studio</span>
-      </button>
-      <button
-        type="button"
-        onClick={handleToggleSiteMenu}
-        aria-expanded={isSiteMenuOpen}
-        aria-haspopup="menu"
-        aria-controls="studio-site-menu"
-        className="flex items-center justify-center rounded-md border border-transparent p-1 text-muted-foreground transition-colors hover:border-border hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
         <ChevronDown
-          className={`h-4 w-4 transition-transform ${isSiteMenuOpen ? 'rotate-180' : ''}`}
+          className={`h-4 w-4 text-muted-foreground transition-transform ${isSiteMenuOpen ? 'rotate-180' : ''}`}
         />
         <span className="sr-only">Open site selector</span>
       </button>
@@ -137,12 +131,12 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
         <div
           id="studio-site-menu"
           role="menu"
-          aria-label="Jesus Film Project websites"
+          aria-label="JesusFilm.org websites"
           className="absolute left-0 top-full z-50 mt-2 w-72 rounded-lg border border-border bg-popover shadow-lg"
         >
           <div className="px-4 py-3 text-left">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Jesus Film Project
+            <p className="pl-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              JesusFilm.org
             </p>
             <ul className="mt-3 space-y-1">
               {jesusFilmLinks.map(({ href, label, description, isSelected, onSelect }) => (
@@ -161,8 +155,13 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
                       role="menuitem"
                       aria-current={isSelected ? 'page' : undefined}
                     >
-                      <span className="font-medium">{label}</span>
-                      <span className="text-xs text-muted-foreground">{description}</span>
+                      <span className="flex flex-col items-start gap-1">
+                        <span className="font-medium">{label}</span>
+                        <span className="text-xs text-muted-foreground">{description}</span>
+                      </span>
+                      {isSelected ? (
+                        <CircleCheck aria-hidden="true" className="h-5 w-5 self-center text-primary" />
+                      ) : null}
                     </a>
                   ) : (
                     <button
@@ -178,14 +177,22 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
                           : 'text-foreground hover:bg-muted hover:text-foreground'
                       }`}
                     >
-                      <span className="font-medium">{label}</span>
-                      <span className="text-xs text-muted-foreground">{description}</span>
+                      <span className="flex flex-col items-start gap-1">
+                        <span className="font-medium">{label}</span>
+                        <span className="text-xs text-muted-foreground">{description}</span>
+                      </span>
+                      {isSelected ? (
+                        <CircleCheck aria-hidden="true" className="h-5 w-5 self-center text-primary" />
+                      ) : null}
                     </button>
                   )}
                 </li>
               ))}
             </ul>
             <div className="my-4 h-px bg-border" role="separator" />
+            <p className="mb-2 pl-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Our Other Projects
+            </p>
             <ul className="space-y-1">
               {partnerSites.map(({ href, label, description }) => (
                 <li key={href}>
@@ -197,8 +204,10 @@ export const StudioSiteSelector: FC<StudioSiteSelectorProps> = ({
                     onClick={closeMenu}
                     role="menuitem"
                   >
-                    <span className="font-medium">{label}</span>
-                    <span className="text-xs text-muted-foreground">{description}</span>
+                    <span className="flex flex-col items-start gap-1">
+                      <span className="font-medium">{label}</span>
+                      <span className="text-xs text-muted-foreground">{description}</span>
+                    </span>
                   </a>
                 </li>
               ))}
