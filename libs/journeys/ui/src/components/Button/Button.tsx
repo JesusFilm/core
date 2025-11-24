@@ -262,20 +262,26 @@ export function Button({
   }
 
   function isEmptyForm(): boolean {
-    return Object.values(formik.values as string).every((value) => value === '')
+    if (formik == null) return true
+    const values = formik.values as unknown
+    if (values == null || typeof values !== 'object') return true
+    return Object.values(values as Record<string, unknown>).every(
+      (value) => value === ''
+    )
   }
 
   const handleClick = async (e: MouseEvent): Promise<void> => {
     e.stopPropagation()
 
     if (submitEnabled && formik != null) {
+      // Control submission flow to ensure events are recorded before navigation
+      e.preventDefault()
       const errors = await formik.validateForm(formik.values)
 
-      if (isEmptyForm()) {
-        e.preventDefault()
+      if (!isEmptyForm()) {
+        if (Object.keys(errors).length > 0) return
+        await formik.submitForm()
       }
-
-      if (!isEmptyForm() && Object.keys(errors).length > 0) return
     }
 
     const hasMessagePlatform = messagePlatform != null

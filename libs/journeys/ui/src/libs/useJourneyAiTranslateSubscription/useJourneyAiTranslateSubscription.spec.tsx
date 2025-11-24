@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing'
-import { act, renderHook, waitFor } from '@testing-library/react'
+import { renderHook, waitFor } from '@testing-library/react'
 
 import {
   JOURNEY_AI_TRANSLATE_CREATE_SUBSCRIPTION,
@@ -21,6 +21,22 @@ const translatedJourney = {
   title: 'Viaje Traducido', // Spanish translation of "Translated Journey"
   description: 'Esta es una descripción traducida', // "This is a translated description"
   languageId: 'es-419',
+  language: {
+    __typename: 'Language',
+    id: 'es-419',
+    name: [
+      {
+        __typename: 'LanguageName',
+        value: 'Español',
+        primary: true
+      },
+      {
+        __typename: 'LanguageName',
+        value: 'Spanish',
+        primary: false
+      }
+    ]
+  },
   createdAt: '2023-04-25T12:34:56Z',
   updatedAt: '2023-04-25T12:34:56Z',
   blocks: [

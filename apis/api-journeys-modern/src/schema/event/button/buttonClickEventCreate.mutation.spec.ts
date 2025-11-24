@@ -38,6 +38,9 @@ describe('buttonClickEventCreate', () => {
       id: 'blockId',
       journeyId: 'journeyId'
     } as any)
+    prismaMock.journey.findUnique.mockResolvedValue({
+      id: 'journeyId'
+    } as any)
 
     // validateBlock uses findFirst; branch on id for child and step
     ;(prismaMock.block.findFirst as unknown as jest.Mock).mockImplementation(

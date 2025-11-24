@@ -5,17 +5,21 @@ import { SnackbarProvider } from 'notistack'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { MultiselectQuestion } from '@core/journeys/ui/MultiselectQuestion'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
 import { SignUp } from '@core/journeys/ui/SignUp'
 import { Typography } from '@core/journeys/ui/Typography'
 
 import { ButtonFields } from '../../../../../../../__generated__/ButtonFields'
 import { TypographyVariant } from '../../../../../../../__generated__/globalTypes'
+import { MultiselectOptionFields } from '../../../../../../../__generated__/MultiselectOptionFields'
+import { MultiselectQuestionFields } from '../../../../../../../__generated__/MultiselectQuestionFields'
 import { RadioOptionFields } from '../../../../../../../__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQuestionFields'
 import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
 import { StepFields } from '../../../../../../../__generated__/StepFields'
 import { TypographyFields } from '../../../../../../../__generated__/TypographyFields'
+import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
 import { SelectableWrapper } from '../SelectableWrapper'
 
 import { InlineEditWrapper } from '.'
@@ -58,11 +62,15 @@ describe('InlineEditWrapper', () => {
   it('renders children by default', () => {
     const { getByText } = render(
       <MockedProvider>
-        <EditorProvider>
-          <InlineEditWrapper block={typographyBlock}>
-            <Typography {...typographyBlock} />
-          </InlineEditWrapper>
-        </EditorProvider>
+        <SnackbarProvider>
+          <MuxVideoUploadProvider>
+            <EditorProvider>
+              <InlineEditWrapper block={typographyBlock}>
+                <Typography {...typographyBlock} />
+              </InlineEditWrapper>
+            </EditorProvider>
+          </MuxVideoUploadProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     expect(getByText('test content')).toBeInTheDocument()
@@ -72,17 +80,19 @@ describe('InlineEditWrapper', () => {
     const { getByDisplayValue, getByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <EditorProvider
-            initialState={{
-              steps: [step(typographyBlock)]
-            }}
-          >
-            <SelectableWrapper block={typographyBlock}>
-              <InlineEditWrapper block={typographyBlock}>
-                <Typography {...typographyBlock} />
-              </InlineEditWrapper>
-            </SelectableWrapper>
-          </EditorProvider>
+          <MuxVideoUploadProvider>
+            <EditorProvider
+              initialState={{
+                steps: [step(typographyBlock)]
+              }}
+            >
+              <SelectableWrapper block={typographyBlock}>
+                <InlineEditWrapper block={typographyBlock}>
+                  <Typography {...typographyBlock} />
+                </InlineEditWrapper>
+              </SelectableWrapper>
+            </EditorProvider>
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -122,17 +132,19 @@ describe('InlineEditWrapper', () => {
     const { getByDisplayValue, getByText } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <EditorProvider
-            initialState={{
-              steps: [step(block)]
-            }}
-          >
-            <SelectableWrapper block={block}>
-              <InlineEditWrapper block={block}>
-                <Button {...block} />
-              </InlineEditWrapper>
-            </SelectableWrapper>
-          </EditorProvider>
+          <MuxVideoUploadProvider>
+            <EditorProvider
+              initialState={{
+                steps: [step(block)]
+              }}
+            >
+              <SelectableWrapper block={block}>
+                <InlineEditWrapper block={block}>
+                  <Button {...block} />
+                </InlineEditWrapper>
+              </SelectableWrapper>
+            </EditorProvider>
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -159,17 +171,19 @@ describe('InlineEditWrapper', () => {
     const { getByDisplayValue, getByText, getByTestId } = render(
       <MockedProvider>
         <SnackbarProvider>
-          <EditorProvider
-            initialState={{
-              steps: [step(block)]
-            }}
-          >
-            <SelectableWrapper block={block}>
-              <InlineEditWrapper block={block}>
-                <SignUp {...block} />
-              </InlineEditWrapper>
-            </SelectableWrapper>
-          </EditorProvider>
+          <MuxVideoUploadProvider>
+            <EditorProvider
+              initialState={{
+                steps: [step(block)]
+              }}
+            >
+              <SelectableWrapper block={block}>
+                <InlineEditWrapper block={block}>
+                  <SignUp {...block} />
+                </InlineEditWrapper>
+              </SelectableWrapper>
+            </EditorProvider>
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -224,18 +238,20 @@ describe('InlineEditWrapper', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <EditorProvider
-              initialState={{
-                steps: [step(block)],
-                selectedBlock: step(block)
-              }}
-            >
-              <SelectableWrapper block={block}>
-                <InlineEditWrapper block={block}>
-                  {radioQuestion}
-                </InlineEditWrapper>
-              </SelectableWrapper>
-            </EditorProvider>
+            <MuxVideoUploadProvider>
+              <EditorProvider
+                initialState={{
+                  steps: [step(block)],
+                  selectedBlock: step(block)
+                }}
+              >
+                <SelectableWrapper block={block}>
+                  <InlineEditWrapper block={block}>
+                    {radioQuestion}
+                  </InlineEditWrapper>
+                </SelectableWrapper>
+              </EditorProvider>
+            </MuxVideoUploadProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
@@ -254,15 +270,17 @@ describe('InlineEditWrapper', () => {
       const { getByText, getByTestId } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <EditorProvider
-              initialState={{
-                steps: [step(block)],
-                selectedBlock: step(block).children[0],
-                selectedBlockId: step(block).children[0].id
-              }}
-            >
-              {radioQuestion}
-            </EditorProvider>
+            <MuxVideoUploadProvider>
+              <EditorProvider
+                initialState={{
+                  steps: [step(block)],
+                  selectedBlock: step(block).children[0],
+                  selectedBlockId: step(block).children[0].id
+                }}
+              >
+                {radioQuestion}
+              </EditorProvider>
+            </MuxVideoUploadProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
@@ -282,14 +300,140 @@ describe('InlineEditWrapper', () => {
       const { getByDisplayValue, getByText, getByTestId } = render(
         <MockedProvider>
           <SnackbarProvider>
-            <EditorProvider
-              initialState={{
-                steps: [step(block)],
-                selectedBlock: step(block).children[0]
-              }}
-            >
-              {radioQuestion}
-            </EditorProvider>
+            <MuxVideoUploadProvider>
+              <EditorProvider
+                initialState={{
+                  steps: [step(block)],
+                  selectedBlock: step(block).children[0]
+                }}
+              >
+                {radioQuestion}
+              </EditorProvider>
+            </MuxVideoUploadProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+      await waitFor(() => fireEvent.click(getByText('option')))
+      await waitFor(() => fireEvent.click(getByText('option')))
+      expect(getByTestId(`SelectableWrapper-${option.id}`)).toHaveStyle({
+        outline: '2px solid',
+        outlineColor: '#C52D3A',
+        zIndex: '1'
+      })
+      const input = getByDisplayValue('option')
+      await waitFor(() => expect(input).toBeInTheDocument())
+    })
+  })
+
+  describe('Multiselect', () => {
+    const option: TreeBlock<MultiselectOptionFields> = {
+      __typename: 'MultiselectOptionBlock',
+      parentBlockId: 'multiselectQuestion.id',
+      parentOrder: 0,
+      id: 'multiselectOption.id',
+      label: 'option',
+      children: []
+    }
+
+    const block: TreeBlock<MultiselectQuestionFields> = {
+      __typename: 'MultiselectBlock',
+      parentBlockId: 'card.id',
+      parentOrder: 0,
+      id: 'multiselectQuestion.id',
+      min: null,
+      max: null,
+      children: [option]
+    }
+
+    const multiselectQuestion = (
+      <SelectableWrapper block={block}>
+        <InlineEditWrapper block={block}>
+          <MultiselectQuestion
+            {...block}
+            wrappers={{
+              Wrapper: SelectableWrapper,
+              MultiselectOptionWrapper: InlineEditWrapper
+            }}
+          />
+        </InlineEditWrapper>
+      </SelectableWrapper>
+    )
+
+    it('should show add option when multiselect question selected', async () => {
+      const { getByText, getByTestId } = render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <MuxVideoUploadProvider>
+              <EditorProvider
+                initialState={{
+                  steps: [step(block)],
+                  selectedBlock: step(block)
+                }}
+              >
+                <SelectableWrapper block={block}>
+                  <InlineEditWrapper block={block}>
+                    {multiselectQuestion}
+                  </InlineEditWrapper>
+                </SelectableWrapper>
+              </EditorProvider>
+            </MuxVideoUploadProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() => fireEvent.click(getByText('option')))
+      expect(getByTestId(`SelectableWrapper-${block.id}`)).toHaveStyle({
+        outline: '2px solid',
+        outlineColor: '#C52D3A',
+        zIndex: '1'
+      })
+      expect(getByTestId(`${block.id}-add-option`)).toBeInTheDocument()
+    })
+
+    it('should show add option when multiselect option selected', async () => {
+      const { getByText, getByTestId } = render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <MuxVideoUploadProvider>
+              <EditorProvider
+                initialState={{
+                  steps: [step(block)],
+                  selectedBlock: step(block).children[0],
+                  selectedBlockId: step(block).children[0].id
+                }}
+              >
+                {multiselectQuestion}
+              </EditorProvider>
+            </MuxVideoUploadProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+      await waitFor(() => fireEvent.click(getByText('option')))
+      expect(getByTestId(`SelectableWrapper-${option.id}`)).toHaveStyle({
+        outline: '2px solid',
+        outlineColor: '#C52D3A',
+        zIndex: '1'
+      })
+
+      await waitFor(() =>
+        expect(getByTestId(`${block.id}-add-option`)).toBeInTheDocument()
+      )
+    })
+
+    it('should edit multiselect option label on double click', async () => {
+      const { getByDisplayValue, getByText, getByTestId } = render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <MuxVideoUploadProvider>
+              <EditorProvider
+                initialState={{
+                  steps: [step(block)],
+                  selectedBlock: step(block).children[0]
+                }}
+              >
+                {multiselectQuestion}
+              </EditorProvider>
+            </MuxVideoUploadProvider>
           </SnackbarProvider>
         </MockedProvider>
       )
