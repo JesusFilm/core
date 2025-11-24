@@ -191,7 +191,8 @@ export function Conductor({ blocks }: ConductorProps): ReactElement {
                   display: {
                     xs: showHeaderFooter ? 'flex' : 'none',
                     lg: 'flex'
-                  }
+                  },
+                  px: { xs: 6, lg: 0 }
                 }}
               />
               <ThemeProvider

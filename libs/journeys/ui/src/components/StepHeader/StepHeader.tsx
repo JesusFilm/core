@@ -52,7 +52,6 @@ export function StepHeader({
           justifyContent="space-between"
           spacing={2}
           sx={{
-            px: { xs: 3, lg: 0 },
             flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
             justifyContent: 'space-between',
             alignItems: { xs: 'flex-start', lg: 'center' },
@@ -100,7 +99,7 @@ export function StepHeader({
       ) : (
         <>
           <PaginationBullets />
-          <InformationButton sx={{ p: 0, mx: 2 }} />
+          <InformationButton sx={{ p: 0, mx: 0 }} />
         </>
       )}
     </Stack>
