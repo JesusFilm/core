@@ -14,6 +14,7 @@
   },
   "exclude": [
     "**/*.spec.ts",
+    "**/*.spec.tsx",
     "jest.config.ts",
     "**/__mocks/*.ts",
     "**/test/*.ts"

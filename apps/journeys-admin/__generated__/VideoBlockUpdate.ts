@@ -9,6 +9,12 @@ import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit, ContactAc
 // GraphQL mutation operation: VideoBlockUpdate
 // ====================================================
 
+export interface VideoBlockUpdate_videoBlockUpdate_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+}
+
 export interface VideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_title {
   __typename: "VideoTitle";
   value: string;
@@ -173,6 +179,8 @@ export interface VideoBlockUpdate_videoBlockUpdate {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
+  subtitleLanguage: VideoBlockUpdate_videoBlockUpdate_subtitleLanguage | null;
   mediaVideo: VideoBlockUpdate_videoBlockUpdate_mediaVideo | null;
   /**
    * action that should be performed when the video ends

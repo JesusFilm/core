@@ -1,1 +1,1 @@
-export { getInteropContext, InteropContext } from './interop'
+export { getInteropContext, type InteropContext } from './interop'

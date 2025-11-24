@@ -271,7 +271,9 @@ describe('video', () => {
           uploadUrl: 'testUrl',
           createdAt: new Date(),
           updatedAt: new Date(),
-          videoId: null
+          videoId: null,
+          blurhash: null,
+          blurhashAttemptedAt: null
         }
       ],
       cloudflareAssets: [
@@ -1429,6 +1431,68 @@ describe('video', () => {
           parents: [{ id: 'parent-with-languages' }]
         }
       ])
+    })
+
+    it('should include unpublished/incomplete children for videos-admin client', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+      prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
+      prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
+        id: 'variantId'
+      } as unknown as VideoVariant)
+
+      const videosAdminClient = getClient({
+        headers: {
+          'x-graphql-client-name': 'videos-admin'
+        }
+      })
+
+      await videosAdminClient({
+        document: VIDEOS_QUERY
+      })
+
+      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: expect.objectContaining({
+            children: {
+              where: expect.not.objectContaining({
+                published: true,
+                availableLanguages: { isEmpty: false }
+              })
+            }
+          })
+        })
+      )
+    })
+
+    it('should keep children filters for non videos-admin clients', async () => {
+      prismaMock.video.findMany.mockResolvedValueOnce(videos)
+      prismaMock.video.findUniqueOrThrow.mockResolvedValue(videos[0])
+      prismaMock.videoVariant.findUnique.mockResolvedValueOnce({
+        id: 'variantId'
+      } as unknown as VideoVariant)
+
+      const nonAdminClient = getClient({
+        headers: {
+          'x-graphql-client-name': 'test-client'
+        }
+      })
+
+      await nonAdminClient({
+        document: VIDEOS_QUERY
+      })
+
+      expect(prismaMock.video.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: expect.objectContaining({
+            children: {
+              where: {
+                published: true,
+                availableLanguages: { isEmpty: false }
+              }
+            }
+          })
+        })
+      )
     })
   })
 

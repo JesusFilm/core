@@ -40,6 +40,7 @@ describe('videoBlockCreate', () => {
         autoplay
         fullsize
         posterBlockId
+        showGeneratedSubtitles
       }
     }
   `)

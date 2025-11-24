@@ -16,6 +16,8 @@ import { useJourney } from '../../libs/JourneyProvider'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
+import { MULTISELECT_SUBMISSION_EVENT_CREATE } from '../MultiselectQuestion'
+import { MultiselectSubmissionEventCreate } from '../MultiselectQuestion/__generated__/MultiselectSubmissionEventCreate'
 import { StepFields } from '../Step/__generated__/StepFields'
 import { TextResponseSubmissionEventCreate } from '../TextResponse/__generated__/TextResponseSubmissionEventCreate'
 import { TEXT_RESPONSE_SUBMISSION_EVENT_CREATE } from '../TextResponse/TextResponse'
@@ -25,8 +27,10 @@ import { CardFields } from './__generated__/CardFields'
 import { ContainedCover } from './ContainedCover'
 import { ExpandedCover } from './ExpandedCover'
 import { getFormInitialValues } from './utils/getFormInitialValues'
+import { getMultiselectBlocks } from './utils/getMultiselectBlocks'
 import { getTextResponseBlocks } from './utils/getTextResponseBlocks'
 import { getValidationSchema } from './utils/getValidationSchema/getValidationSchema'
+import { WebsiteCover } from './WebsiteCover'
 
 export const STEP_NEXT_EVENT_CREATE = gql`
   mutation StepNextEventCreate($input: StepNextEventCreateInput!) {
@@ -88,11 +92,16 @@ export function Card({
     useMutation<TextResponseSubmissionEventCreate>(
       TEXT_RESPONSE_SUBMISSION_EVENT_CREATE
     )
+  const [multiselectSubmissionEventCreate] =
+    useMutation<MultiselectSubmissionEventCreate>(
+      MULTISELECT_SUBMISSION_EVENT_CREATE
+    )
 
   const { t } = useTranslation('journeys-ui')
   const theme = useTheme()
   const { blockHistory, treeBlocks } = useBlocks()
-  const { variant } = useJourney()
+  const { variant, journey } = useJourney()
+  const borderRadius = { xs: 'inherit', lg: journey?.website === true ? 0 : 3 }
   const activeBlock = blockHistory[
     blockHistory.length - 1
   ] as TreeBlock<StepFields>
@@ -113,7 +122,7 @@ export function Card({
     (block) =>
       block.id === coverBlockId &&
       (block.__typename === 'ImageBlock' || block.__typename === 'VideoBlock')
-  ) as TreeBlock<ImageFields | VideoFields> | undefined
+  )
 
   const videoBlock =
     coverBlock?.__typename === 'VideoBlock' ? coverBlock : undefined
@@ -154,6 +163,10 @@ export function Card({
     () => getTextResponseBlocks(children),
     [children]
   )
+  const multiselectBlocks = useMemo(
+    () => getMultiselectBlocks(children),
+    [children]
+  )
 
   /**
    * Handles form submission for text responses within the card.
@@ -170,38 +183,84 @@ export function Card({
     const { resetForm } = formikHelpers
     if (variant !== 'default' && variant !== 'embed') return
 
-    const submissionPromises = textResponseBlocks.map((block) => {
-      const blockId = block.id
-      const responseValue = values[blockId]
-      if (!responseValue || responseValue?.trim() === '')
-        return Promise.resolve(null)
+    const submissionPromises: Array<Promise<string | null>> = [
+      // Text responses
+      ...textResponseBlocks.map((block) => {
+        const blockId = block.id
+        const responseValue = values[blockId]
+        if (typeof responseValue !== 'string' || responseValue.trim() === '')
+          return Promise.resolve<string | null>(null)
 
-      const heading =
-        activeBlock != null
-          ? (getTextResponseLabel(block) ??
-            getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t))
-          : t('None')
-      const id = uuidv4()
-      return textResponseSubmissionEventCreate({
-        variables: {
-          input: {
-            id,
-            blockId,
-            stepId: activeBlock?.id,
-            label: heading,
-            value: responseValue
+        const heading =
+          activeBlock != null
+            ? (getTextResponseLabel(block) ??
+              getStepHeading(
+                activeBlock.id,
+                activeBlock.children,
+                treeBlocks,
+                t
+              ))
+            : t('None')
+        const id = uuidv4()
+        return textResponseSubmissionEventCreate({
+          variables: {
+            input: {
+              id,
+              blockId,
+              stepId: activeBlock?.id,
+              label: heading,
+              value: responseValue
+            }
           }
-        }
-      }).then(() => {
-        sendGTMEvent({
-          event: 'text_response_submission',
-          eventId: id,
-          blockId,
-          stepName: heading
+        }).then(() => {
+          sendGTMEvent({
+            event: 'text_response_submission',
+            eventId: id,
+            blockId,
+            stepName: heading
+          })
+          return id
         })
-        return id
+      }),
+      // Multiselect submissions
+      ...multiselectBlocks.map((block) => {
+        const blockId = block.id
+        const valuesArray = values[blockId] as string[] | undefined
+        if (valuesArray == null || valuesArray.length === 0)
+          return Promise.resolve<string | null>(null)
+
+        const heading =
+          activeBlock != null
+            ? getStepHeading(
+                activeBlock.id,
+                activeBlock.children,
+                treeBlocks,
+                t
+              )
+            : t('None')
+        const id = uuidv4()
+        return multiselectSubmissionEventCreate({
+          variables: {
+            input: {
+              id,
+              blockId,
+              stepId: activeBlock?.id,
+              label: heading,
+              values: valuesArray
+            }
+          }
+        }).then(() => {
+          sendGTMEvent({
+            event: 'multiselect_submission',
+            eventId: id,
+            blockId,
+            stepName: heading
+          })
+          return id
+        })
       })
-    })
+    ]
+
     await Promise.all(submissionPromises)
       .then(() => {
         resetForm()
@@ -215,9 +274,11 @@ export function Card({
   }
 
   const isContained = (coverBlock != null && !fullscreen) || videoBlock != null
+  const isWebsite = isContained && journey?.website === true
 
   return (
     <Formik
+      key={`card-formik-${activeBlock?.id ?? id}`}
       initialValues={formikInitialValues}
       onSubmit={handleFormSubmit}
       validationSchema={validationSchema}
@@ -235,7 +296,7 @@ export function Card({
             height: '100%',
             width: '100%',
             overflow: 'hidden',
-            borderRadius: { xs: 'inherit', lg: 3 }
+            borderRadius
           }}
         >
           <Paper
@@ -244,7 +305,7 @@ export function Card({
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
-              borderRadius: { xs: 'inherit', lg: 3 },
+              borderRadius,
               backgroundColor,
               width: '100%',
               height: '100%',
@@ -253,7 +314,17 @@ export function Card({
             }}
             elevation={3}
           >
-            {isContained ? (
+            {isWebsite ? (
+              <WebsiteCover
+                backgroundColor={cardColor}
+                backgroundBlur={blurUrl}
+                videoBlock={videoBlock}
+                imageBlock={imageBlock}
+                hasFullscreenVideo={hasFullscreenVideo}
+              >
+                {renderedChildren}
+              </WebsiteCover>
+            ) : isContained ? (
               <ContainedCover
                 backgroundColor={cardColor}
                 backgroundBlur={blurUrl}
