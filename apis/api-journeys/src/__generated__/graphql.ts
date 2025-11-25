@@ -3587,7 +3587,6 @@ export type Query = {
    * make multiple queries for each date.
    */
   journeysPlausibleStatsBreakdown: Array<PlausibleStatsResponse>;
-  journeysPlausibleStatsRealtimeVisitors: Scalars['Int']['output'];
   /**
    * This endpoint provides timeseries data over a certain time period.
    * If you are familiar with the Plausible dashboard, this endpoint

@@ -61,24 +61,6 @@ export const siteCreate = graphql.mutation<GraphQLQuery, GraphQLVariables>(
   }
 )
 
-export const getRealTimeVisitorsResponse = 10
-
-export const getRealTimeVisitors = (): RequestHandler =>
-  http.get(
-    `${process.env.PLAUSIBLE_URL}/api/v1/stats/realtime/visitors`,
-    async ({ request }) => {
-      const url = new URL(request.url)
-      const siteId = url.searchParams.get('site_id')
-
-      if (siteId === journeySiteId || siteId === teamSiteId)
-        return HttpResponse.json(getRealTimeVisitorsResponse)
-      return new HttpResponse(null, {
-        status: 404,
-        statusText: 'Mock request failed due to a mismatch of params'
-      })
-    }
-  ) as RequestHandler
-
 export const getStatsAggregateResponse = {
   results: {
     visitors: { value: 4 },

@@ -254,7 +254,6 @@ extend type Query {
   """Get a JourneyVisitor count by JourneyVisitorFilter"""
   journeyVisitorCount(filter: JourneyVisitorFilter!): Int!
   journeysEmailPreference(email: String!): JourneysEmailPreference
-  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType): Int!
   journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter!, id: ID!, idType: IdType): PlausibleStatsAggregateResponse!
 
   """
