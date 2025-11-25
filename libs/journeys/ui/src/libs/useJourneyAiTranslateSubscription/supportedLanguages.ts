@@ -39,6 +39,7 @@ export const SUPPORTED_LANGUAGE_IDS = [
   '1107', // Hungarian
   '7519', // Latvian
   '7698', // Lithuanian
+  '1254', // Myanmar (Burmese)
   '10393', // Norwegian
   '5546', // Romanian
   '5541', // Serbian
