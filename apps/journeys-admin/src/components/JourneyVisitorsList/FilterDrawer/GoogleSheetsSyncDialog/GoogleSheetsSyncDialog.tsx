@@ -491,16 +491,13 @@ export function GoogleSheetsSyncDialog({
   const validationSchema = object().shape({
     integrationId: string().required(t('Integration account is required')),
     sheetName: string().required(t('Sheet tab name is required')),
-    spreadsheetTitle: string().when('googleMode', {
-      is: 'create',
-      then: (schema) =>
-        schema.required(
-          journeyData?.journey?.title
-            ? t('Sheet name is required')
-            : t('Sheet name is required')
-        ),
-      otherwise: (schema) => schema.notRequired()
-    })
+    spreadsheetTitle: string().when(
+      'googleMode',
+      (googleMode: unknown, schema) =>
+        googleMode === 'create'
+          ? schema.required(t('Sheet name is required'))
+          : schema.notRequired()
+    )
   })
 
   const RenderMobileSyncCard = ({
