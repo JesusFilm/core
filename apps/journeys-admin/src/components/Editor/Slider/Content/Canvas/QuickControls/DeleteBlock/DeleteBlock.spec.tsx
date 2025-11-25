@@ -183,12 +183,6 @@ describe('DeleteBlock', () => {
       screen.getByTestId('Trash2Icon')
     )
     await userEvent.click(screen.getByRole('button'))
-    await waitFor(() =>
-      expect(
-        screen.getByRole('dialog', { name: 'Delete Card?' })
-      ).toBeInTheDocument()
-    )
-    await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
 
     await waitFor(() => expect(deleteCardResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([])
@@ -242,12 +236,6 @@ describe('DeleteBlock', () => {
     )
 
     await userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
-    await waitFor(() =>
-      expect(
-        screen.getByRole('dialog', { name: 'Delete Card?' })
-      ).toBeInTheDocument()
-    )
-    await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
     await waitFor(() => expect(deleteCardResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([])
     await waitFor(() =>
@@ -377,12 +365,6 @@ describe('DeleteBlock', () => {
       </SnackbarProvider>
     )
     await userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
-    await waitFor(() =>
-      expect(
-        screen.getByRole('dialog', { name: 'Delete Card?' })
-      ).toBeInTheDocument()
-    )
-    await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
 
     await waitFor(() =>
       expect(passedInStepDeleteMock.result).toHaveBeenCalled()
@@ -449,12 +431,6 @@ describe('DeleteBlock', () => {
     )
     // delete the card
     await userEvent.click(screen.getByRole('menuitem', { name: 'Delete Card' }))
-    await waitFor(() =>
-      expect(
-        screen.getByRole('dialog', { name: 'Delete Card?' })
-      ).toBeInTheDocument()
-    )
-    await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
     await waitFor(() => expect(deleteCardResultMock).toHaveBeenCalled())
     expect(cache.extract()['Journey:journey-id']?.blocks).toEqual([])
     await waitFor(() =>
