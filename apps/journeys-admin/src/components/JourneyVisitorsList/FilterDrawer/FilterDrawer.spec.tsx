@@ -1,8 +1,8 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { SnackbarProvider } from 'notistack'
 import mockRouter from 'next-router-mock'
+import { SnackbarProvider } from 'notistack'
 
 import { FilterDrawer, GET_JOURNEY_BLOCK_TYPENAMES } from './FilterDrawer'
 
@@ -12,7 +12,9 @@ jest.mock('./GoogleSheetsSyncDialog', () => ({
   GoogleSheetsSyncDialog: (props) => {
     mockGoogleSheetsSyncDialog(props)
     return props.open ? (
-      <div data-testid="google-sheets-sync-dialog">Google Sheets Sync Dialog</div>
+      <div data-testid="google-sheets-sync-dialog">
+        Google Sheets Sync Dialog
+      </div>
     ) : null
   }
 }))
