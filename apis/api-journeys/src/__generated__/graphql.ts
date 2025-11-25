@@ -375,6 +375,7 @@ export type ChatOpenEventCreateInput = {
 export type CloudflareImage = {
   __typename?: 'CloudflareImage';
   aspectRatio?: Maybe<ImageAspectRatio>;
+  blurhash?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
   mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
