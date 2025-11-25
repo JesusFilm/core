@@ -56,9 +56,11 @@ export function OnboardingTemplateCard({
                 alt={data?.journey?.primaryImageBlock.alt}
                 placeholder="blur"
                 blurDataURL={data?.journey?.primaryImageBlock.blurhash}
-                layout="fill"
-                objectFit="cover"
                 priority
+                fill
+                sx={{
+                  objectFit: 'cover'
+                }}
               />
             ) : data?.journey != null ? (
               <GridEmptyIcon fontSize="large" />
