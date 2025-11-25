@@ -44,7 +44,7 @@ export async function getJourneyRealtimeVisitors(
           ? data
           : typeof data?.error === 'string'
             ? data.error
-            : error.message ?? 'Failed to fetch Plausible visitors'
+            : (error.message ?? 'Failed to fetch Plausible visitors')
 
       throw new GraphQLError(message, {
         extensions: {
@@ -55,4 +55,3 @@ export async function getJourneyRealtimeVisitors(
     throw error
   }
 }
-

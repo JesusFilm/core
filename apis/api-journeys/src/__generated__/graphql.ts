@@ -375,6 +375,7 @@ export type ChatOpenEventCreateInput = {
 export type CloudflareImage = {
   __typename?: 'CloudflareImage';
   aspectRatio?: Maybe<ImageAspectRatio>;
+  blurhash?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
   mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
@@ -655,10 +656,10 @@ export type GoogleSheetsSync = {
   integration?: Maybe<Integration>;
   integrationId?: Maybe<Scalars['ID']['output']>;
   journey: Journey;
-  journeyId: Scalars['String']['output'];
+  journeyId: Scalars['ID']['output'];
   sheetName?: Maybe<Scalars['String']['output']>;
   spreadsheetId: Scalars['ID']['output'];
-  teamId?: Maybe<Scalars['String']['output']>;
+  teamId: Scalars['ID']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -3587,6 +3588,7 @@ export type Query = {
    * make multiple queries for each date.
    */
   journeysPlausibleStatsBreakdown: Array<PlausibleStatsResponse>;
+  journeysPlausibleStatsRealtimeVisitors?: Maybe<Scalars['Int']['output']>;
   /**
    * This endpoint provides timeseries data over a certain time period.
    * If you are familiar with the Plausible dashboard, this endpoint

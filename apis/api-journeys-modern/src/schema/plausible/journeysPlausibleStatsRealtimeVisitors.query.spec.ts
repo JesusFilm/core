@@ -4,8 +4,8 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
-import { graphql } from '../../lib/graphql/subgraphGraphql'
 import { ability } from '../../lib/auth/ability'
+import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 jest.mock('axios')
 jest.mock('@core/yoga/firebaseClient', () => ({
@@ -219,4 +219,3 @@ describe('journeysPlausibleStatsRealtimeVisitors', () => {
     })
   })
 })
-
