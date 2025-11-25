@@ -422,6 +422,11 @@ export interface GenerateSubtitlesInput {
   languageName: string;
 }
 
+export interface GoogleSheetsSyncsFilter {
+  journeyId?: string | null;
+  integrationId?: string | null;
+}
+
 export interface HostCreateInput {
   title: string;
   location?: string | null;
@@ -470,6 +475,12 @@ export interface ImageBlockUpdateInput {
   scale?: number | null;
   focalTop?: number | null;
   focalLeft?: number | null;
+}
+
+export interface IntegrationGoogleCreateInput {
+  teamId: string;
+  code: string;
+  redirectUri: string;
 }
 
 export interface IntegrationGrowthSpacesCreateInput {
