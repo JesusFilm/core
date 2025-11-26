@@ -99,7 +99,13 @@ export function StepHeader({
       ) : (
         <>
           <PaginationBullets />
-          <InformationButton sx={{ p: 0, mx: 0, px: { xs: variant === 'default' ? 6 : 3, lg: 0} }} />
+          <InformationButton
+            sx={{
+              p: 0,
+              mx: 0,
+              px: { xs: variant === 'default' ? 6 : 3, lg: 0 }
+            }}
+          />
         </>
       )}
     </Stack>
