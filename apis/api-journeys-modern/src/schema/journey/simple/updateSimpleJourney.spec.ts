@@ -91,8 +91,6 @@ describe('updateSimpleJourney', () => {
     prismaMock.$transaction.mockImplementation(
       async (callback: any) => await callback(txMock as any)
     )
-    process.env = { ...originalEnv }
-    process.env.CLOUDFLARE_UPLOAD_KEY = 'test-cloudflare-account-hash'
 
     mockFetch.mockResolvedValue({
       json: () =>
