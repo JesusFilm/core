@@ -114,6 +114,7 @@ export enum IdType {
 }
 
 export enum IntegrationType {
+  google = "google",
   growthSpaces = "growthSpaces",
 }
 
@@ -421,6 +422,11 @@ export interface GenerateSubtitlesInput {
   languageName: string;
 }
 
+export interface GoogleSheetsSyncsFilter {
+  journeyId?: string | null;
+  integrationId?: string | null;
+}
+
 export interface HostCreateInput {
   title: string;
   location?: string | null;
@@ -471,6 +477,12 @@ export interface ImageBlockUpdateInput {
   focalLeft?: number | null;
 }
 
+export interface IntegrationGoogleCreateInput {
+  teamId: string;
+  code: string;
+  redirectUri: string;
+}
+
 export interface IntegrationGrowthSpacesCreateInput {
   accessId: string;
   accessSecret: string;
@@ -511,6 +523,7 @@ export interface JourneyEventsFilter {
   typenames?: string[] | null;
   periodRangeStart?: any | null;
   periodRangeEnd?: any | null;
+  includeUnconnectedCards?: boolean | null;
 }
 
 export interface JourneyNotificationUpdateInput {
