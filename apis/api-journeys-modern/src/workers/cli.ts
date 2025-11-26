@@ -1,8 +1,6 @@
 import { Queue } from 'bullmq'
 import chalk from 'chalk'
 
-import { env } from '../env'
-
 import { connection } from './lib/connection'
 
 const ONE_HOUR = 3600
