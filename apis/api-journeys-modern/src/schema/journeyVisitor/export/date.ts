@@ -34,7 +34,7 @@ export function parseDateInTimeZoneToUtc(
 
   // Build an initial UTC guess by treating the wall time as if it were UTC
   // Then compute the timezone offset at that instant and adjust
-  const initial = new Date(trimmed.endsWith('Z') ? trimmed : `${trimmed}Z`)
+  const initial = new Date(`${trimmed}Z`)
 
   const getTimeZoneOffsetMs = (instant: Date, tz: string): number => {
     const dtf = new Intl.DateTimeFormat('en-US', {
