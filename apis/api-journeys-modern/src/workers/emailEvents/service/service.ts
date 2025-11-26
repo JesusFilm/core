@@ -19,9 +19,9 @@ import { processUserIds } from './processUserIds'
 const httpLink = createHttpLink({
   uri: env.GATEWAY_URL,
   headers: {
-    'interop-token': env.INTEROP_TOKEN ?? '',
+    'interop-token': env.INTEROP_TOKEN,
     'x-graphql-client-name': 'api-journeys-modern',
-    'x-graphql-client-version': env.SERVICE_VERSION ?? ''
+    'x-graphql-client-version': env.SERVICE_VERSION
   }
 })
 
@@ -71,10 +71,10 @@ async function visitorEventEmails(
       if (data.user == null) return
 
       const analyticsUrl = `${
-        env.JOURNEYS_ADMIN_URL ?? ''
+        env.JOURNEYS_ADMIN_URL
       }/reports/visitors/${visitor.id}?journeyId=${journey.id}`
       const unsubscribeUrl = `${
-        env.JOURNEYS_ADMIN_URL ?? ''
+        env.JOURNEYS_ADMIN_URL
       }/journeys/${journey.id}?manageAccess=true`
 
       const text = await render(

@@ -69,7 +69,7 @@ export const yoga = createYoga<
     useForwardedJWT({}),
     env.NODE_ENV !== 'test'
       ? useHmacSignatureValidation({
-          secret: env.GATEWAY_HMAC_SECRET ?? ''
+          secret: env.GATEWAY_HMAC_SECRET
         })
       : {},
     useReadinessCheck({

@@ -71,7 +71,7 @@ export async function fetchFieldsFromMux(videoId: string): Promise<
     uri: env.GATEWAY_URL,
     headers: {
       'x-graphql-client-name': 'api-journeys',
-      'x-graphql-client-version': env.SERVICE_VERSION ?? ''
+      'x-graphql-client-version': env.SERVICE_VERSION
     }
   })
   const apollo = new ApolloClient({
@@ -111,7 +111,7 @@ export async function fetchFieldsFromYouTube(videoId: string): Promise<{
 }> {
   const query = new URLSearchParams({
     part: 'snippet,contentDetails',
-    key: env.FIREBASE_API_KEY ?? '',
+    key: env.FIREBASE_API_KEY,
     id: videoId
   }).toString()
   const videosData: YoutubeVideosData = await (

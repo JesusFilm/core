@@ -43,9 +43,9 @@ const isValidImageUrl = (url: string): boolean => {
 const httpLink = createHttpLink({
   uri: env.GATEWAY_URL,
   headers: {
-    'interop-token': env.INTEROP_TOKEN ?? '',
+    'interop-token': env.INTEROP_TOKEN,
     'x-graphql-client-name': 'api-journeys-modern',
-    'x-graphql-client-version': env.SERVICE_VERSION ?? ''
+    'x-graphql-client-version': env.SERVICE_VERSION
   }
 })
 
@@ -78,9 +78,7 @@ async function processImage(image: JourneySimpleImage) {
 
     const imageId = data?.createCloudflareUploadByUrl?.id
     if (imageId != null) {
-      src = `https://imagedelivery.net/${
-        env.CLOUDFLARE_UPLOAD_KEY ?? ''
-      }/${imageId}/public`
+      src = `https://imagedelivery.net/${env.CLOUDFLARE_UPLOAD_KEY}/${imageId}/public`
 
       // Generate blurhash for the uploaded image
       const blurhashData = await generateBlurhashAndMetadataFromUrl(src)
@@ -131,7 +129,7 @@ function parseISO8601Duration(duration: string): number {
 async function getYouTubeVideoDuration(videoId: string): Promise<number> {
   const videosQuery = new URLSearchParams({
     part: 'contentDetails',
-    key: env.FIREBASE_API_KEY ?? '',
+    key: env.FIREBASE_API_KEY,
     id: videoId
   }).toString()
   const response = await fetch(

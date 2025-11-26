@@ -52,9 +52,9 @@ const createApolloClient = () => {
   const httpLink = createHttpLink({
     uri: env.GATEWAY_URL,
     headers: {
-      'interop-token': env.INTEROP_TOKEN ?? '',
+      'interop-token': env.INTEROP_TOKEN,
       'x-graphql-client-name': 'api-journeys-modern',
-      'x-graphql-client-version': env.SERVICE_VERSION ?? ''
+      'x-graphql-client-version': env.SERVICE_VERSION
     }
   })
 
