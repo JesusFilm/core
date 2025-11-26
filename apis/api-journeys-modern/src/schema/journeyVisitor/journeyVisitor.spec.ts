@@ -176,7 +176,6 @@ describe('journeyVisitorExport', () => {
       where: {
         journeyId: 'journey1',
         blockId: { not: null },
-        label: { not: null },
         typename: { in: ['ButtonClickEvent', 'TextResponseSubmissionEvent'] }
       },
       select: {
@@ -247,7 +246,14 @@ describe('journeyVisitorExport', () => {
       where: {
         journeyId: 'journey1',
         blockId: { not: null },
-        label: { not: null }
+        typename: {
+          in: [
+            'RadioQuestionSubmissionEvent',
+            'MultiselectSubmissionEvent',
+            'TextResponseSubmissionEvent',
+            'SignUpSubmissionEvent'
+          ]
+        }
       },
       select: {
         blockId: true,
@@ -290,7 +296,14 @@ describe('journeyVisitorExport', () => {
       where: {
         journeyId: 'journey1',
         blockId: { not: null },
-        label: { not: null },
+        typename: {
+          in: [
+            'RadioQuestionSubmissionEvent',
+            'MultiselectSubmissionEvent',
+            'TextResponseSubmissionEvent',
+            'SignUpSubmissionEvent'
+          ]
+        },
         createdAt: {
           gte: new Date('2024-01-01T00:00:00Z'),
           lte: new Date('2024-12-31T23:59:59Z')
