@@ -55,12 +55,9 @@ import { PrismaService } from '../../lib/prisma.service'
 import { RevalidateJob } from '../../lib/prisma.types'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockService } from '../block/block.service'
-import { PlausibleJob } from '../plausible/plausible.consumer'
 import { QrCodeService } from '../qrCode/qrCode.service'
 
 type BlockWithAction = Block & { action: BlockAction | null }
-
-const FIVE_DAYS = 5 * 24 * 60 * 60 // in seconds
 
 @Resolver('Journey')
 export class JourneyResolver {
@@ -68,7 +65,6 @@ export class JourneyResolver {
     @InjectQueue('api-journeys-revalidate')
     private readonly revalidateQueue: Queue<RevalidateJob>,
     @InjectQueue('api-journeys-plausible')
-    private readonly plausibleQueue: Queue<PlausibleJob>,
     private readonly blockService: BlockService,
     private readonly prismaService: PrismaService,
     private readonly qrCodeService: QrCodeService
@@ -387,28 +383,6 @@ export class JourneyResolver {
           return journey
         })
         retry = false
-        await this.plausibleQueue.add(
-          'create-journey-site',
-          {
-            __typename: 'plausibleCreateJourneySite',
-            journeyId: journey.id
-          },
-          {
-            removeOnComplete: true,
-            removeOnFail: { age: FIVE_DAYS, count: 50 }
-          }
-        )
-        await this.plausibleQueue.add(
-          'create-team-site',
-          {
-            __typename: 'plausibleCreateTeamSite',
-            teamId: journey.teamId
-          },
-          {
-            removeOnComplete: true,
-            removeOnFail: { age: FIVE_DAYS, count: 50 }
-          }
-        )
         return journey
       } catch (err) {
         if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
@@ -740,28 +714,6 @@ export class JourneyResolver {
           })
         }
         retry = false
-        await this.plausibleQueue.add(
-          'create-journey-site',
-          {
-            __typename: 'plausibleCreateJourneySite',
-            journeyId: duplicateJourneyId
-          },
-          {
-            removeOnComplete: true,
-            removeOnFail: { age: FIVE_DAYS, count: 50 }
-          }
-        )
-        await this.plausibleQueue.add(
-          'create-team-site',
-          {
-            __typename: 'plausibleCreateTeamSite',
-            teamId
-          },
-          {
-            removeOnComplete: true,
-            removeOnFail: { age: FIVE_DAYS, count: 50 }
-          }
-        )
         return duplicateJourney
       } catch (err) {
         if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {

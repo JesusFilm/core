@@ -1,23 +1,36 @@
-import { GraphQLError } from 'graphql'
+import { GraphQLError, GraphQLResolveInfo } from 'graphql'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
 import { builder } from '../builder'
 import { IdType } from '../journey/enums'
 
+import { PlausibleStatsTimeseriesFilter } from './inputs'
 import { loadJourneyOrThrow, normalizeIdType } from './journeyAccess'
-import { getJourneyRealtimeVisitors } from './service'
+import { getMetrics } from './metrics'
+import { PlausibleStatsResponseRef } from './plausible'
+import { getJourneyStatsTimeseries } from './service'
 
-builder.queryField('journeysPlausibleStatsRealtimeVisitors', (t) =>
-  t.withAuth({ isAuthenticated: true }).int({
+builder.queryField('journeysPlausibleStatsTimeseries', (t) =>
+  t.withAuth({ isAuthenticated: true }).field({
+    type: [PlausibleStatsResponseRef],
     args: {
       id: t.arg.id({ required: true }),
       idType: t.arg({
         type: IdType,
         required: false,
         defaultValue: 'slug'
+      }),
+      where: t.arg({
+        type: PlausibleStatsTimeseriesFilter,
+        required: true
       })
     },
-    resolve: async (_parent, { id, idType }, context) => {
+    resolve: async (
+      _parent,
+      { id, idType, where },
+      context,
+      info: GraphQLResolveInfo
+    ) => {
       if (context.type !== 'authenticated') {
         throw new GraphQLError('Not authenticated', {
           extensions: { code: 'UNAUTHENTICATED' }
@@ -32,7 +45,11 @@ builder.queryField('journeysPlausibleStatsRealtimeVisitors', (t) =>
         })
       }
 
-      return getJourneyRealtimeVisitors(journey.id)
+      const metrics = getMetrics(info)
+      return getJourneyStatsTimeseries(journey.id, {
+        metrics,
+        ...where
+      })
     }
   })
 )

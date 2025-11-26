@@ -1,23 +1,39 @@
-import { GraphQLError } from 'graphql'
+import { GraphQLError, GraphQLResolveInfo } from 'graphql'
 
 import { Action, ability, subject } from '../../lib/auth/ability'
 import { builder } from '../builder'
 import { IdType } from '../journey/enums'
 
+import { PlausibleStatsAggregateFilter } from './inputs'
 import { loadJourneyOrThrow, normalizeIdType } from './journeyAccess'
-import { getJourneyRealtimeVisitors } from './service'
+import { getMetrics } from './metrics'
+import {
+  PlausibleStatsAggregateResponse,
+  PlausibleStatsAggregateResponseRef
+} from './plausible'
+import { getJourneyStatsAggregate } from './service'
 
-builder.queryField('journeysPlausibleStatsRealtimeVisitors', (t) =>
-  t.withAuth({ isAuthenticated: true }).int({
+builder.queryField('journeysPlausibleStatsAggregate', (t) =>
+  t.withAuth({ isAuthenticated: true }).field({
+    type: PlausibleStatsAggregateResponseRef,
     args: {
       id: t.arg.id({ required: true }),
       idType: t.arg({
         type: IdType,
         required: false,
         defaultValue: 'slug'
+      }),
+      where: t.arg({
+        type: PlausibleStatsAggregateFilter,
+        required: true
       })
     },
-    resolve: async (_parent, { id, idType }, context) => {
+    resolve: async (
+      _parent,
+      { id, idType, where },
+      context,
+      info
+    ): Promise<PlausibleStatsAggregateResponse> => {
       if (context.type !== 'authenticated') {
         throw new GraphQLError('Not authenticated', {
           extensions: { code: 'UNAUTHENTICATED' }
@@ -32,7 +48,11 @@ builder.queryField('journeysPlausibleStatsRealtimeVisitors', (t) =>
         })
       }
 
-      return getJourneyRealtimeVisitors(journey.id)
+      const metrics = getMetrics(info)
+      return getJourneyStatsAggregate(journey.id, {
+        metrics,
+        ...where
+      })
     }
   })
 )

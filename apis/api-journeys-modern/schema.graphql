@@ -1501,7 +1501,10 @@ type Query {
     """
     timezone: String
   ): String
+  journeysPlausibleStatsAggregate(id: ID!, idType: IdType = slug, where: PlausibleStatsAggregateFilter!): PlausibleStatsAggregateResponse
+  journeysPlausibleStatsBreakdown(id: ID!, idType: IdType = slug, where: PlausibleStatsBreakdownFilter!): [PlausibleStatsResponse!]
   journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType = slug): Int
+  journeysPlausibleStatsTimeseries(id: ID!, idType: IdType = slug, where: PlausibleStatsTimeseriesFilter!): [PlausibleStatsResponse!]
 }
 
 type RadioOptionBlock implements Block

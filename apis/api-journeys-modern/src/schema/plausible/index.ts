@@ -1,3 +1,6 @@
 import './inputs'
+import './journeysPlausibleStatsAggregate.query'
+import './journeysPlausibleStatsBreakdown.query'
 import './journeysPlausibleStatsRealtimeVisitors.query'
+import './journeysPlausibleStatsTimeseries.query'
 import './plausible'

@@ -14,3 +14,21 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: z.string().trim().min(1)
   }
 })
+
+const plausibleEnvSchema = z.object({
+  PLAUSIBLE_URL: z.string().url(),
+  PLAUSIBLE_API_KEY: z.string().trim().min(1)
+})
+
+export function getPlausibleEnv(): {
+  PLAUSIBLE_URL: string
+  PLAUSIBLE_API_KEY: string
+} | null {
+  const parsed = plausibleEnvSchema.safeParse({
+    PLAUSIBLE_URL: process.env.PLAUSIBLE_URL,
+    PLAUSIBLE_API_KEY: process.env.PLAUSIBLE_API_KEY
+  })
+
+  if (!parsed.success) return null
+  return parsed.data
+}

@@ -14,14 +14,11 @@ export interface GetPlausibleJourneyQrCodeScans_journeysPlausibleStatsAggregate_
 
 export interface GetPlausibleJourneyQrCodeScans_journeysPlausibleStatsAggregate {
   __typename: "PlausibleStatsAggregateResponse";
-  /**
-   * The number of unique visitors.
-   */
   visitors: GetPlausibleJourneyQrCodeScans_journeysPlausibleStatsAggregate_visitors | null;
 }
 
 export interface GetPlausibleJourneyQrCodeScans {
-  journeysPlausibleStatsAggregate: GetPlausibleJourneyQrCodeScans_journeysPlausibleStatsAggregate;
+  journeysPlausibleStatsAggregate: GetPlausibleJourneyQrCodeScans_journeysPlausibleStatsAggregate | null;
 }
 
 export interface GetPlausibleJourneyQrCodeScansVariables {

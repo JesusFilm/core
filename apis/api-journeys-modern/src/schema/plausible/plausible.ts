@@ -1,23 +1,23 @@
 import { builder } from '../builder'
 
-interface PlausibleStatsAggregateValue {
+export interface PlausibleStatsAggregateValue {
   value: number
   change?: number | null
 }
 
-interface PlausibleStatsAggregateResponse {
-  visitors: PlausibleStatsAggregateValue
-  visits: PlausibleStatsAggregateValue
-  pageviews: PlausibleStatsAggregateValue
-  viewsPerVisit: PlausibleStatsAggregateValue
-  bounceRate: PlausibleStatsAggregateValue
-  visitDuration: PlausibleStatsAggregateValue
-  events: PlausibleStatsAggregateValue
-  conversionRate: PlausibleStatsAggregateValue
-  timeOnPage: PlausibleStatsAggregateValue
+export interface PlausibleStatsAggregateResponse {
+  visitors?: PlausibleStatsAggregateValue
+  visits?: PlausibleStatsAggregateValue
+  pageviews?: PlausibleStatsAggregateValue
+  viewsPerVisit?: PlausibleStatsAggregateValue
+  bounceRate?: PlausibleStatsAggregateValue
+  visitDuration?: PlausibleStatsAggregateValue
+  events?: PlausibleStatsAggregateValue
+  conversionRate?: PlausibleStatsAggregateValue
+  timeOnPage?: PlausibleStatsAggregateValue
 }
 
-interface PlausibleStatsResponse {
+export interface PlausibleStatsResponse {
   property: string
   visitors?: number | null
   visits?: number | null
@@ -53,38 +53,47 @@ export const PlausibleStatsAggregateResponseRef = builder
     fields: (t) => ({
       visitors: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
         resolve: (parent) => parent.visitors
       }),
       visits: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
         resolve: (parent) => parent.visits
       }),
       pageviews: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
         resolve: (parent) => parent.pageviews
       }),
       viewsPerVisit: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
         resolve: (parent) => parent.viewsPerVisit
       }),
       bounceRate: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
         resolve: (parent) => parent.bounceRate
       }),
       visitDuration: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
         resolve: (parent) => parent.visitDuration
       }),
       events: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
         resolve: (parent) => parent.events
       }),
       conversionRate: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
         resolve: (parent) => parent.conversionRate
       }),
       timeOnPage: t.field({
         type: PlausibleStatsAggregateValueRef,
+        nullable: true,
         resolve: (parent) => parent.timeOnPage
       })
     })
