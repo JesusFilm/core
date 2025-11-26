@@ -67,7 +67,7 @@ export const builder = new SchemaBuilder<{
   prisma: {
     client: prisma,
     dmmf: Prisma.dmmf,
-    onUnusedQuery: env.NODE_ENV === 'production' ? null : 'warn'
+    onUnusedQuery: process.env.NODE_ENV === 'production' ? null : 'warn'
   },
   scopeAuth: {
     authScopes

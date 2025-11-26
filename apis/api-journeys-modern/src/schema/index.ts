@@ -1,11 +1,9 @@
-import { env } from '../env'
-
 import { generate } from './generate'
 
 export { schema } from './schema'
 
 if (
-  (env.NODE_ENV !== 'production' && env.NODE_ENV !== 'test') ||
+  (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') ||
   process.env.GENERATE_SCHEMA === 'true'
 ) {
   generate()

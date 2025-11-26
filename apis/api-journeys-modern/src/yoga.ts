@@ -67,7 +67,7 @@ export const yoga = createYoga<
   plugins: [
     tracingPlugin,
     useForwardedJWT({}),
-    env.NODE_ENV !== 'test'
+    process.env.NODE_ENV !== 'test'
       ? useHmacSignatureValidation({
           secret: env.GATEWAY_HMAC_SECRET
         })
@@ -78,7 +78,7 @@ export const yoga = createYoga<
         await prisma.$queryRaw`SELECT 1`
       }
     }),
-    env.NODE_ENV !== 'test'
+    process.env.NODE_ENV !== 'test'
       ? useResponseCache({
           session: () => null,
           cache,

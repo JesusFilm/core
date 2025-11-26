@@ -10,8 +10,8 @@ export const env = createEnv({
   },
   server: {
     CLOUDFLARE_UPLOAD_KEY: z.string().trim().min(1),
-    FACEBOOK_APP_ID: z.string().trim().min(1).default(''),
-    FACEBOOK_APP_SECRET: z.string().trim().min(1).default(''),
+    FACEBOOK_APP_ID: z.string().trim().min(1),
+    FACEBOOK_APP_SECRET: z.string().trim().min(1),
     FIREBASE_API_KEY: z.string().trim().min(1),
     GATEWAY_HMAC_SECRET: z.string().trim().min(1),
     GATEWAY_URL: z.string().trim().min(1),
@@ -23,9 +23,6 @@ export const env = createEnv({
     JOURNEYS_ADMIN_URL: z.string().trim().min(1),
     JOURNEYS_REVALIDATE_ACCESS_TOKEN: z.string().trim().min(1),
     JOURNEYS_URL: z.string().trim().min(1),
-    NODE_ENV: z
-      .enum(['development', 'test', 'production'])
-      .default('development'),
     REDIS_PORT: z.coerce.number().int().positive().default(6379),
     REDIS_URL: z.string().trim().min(1).default('redis'),
     SERVICE_VERSION: z.string().trim().default('')

@@ -74,8 +74,8 @@ export async function cli(argv = process.argv): Promise<void> {
     )
   )
 
-  if (env.NODE_ENV !== 'test') process.exit(0)
+  if (process.env.NODE_ENV !== 'test') process.exit(0)
 }
 
 // avoid running on test environment
-if (env.NODE_ENV !== 'test') void cli()
+if (process.env.NODE_ENV !== 'test') void cli()

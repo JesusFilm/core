@@ -81,7 +81,7 @@ async function main(): Promise<void> {
     )
   }
 
-  if (env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== 'production') {
     await importAndRunAllWorkers()
     return
   }
@@ -92,4 +92,4 @@ async function main(): Promise<void> {
 }
 
 // avoid running on test environment
-if (env.NODE_ENV !== 'test') void main()
+if (process.env.NODE_ENV !== 'test') void main()
