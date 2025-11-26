@@ -8,6 +8,7 @@ import {
   prisma
 } from '@core/prisma/journeys/client'
 
+import { env } from '../../env'
 import { getTeamGoogleAccessToken } from '../../lib/google/googleAuth'
 import {
   columnIndexToA1,
@@ -21,7 +22,7 @@ import {
 let emailQueue: any
 try {
   // Avoid requiring Redis in tests
-  if (process.env.NODE_ENV !== 'test') {
+  if (env.NODE_ENV !== 'test') {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     emailQueue = require('../../workers/emailEvents/queue').queue
   }
@@ -197,7 +198,7 @@ export async function sendEventsEmail(
   journeyId: string,
   visitorId: string
 ): Promise<void> {
-  if (process.env.NODE_ENV === 'test' || emailQueue == null) return
+  if (env.NODE_ENV === 'test' || emailQueue == null) return
   const jobId = `visitor-event-${journeyId}-${visitorId}`
   const existingJob = await emailQueue.getJob(jobId)
   if (existingJob != null) {
@@ -220,7 +221,7 @@ export async function resetEventsEmailDelay(
   visitorId: string,
   delaySeconds?: number
 ): Promise<void> {
-  if (process.env.NODE_ENV === 'test' || emailQueue == null) return
+  if (env.NODE_ENV === 'test' || emailQueue == null) return
   const jobId = `visitor-event-${journeyId}-${visitorId}`
   const existingJob = await emailQueue.getJob(jobId)
   if (existingJob == null) return

@@ -20,6 +20,8 @@ import { GraphQLJSONObject } from 'graphql-type-json'
 import type PrismaTypes from '@core/prisma/journeys/__generated__/pothos-types'
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
+import { env } from '../env'
+
 import { AuthScopes, Context, authScopes } from './authScopes'
 
 const PrismaPlugin = pluginName
@@ -65,7 +67,7 @@ export const builder = new SchemaBuilder<{
   prisma: {
     client: prisma,
     dmmf: Prisma.dmmf,
-    onUnusedQuery: process.env.NODE_ENV === 'production' ? null : 'warn'
+    onUnusedQuery: env.NODE_ENV === 'production' ? null : 'warn'
   },
   scopeAuth: {
     authScopes

@@ -1,6 +1,8 @@
 import { Job, Queue, Worker } from 'bullmq'
 import { Logger } from 'pino'
 
+import { env } from '../env'
+
 import { connection } from './lib/connection'
 import { runIfLeader } from './lib/leader'
 import { logger } from './lib/logger'
@@ -79,7 +81,7 @@ async function main(): Promise<void> {
     )
   }
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (env.NODE_ENV !== 'production') {
     await importAndRunAllWorkers()
     return
   }
@@ -90,4 +92,4 @@ async function main(): Promise<void> {
 }
 
 // avoid running on test environment
-if (process.env.NODE_ENV !== 'test') void main()
+if (env.NODE_ENV !== 'test') void main()

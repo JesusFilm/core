@@ -1,6 +1,8 @@
 import { Queue } from 'bullmq'
 import chalk from 'chalk'
 
+import { env } from '../env'
+
 import { connection } from './lib/connection'
 
 const ONE_HOUR = 3600
@@ -72,8 +74,8 @@ export async function cli(argv = process.argv): Promise<void> {
     )
   )
 
-  if (process.env.NODE_ENV !== 'test') process.exit(0)
+  if (env.NODE_ENV !== 'test') process.exit(0)
 }
 
 // avoid running on test environment
-if (process.env.NODE_ENV !== 'test') void cli()
+if (env.NODE_ENV !== 'test') void cli()
