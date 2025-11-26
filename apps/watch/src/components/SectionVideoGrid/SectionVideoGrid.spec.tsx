@@ -300,8 +300,8 @@ describe('SectionVideoGrid', () => {
       <MockedProvider mocks={baseMocks} addTypename>
         <SectionVideoGrid
           sources={[
-            { type: 'video', id: 'video-1' },
-            { type: 'collection', id: 'collection-1', limitChildren: 3 }
+            { id: 'video-1' },
+            { id: 'collection-1', limitChildren: 3 }
           ]}
         />
       </MockedProvider>
@@ -382,7 +382,7 @@ describe('SectionVideoGrid', () => {
     render(
       <MockedProvider mocks={collectionOnlyMocks} addTypename>
         <SectionVideoGrid
-          sources={[{ type: 'collection', id: 'collection-1' }]}
+          sources={[{ id: 'collection-1' }]}
           subtitleOverride="Override Subtitle"
           titleOverride="Override Title"
           descriptionOverride="<strong>Bold Lead</strong> remaining copy"
@@ -415,7 +415,7 @@ describe('SectionVideoGrid', () => {
     render(
       <MockedProvider mocks={emptyMocks} addTypename>
         <SectionVideoGrid
-          sources={[{ type: 'collection', id: 'collection-1' }]}
+          sources={[{ id: 'collection-1' }]}
         />
       </MockedProvider>
     )
@@ -429,7 +429,7 @@ describe('SectionVideoGrid', () => {
     render(
       <MockedProvider mocks={collectionOnlyMocks} addTypename>
         <SectionVideoGrid
-          sources={[{ type: 'collection', id: 'collection-1' }]}
+          sources={[{ id: 'collection-1' }]}
         />
       </MockedProvider>
     )

@@ -38,12 +38,11 @@ export const COLLECTION_SHOWCASE_VIDEO_FIELDS = gql`
 export const GET_COLLECTION_SHOWCASE_CONTENT = gql`
   ${COLLECTION_SHOWCASE_VIDEO_FIELDS}
   query GetCollectionShowcaseContent(
-    $collectionIds: [ID!]
-    $videoIds: [ID!]
+    $ids: [ID!]
     $languageId: ID!
   ) {
-    collections: videos(
-      where: { ids: $collectionIds }
+    videos(
+      where: { ids: $ids }
     ) {
       ...CollectionShowcaseVideoFields
       description(languageId: $languageId, primary: true) {
@@ -55,11 +54,6 @@ export const GET_COLLECTION_SHOWCASE_CONTENT = gql`
           ...CollectionShowcaseVideoFields
         }
       }
-    }
-    videos: videos(
-      where: { ids: $videoIds }
-    ) {
-      ...CollectionShowcaseVideoFields
     }
   }
 `

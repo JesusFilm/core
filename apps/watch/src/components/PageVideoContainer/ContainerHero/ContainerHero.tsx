@@ -9,7 +9,7 @@ import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { useBlurhash, blurImage } from '../../../libs/blurhash'
+import { blurImage, useBlurhash } from '../../../libs/blurhash'
 import { getLabelDetails } from '../../../libs/utils/getLabelDetails/getLabelDetails'
 import { useVideo } from '../../../libs/videoContext'
 import { HeroOverlay } from '../../HeroOverlay'

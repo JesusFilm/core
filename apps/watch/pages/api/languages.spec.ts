@@ -454,6 +454,69 @@ describe('Languages API', () => {
     })
   })
 
+  describe('Redis Availability Flag Reset', () => {
+    it('should reset _redisAvailable to true after successful Redis connection', async () => {
+      // Import the redisClient function directly to test the flag behavior
+      const { redisClient } = await import('./languages')
+
+      // Mock Redis to fail initially
+      const mockRedisFail = {
+        ping: jest.fn().mockRejectedValue(new Error('Connection failed')),
+        get: jest.fn(),
+        setex: jest.fn()
+      }
+
+      const mockRedisSuccess = {
+        ping: jest.fn().mockResolvedValue('PONG'),
+        get: jest.fn(),
+        setex: jest.fn()
+      }
+
+      // First call - Redis fails, should return null
+      ;(Redis as jest.Mock).mockImplementationOnce(() => mockRedisFail as any)
+      const result1 = await redisClient()
+      expect(result1).toBeNull()
+      expect(mockRedisFail.ping).toHaveBeenCalledTimes(1)
+
+      // Second call - Redis succeeds, should return Redis instance
+      ;(Redis as jest.Mock).mockImplementationOnce(() => mockRedisSuccess as any)
+      const result2 = await redisClient()
+      expect(result2).toBe(mockRedisSuccess)
+      expect(mockRedisSuccess.ping).toHaveBeenCalledTimes(1)
+    })
+
+    it('should allow Redis to become available again after initial failure', async () => {
+      // This test ensures the flag doesn't get stuck in false state
+      const { redisClient } = await import('./languages')
+
+      // Start with failing Redis
+      const mockRedisFail = {
+        ping: jest.fn().mockRejectedValue(new Error('Connection failed'))
+      }
+
+      const mockRedisSuccess = {
+        ping: jest.fn().mockResolvedValue('PONG'),
+        get: jest.fn(),
+        setex: jest.fn()
+      }
+
+      // First attempt fails
+      ;(Redis as jest.Mock).mockImplementationOnce(() => mockRedisFail as any)
+      const result1 = await redisClient()
+      expect(result1).toBeNull()
+
+      // Second attempt succeeds (simulating Redis becoming available)
+      ;(Redis as jest.Mock).mockImplementationOnce(() => mockRedisSuccess as any)
+      const result2 = await redisClient()
+      expect(result2).toBe(mockRedisSuccess)
+
+      // Third attempt should reuse the successful connection
+      const result3 = await redisClient()
+      expect(result3).toBe(mockRedisSuccess)
+      expect(mockRedisSuccess.ping).toHaveBeenCalledTimes(1) // Only called once during initial connection
+    })
+  })
+
   describe('Data Transformation Edge Cases', () => {
     it('should handle empty languages array', async () => {
       const req = createMockRequest('GET')

@@ -32,16 +32,31 @@ type ApiResponse =
     }
 
 let _redis: Redis | undefined
-function redisClient(): Redis {
-  if (_redis == null || process.env.NODE_ENV === 'test') {
-    _redis = new Redis({
-      url:
-        process.env.REDIRECT_STORAGE_KV_REST_API_URL ??
-        'http://serverless-redis-http:80',
-      token: process.env.REDIRECT_STORAGE_KV_REST_API_TOKEN ?? 'example_token'
-    })
+let _redisAvailable = true
+
+async function redisClient(): Promise<Redis | null> {
+  if (_redis == null) {
+    try {
+      _redis = new Redis({
+        url:
+          process.env.REDIRECT_STORAGE_KV_REST_API_URL ??
+          'http://serverless-redis-http:80',
+        token: process.env.REDIRECT_STORAGE_KV_REST_API_TOKEN ?? 'example_token'
+      })
+
+      // Test the connection to ensure Redis is actually available
+      await _redis.ping()
+      // Successfully connected, mark Redis as available
+      _redisAvailable = true
+    } catch (error) {
+      console.warn('Redis connection failed, disabling caching for this request:', error)
+      _redis = undefined
+      _redisAvailable = false
+      return null
+    }
   }
-  return _redis
+
+  return _redisAvailable ? _redis : null
 }
 
 const CACHE_TTL = 86400 // 1 day in seconds
@@ -57,16 +72,18 @@ export default async function handler(
     return
   }
 
-  const redis = redisClient()
+  const redis = await redisClient()
   // User's preferred language doesn't match the current path
   // Check if we have cached variant languages for this video
   const cacheKey = `languages:${LANGUAGES_CACHE_SCHEMA_VERSION}`
 
-  let cachedLanguages
-  try {
-    cachedLanguages = await redis.get(cacheKey)
-  } catch (error) {
-    console.error('Redis get error:', error)
+  let cachedLanguages = null
+  if (redis != null) {
+    try {
+      cachedLanguages = await redis.get(cacheKey)
+    } catch (error) {
+      console.error('Redis get error:', error)
+    }
   }
 
   if (cachedLanguages) {
@@ -97,10 +114,14 @@ export default async function handler(
           return [languageIdAndSlug, ...name] as LanguageTuple
         })
         .filter((language): language is LanguageTuple => language != null)
-      try {
-        await redis.setex(cacheKey, CACHE_TTL, languages)
-      } catch (error) {
-        console.error('Redis setex error:', error)
+
+      // Only attempt to cache if Redis is available
+      if (redis != null) {
+        try {
+          await redis.setex(cacheKey, CACHE_TTL, languages)
+        } catch (error) {
+          console.error('Redis setex error:', error)
+        }
       }
 
       res.setHeader(

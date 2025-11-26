@@ -15,7 +15,8 @@ import { blurImage } from '../../libs/blurhash'
 
 import {
   SectionVideoCollectionCarouselSource,
-  useSectionVideoCollectionCarouselContent
+  useSectionVideoCollectionCarouselContent,
+  extractVideosAndContainerSlugMap
 } from '../SectionVideoCarousel/useSectionVideoCollectionCarouselContent'
 import { VideoGrid } from '../VideoGrid/VideoGrid'
 
@@ -111,7 +112,10 @@ export function SectionVideoGrid({
       languageId
     })
 
-  const videos = useMemo(() => slides.map((slide) => slide.video), [slides])
+  const { videos, containerSlugMap } = useMemo(
+    () => extractVideosAndContainerSlugMap(slides),
+    [slides]
+  )
 
   const [hoverBackground, setHoverBackground] = useState<string | null>(null)
   const [hoverBlurhash, setHoverBlurhash] = useState<string | null>(null)
@@ -308,6 +312,7 @@ export function SectionVideoGrid({
           analyticsTag={analyticsTag}
           showSequenceNumbers={showSequenceNumbers}
           onCardHoverChange={handleCardHoverChange}
+          containerSlugMap={containerSlugMap}
           data-testid="SectionVideoGridContainer"
         />
       </div>

@@ -1,6 +1,14 @@
 import { useLazyQuery, useQuery } from '@apollo/client'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+// Stable ref to avoid infinite useEffect loops when loadNextVideo is a dependency
+function useStableCallback<T extends (...args: any[]) => any>(callback: T): T {
+  const callbackRef = useRef(callback)
+  callbackRef.current = callback
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useCallback(((...args) => callbackRef.current(...args)) as T, [])
+}
+
 import { getLanguageIdFromLocale } from '../../../../libs/getLanguageIdFromLocale'
 import type { VideoCarouselSlide } from '../../../../types/inserts'
 
@@ -82,6 +90,23 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
   })
   const [loadingQueue, setLoadingQueue] = useState<Set<number>>(new Set())
   const [error, setError] = useState<Error | null>(null)
+
+  // Refs to avoid stale closures and infinite loops
+  const videosRef = useRef(videos)
+  const currentIndexRef = useRef(currentIndex)
+  const loadingQueueRef = useRef(loadingQueue)
+  const isLoadingRef = useRef(false)
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    videosRef.current = videos
+  }, [videos])
+  useEffect(() => {
+    currentIndexRef.current = currentIndex
+  }, [currentIndex])
+  useEffect(() => {
+    loadingQueueRef.current = loadingQueue
+  }, [loadingQueue])
 
   const config = getPlaylistConfig()
   const blacklistedVideoIds = useMemo(
@@ -400,34 +425,47 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
   )
 
   // Progressive video loading for infinite playlist
-  const loadNextVideo = useCallback(async () => {
+  // Uses refs to avoid infinite useEffect loops caused by changing callback identity
+  const loadNextVideoImpl = useCallback(async () => {
+    // Use refs to avoid stale closures and prevent infinite loops
+    const currentVideos = videosRef.current
+    const currentIdx = currentIndexRef.current
+    const currentLoadingQueue = loadingQueueRef.current
+
+    // Prevent concurrent loads
+    if (isLoadingRef.current) {
+      return
+    }
+
     // New prefetch logic: 7 on initial load, 1 ahead during playback
     const initialPrefetchTarget = 7
     const playbackPrefetchTarget = 1
-    const isInitialLoad = videos.length < initialPrefetchTarget
-    const videosAhead = videos.length - currentIndex - 1
+    const isInitialLoad = currentVideos.length < initialPrefetchTarget
+    const videosAhead = currentVideos.length - currentIdx - 1
     const prefetchTarget = isInitialLoad
       ? initialPrefetchTarget
       : playbackPrefetchTarget
 
-    if (loadingQueue.size >= 1) {
+    if (currentLoadingQueue.size >= 1) {
       return // Only load one at a time
     }
     if (videosAhead >= prefetchTarget) {
       return // Max videos ahead based on new logic
     }
 
-    const nextVideoPosition = videos.length
+    const nextVideoPosition = currentVideos.length
 
     // Find starting search index: after the last video's pool index, or after current video if no videos yet
     let searchStartIndex: number
-    if (videos.length > 0) {
+    if (currentVideos.length > 0) {
       // Start searching after the highest pool index in the videos array
-      const highestPoolIndex = Math.max(...videos.map((v) => v.poolIndex || 0))
+      const highestPoolIndex = Math.max(
+        ...currentVideos.map((v) => v.poolIndex || 0)
+      )
       searchStartIndex = highestPoolIndex + 1
 
       // If we have multiple videos from the same pool recently, skip ahead more to force diversity
-      const recentVideos = videos.slice(-5) // Last 5 videos
+      const recentVideos = currentVideos.slice(-5) // Last 5 videos
       const recentPoolCounts = recentVideos.reduce(
         (acc, video) => {
           const poolId = video.poolId || 'unknown'
@@ -455,6 +493,7 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       return
     }
 
+    isLoadingRef.current = true
     setLoadingQueue((prev) => new Set(prev).add(nextVideoPosition))
 
     try {
@@ -467,7 +506,7 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
           poolId: nextPool.pool[0]
         }
 
-        const isFirst = videos.length === 0
+        const isFirst = videosRef.current.length === 0
 
         // Check for duplicates before adding to videos array
         setVideos((prev) => {
@@ -500,20 +539,17 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
     } catch {
       // Ignore errors when loading video
     } finally {
+      isLoadingRef.current = false
       setLoadingQueue((prev) => {
         const newSet = new Set(prev)
         newSet.delete(nextVideoPosition)
         return newSet
       })
     }
-  }, [
-    videos,
-    currentIndex,
-    effectivePoolIndex,
-    findNextAvailablePool,
-    loadVideoFromPool,
-    loadingQueue.size
-  ])
+  }, [effectivePoolIndex, findNextAvailablePool, loadVideoFromPool])
+
+  // Wrap in stable callback to prevent infinite useEffect loops
+  const loadNextVideo = useStableCallback(loadNextVideoImpl)
 
   // Save current video session whenever current video changes
   useEffect(() => {
@@ -544,16 +580,14 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
   useEffect(() => {
     if (!countsData || videos.length > 0) return
     void loadNextVideo()
+    // loadNextVideo has stable identity via useStableCallback
   }, [countsData, videos.length, loadNextVideo])
 
-  // Start progressive loading after first video is set
-  useEffect(() => {
-    if (videos.length === 0 || !countsData) return
-    void loadNextVideo()
-  }, [videos.length, countsData, loadNextVideo])
-
   // Continue loading next videos to maintain prefetch count
+  // This single effect handles both initial load and ongoing prefetch
   useEffect(() => {
+    if (!countsData || videos.length === 0) return
+
     const initialPrefetchTarget = 7
     const playbackPrefetchTarget = 1
     const isInitialLoad = videos.length < initialPrefetchTarget
@@ -562,15 +596,13 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       ? initialPrefetchTarget
       : playbackPrefetchTarget
 
-    const shouldLoad =
-      videos.length > 0 &&
-      videosAhead < prefetchTarget &&
-      loadingQueue.size === 0
+    const shouldLoad = videosAhead < prefetchTarget && loadingQueue.size === 0
 
     if (shouldLoad) {
       void loadNextVideo()
     }
-  }, [videos.length, currentIndex, loadingQueue.size, loadNextVideo])
+    // loadNextVideo has stable identity via useStableCallback
+  }, [countsData, videos.length, currentIndex, loadingQueue.size, loadNextVideo])
 
   const moveToNext = useCallback(() => {
     if (currentIndex < videos.length - 1) {

@@ -2,15 +2,15 @@ import last from 'lodash/last'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState, memo } from 'react'
+import { ReactElement, memo, useState } from 'react'
 
 import Play3 from '@core/shared/ui/icons/Play3'
 
-import { useBlurhash, blurImage } from '../../libs/blurhash'
+import { blurImage, useBlurhash } from '../../libs/blurhash'
 import { usePlayer, useThrottledPlayerProgress } from '../../libs/playerContext'
+import { useThumbnailUrl } from '../../libs/thumbnail'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 import { getWatchUrl } from '../../libs/utils/getWatchUrl'
-import { useThumbnailUrl } from '../../libs/thumbnail'
 import { useWatch } from '../../libs/watchContext'
 import { UnifiedCardData } from '../../types/inserts'
 

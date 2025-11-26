@@ -1,5 +1,6 @@
 import { existsSync, statSync } from 'fs'
 import { join } from 'path'
+
 import { NextApiRequest, NextApiResponse } from 'next'
 
 interface ThumbnailApiResponse {

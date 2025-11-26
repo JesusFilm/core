@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 
-import { useBlurhash, blurImage } from '../../libs/blurhash'
+import { blurImage, useBlurhash } from '../../libs/blurhash'
 import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 import { useVideo } from '../../libs/videoContext'
 import { ContentHeader } from '../ContentHeader'

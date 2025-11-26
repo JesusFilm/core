@@ -9,6 +9,7 @@ export interface VideoGridProps {
   videos?: VideoChildFields[]
   showLoadMore?: boolean
   containerSlug?: string
+  containerSlugMap?: Map<string, string | undefined>
   orientation?: 'horizontal' | 'vertical'
   loading?: boolean
   showMore?: () => void
@@ -31,6 +32,7 @@ export function VideoGrid({
   videos = [],
   showLoadMore = false,
   containerSlug,
+  containerSlugMap,
   orientation = 'horizontal',
   loading = false,
   showMore,
@@ -79,20 +81,24 @@ export function VideoGrid({
       data-testid="VideoGrid"
     >
       {(videos?.length ?? 0) > 0 &&
-        videos?.map((video, index) => (
-          <div key={index} className="w-full">
-            <VideoCard
-              video={video}
-              orientation={orientation}
-              containerSlug={containerSlug}
-              index={index}
-              onClick={onCardClick}
-              analyticsTag={analyticsTag}
-              showSequenceNumber={showSequenceNumbers}
-              onHoverImageChange={onCardHoverChange}
-            />
-          </div>
-        ))}
+        videos?.map((video, index) => {
+          const videoContainerSlug =
+            containerSlugMap?.get(video.id) ?? containerSlug
+          return (
+            <div key={index} className="w-full">
+              <VideoCard
+                video={video}
+                orientation={orientation}
+                containerSlug={videoContainerSlug}
+                index={index}
+                onClick={onCardClick}
+                analyticsTag={analyticsTag}
+                showSequenceNumber={showSequenceNumbers}
+                onHoverImageChange={onCardHoverChange}
+              />
+            </div>
+          )
+        })}
       {loading && videos?.length === 0 && (
         <>
           <div className="w-full">
@@ -167,19 +173,23 @@ export function VideoGrid({
                   {(fallbackLoading
                     ? Array.from({ length: fallbackSkeletonCount }, () => undefined)
                     : fallbackVideos
-                  ).map((video, index) => (
-                    <div key={index} className="w-full">
-                      <VideoCard
-                        video={fallbackLoading ? undefined : video}
-                        orientation={orientation}
-                        containerSlug={containerSlug}
-                        index={index}
-                        onClick={onCardClick}
-                        analyticsTag={analyticsTag}
-                        showSequenceNumber={showSequenceNumbers}
-                      />
-                    </div>
-                  ))}
+                  ).map((video, index) => {
+                    const videoContainerSlug =
+                      (video && containerSlugMap?.get(video.id)) ?? containerSlug
+                    return (
+                      <div key={index} className="w-full">
+                        <VideoCard
+                          video={fallbackLoading ? undefined : video}
+                          orientation={orientation}
+                          containerSlug={videoContainerSlug}
+                          index={index}
+                          onClick={onCardClick}
+                          analyticsTag={analyticsTag}
+                          showSequenceNumber={showSequenceNumbers}
+                        />
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             )}

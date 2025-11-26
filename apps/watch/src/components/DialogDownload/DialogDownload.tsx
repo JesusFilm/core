@@ -1,9 +1,13 @@
+import last from 'lodash/last'
 import { Download as DownloadIcon, Globe2, Play, X } from 'lucide-react'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useMemo, useState } from 'react'
 import useDownloader from 'react-use-downloader'
 
+import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
+import { Button } from '@core/shared/uimodern/components/button'
+import { Checkbox } from '@core/shared/uimodern/components/checkbox'
 import {
   Dialog,
   DialogClose,
@@ -13,8 +17,6 @@ import {
   DialogPortal,
   DialogTitle
 } from '@core/shared/uimodern/components/dialog'
-import { Button } from '@core/shared/uimodern/components/button'
-import { Checkbox } from '@core/shared/uimodern/components/checkbox'
 import {
   Select,
   SelectContent,
@@ -28,13 +30,11 @@ import {
   TooltipProvider,
   TooltipTrigger
 } from '@core/shared/uimodern/components/tooltip'
-import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { VideoVariantDownloadQuality } from '../../../__generated__/globalTypes'
 import { useVideo } from '../../libs/videoContext'
 
 import { TermsOfUseDialog } from './TermsOfUseDialog'
-import last from 'lodash/last'
 
 interface DialogDownloadProps {
   open?: boolean
@@ -96,8 +96,8 @@ export function DialogDownload({
     () =>
       [...filteredDownloads].sort(
         (a, b) =>
-          qualityEnumToOrder[a.quality as keyof typeof qualityEnumToOrder] -
-          qualityEnumToOrder[b.quality as keyof typeof qualityEnumToOrder]
+          qualityEnumToOrder[a.quality] -
+          qualityEnumToOrder[b.quality]
       ),
     [filteredDownloads]
   )

@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from 'next'
 import { encode } from 'blurhash'
+import { NextApiRequest, NextApiResponse } from 'next'
 import sharp from 'sharp'
 
 import handler from './blurhash'

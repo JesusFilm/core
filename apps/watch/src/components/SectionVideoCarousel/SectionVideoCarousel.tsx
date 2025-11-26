@@ -48,7 +48,7 @@ export function SectionVideoCarousel({
 
   const { loading, slides, subtitle, title, description, ctaHref, ctaLabel } =
     useSectionVideoCollectionCarouselContent({
-      sources,
+      sources: sources ?? [],
       primaryCollectionId,
       subtitleOverride,
       titleOverride,

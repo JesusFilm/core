@@ -1,4 +1,4 @@
-import { Dispatch, createContext, useContext, useMemo, useReducer, useState, useEffect } from 'react'
+import { Dispatch, createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react'
 
 /**
  * State interface for the video player

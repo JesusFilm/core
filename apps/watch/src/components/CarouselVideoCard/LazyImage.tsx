@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
-import { useBlurhash, blurImage } from '../../libs/blurhash'
+import { blurImage, useBlurhash } from '../../libs/blurhash'
 
 interface LazyImageProps {
   src: string

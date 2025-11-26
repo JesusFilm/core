@@ -14,7 +14,7 @@ export type ShowcaseIdType = 'databaseId' | 'slug'
 
 export interface SectionVideoCollectionCarouselSource {
   id: string
-  type: ShowcaseSourceType
+  type?: ShowcaseSourceType
   idType?: ShowcaseIdType
   limitChildren?: number
 }
@@ -99,13 +99,11 @@ type VideoNode = ShowcaseVideoNode
 type MaybeCollection = ShowcaseVideoNode
 
 interface CollectionShowcaseQueryData {
-  collections?: ShowcaseVideoNode[] | null
   videos?: ShowcaseVideoNode[] | null
 }
 
 interface CollectionShowcaseQueryVars {
-  collectionIds?: string[]
-  videoIds?: string[]
+  ids?: string[]
   languageId: string
 }
 
@@ -241,7 +239,10 @@ function buildSlide(
     return null
   }
 
-  const containerSlug = getContainerSlug(node)
+  // Determine if this is a collection based on having children
+  const isCollection = (node.childrenCount ?? 0) > 0 || (node.children?.length ?? 0) > 0
+  // Skip parent info extraction for collections - they should use their own metadata
+  const containerSlug = isCollection ? undefined : getContainerSlug(node)
   const href = getWatchUrl(containerSlug, node.label, variantSlug)
   const imageUrl = selectImageUrl(node)
   if (imageUrl == null) {
@@ -280,19 +281,6 @@ function flattenCollection(
   const slides: (SectionVideoCollectionCarouselSlide | null)[] = []
   const limit = options?.limit ?? children.length
 
-  if (debugContext?.isLumoSection) {
-    console.log(`🔍 [Scripture Section] flattenCollection for ${collection.id}:`, {
-      totalChildren: children.length,
-      limit,
-      childrenLabels: children.map((c) => ({
-        id: c?.id,
-        label: c?.label,
-        hasVariant: c?.variant != null,
-        variantSlug: c?.variant?.slug,
-        childrenCount: c?.children?.length ?? 0
-      }))
-    })
-  }
 
   for (const child of children) {
     if (slides.length >= limit) break
@@ -342,6 +330,17 @@ export interface UseSectionVideoCollectionCarouselContentOptions {
   languageId?: string
 }
 
+export function extractVideosAndContainerSlugMap(
+  slides: SectionVideoCollectionCarouselSlide[]
+): { videos: VideoChildFields[]; containerSlugMap: Map<string, string | undefined> } {
+  const videos = slides.map((slide) => slide.video)
+  const containerSlugMap = new Map(
+    slides.map((slide) => [slide.video.id, slide.containerSlug])
+  )
+
+  return { videos, containerSlugMap }
+}
+
 export function useSectionVideoCollectionCarouselContent({
   sources,
   primaryCollectionId,
@@ -366,24 +365,13 @@ export function useSectionVideoCollectionCarouselContent({
     }
   }, [sources])
 
-  const collectionSources = useMemo(
-    () => sources.filter((source) => source.type === 'collection'),
-    [sources]
-  )
-  const videoSources = useMemo(
-    () => sources.filter((source) => source.type === 'video'),
+  const allSourceIds = useMemo(
+    () => sources.map((source) => source.id),
     [sources]
   )
 
   const queryVariables = {
-    collectionIds:
-      collectionSources.length > 0
-        ? collectionSources.map((source) => source.id)
-        : undefined,
-    videoIds:
-      videoSources.length > 0
-        ? videoSources.map((source) => source.id)
-        : undefined,
+    ids: allSourceIds.length > 0 ? allSourceIds : undefined,
     languageId
   }
 
@@ -392,7 +380,7 @@ export function useSectionVideoCollectionCarouselContent({
     CollectionShowcaseQueryVars
   >(GET_COLLECTION_SHOWCASE_CONTENT, {
     variables: queryVariables,
-    skip: collectionSources.length === 0 && videoSources.length === 0,
+    skip: allSourceIds.length === 0,
     // Use cache-and-network to prevent cache collisions
     // When queries with specific IDs are made, other queries that fetch all items
     // might overwrite the cache. Using cache-and-network ensures we always get
@@ -407,101 +395,62 @@ export function useSectionVideoCollectionCarouselContent({
     const slideAccumulator: SectionVideoCollectionCarouselSlide[] = []
     const seen = new Set<string>()
 
-    const collectionsById = new Map(
-      (data.collections ?? []).map((collection) => [collection.id, collection])
-    )
-    const videosById = new Map(
-      (data.videos ?? []).map((video) => [video.id, video])
+    const nodesById = new Map(
+      (data.videos ?? []).map((node) => [node.id, node])
     )
 
     // Debug logging for "Scripture, Spoken Exactly as Written" section
-    const isLumoSection = sources.some(
-      (s) => s.type === 'collection' && s.id === 'LUMOCollection'
-    )
+    const isLumoSection = sources.some((s) => s.id === 'LUMOCollection')
     // Debug logging for "Christmas Advent Countdown" section
-    const isChristmasAdventSection = sources.some(
-      (s) => s.type === 'video' && s.id === '2_0-ConsideringChristmas'
-    )
-    
-    if (isLumoSection) {
-      console.log('🔍 [Scripture Section] Query data:', {
-        collectionsCount: data.collections?.length ?? 0,
-        videosCount: data.videos?.length ?? 0,
-        requestedCollectionIds: sources
-          .filter((s) => s.type === 'collection')
-          .map((s) => s.id),
-        foundCollectionIds: Array.from(collectionsById.keys())
-      })
-    }
-    
-    if (isChristmasAdventSection) {
-      console.log('🎄 [Christmas Advent Section] Query data:', {
-        collectionsCount: data.collections?.length ?? 0,
-        videosCount: data.videos?.length ?? 0,
-        requestedVideoIds: sources
-          .filter((s) => s.type === 'video')
-          .map((s) => s.id),
-        foundVideoIds: Array.from(videosById.keys()),
-        missingVideoIds: sources
-          .filter((s) => s.type === 'video')
-          .map((s) => s.id)
-          .filter((id) => !videosById.has(id))
-      })
-    }
+    const isChristmasAdventSection = sources.some((s) => s.id === '2_0-ConsideringChristmas')
+
+
 
     for (const source of sources) {
-      if (source.type === 'collection') {
-        const collection = collectionsById.get(source.id)
-        if (collection == null) {
-          if (isLumoSection) {
-            console.warn(`🚨 [Scripture Section] Collection not found: ${source.id}`)
+      const node = nodesById.get(source.id)
+      if (node == null) {
+        if (isLumoSection || isChristmasAdventSection) {
+          console.warn(`🚨 Node not found: ${source.id}`)
+        }
+        continue
+      }
+
+      // Determine if this is a collection based on having children
+      const isCollection = (node.childrenCount ?? 0) > 0 || (node.children?.length ?? 0) > 0
+
+      if (isCollection) {
+        // Special case: limitChildren: 0 means render collection as single item
+        if (source.limitChildren === 0) {
+          const slide = buildSlide(node, undefined, {
+            isLumoSection
+          })
+          if (slide != null) {
+            const key = slide.href
+            if (!seen.has(key)) {
+              seen.add(key)
+              slideAccumulator.push(slide)
+            }
           }
-          continue
-        }
-        if (isLumoSection) {
-          console.log(`✅ [Scripture Section] Found collection ${source.id}:`, {
-            childrenCount: collection.children?.length ?? 0,
-            limitChildren: source.limitChildren
-          })
-        }
-        const flattened = flattenCollection(
-          collection,
-          {
-            limit: source.limitChildren
-          },
-          { isLumoSection }
-        )
-        if (isLumoSection) {
-          console.log(`📊 [Scripture Section] Flattened ${source.id}:`, {
-            totalFlattened: flattened.length,
-            validSlides: flattened.filter((s) => s != null).length,
-            nullSlides: flattened.filter((s) => s == null).length
-          })
-        }
-        for (const slide of flattened) {
-          if (slide == null) continue
-          const key = slide.href
-          if (seen.has(key)) continue
-          seen.add(key)
-          slideAccumulator.push(slide)
+        } else {
+          // Normal flattening behavior for limitChildren > 0 or undefined
+          const flattened = flattenCollection(
+            node,
+            {
+              limit: source.limitChildren
+            },
+            { isLumoSection }
+          )
+          for (const slide of flattened) {
+            if (slide == null) continue
+            const key = slide.href
+            if (seen.has(key)) continue
+            seen.add(key)
+            slideAccumulator.push(slide)
+          }
         }
       } else {
-        const video = videosById.get(source.id)
-        if (video == null) {
-          if (isChristmasAdventSection) {
-            console.warn(`🚨 [Christmas Advent Section] Video not found: ${source.id}`)
-          }
-          continue
-        }
-        if (isChristmasAdventSection) {
-          console.log(`✅ [Christmas Advent Section] Found video ${source.id}:`, {
-            title: video.title?.[0]?.value ?? 'no title',
-            hasVariant: video.variant != null,
-            variantSlug: video.variant?.slug,
-            hasImage: selectImageUrl(video) != null
-          })
-        }
-        const slide = buildSlide(video, undefined, {
+        // Handle individual videos
+        const slide = buildSlide(node, undefined, {
           isLumoSection: isChristmasAdventSection
         })
         if (slide == null) {
@@ -522,36 +471,27 @@ export function useSectionVideoCollectionCarouselContent({
       }
     }
 
-    if (isLumoSection) {
-      console.log(`🎯 [Scripture Section] Final slides count: ${slideAccumulator.length}`)
-    }
     
-    if (isChristmasAdventSection) {
-      console.log(`🎯 [Christmas Advent Section] Final slides count: ${slideAccumulator.length}`, {
-        slideIds: slideAccumulator.map((s) => s.id),
-        slideTitles: slideAccumulator.map((s) => s.title)
-      })
-    }
 
     return slideAccumulator
   }, [data, sources])
 
   const primaryCollection = useMemo(() => {
-    if (data?.collections == null || data.collections.length === 0)
+    if (data?.videos == null || data.videos.length === 0)
       return undefined
     if (primaryCollectionId != null) {
-      return data.collections.find(
-        (collection) => collection.id === primaryCollectionId
+      return data.videos.find(
+        (video) => video.id === primaryCollectionId
       )
     }
-    const firstSource = collectionSources[0]
+    const firstSource = sources[0]
     if (firstSource != null) {
-      return data.collections.find(
-        (collection) => collection.id === firstSource.id
+      return data.videos.find(
+        (video) => video.id === firstSource.id
       )
     }
-    return data.collections[0]
-  }, [collectionSources, data, primaryCollectionId])
+    return data.videos[0]
+  }, [sources, data, primaryCollectionId])
 
   const subtitle = subtitleOverride ?? primaryCollection?.snippet?.[0]?.value
   const title = titleOverride ?? primaryCollection?.title?.[0]?.value

@@ -1,9 +1,10 @@
+import { readFileSync } from 'fs'
+import { join } from 'path'
+
 import { encode } from 'blurhash'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { unstable_cache } from 'next/cache'
 import sharp from 'sharp'
-import { readFileSync } from 'fs'
-import { join } from 'path'
 
 import {
   BlurhashApiResponse,

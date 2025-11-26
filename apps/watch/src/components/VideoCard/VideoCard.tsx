@@ -9,10 +9,10 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import { VideoLabel } from '../../../__generated__/globalTypes'
 import type { VideoChildFields } from '../../../__generated__/VideoChildFields'
 import { blurImage, useBlurhash } from '../../libs/blurhash'
-import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
-import type { CarouselVideo } from '../VideoHero/libs/useCarouselVideos'
 import { useThumbnailUrl } from '../../libs/thumbnail'
+import { getLabelDetails } from '../../libs/utils/getLabelDetails/getLabelDetails'
 import { useWatch } from '../../libs/watchContext'
+import type { CarouselVideo } from '../VideoHero/libs/useCarouselVideos'
 
 interface VideoCardProps {
   video?: VideoChildFields | CarouselVideo
