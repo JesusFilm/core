@@ -50,9 +50,6 @@ describe('integrationGoogleCreate', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env.GOOGLE_CLIENT_ID = 'test-client-id'
-    process.env.GOOGLE_CLIENT_SECRET = 'test-client-secret'
-    process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET = 'test-secret'
     mockGetUserFromPayload.mockReturnValue(mockUser)
     prismaMock.userRole.findUnique.mockResolvedValue({
       userId: mockUser.id,
@@ -60,12 +57,6 @@ describe('integrationGoogleCreate', () => {
     } as any)
     // Pass isInTeam auth guard
     prismaMock.userTeam.findFirst.mockResolvedValue({ id: 'ut-1' } as any)
-  })
-
-  afterEach(() => {
-    delete process.env.GOOGLE_CLIENT_ID
-    delete process.env.GOOGLE_CLIENT_SECRET
-    delete process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
   })
 
   it('should create Google integration with refresh token', async () => {
