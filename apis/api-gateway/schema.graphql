@@ -4279,6 +4279,7 @@ input JourneysFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JO
   limit: Int
   orderByRecent: Boolean
   fromTemplateId: ID
+  teamId: String
 }
 
 input JourneysQueryOptions @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4377,7 +4378,6 @@ input JourneyEventsFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: A
   typenames: [String!]
   periodRangeStart: DateTime
   periodRangeEnd: DateTime
-  includeUnconnectedCards: Boolean
 }
 
 input JourneyNotificationUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {

@@ -523,7 +523,6 @@ export interface JourneyEventsFilter {
   typenames?: string[] | null;
   periodRangeStart?: any | null;
   periodRangeEnd?: any | null;
-  includeUnconnectedCards?: boolean | null;
 }
 
 export interface JourneyNotificationUpdateInput {
@@ -614,6 +613,7 @@ export interface JourneysFilter {
   limit?: number | null;
   orderByRecent?: boolean | null;
   fromTemplateId?: string | null;
+  teamId?: string | null;
 }
 
 export interface JourneysQueryOptions {

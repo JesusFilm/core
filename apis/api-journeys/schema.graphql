@@ -2232,6 +2232,7 @@ input JourneysFilter {
   limit: Int
   orderByRecent: Boolean
   fromTemplateId: ID
+  teamId: String
 }
 
 input JourneysQueryOptions {
@@ -2445,7 +2446,6 @@ input JourneyEventsFilter {
   typenames: [String!]
   periodRangeStart: DateTime
   periodRangeEnd: DateTime
-  includeUnconnectedCards: Boolean
 }
 
 type JourneyNotification

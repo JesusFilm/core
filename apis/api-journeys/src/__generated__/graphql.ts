@@ -375,6 +375,7 @@ export type ChatOpenEventCreateInput = {
 export type CloudflareImage = {
   __typename?: 'CloudflareImage';
   aspectRatio?: Maybe<ImageAspectRatio>;
+  blurhash?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
   mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
@@ -655,10 +656,10 @@ export type GoogleSheetsSync = {
   integration?: Maybe<Integration>;
   integrationId?: Maybe<Scalars['ID']['output']>;
   journey: Journey;
-  journeyId: Scalars['String']['output'];
+  journeyId: Scalars['ID']['output'];
   sheetName?: Maybe<Scalars['String']['output']>;
   spreadsheetId: Scalars['ID']['output'];
-  teamId?: Maybe<Scalars['String']['output']>;
+  teamId: Scalars['ID']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -1126,7 +1127,6 @@ export type JourneyEventsExportLogInput = {
 };
 
 export type JourneyEventsFilter = {
-  includeUnconnectedCards?: InputMaybe<Scalars['Boolean']['input']>;
   periodRangeEnd?: InputMaybe<Scalars['DateTime']['input']>;
   periodRangeStart?: InputMaybe<Scalars['DateTime']['input']>;
   typenames?: InputMaybe<Array<Scalars['String']['input']>>;

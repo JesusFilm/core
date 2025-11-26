@@ -666,6 +666,7 @@ export class JourneysFilter {
     limit?: Nullable<number>;
     orderByRecent?: Nullable<boolean>;
     fromTemplateId?: Nullable<string>;
+    teamId?: Nullable<string>;
 }
 
 export class JourneysQueryOptions {
