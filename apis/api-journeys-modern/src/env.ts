@@ -23,26 +23,10 @@ export const env = createEnv({
     JOURNEYS_ADMIN_URL: z.string().trim().min(1),
     JOURNEYS_REVALIDATE_ACCESS_TOKEN: z.string().trim().min(1),
     JOURNEYS_URL: z.string().trim().min(1),
+    PLAUSIBLE_API_KEY: z.string().trim().min(1),
+    PLAUSIBLE_URL: z.string().url(),
     REDIS_PORT: z.coerce.number().int().positive().default(6379),
     REDIS_URL: z.string().trim().min(1).default('redis'),
     SERVICE_VERSION: z.string().trim().default('')
   }
 })
-
-const plausibleEnvSchema = z.object({
-  PLAUSIBLE_URL: z.string().url(),
-  PLAUSIBLE_API_KEY: z.string().trim().min(1)
-})
-
-export function getPlausibleEnv(): {
-  PLAUSIBLE_URL: string
-  PLAUSIBLE_API_KEY: string
-} | null {
-  const parsed = plausibleEnvSchema.safeParse({
-    PLAUSIBLE_URL: process.env.PLAUSIBLE_URL,
-    PLAUSIBLE_API_KEY: process.env.PLAUSIBLE_API_KEY
-  })
-
-  if (!parsed.success) return null
-  return parsed.data
-}

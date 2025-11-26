@@ -12,7 +12,7 @@ import { Logger } from 'pino'
 import { JourneyPlausibleEvents } from '@core/journeys/ui/plausibleHelpers'
 import { prisma } from '@core/prisma/journeys/client'
 
-import { getPlausibleEnv } from '../../env'
+import { env } from '../../env'
 
 interface PlausibleCreateSitesJob {
   __typename: 'plausibleCreateSites'
@@ -107,18 +107,13 @@ const goals: Array<keyof JourneyPlausibleEvents> = [
   'videoTrigger'
 ]
 
-const plausibleCredentials = getPlausibleEnv()
-if (plausibleCredentials == null) {
-  throw new Error('Plausible is not configured')
-}
-
 const httpLink = createHttpLink({
   uri: process.env.GATEWAY_URL,
   fetch,
   headers: {
-    Authorization: `Bearer ${plausibleCredentials.PLAUSIBLE_API_KEY}`,
+    Authorization: `Bearer ${env.PLAUSIBLE_API_KEY}`,
     'x-graphql-client-name': 'api-journeys-modern',
-    'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
+    'x-graphql-client-version': env.SERVICE_VERSION
   }
 })
 
@@ -140,11 +135,6 @@ function teamSiteId(teamId: string): string {
 async function createSite(
   domain: string
 ): Promise<MutationSiteCreateResult | undefined> {
-  const credentials = getPlausibleEnv()
-  if (credentials == null) {
-    throw new Error('Plausible is not configured')
-  }
-
   const { data } = await client.mutate({
     mutation: SITE_CREATE,
     variables: {
