@@ -16,6 +16,20 @@ import {
   updateRangeValues,
   writeValues
 } from '../../lib/google/sheets'
+import { computeConnectedBlockIds } from '../journeyVisitor/export/connectivity'
+import {
+  type BaseColumnLabelResolver,
+  type JourneyExportColumn,
+  buildHeaderRows,
+  buildJourneyExportColumns,
+  getAncestorByType,
+  getCardHeading
+} from '../journeyVisitor/export/headings'
+import {
+  type SimpleBlock,
+  buildRenderTree,
+  computeOrderIndex
+} from '../journeyVisitor/export/order'
 
 // Queue for visitor interaction emails
 let emailQueue: any
@@ -229,6 +243,17 @@ export async function resetEventsEmailDelay(
 }
 
 // Live Google Sheets sync: append row per event when a sync config exists
+const journeyBlockSelect = {
+  id: true,
+  typename: true,
+  parentBlockId: true,
+  parentOrder: true,
+  nextBlockId: true,
+  action: true,
+  content: true,
+  deletedAt: true
+} as const
+
 export async function appendEventToGoogleSheets({
   journeyId,
   teamId,
@@ -240,11 +265,116 @@ export async function appendEventToGoogleSheets({
   row: (string | number | null)[]
   sheetName?: string
 }): Promise<void> {
-  // find sync config
   const sync = await prisma.googleSheetsSync.findFirst({
     where: { journeyId, teamId, deletedAt: null }
   })
   if (sync == null) return
+
+  const journey = await prisma.journey.findUnique({
+    where: { id: journeyId },
+    select: {
+      blocks: {
+        select: journeyBlockSelect
+      }
+    }
+  })
+  if (journey == null) return
+
+  const journeyBlocks = journey.blocks.filter(
+    (block) => block.deletedAt == null
+  )
+  const idToBlock = new Map(journeyBlocks.map((block) => [block.id, block]))
+  const simpleBlocks: SimpleBlock[] = journeyBlocks.map((block) => ({
+    id: block.id,
+    typename: block.typename,
+    parentBlockId: block.parentBlockId ?? null,
+    parentOrder: block.parentOrder ?? null
+  }))
+  const treeRoots = buildRenderTree(simpleBlocks)
+  const orderIndex = computeOrderIndex(treeRoots)
+
+  // Apply connectivity filter to only include blocks from connected steps
+  const connectedBlockIds = computeConnectedBlockIds({
+    simpleBlocks,
+    journeyBlocks
+  })
+
+  const blockHeadersResult = await prisma.event.findMany({
+    where: {
+      journeyId,
+      blockId: { in: Array.from(connectedBlockIds) },
+      // Only include submission events
+      typename: {
+        in: [
+          'RadioQuestionSubmissionEvent',
+          'MultiselectSubmissionEvent',
+          'TextResponseSubmissionEvent',
+          'SignUpSubmissionEvent'
+        ]
+      }
+    },
+    select: {
+      blockId: true,
+      label: true
+    },
+    distinct: ['blockId', 'label']
+  })
+
+  // Normalize labels and deduplicate by normalized key
+  const headerMap = new Map<string, { blockId: string; label: string }>()
+  blockHeadersResult
+    .filter((header) => header.blockId != null)
+    .forEach((header) => {
+      const normalizedLabel = (header.label ?? '').replace(/\s+/g, ' ').trim()
+      const key = `${header.blockId}-${normalizedLabel}`
+      // Only add if not already present (handles duplicates with different whitespace)
+      if (!headerMap.has(key)) {
+        headerMap.set(key, {
+          blockId: header.blockId!,
+          label: normalizedLabel
+        })
+      }
+    })
+  const normalizedBlockHeaders = Array.from(headerMap.values())
+
+  const baseColumns: JourneyExportColumn[] = [
+    { key: 'visitorId', label: 'Visitor ID', blockId: null, typename: '' },
+    { key: 'date', label: 'Date', blockId: null, typename: '' }
+  ]
+  const columns = buildJourneyExportColumns({
+    baseColumns,
+    blockHeaders: normalizedBlockHeaders,
+    journeyBlocks,
+    orderIndex
+  })
+
+  const resolveBaseColumnLabel: BaseColumnLabelResolver = ({
+    column,
+    row,
+    userTimezone
+  }) => {
+    if (column.key === 'visitorId') return 'Visitor ID'
+    if (column.key === 'date') {
+      return userTimezone !== 'UTC' && userTimezone !== ''
+        ? `Date (${userTimezone})`
+        : 'Date'
+    }
+    return column.label
+  }
+
+  const { cardHeadingRow, labelRow } = buildHeaderRows({
+    columns,
+    userTimezone: 'UTC',
+    getAncestorByType: (blockId, type) =>
+      getAncestorByType(idToBlock as any, blockId, type),
+    getCardHeading: (blockId) =>
+      getCardHeading(idToBlock as any, journeyBlocks as any, blockId),
+    baseColumnLabelResolver: resolveBaseColumnLabel
+  })
+
+  const sanitizedCardHeadingRow = cardHeadingRow.map((cell) => cell ?? '')
+  const sanitizedLabelRow = labelRow.map((cell) => cell ?? '')
+  const finalHeader = columns.map((column) => column.key)
 
   const { accessToken } = await getTeamGoogleAccessToken(teamId)
   const tabName =
@@ -254,112 +384,101 @@ export async function appendEventToGoogleSheets({
     spreadsheetId: sync.spreadsheetId,
     sheetTitle: tabName
   })
-  // Expected incoming row format from callers:
-  // [visitorId, createdAtISO, name, email, phone, dynamicKey, dynamicValue]
-  const safe = (v: string | number | null | undefined): string =>
-    v == null ? '' : String(v)
-  const visitorId = safe(row[0])
-  const createdAt = safe(row[1])
-  const name = safe(row[2])
-  const email = safe(row[3])
-  const phone = safe(row[4])
-  const dynamicKey = safe(row[5])
-  const dynamicValue = safe(row[6])
 
-  // Load current header
-  const headerRange = `${tabName}!A1:ZZ1`
-  const headerRows = await readValues({
+  const headerRange = `${tabName}!A1:${columnIndexToA1(
+    finalHeader.length - 1
+  )}2`
+  const existingHeaderRows = await readValues({
     accessToken,
     spreadsheetId: sync.spreadsheetId,
     range: headerRange
   })
-  const existingHeader: string[] = (headerRows[0] ?? []).map((v) => v ?? '')
-
-  // Ensure base headers
-  const baseHeaders = ['visitorId', 'createdAt', 'name', 'email', 'phone']
-  // Build headers as baseHeaders followed by existingHeaders filtered to remove duplicates
-  const baseHeaderSet = new Set(baseHeaders)
-  const additionalHeaders = existingHeader.filter(
-    (h) => h !== '' && !baseHeaderSet.has(h)
+  const existingCardHeadingRow: string[] = (existingHeaderRows[0] ?? []).map(
+    (value) => value ?? ''
   )
-  const headers: string[] = [...baseHeaders, ...additionalHeaders]
-  // Ensure dynamic key column exists (if provided)
-  if (dynamicKey !== '' && !headers.includes(dynamicKey)) {
-    headers.push(dynamicKey)
-  }
+  const existingLabelRow: string[] = (existingHeaderRows[1] ?? []).map(
+    (value) => value ?? ''
+  )
 
-  // If headers changed, write them back
-  const headersChanged =
-    existingHeader.length === 0 ||
-    headers.length !== existingHeader.length ||
-    headers.some((h, i) => h !== (existingHeader[i] ?? ''))
-  if (headersChanged) {
+  const headerChanged =
+    existingCardHeadingRow.length !== sanitizedCardHeadingRow.length ||
+    existingLabelRow.length !== sanitizedLabelRow.length ||
+    sanitizedCardHeadingRow.some(
+      (cell, index) => cell !== (existingCardHeadingRow[index] ?? '')
+    ) ||
+    sanitizedLabelRow.some(
+      (cell, index) => cell !== (existingLabelRow[index] ?? '')
+    )
+
+  if (headerChanged) {
     await updateRangeValues({
       accessToken,
       spreadsheetId: sync.spreadsheetId,
-      range: `${tabName}!A1:${columnIndexToA1(headers.length - 1)}1`,
-      values: [headers]
+      range: headerRange,
+      values: [sanitizedCardHeadingRow, sanitizedLabelRow]
     })
   }
 
-  // Build an aligned row matching headers
-  const alignedRow = new Array(headers.length).fill('') as string[]
-  const setIfPresent = (key: string, value: string) => {
-    const idx = headers.indexOf(key)
-    if (idx >= 0 && value !== '') alignedRow[idx] = value
-  }
-  setIfPresent('visitorId', visitorId)
-  setIfPresent('createdAt', createdAt)
-  setIfPresent('name', name)
-  setIfPresent('email', email)
-  setIfPresent('phone', phone)
-  if (dynamicKey !== '') setIfPresent(dynamicKey, dynamicValue)
+  const safe = (value: string | number | null | undefined): string =>
+    value == null ? '' : String(value)
+  const visitorId = safe(row[0])
+  const createdAt = safe(row[1])
+  const dynamicKey = safe(row[5])
+  const dynamicValue = safe(row[6])
 
-  // Try to find an existing row for this visitorId in column A (which should be visitorId)
-  const idColumnRange = `${tabName}!A2:A1000000`
+  const rowMap: Record<string, string> = {}
+  if (visitorId !== '') rowMap.visitorId = visitorId
+  if (createdAt !== '') rowMap.date = createdAt
+  if (dynamicKey !== '' && dynamicValue !== '') {
+    rowMap[dynamicKey] = dynamicValue
+  }
+
+  const alignedRow = finalHeader.map((key) => rowMap[key] ?? '')
+
+  const firstDataRow = 3
+  const idColumnRange = `${tabName}!A${firstDataRow}:A1000000`
   const idColumnValues = await readValues({
     accessToken,
     spreadsheetId: sync.spreadsheetId,
     range: idColumnRange
   })
-  let foundRowIndex: number | null = null // 1-based row index in the sheet
+  let foundRowNumber: number | null = null
   for (let i = 0; i < idColumnValues.length; i++) {
     const cellVal = idColumnValues[i]?.[0] ?? ''
     if (cellVal === visitorId && visitorId !== '') {
-      foundRowIndex = i + 2 // offset since A2 is index 0
+      foundRowNumber = firstDataRow + i
       break
     }
   }
 
-  const lastColA1 = columnIndexToA1(headers.length - 1)
-  if (foundRowIndex != null) {
-    // Read existing row to merge values (avoid blanking non-updated fields)
+  const lastColA1 = columnIndexToA1(finalHeader.length - 1)
+  if (foundRowNumber != null) {
     const existingRowRes = await readValues({
       accessToken,
       spreadsheetId: sync.spreadsheetId,
-      range: `${tabName}!A${foundRowIndex}:${lastColA1}${foundRowIndex}`
+      range: `${tabName}!A${foundRowNumber}:${lastColA1}${foundRowNumber}`
     })
-    const existingRow: string[] = (existingRowRes[0] ?? []).map((v) => v ?? '')
-    const mergedRow = new Array(headers.length)
-      .fill('')
-      .map((_, i) =>
-        alignedRow[i] !== '' ? alignedRow[i] : (existingRow[i] ?? '')
-      )
+    const existingRow: string[] = (existingRowRes[0] ?? []).map(
+      (value) => value ?? ''
+    )
+    const mergedRow = alignedRow.map((value, index) =>
+      value !== '' ? value : (existingRow[index] ?? '')
+    )
 
     await updateRangeValues({
       accessToken,
       spreadsheetId: sync.spreadsheetId,
-      range: `${tabName}!A${foundRowIndex}:${lastColA1}${foundRowIndex}`,
+      range: `${tabName}!A${foundRowNumber}:${lastColA1}${foundRowNumber}`,
       values: [mergedRow]
     })
-  } else {
-    // Append as a new row
-    await writeValues({
-      accessToken,
-      spreadsheetId: sync.spreadsheetId,
-      sheetTitle: tabName,
-      values: [alignedRow],
-      append: true
-    })
+    return
   }
+
+  await writeValues({
+    accessToken,
+    spreadsheetId: sync.spreadsheetId,
+    sheetTitle: tabName,
+    values: [alignedRow],
+    append: true
+  })
 }
