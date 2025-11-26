@@ -1,7 +1,4 @@
-import { SimpleBlock } from './order'
-
 export interface ConnectivityFilterOptions {
-  simpleBlocks: SimpleBlock[]
   journeyBlocks: Array<{
     id: string
     typename: string
@@ -17,7 +14,6 @@ export interface ConnectivityFilterOptions {
  * Only includes blocks under steps that can be reached via nextBlockId or button navigate actions.
  */
 export function computeConnectedBlockIds({
-  simpleBlocks,
   journeyBlocks
 }: ConnectivityFilterOptions): Set<string> {
   // Build children map for traversal

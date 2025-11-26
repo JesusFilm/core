@@ -245,10 +245,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
 
       // Apply connectivity filter unless explicitly requested to include unconnected
       const includeOld = filter?.includeUnconnectedCards === true
-      const connectedBlockIds = computeConnectedBlockIds({
-        simpleBlocks,
-        journeyBlocks
-      })
+      const connectedBlockIds = computeConnectedBlockIds({ journeyBlocks })
       const allowedBlockIds =
         includeOld === true
           ? new Set(simpleBlocks.map((b) => b.id))

@@ -274,7 +274,6 @@ builder.queryField('journeyVisitorExport', (t) => {
 
         const includeOld = filter?.includeUnconnectedCards === true
         const connectedAllowedBlockIds = computeConnectedBlockIds({
-          simpleBlocks,
           journeyBlocks
         })
         const allowedBlockIds =
