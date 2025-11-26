@@ -744,6 +744,7 @@ export class JourneyEventsFilter {
     typenames?: Nullable<string[]>;
     periodRangeStart?: Nullable<DateTime>;
     periodRangeEnd?: Nullable<DateTime>;
+    includeUnconnectedCards?: Nullable<boolean>;
 }
 
 export class JourneyNotificationUpdateInput {

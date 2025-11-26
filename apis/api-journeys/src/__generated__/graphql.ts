@@ -1127,6 +1127,7 @@ export type JourneyEventsExportLogInput = {
 };
 
 export type JourneyEventsFilter = {
+  includeUnconnectedCards?: InputMaybe<Scalars['Boolean']['input']>;
   periodRangeEnd?: InputMaybe<Scalars['DateTime']['input']>;
   periodRangeStart?: InputMaybe<Scalars['DateTime']['input']>;
   typenames?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -1422,6 +1423,7 @@ export type JourneysFilter = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   orderByRecent?: InputMaybe<Scalars['Boolean']['input']>;
   tagIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  teamId?: InputMaybe<Scalars['String']['input']>;
   template?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
