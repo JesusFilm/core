@@ -64,7 +64,9 @@ export function computeConnectedBlockIds({
   }
 
   // Extract navigate target from action if present
-  function getNavigateTargetId(block: typeof journeyBlocks[0]): string | undefined {
+  function getNavigateTargetId(
+    block: (typeof journeyBlocks)[0]
+  ): string | undefined {
     const action = block.action
     const blockId = action?.blockId
     return typeof blockId === 'string' ? blockId : undefined
@@ -125,4 +127,3 @@ export function computeConnectedBlockIds({
 
   return connectedAllowedBlockIds
 }
-
