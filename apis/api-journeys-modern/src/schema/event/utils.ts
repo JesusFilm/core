@@ -294,10 +294,7 @@ export async function appendEventToGoogleSheets({
   const orderIndex = computeOrderIndex(treeRoots)
 
   // Apply connectivity filter to only include blocks from connected steps
-  const connectedBlockIds = computeConnectedBlockIds({
-    simpleBlocks,
-    journeyBlocks
-  })
+  const connectedBlockIds = computeConnectedBlockIds({ journeyBlocks })
 
   const blockHeadersResult = await prisma.event.findMany({
     where: {

@@ -1,12 +1,10 @@
-import { SimpleBlock } from './order'
-
 export interface ConnectivityFilterOptions {
-  simpleBlocks: SimpleBlock[]
   journeyBlocks: Array<{
     id: string
     typename: string
     parentBlockId: string | null
     nextBlockId: string | null
+    parentOrder?: number | null
     action?: { blockId?: unknown } | null
   }>
 }
@@ -16,7 +14,6 @@ export interface ConnectivityFilterOptions {
  * Only includes blocks under steps that can be reached via nextBlockId or button navigate actions.
  */
 export function computeConnectedBlockIds({
-  simpleBlocks,
   journeyBlocks
 }: ConnectivityFilterOptions): Set<string> {
   // Build children map for traversal
@@ -88,10 +85,8 @@ export function computeConnectedBlockIds({
     const topLevelSteps = journeyBlocks
       .filter((b) => b.typename === 'StepBlock' && b.parentBlockId == null)
       .sort((a, b) => {
-        const aOrder =
-          (a as { parentOrder?: number | null }).parentOrder ?? 9999
-        const bOrder =
-          (b as { parentOrder?: number | null }).parentOrder ?? 9999
+        const aOrder = a.parentOrder ?? 9999
+        const bOrder = b.parentOrder ?? 9999
         return aOrder - bOrder
       })
     return topLevelSteps[0]?.id ?? null
