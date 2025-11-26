@@ -16,7 +16,10 @@ import { JourneyEventsFilter } from '../event/journey/inputs'
 
 import { computeConnectedBlockIds } from './export/connectivity'
 import { sanitizeCSVCell } from './export/csv'
-import { formatDateYmdInTimeZone } from './export/date'
+import {
+  formatDateYmdInTimeZone,
+  parseDateInTimeZoneToUtc
+} from './export/date'
 import {
   type BaseColumnLabelResolver,
   type JourneyExportColumn,
@@ -276,19 +279,16 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       if (filter?.periodRangeStart || filter?.periodRangeEnd) {
         eventWhere.createdAt = {}
         if (filter.periodRangeStart) {
-          // Parse timezone-aware date if needed
-          const startDate =
-            filter.periodRangeStart instanceof Date
-              ? filter.periodRangeStart
-              : new Date(filter.periodRangeStart)
-          eventWhere.createdAt.gte = startDate
+          eventWhere.createdAt.gte = parseDateInTimeZoneToUtc(
+            filter.periodRangeStart,
+            userTimezone
+          )
         }
         if (filter.periodRangeEnd) {
-          const endDate =
-            filter.periodRangeEnd instanceof Date
-              ? filter.periodRangeEnd
-              : new Date(filter.periodRangeEnd)
-          eventWhere.createdAt.lte = endDate
+          eventWhere.createdAt.lte = parseDateInTimeZoneToUtc(
+            filter.periodRangeEnd,
+            userTimezone
+          )
         }
       }
 
