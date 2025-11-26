@@ -7,6 +7,7 @@ export interface ConnectivityFilterOptions {
     typename: string
     parentBlockId: string | null
     nextBlockId: string | null
+    parentOrder?: number | null
     action?: { blockId?: unknown } | null
   }>
 }
@@ -88,10 +89,8 @@ export function computeConnectedBlockIds({
     const topLevelSteps = journeyBlocks
       .filter((b) => b.typename === 'StepBlock' && b.parentBlockId == null)
       .sort((a, b) => {
-        const aOrder =
-          (a as { parentOrder?: number | null }).parentOrder ?? 9999
-        const bOrder =
-          (b as { parentOrder?: number | null }).parentOrder ?? 9999
+        const aOrder = a.parentOrder ?? 9999
+        const bOrder = b.parentOrder ?? 9999
         return aOrder - bOrder
       })
     return topLevelSteps[0]?.id ?? null
