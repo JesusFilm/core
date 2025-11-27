@@ -13,6 +13,11 @@ interface PlausibleCreateJourneySiteJob {
   journeyId: string
 }
 
+interface PlausibleCreateTemplateSiteJob {
+  __typename: 'plausibleCreateTemplateSite'
+  templateId: string
+}
+
 interface PlausibleCreateSitesJob {
   __typename: 'plausibleCreateSites'
 }
@@ -20,6 +25,7 @@ interface PlausibleCreateSitesJob {
 export type PlausibleJob =
   | PlausibleCreateTeamSiteJob
   | PlausibleCreateJourneySiteJob
+  | PlausibleCreateTemplateSiteJob
   | PlausibleCreateSitesJob
 
 @Processor('api-journeys-plausible')
@@ -38,6 +44,9 @@ export class PlausibleConsumer extends WorkerHost {
         break
       case 'plausibleCreateJourneySite':
         await this.plausibleService.createJourneySite(job.data)
+        break
+      case 'plausibleCreateTemplateSite':
+        await this.plausibleService.createTemplateSite(job.data)
         break
     }
   }
