@@ -89,17 +89,15 @@ export function StepHeader({
                 {journey?.displayTitle ?? journey?.seoTitle}
               </Typography>
             </Stack>
-            {hasMenuButtonIcon ? (
-              <StepHeaderMenu />
-            ) : (
-              <InformationButton />
-            )}
+            {hasMenuButtonIcon ? <StepHeaderMenu /> : <InformationButton />}
           </Stack>
         </Stack>
       ) : (
         <>
           <PaginationBullets />
-          <InformationButton sx={{ px: { xs: variant === 'default' ? 6 : 3, lg: 0} }} />
+          <InformationButton
+            sx={{ px: { xs: variant === 'default' ? 6 : 3, lg: 0 } }}
+          />
         </>
       )}
     </Stack>
