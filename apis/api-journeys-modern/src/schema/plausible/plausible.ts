@@ -1,3 +1,4 @@
+import { goals } from '../../workers/plausible/service'
 import { builder } from '../builder'
 
 export interface PlausibleStatsAggregateValue {
@@ -28,6 +29,18 @@ export interface PlausibleStatsResponse {
   events?: number | null
   conversionRate?: number | null
   timeOnPage?: number | null
+}
+
+export interface TemplatePlausibleStatsEventResponse {
+  event: (typeof goals)[number]
+  visitors: number
+}
+
+export interface TemplatePlausibleStatsBreakdownResponse {
+  journeyId: string
+  journeyName: string
+  teamName: string
+  stats: TemplatePlausibleStatsEventResponse[]
 }
 
 export const PlausibleStatsAggregateValueRef = builder
@@ -171,6 +184,51 @@ export const PlausibleStatsResponseRef = builder
         description:
           'The average time users spend on viewing a single page. Requires an `event:page` filter or `event:page` property in the breakdown endpoint.',
         resolve: (parent) => parent.timeOnPage
+      })
+    })
+  })
+
+export const TemplatePlausibleStatsEventResponseRef = builder
+  .objectRef<TemplatePlausibleStatsEventResponse>(
+    'TemplatePlausibleStatsEventResponse'
+  )
+  .implement({
+    shareable: true,
+    fields: (t) => ({
+      event: t.string({
+        nullable: false,
+        resolve: (parent) => parent.event as string
+      }),
+      visitors: t.int({
+        nullable: false,
+        resolve: (parent) => parent.visitors
+      })
+    })
+  })
+
+export const TemplatePlausibleStatsBreakdownResponseRef = builder
+  .objectRef<TemplatePlausibleStatsBreakdownResponse>(
+    'TemplatePlausibleStatsBreakdownResponse'
+  )
+  .implement({
+    shareable: true,
+    fields: (t) => ({
+      journeyId: t.string({
+        nullable: false,
+        resolve: (parent) => parent.journeyId
+      }),
+      journeyName: t.string({
+        nullable: false,
+        resolve: (parent) => parent.journeyName
+      }),
+      teamName: t.string({
+        nullable: false,
+        resolve: (parent) => parent.teamName
+      }),
+      stats: t.field({
+        type: [TemplatePlausibleStatsEventResponseRef],
+        nullable: false,
+        resolve: (parent) => parent.stats
       })
     })
   })
