@@ -19,6 +19,7 @@ import {
 } from '../../../__generated__/globalTypes'
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
+import { BlockFields_IconBlock } from '../../libs/block/__generated__/BlockFields'
 import { useBlocks } from '../../libs/block'
 import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { getStepHeading } from '../../libs/getStepHeading'
@@ -27,7 +28,6 @@ import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { Icon } from '../Icon'
-import { IconFields } from '../Icon/__generated__/IconFields'
 
 import {
   ButtonClickEventCreate,
@@ -129,11 +129,11 @@ export function Button({
       : 'None'
 
   const startIcon = children.find((block) => block.id === startIconId) as
-    | TreeBlock<IconFields>
+    | TreeBlock<BlockFields_IconBlock>
     | undefined
 
   const endIcon = children.find((block) => block.id === endIconId) as
-    | TreeBlock<IconFields>
+    | TreeBlock<BlockFields_IconBlock>
     | undefined
 
   const messagePlatform = useMemo(() => findMessagePlatform(action), [action])
