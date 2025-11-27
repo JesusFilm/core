@@ -92,5 +92,9 @@
   "Short Film": "단편 영화",
   "Behind The Scenes": "비하인드 스토리",
   "Trailer": "트레일러",
-  "Available in {{count}} languages._other": "{{count}} 언어로 제공됩니다."
+  "Available in {{count}} languages._other": "{{count}} 언어로 제공됩니다.",
+  "localeSuggestion": {
+    "message": "We noticed your browser prefers {{localeName}}. Would you like to view the site in this language?",
+    "action": "Switch to {{localeName}}"
+  }
 }
