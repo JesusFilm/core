@@ -193,7 +193,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           }}
         />
       </IconButton>
-      <Tooltip title={t('See all journeys')} placement="bottom" arrow>
+      {/* <Tooltip title={t('See all journeys')} placement="bottom" arrow>
         <IconButton
           component={NextLink}
           href="/"
@@ -202,7 +202,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         >
           <FormatListBulletedIcon />
         </IconButton>
-      </Tooltip>
+      </Tooltip> */}
       <Stack
         gap={2}
         direction="row"
