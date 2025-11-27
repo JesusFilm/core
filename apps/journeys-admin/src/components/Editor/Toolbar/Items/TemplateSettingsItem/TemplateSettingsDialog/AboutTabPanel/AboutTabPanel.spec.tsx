@@ -5,6 +5,9 @@ import { FormikContextType, FormikProvider } from 'formik'
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { AboutTabPanel } from './AboutTabPanel'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { publishedGlobalTemplate, publishedLocalTemplate } from '../../../../../../JourneyList/journeyListData'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -18,16 +21,20 @@ describe('AboutTabPanel', () => {
     const handleChange = jest.fn()
     const { getByLabelText } = render(
       <MockedProvider>
-        <FormikProvider
-          value={
-            {
-              values: { creatorDescription: '', strategySlug: '' },
-              handleChange
-            } as unknown as FormikContextType<TemplateSettingsFormValues>
-          }
+        <JourneyProvider
+          value={{ journey: publishedGlobalTemplate as unknown as Journey }}
         >
-          <AboutTabPanel />
-        </FormikProvider>
+          <FormikProvider
+            value={
+              {
+                values: { creatorDescription: '', strategySlug: '' },
+                handleChange
+              } as unknown as FormikContextType<TemplateSettingsFormValues>
+            }
+          >
+            <AboutTabPanel />
+          </FormikProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -40,16 +47,20 @@ describe('AboutTabPanel', () => {
   it('should validate form on error', async () => {
     const { getByText } = render(
       <MockedProvider>
-        <FormikProvider
-          value={
-            {
-              values: { creatorDescription: '', strategySlug: '' },
-              errors: { strategySlug: 'Invalid embed link' }
-            } as unknown as FormikContextType<TemplateSettingsFormValues>
-          }
+        <JourneyProvider
+          value={{ journey: publishedGlobalTemplate as unknown as Journey }}
         >
-          <AboutTabPanel />
-        </FormikProvider>
+          <FormikProvider
+            value={
+              {
+                values: { creatorDescription: '', strategySlug: '' },
+                errors: { strategySlug: 'Invalid embed link' }
+              } as unknown as FormikContextType<TemplateSettingsFormValues>
+            }
+          >
+            <AboutTabPanel />
+          </FormikProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -58,21 +69,47 @@ describe('AboutTabPanel', () => {
     )
   })
 
+  it('should not show strategy section for local template', () => {
+    const { queryByText, queryByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: publishedLocalTemplate as unknown as Journey }}
+        >
+          <FormikProvider
+            value={
+              {
+                values: { creatorDescription: '', strategySlug: '' }
+              } as unknown as FormikContextType<TemplateSettingsFormValues>
+            }
+          >
+            <AboutTabPanel />
+          </FormikProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(queryByText('Paste URL here')).not.toBeInTheDocument()
+    expect(queryByTestId('strategy-iframe')).not.toBeInTheDocument()
+  })
+
   it('should render strategy section preview with old canva links', async () => {
     const { queryByText, getByTestId } = render(
       <MockedProvider>
-        <FormikProvider
-          value={
-            {
-              values: {
-                creatorDescription: '',
-                strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view'
-              }
-            } as unknown as FormikContextType<TemplateSettingsFormValues>
-          }
+        <JourneyProvider
+          value={{ journey: publishedGlobalTemplate as unknown as Journey }}
         >
-          <AboutTabPanel />
-        </FormikProvider>
+          <FormikProvider
+            value={
+              {
+                values: {
+                  creatorDescription: '',
+                  strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view'
+                }
+              } as unknown as FormikContextType<TemplateSettingsFormValues>
+            }
+          >
+            <AboutTabPanel />
+          </FormikProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -83,19 +120,23 @@ describe('AboutTabPanel', () => {
   it('should render strategy section preview with new canva links', async () => {
     const { queryByText, getByTestId } = render(
       <MockedProvider>
-        <FormikProvider
-          value={
-            {
-              values: {
-                creatorDescription: '',
-                strategySlug:
-                  'https://www.canva.com/design/DAF9QMJYu1Y/XmioFIQOATVa-lXCEYucmg/view'
-              }
-            } as unknown as FormikContextType<TemplateSettingsFormValues>
-          }
+        <JourneyProvider
+          value={{ journey: publishedGlobalTemplate as unknown as Journey }}
         >
-          <AboutTabPanel />
-        </FormikProvider>
+          <FormikProvider
+            value={
+              {
+                values: {
+                  creatorDescription: '',
+                  strategySlug:
+                    'https://www.canva.com/design/DAF9QMJYu1Y/XmioFIQOATVa-lXCEYucmg/view'
+                }
+              } as unknown as FormikContextType<TemplateSettingsFormValues>
+            }
+          >
+            <AboutTabPanel />
+          </FormikProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -106,19 +147,23 @@ describe('AboutTabPanel', () => {
   it('should render Customize Template text area', () => {
     const { getByTestId } = render(
       <MockedProvider>
-        <FormikProvider
-          value={
-            {
-              values: {
-                creatorDescription: '',
-                strategySlug:
-                  'https://www.canva.com/design/DAF9QMJYu1Y/XmioFIQOATVa-lXCEYucmg/view'
-              }
-            } as unknown as FormikContextType<TemplateSettingsFormValues>
-          }
+        <JourneyProvider
+          value={{ journey: publishedGlobalTemplate as unknown as Journey }}
         >
-          <AboutTabPanel />
-        </FormikProvider>
+          <FormikProvider
+            value={
+              {
+                values: {
+                  creatorDescription: '',
+                  strategySlug:
+                    'https://www.canva.com/design/DAF9QMJYu1Y/XmioFIQOATVa-lXCEYucmg/view'
+                }
+              } as unknown as FormikContextType<TemplateSettingsFormValues>
+            }
+          >
+            <AboutTabPanel />
+          </FormikProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 

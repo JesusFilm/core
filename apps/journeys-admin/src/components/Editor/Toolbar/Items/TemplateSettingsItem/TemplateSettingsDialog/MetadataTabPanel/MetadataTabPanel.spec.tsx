@@ -6,7 +6,10 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
-import { publishedJourney } from '../../../../../../JourneyList/journeyListData'
+import {
+  publishedLocalTemplate,
+  publishedGlobalTemplate
+} from '../../../../../../JourneyList/journeyListData'
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { MetadataTabPanel } from './MetadataTabPanel'
@@ -19,7 +22,7 @@ describe('MetadataTabPanel', () => {
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: publishedJourney as unknown as Journey }}
+          value={{ journey: publishedGlobalTemplate as unknown as Journey }}
         >
           <FormikProvider
             value={
@@ -38,20 +41,48 @@ describe('MetadataTabPanel', () => {
     expect(getByRole('textbox', { name: '' })).toHaveValue('01/01/2021')
   })
 
+  it('does not show published date for local template', () => {
+    const handleChange = jest.fn()
+    const { queryByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: publishedLocalTemplate as unknown as Journey }}
+        >
+          <FormikProvider
+            value={
+              {
+                values: { title: '', description: '', featuredAt: false },
+                handleChange
+              } as unknown as FormikContextType<TemplateSettingsFormValues>
+            }
+          >
+            <MetadataTabPanel />
+          </FormikProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+
+    expect(queryByRole('textbox', { name: '' })).not.toBeInTheDocument()
+  })
+
   it('should handle form change', () => {
     const handleChange = jest.fn()
     const { getByRole } = render(
       <MockedProvider>
-        <FormikProvider
-          value={
-            {
-              values: { title: '', description: '', featuredAt: false },
-              handleChange
-            } as unknown as FormikContextType<TemplateSettingsFormValues>
-          }
+        <JourneyProvider
+          value={{ journey: publishedGlobalTemplate as unknown as Journey }}
         >
-          <MetadataTabPanel />
-        </FormikProvider>
+          <FormikProvider
+            value={
+              {
+                values: { title: '', description: '', featuredAt: false },
+                handleChange
+              } as unknown as FormikContextType<TemplateSettingsFormValues>
+            }
+          >
+            <MetadataTabPanel />
+          </FormikProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -73,6 +104,29 @@ describe('MetadataTabPanel', () => {
 
     fireEvent.click(getByRole('checkbox', { name: 'Featured' }))
     expect(handleChange).toHaveBeenCalled()
+  })
+
+  it('should not show featured checkbox for local template', () => {
+    const handleChange = jest.fn()
+    const { queryByRole } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: publishedLocalTemplate as unknown as Journey }}
+        >
+          <FormikProvider
+            value={
+              {
+                values: { title: '', description: '', featuredAt: false },
+                handleChange
+              } as unknown as FormikContextType<TemplateSettingsFormValues>
+            }
+          >
+            <MetadataTabPanel />
+          </FormikProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(queryByRole('checkbox', { name: 'Featured' })).not.toBeInTheDocument()
   })
 
   it('should handle language selection change', async () => {

@@ -65,36 +65,42 @@ export function MetadataTabPanel(): ReactElement {
         loading={loading}
         helperText={t('RTL languages will change the journey flow')}
       />
-      <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Checkbox
-                sx={{ mr: 1 }}
-                color="secondary"
-                defaultChecked={values.featured}
-                onChange={handleChange}
-                value={values.featured}
-                name="featured"
-              />
-            }
-            componentsProps={{
-              typography: { color: 'secondary.main', variant: 'subtitle2' }
-            }}
-            label={t('Featured')}
-          />
-        </FormGroup>
-        {journey?.publishedAt != null && (
-          <TextField
-            hiddenLabel
-            variant="filled"
-            value={format(parseISO(journey?.publishedAt as string), 'P')}
-            InputProps={{
-              readOnly: true
-            }}
-          />
-        )}
-      </Stack>
+      {journey?.team?.id === 'jfp-team' && (
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  sx={{ mr: 1 }}
+                  color="secondary"
+                  defaultChecked={values.featured}
+                  onChange={handleChange}
+                  value={values.featured}
+                  name="featured"
+                />
+              }
+              componentsProps={{
+                typography: { color: 'secondary.main', variant: 'subtitle2' }
+              }}
+              label={t('Featured')}
+            />
+          </FormGroup>
+          {journey?.publishedAt != null && (
+            <TextField
+              hiddenLabel
+              variant="filled"
+              value={format(parseISO(journey?.publishedAt as string), 'P')}
+              InputProps={{
+                readOnly: true
+              }}
+            />
+          )}
+        </Stack>
+      )}
     </>
   )
 }
