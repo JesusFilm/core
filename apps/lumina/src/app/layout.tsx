@@ -1,12 +1,12 @@
 'use server'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale } from 'next-intl/server'
+import { type ReactNode } from 'react'
 import { getLangDir } from 'rtl-detect'
 
 import DatadogErrorBoundary from '@/components/Datadog/ErrorBoundary'
 import DatadogInit from '@/components/Datadog/Init'
-import { AuthProvider } from '@/components/Auth/AuthProvider'
-import { getUser } from '@/libs/auth/getUser/server-getUser'
+import { getToken } from '@/libs/auth/getToken'
 import { ApolloProvider } from '@/components/ApolloProvider'
 
 import '@/app/globals.css'
@@ -14,21 +14,18 @@ import '@/app/globals.css'
 export default async function RootLayout({
   children
 }: {
-  children: React.ReactNode
+  children: ReactNode
 }) {
   const locale = await getLocale()
   const direction = getLangDir(locale)
-  const user = await getUser()
-
+  const token = await getToken()
   return (
     <html lang={locale} dir={direction}>
       <body>
         <DatadogInit />
         <NextIntlClientProvider>
-          <ApolloProvider user={user}>
-            <AuthProvider initialUser={user}>
-              <DatadogErrorBoundary>{children}</DatadogErrorBoundary>
-            </AuthProvider>
+          <ApolloProvider token={token}>
+            <DatadogErrorBoundary>{children}</DatadogErrorBoundary>
           </ApolloProvider>
         </NextIntlClientProvider>
       </body>

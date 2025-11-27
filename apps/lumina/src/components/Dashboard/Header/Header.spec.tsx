@@ -3,9 +3,10 @@ import userEvent from '@testing-library/user-event'
 import { useRouter } from 'next/navigation'
 
 import { logout } from '@/app/api'
-import { useAuth } from '@/libs/auth/authContext'
 
 import { Header } from './Header'
+import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
+import { ME_QUERY, type User } from '@/libs/auth/useUser'
 
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn()
@@ -27,55 +28,99 @@ describe('Header', () => {
 
   beforeEach(() => {
     ;(useRouter as jest.Mock).mockReturnValue(mockRouter)
-    ;(useAuth as jest.Mock).mockReturnValue({
-      user: {
-        email: 'test@example.com',
-        displayName: 'Test User',
-        photoURL: null
-      }
-    })
   })
 
   afterEach(() => {
     jest.clearAllMocks()
   })
 
+  const mockUser: User = {
+    id: 'user.id',
+    email: 'test@example.com',
+    firstName: 'Test',
+    lastName: 'User',
+    imageUrl: 'https://example.com/photo.jpg',
+    emailVerified: true
+  }
+
+  const meQueryMock: MockedResponse = {
+    request: {
+      query: ME_QUERY
+    },
+    result: {
+      data: {
+        me: mockUser
+      }
+    }
+  }
+
   it('renders the mobile menu button', () => {
     const onMenuClick = jest.fn()
-    render(<Header onMenuClick={onMenuClick} />)
+    render(
+      <MockedProvider mocks={[meQueryMock]}>
+        <Header onMenuClick={onMenuClick} />
+      </MockedProvider>
+    )
     expect(screen.getByLabelText('Open menu')).toBeInTheDocument()
   })
 
   it('calls onMenuClick when mobile menu button is clicked', async () => {
     const user = userEvent.setup()
     const onMenuClick = jest.fn()
-    render(<Header onMenuClick={onMenuClick} />)
+    render(
+      <MockedProvider mocks={[meQueryMock]}>
+        <Header onMenuClick={onMenuClick} />
+      </MockedProvider>
+    )
     const menuButton = screen.getByLabelText('Open menu')
     await user.click(menuButton)
     expect(onMenuClick).toHaveBeenCalled()
   })
 
-  it('displays user initial when no photo URL', () => {
-    render(<Header onMenuClick={jest.fn()} />)
-    expect(screen.getByText('T')).toBeInTheDocument()
+  it('displays user initial when no photo URL', async () => {
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            ...meQueryMock,
+            result: {
+              data: {
+                me: { ...mockUser, imageUrl: null }
+              }
+            }
+          }
+        ]}
+      >
+        <Header onMenuClick={jest.fn()} />
+      </MockedProvider>
+    )
+    await waitFor(() => {
+      expect(screen.getByText('TU')).toBeInTheDocument()
+    })
   })
 
-  it('displays user photo when available', () => {
-    ;(useAuth as jest.Mock).mockReturnValue({
-      user: {
-        email: 'test@example.com',
-        displayName: 'Test User',
-        photoURL: 'https://example.com/photo.jpg'
-      }
+  it('displays user photo when available', async () => {
+    render(
+      <MockedProvider mocks={[meQueryMock]}>
+        <Header onMenuClick={jest.fn()} />
+      </MockedProvider>
+    )
+    await waitFor(() => {
+      expect(screen.getByAltText('Test User')).toBeInTheDocument()
     })
-    render(<Header onMenuClick={jest.fn()} />)
-    const img = screen.getByAltText('Test User')
-    expect(img).toHaveAttribute('src', 'https://example.com/photo.jpg')
+    expect(screen.getByAltText('Test User')).toHaveAttribute(
+      'src',
+      'https://example.com/photo.jpg'
+    )
   })
 
   it('opens dropdown when profile button is clicked', async () => {
     const user = userEvent.setup()
-    render(<Header onMenuClick={jest.fn()} />)
+    render(
+      <MockedProvider mocks={[meQueryMock]}>
+        <Header onMenuClick={jest.fn()} />
+      </MockedProvider>
+    )
     const profileButton = screen.getByLabelText('User menu')
     await user.click(profileButton)
     expect(screen.getByText('Log out')).toBeInTheDocument()
@@ -83,7 +128,11 @@ describe('Header', () => {
 
   it('calls logout and redirects when logout is clicked', async () => {
     const user = userEvent.setup()
-    render(<Header onMenuClick={jest.fn()} />)
+    render(
+      <MockedProvider mocks={[meQueryMock]}>
+        <Header onMenuClick={jest.fn()} />
+      </MockedProvider>
+    )
     const profileButton = screen.getByLabelText('User menu')
     await user.click(profileButton)
     const logoutButton = screen.getByText('Log out')
@@ -95,4 +144,3 @@ describe('Header', () => {
     })
   })
 })
-

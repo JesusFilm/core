@@ -4,14 +4,14 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useState, useRef, useEffect } from 'react'
 
 import { logout } from '@/app/api'
-import { useAuth } from '@/libs/auth/authContext'
+import { useUser } from '@/libs/auth/useUser'
 
 interface HeaderProps {
   onMenuClick: () => void
 }
 
 export function Header({ onMenuClick }: HeaderProps) {
-  const { user } = useAuth()
+  const { user, loading } = useUser()
   const router = useRouter()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -41,13 +41,14 @@ export function Header({ onMenuClick }: HeaderProps) {
     router.refresh()
   }, [router])
 
-  const displayName = user
-    ? [user.firstName, user.lastName].filter(Boolean).join(' ') || 'User'
-    : 'User'
+  const displayName =
+    user != null
+      ? [user.firstName, user.lastName].filter(Boolean).join(' ') || 'User'
+      : 'User'
   const userInitial =
-    user?.email?.[0]?.toUpperCase() ??
-    user?.firstName?.[0]?.toUpperCase() ??
-    'U'
+    user?.firstName && user?.lastName
+      ? `${user?.firstName?.[0] ?? ''}${user?.lastName?.[0] ?? ''}`.toUpperCase()
+      : (user?.email?.[0]?.toUpperCase() ?? 'U')
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 lg:px-6">
@@ -88,6 +89,8 @@ export function Header({ onMenuClick }: HeaderProps) {
               alt={displayName}
               className="h-8 w-8 rounded-full"
             />
+          ) : loading ? (
+            <div className="h-8 w-8 animate-pulse rounded-full bg-gray-200" />
           ) : (
             <div className="bg-primary-500 flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium text-white">
               {userInitial}
@@ -95,7 +98,7 @@ export function Header({ onMenuClick }: HeaderProps) {
           )}
         </button>
 
-        {isDropdownOpen && user && (
+        {isDropdownOpen && !loading && user && (
           <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
             <div className="py-1">
               <div className="border-b border-gray-200 px-4 py-2 text-sm text-gray-700">
