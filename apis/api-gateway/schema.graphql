@@ -3656,6 +3656,7 @@ enum VideoVariantDownloadQuality @join__type(graph: API_MEDIA)  {
 input SiteCreateInput @join__type(graph: API_ANALYTICS)  {
   domain: String!
   goals: [String!]
+  disableSharedLinks: Boolean
 }
 
 input BlocksFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {

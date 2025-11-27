@@ -87,7 +87,20 @@ export const goals: Array<keyof JourneyPlausibleEvents> = [
   'videoProgress50',
   'videoProgress75',
   'videoComplete',
-  'videoTrigger'
+  'videoTrigger',
+  // Capture events are triggered by journey events above
+  'prayerRequestCapture',
+  'christDecisionCapture',
+  'gospelStartCapture',
+  'gospelCompleteCapture',
+  'shareCapture',
+  'rsvpCapture',
+  'inviteFriendCapture',
+  'custom1Capture',
+  'custom2Capture',
+  'custom3Capture',
+  'custom4Capture',
+  'custom5Capture'
 ]
 
 interface PlausibleAPIStatsBreakdownResponse extends PlausibleAPIStatsResponse {
@@ -204,6 +217,26 @@ export class PlausibleService implements OnModuleInit {
         )
       )
     }
+
+    // TODO: we may want another way to check all the templates that still needs sites
+    console.log('creating template sites...')
+    const chunkedTemplateIds = chunk(
+      (
+        await this.prismaService.journey.findMany({
+          where: { template: true },
+          select: { id: true }
+        })
+      ).map(({ id }) => id),
+      5
+    )
+
+    for await (const templateIds of chunkedTemplateIds) {
+      await Promise.allSettled(
+        templateIds.map(
+          async (templateId) => await this.createTemplateSite({ templateId })
+        )
+      )
+    }
   }
 
   async createJourneySite({ journeyId }: { journeyId: string }): Promise<void> {
@@ -228,15 +261,35 @@ export class PlausibleService implements OnModuleInit {
     })
   }
 
+  async createTemplateSite({
+    templateId
+  }: {
+    templateId: string
+  }): Promise<void> {
+    try {
+      await this.createSite(this.templateSiteId(templateId), true)
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message.includes('domain already exists')
+      ) {
+        return
+      }
+      throw error
+    }
+  }
+
   async createSite(
-    domain: string
+    domain: string,
+    disableSharedLinks = false
   ): Promise<MutationSiteCreateResult | undefined> {
     const { data } = await this.client.mutate({
       mutation: SITE_CREATE,
       variables: {
         input: {
           domain,
-          goals: goals as string[]
+          goals: goals as string[],
+          disableSharedLinks
         }
       }
     })
@@ -390,5 +443,9 @@ export class PlausibleService implements OnModuleInit {
 
   private teamSiteId(teamId: string): string {
     return `api-journeys-team-${teamId}`
+  }
+
+  private templateSiteId(templateId: string): string {
+    return `api-journeys-template-${templateId}`
   }
 }

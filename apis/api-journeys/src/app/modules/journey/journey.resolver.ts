@@ -1044,6 +1044,22 @@ export class JourneyResolver {
           extensions: { code: 'FORBIDDEN' }
         }
       )
+
+    // If setting journey as template, create template site
+    if (input.template === true) {
+      await this.plausibleQueue.add(
+        'create-template-site',
+        {
+          __typename: 'plausibleCreateTemplateSite',
+          templateId: id
+        },
+        {
+          removeOnComplete: true,
+          removeOnFail: { age: FIVE_DAYS, count: 50 }
+        }
+      )
+    }
+
     return await this.prismaService.journey.update({
       where: { id },
       data: input
