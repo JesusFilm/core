@@ -9,6 +9,7 @@ export const JourneysFilter = builder.inputType('JourneysFilter', {
     languageIds: t.idList({ required: false }),
     limit: t.int({ required: false }),
     orderByRecent: t.boolean({ required: false }),
-    fromTemplateId: t.id({ required: false })
+    fromTemplateId: t.id({ required: false }),
+    teamId: t.string({ required: false })
   })
 })
