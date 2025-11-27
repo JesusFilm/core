@@ -7,11 +7,14 @@ import { ReactElement, useEffect, useState } from 'react'
 import { JourneyStatus } from '../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { usePageWrapperStyles } from '../PageWrapper/utils/usePageWrapperStyles'
-import { StatusTabPanel } from '../StatusTabPanel'
+// import { StatusTabPanel } from '../StatusTabPanel'
 
 import { AddJourneyFab } from './AddJourneyFab'
+import { JourneyListContent } from './JourneyListContent'
+import { JourneyListView } from './JourneyListView'
 import { SortOrder } from './JourneySort'
 import { LoadingJourneyList } from './LoadingJourneyList'
+import type { ContentType, JourneyStatusFilter } from './JourneyListView'
 
 export interface JourneyListProps {
   sortOrder?: SortOrder
@@ -30,6 +33,7 @@ export type JourneyListEvent =
   | 'deleteAllTrashed'
   | 'refetchTrashed'
 
+// Keep old components for reference - can be removed later
 const ActiveJourneyList = dynamic(
   async () =>
     await import(
@@ -96,7 +100,30 @@ export function JourneyList({
     event
   }
 
-  const activeTab = router?.query?.tab?.toString() ?? 'active'
+  // Determine active tab from router query (support both old 'tab' and new 'status' params)
+  const activeTab =
+    (router?.query?.status as JourneyStatusFilter) ??
+    (router?.query?.tab?.toString() === 'archived'
+      ? 'archived'
+      : router?.query?.tab?.toString() === 'trashed'
+        ? 'trashed'
+        : 'active')
+
+  // Render function for JourneyListView
+  const renderList = (
+    contentType: ContentType,
+    status: JourneyStatusFilter
+  ): ReactElement => {
+    return (
+      <JourneyListContent
+        contentType={contentType}
+        status={status}
+        user={contentType === 'journeys' ? user : undefined}
+        sortOrder={sortOrder}
+        event={event}
+      />
+    )
+  }
 
   return (
     <>
@@ -110,14 +137,21 @@ export function JourneyList({
         }}
         data-testid="JourneysAdminJourneyList"
       >
-        <StatusTabPanel
+        <JourneyListView
+          renderList={renderList}
+          setActiveEvent={handleClick}
+          setSortOrder={setSortOrder}
+          sortOrder={sortOrder}
+        />
+        {/* Old StatusTabPanel - commented out, keeping for reference */}
+        {/* <StatusTabPanel
           activeList={<ActiveJourneyList {...journeyListProps} />}
           archivedList={<ArchivedJourneyList {...journeyListProps} />}
           trashedList={<TrashedJourneyList {...journeyListProps} />}
           setActiveEvent={handleClick}
           setSortOrder={setSortOrder}
           sortOrder={sortOrder}
-        />
+        /> */}
       </Box>
       {activeTab === 'active' && <AddJourneyFab />}
     </>
