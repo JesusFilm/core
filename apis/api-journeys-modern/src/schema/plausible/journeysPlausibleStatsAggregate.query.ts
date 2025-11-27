@@ -32,7 +32,7 @@ builder.queryField('journeysPlausibleStatsAggregate', (t) =>
       _parent,
       { id, idType, where },
       context,
-      info
+      info: GraphQLResolveInfo
     ): Promise<PlausibleStatsAggregateResponse> => {
       if (context.type !== 'authenticated') {
         throw new GraphQLError('Not authenticated', {
