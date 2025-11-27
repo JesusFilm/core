@@ -3,12 +3,9 @@
 import { useState } from 'react'
 
 import { Header, MobileMenu, Sidebar } from '@/components/Dashboard'
+import { type ReactNode } from 'react'
 
-export default function DashboardLayout({
-  children
-}: {
-  children: React.ReactNode
-}) {
+export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleMenuClick = () => {
@@ -30,11 +27,8 @@ export default function DashboardLayout({
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header onMenuClick={handleMenuClick} />
 
-        <main className="flex-1 overflow-y-auto bg-gray-50">
-          {children}
-        </main>
+        <main className="flex-1 overflow-y-auto bg-gray-50">{children}</main>
       </div>
     </div>
   )
 }
-

@@ -41,7 +41,13 @@ export function Header({ onMenuClick }: HeaderProps) {
     router.refresh()
   }, [router])
 
-  const userInitial = user?.email?.[0]?.toUpperCase() ?? 'U'
+  const displayName = user
+    ? [user.firstName, user.lastName].filter(Boolean).join(' ') || 'User'
+    : 'User'
+  const userInitial =
+    user?.email?.[0]?.toUpperCase() ??
+    user?.firstName?.[0]?.toUpperCase() ??
+    'U'
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 lg:px-6">
@@ -76,10 +82,10 @@ export function Header({ onMenuClick }: HeaderProps) {
           aria-label="User menu"
           aria-expanded={isDropdownOpen}
         >
-          {user?.photoURL ? (
+          {user?.imageUrl ? (
             <img
-              src={user.photoURL}
-              alt={user.displayName ?? 'User'}
+              src={user.imageUrl}
+              alt={displayName}
               className="h-8 w-8 rounded-full"
             />
           ) : (
@@ -89,19 +95,17 @@ export function Header({ onMenuClick }: HeaderProps) {
           )}
         </button>
 
-        {isDropdownOpen && (
+        {isDropdownOpen && user && (
           <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg">
             <div className="py-1">
-              {user?.email && (
-                <div className="border-b border-gray-200 px-4 py-2 text-sm text-gray-700">
-                  <div className="font-medium">
-                    {user.displayName ?? 'User'}
-                  </div>
+              <div className="border-b border-gray-200 px-4 py-2 text-sm text-gray-700">
+                <div className="font-medium">{displayName}</div>
+                {user.email && (
                   <div className="truncate text-xs text-gray-500">
                     {user.email}
                   </div>
-                </div>
-              )}
+                )}
+              </div>
               <button
                 type="button"
                 onClick={handleLogout}

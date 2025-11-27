@@ -108,7 +108,7 @@ export function Sidebar({ onNavigate }: SidebarProps) {
   }
 
   return (
-    <div className="flex h-full flex-col border-r border-gray-200 bg-white">
+    <div className="flex h-full w-full flex-col border-r border-gray-200 bg-white">
       <Link
         href="/"
         onClick={handleClick}
