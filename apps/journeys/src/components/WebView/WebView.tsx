@@ -159,7 +159,7 @@ export function WebView({ blocks, stepBlock }: WebViewProps): ReactElement {
           sx={{
             ...mobileNotchStyling,
             display: 'flex',
-            px: { lg: 8 }
+            px: { xs: 6, lg: 8 }
           }}
         />
         <ThemeProvider {...stepTheme} locale={locale} rtl={rtl} nested>

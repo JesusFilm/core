@@ -1,11 +1,9 @@
 import IconButton from '@mui/material/IconButton'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
-import { Dialog } from '@core/shared/ui/Dialog'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
 import { MenuItem } from '../../../../../../MenuItem'
@@ -33,36 +31,16 @@ export function DeleteBlock({
   const { addBlockDelete } = useBlockDeleteCommand()
 
   const blockType = currentBlock?.__typename === 'StepBlock' ? 'Card' : 'Block'
-  const [openDialog, setOpenDialog] = useState(false)
-  const handleOpenDialog = (): void => setOpenDialog(true)
-  const handleCloseDialog = (): void => {
-    setOpenDialog(false)
-    closeMenu?.()
-  }
 
   const disableAction = currentBlock == null || disabled
 
   function handleDeleteBlock(): void {
     if (currentBlock != null) addBlockDelete(currentBlock)
-    handleCloseDialog()
+    closeMenu?.()
   }
 
   return (
     <>
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-        dialogTitle={{ title: t('Delete Card?') }}
-        dialogAction={{
-          onSubmit: handleDeleteBlock,
-          submitLabel: t('Delete'),
-          closeLabel: t('Cancel')
-        }}
-      >
-        <Typography>
-          {t('Are you sure you would like to delete this card?')}
-        </Typography>
-      </Dialog>
       {variant === 'button' ? (
         <IconButton
           id="delete-block-actions"
@@ -71,9 +49,7 @@ export function DeleteBlock({
           aria-haspopup="true"
           aria-expanded="true"
           disabled={disableAction}
-          onMouseUp={
-            blockType === 'Card' ? handleOpenDialog : handleDeleteBlock
-          }
+          onMouseUp={handleDeleteBlock}
           sx={{
             p: 1
           }}
@@ -87,7 +63,7 @@ export function DeleteBlock({
           })}
           icon={<Trash2Icon />}
           disabled={disableAction}
-          onClick={blockType === 'Card' ? handleOpenDialog : handleDeleteBlock}
+          onClick={handleDeleteBlock}
         />
       )}
     </>
