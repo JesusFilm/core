@@ -92,20 +92,14 @@ export function StepHeader({
             {hasMenuButtonIcon ? (
               <StepHeaderMenu />
             ) : (
-              <InformationButton sx={{ p: 0 }} />
+              <InformationButton />
             )}
           </Stack>
         </Stack>
       ) : (
         <>
           <PaginationBullets />
-          <InformationButton
-            sx={{
-              p: 0,
-              mx: 0,
-              px: { xs: variant === 'default' ? 6 : 3, lg: 0 }
-            }}
-          />
+          <InformationButton sx={{ px: { xs: variant === 'default' ? 6 : 3, lg: 0} }} />
         </>
       )}
     </Stack>
