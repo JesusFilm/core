@@ -4,7 +4,7 @@ import camelCase from 'lodash/camelCase'
 import get from 'lodash/get'
 import reduce from 'lodash/reduce'
 
-import { getPlausibleEnv } from '../../env'
+import { env } from '../../env'
 
 import {
   PlausibleStatsAggregateFilter,
@@ -45,18 +45,10 @@ function buildJourneySiteId(journeyId: string): string {
 }
 
 function getPlausibleConfig(): PlausibleConfig {
-  const credentials = getPlausibleEnv()
-
-  if (credentials == null) {
-    throw new GraphQLError('Plausible is not configured', {
-      extensions: { code: 'INTERNAL_SERVER_ERROR' }
-    })
-  }
-
   return {
-    baseUrl: sanitizeBaseUrl(credentials.PLAUSIBLE_URL),
+    baseUrl: sanitizeBaseUrl(env.PLAUSIBLE_URL),
     headers: {
-      Authorization: `Bearer ${credentials.PLAUSIBLE_API_KEY}`
+      Authorization: `Bearer ${env.PLAUSIBLE_API_KEY}`
     }
   }
 }
