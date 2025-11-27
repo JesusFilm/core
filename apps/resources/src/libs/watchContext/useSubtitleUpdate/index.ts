@@ -1,0 +1,1 @@
+export { useSubtitleUpdate } from './useSubtitleUpdate'

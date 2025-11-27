@@ -1,0 +1,1 @@
+export { ResourcesView } from './ResourcesView'
