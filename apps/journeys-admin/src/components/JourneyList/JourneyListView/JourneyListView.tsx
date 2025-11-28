@@ -70,12 +70,12 @@ export function JourneyListView({
   const contentTypeOptions: ContentTypeOption[] = [
     {
       queryParam: 'journeys',
-      displayValue: t('Journeys'),
+      displayValue: t('Team Projects'),
       tabIndex: 0
     },
     {
       queryParam: 'templates',
-      displayValue: t('Templates'),
+      displayValue: t('Team Templates'),
       tabIndex: 1
     }
   ]
@@ -194,6 +194,15 @@ export function JourneyListView({
         onChange={handleContentTypeChange}
         aria-label="journey content type tabs"
         data-testid="journey-list-view"
+        sx={{
+          // Allow overflow to prevent hover circle on JourneyListMenu from being clipped
+          // MUI Tabs uses an internal scroller with overflow: hidden by default
+          overflow: 'visible',
+          pr: 2,
+          '& .MuiTabs-scroller': {
+            overflow: 'visible !important'
+          }
+        }}
       >
         <Tab
           label={contentTypeOptions[0].displayValue}
@@ -209,12 +218,12 @@ export function JourneyListView({
             contentTypeOptions[1].tabIndex
           )}
         />
-        <Box sx={{ flexGrow: 1 }} />
         {/* Status filter dropdown - visible for both tabs */}
         <Box
           sx={{
             display: 'flex',
             alignItems: 'center',
+            ml: 'auto',
             mr: 2
           }}
         >
@@ -249,7 +258,8 @@ export function JourneyListView({
         <Box
           sx={{
             display: 'flex',
-            alignItems: 'center'
+            alignItems: 'center',
+            mr: -6
           }}
         >
           <JourneyListMenu onClick={setActiveEvent} />
