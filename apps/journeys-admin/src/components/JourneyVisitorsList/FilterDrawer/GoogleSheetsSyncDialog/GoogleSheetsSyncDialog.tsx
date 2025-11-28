@@ -1,6 +1,7 @@
 import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client'
 import FolderIcon from '@mui/icons-material/Folder'
 import LaunchIcon from '@mui/icons-material/Launch'
+import NorthEastIcon from '@mui/icons-material/NorthEast'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
 import AccordionSummary from '@mui/material/AccordionSummary'
@@ -160,6 +161,7 @@ export function GoogleSheetsSyncDialog({
   })
 
   const [googleDialogOpen, setGoogleDialogOpen] = useState(false)
+  const [pickerActive, setPickerActive] = useState(false)
 
   const [exportToSheets, { loading: sheetsLoading }] =
     useMutation(EXPORT_TO_SHEETS)
@@ -289,24 +291,16 @@ export function GoogleSheetsSyncDialog({
     integrationId: string | undefined,
     setFieldValue: (field: string, value: unknown) => void
   ): Promise<void> {
-    const shouldReopenGoogleDialog = googleDialogOpen
-
     try {
-      if (shouldReopenGoogleDialog) {
-        setGoogleDialogOpen(false)
-      }
-
       const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY
       if (apiKey == null || apiKey === '') {
         enqueueSnackbar(t('Missing Google API key'), { variant: 'error' })
-        if (shouldReopenGoogleDialog) setGoogleDialogOpen(true)
         return
       }
       if (integrationId == null || integrationId === '') {
         enqueueSnackbar(t('Select an integration account first'), {
           variant: 'error'
         })
-        if (shouldReopenGoogleDialog) setGoogleDialogOpen(true)
         return
       }
 
@@ -322,11 +316,13 @@ export function GoogleSheetsSyncDialog({
         enqueueSnackbar(t('Unable to authorize Google Picker'), {
           variant: 'error'
         })
-        if (shouldReopenGoogleDialog) setGoogleDialogOpen(true)
         return
       }
 
       await ensurePickerLoaded()
+
+      // Mark picker as active to lower dialog z-index
+      setPickerActive(true)
 
       const googleAny: any = (window as any).google
       const view =
@@ -358,7 +354,7 @@ export function GoogleSheetsSyncDialog({
             pickerData?.action === googleAny.picker.Action.PICKED ||
             pickerData?.action === googleAny.picker.Action.CANCEL
           ) {
-            if (shouldReopenGoogleDialog) setGoogleDialogOpen(true)
+            setPickerActive(false)
           }
         })
         .build()
@@ -367,7 +363,7 @@ export function GoogleSheetsSyncDialog({
       elevatePickerZIndexWithRetries()
     } catch (err) {
       enqueueSnackbar(t('Failed to open Google Picker'), { variant: 'error' })
-      if (shouldReopenGoogleDialog) setGoogleDialogOpen(true)
+      setPickerActive(false)
     }
   }
 
@@ -395,7 +391,7 @@ export function GoogleSheetsSyncDialog({
     const dialog = document.querySelector<HTMLElement>('.picker-dialog')
     const bg = document.querySelector<HTMLElement>('.picker-dialog-bg')
     const modal = document.querySelector<HTMLElement>('.picker.modal-dialog')
-    const z = '2147483647'
+    const z = '1300'
     if (dialog != null) dialog.style.zIndex = z
     if (bg != null) bg.style.zIndex = z
     if (modal != null) modal.style.zIndex = z
@@ -722,8 +718,7 @@ export function GoogleSheetsSyncDialog({
               <Table stickyHeader size="small" aria-label={t('Existing syncs')}>
                 <TableHead>
                   <TableRow>
-                    <TableCell>{t('Sheet ID')}</TableCell>
-                    <TableCell>{t('Tab Name')}</TableCell>
+                    <TableCell>{t('Sheet Name')}</TableCell>
                     <TableCell sx={{ width: 120 }}>{t('Sync Start')}</TableCell>
                     <TableCell>{t('Started By')}</TableCell>
                     <TableCell sx={{ width: 120 }}>{t('Status')}</TableCell>
@@ -763,40 +758,33 @@ export function GoogleSheetsSyncDialog({
                       >
                         <TableCell width="40%">
                           <Tooltip
-                            title={sync.spreadsheetId ?? ''}
-                            arrow
-                            placement="top"
-                          >
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                maxWidth: 240,
-                                whiteSpace: 'nowrap',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis'
-                              }}
-                            >
-                              {sync.spreadsheetId ?? 'N/A'}
-                            </Typography>
-                          </Tooltip>
-                        </TableCell>
-                        <TableCell>
-                          <Tooltip
                             title={sync.sheetName ?? ''}
                             arrow
                             placement="top"
                           >
-                            <Typography
-                              variant="body2"
+                            <Box
                               sx={{
-                                maxWidth: 200,
-                                whiteSpace: 'nowrap',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis'
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 0.5,
+                                maxWidth: 240
                               }}
                             >
-                              {sync.sheetName ?? 'N/A'}
-                            </Typography>
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  textDecoration: 'underline'
+                                }}
+                              >
+                                {sync.sheetName ?? 'N/A'}
+                              </Typography>
+                              <NorthEastIcon
+                                sx={{ fontSize: 14, flexShrink: 0 }}
+                              />
+                            </Box>
                           </Tooltip>
                         </TableCell>
                         <TableCell sx={{ width: 120 }}>
@@ -858,8 +846,7 @@ export function GoogleSheetsSyncDialog({
                   >
                     <TableHead>
                       <TableRow>
-                        <TableCell>{t('Sheet ID')}</TableCell>
-                        <TableCell>{t('Tab Name')}</TableCell>
+                        <TableCell>{t('Sheet Name')}</TableCell>
                         <TableCell sx={{ width: 120 }}>
                           {t('Removed At')}
                         </TableCell>
@@ -905,40 +892,33 @@ export function GoogleSheetsSyncDialog({
                           >
                             <TableCell width="40%">
                               <Tooltip
-                                title={sync.spreadsheetId ?? ''}
-                                arrow
-                                placement="top"
-                              >
-                                <Typography
-                                  variant="body2"
-                                  sx={{
-                                    maxWidth: 240,
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis'
-                                  }}
-                                >
-                                  {sync.spreadsheetId ?? 'N/A'}
-                                </Typography>
-                              </Tooltip>
-                            </TableCell>
-                            <TableCell>
-                              <Tooltip
                                 title={sync.sheetName ?? ''}
                                 arrow
                                 placement="top"
                               >
-                                <Typography
-                                  variant="body2"
+                                <Box
                                   sx={{
-                                    maxWidth: 200,
-                                    whiteSpace: 'nowrap',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis'
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 0.5,
+                                    maxWidth: 240
                                   }}
                                 >
-                                  {sync.sheetName ?? 'N/A'}
-                                </Typography>
+                                  <Typography
+                                    variant="body2"
+                                    sx={{
+                                      whiteSpace: 'nowrap',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      textDecoration: 'underline'
+                                    }}
+                                  >
+                                    {sync.sheetName ?? 'N/A'}
+                                  </Typography>
+                                  <LaunchIcon
+                                    sx={{ fontSize: 14, flexShrink: 0 }}
+                                  />
+                                </Box>
                               </Tooltip>
                             </TableCell>
                             <TableCell sx={{ width: 120 }}>
@@ -997,6 +977,9 @@ export function GoogleSheetsSyncDialog({
             }}
             divider={false}
             maxWidth="sm"
+            sx={{
+              zIndex: pickerActive ? 1 : undefined
+            }}
             dialogActionChildren={
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <Button
