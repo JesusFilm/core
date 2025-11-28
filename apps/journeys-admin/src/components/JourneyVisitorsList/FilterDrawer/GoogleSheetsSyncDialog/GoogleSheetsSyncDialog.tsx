@@ -388,16 +388,22 @@ export function GoogleSheetsSyncDialog({
   }
 
   function elevatePickerZIndex(): void {
-    const dialog = document.querySelector<HTMLElement>('.picker-dialog')
-    const bg = document.querySelector<HTMLElement>('.picker-dialog-bg')
-    const modal = document.querySelector<HTMLElement>('.picker.modal-dialog')
-    const z = '1300'
-    if (dialog != null) dialog.style.zIndex = z
-    if (bg != null) bg.style.zIndex = z
-    if (modal != null) modal.style.zIndex = z
+    const pickerElements = document.querySelectorAll<HTMLElement>(
+      '.picker-dialog, .picker-dialog-bg, .picker.modal-dialog, [class*="picker"]'
+    )
+
+    if (pickerElements.length === 0) return
+
+    // Ensure the Google Picker is always above any MUI dialog or overlay.
+    // Use a very high static value to stay above custom MUI z-index configurations.
+    const pickerZIndex = '99999'
+
+    pickerElements.forEach((element) => {
+      element.style.zIndex = pickerZIndex
+    })
   }
 
-  function elevatePickerZIndexWithRetries(attempts = 10, delayMs = 50): void {
+  function elevatePickerZIndexWithRetries(attempts = 100, delayMs = 100): void {
     elevatePickerZIndex()
     if (attempts <= 1) return
     setTimeout(
