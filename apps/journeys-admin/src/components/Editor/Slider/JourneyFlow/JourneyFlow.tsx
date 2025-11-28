@@ -117,6 +117,7 @@ export function JourneyFlow(): ReactElement {
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [referrerNodes, setReferrerNodes] = useNodesState([])
   const [referrerEdges, setReferrerEdges] = useEdgesState([])
+
   const dragTimeStampRef = useRef(0)
 
   const createStepFromStep = useCreateStepFromStep()
@@ -143,6 +144,26 @@ export function JourneyFlow(): ReactElement {
     },
     skip: router?.query.journeyId == null
   })
+
+  const wrappedOnNodesChange = useCallback(
+    (changes: any) => {
+      // Filter out changes that affect referrer nodes to prevent infinite loops
+      const filteredChanges = changes.filter((change: any) => {
+        const isReferrerNode = referrerNodes.some(
+          (node) => node.id === change.id
+        )
+        if (isReferrerNode) {
+          return false
+        }
+        return true
+      })
+
+      if (filteredChanges.length > 0) {
+        onNodesChange(filteredChanges)
+      }
+    },
+    [onNodesChange, referrerNodes]
+  )
 
   const blockPositionUpdate = useCallback(
     (input: Array<{ id: string; x: number; y: number }>): void => {
@@ -587,7 +608,8 @@ export function JourneyFlow(): ReactElement {
       <ReactFlow
         nodes={[...referrerNodes, ...nodes]}
         edges={[...referrerEdges, ...edges]}
-        onNodesChange={onNodesChange}
+        // onNodesChange={onNodesChange}
+        onNodesChange={wrappedOnNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onConnectEnd={onConnectEnd}
