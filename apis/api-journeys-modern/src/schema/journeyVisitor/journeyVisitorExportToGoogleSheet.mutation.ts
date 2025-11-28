@@ -14,20 +14,49 @@ import {
 import { builder } from '../builder'
 import { JourneyEventsFilter } from '../event/journey/inputs'
 
+import { computeConnectedBlockIds } from './export/connectivity'
+import { sanitizeCSVCell } from './export/csv'
+import {
+  formatDateYmdInTimeZone,
+  parseDateInTimeZoneToUtc
+} from './export/date'
+import {
+  type BaseColumnLabelResolver,
+  type JourneyExportColumn,
+  buildHeaderRows,
+  buildJourneyExportColumns,
+  getCardHeading as getCardHeadingHelper
+} from './export/headings'
+import {
+  type SimpleBlock,
+  buildRenderTree,
+  computeOrderIndex
+} from './export/order'
 import { JourneyVisitorExportSelect } from './inputs'
+
+const journeyBlockSelect = {
+  id: true,
+  typename: true,
+  parentBlockId: true,
+  parentOrder: true,
+  nextBlockId: true,
+  action: true,
+  content: true,
+  x: true,
+  y: true,
+  deletedAt: true
+} as const
 
 interface JourneyVisitorExportRow {
   visitorId: string
-  createdAt: string
-  name: string
-  email: string
-  phone: string
+  date: string
   [key: string]: string
 }
 
 async function* getJourneyVisitors(
   journeyId: string,
   eventWhere: Prisma.EventWhereInput,
+  timezone: string,
   batchSize: number = 1000
 ): AsyncGenerator<JourneyVisitorExportRow> {
   let offset = 0
@@ -51,10 +80,7 @@ async function* getJourneyVisitors(
         createdAt: true,
         visitor: {
           select: {
-            id: true,
-            name: true,
-            email: true,
-            phone: true
+            id: true
           }
         },
         events: {
@@ -62,7 +88,8 @@ async function* getJourneyVisitors(
           select: {
             blockId: true,
             label: true,
-            value: true
+            value: true,
+            typename: true
           },
           orderBy: {
             createdAt: 'asc'
@@ -77,29 +104,33 @@ async function* getJourneyVisitors(
     }
 
     for (const journeyVisitor of journeyVisitors) {
+      // Format date in user's timezone to match frontend display
+      const date = formatDateYmdInTimeZone(journeyVisitor.createdAt, timezone)
       const row: JourneyVisitorExportRow = {
         visitorId: journeyVisitor.visitor.id,
-        createdAt: journeyVisitor.createdAt.toISOString(),
-        name: journeyVisitor.visitor.name || '',
-        email: journeyVisitor.visitor.email || '',
-        phone: journeyVisitor.visitor.phone || ''
+        date
       }
-
+      // Group events by blockId-label key and collect values deterministically
+      const eventValuesByKey = new Map<string, string[]>()
       journeyVisitor.events.forEach((event) => {
-        if (event.blockId && event.label && event.value != null) {
-          const val = String(event.value)
-          if (val === '') {
-            return
+        if (event.blockId) {
+          // Normalize label to match header key format
+          const normalizedLabel = (event.label ?? '')
+            .replace(/\s+/g, ' ')
+            .trim()
+          const key = `${event.blockId}-${normalizedLabel}`
+          const eventValue = event.value ?? ''
+          if (!eventValuesByKey.has(key)) {
+            eventValuesByKey.set(key, [])
           }
-          const key = `${event.blockId}-${event.label}`
-          if (row[key]) {
-            row[key] += `; ${val}`
-          } else {
-            row[key] = val
-          }
+          eventValuesByKey.get(key)!.push(eventValue)
         }
       })
-
+      // Join values with a fixed separator and sanitize for CSV
+      eventValuesByKey.forEach((values, key) => {
+        const sanitizedValues = values.map((value) => sanitizeCSVCell(value))
+        row[key] = sanitizedValues.join('; ')
+      })
       yield row
     }
 
@@ -160,19 +191,29 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       filter: t.arg({ type: JourneyEventsFilter, required: false }),
       select: t.arg({ type: JourneyVisitorExportSelect, required: false }),
       destination: t.arg({ type: ExportDestinationInput, required: true }),
-      integrationId: t.arg.id({ required: true })
+      integrationId: t.arg.id({ required: true }),
+      timezone: t.arg.string({
+        required: false,
+        description:
+          'IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.'
+      })
     },
     resolve: async (
       _parent,
-      { journeyId, filter, select, destination, integrationId },
+      { journeyId, filter, select, destination, integrationId, timezone },
       context
     ) => {
+      // Use user's timezone or default to UTC
+      const userTimezone = timezone ?? 'UTC'
       const journey = await prisma.journey.findUnique({
         where: { id: journeyId },
         include: {
           team: { include: { userTeams: true } },
           userJourneys: true,
-          blocks: { select: { id: true }, orderBy: { updatedAt: 'asc' } }
+          blocks: {
+            select: journeyBlockSelect,
+            orderBy: { updatedAt: 'asc' }
+          }
         }
       })
 
@@ -188,53 +229,131 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         })
       }
 
+      // Build a map of blocks (non-deleted only) and compute renderer-aligned order
+      const journeyBlocks = journey.blocks.filter((b) => b.deletedAt == null)
+      const idToBlock = new Map(journeyBlocks.map((b) => [b.id, b]))
+
+      const simpleBlocks: SimpleBlock[] = journeyBlocks.map((b) => ({
+        id: b.id,
+        typename: b.typename,
+        parentBlockId: b.parentBlockId ?? null,
+        parentOrder: b.parentOrder ?? null
+      }))
+      const treeRoots = buildRenderTree(simpleBlocks)
+      const orderIndex = computeOrderIndex(treeRoots)
+
+      // Apply connectivity filter unless explicitly requested to include unconnected
+      const includeOld = filter?.includeUnconnectedCards === true
+      const connectedBlockIds = computeConnectedBlockIds({ journeyBlocks })
+      const allowedBlockIds =
+        includeOld === true
+          ? new Set(simpleBlocks.map((b) => b.id))
+          : connectedBlockIds
+
       const eventWhere: Prisma.EventWhereInput = {
         journeyId: journeyId,
-        blockId: { not: null },
-        label: { not: null }
+        blockId:
+          includeOld === true
+            ? { not: null }
+            : { in: Array.from(allowedBlockIds) }
       }
+
+      // Filter by typenames - if provided use those, otherwise default to submission events only
       if (filter?.typenames && filter.typenames.length > 0) {
         eventWhere.typename = { in: filter.typenames }
+      } else {
+        // Default: only include submission events (exclude view/navigation events)
+        eventWhere.typename = {
+          in: [
+            'RadioQuestionSubmissionEvent',
+            'MultiselectSubmissionEvent',
+            'TextResponseSubmissionEvent',
+            'SignUpSubmissionEvent'
+          ]
+        }
       }
       if (filter?.periodRangeStart || filter?.periodRangeEnd) {
         eventWhere.createdAt = {}
-        if (filter.periodRangeStart)
-          eventWhere.createdAt.gte = filter.periodRangeStart
-        if (filter.periodRangeEnd)
-          eventWhere.createdAt.lte = filter.periodRangeEnd
+        if (filter.periodRangeStart) {
+          eventWhere.createdAt.gte = parseDateInTimeZoneToUtc(
+            filter.periodRangeStart,
+            userTimezone
+          )
+        }
+        if (filter.periodRangeEnd) {
+          eventWhere.createdAt.lte = parseDateInTimeZoneToUtc(
+            filter.periodRangeEnd,
+            userTimezone
+          )
+        }
       }
 
+      // Get unique blockId_label combinations for headers using Prisma
       const blockHeadersResult = await prisma.event.findMany({
         where: eventWhere,
-        select: { blockId: true, label: true },
+        select: {
+          blockId: true,
+          label: true
+        },
         distinct: ['blockId', 'label']
       })
 
-      const blockIds = journey.blocks.map((b) => b.id)
-      const blockHeaders = blockHeadersResult
-        .sort(
-          (a, b) =>
-            blockIds.findIndex((id) => id === a.blockId) -
-            blockIds.findIndex((id) => id === b.blockId)
-        )
-        .map((item) => ({
-          key: `${item.blockId!}-${item.label!}`,
-          header: item.label!
-        }))
+      // Normalize labels and deduplicate by normalized key
+      const headerMap = new Map<string, { blockId: string; label: string }>()
+      blockHeadersResult
+        .filter((header) => header.blockId != null)
+        .forEach((header) => {
+          const normalizedLabel = (header.label ?? '')
+            .replace(/\s+/g, ' ')
+            .trim()
+          const key = `${header.blockId}-${normalizedLabel}`
+          // Only add if not already present (handles duplicates with different whitespace)
+          if (!headerMap.has(key)) {
+            headerMap.set(key, {
+              blockId: header.blockId!,
+              label: normalizedLabel
+            })
+          }
+        })
+      const normalizedBlockHeaders = Array.from(headerMap.values())
 
-      const columns = [
-        { key: 'visitorId' },
-        select?.createdAt !== false ? { key: 'createdAt' } : null,
-        select?.name !== false ? { key: 'name' } : null,
-        select?.email !== false ? { key: 'email' } : null,
-        select?.phone !== false ? { key: 'phone' } : null,
-        ...(filter?.typenames == null || filter.typenames.length > 0
-          ? blockHeaders
-          : [])
-      ].filter((v) => v != null) as Array<{ key: string }>
+      const getCardHeading = (blockId: string | null | undefined) =>
+        getCardHeadingHelper(idToBlock as any, journeyBlocks as any, blockId)
 
-      // Compute the desired header row for this export
+      const baseColumns: JourneyExportColumn[] = [
+        { key: 'visitorId', label: 'Visitor ID', blockId: null, typename: '' },
+        { key: 'date', label: 'Date', blockId: null, typename: '' }
+      ]
+      const columns = buildJourneyExportColumns({
+        baseColumns,
+        blockHeaders: normalizedBlockHeaders,
+        journeyBlocks,
+        orderIndex
+      })
+
+      const resolveBaseColumnLabel: BaseColumnLabelResolver = ({
+        column,
+        userTimezone
+      }) => {
+        if (column.key === 'visitorId') return 'Visitor ID'
+        if (column.key === 'date') {
+          return userTimezone !== 'UTC' && userTimezone !== ''
+            ? `Date (${userTimezone})`
+            : 'Date'
+        }
+        return column.label
+      }
+
+      const { headerRow } = buildHeaderRows({
+        columns,
+        userTimezone,
+        getCardHeading,
+        baseColumnLabelResolver: resolveBaseColumnLabel
+      })
+
+      // Compute the desired header keys for this export
       const desiredHeader = columns.map((c) => c.key)
+      let finalHeaderRow = headerRow
 
       const accessToken = (await getIntegrationGoogleAccessToken(integrationId))
         .accessToken
@@ -327,35 +446,136 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
       let finalHeader = desiredHeader
       if (destination.mode === 'existing') {
         await ensureSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
+        // Read first row (header row)
         const headerRes = await readValues({
           accessToken,
           spreadsheetId,
           range: `${sheetName}!A1:ZZ1`
         })
-        const existingHeader: string[] = (headerRes[0] ?? []).map(
+        const existingHeaderRow: string[] = (headerRes[0] ?? []).map(
           (v) => v ?? ''
         )
-        if (existingHeader.length > 0) {
-          // Ensure base headers exist in the correct order at start, respecting select preferences
-          const base: string[] = ['visitorId']
-          if (select?.createdAt !== false) base.push('createdAt')
-          if (select?.name !== false) base.push('name')
-          if (select?.email !== false) base.push('email')
-          if (select?.phone !== false) base.push('phone')
+        if (existingHeaderRow.length > 0) {
+          // Extract keys from existing header row
+          // The header row contains display labels, we need to map them back to column keys
+          // Note: labels in the sheet were written through sanitizeCSVCell, so we need to
+          // compare against both raw and sanitized labels to match correctly
+          const existingHeader: string[] = existingHeaderRow.map((label) => {
+            // Skip empty labels (no header columns)
+            if (label.trim() === '') return ''
+
+            // Normalize the existing label to match our normalized column labels
+            const normalizedExistingLabel = label.replace(/\s+/g, ' ').trim()
+
+            // Try to find matching column by normalized label
+            const matchingCol = columns.find(
+              (c) => c.label === normalizedExistingLabel
+            )
+            if (matchingCol) return matchingCol.key
+
+            // Check if it's a standard column label (handle sanitized versions too)
+            const sanitizedVisitorId = sanitizeCSVCell('Visitor ID')
+            if (label === 'Visitor ID' || label === sanitizedVisitorId) {
+              return 'visitorId'
+            }
+            // Date labels may have timezone suffix, check if it starts with sanitized "Date"
+            const sanitizedDate = sanitizeCSVCell('Date')
+            if (
+              label === 'Date' ||
+              label.startsWith('Date') ||
+              label === sanitizedDate ||
+              label.startsWith(sanitizedDate)
+            ) {
+              return 'date'
+            }
+
+            // Check for Poll or Multiselect patterns (with or without card heading)
+            if (label === 'Poll' || label.startsWith('Poll (')) {
+              // Try to find matching Poll column by key
+              const pollCol = columns.find(
+                (c) => c.typename === 'RadioQuestionBlock' && c.key === label
+              )
+              if (pollCol) return pollCol.key
+            }
+            if (label === 'Multiselect' || label.startsWith('Multiselect (')) {
+              // Try to find matching Multiselect column by key
+              const multiselectCol = columns.find(
+                (c) => c.typename === 'MultiselectBlock' && c.key === label
+              )
+              if (multiselectCol) return multiselectCol.key
+            }
+
+            // If not found, check if it's a key directly
+            if (desiredHeader.includes(label)) return label
+
+            // For existing columns not in current export, use label as key
+            // This handles legacy columns that may not match current structure
+            return label
+          })
+
+          // Ensure base headers exist in the correct order at start
+          // Filter out empty strings (no header columns) before merging
+          const base: string[] = ['visitorId', 'date']
           const merged: string[] = []
           for (const b of base) if (!merged.includes(b)) merged.push(b)
           for (const h of existingHeader)
-            if (h !== '' && !merged.includes(h)) merged.push(h)
+            if (h !== '' && h.trim() !== '' && !merged.includes(h))
+              merged.push(h)
           for (const h of desiredHeader)
-            if (h !== '' && !merged.includes(h)) merged.push(h)
+            if (h !== '' && h.trim() !== '' && !merged.includes(h))
+              merged.push(h)
           finalHeader = merged
+
+          // Rebuild header row for merged columns
+          const mergedColumns: JourneyExportColumn[] = finalHeader.map(
+            (key) => {
+              // Handle empty header columns (no header columns)
+              if (key === '' || key.trim() === '') {
+                return {
+                  key: '',
+                  label: '',
+                  blockId: null,
+                  typename: ''
+                }
+              }
+              const existingCol = columns.find((c) => c.key === key)
+              if (existingCol) return existingCol
+              // For columns not in current export, create placeholder
+              return {
+                key,
+                label: key,
+                blockId: null,
+                typename: ''
+              }
+            }
+          )
+
+          const mergedRows = buildHeaderRows({
+            columns: mergedColumns,
+            userTimezone,
+            getCardHeading,
+            baseColumnLabelResolver: resolveBaseColumnLabel
+          })
+          finalHeaderRow = mergedRows.headerRow
         }
       }
 
-      // Build data rows aligned to finalHeader
-      const values: (string | null)[][] = [finalHeader]
-      for await (const row of getJourneyVisitors(journeyId, eventWhere)) {
-        const aligned = finalHeader.map((k) => row[k] ?? '')
+      // Build data rows aligned to finalHeader with sanitization
+      const sanitizedHeaderRow = finalHeaderRow.map((cell) =>
+        sanitizeCSVCell(cell)
+      )
+      const values: (string | null)[][] = [sanitizedHeaderRow]
+      for await (const row of getJourneyVisitors(
+        journeyId,
+        eventWhere,
+        userTimezone
+      )) {
+        const aligned = finalHeader.map((k) => {
+          // Handle empty header columns (no header columns)
+          if (k === '' || k.trim() === '') return ''
+          const value = row[k] ?? ''
+          return sanitizeCSVCell(value)
+        })
         values.push(aligned)
       }
 
