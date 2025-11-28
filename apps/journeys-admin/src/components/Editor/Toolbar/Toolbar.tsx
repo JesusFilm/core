@@ -182,7 +182,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           href="/"
           data-testid="NextStepsLogo"
           disableRipple
-          sx={{p: '10px'}}
+          sx={{p: '10px', ':active': {filter: 'brightness(0.85)'}}}
         >
           <Image
             src={logo}
@@ -196,16 +196,6 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
           />
         </IconButton>
       </Tooltip>
-      {/* <Tooltip title={t('See all journeys')} placement="bottom" arrow>
-        <IconButton
-          component={NextLink}
-          href="/"
-          data-testid="ToolbarBackButton"
-          disabled={isNavigating}
-        >
-          <FormatListBulletedIcon />
-        </IconButton>
-      </Tooltip> */}
       <Stack
         gap={2}
         direction="row"
