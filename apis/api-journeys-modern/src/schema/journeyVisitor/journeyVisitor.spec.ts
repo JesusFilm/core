@@ -45,7 +45,7 @@ describe('journeyVisitorExport', () => {
     jest.clearAllMocks()
   })
 
-  it('should return CSV formatted string with two header rows and visitor data', async () => {
+  it('should return CSV formatted string with single header row and visitor data', async () => {
     jf.mockResolvedValueOnce({
       id: 'journey1',
       team: {
@@ -119,12 +119,11 @@ describe('journeyVisitorExport', () => {
       }
     })
 
-    // First row: Date + card headings
-    // Second row: Date + event labels
-    // Third row+: visitor data
+    // Single header row: Type (Card Heading) or label for non-Poll/Multiselect
+    // Data rows follow
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      '"Date","Welcome Card"\n"Date","Button Click"\n"2024-01-01","Submit"\n'
+      '"Date","Button Click"\n"2024-01-01","Submit"\n'
     )
   })
 
@@ -169,7 +168,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      '"Date",""\n"Date","Button Click"\n'
+      '"Date","Button Click"\n'
     )
 
     expect(prismaMock.event.findMany).toHaveBeenCalledWith({
@@ -239,7 +238,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      '"Date",""\n"Date","Button Click"\n"2024-01-01","Submit"\n'
+      '"Date","Button Click"\n"2024-01-01","Submit"\n'
     )
 
     expect(prismaMock.event.findMany).toHaveBeenCalledWith({
@@ -287,10 +286,7 @@ describe('journeyVisitorExport', () => {
       }
     })
 
-    expect(result).toHaveProperty(
-      'data.journeyVisitorExport',
-      '"Date"\n"Date"\n'
-    )
+    expect(result).toHaveProperty('data.journeyVisitorExport', '"Date"\n')
 
     expect(prismaMock.event.findMany).toHaveBeenCalledWith({
       where: {
@@ -373,7 +369,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      '"Date",""\n"Date","Button Click"\n"2024-01-01","Submit; Cancel"\n'
+      '"Date","Button Click"\n"2024-01-01","Submit; Cancel"\n'
     )
   })
 
@@ -437,7 +433,7 @@ describe('journeyVisitorExport', () => {
 
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      '"Date","",""\n"Date","Button Click","Button Click New Label"\n"2024-01-01","Submit","Cancel"\n'
+      '"Date","Button Click","Button Click New Label"\n"2024-01-01","Submit","Cancel"\n'
     )
   })
 
@@ -460,10 +456,7 @@ describe('journeyVisitorExport', () => {
       }
     })
 
-    expect(result).toHaveProperty(
-      'data.journeyVisitorExport',
-      '"Date"\n"Date"\n'
-    )
+    expect(result).toHaveProperty('data.journeyVisitorExport', '"Date"\n')
   })
 
   it('should handle empty results gracefully', async () => {
@@ -485,10 +478,7 @@ describe('journeyVisitorExport', () => {
       }
     })
 
-    expect(result).toHaveProperty(
-      'data.journeyVisitorExport',
-      '"Date"\n"Date"\n'
-    )
+    expect(result).toHaveProperty('data.journeyVisitorExport', '"Date"\n')
   })
 
   it('should error when journey is not found', async () => {
@@ -521,7 +511,7 @@ describe('journeyVisitorExport', () => {
     )
   })
 
-  it('should include card headings in second header row', async () => {
+  it('should format Poll headers with card heading', async () => {
     jf.mockResolvedValueOnce({
       id: 'journey1',
       team: { userTeams: [{ userId: mockUser.id, role: 'manager' }] },
@@ -640,13 +630,14 @@ describe('journeyVisitorExport', () => {
       }
     })
 
+    // Single header row: label for TextResponse, "Poll (Card Heading)" for RadioQuestion
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      '"Date","Question 1 Card","Question 2 Card"\n"Date","What is your name?","Poll"\n"2024-01-15","John Doe","Option A"\n'
+      '"Date","What is your name?","Poll (Question 2 Card)"\n"2024-01-15","John Doe","Option A"\n'
     )
   })
 
-  it('should use "Multiselect" as header for RadioMultiselectBlock types', async () => {
+  it('should format Multiselect headers with card heading', async () => {
     jf.mockResolvedValueOnce({
       id: 'journey1',
       team: { userTeams: [{ userId: mockUser.id, role: 'manager' }] },
@@ -725,9 +716,10 @@ describe('journeyVisitorExport', () => {
       }
     })
 
+    // Single header row: "Multiselect (Card Heading)" format
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      '"Date","Choose Your Options"\n"Date","Multiselect"\n"2024-01-20","Option 1; Option 2"\n'
+      '"Date","Multiselect (Choose Your Options)"\n"2024-01-20","Option 1; Option 2"\n'
     )
   })
 
@@ -881,7 +873,7 @@ describe('journeyVisitorExport', () => {
     })
     expect(resultDefault).toHaveProperty(
       'data.journeyVisitorExport',
-      '"Date","Step 1 Heading","Step 2 Heading"\n"Date","Question A","Question B"\n"2024-02-01","Alice","Bob"\n'
+      '"Date","Question A","Question B"\n"2024-02-01","Alice","Bob"\n'
     )
 
     // Now include unconnected cards; headers should include C as well
@@ -1041,7 +1033,7 @@ describe('journeyVisitorExport', () => {
     })
     expect(resultInclude).toHaveProperty(
       'data.journeyVisitorExport',
-      '"Date","Step 1 Heading","Step 2 Heading","Disconnected Heading"\n"Date","Question A","Question B","Question C"\n"2024-02-02","Ann","Ben","Cat"\n'
+      '"Date","Question A","Question B","Question C"\n"2024-02-02","Ann","Ben","Cat"\n'
     )
   })
 
@@ -1123,7 +1115,7 @@ describe('journeyVisitorExport', () => {
     })
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      '"Date","Heading"\n"Date","Alive Q"\n"2024-03-01","A"\n'
+      '"Date","Alive Q"\n"2024-03-01","A"\n'
     )
   })
 
@@ -1256,9 +1248,10 @@ describe('journeyVisitorExport', () => {
       variables: { journeyId: 'journey1' }
     })
     // Expected order: a, b (under Card 1), then c (under Card 2)
+    // Single header row with labels (non-Poll/Multiselect types)
     expect(result).toHaveProperty(
       'data.journeyVisitorExport',
-      '"Date","Card 1","Card 1","Card 2"\n"Date","Label A","Label B","Label C"\n"2024-04-01","AV","BV","CV"\n'
+      '"Date","Label A","Label B","Label C"\n"2024-04-01","AV","BV","CV"\n'
     )
   })
 })

@@ -146,7 +146,6 @@ function compareHeaders(
 
 interface BaseColumnLabelResolverParams {
   column: JourneyExportColumn
-  row: 'card' | 'label'
   userTimezone: string
 }
 
@@ -157,23 +156,17 @@ export type BaseColumnLabelResolver = (
 interface BuildHeaderRowsOptions {
   columns: JourneyExportColumn[]
   userTimezone: string
-  getAncestorByType: (
-    blockId: string | null | undefined,
-    type: string
-  ) => BlockLike | undefined
   getCardHeading: (blockId: string | null | undefined) => string
   baseColumnLabelResolver?: BaseColumnLabelResolver
 }
 
 export interface HeaderRows {
-  cardHeadingRow: string[]
-  labelRow: string[]
+  headerRow: string[]
 }
 
 export function buildHeaderRows({
   columns,
   userTimezone,
-  getAncestorByType,
   getCardHeading,
   baseColumnLabelResolver
 }: BuildHeaderRowsOptions): HeaderRows {
@@ -181,82 +174,30 @@ export function buildHeaderRows({
     baseColumnLabelResolver ??
     (({ column }: BaseColumnLabelResolverParams) => column.label)
 
-  const cardPollCounts = new Map<
-    string,
-    { pollCount: number; multiselectCount: number }
-  >()
-
-  columns.forEach((column) => {
-    if (column.blockId == null) return
-    if (
-      column.typename !== 'RadioQuestionBlock' &&
-      column.typename !== 'MultiselectBlock'
-    ) {
-      return
-    }
-    const cardBlock = getAncestorByType(column.blockId, 'CardBlock')
-    if (cardBlock == null) return
-    const cardId = cardBlock.id
-    if (!cardPollCounts.has(cardId)) {
-      cardPollCounts.set(cardId, { pollCount: 0, multiselectCount: 0 })
-    }
-    const counts = cardPollCounts.get(cardId)!
-    if (column.typename === 'RadioQuestionBlock') {
-      counts.pollCount++
-    } else if (column.typename === 'MultiselectBlock') {
-      counts.multiselectCount++
-    }
-  })
-
-  const currentCardCounts = new Map<
-    string,
-    { pollCount: number; multiselectCount: number }
-  >()
-
-  const labelRow = columns.map((column) => {
+  const headerRow = columns.map((column) => {
+    // Base columns (no blockId) - use resolver
     if (column.blockId == null) {
       return resolveBaseColumnLabel({
         column,
-        row: 'label',
         userTimezone
       })
     }
 
-    const cardBlock = getAncestorByType(column.blockId, 'CardBlock')
-    if (cardBlock == null) return column.label
-    if (
-      column.typename !== 'RadioQuestionBlock' &&
-      column.typename !== 'MultiselectBlock'
-    ) {
-      return column.label
-    }
+    const cardHeading = getCardHeading(column.blockId)
 
-    const cardId = cardBlock.id
-    if (!currentCardCounts.has(cardId)) {
-      currentCardCounts.set(cardId, { pollCount: 0, multiselectCount: 0 })
-    }
-    const counts = currentCardCounts.get(cardId)!
-    const totals = cardPollCounts.get(cardId)!
+    // For RadioQuestionBlock: "Poll (Card Heading)" or "Poll"
     if (column.typename === 'RadioQuestionBlock') {
-      counts.pollCount++
-      return totals.pollCount > 1 ? `Poll ${counts.pollCount}` : 'Poll'
+      return cardHeading ? `Poll (${cardHeading})` : 'Poll'
     }
-    counts.multiselectCount++
-    return totals.multiselectCount > 1
-      ? `Multiselect ${counts.multiselectCount}`
-      : 'Multiselect'
+
+    // For MultiselectBlock: "Multiselect (Card Heading)" or "Multiselect"
+    if (column.typename === 'MultiselectBlock') {
+      return cardHeading ? `Multiselect (${cardHeading})` : 'Multiselect'
+    }
+
+    // For other block types: use the label
+    return column.label
   })
 
-  const cardHeadingRow = columns.map((column) => {
-    if (column.blockId == null) {
-      return resolveBaseColumnLabel({
-        column,
-        row: 'card',
-        userTimezone
-      })
-    }
-    return getCardHeading(column.blockId)
-  })
-
-  return { cardHeadingRow, labelRow }
+  return { headerRow }
 }

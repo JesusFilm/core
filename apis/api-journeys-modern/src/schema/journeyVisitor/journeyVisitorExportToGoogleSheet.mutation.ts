@@ -25,7 +25,6 @@ import {
   type JourneyExportColumn,
   buildHeaderRows,
   buildJourneyExportColumns,
-  getAncestorByType as getAncestorByTypeHelper,
   getCardHeading as getCardHeadingHelper
 } from './export/headings'
 import {
@@ -318,10 +317,6 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         })
       const normalizedBlockHeaders = Array.from(headerMap.values())
 
-      const getAncestorByType = (
-        blockId: string | null | undefined,
-        type: string
-      ) => getAncestorByTypeHelper(idToBlock as any, blockId, type)
       const getCardHeading = (blockId: string | null | undefined) =>
         getCardHeadingHelper(idToBlock as any, journeyBlocks as any, blockId)
 
@@ -338,7 +333,6 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
 
       const resolveBaseColumnLabel: BaseColumnLabelResolver = ({
         column,
-        row,
         userTimezone
       }) => {
         if (column.key === 'visitorId') return 'Visitor ID'
@@ -350,16 +344,16 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
         return column.label
       }
 
-      const { cardHeadingRow, labelRow } = buildHeaderRows({
+      const { headerRow } = buildHeaderRows({
         columns,
         userTimezone,
-        getAncestorByType,
         getCardHeading,
         baseColumnLabelResolver: resolveBaseColumnLabel
       })
 
       // Compute the desired header keys for this export
       const desiredHeader = columns.map((c) => c.key)
+      let finalHeaderRow = headerRow
 
       const accessToken = (await getIntegrationGoogleAccessToken(integrationId))
         .accessToken
@@ -450,25 +444,23 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
 
       // Read existing header (for existing sheets) and merge to preserve/extend columns
       let finalHeader = desiredHeader
-      let finalCardHeadingRow = cardHeadingRow
-      let finalLabelRow = labelRow
       if (destination.mode === 'existing') {
         await ensureSheet({ accessToken, spreadsheetId, sheetTitle: sheetName })
-        // Read first two rows (card heading and label rows)
+        // Read first row (header row)
         const headerRes = await readValues({
           accessToken,
           spreadsheetId,
-          range: `${sheetName}!A1:ZZ2`
+          range: `${sheetName}!A1:ZZ1`
         })
-        const existingLabelRow: string[] = (headerRes[1] ?? []).map(
+        const existingHeaderRow: string[] = (headerRes[0] ?? []).map(
           (v) => v ?? ''
         )
-        if (existingLabelRow.length > 0) {
-          // Extract keys from existing label row
-          // The label row contains display labels, we need to map them back to column keys
+        if (existingHeaderRow.length > 0) {
+          // Extract keys from existing header row
+          // The header row contains display labels, we need to map them back to column keys
           // Note: labels in the sheet were written through sanitizeCSVCell, so we need to
           // compare against both raw and sanitized labels to match correctly
-          const existingHeader: string[] = existingLabelRow.map((label) => {
+          const existingHeader: string[] = existingHeaderRow.map((label) => {
             // Skip empty labels (no header columns)
             if (label.trim() === '') return ''
 
@@ -497,6 +489,22 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
               return 'date'
             }
 
+            // Check for Poll or Multiselect patterns (with or without card heading)
+            if (label === 'Poll' || label.startsWith('Poll (')) {
+              // Try to find matching Poll column by key
+              const pollCol = columns.find(
+                (c) => c.typename === 'RadioQuestionBlock' && c.key === label
+              )
+              if (pollCol) return pollCol.key
+            }
+            if (label === 'Multiselect' || label.startsWith('Multiselect (')) {
+              // Try to find matching Multiselect column by key
+              const multiselectCol = columns.find(
+                (c) => c.typename === 'MultiselectBlock' && c.key === label
+              )
+              if (multiselectCol) return multiselectCol.key
+            }
+
             // If not found, check if it's a key directly
             if (desiredHeader.includes(label)) return label
 
@@ -518,7 +526,7 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
               merged.push(h)
           finalHeader = merged
 
-          // Rebuild header rows for merged columns
+          // Rebuild header row for merged columns
           const mergedColumns: JourneyExportColumn[] = finalHeader.map(
             (key) => {
               // Handle empty header columns (no header columns)
@@ -545,26 +553,18 @@ builder.mutationField('journeyVisitorExportToGoogleSheet', (t) =>
           const mergedRows = buildHeaderRows({
             columns: mergedColumns,
             userTimezone,
-            getAncestorByType,
             getCardHeading,
             baseColumnLabelResolver: resolveBaseColumnLabel
           })
-          finalLabelRow = mergedRows.labelRow
-          finalCardHeadingRow = mergedRows.cardHeadingRow
+          finalHeaderRow = mergedRows.headerRow
         }
       }
 
       // Build data rows aligned to finalHeader with sanitization
-      const sanitizedCardHeadingRow = finalCardHeadingRow.map((cell) =>
+      const sanitizedHeaderRow = finalHeaderRow.map((cell) =>
         sanitizeCSVCell(cell)
       )
-      const sanitizedLabelRow = finalLabelRow.map((cell) =>
-        sanitizeCSVCell(cell)
-      )
-      const values: (string | null)[][] = [
-        sanitizedCardHeadingRow,
-        sanitizedLabelRow
-      ]
+      const values: (string | null)[][] = [sanitizedHeaderRow]
       for await (const row of getJourneyVisitors(
         journeyId,
         eventWhere,

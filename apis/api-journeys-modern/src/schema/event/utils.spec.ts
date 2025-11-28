@@ -493,9 +493,9 @@ describe('event utils', () => {
         accessToken: 'access-token'
       })
       mockEnsureSheet.mockResolvedValue(undefined)
-      // Mock header reads (2 rows: card heading + label row)
+      // Mock header reads (1 row: header row)
       mockReadValues
-        .mockResolvedValueOnce([[''], ['']]) // existing headers (empty)
+        .mockResolvedValueOnce([['']]) // existing header (empty)
         .mockResolvedValueOnce([]) // no existing visitor rows
 
       await appendEventToGoogleSheets({
@@ -544,7 +544,7 @@ describe('event utils', () => {
       })
       mockEnsureSheet.mockResolvedValue(undefined)
       mockReadValues
-        .mockResolvedValueOnce([[''], ['']]) // existing headers (2 rows)
+        .mockResolvedValueOnce([['']]) // existing header (1 row)
         .mockResolvedValueOnce([['visitor-id']]) // found visitor in column A
         .mockResolvedValueOnce([
           ['visitor-id', '2024-01-01', 'John Doe', 'john@example.com', '']
@@ -591,7 +591,7 @@ describe('event utils', () => {
       })
       mockEnsureSheet.mockResolvedValue(undefined)
       mockReadValues
-        .mockResolvedValueOnce([[''], ['']]) // existing headers (2 rows)
+        .mockResolvedValueOnce([['']]) // existing header (1 row)
         .mockResolvedValueOnce([]) // no existing visitor rows
 
       await appendEventToGoogleSheets({
@@ -626,13 +626,10 @@ describe('event utils', () => {
         accessToken: 'access-token'
       })
       mockEnsureSheet.mockResolvedValue(undefined)
-      // First call: read headers (2 rows: card heading + label row, without custom-field)
+      // First call: read header (1 row, but missing 'Date' column to trigger header update)
       // Second call: check for existing visitor (empty = new visitor)
       mockReadValues
-        .mockResolvedValueOnce([
-          ['', ''],
-          ['Visitor ID', 'Date']
-        ]) // existing 2-row headers
+        .mockResolvedValueOnce([['Visitor ID']]) // existing header missing 'Date' column
         .mockResolvedValueOnce([]) // no existing visitor
       mockUpdateRangeValues.mockResolvedValue(undefined)
 
@@ -650,7 +647,7 @@ describe('event utils', () => {
         ]
       })
 
-      // Headers should be updated when new dynamic key is added
+      // Headers should be updated when existing header differs from computed header
       expect(mockUpdateRangeValues).toHaveBeenCalled()
       // Then row should be appended
       expect(mockWriteValues).toHaveBeenCalledWith(

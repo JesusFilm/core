@@ -228,16 +228,14 @@ describe('journeyVisitorExportToGoogleSheet', () => {
         spreadsheetId: 'spreadsheet-id',
         sheetTitle: '2024-01-01 test-journey',
         values: expect.arrayContaining([
-          // Card heading row (row 1)
-          expect.arrayContaining(['Visitor ID', 'Date']),
-          // Label row (row 2)
+          // Single header row
           expect.arrayContaining([
             'Visitor ID',
             'Date',
             'Button Click',
             'Text Response'
           ]),
-          // Data row (row 3+)
+          // Data row
           expect.arrayContaining(['visitor-1'])
         ]),
         append: false
@@ -326,7 +324,7 @@ describe('journeyVisitorExportToGoogleSheet', () => {
     expect(mockReadValues).toHaveBeenCalledWith({
       accessToken: 'access-token',
       spreadsheetId: 'existing-spreadsheet-id',
-      range: 'Sheet1!A1:ZZ2'
+      range: 'Sheet1!A1:ZZ1'
     })
 
     expect(result).toEqual({
