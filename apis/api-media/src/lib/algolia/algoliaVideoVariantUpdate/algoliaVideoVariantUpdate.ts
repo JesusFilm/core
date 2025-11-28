@@ -106,7 +106,7 @@ export async function updateVideoVariantInAlgolia(
           ?.value ?? '',
       childrenCount: videoVariant.video?.childIds.length ?? 0,
       videoPublished: videoVariant.video?.published ?? false,
-      published: videoVariant.published ?? true,
+      published: videoVariant.published ?? false,
       restrictViewPlatforms: videoVariant.video?.restrictViewPlatforms ?? [],
       manualRanking: videoVariant.languageId === '529' ? 0 : 1
     }
