@@ -53,7 +53,6 @@ builder.mutationField('multiselectSubmissionEventCreate', (t) =>
         }
       })
 
-      // live sync to Google Sheets (fire and forget)
       if (teamId) {
         appendEventToGoogleSheets({
           journeyId,
