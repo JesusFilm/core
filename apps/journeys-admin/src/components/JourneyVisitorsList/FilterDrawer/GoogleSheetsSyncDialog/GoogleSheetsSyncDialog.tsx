@@ -328,9 +328,9 @@ export function GoogleSheetsSyncDialog({
       const view =
         mode === 'sheet'
           ? new googleAny.picker.DocsView(googleAny.picker.ViewId.SPREADSHEETS)
-          : new googleAny.picker.DocsView()
-              .setIncludeFolders(true)
-              .setSelectFolderEnabled(true)
+          : new googleAny.picker.DocsView(
+              googleAny.picker.ViewId.FOLDERS
+            ).setSelectFolderEnabled(true)
 
       const picker = new googleAny.picker.PickerBuilder()
         .setOAuthToken(oauthToken)
