@@ -40,7 +40,7 @@ describe('NavigationDrawer', () => {
     expect(handleClose).toHaveBeenCalledWith(true)
   })
 
-  it('should show selected discover link when selected page empty', async () => {
+  it('should show selected projects link when selected page empty', async () => {
     const { getByTestId } = render(<NavigationDrawer open selectedPage="" />)
     expect(getByTestId('NavigationListItemDiscover')).toHaveClass(
       'Mui-selected'
@@ -51,7 +51,7 @@ describe('NavigationDrawer', () => {
     )
   })
 
-  it('should show selected discover link when selected page journeys', async () => {
+  it('should show selected projects link when selected page journeys', async () => {
     const { getByTestId } = render(
       <NavigationDrawer open selectedPage="journeys" />
     )
