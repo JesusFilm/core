@@ -59,7 +59,12 @@ export const defaultJourney: Journey = {
   seoDescription: null,
   chatButtons: [],
   host: null,
-  team: null,
+  team: {
+    __typename: 'Team',
+    id: 'jfp-team',
+    title: 'Jesus Film Project',
+    publicTitle: 'Jesus Film Project'
+  },
   userJourneys: [
     {
       id: 'userJourneyId1',
@@ -226,6 +231,18 @@ export const trashedJourney: Journey = {
   ...defaultJourney,
   id: 'trashed-journey-id',
   status: JourneyStatus.trashed
+}
+
+export const publishedLocalTemplate: Journey = {
+  ...publishedJourney,
+  id: 'published-local-template-id',
+  template: true,
+  team: {
+    __typename: 'Team',
+    id: 'local-team-id',
+    title: 'Local Team',
+    publicTitle: 'Local Team'
+  }
 }
 
 export const blocks: Block[] = [
