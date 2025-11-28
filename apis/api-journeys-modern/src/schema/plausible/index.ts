@@ -1,2 +1,3 @@
-import './plausible'
 import './inputs'
+import './journeysPlausibleStatsRealtimeVisitors.query'
+import './plausible'

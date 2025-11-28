@@ -243,25 +243,6 @@ export class PlausibleService implements OnModuleInit {
     return data?.siteCreate
   }
 
-  async getStatsRealtimeVisitors(
-    id: string,
-    type: 'journey' | 'team'
-  ): Promise<number> {
-    const domain =
-      type === 'journey' ? this.journeySiteId(id) : this.teamSiteId(id)
-
-    const response = await this.plausibleClient.get<number>(
-      `/api/v1/stats/realtime/visitors`,
-      {
-        params: {
-          site_id: domain
-        }
-      }
-    )
-
-    return response.data
-  }
-
   async getStatsAggregate(
     id: string,
     type: 'journey' | 'team',

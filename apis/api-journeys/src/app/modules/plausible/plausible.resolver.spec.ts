@@ -92,7 +92,6 @@ describe('PlausibleResolver', () => {
         {
           provide: PlausibleService,
           useValue: {
-            getStatsRealtimeVisitors: jest.fn(),
             getStatsAggregate: jest.fn(),
             getStatsBreakdown: jest.fn(),
             getStatsTimeseries: jest.fn()
@@ -118,74 +117,6 @@ describe('PlausibleResolver', () => {
     ) as DeepMockProxy<PrismaService>
     ability = await new AppCaslFactory().createAbility({
       id: 'userId'
-    })
-  })
-
-  describe('journeysPlausibleStatsRealtimeVisitors', () => {
-    it('should return realtime visitors', async () => {
-      prismaService.journey.findUnique.mockResolvedValue(journeyWithUserTeam)
-      const result = 10
-      plausibleService.getStatsRealtimeVisitors.mockResolvedValue(result)
-
-      const actual = await resolver.journeysPlausibleStatsRealtimeVisitors(
-        ability,
-        'id',
-        IdType.slug
-      )
-      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
-        where: { slug: 'id' },
-        include: {
-          userJourneys: true,
-          team: {
-            include: { userTeams: true }
-          }
-        }
-      })
-      expect(plausibleService.getStatsRealtimeVisitors).toHaveBeenCalledWith(
-        journey.id,
-        'journey'
-      )
-      expect(actual).toEqual(result)
-    })
-
-    it('should load journey with journey id', async () => {
-      prismaService.journey.findUnique.mockResolvedValue(journeyWithUserTeam)
-      await resolver.journeysPlausibleStatsRealtimeVisitors(
-        ability,
-        'id',
-        IdType.databaseId
-      )
-      expect(prismaService.journey.findUnique).toHaveBeenCalledWith({
-        where: { id: 'id' },
-        include: {
-          userJourneys: true,
-          team: {
-            include: { userTeams: true }
-          }
-        }
-      })
-    })
-
-    it('should throw error when journey not found', async () => {
-      prismaService.journey.findUnique.mockResolvedValue(null)
-      await expect(
-        resolver.journeysPlausibleStatsRealtimeVisitors(
-          ability,
-          'id',
-          IdType.slug
-        )
-      ).rejects.toThrow('journey not found')
-    })
-
-    it('should throw error when user not allowed access to journey', async () => {
-      prismaService.journey.findUnique.mockResolvedValue(journey)
-      await expect(
-        resolver.journeysPlausibleStatsRealtimeVisitors(
-          ability,
-          'id',
-          IdType.slug
-        )
-      ).rejects.toThrow('user is not allowed to view journey')
     })
   })
 

@@ -186,7 +186,6 @@ input PlausibleStatsTimeseriesFilter {
 }
 
 extend type Query {
-  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType): Int!
   journeysPlausibleStatsAggregate(
     where: PlausibleStatsAggregateFilter!
     id: ID!

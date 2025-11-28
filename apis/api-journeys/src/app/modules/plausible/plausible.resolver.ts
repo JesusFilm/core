@@ -31,21 +31,6 @@ export class PlausibleResolver {
 
   @Query()
   @UseGuards(AppCaslGuard)
-  async journeysPlausibleStatsRealtimeVisitors(
-    @CaslAbility() ability: AppAbility,
-    @Args('id') id: string,
-    @Args('idType') idType: IdType = IdType.slug
-  ): Promise<number> {
-    const journey = await this.loadJourney(ability, id, idType)
-    const result = await this.plausibleService.getStatsRealtimeVisitors(
-      journey.id,
-      'journey'
-    )
-    return result
-  }
-
-  @Query()
-  @UseGuards(AppCaslGuard)
   async journeysPlausibleStatsAggregate(
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,

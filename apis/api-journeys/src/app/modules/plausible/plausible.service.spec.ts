@@ -8,8 +8,6 @@ import { Journey, Team } from '@core/prisma/journeys/client'
 import { PrismaService } from '../../lib/prisma.service'
 
 import {
-  getRealTimeVisitors,
-  getRealTimeVisitorsResponse,
   getStatsAggregate,
   getStatsAggregateResponse,
   getStatsBreakdown,
@@ -159,24 +157,6 @@ describe('PlausibleService', () => {
     it('should create a site', async () => {
       expect(await service.createSite('site-name')).toEqual(
         siteCreateResponse.data.siteCreate
-      )
-    })
-  })
-
-  describe('getStatsRealtimeVisitors', () => {
-    beforeEach(() => {
-      server.use(getRealTimeVisitors())
-    })
-
-    it('should return real time visitors for journey', async () => {
-      expect(
-        await service.getStatsRealtimeVisitors('journeyId', 'journey')
-      ).toBe(getRealTimeVisitorsResponse)
-    })
-
-    it('should return real time visitors for team', async () => {
-      expect(await service.getStatsRealtimeVisitors('teamId', 'team')).toBe(
-        getRealTimeVisitorsResponse
       )
     })
   })
