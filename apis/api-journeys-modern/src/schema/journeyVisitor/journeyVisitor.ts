@@ -18,7 +18,6 @@ import {
   type JourneyExportColumn,
   buildHeaderRows,
   buildJourneyExportColumns,
-  getAncestorByType as getAncestorByTypeHelper,
   getCardHeading as getCardHeadingHelper
 } from './export/headings'
 import {
@@ -349,10 +348,6 @@ builder.queryField('journeyVisitorExport', (t) => {
           })
         const normalizedBlockHeaders = Array.from(headerMap.values())
 
-        const getAncestorByType = (
-          blockId: string | null | undefined,
-          type: string
-        ) => getAncestorByTypeHelper(idToBlock as any, blockId, type)
         const getCardHeading = (blockId: string | null | undefined) =>
           getCardHeadingHelper(idToBlock as any, journeyBlocks as any, blockId)
 
@@ -378,10 +373,9 @@ builder.queryField('journeyVisitorExport', (t) => {
           return column.label
         }
 
-        const { cardHeadingRow, labelRow } = buildHeaderRows({
+        const { headerRow } = buildHeaderRows({
           columns,
           userTimezone,
-          getAncestorByType,
           getCardHeading,
           baseColumnLabelResolver: resolveBaseColumnLabel
         })
@@ -390,13 +384,11 @@ builder.queryField('journeyVisitorExport', (t) => {
           columns.map((col) => ({ key: col.key }))
         )
 
-        // Manually write the two header rows (sanitized)
-        const sanitizedCardHeadingRow = cardHeadingRow.map((cell) =>
+        // Write the header row (sanitized)
+        const sanitizedHeaderRow = headerRow.map((cell) =>
           sanitizeCSVCell(cell)
         )
-        const sanitizedLabelRow = labelRow.map((cell) => sanitizeCSVCell(cell))
-        stringifier.write(sanitizedCardHeadingRow)
-        stringifier.write(sanitizedLabelRow)
+        stringifier.write(sanitizedHeaderRow)
 
         for await (const row of getJourneyVisitors(
           journeyId,

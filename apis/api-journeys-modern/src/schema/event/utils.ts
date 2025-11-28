@@ -22,7 +22,6 @@ import {
   type JourneyExportColumn,
   buildHeaderRows,
   buildJourneyExportColumns,
-  getAncestorByType,
   getCardHeading
 } from '../journeyVisitor/export/headings'
 import {
@@ -347,7 +346,6 @@ export async function appendEventToGoogleSheets({
 
   const resolveBaseColumnLabel: BaseColumnLabelResolver = ({
     column,
-    row,
     userTimezone
   }) => {
     if (column.key === 'visitorId') return 'Visitor ID'
@@ -359,18 +357,15 @@ export async function appendEventToGoogleSheets({
     return column.label
   }
 
-  const { cardHeadingRow, labelRow } = buildHeaderRows({
+  const { headerRow } = buildHeaderRows({
     columns,
     userTimezone: 'UTC',
-    getAncestorByType: (blockId, type) =>
-      getAncestorByType(idToBlock as any, blockId, type),
     getCardHeading: (blockId) =>
       getCardHeading(idToBlock as any, journeyBlocks as any, blockId),
     baseColumnLabelResolver: resolveBaseColumnLabel
   })
 
-  const sanitizedCardHeadingRow = cardHeadingRow.map((cell) => cell ?? '')
-  const sanitizedLabelRow = labelRow.map((cell) => cell ?? '')
+  const sanitizedHeaderRow = headerRow.map((cell) => cell ?? '')
   const finalHeader = columns.map((column) => column.key)
 
   const { accessToken } = await getTeamGoogleAccessToken(teamId)
@@ -384,27 +379,20 @@ export async function appendEventToGoogleSheets({
 
   const headerRange = `${tabName}!A1:${columnIndexToA1(
     finalHeader.length - 1
-  )}2`
+  )}1`
   const existingHeaderRows = await readValues({
     accessToken,
     spreadsheetId: sync.spreadsheetId,
     range: headerRange
   })
-  const existingCardHeadingRow: string[] = (existingHeaderRows[0] ?? []).map(
-    (value) => value ?? ''
-  )
-  const existingLabelRow: string[] = (existingHeaderRows[1] ?? []).map(
+  const existingHeaderRow: string[] = (existingHeaderRows[0] ?? []).map(
     (value) => value ?? ''
   )
 
   const headerChanged =
-    existingCardHeadingRow.length !== sanitizedCardHeadingRow.length ||
-    existingLabelRow.length !== sanitizedLabelRow.length ||
-    sanitizedCardHeadingRow.some(
-      (cell, index) => cell !== (existingCardHeadingRow[index] ?? '')
-    ) ||
-    sanitizedLabelRow.some(
-      (cell, index) => cell !== (existingLabelRow[index] ?? '')
+    existingHeaderRow.length !== sanitizedHeaderRow.length ||
+    sanitizedHeaderRow.some(
+      (cell, index) => cell !== (existingHeaderRow[index] ?? '')
     )
 
   if (headerChanged) {
@@ -412,7 +400,7 @@ export async function appendEventToGoogleSheets({
       accessToken,
       spreadsheetId: sync.spreadsheetId,
       range: headerRange,
-      values: [sanitizedCardHeadingRow, sanitizedLabelRow]
+      values: [sanitizedHeaderRow]
     })
   }
 
@@ -432,7 +420,7 @@ export async function appendEventToGoogleSheets({
 
   const alignedRow = finalHeader.map((key) => rowMap[key] ?? '')
 
-  const firstDataRow = 3
+  const firstDataRow = 2
   const idColumnRange = `${tabName}!A${firstDataRow}:A1000000`
   const idColumnValues = await readValues({
     accessToken,
