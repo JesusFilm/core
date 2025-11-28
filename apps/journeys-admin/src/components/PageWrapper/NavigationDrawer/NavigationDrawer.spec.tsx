@@ -40,25 +40,25 @@ describe('NavigationDrawer', () => {
     expect(handleClose).toHaveBeenCalledWith(true)
   })
 
-  it('should show selected discover link when selected page empty', async () => {
+  it('should show selected projects link when selected page empty', async () => {
     const { getByTestId } = render(<NavigationDrawer open selectedPage="" />)
-    expect(getByTestId('NavigationListItemDiscover')).toHaveClass(
+    expect(getByTestId('NavigationListItemProjects')).toHaveClass(
       'Mui-selected'
     )
-    expect(getByTestId('NavigationListItemDiscover')).toHaveAttribute(
+    expect(getByTestId('NavigationListItemProjects')).toHaveAttribute(
       'href',
       '/'
     )
   })
 
-  it('should show selected discover link when selected page journeys', async () => {
+  it('should show selected projects link when selected page journeys', async () => {
     const { getByTestId } = render(
       <NavigationDrawer open selectedPage="journeys" />
     )
-    expect(getByTestId('NavigationListItemDiscover')).toHaveClass(
+    expect(getByTestId('NavigationListItemProjects')).toHaveClass(
       'Mui-selected'
     )
-    expect(getByTestId('NavigationListItemDiscover')).toHaveAttribute(
+    expect(getByTestId('NavigationListItemProjects')).toHaveAttribute(
       'href',
       '/'
     )
@@ -166,7 +166,7 @@ describe('NavigationDrawer', () => {
           </Suspense>
         </MockedProvider>
       )
-      fireEvent.mouseOver(getByTestId('NavigationListItemDiscover'))
+      fireEvent.mouseOver(getByTestId('NavigationListItemProjects'))
       await waitFor(() =>
         expect(
           getByRole('tooltip', { name: 'New Journey' })
