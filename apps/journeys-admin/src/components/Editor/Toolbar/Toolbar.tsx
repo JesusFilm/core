@@ -176,13 +176,13 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         flexShrink: 0
       }}
     >
-      <Tooltip title={t('Back to home')} placement='bottom' arrow>
+      <Tooltip title={t('Back to home')} placement="bottom" arrow>
         <IconButton
           component={NextLink}
           href="/"
           data-testid="NextStepsLogo"
           disableRipple
-          sx={{p: '10px', ':active': {filter: 'brightness(0.85)'}}}
+          sx={{ p: '10px', ':active': { filter: 'brightness(0.85)' } }}
         >
           <Image
             src={logo}
