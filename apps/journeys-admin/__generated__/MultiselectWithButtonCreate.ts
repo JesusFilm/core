@@ -75,6 +75,8 @@ export interface MultiselectWithButtonCreate_button_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type MultiselectWithButtonCreate_button_action = MultiselectWithButtonCreate_button_action_NavigateToBlockAction | MultiselectWithButtonCreate_button_action_LinkAction | MultiselectWithButtonCreate_button_action_EmailAction | MultiselectWithButtonCreate_button_action_ChatAction | MultiselectWithButtonCreate_button_action_PhoneAction;
@@ -164,6 +166,8 @@ export interface MultiselectWithButtonCreate_buttonUpdate_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type MultiselectWithButtonCreate_buttonUpdate_action = MultiselectWithButtonCreate_buttonUpdate_action_NavigateToBlockAction | MultiselectWithButtonCreate_buttonUpdate_action_LinkAction | MultiselectWithButtonCreate_buttonUpdate_action_EmailAction | MultiselectWithButtonCreate_buttonUpdate_action_ChatAction | MultiselectWithButtonCreate_buttonUpdate_action_PhoneAction;

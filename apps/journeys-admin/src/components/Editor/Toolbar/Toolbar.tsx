@@ -69,7 +69,7 @@ export const GET_PLAUSIBLE_JOURNEY_FLOW_VIEWED = gql`
     }
   }
 `
-
+//
 export const UPDATE_PLAUSIBLE_JOURNEY_FLOW_VIEWED = gql`
   mutation UpdatePlausibleJourneyFlowViewed(
     $input: JourneyProfileUpdateInput!
