@@ -142,6 +142,14 @@ describe('Toolbar', () => {
     expect(screen.getByTestId('NextStepsLogo')).toHaveAttribute('href', '/')
   })
 
+  it('should render NextSteps tooltip on hover', async () => {
+    render(toolbar(defaultJourney))
+    fireEvent.mouseOver(screen.getByTestId('NextStepsLogo'))
+    await waitFor(() => {
+      expect(screen.getByText('Back to home')).toBeInTheDocument()
+    })
+  })
+
   it('should render help scout beacon', () => {
     render(toolbar(defaultJourney))
     expect(screen.getByTestId('HelpScoutBeaconIconButton')).toBeInTheDocument()
@@ -184,20 +192,6 @@ describe('Toolbar', () => {
     render(toolbar(defaultJourney))
     expect(screen.getByTestId('ToolbarMenuButton')).toBeInTheDocument()
     expect(screen.getByTestId('MoreIcon')).toBeInTheDocument()
-  })
-
-  it('should render all journeys button', () => {
-    render(toolbar(defaultJourney))
-    expect(screen.getByTestId('ToolbarBackButton')).toHaveAttribute('href', '/')
-    expect(screen.getByTestId('FormatListBulletedIcon')).toBeInTheDocument()
-  })
-
-  it('should render journeys tooltip on hover', async () => {
-    render(toolbar(defaultJourney))
-    fireEvent.mouseOver(screen.getByTestId('ToolbarBackButton'))
-    await waitFor(() => {
-      expect(screen.getByText('See all journeys')).toBeInTheDocument()
-    })
   })
 
   it('should render journey image', () => {
