@@ -37,7 +37,7 @@ import {
   UpdatePlausibleJourneyFlowViewed,
   UpdatePlausibleJourneyFlowViewedVariables
 } from '../../../../__generated__/UpdatePlausibleJourneyFlowViewed'
-import logo from '../../../../public/taskbar-icon.svg'
+import logo from '../../../../public/taskbar-icon-45x32.svg'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { NotificationPopover } from '../../NotificationPopover'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
@@ -181,17 +181,18 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         href="/"
         data-testid="NextStepsLogo"
         disableRipple
+        sx={{p: '10px'}}
       >
-        <Image
-          src={logo}
-          alt="Next Steps"
-          height={32}
-          width={32}
-          style={{
-            maxWidth: '100%',
-            height: 'auto'
-          }}
-        />
+          <Image
+            src={logo}
+            alt="Next Steps"
+            height={32}
+            width={45}
+            style={{
+              maxWidth: '100%',
+              height: 'auto'
+            }}
+          />
       </IconButton>
       {/* <Tooltip title={t('See all journeys')} placement="bottom" arrow>
         <IconButton
