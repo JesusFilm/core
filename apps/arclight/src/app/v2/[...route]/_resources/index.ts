@@ -103,7 +103,25 @@ async function searchVideoVariantsAlgolia(
     indexName,
     searchParams: {
       query: term,
-      hitsPerPage: 1000
+      attributesToRetrieve: [
+        'mediaComponentId',
+        'componentType',
+        'subType',
+        'contentType',
+        'imageUrls',
+        'lengthInMilliseconds',
+        'containsCount',
+        'isDownloadable',
+        'downloadSizes',
+        'bibleCitations',
+        'primaryLanguageId',
+        'titles',
+        'descriptions',
+        'studyQuestions'
+      ],
+      ruleContexts: ['arclight_resources_page'],
+      filters:
+        'published:true AND NOT restrictViewPlatforms:arclight AND hasAvailableLanguages:true'
     }
   })) as AlgoliaSearchResponse<AlgoliaVideoHit>
 
@@ -128,7 +146,6 @@ async function searchAlgoliaLanguages(
   for (const tag of metadataLanguageTags) {
     facets.push(`names.bcp47:${tag}`)
   }
-
   const response = await client.searchSingleIndex<AlgoliaLanguageHit>({
     indexName,
     searchParams: {
@@ -148,7 +165,8 @@ async function searchAlgoliaLanguages(
         'nameNative',
         'names',
         'speakersCount'
-      ]
+      ],
+      ruleContexts: ['arclight_resources_page']
     }
   })
 
@@ -190,7 +208,8 @@ async function searchAlgoliaCountries(
       facets: metadataLanguageTags.length > 0 ? ['names.bcp47'] : [],
       ...(metadataLanguageTags.length > 0 && {
         facetFilters: facets
-      })
+      }),
+      ruleContexts: ['arclight_resources_page']
     }
   })
 
