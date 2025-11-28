@@ -19,10 +19,10 @@ import { ActivePriorityList } from '../ActiveJourneyList/ActivePriorityList'
 import { AddJourneyButton } from '../ActiveJourneyList/AddJourneyButton'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListEvent, JourneyListProps } from '../JourneyList'
+import type { ContentType, JourneyStatusFilter } from '../JourneyListView'
 import { JourneySort, SortOrder } from '../JourneySort'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../LoadingJourneyList'
-import type { ContentType, JourneyStatusFilter } from '../JourneyListView'
 
 const Dialog = dynamic(
   async () =>
@@ -498,7 +498,12 @@ export function JourneyListContent({
         <Box
           sx={{
             mt: { xs: 3, sm: 2 },
-            px: { xs: 5, sm: 0 }
+            px: { xs: 5, sm: 0 },
+            // Negative margin-right for templates to offset extra spacing from Grid container
+            // This ensures symmetric padding (32px on both sides) when side panel is hidden
+            mr: {
+              sm: contentType === 'templates' ? -4 : undefined
+            }
           }}
         >
           {usePriorityList ? (
@@ -538,7 +543,16 @@ export function JourneyListContent({
                 {sortedJourneys.map((journey) => (
                   <Grid
                     key={journey.id}
-                    size={{ xs: 12, sm: 6, md: 6, lg: 3, xl: 3 }}
+                    size={{
+                      xs: 12,
+                      sm: 6,
+                      md: 6,
+                      // MUI Grid2 uses a 12-column system:
+                      // - 4 columns: 12 / 4 = 3 columns per item (journeys)
+                      // - 5 columns: 12 / 5 = 2.4 columns per item (templates)
+                      lg: contentType === 'templates' ? 2.4 : 3,
+                      xl: contentType === 'templates' ? 2.4 : 3
+                    }}
                   >
                     <JourneyProvider
                       value={{
