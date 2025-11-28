@@ -37,7 +37,7 @@ import {
   UpdatePlausibleJourneyFlowViewed,
   UpdatePlausibleJourneyFlowViewedVariables
 } from '../../../../__generated__/UpdatePlausibleJourneyFlowViewed'
-import logo from '../../../../public/taskbar-icon.svg'
+import logo from '../../../../public/taskbar-icon-45x32.svg'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { NotificationPopover } from '../../NotificationPopover'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
@@ -176,31 +176,24 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         flexShrink: 0
       }}
     >
-      <IconButton
-        component={NextLink}
-        href="/"
-        data-testid="NextStepsLogo"
-        disableRipple
-      >
-        <Image
-          src={logo}
-          alt="Next Steps"
-          height={32}
-          width={32}
-          style={{
-            maxWidth: '100%',
-            height: 'auto'
-          }}
-        />
-      </IconButton>
-      <Tooltip title={t('See all journeys')} placement="bottom" arrow>
+      <Tooltip title={t('Back to home')} placement="bottom" arrow>
         <IconButton
           component={NextLink}
           href="/"
-          data-testid="ToolbarBackButton"
-          disabled={isNavigating}
+          data-testid="NextStepsLogo"
+          disableRipple
+          sx={{ p: '10px', ':active': { filter: 'brightness(0.85)' } }}
         >
-          <FormatListBulletedIcon />
+          <Image
+            src={logo}
+            alt="Next Steps"
+            height={32}
+            width={45}
+            style={{
+              maxWidth: '100%',
+              height: 'auto'
+            }}
+          />
         </IconButton>
       </Tooltip>
       <Stack
