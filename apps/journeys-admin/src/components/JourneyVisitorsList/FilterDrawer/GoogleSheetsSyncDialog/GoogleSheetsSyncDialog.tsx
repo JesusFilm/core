@@ -339,11 +339,12 @@ export function GoogleSheetsSyncDialog({
           if (pickerData?.action === googleAny.picker.Action.PICKED) {
             const doc = pickerData.docs?.[0]
             if (doc != null) {
+              const docName = doc?.name ?? doc?.title ?? doc?.id ?? null
               if (mode === 'sheet') {
                 setFieldValue('existingSpreadsheetId', doc.id)
+                setFieldValue('existingSpreadsheetName', docName ?? undefined)
               } else {
                 setFieldValue('folderId', doc.id)
-                const docName = doc?.name ?? doc?.title ?? doc?.id ?? null
                 setFieldValue('folderName', docName ?? undefined)
               }
             }
@@ -953,7 +954,8 @@ export function GoogleSheetsSyncDialog({
           sheetName: '',
           folderId: undefined as string | undefined,
           folderName: undefined as string | undefined,
-          existingSpreadsheetId: undefined as string | undefined
+          existingSpreadsheetId: undefined as string | undefined,
+          existingSpreadsheetName: undefined as string | undefined
         }}
         validationSchema={validationSchema}
         onSubmit={handleExportToSheets}
@@ -1052,6 +1054,11 @@ export function GoogleSheetsSyncDialog({
                 type="hidden"
                 name="existingSpreadsheetId"
                 value={values.existingSpreadsheetId ?? ''}
+              />
+              <input
+                type="hidden"
+                name="existingSpreadsheetName"
+                value={values.existingSpreadsheetName ?? ''}
               />
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <FormControl
@@ -1271,7 +1278,8 @@ export function GoogleSheetsSyncDialog({
                           }}
                         >
                           {values.existingSpreadsheetId
-                            ? t('Spreadsheet selected')
+                            ? (values.existingSpreadsheetName ??
+                              values.existingSpreadsheetId)
                             : t('Choose Spreadsheet')}
                         </Button>
                       )}
