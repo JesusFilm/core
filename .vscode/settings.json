@@ -85,8 +85,26 @@
     "source.fixAll.eslint": "always"
   },
   "eslint.validate": ["javascript", "typescript"],
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  "eslint.runtime": "node",
+  "eslint.useFlatConfig": true,
   "typescript.preferences.importModuleSpecifier": "project-relative",
   "javascript.preferences.importModuleSpecifier": "project-relative",
+  "typescript.tsserver.maxTsServerMemory": 8192,
+  "typescript.tsserver.watchOptions": {
+    "excludeDirectories": [
+      "**/node_modules",
+      "**/dist",
+      "**/.next",
+      "**/coverage",
+      "**/.cache",
+      "**/.nx",
+      "**/out-tsc",
+      "**/.docusaurus",
+      "**/test-results",
+      "**/playwright-report"
+    ]
+  },
   "prettier.prettierPath": "./node_modules/prettier",
   "remote.localPortHost": "allInterfaces",
   "typescript.tsdk": "node_modules/typescript/lib",
@@ -94,11 +112,51 @@
   "files.watcherExclude": {
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true,
-    "**/node_modules/*/**": true,
-    "**/coverage/*/**": true,
-    "**/.cache/*/**": true
+    "**/node_modules/**": true,
+    "**/coverage/**": true,
+    "**/.cache/**": true,
+    "**/dist/**": true,
+    "**/.next/**": true,
+    "**/.nx/**": true,
+    "**/out-tsc/**": true,
+    "**/.docusaurus/**": true,
+    "**/test-results/**": true,
+    "**/playwright-report/**": true,
+    "**/playwright/.cache/**": true,
+    "**/*.tsbuildinfo": true,
+    "**/.tsbuildinfo": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.next": true,
+    "**/coverage": true,
+    "**/.cache": true,
+    "**/.nx": true,
+    "**/out-tsc": true,
+    "**/.docusaurus": true,
+    "**/test-results": true,
+    "**/playwright-report": true,
+    "**/playwright/.cache": true,
+    "**/tsconfig.tsbuildinfo": true,
+    "**/.tsbuildinfo": true,
+    "**/*.tsbuildinfo": true,
+    "**/*.bundle.js": true,
+    "**/*.chunk.js": true,
+    "**/*.log": true
+  },
+  "files.exclude": {
+    "**/.git": false,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true
   },
   "tailwindCSS.experimental.classRegex": [
     ["className\\s*:\\s*['\"]([^'\"]*)['\"]"]
-  ]
+  ],
+  "git.enabled": true,
+  "git.autoRepositoryDetection": false,
+  "git.scanRepositories": [],
+  "git.decorations.enabled": true,
+  "git.confirmSync": false,
+  "git.ignoreLimitWarning": true
 }
