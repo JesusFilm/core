@@ -14,6 +14,9 @@ export interface GetJourneyPlausibleVisitors_journeyAggregateVisitors_visitors {
 
 export interface GetJourneyPlausibleVisitors_journeyAggregateVisitors {
   __typename: "PlausibleStatsAggregateResponse";
+  /**
+   * The number of unique visitors.
+   */
   visitors: GetJourneyPlausibleVisitors_journeyAggregateVisitors_visitors | null;
 }
 
