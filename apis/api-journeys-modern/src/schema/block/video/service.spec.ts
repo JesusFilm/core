@@ -17,15 +17,8 @@ jest.mock('@apollo/client', () => {
 })
 
 describe('video service', () => {
-  const originalEnv = process.env
-
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env = { ...originalEnv, GATEWAY_URL: 'http://localhost/graphql' }
-  })
-
-  afterAll(() => {
-    process.env = originalEnv
   })
 
   describe('schemas', () => {

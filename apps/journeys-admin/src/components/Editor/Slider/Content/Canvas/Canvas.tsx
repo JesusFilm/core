@@ -25,6 +25,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 import { Hotkeys } from '../../../Hotkeys'
 
 import { CanvasFooter } from './CanvasFooter'
+import { CardSlugEdit } from './CardSlugEdit'
 import { CardWrapper } from './CardWrapper'
 import { DragDropWrapper } from './DragDropWrapper'
 import { DragItemWrapper } from './DragItemWrapper'
@@ -67,6 +68,9 @@ export function Canvas(): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
+
+  const showSlugEdit =
+    journey?.website === true && activeSlide === ActiveSlide.Content
 
   const initialScale =
     typeof window !== 'undefined' && window.innerWidth <= 600 ? 0 : 1
@@ -188,6 +192,7 @@ export function Canvas(): ReactElement {
             justifyContent: 'center'
           }}
         >
+          <CardSlugEdit visible={showSlugEdit} />
           <Box
             data-testId="CanvasContainer"
             sx={{
