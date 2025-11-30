@@ -112,7 +112,6 @@ export function JourneyList({
           setSortOrder={setSortOrder}
           sortOrder={sortOrder}
         />
-
       </Box>
       {activeTab === 'active' && <AddJourneyFab />}
     </>
