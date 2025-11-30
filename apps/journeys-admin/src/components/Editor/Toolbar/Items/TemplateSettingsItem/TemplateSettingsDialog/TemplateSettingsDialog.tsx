@@ -71,6 +71,7 @@ export function TemplateSettingsDialog({
       JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE
     )
   const { enqueueSnackbar } = useSnackbar()
+  const isGlobalTemplate = journey?.team?.id === 'jfp-team'
 
   const validationSchema = object({
     strategySlug: string()
@@ -203,25 +204,26 @@ export function TemplateSettingsDialog({
                 sx={{ borderBottom: 1, borderColor: 'divider' }}
               >
                 <Tab label={t('Metadata')} {...tabA11yProps('metadata', 0)} />
-                <Tab
-                  label={t('Categories')}
-                  {...tabA11yProps('categories', 1)}
-                />
-                <Tab label={t('About')} {...tabA11yProps('about', 2)} />
+                {isGlobalTemplate && (
+                  <Tab label={t('Categories')} {...tabA11yProps('categories', 1)} />
+                )}
+                <Tab label={t('About')} {...tabA11yProps('about', isGlobalTemplate ? 2 : 1)} />
               </Tabs>
               <TabPanel name="metadata" value={tab} index={0}>
                 <Stack sx={{ pt: 6 }} gap={5}>
-                  <MetadataTabPanel />
+                  <MetadataTabPanel showFeaturedSettings={isGlobalTemplate} />
                 </Stack>
               </TabPanel>
-              <TabPanel name="categories" value={tab} index={1}>
+              {isGlobalTemplate && (
+                <TabPanel name="categories" value={tab} index={1}>
+                  <Stack sx={{ pt: 6 }} gap={5}>
+                    <CategoriesTabPanel />
+                  </Stack>
+                </TabPanel>
+              )}
+              <TabPanel name="about" value={tab} index={isGlobalTemplate ? 2 : 1}>
                 <Stack sx={{ pt: 6 }} gap={5}>
-                  <CategoriesTabPanel />
-                </Stack>
-              </TabPanel>
-              <TabPanel name="about" value={tab} index={2}>
-                <Stack sx={{ pt: 6 }} gap={5}>
-                  <AboutTabPanel />
+                  <AboutTabPanel showStrategySection={isGlobalTemplate} />
                 </Stack>
               </TabPanel>
             </>

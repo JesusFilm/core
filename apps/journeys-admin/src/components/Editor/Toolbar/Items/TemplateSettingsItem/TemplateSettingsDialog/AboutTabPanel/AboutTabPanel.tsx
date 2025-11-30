@@ -12,8 +12,13 @@ import { ImageEdit } from '../../../../../Slider/Settings/Drawer/ImageEdit/Image
 import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
 import { CustomizeTemplate } from './CustomizeTemplate'
+interface AboutTabPanelProps {
+  showStrategySection?: boolean
+}
 
-export function AboutTabPanel(): ReactElement {
+export function AboutTabPanel({ 
+  showStrategySection = false 
+}: AboutTabPanelProps): ReactElement {
   const { values, handleChange, errors } = useTemplateSettingsForm()
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -45,29 +50,33 @@ export function AboutTabPanel(): ReactElement {
       </Stack>
       <Divider />
       <CustomizeTemplate />
-      <TextField
-        data-testid="StrategySlugEdit"
-        id="strategySlug"
-        name="strategySlug"
-        value={values.strategySlug}
-        error={Boolean(errors?.strategySlug)}
-        variant="filled"
-        helperText={
-          errors?.strategySlug != null
-            ? errors?.strategySlug
-            : t('Embed web link from Google Slides or Canva')
-        }
-        onChange={handleChange}
-        label={t('Paste URL here')}
-        InputProps={{
-          endAdornment: <LinkAngled sx={{ color: 'secondary.light' }} />
-        }}
-      />
-      <StrategySection
-        strategySlug={values.strategySlug}
-        variant="placeholder"
-        isError={Boolean(errors?.strategySlug)}
-      />
+      {showStrategySection && (
+        <>
+          <TextField
+            data-testid="StrategySlugEdit"
+            id="strategySlug"
+            name="strategySlug"
+            value={values.strategySlug}
+            error={Boolean(errors?.strategySlug)}
+            variant="filled"
+            helperText={
+              errors?.strategySlug != null
+                ? errors?.strategySlug
+                : t('Embed web link from Google Slides or Canva')
+            }
+            onChange={handleChange}
+            label={t('Paste URL here')}
+            InputProps={{
+              endAdornment: <LinkAngled sx={{ color: 'secondary.light' }} />
+            }}
+          />
+          <StrategySection
+            strategySlug={values.strategySlug}
+            variant="placeholder"
+            isError={Boolean(errors?.strategySlug)}
+          />
+        </>
+      )}
     </>
   )
 }

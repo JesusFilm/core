@@ -5,6 +5,9 @@ import { FormikContextType, FormikProvider } from 'formik'
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
 import { AboutTabPanel } from './AboutTabPanel'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import { publishedGlobalTemplate, publishedLocalTemplate } from '../../../../../../JourneyList/journeyListData'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -16,18 +19,24 @@ describe('AboutTabPanel', () => {
 
   it('should call onChange on form change', async () => {
     const handleChange = jest.fn()
+    const publishedGlobalTemplateJourney = publishedGlobalTemplate as unknown as Journey
+    const showStrategySection = publishedGlobalTemplateJourney.team?.id === 'jfp-team'
     const { getByLabelText } = render(
       <MockedProvider>
-        <FormikProvider
-          value={
-            {
-              values: { creatorDescription: '', strategySlug: '' },
-              handleChange
-            } as unknown as FormikContextType<TemplateSettingsFormValues>
-          }
+        <JourneyProvider
+          value={{ journey: publishedGlobalTemplateJourney }}
         >
-          <AboutTabPanel />
-        </FormikProvider>
+          <FormikProvider
+            value={
+              {
+                values: { creatorDescription: '', strategySlug: '' },
+                handleChange
+              } as unknown as FormikContextType<TemplateSettingsFormValues>
+            }
+          >
+            <AboutTabPanel showStrategySection={showStrategySection} />
+          </FormikProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -38,18 +47,24 @@ describe('AboutTabPanel', () => {
   })
 
   it('should validate form on error', async () => {
+    const publishedGlobalTemplateJourney = publishedGlobalTemplate as unknown as Journey
+    const showStrategySection = publishedGlobalTemplateJourney.team?.id === 'jfp-team'
     const { getByText } = render(
       <MockedProvider>
-        <FormikProvider
-          value={
-            {
-              values: { creatorDescription: '', strategySlug: '' },
-              errors: { strategySlug: 'Invalid embed link' }
-            } as unknown as FormikContextType<TemplateSettingsFormValues>
-          }
+        <JourneyProvider
+          value={{ journey: publishedGlobalTemplateJourney }}
         >
-          <AboutTabPanel />
-        </FormikProvider>
+          <FormikProvider
+            value={
+              {
+                values: { creatorDescription: '', strategySlug: '' },
+                errors: { strategySlug: 'Invalid embed link' }
+              } as unknown as FormikContextType<TemplateSettingsFormValues>
+            }
+          >
+            <AboutTabPanel showStrategySection={showStrategySection} />
+          </FormikProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -58,21 +73,51 @@ describe('AboutTabPanel', () => {
     )
   })
 
+  it('should not show strategy section for local template', () => {
+    const publishedLocalTemplateJourney = publishedLocalTemplate as unknown as Journey
+    const showStrategySection = publishedLocalTemplateJourney.team?.id === 'jfp-team'
+    const { queryByText, queryByTestId } = render(
+      <MockedProvider>
+        <JourneyProvider
+          value={{ journey: publishedLocalTemplateJourney }}
+        >
+          <FormikProvider
+            value={
+              {
+                values: { creatorDescription: '', strategySlug: '' }
+              } as unknown as FormikContextType<TemplateSettingsFormValues>
+            }
+          >
+            <AboutTabPanel showStrategySection={showStrategySection} />
+          </FormikProvider>
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(queryByText('Paste URL here')).not.toBeInTheDocument()
+    expect(queryByTestId('strategy-iframe')).not.toBeInTheDocument()
+  })
+
   it('should render strategy section preview with old canva links', async () => {
+    const publishedGlobalTemplateJourney = publishedGlobalTemplate as unknown as Journey
+    const showStrategySection = publishedGlobalTemplateJourney.team?.id === 'jfp-team'
     const { queryByText, getByTestId } = render(
       <MockedProvider>
-        <FormikProvider
-          value={
-            {
-              values: {
-                creatorDescription: '',
-                strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view'
-              }
-            } as unknown as FormikContextType<TemplateSettingsFormValues>
-          }
+        <JourneyProvider
+          value={{ journey: publishedGlobalTemplateJourney }}
         >
-          <AboutTabPanel />
-        </FormikProvider>
+          <FormikProvider
+            value={
+              {
+                values: {
+                  creatorDescription: '',
+                  strategySlug: 'https://www.canva.com/design/DAFvDBw1z1A/view'
+                }
+              } as unknown as FormikContextType<TemplateSettingsFormValues>
+            }
+          >
+            <AboutTabPanel showStrategySection={showStrategySection} />
+          </FormikProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -81,21 +126,27 @@ describe('AboutTabPanel', () => {
   })
 
   it('should render strategy section preview with new canva links', async () => {
+    const publishedGlobalTemplateJourney = publishedGlobalTemplate as unknown as Journey
+    const showStrategySection = publishedGlobalTemplateJourney.team?.id === 'jfp-team'
     const { queryByText, getByTestId } = render(
       <MockedProvider>
-        <FormikProvider
-          value={
-            {
-              values: {
-                creatorDescription: '',
-                strategySlug:
-                  'https://www.canva.com/design/DAF9QMJYu1Y/XmioFIQOATVa-lXCEYucmg/view'
-              }
-            } as unknown as FormikContextType<TemplateSettingsFormValues>
-          }
+        <JourneyProvider
+          value={{ journey: publishedGlobalTemplateJourney }}
         >
-          <AboutTabPanel />
-        </FormikProvider>
+          <FormikProvider
+            value={
+              {
+                values: {
+                  creatorDescription: '',
+                  strategySlug:
+                    'https://www.canva.com/design/DAF9QMJYu1Y/XmioFIQOATVa-lXCEYucmg/view'
+                }
+              } as unknown as FormikContextType<TemplateSettingsFormValues>
+            }
+          >
+            <AboutTabPanel showStrategySection={showStrategySection} />
+          </FormikProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
@@ -104,21 +155,27 @@ describe('AboutTabPanel', () => {
   })
 
   it('should render Customize Template text area', () => {
+    const publishedGlobalTemplateJourney = publishedGlobalTemplate as unknown as Journey
+    const showStrategySection = publishedGlobalTemplateJourney.team?.id === 'jfp-team'
     const { getByTestId } = render(
       <MockedProvider>
-        <FormikProvider
-          value={
-            {
-              values: {
-                creatorDescription: '',
-                strategySlug:
-                  'https://www.canva.com/design/DAF9QMJYu1Y/XmioFIQOATVa-lXCEYucmg/view'
-              }
-            } as unknown as FormikContextType<TemplateSettingsFormValues>
-          }
+        <JourneyProvider
+          value={{ journey: publishedGlobalTemplateJourney }}
         >
-          <AboutTabPanel />
-        </FormikProvider>
+          <FormikProvider
+            value={
+              {
+                values: {
+                  creatorDescription: '',
+                  strategySlug:
+                    'https://www.canva.com/design/DAF9QMJYu1Y/XmioFIQOATVa-lXCEYucmg/view'
+                }
+              } as unknown as FormikContextType<TemplateSettingsFormValues>
+            }
+          >
+            <AboutTabPanel showStrategySection={showStrategySection} />
+          </FormikProvider>
+        </JourneyProvider>
       </MockedProvider>
     )
 
