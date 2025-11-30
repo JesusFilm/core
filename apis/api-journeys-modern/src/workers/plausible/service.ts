@@ -82,7 +82,7 @@ export const SITE_CREATE = gql(`
   }
 `)
 
-const goals: Array<keyof JourneyPlausibleEvents> = [
+export const goals: Array<keyof JourneyPlausibleEvents> = [
   'footerThumbsUpButtonClick',
   'footerThumbsDownButtonClick',
   'shareButtonClick',

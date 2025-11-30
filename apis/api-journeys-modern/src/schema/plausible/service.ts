@@ -139,7 +139,8 @@ export async function getJourneyStatsAggregate(
 
 export async function getJourneyStatsBreakdown(
   journeyId: string,
-  params: PlausibleBreakdownParams
+  params: PlausibleBreakdownParams,
+  siteId?: string
 ): Promise<PlausibleStatsResponse[]> {
   const { baseUrl, headers } = getPlausibleConfig()
   const endpoint = `${baseUrl}/api/v1/stats/breakdown`
@@ -150,7 +151,7 @@ export async function getJourneyStatsBreakdown(
     }>(endpoint, {
       headers,
       params: {
-        site_id: buildJourneySiteId(journeyId),
+        site_id: siteId ?? buildJourneySiteId(journeyId),
         ...params
       }
     })
