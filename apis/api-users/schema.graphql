@@ -3,10 +3,12 @@ extend schema
 
 input CreateVerificationRequestInput {
   redirect: String
+  mobileApp: Boolean
 }
 
 input MeInput {
   redirect: String
+  mobileApp: Boolean
 }
 
 type Mutation {

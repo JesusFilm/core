@@ -9,7 +9,8 @@ export function generateSixDigitNumber(): string {
 export async function verifyUser(
   userId: string,
   email: string,
-  redirect?: string
+  redirect?: string,
+  mobileApp?: boolean
 ): Promise<void> {
   const isExample = email.endsWith('@example.com')
   const token = isExample
@@ -25,7 +26,8 @@ export async function verifyUser(
         userId,
         email,
         token,
-        redirect
+        redirect,
+        mobileApp
       },
       {
         jobId: userId,
@@ -44,7 +46,8 @@ export async function verifyUser(
         userId,
         email,
         token,
-        redirect
+        redirect,
+        mobileApp
       },
       {
         jobId: userId,

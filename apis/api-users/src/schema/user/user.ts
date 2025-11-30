@@ -60,7 +60,8 @@ builder.queryFields((t) => ({
       return await findOrFetchUser(
         query,
         ctx.currentUser.id,
-        input?.redirect ?? undefined
+        input?.redirect ?? undefined,
+        input?.mobileApp ?? undefined
       )
     }
   }),
@@ -129,7 +130,8 @@ builder.mutationFields((t) => ({
       await verifyUser(
         ctx.currentUser.id,
         ctx.currentUser.email,
-        input?.redirect ?? undefined
+        input?.redirect ?? undefined,
+        input?.mobileApp ?? undefined
       )
       return true
     }

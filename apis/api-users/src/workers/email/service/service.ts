@@ -4,6 +4,7 @@ import { Logger } from 'pino'
 
 import { prisma } from '@core/prisma/users/client'
 import { sendEmail } from '@core/yoga/email'
+import { EmailLogo } from '@core/yoga/email/types'
 
 import { EmailVerifyEmail } from '../../../emails/templates/EmailVerify/EmailVerify'
 
@@ -12,6 +13,7 @@ export interface VerifyUserJob {
   email: string
   token: string
   redirect: string | undefined
+  mobileApp?: boolean
 }
 
 export async function service(
@@ -43,11 +45,15 @@ export async function service(
     lastName: user.lastName ?? '',
     imageUrl: user.imageUrl ?? undefined
   }
+  const logo =
+    job.data.mobileApp === true ? EmailLogo.Mobile : EmailLogo.NextSteps
+
   const html = await render(
     EmailVerifyEmail({
       token: job.data.token,
       recipient,
-      inviteLink: url
+      inviteLink: url,
+      logo
     })
   )
 
@@ -55,19 +61,24 @@ export async function service(
     EmailVerifyEmail({
       token: job.data.token,
       recipient,
-      inviteLink: url
+      inviteLink: url,
+      logo
     }),
     {
       plainText: true
     }
   )
 
+  const from =
+    job.data?.mobileApp === true ? 'support@jesusfilmapp.com' : undefined
+
   await sendEmail(
     {
       to: job.data.email,
       subject: 'Verify your email address on Next Steps',
       text,
-      html
+      html,
+      from
     },
     logger
   )

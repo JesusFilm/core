@@ -21,11 +21,13 @@ import {
   Header,
   UnsubscribeLink
 } from '@core/yoga/email/components'
+import { EmailLogo } from '@core/yoga/email/types'
 
 interface VerifyEmailProps {
   inviteLink: string
   token: string
   story?: boolean
+  logo?: EmailLogo
   recipient: {
     firstName: string
     lastName: string
@@ -42,7 +44,8 @@ export const EmailVerifyEmail = ({
   inviteLink,
   recipient,
   token,
-  story = false
+  story = false,
+  logo
 }: VerifyEmailProps): ReactElement => {
   const previewText = `Verify your email address on Next Steps`
   const tailwindWrapper = ({ children }: WrapperProps): ReactElement => {
@@ -55,7 +58,7 @@ export const EmailVerifyEmail = ({
   }
   const emailBody: ReactNode = (
     <>
-      <Header />
+      <Header logo={logo} />
       <EmailContainer>
         <BodyWrapper>
           <ActionCard recipient={recipient}>

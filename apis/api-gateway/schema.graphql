@@ -5231,9 +5231,11 @@ input VideosFilter @join__type(graph: API_MEDIA)  {
 
 input CreateVerificationRequestInput @join__type(graph: API_USERS)  {
   redirect: String
+  mobileApp: Boolean
 }
 
 input MeInput @join__type(graph: API_USERS)  {
   redirect: String
+  mobileApp: Boolean
 }
     

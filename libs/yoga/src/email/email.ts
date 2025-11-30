@@ -6,6 +6,7 @@ export interface SendEmailParams {
   subject: string
   html: string
   text: string
+  from?: string | undefined
 }
 
 const defaults = {
@@ -13,7 +14,7 @@ const defaults = {
 }
 
 export async function sendEmail(
-  { to, subject, text, html }: SendEmailParams,
+  { to, subject, text, html, from }: SendEmailParams,
   logger?: Logger
 ): Promise<void> {
   if (process.env.SMTP_URL == null) throw new Error('SMTP_URL is not defined')
@@ -30,6 +31,8 @@ export async function sendEmail(
     disallowedDomains.includes(domain)
   )
     throw new Error('Example email address')
+
+  if (from != null) defaults.from = from
 
   const transporter = nodemailer.createTransport(process.env.SMTP_URL, defaults)
 

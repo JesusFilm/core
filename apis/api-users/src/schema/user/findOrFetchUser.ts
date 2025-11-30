@@ -6,7 +6,8 @@ import { verifyUser } from './verifyUser'
 export async function findOrFetchUser(
   query: { select?: Prisma.UserSelect; include?: undefined },
   userId: string,
-  redirect: string | undefined = undefined
+  redirect: string | undefined = undefined,
+  mobileApp?: boolean
 ): Promise<User | null> {
   const existingUser = await prisma.user.findUnique({
     ...query,
@@ -93,6 +94,6 @@ export async function findOrFetchUser(
   }
   // after user create so it is only sent once
   if (email != null && userCreated && !emailVerified)
-    await verifyUser(userId, email, redirect)
+    await verifyUser(userId, email, redirect, mobileApp)
   return user
 }
