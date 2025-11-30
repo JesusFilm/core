@@ -29,13 +29,27 @@ interface Props {
   /**
    * compound of stepId, event name, blockId, targetBlockId.
    * Needed to run plausible /api/v1/stats/breakdown api call with
-   * property=event:props:key param */
+   * property=event:props:key param
+   * used for breakdown of journey map*/
   key: string
   /**
    * compound of stepId, event name, blockId.
    * Needed to run plausible /api/v1/stats/breakdown api call with
-   * property=event:props:simpleKey param */
+   * property=event:props:simpleKey param
+   * used for aggregate stats for journey*/
   simpleKey: string
+  /**
+   * compound of event name, journeyId.
+   * Needed to run plausible /api/v1/stats/breakdown api call with
+   * property=event:templateKey param
+   * used for journey breakdown stats by template*/
+  templateKey?: string
+  /**
+   * compound of event name.
+   * Needed to run plausible /api/v1/stats/breakdown api call with
+   * property=event:simpleTemplateKey param
+   * used for aggregate stats of template*/
+  simpleTemplateKey?: string
 }
 
 interface Events {
@@ -65,6 +79,18 @@ export interface JourneyPlausibleEvents extends Events {
   videoProgress75: VideoProgressEventCreateInput & Props
   videoComplete: VideoCompleteEventCreateInput & Props
   videoTrigger: Props
+  // New events
+  prayerRequestCapture: Props
+  christDecisionCapture: Props
+  gospelStartCapture: Props
+  gospelCompleteCapture: Props
+  shareCapture: Props
+  rsvpCapture: Props
+  inviteFriendCapture: Props
+  custom2Capture: Props
+  custom3Capture: Props
+  custom4Capture: Props
+  custom5Capture: Props
 }
 
 interface KeyifyProps {
@@ -72,6 +98,7 @@ interface KeyifyProps {
   event: keyof JourneyPlausibleEvents
   blockId: string
   target?: string | Action | null
+  journeyId?: string
 }
 
 export function generateActionTargetKey(action: Action): string {
@@ -95,7 +122,8 @@ export function keyify({
   stepId,
   event,
   blockId,
-  target
+  target,
+  journeyId
 }: KeyifyProps): string {
   let targetId = ''
 
@@ -109,7 +137,8 @@ export function keyify({
     stepId,
     event,
     blockId,
-    target: targetId
+    target: targetId,
+    journeyId
   })
 }
 
@@ -118,6 +147,7 @@ export function reverseKeyify(key: string): {
   event: keyof JourneyPlausibleEvents
   blockId: string
   target?: string
+  journeyId?: string
 } {
   return JSON.parse(key)
 }
@@ -133,4 +163,26 @@ export function getTargetEventKey(action?: Action | null): string {
 
   const target = generateActionTargetKey(action)
   return `${action.parentBlockId}->${target}`
+}
+
+interface TemplateKeyifyProps {
+  event: keyof JourneyPlausibleEvents
+  journeyId?: string
+}
+
+export function templateKeyify({
+  event,
+  journeyId
+}: TemplateKeyifyProps): string {
+  return JSON.stringify({
+    event,
+    journeyId
+  })
+}
+
+export function reverseTemplateKeyify(key: string): {
+  event: keyof JourneyPlausibleEvents
+  journeyId?: string
+} {
+  return JSON.parse(key)
 }

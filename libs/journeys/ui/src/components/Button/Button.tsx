@@ -23,8 +23,11 @@ import { useBlocks } from '../../libs/block'
 import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
-import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
-import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
+import {
+  JourneyPlausibleEvents,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers'
 import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
@@ -188,12 +191,21 @@ export function Button({
               stepId: input.stepId ?? '',
               event: 'buttonClick',
               blockId: input.blockId,
-              target: action
+              target: action,
+              journeyId: journey?.id
             }),
             simpleKey: keyify({
               stepId: input.stepId ?? '',
               event: 'buttonClick',
-              blockId: input.blockId
+              blockId: input.blockId,
+              journeyId: journey?.id
+            }),
+            templateKey: templateKeyify({
+              event: 'buttonClick',
+              journeyId: journey?.id
+            }),
+            simpleTemplateKey: templateKeyify({
+              event: 'buttonClick'
             })
           }
         })
@@ -225,12 +237,21 @@ export function Button({
               stepId: input.stepId ?? '',
               event: 'chatButtonClick',
               blockId: input.blockId,
-              target: action
+              target: action,
+              journeyId: journey?.id
             }),
             simpleKey: keyify({
               stepId: input.stepId ?? '',
               event: 'chatButtonClick',
-              blockId: input.blockId
+              blockId: input.blockId,
+              journeyId: journey?.id
+            }),
+            templateKey: templateKeyify({
+              event: 'chatButtonClick',
+              journeyId: journey?.id
+            }),
+            simpleTemplateKey: templateKeyify({
+              event: 'chatButtonClick'
             })
           }
         })

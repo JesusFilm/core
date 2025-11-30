@@ -10,7 +10,11 @@ import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
-import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
+import {
+  JourneyPlausibleEvents,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { RadioOption } from '../RadioOption'
@@ -102,12 +106,21 @@ export function RadioQuestion({
               stepId: input.stepId ?? '',
               event: 'radioQuestionSubmit',
               blockId: radioOptionBlock.id,
-              target: radioOptionBlock.action
+              target: radioOptionBlock.action,
+              journeyId: journey?.id
             }),
             simpleKey: keyify({
               stepId: input.stepId ?? '',
               event: 'radioQuestionSubmit',
-              blockId: radioOptionBlock.id
+              blockId: radioOptionBlock.id,
+              journeyId: journey?.id
+            }),
+            templateKey: templateKeyify({
+              event: 'radioQuestionSubmit',
+              journeyId: journey?.id
+            }),
+            simpleTemplateKey: templateKeyify({
+              event: 'radioQuestionSubmit'
             })
           }
         })

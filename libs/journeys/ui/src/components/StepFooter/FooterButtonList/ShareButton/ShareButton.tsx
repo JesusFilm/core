@@ -8,7 +8,8 @@ import { useBlocks } from '../../../../libs/block'
 import { useJourney } from '../../../../libs/JourneyProvider'
 import {
   JourneyPlausibleEvents,
-  keyify
+  keyify,
+  templateKeyify
 } from '../../../../libs/plausibleHelpers'
 import { StyledFooterButton } from '../StyledFooterButton'
 
@@ -38,13 +39,21 @@ export function ShareButton(): ReactElement {
       const key = keyify({
         stepId: input.blockId ?? '',
         event: 'shareButtonClick',
-        blockId: input.blockId
+        blockId: input.blockId,
+        journeyId: journey?.id
       })
       plausible('shareButtonClick', {
         props: {
           ...input,
           key,
-          simpleKey: key
+          simpleKey: key,
+          templateKey: templateKeyify({
+            event: 'shareButtonClick',
+            journeyId: journey?.id
+          }),
+          simpleTemplateKey: templateKeyify({
+            event: 'shareButtonClick'
+          })
         }
       })
     }

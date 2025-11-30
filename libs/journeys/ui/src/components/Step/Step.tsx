@@ -11,7 +11,11 @@ import type { TreeBlock } from '../../libs/block'
 import { isActiveBlockOrDescendant, useBlocks } from '../../libs/block'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider/JourneyProvider'
-import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
+import {
+  JourneyPlausibleEvents,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 
@@ -74,14 +78,22 @@ export function Step({
         const key = keyify({
           stepId: input.blockId,
           event: 'pageview',
-          blockId: input.blockId
+          blockId: input.blockId,
+          journeyId: journey?.id
         })
         plausible('pageview', {
           u: `${window.location.origin}/${journey.id}/${blockId}${search}`,
           props: {
             ...input,
             key,
-            simpleKey: key
+            simpleKey: key,
+            templateKey: templateKeyify({
+              event: 'pageview',
+              journeyId: journey?.id
+            }),
+            simpleTemplateKey: templateKeyify({
+              event: 'pageview'
+            })
           }
         })
       }

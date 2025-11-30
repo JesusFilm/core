@@ -87,7 +87,20 @@ export const goals: Array<keyof JourneyPlausibleEvents> = [
   'videoProgress50',
   'videoProgress75',
   'videoComplete',
-  'videoTrigger'
+  'videoTrigger',
+  // Capture events are triggered by journey events above
+  'prayerRequestCapture',
+  'christDecisionCapture',
+  'gospelStartCapture',
+  'gospelCompleteCapture',
+  'shareCapture',
+  'rsvpCapture',
+  'inviteFriendCapture',
+  'custom1Capture',
+  'custom2Capture',
+  'custom3Capture',
+  'custom4Capture',
+  'custom5Capture'
 ]
 
 interface PlausibleAPIStatsBreakdownResponse extends PlausibleAPIStatsResponse {
