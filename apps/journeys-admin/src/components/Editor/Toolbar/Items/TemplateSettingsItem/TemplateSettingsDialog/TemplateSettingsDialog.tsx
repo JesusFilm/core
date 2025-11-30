@@ -211,7 +211,7 @@ export function TemplateSettingsDialog({
               </Tabs>
               <TabPanel name="metadata" value={tab} index={0}>
                 <Stack sx={{ pt: 6 }} gap={5}>
-                  <MetadataTabPanel />
+                  <MetadataTabPanel showFeaturedSettings={isGlobalTemplate} />
                 </Stack>
               </TabPanel>
               {isGlobalTemplate && (
@@ -223,7 +223,7 @@ export function TemplateSettingsDialog({
               )}
               <TabPanel name="about" value={tab} index={isGlobalTemplate ? 2 : 1}>
                 <Stack sx={{ pt: 6 }} gap={5}>
-                  <AboutTabPanel />
+                  <AboutTabPanel showStrategySection={isGlobalTemplate} />
                 </Stack>
               </TabPanel>
             </>

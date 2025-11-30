@@ -19,10 +19,12 @@ describe('MetadataTabPanel', () => {
 
   it('shows published date', () => {
     const handleChange = jest.fn()
+    const publishedGlobalTemplateJourney = publishedGlobalTemplate as unknown as Journey
+    const showFeaturedSettings = publishedGlobalTemplateJourney.team?.id === 'jfp-team'
     const { getByRole } = render(
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: publishedGlobalTemplate as unknown as Journey }}
+          value={{ journey: publishedGlobalTemplateJourney }}
         >
           <FormikProvider
             value={
@@ -32,7 +34,7 @@ describe('MetadataTabPanel', () => {
               } as unknown as FormikContextType<TemplateSettingsFormValues>
             }
           >
-            <MetadataTabPanel />
+            <MetadataTabPanel showFeaturedSettings={showFeaturedSettings} />
           </FormikProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -67,11 +69,14 @@ describe('MetadataTabPanel', () => {
 
   it('should handle form change', () => {
     const handleChange = jest.fn()
+    const publishedGlobalTemplateJourney =
+      publishedGlobalTemplate as unknown as Journey
+    const showFeaturedSettings =
+      publishedGlobalTemplateJourney.team?.id === 'jfp-team'
+
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{ journey: publishedGlobalTemplate as unknown as Journey }}
-        >
+        <JourneyProvider value={{ journey: publishedGlobalTemplateJourney }}>
           <FormikProvider
             value={
               {
@@ -80,7 +85,7 @@ describe('MetadataTabPanel', () => {
               } as unknown as FormikContextType<TemplateSettingsFormValues>
             }
           >
-            <MetadataTabPanel />
+            <MetadataTabPanel showFeaturedSettings={showFeaturedSettings} />
           </FormikProvider>
         </JourneyProvider>
       </MockedProvider>
@@ -108,10 +113,14 @@ describe('MetadataTabPanel', () => {
 
   it('should not show featured checkbox for local template', () => {
     const handleChange = jest.fn()
+    const publishedLocalTemplateJourney =
+      publishedLocalTemplate as unknown as Journey
+    const showFeaturedSettings =
+      publishedLocalTemplateJourney.team?.id === 'jfp-team'
     const { queryByRole } = render(
       <MockedProvider>
         <JourneyProvider
-          value={{ journey: publishedLocalTemplate as unknown as Journey }}
+          value={{ journey: publishedLocalTemplateJourney }}
         >
           <FormikProvider
             value={
@@ -121,12 +130,14 @@ describe('MetadataTabPanel', () => {
               } as unknown as FormikContextType<TemplateSettingsFormValues>
             }
           >
-            <MetadataTabPanel />
+            <MetadataTabPanel showFeaturedSettings={showFeaturedSettings} />
           </FormikProvider>
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(queryByRole('checkbox', { name: 'Featured' })).not.toBeInTheDocument()
+    expect(
+      queryByRole('checkbox', { name: 'Featured' })
+    ).not.toBeInTheDocument()
   })
 
   it('should handle language selection change', async () => {

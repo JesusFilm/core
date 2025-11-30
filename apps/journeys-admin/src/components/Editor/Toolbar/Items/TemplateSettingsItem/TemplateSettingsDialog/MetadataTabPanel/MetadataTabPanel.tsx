@@ -16,7 +16,13 @@ import {
 
 import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
-export function MetadataTabPanel(): ReactElement {
+interface MetadataTabPanelProps {
+  showFeaturedSettings?: boolean
+}
+
+export function MetadataTabPanel({
+  showFeaturedSettings = false
+}: MetadataTabPanelProps): ReactElement {
   const { values, handleChange, setFieldValue } = useTemplateSettingsForm()
   const { data, loading } = useLanguagesQuery({ languageId: '529' })
   const { journey } = useJourney()
@@ -65,7 +71,7 @@ export function MetadataTabPanel(): ReactElement {
         loading={loading}
         helperText={t('RTL languages will change the journey flow')}
       />
-      {journey?.team?.id === 'jfp-team' && (
+      {showFeaturedSettings && (
         <Stack
           direction="row"
           justifyContent="space-between"

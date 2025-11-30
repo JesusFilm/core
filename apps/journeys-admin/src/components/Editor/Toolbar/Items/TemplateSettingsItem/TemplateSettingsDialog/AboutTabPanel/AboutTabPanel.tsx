@@ -5,7 +5,6 @@ import TextField from '@mui/material/TextField'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { StrategySection } from '@core/journeys/ui/StrategySection'
 import LinkAngled from '@core/shared/ui/icons/LinkAngled'
 
@@ -13,11 +12,15 @@ import { ImageEdit } from '../../../../../Slider/Settings/Drawer/ImageEdit/Image
 import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
 import { CustomizeTemplate } from './CustomizeTemplate'
+interface AboutTabPanelProps {
+  showStrategySection?: boolean
+}
 
-export function AboutTabPanel(): ReactElement {
+export function AboutTabPanel({ 
+  showStrategySection = false 
+}: AboutTabPanelProps): ReactElement {
   const { values, handleChange, errors } = useTemplateSettingsForm()
   const { t } = useTranslation('apps-journeys-admin')
-  const { journey } = useJourney()
 
   return (
     <>
@@ -47,7 +50,7 @@ export function AboutTabPanel(): ReactElement {
       </Stack>
       <Divider />
       <CustomizeTemplate />
-      {journey?.team?.id === 'jfp-team' && (
+      {showStrategySection && (
         <>
           <TextField
             data-testid="StrategySlugEdit"
