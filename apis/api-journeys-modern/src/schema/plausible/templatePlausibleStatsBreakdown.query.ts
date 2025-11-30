@@ -10,7 +10,6 @@ import { IdType } from '../journey/enums'
 
 import { PlausibleStatsBreakdownFilter } from './inputs'
 import { loadJourneyOrThrow, normalizeIdType } from './journeyAccess'
-import { getMetrics } from './metrics'
 import {
   PlausibleStatsResponse,
   TemplatePlausibleStatsBreakdownResponse,
@@ -71,14 +70,13 @@ builder.queryField('templatePlausibleStatsBreakdown', (t) =>
         })
       }
 
-      const metrics = getMetrics(info)
       const { property: _, ...whereWithoutProperty } = where
       const templateSiteId = `api-journeys-template-${templateJourney.id}`
       const breakdownResults = await getJourneyStatsBreakdown(
         templateJourney.id,
         {
-          property: 'event:goal',
-          metrics,
+          property: 'event:props:templateKey',
+          metrics: 'visitors',
           ...whereWithoutProperty
         },
         templateSiteId
