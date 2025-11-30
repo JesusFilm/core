@@ -401,13 +401,22 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   buttonClickEventCreate(input: ButtonClickEventCreateInput!) : ButtonClickEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   chatOpenEventCreate(input: ChatOpenEventCreateInput!) : ChatOpenEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!) : MultiselectSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
+  journeySimpleUpdate(id: ID!, journey: Json!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
+  googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!) : GoogleSheetsSync! @join__field(graph: API_JOURNEYS_MODERN) 
+  googleSheetsSyncDelete(id: ID!) : GoogleSheetsSync! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGoogleCreate(input: IntegrationGoogleCreateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
   integrationDelete(id: ID!) : Integration! @join__field(graph: API_JOURNEYS_MODERN) 
-  journeySimpleUpdate(id: ID!, journey: Json!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyVisitorExportToGoogleSheet(
+    journeyId: ID!
+    filter: JourneyEventsFilter
+    select: JourneyVisitorExportSelect
+    destination: JourneyVisitorGoogleSheetDestinationInput!
+    integrationId: ID!
+  ): JourneyVisitorGoogleSheetExportResult! @join__field(graph: API_JOURNEYS_MODERN) 
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewDelete(languageId: ID!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
@@ -786,8 +795,9 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   visitor(id: ID!) : Visitor! @join__field(graph: API_JOURNEYS) 
   node(id: ID!) : Node @join__field(graph: API_JOURNEYS_MODERN) 
   nodes(ids: [ID!]!) : [Node]! @join__field(graph: API_JOURNEYS_MODERN) 
-  integrationGooglePickerToken(integrationId: ID!) : String! @join__field(graph: API_JOURNEYS_MODERN) 
   journeySimpleGet(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
+  googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!) : [GoogleSheetsSync!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  integrationGooglePickerToken(integrationId: ID!) : String! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
   """
@@ -2422,6 +2432,22 @@ type Translation @join__type(graph: API_JOURNEYS)  {
   primary: Boolean!
 }
 
+type GoogleSheetsSync @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID!
+  teamId: ID!
+  journeyId: ID!
+  integrationId: ID
+  spreadsheetId: ID!
+  sheetName: String
+  folderId: String
+  email: String
+  deletedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  integration: Integration
+  journey: Journey!
+}
+
 type JourneyAiTranslateProgress @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   Translation progress as a percentage (0-100)
@@ -2445,6 +2471,12 @@ type JourneyEventsExportLog @join__type(graph: API_JOURNEYS_MODERN)  {
   eventsFilter: [String!]!
   dateRangeStart: DateTimeISO
   dateRangeEnd: DateTimeISO
+}
+
+type JourneyVisitorGoogleSheetExportResult @join__type(graph: API_JOURNEYS_MODERN)  {
+  spreadsheetId: ID!
+  spreadsheetUrl: String!
+  sheetName: String!
 }
 
 type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
@@ -2580,6 +2612,7 @@ type CloudflareImage @join__type(graph: API_MEDIA)  {
   mobileCinematicVeryLow: String
   thumbnail: String
   videoStill: String
+  blurhash: String
 }
 
 type CloudflareR2 @join__type(graph: API_MEDIA)  {
@@ -3492,6 +3525,11 @@ enum EventType @join__type(graph: API_JOURNEYS_MODERN)  {
   VideoExpandEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
   VideoCollapseEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
   VideoProgressEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+enum GoogleSheetExportMode @join__type(graph: API_JOURNEYS_MODERN)  {
+  create @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  existing @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
@@ -4632,11 +4670,24 @@ input ChatOpenEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   value: MessagePlatform
 }
 
+input CreateGoogleSheetsSyncInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyId: ID!
+  integrationId: ID!
+  spreadsheetId: ID!
+  sheetName: String!
+  folderId: String
+}
+
 input EmailActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   gtmEventName: String
   email: String!
   customizable: Boolean
   parentStepId: String
+}
+
+input GoogleSheetsSyncsFilter @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyId: ID
+  integrationId: ID
 }
 
 input IntegrationGoogleCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4670,6 +4721,26 @@ input JourneyVisitorExportSelect @join__type(graph: API_JOURNEYS_MODERN)  {
   email: Boolean
   phone: Boolean
   createdAt: Boolean
+}
+
+input JourneyVisitorGoogleSheetDestinationInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  mode: GoogleSheetExportMode!
+  """
+  Required when mode is "create". The title for the new spreadsheet.
+  """
+  spreadsheetTitle: String
+  """
+  Optional when mode is "create". The Drive folder ID to create the spreadsheet in. If omitted, it will be created in My Drive.
+  """
+  folderId: String
+  """
+  Required when mode is "existing". The ID of the existing spreadsheet to export to.
+  """
+  spreadsheetId: String
+  """
+  Required when mode is "existing". The name of the sheet within the existing spreadsheet.
+  """
+  sheetName: String
 }
 
 input LinkActionInput @join__type(graph: API_JOURNEYS_MODERN)  {

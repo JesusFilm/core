@@ -20,7 +20,7 @@ export function StepHeader({
   onHeaderClick,
   sx
 }: StepHeaderProps): ReactElement {
-  const { journey } = useJourney()
+  const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const { menuButtonIcon } = journey ?? {}
   const hasMenuButtonIcon = menuButtonIcon != null
@@ -52,7 +52,6 @@ export function StepHeader({
           justifyContent="space-between"
           spacing={2}
           sx={{
-            px: { xs: 3, lg: 0 },
             flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
             justifyContent: 'space-between',
             alignItems: { xs: 'flex-start', lg: 'center' },
@@ -90,17 +89,15 @@ export function StepHeader({
                 {journey?.displayTitle ?? journey?.seoTitle}
               </Typography>
             </Stack>
-            {hasMenuButtonIcon ? (
-              <StepHeaderMenu />
-            ) : (
-              <InformationButton sx={{ p: 0 }} />
-            )}
+            {hasMenuButtonIcon ? <StepHeaderMenu /> : <InformationButton />}
           </Stack>
         </Stack>
       ) : (
         <>
           <PaginationBullets />
-          <InformationButton sx={{ p: 0, mx: 2 }} />
+          <InformationButton
+            sx={{ px: { xs: variant === 'default' ? 6 : 3, lg: 0 } }}
+          />
         </>
       )}
     </Stack>
