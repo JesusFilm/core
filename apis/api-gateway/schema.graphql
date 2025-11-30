@@ -2477,6 +2477,18 @@ type Subscription @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress!
 }
 
+type TemplatePlausibleStatsBreakdownResponse @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyId: String!
+  journeyName: String!
+  teamName: String!
+  stats: [TemplatePlausibleStatsEventResponse!]!
+}
+
+type TemplatePlausibleStatsEventResponse @join__type(graph: API_JOURNEYS_MODERN)  {
+  event: String!
+  visitors: Int!
+}
+
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {
   id: ID!
   primaryLanguageId: ID

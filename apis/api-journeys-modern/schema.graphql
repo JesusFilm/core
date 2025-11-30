@@ -1949,6 +1949,22 @@ input TeamUpdateInput {
   publicTitle: String
 }
 
+type TemplatePlausibleStatsBreakdownResponse
+  @shareable
+{
+  journeyId: String!
+  journeyName: String!
+  teamName: String!
+  stats: [TemplatePlausibleStatsEventResponse!]!
+}
+
+type TemplatePlausibleStatsEventResponse
+  @shareable
+{
+  event: String!
+  visitors: Int!
+}
+
 type TextResponseBlock implements Block
   @shareable
 {
