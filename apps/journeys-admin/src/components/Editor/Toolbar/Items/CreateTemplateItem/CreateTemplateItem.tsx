@@ -5,12 +5,12 @@ import { ComponentProps, ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
+import Layout1Icon from '@core/shared/ui/icons/Layout1'
+import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
 
 import { CreateTemplate } from '../../../../../../__generated__/CreateTemplate'
 import { RemoveUserJourney } from '../../../../../../__generated__/RemoveUserJourney'
 import { Item } from '../Item/Item'
-import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
-import Layout1Icon from '@core/shared/ui/icons/Layout1'
 
 export const REMOVE_USER_JOURNEY = gql`
   mutation RemoveUserJourney($id: ID!) {
@@ -51,9 +51,9 @@ export function CreateTemplateItem({
     if (journey == null) return
 
     const { data } = await journeyDuplicate({
-      variables: { 
-        id: journey?.id, 
-        teamId: globalPublish ? 'jfp-team' : journey.team?.id ?? '' 
+      variables: {
+        id: journey?.id,
+        teamId: globalPublish ? 'jfp-team' : (journey.team?.id ?? '')
       }
     })
 

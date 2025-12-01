@@ -30,13 +30,13 @@ import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQ
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery'
 import { GET_JOURNEY_WITH_PERMISSIONS } from '../../../../AccessDialog/AccessDialog'
+import { CreateTemplateItem } from '../../../../Editor/Toolbar/Items/CreateTemplateItem/CreateTemplateItem'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'
-import { CreateTemplateItem } from '../../../../Editor/Toolbar/Items/CreateTemplateItem/CreateTemplateItem'
 
 export const GET_JOURNEY_WITH_USER_ROLES = gql`
   query GetJourneyWithUserRoles($id: ID!) {
@@ -232,7 +232,9 @@ export function DefaultMenu({
         <>
           <Divider />
           <CreateTemplateItem variant="menu-item" globalPublish={false} />
-          {isPublisher === true && <CreateTemplateItem variant="menu-item" globalPublish={true} />}
+          {isPublisher === true && (
+            <CreateTemplateItem variant="menu-item" globalPublish={true} />
+          )}
         </>
       )}
 

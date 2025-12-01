@@ -236,10 +236,14 @@ describe('DefaultMenu', () => {
       expect(getByRole('menuitem', { name: 'Duplicate' })).toBeInTheDocument()
     )
     await waitFor(() =>
-      expect(getByRole('menuitem', { name: 'Make Template' })).toBeInTheDocument()
+      expect(
+        getByRole('menuitem', { name: 'Make Template' })
+      ).toBeInTheDocument()
     )
     await waitFor(() =>
-      expect(queryByRole('menuitem', { name: 'Make Global Template' })).not.toBeInTheDocument()
+      expect(
+        queryByRole('menuitem', { name: 'Make Global Template' })
+      ).not.toBeInTheDocument()
     )
     expect(getByRole('menuitem', { name: 'Translate' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
@@ -253,9 +257,9 @@ describe('DefaultMenu', () => {
     const { getByRole } = render(
       <MockedProvider
         mocks={[
-          teamWithManagerMock, 
+          teamWithManagerMock,
           currentUserMock,
-          userRolePublisherMock, 
+          userRolePublisherMock,
           makeJourneyMock('journey-id')
         ]}
       >
@@ -278,12 +282,16 @@ describe('DefaultMenu', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByRole('menuitem', { name: 'Make Template' })).toBeInTheDocument()
+      expect(
+        getByRole('menuitem', { name: 'Make Template' })
+      ).toBeInTheDocument()
     )
     await waitFor(() =>
-      expect(getByRole('menuitem', { name: 'Make Global Template' })).toBeInTheDocument()
+      expect(
+        getByRole('menuitem', { name: 'Make Global Template' })
+      ).toBeInTheDocument()
     )
-    })
+  })
 
   it('should render menu for templates', async () => {
     const { queryByRole, getByRole } = render(
