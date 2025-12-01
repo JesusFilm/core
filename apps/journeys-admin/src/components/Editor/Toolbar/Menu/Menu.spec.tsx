@@ -153,7 +153,12 @@ describe('Toolbar Menu', () => {
       ).toBeInTheDocument()
       await waitFor(() =>
         expect(
-          screen.getByRole('menuitem', { name: 'Create Template' })
+          screen.getByRole('menuitem', { name: 'Make Template' })
+        ).toBeInTheDocument()
+      )
+      await waitFor(() =>
+        expect(
+          screen.getByRole('menuitem', { name: 'Make Global Template' })
         ).toBeInTheDocument()
       )
       expect(screen.getByTestId('menu-divider')).toBeInTheDocument()
@@ -162,6 +167,64 @@ describe('Toolbar Menu', () => {
       ).toBeInTheDocument()
     })
 
+    it('should not render global template menu item for non-publishers', async () => {
+      const selectedBlock: TreeBlock<StepBlock> = {
+        __typename: 'StepBlock',
+        id: 'stepId',
+        parentBlockId: 'journeyId',
+        parentOrder: 0,
+        locked: true,
+        nextBlockId: null,
+        children: [],
+        slug: null
+      }
+      render(
+        <SnackbarProvider>
+          <MockedProvider
+            mocks={[
+              {
+                request: {
+                  query: GET_ROLE
+                },
+                result: {
+                  data: {
+                    getUserRole: {
+                      id: '1',
+                      userId: 'userId',
+                      roles: []
+                    }
+                  }
+                }
+              }
+            ]}
+          >
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journeyId',
+                  title: 'Some title',
+                  description: 'Some description',
+                  slug: 'my-journey',
+                  tags: [],
+                  language
+                } as unknown as Journey
+              }}
+            >
+              <EditorProvider initialState={{ selectedBlock }}>
+                <Menu />
+              </EditorProvider>
+            </JourneyProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+      fireEvent.click(screen.getByRole('button'))
+      expect(
+        screen.getByRole('menuitem', { name: 'Make Template' })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('menuitem', { name: 'Make Global Template' })
+      ).not.toBeInTheDocument()
+    })
     it('should render template menu items', async () => {
       const selectedBlock: TreeBlock<StepBlock> = {
         __typename: 'StepBlock',

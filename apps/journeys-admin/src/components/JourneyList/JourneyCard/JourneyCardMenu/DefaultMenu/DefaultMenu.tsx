@@ -36,6 +36,7 @@ import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTe
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
 
 import { ArchiveJourney } from './ArchiveJourney'
+import { CreateTemplateItem } from '../../../../Editor/Toolbar/Items/CreateTemplateItem/CreateTemplateItem'
 
 export const GET_JOURNEY_WITH_USER_ROLES = gql`
   query GetJourneyWithUserRoles($id: ID!) {
@@ -224,6 +225,14 @@ export function DefaultMenu({
               handleCloseMenu()
             }}
           />
+        </>
+      )}
+
+      {template !== true && (
+        <>
+          <Divider />
+          <CreateTemplateItem variant="menu-item" globalPublish={false} />
+          {isPublisher === true && <CreateTemplateItem variant="menu-item" globalPublish={true} />}
         </>
       )}
 
