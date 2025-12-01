@@ -176,7 +176,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
         flexShrink: 0
       }}
     >
-      <Tooltip title={t('Back to home')} placement="bottom" arrow>
+      <Tooltip title={t('Back to Home')} placement="bottom" arrow>
         <IconButton
           component={NextLink}
           href="/"
