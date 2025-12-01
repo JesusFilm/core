@@ -13,7 +13,9 @@ import { getAlgoliaClient } from '../../lib/algolia/algoliaClient'
 async function main(): Promise<void> {
   console.log('🚀 Adding hasAvailableLanguages to videos index...')
   const client = await getAlgoliaClient()
-  const videosIndex = 'videos-prd'
+
+  const videosIndex = process.env.ALGOLIA_INDEX_VIDEOS ?? ''
+  console.log(`📋 Using Algolia index: ${videosIndex}`)
 
   if (client == null) {
     console.error('❌ Algolia client not found')
