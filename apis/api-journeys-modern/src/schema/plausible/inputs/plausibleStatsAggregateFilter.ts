@@ -6,13 +6,13 @@ export const PlausibleStatsAggregateFilter = builder.inputType(
     fields: (t) => ({
       period: t.string({
         required: false,
-        description:
-          'See [time periods](https://plausible.io/docs/stats-api#time-periods).\nIf not specified, it will default to 30d.'
+        description: `See [time periods](https://plausible.io/docs/stats-api#time-periods).
+If not specified, it will default to 30d.`
       }),
       date: t.string({
         required: false,
-        description:
-          'date in the standard ISO-8601 format (YYYY-MM-DD).\nWhen using a custom range, the date parameter expects two ISO-8601 formatted dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned for the whole date range inclusive of the start and end dates.'
+        description: `date in the standard ISO-8601 format (YYYY-MM-DD).
+When using a custom range, the date parameter expects two ISO-8601 formatted dates joined with a comma e.g \`2021-01-01,2021-01-31\`. Stats will be returned for the whole date range inclusive of the start and end dates.`
       }),
       filters: t.string({
         required: false,

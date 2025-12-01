@@ -16,15 +16,15 @@ builder.queryField('journeysPlausibleStatsTimeseries', (t) =>
     description:
       'This endpoint provides timeseries data over a certain time period.\nIf you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.',
     args: {
+      where: t.arg({
+        type: PlausibleStatsTimeseriesFilter,
+        required: true
+      }),
       id: t.arg.id({ required: true }),
       idType: t.arg({
         type: IdType,
         required: false,
         defaultValue: 'slug'
-      }),
-      where: t.arg({
-        type: PlausibleStatsTimeseriesFilter,
-        required: true
       })
     },
     resolve: async (
@@ -33,12 +33,6 @@ builder.queryField('journeysPlausibleStatsTimeseries', (t) =>
       context,
       info: GraphQLResolveInfo
     ) => {
-      if (context.type !== 'authenticated') {
-        throw new GraphQLError('Not authenticated', {
-          extensions: { code: 'UNAUTHENTICATED' }
-        })
-      }
-
       const journey = await loadJourneyOrThrow(id, normalizeIdType(idType))
 
       if (!ability(Action.Update, subject('Journey', journey), context.user)) {
