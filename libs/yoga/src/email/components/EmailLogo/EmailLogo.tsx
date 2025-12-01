@@ -1,19 +1,19 @@
 import { Img } from '@react-email/components'
 import { ReactElement } from 'react'
 
-import { EmailLogo as EmailLogoEnum } from '../../types'
+import { type Logo } from '../../types'
 
 export function EmailLogo({
-  logo = EmailLogoEnum.NextSteps
+  logo = 'NextSteps'
 }: {
-  logo?: EmailLogoEnum
+  logo?: Logo
 }): ReactElement {
   let logoUrl: string
   switch (logo) {
-    case EmailLogoEnum.Mobile:
+    case 'JesusFilmApp':
       logoUrl = 'https://your.nextstep.is/LogoHorizontal.png'
       break
-    case EmailLogoEnum.NextSteps:
+    case 'NextSteps':
     default:
       logoUrl = 'https://your.nextstep.is/LogoHorizontal.png'
       break

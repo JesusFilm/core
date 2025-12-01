@@ -1,10 +1,10 @@
 import { Column, Container, Row, Section } from '@react-email/components'
 import { ReactElement } from 'react'
 
-import { EmailLogo as EmailLogoEnum } from '../../types'
 import { EmailLogo } from '../EmailLogo'
+import { Logo } from '../../types'
 
-export function Header({ logo }: { logo?: EmailLogoEnum }): ReactElement {
+export function Header({ logo }: { logo?: Logo }): ReactElement {
   return (
     <Section className="h-[72px] w-full bg-[#FFFFFF]">
       <Container>

@@ -21,13 +21,13 @@ import {
   Header,
   UnsubscribeLink
 } from '@core/yoga/email/components'
-import { EmailLogo } from '@core/yoga/email/types'
+import { Logo } from '@core/yoga/email/types'
 
 interface VerifyEmailProps {
   inviteLink: string
   token: string
   story?: boolean
-  logo?: EmailLogo
+  logo?: Logo
   recipient: {
     firstName: string
     lastName: string

@@ -3653,6 +3653,11 @@ enum VideoVariantDownloadQuality @join__type(graph: API_MEDIA)  {
   highest @join__enumValue(graph: API_MEDIA) 
 }
 
+enum App @join__type(graph: API_USERS)  {
+  NextSteps @join__enumValue(graph: API_USERS) 
+  JesusFilmApp @join__enumValue(graph: API_USERS) 
+}
+
 input SiteCreateInput @join__type(graph: API_ANALYTICS)  {
   domain: String!
   goals: [String!]
@@ -5231,11 +5236,11 @@ input VideosFilter @join__type(graph: API_MEDIA)  {
 
 input CreateVerificationRequestInput @join__type(graph: API_USERS)  {
   redirect: String
-  mobileApp: Boolean
+  app: App
 }
 
 input MeInput @join__type(graph: API_USERS)  {
   redirect: String
-  mobileApp: Boolean
+  app: App
 }
     

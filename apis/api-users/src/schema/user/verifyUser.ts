@@ -2,6 +2,8 @@ import crypto from 'crypto'
 
 import { queue } from '../../workers/email/queue'
 
+import { type AppType } from './enums/app'
+
 export function generateSixDigitNumber(): string {
   return crypto.randomInt(100000, 999999).toString()
 }
@@ -10,7 +12,7 @@ export async function verifyUser(
   userId: string,
   email: string,
   redirect?: string,
-  mobileApp?: boolean
+  app: AppType = 'NextSteps'
 ): Promise<void> {
   const isExample = email.endsWith('@example.com')
   const token = isExample
@@ -27,7 +29,7 @@ export async function verifyUser(
         email,
         token,
         redirect,
-        mobileApp
+        app
       },
       {
         jobId: userId,
@@ -47,7 +49,7 @@ export async function verifyUser(
         email,
         token,
         redirect,
-        mobileApp
+        app
       },
       {
         jobId: userId,

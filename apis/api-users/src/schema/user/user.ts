@@ -61,7 +61,7 @@ builder.queryFields((t) => ({
         query,
         ctx.currentUser.id,
         input?.redirect ?? undefined,
-        input?.mobileApp ?? undefined
+        input?.app ?? 'NextSteps'
       )
     }
   }),
@@ -131,7 +131,7 @@ builder.mutationFields((t) => ({
         ctx.currentUser.id,
         ctx.currentUser.email,
         input?.redirect ?? undefined,
-        input?.mobileApp ?? undefined
+        input?.app ?? 'NextSteps'
       )
       return true
     }

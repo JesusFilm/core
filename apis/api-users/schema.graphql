@@ -1,14 +1,19 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@key"])
 
+enum App {
+  NextSteps
+  JesusFilmApp
+}
+
 input CreateVerificationRequestInput {
   redirect: String
-  mobileApp: Boolean
+  app: App
 }
 
 input MeInput {
   redirect: String
-  mobileApp: Boolean
+  app: App
 }
 
 type Mutation {

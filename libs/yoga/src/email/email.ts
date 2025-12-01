@@ -6,11 +6,7 @@ export interface SendEmailParams {
   subject: string
   html: string
   text: string
-  from?: string | undefined
-}
-
-const defaults = {
-  from: '"Next Steps Support" <support@nextstep.is>'
+  from?: string
 }
 
 export async function sendEmail(
@@ -32,9 +28,9 @@ export async function sendEmail(
   )
     throw new Error('Example email address')
 
-  const mailFrom = from != null ? { from } : defaults
+  if (from == null) from = '"Next Steps Support" <support@nextstep.is>'
 
-  const transporter = nodemailer.createTransport(process.env.SMTP_URL, mailFrom)
+  const transporter = nodemailer.createTransport(process.env.SMTP_URL, { from })
 
   await transporter.sendMail({
     to,

@@ -4,16 +4,16 @@ import { Logger } from 'pino'
 
 import { prisma } from '@core/prisma/users/client'
 import { sendEmail } from '@core/yoga/email'
-import { EmailLogo } from '@core/yoga/email/types'
 
 import { EmailVerifyEmail } from '../../../emails/templates/EmailVerify/EmailVerify'
+import { type AppType } from '../../../schema/user/enums/app'
 
 export interface VerifyUserJob {
   userId: string
   email: string
   token: string
   redirect: string | undefined
-  mobileApp?: boolean
+  logo?: AppType
 }
 
 export async function service(
@@ -45,8 +45,7 @@ export async function service(
     lastName: user.lastName ?? '',
     imageUrl: user.imageUrl ?? undefined
   }
-  const logo =
-    job.data.mobileApp === true ? EmailLogo.Mobile : EmailLogo.NextSteps
+  const logo = job.data.logo ?? 'NextSteps'
 
   const html = await render(
     EmailVerifyEmail({
@@ -69,10 +68,17 @@ export async function service(
     }
   )
 
-  const from =
-    job.data?.mobileApp === true
-      ? 'Jesus Film App Support <support@jesusfilmapp.com>'
-      : undefined
+  let from: string | undefined
+
+  switch (logo) {
+    case 'JesusFilmApp':
+      from = '"Jesus Film App Support" <support@jesusfilmapp.com>'
+      break
+    case 'NextSteps':
+    default:
+      from = '"Next Steps Support" <support@nextstep.is>'
+      break
+  }
 
   await sendEmail(
     {
