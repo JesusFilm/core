@@ -1,5 +1,6 @@
 /**
- * Script to find all video variants with languageId '176243' and add them to Algolia
+ * Script to find video variants for a given videoId and add them to Algolia.
+ * Note: The languageId filter is currently commented out/disabled.
  *
  * Usage: npx tsx src/scripts/add-video-variants-to-algolia.ts
  */
@@ -10,11 +11,13 @@ import { getAlgoliaClient } from '../../lib/algolia/algoliaClient'
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate/algoliaVideoVariantUpdate'
 
 async function main(): Promise<void> {
-  console.log('🚀 Finding video variants with videoId 2_PI...')
-
   // SET DESIRED FILTERS HERE
   const targetVideoIds = ['15_TrueMerit']
   // const targetLanguageIds = ['176243']
+
+  console.log(
+    `🚀 Finding video variants for targetVideoIds: ${targetVideoIds.join(', ')}`
+  )
 
   // Find all video variants for the target video ids
   const videoVariants = await prisma.videoVariant.findMany({
@@ -26,8 +29,7 @@ async function main(): Promise<void> {
       videoId: true,
       languageId: true,
       published: true
-    },
-    take: 1000
+    }
   })
 
   console.log(`📊 Found ${videoVariants.length} video variants`)
