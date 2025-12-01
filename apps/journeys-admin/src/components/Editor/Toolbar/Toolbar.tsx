@@ -172,7 +172,7 @@ export function Toolbar({ user }: ToolbarProps): ReactElement {
       sx={{
         height: EDIT_TOOLBAR_HEIGHT,
         backgroundColor: 'background.paper',
-        px: { xs: 2, sm: 4 },
+        px: { xs: 2, sm: 5 },
         flexShrink: 0
       }}
     >
