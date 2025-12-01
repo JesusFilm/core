@@ -60,6 +60,9 @@ export const GET_ADMIN_JOURNEYS = gql`
         height
         blurhash
       }
+      team {
+        id
+      }
       fromTemplateId
     }
   }
