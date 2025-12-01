@@ -32,14 +32,16 @@ export async function sendEmail(
   )
     throw new Error('Example email address')
 
-  const transporter = nodemailer.createTransport(process.env.SMTP_URL, defaults)
+  const transporter =
+    from != null
+      ? nodemailer.createTransport(process.env.SMTP_URL, { from })
+      : nodemailer.createTransport(process.env.SMTP_URL, defaults)
 
   await transporter.sendMail({
     to,
     subject,
     text,
-    html,
-    ...(from != null ? { from } : defaults)
+    html
   })
 
   logger?.info(
