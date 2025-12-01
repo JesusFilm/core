@@ -459,15 +459,15 @@ export function JourneyListContent({
       switch (status) {
         case 'active':
           return t(
-            'You can archive a template to to delist it from the Template Library.'
+            'You can archive a template to hide it from the Template Library.'
           )
         case 'archived':
-          return t('Archived templates are delisted from the Template Library.')
+          return t('Archived templates are hidden from the Template Library.')
         case 'trashed':
           return t('Trashed templates are moved here for up to 40 days.')
         default:
           return t(
-            'You can archive a template to to delist it from the Template Library.'
+            'You can archive a template to hide it from the Template Library.'
           )
       }
     } else {
