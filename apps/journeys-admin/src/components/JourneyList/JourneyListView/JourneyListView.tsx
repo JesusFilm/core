@@ -259,7 +259,7 @@ export function JourneyListView({
           sx={{
             display: 'flex',
             alignItems: 'center',
-            mr: -6
+            mr: router?.query?.type === 'templates' ? -12 : -8
           }}
         >
           <JourneyListMenu onClick={setActiveEvent} />
