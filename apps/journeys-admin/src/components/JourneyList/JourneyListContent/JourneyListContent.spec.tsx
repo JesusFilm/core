@@ -192,6 +192,95 @@ const noTrashedMock: MockedResponse<
   }
 }
 
+const archivedTemplatesMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
+  request: {
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.archived],
+      template: true,
+      useLastActiveTeamId: true
+    }
+  },
+  result: {
+    data: {
+      journeys: [
+        {
+          ...defaultJourney,
+          status: JourneyStatus.archived,
+          template: true
+        }
+      ]
+    }
+  }
+}
+
+const noArchivedTemplatesMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
+  request: {
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.archived],
+      template: true,
+      useLastActiveTeamId: true
+    }
+  },
+  result: {
+    data: {
+      journeys: []
+    }
+  }
+}
+
+const trashedTemplatesMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
+  request: {
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.trashed],
+      template: true,
+      useLastActiveTeamId: true
+    }
+  },
+  result: {
+    data: {
+      journeys: [
+        {
+          ...defaultJourney,
+          status: JourneyStatus.trashed,
+          template: true,
+          trashedAt: new Date().toISOString()
+        }
+      ]
+    }
+  }
+}
+
+const noTrashedTemplatesMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
+  request: {
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.trashed],
+      template: true,
+      useLastActiveTeamId: true
+    }
+  },
+  result: {
+    data: {
+      journeys: []
+    }
+  }
+}
+
 describe('JourneyListContent', () => {
   describe('Active Journeys', () => {
     it('should render journeys list', async () => {
@@ -329,9 +418,7 @@ describe('JourneyListContent', () => {
       await waitFor(() => {
         expect(getByText('Archive Templates')).toBeInTheDocument()
         expect(
-          getByText(
-            'Are you sure you would like to archive all active templates immediately?'
-          )
+          getByText('This will archive all active templates you own.')
         ).toBeInTheDocument()
       })
     })
@@ -397,6 +484,33 @@ describe('JourneyListContent', () => {
       await waitFor(() =>
         expect(getByText('Unarchive Journeys')).toBeInTheDocument()
       )
+    })
+
+    it('should open trash dialog when event is trashAllArchived', async () => {
+      const { getByText } = render(
+        <MockedProvider mocks={[archivedJourneysMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <JourneyListContent
+                contentType="journeys"
+                status="archived"
+                user={user}
+                event="trashAllArchived"
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(getByText('Trash Journeys')).toBeInTheDocument()
+        expect(
+          getByText('This will trash all archived journeys you own.')
+        ).toBeInTheDocument()
+        expect(
+          getByText('Are you sure you want to proceed?')
+        ).toBeInTheDocument()
+      })
     })
   })
 
@@ -486,6 +600,182 @@ describe('JourneyListContent', () => {
     })
   })
 
+  describe('Archived Templates', () => {
+    it('should render archived templates', async () => {
+      const { getByText } = render(
+        <MockedProvider mocks={[archivedTemplatesMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <JourneyListContent contentType="templates" status="archived" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+      )
+    })
+
+    it('should display empty state for archived templates', async () => {
+      const { getByText } = render(
+        <MockedProvider mocks={[noArchivedTemplatesMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <JourneyListContent contentType="templates" status="archived" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('No archived templates.')).toBeInTheDocument()
+      )
+    })
+
+    it('should open restore dialog when event is restoreAllArchived', async () => {
+      const { getByText } = render(
+        <MockedProvider mocks={[archivedTemplatesMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <JourneyListContent
+                contentType="templates"
+                status="archived"
+                event="restoreAllArchived"
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(getByText('Unarchive Templates')).toBeInTheDocument()
+        expect(
+          getByText('This will unarchive all archived templates you own.')
+        ).toBeInTheDocument()
+        expect(
+          getByText('Are you sure you want to proceed?')
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('should open trash dialog when event is trashAllArchived', async () => {
+      const { getByText } = render(
+        <MockedProvider mocks={[archivedTemplatesMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <JourneyListContent
+                contentType="templates"
+                status="archived"
+                event="trashAllArchived"
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(getByText('Trash Templates')).toBeInTheDocument()
+        expect(
+          getByText('This will trash all archived templates you own.')
+        ).toBeInTheDocument()
+        expect(
+          getByText('Are you sure you want to proceed?')
+        ).toBeInTheDocument()
+      })
+    })
+  })
+
+  describe('Trashed Templates', () => {
+    it('should render trashed templates', async () => {
+      const { getByText } = render(
+        <MockedProvider mocks={[trashedTemplatesMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <JourneyListContent contentType="templates" status="trashed" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(getByText('Default Journey Heading')).toBeInTheDocument()
+      )
+    })
+
+    it('should display empty state for trashed templates', async () => {
+      const { getByText } = render(
+        <MockedProvider mocks={[noTrashedTemplatesMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <JourneyListContent contentType="templates" status="trashed" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(
+          getByText('Your trashed templates will appear here.')
+        ).toBeInTheDocument()
+      )
+    })
+
+    it('should open restore dialog when event is restoreAllTrashed', async () => {
+      const { getByText } = render(
+        <MockedProvider mocks={[trashedTemplatesMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <JourneyListContent
+                contentType="templates"
+                status="trashed"
+                event="restoreAllTrashed"
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(getByText('Restore Templates')).toBeInTheDocument()
+        expect(
+          getByText('This will restore all trashed templates you own.')
+        ).toBeInTheDocument()
+        expect(
+          getByText('Are you sure you want to proceed?')
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('should open delete dialog when event is deleteAllTrashed', async () => {
+      const { getByText } = render(
+        <MockedProvider mocks={[trashedTemplatesMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <JourneyListContent
+                contentType="templates"
+                status="trashed"
+                event="deleteAllTrashed"
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() => {
+        expect(getByText('Delete Templates Forever')).toBeInTheDocument()
+        expect(
+          getByText(
+            'This will permanently delete all trashed templates you own.'
+          )
+        ).toBeInTheDocument()
+        expect(
+          getByText('Are you sure you want to proceed?')
+        ).toBeInTheDocument()
+      })
+    })
+  })
+
   describe('Helper Text', () => {
     it('should display helper text for active journeys', async () => {
       const { getByText } = render(
@@ -495,6 +785,30 @@ describe('JourneyListContent', () => {
               <JourneyListContent
                 contentType="journeys"
                 status="active"
+                user={user}
+              />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(
+          getByText(
+            'You can archive a Journey to hide it from your active Journey list for better organization.'
+          )
+        ).toBeInTheDocument()
+      )
+    })
+
+    it('should display helper text for archived journeys', async () => {
+      const { getByText } = render(
+        <MockedProvider mocks={[archivedJourneysMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <JourneyListContent
+                contentType="journeys"
+                status="archived"
                 user={user}
               />
             </SnackbarProvider>
@@ -529,6 +843,62 @@ describe('JourneyListContent', () => {
       await waitFor(() =>
         expect(
           getByText('Trashed journeys are moved here for up to 40 days.')
+        ).toBeInTheDocument()
+      )
+    })
+
+    it('should display helper text for active templates', async () => {
+      const { getByText } = render(
+        <MockedProvider mocks={[templatesMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <JourneyListContent contentType="templates" status="active" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(
+          getByText(
+            'You can archive a template to hide it from the Template Library.'
+          )
+        ).toBeInTheDocument()
+      )
+    })
+
+    it('should display helper text for archived templates', async () => {
+      const { getByText } = render(
+        <MockedProvider mocks={[archivedTemplatesMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <JourneyListContent contentType="templates" status="archived" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(
+          getByText('Archived templates are hidden from the Template Library.')
+        ).toBeInTheDocument()
+      )
+    })
+
+    it('should display helper text for trashed templates', async () => {
+      const { getByText } = render(
+        <MockedProvider mocks={[trashedTemplatesMock]}>
+          <ThemeProvider>
+            <SnackbarProvider>
+              <JourneyListContent contentType="templates" status="trashed" />
+            </SnackbarProvider>
+          </ThemeProvider>
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(
+          getByText('Trashed templates are moved here for up to 40 days.')
         ).toBeInTheDocument()
       )
     })
