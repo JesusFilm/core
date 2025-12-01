@@ -19,8 +19,8 @@ import {
 } from '../../../__generated__/globalTypes'
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
-import { BlockFields_IconBlock } from '../../libs/block/__generated__/BlockFields'
 import { useBlocks } from '../../libs/block'
+import { BlockFields_IconBlock } from '../../libs/block/__generated__/BlockFields'
 import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
@@ -128,13 +128,9 @@ export function Button({
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
-  const startIcon = children.find((block) => block.id === startIconId) as
-    | TreeBlock<BlockFields_IconBlock>
-    | undefined
+  const startIcon = children.find((block) => block.id === startIconId)
 
-  const endIcon = children.find((block) => block.id === endIconId) as
-    | TreeBlock<BlockFields_IconBlock>
-    | undefined
+  const endIcon = children.find((block) => block.id === endIconId)
 
   const messagePlatform = useMemo(() => findMessagePlatform(action), [action])
   const actionValue = useMemo(

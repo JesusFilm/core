@@ -225,6 +225,7 @@ describe('Toolbar Menu', () => {
         screen.queryByRole('menuitem', { name: 'Make Global Template' })
       ).not.toBeInTheDocument()
     })
+
     it('should render template menu items', async () => {
       const selectedBlock: TreeBlock<StepBlock> = {
         __typename: 'StepBlock',
