@@ -72,25 +72,28 @@ export function JourneyList({
         ? 'trashed'
         : 'active')
 
+  // Side panel is only visible for journeys tab, so expand width for templates
+  const currentContentType = (router?.query?.type as ContentType) ?? 'journeys'
+  const sidePanelVisible = currentContentType === 'journeys'
+
   // Render function for JourneyListView
   const renderList = (
     contentType: ContentType,
     status: JourneyStatusFilter
   ): ReactElement => {
+    // Only pass event to the currently active content type to prevent duplicate actions
+    const eventForThisContentType =
+      contentType === currentContentType ? event : undefined
     return (
       <JourneyListContent
         contentType={contentType}
         status={status}
         user={contentType === 'journeys' ? user : undefined}
         sortOrder={sortOrder}
-        event={event}
+        event={eventForThisContentType}
       />
     )
   }
-
-  // Side panel is only visible for journeys tab, so expand width for templates
-  const currentContentType = (router?.query?.type as ContentType) ?? 'journeys'
-  const sidePanelVisible = currentContentType === 'journeys'
 
   return (
     <>

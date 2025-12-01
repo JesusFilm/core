@@ -174,32 +174,66 @@ export function JourneyListContent({
   }
 
   const mutations = getMutations()
+
+  // Helper to get the mutation response field name based on status
+  const getPrimaryMutationField = (): string => {
+    switch (status) {
+      case 'active':
+        return 'journeysArchive'
+      case 'archived':
+        return 'journeysRestore'
+      case 'trashed':
+        return 'journeysRestore'
+      default:
+        return 'journeysArchive'
+    }
+  }
+
+  const getSecondaryMutationField = (): string => {
+    switch (status) {
+      case 'active':
+        return 'journeysTrash'
+      case 'archived':
+        return 'journeysTrash'
+      case 'trashed':
+        return 'journeysDelete'
+      default:
+        return 'journeysTrash'
+    }
+  }
+
   const [primaryMutation] = useMutation(mutations.primary, {
     update(_cache, { data }) {
-      const messageKey =
-        status === 'active'
-          ? 'Journeys Archived'
-          : status === 'archived'
-            ? 'Journeys Restored'
-            : 'Journeys Restored'
-      enqueueSnackbar(t(messageKey), {
-        variant: 'success'
-      })
-      void refetch()
+      const mutationField = getPrimaryMutationField()
+      if (data?.[mutationField] != null) {
+        const messageKey =
+          status === 'active'
+            ? 'Journeys Archived'
+            : status === 'archived'
+              ? 'Journeys Restored'
+              : 'Journeys Restored'
+        enqueueSnackbar(t(messageKey), {
+          variant: 'success'
+        })
+        void refetch()
+      }
     }
   })
   const [secondaryMutation] = useMutation(mutations.secondary, {
     update(_cache, { data }) {
-      const messageKey =
-        status === 'active'
-          ? 'Journeys Trashed'
-          : status === 'archived'
+      const mutationField = getSecondaryMutationField()
+      if (data?.[mutationField] != null) {
+        const messageKey =
+          status === 'active'
             ? 'Journeys Trashed'
-            : 'Journeys Deleted'
-      enqueueSnackbar(t(messageKey), {
-        variant: 'success'
-      })
-      void refetch()
+            : status === 'archived'
+              ? 'Journeys Trashed'
+              : 'Journeys Deleted'
+        enqueueSnackbar(t(messageKey), {
+          variant: 'success'
+        })
+        void refetch()
+      }
     }
   })
 
@@ -211,15 +245,24 @@ export function JourneyListContent({
   >()
 
   // Filter journeys by owner role for journeys (not templates)
+  // When useLastActiveTeamId is true, we're in a team context, so archive all journeys
+  // and let the backend ACL handle permissions (team managers can archive team journeys)
   const getOwnerFilteredIds = (): string[] | undefined => {
     if (contentType === 'templates' || !user?.id) {
       return data?.journeys?.map((journey) => journey.id)
     }
+    // When useLastActiveTeamId is true, we're querying team journeys
+    // In team context, archive all journeys (backend ACL will handle permissions)
+    const queryParams = getQueryParams()
+    if (queryParams.useLastActiveTeamId === true) {
+      return data?.journeys?.map((journey) => journey.id)
+    }
+    // For personal journeys (no team), filter by owner
     return data?.journeys
       ?.filter(
         (journey) =>
           journey.userJourneys?.find(
-            (userJourney) => userJourney.user?.id === user.id
+            (userJourney) => userJourney.user?.id === (user?.id ?? '')
           )?.role === 'owner'
       )
       .map((journey) => journey.id)
