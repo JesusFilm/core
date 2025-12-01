@@ -135,6 +135,63 @@ const trashedJourneysMock: MockedResponse<
   }
 }
 
+const noTemplatesMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
+  request: {
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.draft, JourneyStatus.published],
+      template: true,
+      useLastActiveTeamId: true
+    }
+  },
+  result: {
+    data: {
+      journeys: []
+    }
+  }
+}
+
+const noArchivedMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
+  request: {
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.archived],
+      template: false,
+      useLastActiveTeamId: true
+    }
+  },
+  result: {
+    data: {
+      journeys: []
+    }
+  }
+}
+
+const noTrashedMock: MockedResponse<
+  GetAdminJourneys,
+  GetAdminJourneysVariables
+> = {
+  request: {
+    query: GET_ADMIN_JOURNEYS,
+    variables: {
+      status: [JourneyStatus.trashed],
+      template: false,
+      useLastActiveTeamId: true
+    }
+  },
+  result: {
+    data: {
+      journeys: []
+    }
+  }
+}
+
 describe('JourneyListContent', () => {
   describe('Active Journeys', () => {
     it('should render journeys list', async () => {
@@ -239,25 +296,6 @@ describe('JourneyListContent', () => {
     })
 
     it('should display empty state message when no templates', async () => {
-      const noTemplatesMock: MockedResponse<
-        GetAdminJourneys,
-        GetAdminJourneysVariables
-      > = {
-        request: {
-          query: GET_ADMIN_JOURNEYS,
-          variables: {
-            status: [JourneyStatus.draft, JourneyStatus.published],
-            template: true,
-            useLastActiveTeamId: true
-          }
-        },
-        result: {
-          data: {
-            journeys: []
-          }
-        }
-      }
-
       const { getByText } = render(
         <MockedProvider mocks={[noTemplatesMock]}>
           <ThemeProvider>
@@ -321,25 +359,6 @@ describe('JourneyListContent', () => {
     })
 
     it('should display empty state for archived journeys', async () => {
-      const noArchivedMock: MockedResponse<
-        GetAdminJourneys,
-        GetAdminJourneysVariables
-      > = {
-        request: {
-          query: GET_ADMIN_JOURNEYS,
-          variables: {
-            status: [JourneyStatus.archived],
-            template: false,
-            useLastActiveTeamId: true
-          }
-        },
-        result: {
-          data: {
-            journeys: []
-          }
-        }
-      }
-
       const { getByText } = render(
         <MockedProvider mocks={[noArchivedMock]}>
           <ThemeProvider>
@@ -403,25 +422,6 @@ describe('JourneyListContent', () => {
     })
 
     it('should display empty state for trashed journeys', async () => {
-      const noTrashedMock: MockedResponse<
-        GetAdminJourneys,
-        GetAdminJourneysVariables
-      > = {
-        request: {
-          query: GET_ADMIN_JOURNEYS,
-          variables: {
-            status: [JourneyStatus.trashed],
-            template: false,
-            useLastActiveTeamId: true
-          }
-        },
-        result: {
-          data: {
-            journeys: []
-          }
-        }
-      }
-
       const { getByText } = render(
         <MockedProvider mocks={[noTrashedMock]}>
           <ThemeProvider>
