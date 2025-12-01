@@ -152,7 +152,7 @@ export function NavigationDrawer({
               </Badge>
             </ListItemIcon>
             <ListItemText
-              primary={t('Discover')}
+              primary={t('Projects')}
               primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
             />
           </ListItemButton>
