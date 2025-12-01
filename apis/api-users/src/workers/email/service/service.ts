@@ -13,7 +13,7 @@ export interface VerifyUserJob {
   email: string
   token: string
   redirect: string | undefined
-  logo?: AppType
+  app?: AppType
 }
 
 export async function service(
@@ -45,7 +45,7 @@ export async function service(
     lastName: user.lastName ?? '',
     imageUrl: user.imageUrl ?? undefined
   }
-  const logo = job.data.logo ?? 'NextSteps'
+  const logo = job.data.app ?? 'NextSteps'
 
   const html = await render(
     EmailVerifyEmail({
@@ -69,21 +69,24 @@ export async function service(
   )
 
   let from: string | undefined
+  let subject: string
 
   switch (logo) {
     case 'JesusFilmApp':
       from = '"Jesus Film App Support" <support@jesusfilmapp.com>'
+      subject = 'Verify your email address on Jesus Film App'
       break
     case 'NextSteps':
     default:
       from = '"Next Steps Support" <support@nextstep.is>'
+      subject = 'Verify your email address on Next Steps'
       break
   }
 
   await sendEmail(
     {
       to: job.data.email,
-      subject: 'Verify your email address on Next Steps',
+      subject,
       text,
       html,
       from

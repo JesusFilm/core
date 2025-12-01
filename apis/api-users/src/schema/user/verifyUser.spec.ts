@@ -31,7 +31,9 @@ describe('verifyUser', () => {
       {
         email,
         token: expect.any(String),
-        userId
+        userId,
+        redirect: undefined,
+        app: 'NextSteps'
       },
       {
         jobId: expect.any(String),
@@ -55,7 +57,9 @@ describe('verifyUser', () => {
       {
         email,
         token: expect.any(String),
-        userId
+        userId,
+        redirect: undefined,
+        app: 'NextSteps'
       },
       {
         jobId: expect.any(String),
@@ -80,7 +84,9 @@ describe('verifyUser', () => {
       {
         email,
         token: '123456',
-        userId
+        userId,
+        redirect: undefined,
+        app: 'NextSteps'
       },
       {
         jobId: expect.any(String),
