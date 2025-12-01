@@ -395,6 +395,7 @@ export interface ChatOpenEventCreateInput {
 
 export interface CreateVerificationRequestInput {
   redirect?: string | null;
+  mobileApp?: boolean | null;
 }
 
 export interface CustomDomainCreateInput {
@@ -638,6 +639,7 @@ export interface LinkActionInput {
 
 export interface MeInput {
   redirect?: string | null;
+  mobileApp?: boolean | null;
 }
 
 export interface MultiselectBlockCreateInput {
