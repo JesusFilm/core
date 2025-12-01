@@ -201,6 +201,12 @@ export function JourneyListView({
           pr: 2,
           '& .MuiTabs-scroller': {
             overflow: 'visible !important'
+          },
+          '& .MuiTab-root': {
+            fontFamily: "'Montserrat', sans-serif",
+            fontWeight: 600,
+            fontSize: '16px',
+            lineHeight: '21px'
           }
         }}
       >

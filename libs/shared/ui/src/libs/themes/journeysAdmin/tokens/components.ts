@@ -39,19 +39,6 @@ export const adminComponents: Required<Pick<ThemeOptions, 'components'>> = {
         }
       }
     },
-    MuiTabs: {
-      styleOverrides: {
-        root: {
-          // Scoped styling for JourneyListView tabs only
-          '&[data-testid="journey-list-view"] .MuiTab-root': {
-            fontFamily: "'Montserrat', sans-serif",
-            fontWeight: 600,
-            fontSize: '16px',
-            lineHeight: '21px'
-          }
-        }
-      }
-    },
     MuiAppBar: {
       defaultProps: {
         elevation: 0
