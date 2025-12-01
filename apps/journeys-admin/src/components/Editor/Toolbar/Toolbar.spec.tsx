@@ -146,7 +146,7 @@ describe('Toolbar', () => {
     render(toolbar(defaultJourney))
     fireEvent.mouseOver(screen.getByTestId('NextStepsLogo'))
     await waitFor(() => {
-      expect(screen.getByText('Back to home')).toBeInTheDocument()
+      expect(screen.getByText('Back to Home')).toBeInTheDocument()
     })
   })
 
