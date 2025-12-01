@@ -1,3 +1,5 @@
+import { normalizeCallingCode } from '../normalizeCallingCode'
+
 export function getFullPhoneNumber(
   callingCode: string,
   phoneNumber: string
@@ -10,12 +12,7 @@ export function getFullPhoneNumber(
     return digits === '' ? '' : `+${digits}`
   }
 
-  const normalizedCallingCode =
-    rawCallingCode === ''
-      ? ''
-      : rawCallingCode.startsWith('+')
-        ? rawCallingCode
-        : `+${rawCallingCode}`
+  const normalizedCallingCode = normalizeCallingCode(rawCallingCode)
 
   const callingCodeDigits = normalizedCallingCode.replace(/[^\d]/g, '')
   const localDigits = rawLocalNumber.replace(/[^\d]/g, '')
