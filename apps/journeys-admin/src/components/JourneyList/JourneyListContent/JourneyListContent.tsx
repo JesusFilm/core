@@ -380,6 +380,7 @@ export function JourneyListContent({
     const itemType = isTemplate ? 'Templates' : 'Journeys'
 
     switch (status) {
+      default:
       case 'active':
         return {
           primary: {
@@ -387,7 +388,7 @@ export function JourneyListContent({
             submitLabel: t('Archive'),
             message: isTemplate
               ? t(
-                  'Are you sure you would like to archive all active templates immediately?'
+                  'This will archive all active templates you own.'
                 )
               : t('This will archive all active journeys you own.')
           },
@@ -396,7 +397,7 @@ export function JourneyListContent({
             submitLabel: t('Trash'),
             message: isTemplate
               ? t(
-                  'Are you sure you would like to trash all active templates immediately?'
+                  'This will trash all active templates you own.'
                 )
               : t('This will trash all active journeys you own.')
           }
@@ -408,7 +409,7 @@ export function JourneyListContent({
             submitLabel: t('Unarchive'),
             message: isTemplate
               ? t(
-                  'Are you sure you would like to unarchive all archived templates immediately?'
+                  'This will unarchive all archived templates you own.'
                 )
               : t('This will unarchive all archived journeys you own.')
           },
@@ -417,7 +418,7 @@ export function JourneyListContent({
             submitLabel: t('Trash'),
             message: isTemplate
               ? t(
-                  'Are you sure you would like to trash all archived templates immediately?'
+                  'This will trash all archived templates you own.'
                 )
               : t('This will trash all archived journeys you own.')
           }
@@ -429,7 +430,7 @@ export function JourneyListContent({
             submitLabel: t('Restore'),
             message: isTemplate
               ? t(
-                  'Are you sure you would like to restore all trashed templates immediately?'
+                  'This will restore all trashed templates you own.'
                 )
               : t('This will restore all trashed journeys you own.')
           },
@@ -438,33 +439,12 @@ export function JourneyListContent({
             submitLabel: t('Delete Forever'),
             message: isTemplate
               ? t(
-                  'Are you sure you would like to permanently delete all trashed templates immediately?'
+                  'This will permanently delete all trashed templates you own.'
                 )
               : t('This will permanently delete all trashed journeys you own.')
           }
         }
-      default:
-        return {
-          primary: {
-            title: t(`Archive ${itemType}`),
-            submitLabel: t('Archive'),
-            message: isTemplate
-              ? t(
-                  'Are you sure you would like to archive all active templates immediately?'
-                )
-              : t('This will archive all active journeys you own.')
-          },
-          secondary: {
-            title: t(`Trash ${itemType}`),
-            submitLabel: t('Trash'),
-            message: isTemplate
-              ? t(
-                  'Are you sure you would like to trash all active templates immediately?'
-                )
-              : t('This will trash all active journeys you own.')
-          }
-        }
-    }
+      }
   }
 
   const dialogLabels = getDialogLabels()
