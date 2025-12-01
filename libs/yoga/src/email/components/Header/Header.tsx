@@ -1,8 +1,8 @@
 import { Column, Container, Row, Section } from '@react-email/components'
 import { ReactElement } from 'react'
 
-import { EmailLogo } from '../EmailLogo'
 import { Logo } from '../../types'
+import { EmailLogo } from '../EmailLogo'
 
 export function Header({ logo }: { logo?: Logo }): ReactElement {
   return (
