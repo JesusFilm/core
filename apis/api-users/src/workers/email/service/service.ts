@@ -70,7 +70,9 @@ export async function service(
   )
 
   const from =
-    job.data?.mobileApp === true ? 'support@jesusfilmapp.com' : undefined
+    job.data?.mobileApp === true
+      ? 'Jesus Film App Support <support@jesusfilmapp.com>'
+      : undefined
 
   await sendEmail(
     {
