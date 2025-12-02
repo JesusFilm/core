@@ -80,7 +80,7 @@ export const UPDATE_PLAUSIBLE_JOURNEY_FLOW_VIEWED = gql`
     }
   }
 `
-//
+
 export function Toolbar({ user }: ToolbarProps): ReactElement {
   const router = useRouter()
   const { t } = useTranslation('apps-journeys-admin')
