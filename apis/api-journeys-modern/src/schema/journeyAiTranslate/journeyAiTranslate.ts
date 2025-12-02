@@ -402,6 +402,20 @@ Field names to translate per block type:
 - ButtonBlock: "label" field
 - RadioOptionBlock: "label" field
 - TextResponseBlock: "label", "placeholder", and "hint" fields
+- MultiselectOptionBlock: "label" field
+
+HANDLING CURLY BRACES {{ }} IN TEXT:
+When translating block content, you may encounter text with curly braces like {{ key }} or {{ key: value }}.
+- If there is a colon inside the curly braces (e.g., {{ key: value }}), the first word before the colon is a key and the text after the colon is a value.
+- If there is no colon (e.g., {{ key }}), the key is also the value.
+- DO NOT translate or modify anything inside the curly braces {{ }} - preserve them exactly as-is.
+- Only translate the text that appears OUTSIDE and BETWEEN sets of curly braces.
+- This helps you correctly translate text that appears between customizable fields.
+
+Example: "Welcome {{ user_name }}! Your event is on {{ event_date: January 15 }}."
+- Preserve {{ user_name }} exactly as-is
+- Preserve {{ event_date: January 15 }} exactly as-is
+- Translate "Welcome" and "! Your event is on" and "."
 
 Ensure translations maintain the meaning while being culturally appropriate for ${input.textLanguageName}.
 Keep translations concise and effective for UI context (e.g., button labels should remain short).
@@ -886,6 +900,20 @@ Field names to translate per block type:
 - ButtonBlock: "label" field
 - RadioOptionBlock: "label" field
 - TextResponseBlock: "label", "placeholder", and "hint" fields
+- MultiselectOptionBlock: "label" field
+
+HANDLING CURLY BRACES {{ }} IN TEXT:
+When translating block content, you may encounter text with curly braces like {{ key }} or {{ key: value }}.
+- If there is a colon inside the curly braces (e.g., {{ key: value }}), the first word before the colon is a key and the text after the colon is a value.
+- If there is no colon (e.g., {{ key }}), the key is also the value.
+- DO NOT translate or modify anything inside the curly braces {{ }} - preserve them exactly as-is.
+- Only translate the text that appears OUTSIDE and BETWEEN sets of curly braces.
+- This helps you correctly translate text that appears between customizable fields.
+
+Example: "Welcome {{ user_name }}! Your event is on {{ event_date: January 15 }}."
+- Preserve {{ user_name }} exactly as-is
+- Preserve {{ event_date: January 15 }} exactly as-is
+- Translate "Welcome" and "! Your event is on" and "."
 
 Ensure translations maintain the meaning while being culturally appropriate for ${hardenPrompt(requestedLanguageName)}.
 Keep translations concise and effective for UI context (e.g., button labels should remain short).

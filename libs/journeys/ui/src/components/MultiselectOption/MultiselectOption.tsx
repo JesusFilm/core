@@ -9,6 +9,7 @@ import type { TreeBlock } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
 
 import { MultiselectOptionFields } from './__generated__/MultiselectOptionFields'
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
   theme
@@ -101,10 +102,11 @@ export function MultiselectOption({
   editableLabel
 }: MultiselectOptionProps): ReactElement {
   const theme = useTheme()
+  const resolvedLabel = useGetValueFromJourneyCustomizationString(label)
 
   const handleClick = (e: MouseEvent): void => {
     e.stopPropagation()
-    onClick?.(id, label)
+    onClick?.(id, resolvedLabel)
   }
 
   return (
@@ -146,7 +148,7 @@ export function MultiselectOption({
       }
       data-testid="JourneysMultiselectOptionList"
     >
-      {editableLabel ?? label}
+      {editableLabel ?? resolvedLabel}
     </StyledListMultiselectOption>
   )
 }

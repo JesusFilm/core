@@ -14,6 +14,8 @@ import {
 } from '../../../../../../../../__generated__/MultiselectOptionBlockUpdate'
 import { MultiselectOptionFields } from '../../../../../../../../__generated__/MultiselectOptionFields'
 import { InlineEditInput } from '../InlineEditInput'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { resolveJourneyCustomizationString } from '@core/journeys/ui/resolveJourneyCustomizationString'
 
 export const MULTISELECT_OPTION_BLOCK_UPDATE = gql`
   mutation MultiselectOptionBlockUpdate(
@@ -38,7 +40,16 @@ export function MultiselectOptionEdit({
     MultiselectOptionBlockUpdateVariables
   >(MULTISELECT_OPTION_BLOCK_UPDATE)
 
-  const [value, setValue] = useState(label)
+  const { journey } = useJourney()
+
+  const resolvedLabel = !journey?.template
+    ? (resolveJourneyCustomizationString(
+        label,
+        journey?.journeyCustomizationFields ?? []
+      ) ?? label)
+    : label
+
+  const [value, setValue] = useState(resolvedLabel)
   const [commandInput, setCommandInput] = useState({ id: uuidv4(), value })
   const [selection, setSelection] = useState({ start: 0, end: value.length })
 
@@ -58,9 +69,9 @@ export function MultiselectOptionEdit({
   }, [undo?.id])
 
   useEffect(() => {
-    if (value !== label) setValue(label)
+    if (value !== resolvedLabel) setValue(resolvedLabel)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [label])
+  }, [resolvedLabel])
 
   function resetCommandInput(): void {
     setCommandInput({ id: uuidv4(), value })
