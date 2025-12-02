@@ -5,7 +5,8 @@ import { ComponentProps, ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
-import Bag5Icon from '@core/shared/ui/icons/Bag5'
+import Layout1Icon from '@core/shared/ui/icons/Layout1'
+import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
 
 import { CreateTemplate } from '../../../../../../__generated__/CreateTemplate'
 import { RemoveUserJourney } from '../../../../../../__generated__/RemoveUserJourney'
@@ -30,15 +31,16 @@ export const CREATE_TEMPLATE = gql`
 
 interface CreateTemplateItemProps {
   variant: ComponentProps<typeof Item>['variant']
+  globalPublish?: boolean
 }
 
 export function CreateTemplateItem({
-  variant
+  variant,
+  globalPublish = false
 }: CreateTemplateItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const router = useRouter()
-
   const [journeyDuplicate] = useJourneyDuplicateMutation()
 
   const [removeUserJourney] =
@@ -49,7 +51,10 @@ export function CreateTemplateItem({
     if (journey == null) return
 
     const { data } = await journeyDuplicate({
-      variables: { id: journey?.id, teamId: 'jfp-team' }
+      variables: {
+        id: journey?.id,
+        teamId: globalPublish ? 'jfp-team' : (journey.team?.id ?? '')
+      }
     })
 
     // Convert duplicated journey to a template
@@ -101,8 +106,8 @@ export function CreateTemplateItem({
   return (
     <Item
       variant={variant}
-      label={t('Create Template')}
-      icon={<Bag5Icon />}
+      label={globalPublish ? t('Make Global Template') : t('Make Template')}
+      icon={globalPublish ? <Layout1Icon /> : <LayoutTopIcon />}
       onClick={handleCreateTemplate}
     />
   )
