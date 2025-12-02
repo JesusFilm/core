@@ -29,5 +29,11 @@ export const env = {
   },
   get JOURNEYS_URL(): string {
     return 'https://example.com'
+  },
+  get PLAUSIBLE_API_KEY(): string {
+    return 'test-api-key'
+  },
+  get PLAUSIBLE_URL(): string {
+    return 'https://example.com'
   }
 }
