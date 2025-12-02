@@ -158,7 +158,7 @@ Return only the translated value, maintaining the same meaning and cultural appr
 `
 
   const { object } = await generateObject({
-    model: google('gemini-2.5-flash'),
+    model: google('gemini-2.0-flash'),
     messages: [
       {
         role: 'system',
