@@ -39,7 +39,8 @@ export function ArchivedTemplateList({
   const { enqueueSnackbar } = useSnackbar()
   const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.archived],
-    template: true
+    template: true,
+    teamId: 'jfp-team'
   })
   const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {

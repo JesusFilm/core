@@ -39,7 +39,8 @@ export function TrashedTemplateList({
   const { enqueueSnackbar } = useSnackbar()
   const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.trashed],
-    template: true
+    template: true,
+    teamId: 'jfp-team'
   })
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {
