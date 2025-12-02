@@ -23,6 +23,8 @@ export const env = createEnv({
     JOURNEYS_ADMIN_URL: z.string().trim().min(1),
     JOURNEYS_REVALIDATE_ACCESS_TOKEN: z.string().trim().min(1),
     JOURNEYS_URL: z.string().trim().min(1),
+    PLAUSIBLE_API_KEY: z.string().trim().min(1),
+    PLAUSIBLE_URL: z.string().url(),
     REDIS_PORT: z.coerce.number().int().positive().default(6379),
     REDIS_URL: z.string().trim().min(1).default('redis'),
     SERVICE_VERSION: z.string().trim().default('')
