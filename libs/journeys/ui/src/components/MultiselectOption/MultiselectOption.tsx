@@ -7,9 +7,9 @@ import SquareIcon from '@core/shared/ui/icons/Square'
 
 import type { TreeBlock } from '../../libs/block'
 import { useJourney } from '../../libs/JourneyProvider'
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 import { MultiselectOptionFields } from './__generated__/MultiselectOptionFields'
-import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
   theme

@@ -6,7 +6,9 @@ import { v4 as uuidv4 } from 'uuid'
 import { TreeBlock } from '@core/journeys/ui/block/TreeBlock'
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { MultiselectOption } from '@core/journeys/ui/MultiselectOption/MultiselectOption'
+import { resolveJourneyCustomizationString } from '@core/journeys/ui/resolveJourneyCustomizationString'
 
 import {
   MultiselectOptionBlockUpdate,
@@ -14,8 +16,6 @@ import {
 } from '../../../../../../../../__generated__/MultiselectOptionBlockUpdate'
 import { MultiselectOptionFields } from '../../../../../../../../__generated__/MultiselectOptionFields'
 import { InlineEditInput } from '../InlineEditInput'
-import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { resolveJourneyCustomizationString } from '@core/journeys/ui/resolveJourneyCustomizationString'
 
 export const MULTISELECT_OPTION_BLOCK_UPDATE = gql`
   mutation MultiselectOptionBlockUpdate(
