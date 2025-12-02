@@ -252,7 +252,7 @@ export function JourneyListContent({
 
   const getOwnerFilteredIds = (): string[] | undefined => {
     const isTemplate = contentType === 'templates'
-    const isTeamContext = getQueryParams().useLastActiveTeamId === true
+    const isTeamContext = getQueryParams().useLastActiveTeamId
 
     // Templates and team journeys: send all IDs, backend handles permissions
     if (isTemplate || !user?.id || isTeamContext) {
@@ -382,24 +382,6 @@ export function JourneyListContent({
     const itemType = isTemplate ? 'Templates' : 'Journeys'
 
     switch (status) {
-      default:
-      case 'active':
-        return {
-          primary: {
-            title: t(`Archive ${itemType}`),
-            submitLabel: t('Archive'),
-            message: isTemplate
-              ? t('This will archive all active templates you own.')
-              : t('This will archive all active journeys you own.')
-          },
-          secondary: {
-            title: t(`Trash ${itemType}`),
-            submitLabel: t('Trash'),
-            message: isTemplate
-              ? t('This will trash all active templates you own.')
-              : t('This will trash all active journeys you own.')
-          }
-        }
       case 'archived':
         return {
           primary: {
@@ -432,6 +414,24 @@ export function JourneyListContent({
             message: isTemplate
               ? t('This will permanently delete all trashed templates you own.')
               : t('This will permanently delete all trashed journeys you own.')
+          }
+        }
+      case 'active':
+      default:
+        return {
+          primary: {
+            title: t(`Archive ${itemType}`),
+            submitLabel: t('Archive'),
+            message: isTemplate
+              ? t('This will archive all active templates you own.')
+              : t('This will archive all active journeys you own.')
+          },
+          secondary: {
+            title: t(`Trash ${itemType}`),
+            submitLabel: t('Trash'),
+            message: isTemplate
+              ? t('This will trash all active templates you own.')
+              : t('This will trash all active journeys you own.')
           }
         }
     }
