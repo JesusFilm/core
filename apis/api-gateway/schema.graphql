@@ -3553,6 +3553,8 @@ enum PlausibleEvent @join__type(graph: API_JOURNEYS_MODERN)  {
   videoProgress75 @join__enumValue(graph: API_JOURNEYS_MODERN) 
   videoComplete @join__enumValue(graph: API_JOURNEYS_MODERN) 
   videoTrigger @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  chatsClicked @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  linksClicked @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum LanguageIdType @join__type(graph: API_LANGUAGES)  {

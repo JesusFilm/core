@@ -1414,6 +1414,8 @@ enum PlausibleEvent {
   videoProgress75
   videoComplete
   videoTrigger
+  chatsClicked
+  linksClicked
 }
 
 input PlausibleStatsAggregateFilter {

@@ -32,7 +32,7 @@ export interface PlausibleStatsResponse {
 }
 
 export interface TemplatePlausibleStatsEventResponse {
-  event: (typeof goals)[number]
+  event: (typeof goals)[number] | 'chatsClicked' | 'linksClicked'
   visitors: number
 }
 

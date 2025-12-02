@@ -19,7 +19,7 @@ import {
 import { getJourneyStatsBreakdown } from './service'
 
 const PlausibleEventEnum = builder.enumType('PlausibleEvent', {
-  values: goals as readonly string[]
+  values: [...goals, 'chatsClicked', 'linksClicked'] as readonly string[]
 })
 
 builder.queryField('templatePlausibleStatsBreakdown', (t) =>
@@ -71,7 +71,8 @@ builder.queryField('templatePlausibleStatsBreakdown', (t) =>
       }
 
       const { property: _, ...whereWithoutProperty } = where
-      const templateSiteId = `api-journeys-template-${templateJourney.id}`
+      const templateSiteId = `template-site`
+      // const templateSiteId = `api-journeys-template-${templateJourney.id}`
       const breakdownResults = await getJourneyStatsBreakdown(
         templateJourney.id,
         {
@@ -125,7 +126,14 @@ function transformBreakdownResults(
 
   const grouped = breakdownResults.reduce(
     (
-      acc: Record<string, Array<{ eventType: string; visitors: number }>>,
+      acc: Record<
+        string,
+        {
+          events: Record<string, number>
+          chatsClicked: number
+          linksClicked: number
+        }
+      >,
       result
     ) => {
       try {
@@ -133,6 +141,7 @@ function transformBreakdownResults(
 
         const journeyId = propertyData.journeyId
         const event = propertyData.event
+        const target = propertyData.target
 
         if (journeyId == null || event == null) {
           return acc
@@ -145,29 +154,85 @@ function transformBreakdownResults(
         const visitors = result.visitors ?? 0
 
         if (!acc[journeyId]) {
-          acc[journeyId] = []
+          acc[journeyId] = {
+            events: {},
+            chatsClicked: 0,
+            linksClicked: 0
+          }
         }
 
-        acc[journeyId].push({
-          eventType: event,
-          visitors
-        })
+        // Merge events with the same eventType by summing their visitors
+        acc[journeyId].events[event] =
+          (acc[journeyId].events[event] ?? 0) + visitors
+
+        // Aggregate chatsClicked and linksClicked based on target
+        if (
+          target === 'chat' ||
+          (target != null && target.startsWith('chat:'))
+        ) {
+          acc[journeyId].chatsClicked += visitors
+          // Add to events if filter allows it
+          if (allowedEvents == null || allowedEvents.has('chatsClicked')) {
+            acc[journeyId].events['chatsClicked'] =
+              (acc[journeyId].events['chatsClicked'] ?? 0) + visitors
+          }
+        }
+
+        if (
+          target === 'link' ||
+          (target != null && target.startsWith('link:'))
+        ) {
+          acc[journeyId].linksClicked += visitors
+          // Add to events if filter allows it
+          if (allowedEvents == null || allowedEvents.has('linksClicked')) {
+            acc[journeyId].events['linksClicked'] =
+              (acc[journeyId].events['linksClicked'] ?? 0) + visitors
+          }
+        }
 
         return acc
       } catch {
         return acc
       }
     },
-    {} as Record<string, Array<{ eventType: string; visitors: number }>>
+    {} as Record<
+      string,
+      {
+        events: Record<string, number>
+        chatsClicked: number
+        linksClicked: number
+      }
+    >
   )
 
-  return Object.entries(grouped).map(([journeyId, events]) => ({
-    journeyId,
-    stats: events.map((event) => ({
-      event: event.eventType as TemplatePlausibleStatsEventResponse['event'],
-      visitors: event.visitors
+  return Object.entries(grouped).map(([journeyId, data]) => {
+    // Convert merged events to stats array
+    const stats = Object.entries(data.events).map(([eventType, visitors]) => ({
+      event: eventType as TemplatePlausibleStatsEventResponse['event'],
+      visitors
     }))
-  }))
+
+    // If there's a filter, ensure all filtered events are included (with 0 if missing)
+    if (allowedEvents != null) {
+      const existingEventTypes = new Set(
+        stats.map((stat) => String(stat.event))
+      )
+
+      for (const eventType of allowedEvents) {
+        if (!existingEventTypes.has(String(eventType))) {
+          stats.push({
+            event: eventType as TemplatePlausibleStatsEventResponse['event'],
+            visitors: 0
+          })
+        }
+      }
+    }
+
+    return {
+      journeyId,
+      stats
+    }
+  })
 }
 
 type JourneyWithAcl = Prisma.JourneyGetPayload<{
