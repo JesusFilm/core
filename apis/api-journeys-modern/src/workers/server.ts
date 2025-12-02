@@ -1,6 +1,8 @@
 import { Job, Queue, Worker } from 'bullmq'
 import { Logger } from 'pino'
 
+import { env } from '../env'
+
 import { connection } from './lib/connection'
 import { runIfLeader } from './lib/leader'
 import { logger } from './lib/logger'
@@ -11,11 +13,13 @@ const ONE_DAY = 86_400
 function run({
   service,
   queueName,
-  repeat
+  repeat,
+  jobData
 }: {
   service: (job: Job, logger?: Logger) => Promise<void>
   queueName: string
   repeat?: string
+  jobData?: Record<string, unknown>
 }): void {
   // eslint-disable-next-line no-new
   new Worker(queueName, job, {
@@ -40,7 +44,7 @@ function run({
     const queue = new Queue(queueName, { connection })
     void queue.add(
       `${queueName}-job`,
-      { __typename: 'updateAllShortlinks' },
+      jobData ?? {},
       {
         removeOnComplete: { age: ONE_HOUR },
         removeOnFail: { age: ONE_DAY },
@@ -69,6 +73,12 @@ async function main(): Promise<void> {
       await import(
         /* webpackChunkName: 'revalidate' */
         './revalidate'
+      )
+    )
+    run(
+      await import(
+        /* webpackChunkName: 'plausible' */
+        './plausible'
       )
     )
     run(
