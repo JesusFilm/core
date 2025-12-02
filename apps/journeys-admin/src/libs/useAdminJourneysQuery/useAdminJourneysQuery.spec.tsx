@@ -56,13 +56,16 @@ describe('useAdminJourneysQuery', () => {
                   imageUrl: 'https://bit.ly/3Gth4Yf'
                 }
               }
-            ]
+            ],
+            team: {
+              id: 'team-id'
+            }
           }
         ]
       }
     }))
 
-    renderHook(
+    const { result: hookResult } = renderHook(
       () =>
         useAdminJourneysQuery({
           status: [JourneyStatus.draft],
@@ -93,5 +96,11 @@ describe('useAdminJourneysQuery', () => {
     await act(
       async () => await waitFor(() => expect(result).toHaveBeenCalled())
     )
+
+    expect(hookResult.current.data?.journeys).toBeDefined()
+    expect(hookResult.current.data?.journeys?.length).toBeGreaterThan(0)
+    hookResult.current.data?.journeys?.forEach((journey) => {
+      expect((journey as any).team?.id).toBe('team-id')
+    })
   })
 })
