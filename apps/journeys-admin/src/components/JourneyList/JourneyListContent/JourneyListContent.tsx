@@ -174,32 +174,72 @@ export function JourneyListContent({
   }
 
   const mutations = getMutations()
+
+  // Helper to get the mutation response field name based on status
+  const getPrimaryMutationField = (): string => {
+    switch (status) {
+      case 'active':
+        return 'journeysArchive'
+      case 'archived':
+        return 'journeysRestore'
+      case 'trashed':
+        return 'journeysRestore'
+      default:
+        return 'journeysArchive'
+    }
+  }
+
+  const getSecondaryMutationField = (): string => {
+    switch (status) {
+      case 'active':
+        return 'journeysTrash'
+      case 'archived':
+        return 'journeysTrash'
+      case 'trashed':
+        return 'journeysDelete'
+      default:
+        return 'journeysTrash'
+    }
+  }
+
   const [primaryMutation] = useMutation(mutations.primary, {
     update(_cache, { data }) {
-      const messageKey =
-        status === 'active'
-          ? 'Journeys Archived'
-          : status === 'archived'
-            ? 'Journeys Restored'
-            : 'Journeys Restored'
-      enqueueSnackbar(t(messageKey), {
-        variant: 'success'
-      })
-      void refetch()
+      const mutationField = getPrimaryMutationField()
+      if (data?.[mutationField] != null) {
+        const isTemplate = contentType === 'templates'
+        let messageKey: string
+        if (status === 'active') {
+          messageKey = isTemplate ? 'Templates Archived' : 'Journeys Archived'
+        } else if (status === 'archived') {
+          messageKey = isTemplate ? 'Templates Restored' : 'Journeys Restored'
+        } else {
+          messageKey = isTemplate ? 'Templates Restored' : 'Journeys Restored'
+        }
+        enqueueSnackbar(t(messageKey), {
+          variant: 'success'
+        })
+        void refetch()
+      }
     }
   })
   const [secondaryMutation] = useMutation(mutations.secondary, {
     update(_cache, { data }) {
-      const messageKey =
-        status === 'active'
-          ? 'Journeys Trashed'
-          : status === 'archived'
-            ? 'Journeys Trashed'
-            : 'Journeys Deleted'
-      enqueueSnackbar(t(messageKey), {
-        variant: 'success'
-      })
-      void refetch()
+      const mutationField = getSecondaryMutationField()
+      if (data?.[mutationField] != null) {
+        const isTemplate = contentType === 'templates'
+        let messageKey: string
+        if (status === 'active') {
+          messageKey = isTemplate ? 'Templates Trashed' : 'Journeys Trashed'
+        } else if (status === 'archived') {
+          messageKey = isTemplate ? 'Templates Trashed' : 'Journeys Trashed'
+        } else {
+          messageKey = isTemplate ? 'Templates Deleted' : 'Journeys Deleted'
+        }
+        enqueueSnackbar(t(messageKey), {
+          variant: 'success'
+        })
+        void refetch()
+      }
     }
   })
 
@@ -210,16 +250,21 @@ export function JourneyListContent({
     boolean | undefined
   >()
 
-  // Filter journeys by owner role for journeys (not templates)
   const getOwnerFilteredIds = (): string[] | undefined => {
-    if (contentType === 'templates' || !user?.id) {
+    const isTemplate = contentType === 'templates'
+    const isTeamContext = getQueryParams().useLastActiveTeamId
+
+    // Templates and team journeys: send all IDs, backend handles permissions
+    if (isTemplate || !user?.id || isTeamContext) {
       return data?.journeys?.map((journey) => journey.id)
     }
+
+    // Personal journeys: only include journeys where user is owner
     return data?.journeys
       ?.filter(
         (journey) =>
           journey.userJourneys?.find(
-            (userJourney) => userJourney.user?.id === user.id
+            (userJourney) => userJourney.user?.id === (user?.id ?? '')
           )?.role === 'owner'
       )
       .map((journey) => journey.id)
@@ -337,45 +382,20 @@ export function JourneyListContent({
     const itemType = isTemplate ? 'Templates' : 'Journeys'
 
     switch (status) {
-      case 'active':
-        return {
-          primary: {
-            title: t(`Archive ${itemType}`),
-            submitLabel: t('Archive'),
-            message: isTemplate
-              ? t(
-                  'Are you sure you would like to archive all active templates immediately?'
-                )
-              : t('This will archive all active journeys you own.')
-          },
-          secondary: {
-            title: t(`Trash ${itemType}`),
-            submitLabel: t('Trash'),
-            message: isTemplate
-              ? t(
-                  'Are you sure you would like to trash all active templates immediately?'
-                )
-              : t('This will trash all active journeys you own.')
-          }
-        }
       case 'archived':
         return {
           primary: {
             title: t(`Unarchive ${itemType}`),
             submitLabel: t('Unarchive'),
             message: isTemplate
-              ? t(
-                  'Are you sure you would like to unarchive all archived templates immediately?'
-                )
+              ? t('This will unarchive all archived templates you own.')
               : t('This will unarchive all archived journeys you own.')
           },
           secondary: {
             title: t(`Trash ${itemType}`),
             submitLabel: t('Trash'),
             message: isTemplate
-              ? t(
-                  'Are you sure you would like to trash all archived templates immediately?'
-                )
+              ? t('This will trash all archived templates you own.')
               : t('This will trash all archived journeys you own.')
           }
         }
@@ -385,39 +405,32 @@ export function JourneyListContent({
             title: t(`Restore ${itemType}`),
             submitLabel: t('Restore'),
             message: isTemplate
-              ? t(
-                  'Are you sure you would like to restore all trashed templates immediately?'
-                )
+              ? t('This will restore all trashed templates you own.')
               : t('This will restore all trashed journeys you own.')
           },
           secondary: {
             title: t(`Delete ${itemType} Forever`),
             submitLabel: t('Delete Forever'),
             message: isTemplate
-              ? t(
-                  'Are you sure you would like to permanently delete all trashed templates immediately?'
-                )
+              ? t('This will permanently delete all trashed templates you own.')
               : t('This will permanently delete all trashed journeys you own.')
           }
         }
+      case 'active':
       default:
         return {
           primary: {
             title: t(`Archive ${itemType}`),
             submitLabel: t('Archive'),
             message: isTemplate
-              ? t(
-                  'Are you sure you would like to archive all active templates immediately?'
-                )
+              ? t('This will archive all active templates you own.')
               : t('This will archive all active journeys you own.')
           },
           secondary: {
             title: t(`Trash ${itemType}`),
             submitLabel: t('Trash'),
             message: isTemplate
-              ? t(
-                  'Are you sure you would like to trash all active templates immediately?'
-                )
+              ? t('This will trash all active templates you own.')
               : t('This will trash all active journeys you own.')
           }
         }
