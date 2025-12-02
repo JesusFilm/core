@@ -93,8 +93,13 @@ export function Menu({ user }: MenuProps): ReactElement {
         {!mdUp && journey?.template !== true && (
           <AnalyticsItem variant="menu-item" />
         )}
-        {journey?.template !== true && isPublisher === true && (
-          <CreateTemplateItem variant="menu-item" />
+        {journey?.template !== true && (
+          <>
+            <CreateTemplateItem variant="menu-item" globalPublish={false} />
+            {isPublisher === true && (
+              <CreateTemplateItem variant="menu-item" globalPublish={true} />
+            )}
+          </>
         )}
         {!mdUp && (
           <>

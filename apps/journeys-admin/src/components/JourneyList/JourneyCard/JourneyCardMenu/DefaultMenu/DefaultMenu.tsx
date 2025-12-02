@@ -30,6 +30,7 @@ import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQ
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery'
 import { GET_JOURNEY_WITH_PERMISSIONS } from '../../../../AccessDialog/AccessDialog'
+import { CreateTemplateItem } from '../../../../Editor/Toolbar/Items/CreateTemplateItem/CreateTemplateItem'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
@@ -224,6 +225,16 @@ export function DefaultMenu({
               handleCloseMenu()
             }}
           />
+        </>
+      )}
+
+      {template !== true && (
+        <>
+          <Divider />
+          <CreateTemplateItem variant="menu-item" globalPublish={false} />
+          {isPublisher === true && (
+            <CreateTemplateItem variant="menu-item" globalPublish={true} />
+          )}
         </>
       )}
 
