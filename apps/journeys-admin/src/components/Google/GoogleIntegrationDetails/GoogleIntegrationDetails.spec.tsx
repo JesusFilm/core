@@ -50,22 +50,26 @@ describe('GoogleIntegrationDetails', () => {
     jest.clearAllMocks()
   })
 
+  interface GoogleIntegrationMock {
+    id: string
+    accountEmail?: string
+    user?: { id: string }
+    __typename?: 'IntegrationGoogle'
+  }
+
   function setupMocks({
     canManageSyncs = true,
     integrations = [
       {
         id: 'integrationId',
         accountEmail: 'user@example.com',
-        user: { id: 'userId' }
+        user: { id: 'userId' },
+        __typename: 'IntegrationGoogle'
       }
     ]
   }: {
     canManageSyncs?: boolean
-    integrations?: Array<{
-      id: string
-      accountEmail?: string
-      user?: { id: string }
-    }>
+    integrations?: GoogleIntegrationMock[]
   }): void {
     ;(useRouter as jest.Mock).mockReturnValue({
       query: {
@@ -116,7 +120,17 @@ describe('GoogleIntegrationDetails', () => {
   })
 
   it('disables remove button when user cannot manage syncs', () => {
-    setupMocks({ canManageSyncs: false })
+    setupMocks({
+      canManageSyncs: false,
+      integrations: [
+        {
+          id: 'integrationId',
+          accountEmail: 'user@example.com',
+          user: { id: 'anotherUserId' },
+          __typename: 'IntegrationGoogle'
+        }
+      ]
+    })
 
     const { getByRole } = render(
       <MockedProvider mocks={[]}>

@@ -1,9 +1,17 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { useRouter } from 'next/router'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
 
 import { FilterDrawer, GET_JOURNEY_BLOCK_TYPENAMES } from './FilterDrawer'
+
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(() => ({
+    query: { flag: 'sheets' }
+  }))
+}))
 
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
 const mockJourneyCreatedAt: MockedResponse = {
