@@ -57,7 +57,7 @@ test.describe('Journey level actions', () => {
     await journeyPage.clickEditDetailsInThreeDotOptions() // clicking on the title option of the three dot options
     await journeyLevelActions.enterTitle() // renaming the title on the title field in the 'edit title' popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
-    await journeyPage.backIcon() // clicking on the back icon in the custom jouney page
+    await journeyPage.backToHome() // clicking on thenext steps logo icon in the custom jouney page
     await journeyLevelActions.verifyJourneyRenamedInActiveList() // verifying the journey is renamed and updated in the journey list
   })
 
@@ -116,7 +116,7 @@ test.describe('Journey level actions', () => {
     ) // clicking on the Edit Details option of the thre dot options
     await journeyLevelActions.enterTitle() // entering title on the title field in the 'edit title' popup
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit title' popup
-    await journeyPage.backIcon() // clicking back icon at the top left corner in the custom journey page
+    await journeyPage.backToHome() // clicking next steps logo icon at the top left corner in the custom journey page
     await journeyLevelActions.verifyJourneyRenamedInActiveList() // verifying journey is displaying in the journey list with the entered title
   })
 
@@ -138,7 +138,7 @@ test.describe('Journey level actions', () => {
     await journeyPage.clickSaveBtn() // clicking on save button in the 'edit description' popup
     await journeyLevelActions.validateJourneyDescription() // verifying the description is updated in the journey details page
     //new UI descriptions details are not shown in the journey card list, so commenting the below line
-    //await journeyPage.backIcon() // clicking back icon at the top left corner in the custom journey page
+    //await journeyPage.backToHome() // clicking the next steps logo icon at the top left corner in the custom journey page
     //await journeyLevelActions.verifyDescriptionAddedForSelectedJourney() // verifying the journey is displaying in the journey list with added description below the journey title
   })
 
