@@ -1,5 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
-import React from 'react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { PhoneField } from './PhoneField'
 
 // Mock translations to return the key as-is
@@ -27,7 +26,7 @@ describe('PhoneField', () => {
     expect(phoneInput.value).toBe('3333')
   })
 
-  it('submits calling code', () => {
+  it('submits calling code', async () => {
     const handleCallingCodeChange = jest.fn()
 
     render(
@@ -43,10 +42,12 @@ describe('PhoneField', () => {
 
     fireEvent.blur(callingCodeInput)
 
-    expect(handleCallingCodeChange).toHaveBeenCalledWith('+7')
+    await waitFor(() => {
+      expect(handleCallingCodeChange).toHaveBeenCalledWith('+7')
+    })
   })
 
-  it('submits phone number', () => {
+  it('submits phone number', async () => {
     const handlePhoneNumberChange = jest.fn()
 
     render(
@@ -62,6 +63,8 @@ describe('PhoneField', () => {
 
     fireEvent.blur(phoneInput)
 
-    expect(handlePhoneNumberChange).toHaveBeenCalledWith('3333')
+    await waitFor(() => {
+      expect(handlePhoneNumberChange).toHaveBeenCalledWith('3333')
+    })
   })
 })
