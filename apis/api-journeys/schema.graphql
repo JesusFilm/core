@@ -2232,6 +2232,7 @@ input JourneysFilter {
   limit: Int
   orderByRecent: Boolean
   fromTemplateId: ID
+  teamId: String
 }
 
 input JourneysQueryOptions {
