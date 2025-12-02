@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
@@ -13,6 +13,16 @@ import { ThemeProvider } from '../../ThemeProvider'
 import { defaultJourney, oldJourney } from '../journeyListData'
 
 import { JourneyListContent } from '.'
+import {
+  ARCHIVE_ACTIVE_JOURNEYS,
+  DELETE_TRASHED_JOURNEYS,
+  RESTORE_ARCHIVED_JOURNEYS,
+  RESTORE_TRASHED_JOURNEYS,
+  TRASH_ACTIVE_JOURNEYS,
+  TRASH_ARCHIVED_JOURNEYS
+} from './JourneyListContent'
+
+import '../../../../test/i18n'
 
 jest.mock('@core/journeys/ui/useNavigationState', () => ({
   useNavigationState: jest.fn(() => false)
@@ -901,6 +911,568 @@ describe('JourneyListContent', () => {
           getByText('Trashed templates are moved here for up to 40 days.')
         ).toBeInTheDocument()
       )
+    })
+  })
+
+  describe('Snackbar Messages', () => {
+    describe('Active Journeys', () => {
+      it('should show "Journeys Archived" snackbar after archiving', async () => {
+        const archiveMutationMock: MockedResponse = {
+          request: {
+            query: ARCHIVE_ACTIVE_JOURNEYS,
+            variables: { ids: [defaultJourney.id, oldJourney.id] }
+          },
+          result: {
+            data: {
+              journeysArchive: [
+                { id: defaultJourney.id, status: JourneyStatus.archived },
+                { id: oldJourney.id, status: JourneyStatus.archived }
+              ]
+            }
+          }
+        }
+
+        const { getByText, getByRole } = render(
+          <MockedProvider
+            mocks={[
+              activeJourneysMock,
+              archiveMutationMock,
+              activeJourneysMock
+            ]}
+          >
+            <ThemeProvider>
+              <SnackbarProvider>
+                <JourneyListContent
+                  contentType="journeys"
+                  status="active"
+                  user={user}
+                  event="archiveAllActive"
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </MockedProvider>
+        )
+
+        await waitFor(() =>
+          expect(getByText('Archive Journeys')).toBeInTheDocument()
+        )
+
+        fireEvent.click(getByRole('button', { name: 'Archive' }))
+
+        await waitFor(() =>
+          expect(getByText('Journeys Archived')).toBeInTheDocument()
+        )
+      })
+
+      it('should show "Journeys Trashed" snackbar after trashing', async () => {
+        const trashMutationMock: MockedResponse = {
+          request: {
+            query: TRASH_ACTIVE_JOURNEYS,
+            variables: { ids: [defaultJourney.id, oldJourney.id] }
+          },
+          result: {
+            data: {
+              journeysTrash: [
+                { id: defaultJourney.id, status: JourneyStatus.trashed },
+                { id: oldJourney.id, status: JourneyStatus.trashed }
+              ]
+            }
+          }
+        }
+
+        const { getByText, getByRole } = render(
+          <MockedProvider
+            mocks={[activeJourneysMock, trashMutationMock, activeJourneysMock]}
+          >
+            <ThemeProvider>
+              <SnackbarProvider>
+                <JourneyListContent
+                  contentType="journeys"
+                  status="active"
+                  user={user}
+                  event="trashAllActive"
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </MockedProvider>
+        )
+
+        await waitFor(() =>
+          expect(getByText('Trash Journeys')).toBeInTheDocument()
+        )
+
+        fireEvent.click(getByRole('button', { name: 'Trash' }))
+
+        await waitFor(() =>
+          expect(getByText('Journeys Trashed')).toBeInTheDocument()
+        )
+      })
+    })
+
+    describe('Active Templates', () => {
+      it('should show "Templates Archived" snackbar after archiving', async () => {
+        const archiveMutationMock: MockedResponse = {
+          request: {
+            query: ARCHIVE_ACTIVE_JOURNEYS,
+            variables: { ids: [defaultJourney.id] }
+          },
+          result: {
+            data: {
+              journeysArchive: [
+                { id: defaultJourney.id, status: JourneyStatus.archived }
+              ]
+            }
+          }
+        }
+
+        const { getByText, getByRole } = render(
+          <MockedProvider
+            mocks={[templatesMock, archiveMutationMock, templatesMock]}
+          >
+            <ThemeProvider>
+              <SnackbarProvider>
+                <JourneyListContent
+                  contentType="templates"
+                  status="active"
+                  event="archiveAllActive"
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </MockedProvider>
+        )
+
+        await waitFor(() =>
+          expect(getByText('Archive Templates')).toBeInTheDocument()
+        )
+
+        fireEvent.click(getByRole('button', { name: 'Archive' }))
+
+        await waitFor(() =>
+          expect(getByText('Templates Archived')).toBeInTheDocument()
+        )
+      })
+
+      it('should show "Templates Trashed" snackbar after trashing', async () => {
+        const trashMutationMock: MockedResponse = {
+          request: {
+            query: TRASH_ACTIVE_JOURNEYS,
+            variables: { ids: [defaultJourney.id] }
+          },
+          result: {
+            data: {
+              journeysTrash: [
+                { id: defaultJourney.id, status: JourneyStatus.trashed }
+              ]
+            }
+          }
+        }
+
+        const { getByText, getByRole } = render(
+          <MockedProvider
+            mocks={[templatesMock, trashMutationMock, templatesMock]}
+          >
+            <ThemeProvider>
+              <SnackbarProvider>
+                <JourneyListContent
+                  contentType="templates"
+                  status="active"
+                  event="trashAllActive"
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </MockedProvider>
+        )
+
+        await waitFor(() =>
+          expect(getByText('Trash Templates')).toBeInTheDocument()
+        )
+
+        fireEvent.click(getByRole('button', { name: 'Trash' }))
+
+        await waitFor(() =>
+          expect(getByText('Templates Trashed')).toBeInTheDocument()
+        )
+      })
+    })
+
+    describe('Archived Journeys', () => {
+      it('should show "Journeys Restored" snackbar after restoring', async () => {
+        const restoreMutationMock: MockedResponse = {
+          request: {
+            query: RESTORE_ARCHIVED_JOURNEYS,
+            variables: { ids: [defaultJourney.id] }
+          },
+          result: {
+            data: {
+              journeysRestore: [
+                { id: defaultJourney.id, status: JourneyStatus.published }
+              ]
+            }
+          }
+        }
+
+        const { getByText, getByRole } = render(
+          <MockedProvider
+            mocks={[
+              archivedJourneysMock,
+              restoreMutationMock,
+              archivedJourneysMock
+            ]}
+          >
+            <ThemeProvider>
+              <SnackbarProvider>
+                <JourneyListContent
+                  contentType="journeys"
+                  status="archived"
+                  user={user}
+                  event="restoreAllArchived"
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </MockedProvider>
+        )
+
+        await waitFor(() =>
+          expect(getByText('Unarchive Journeys')).toBeInTheDocument()
+        )
+
+        fireEvent.click(getByRole('button', { name: 'Unarchive' }))
+
+        await waitFor(() =>
+          expect(getByText('Journeys Restored')).toBeInTheDocument()
+        )
+      })
+
+      it('should show "Journeys Trashed" snackbar after trashing', async () => {
+        const trashMutationMock: MockedResponse = {
+          request: {
+            query: TRASH_ARCHIVED_JOURNEYS,
+            variables: { ids: [defaultJourney.id] }
+          },
+          result: {
+            data: {
+              journeysTrash: [
+                { id: defaultJourney.id, status: JourneyStatus.trashed }
+              ]
+            }
+          }
+        }
+
+        const { getByText, getByRole } = render(
+          <MockedProvider
+            mocks={[
+              archivedJourneysMock,
+              trashMutationMock,
+              archivedJourneysMock
+            ]}
+          >
+            <ThemeProvider>
+              <SnackbarProvider>
+                <JourneyListContent
+                  contentType="journeys"
+                  status="archived"
+                  user={user}
+                  event="trashAllArchived"
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </MockedProvider>
+        )
+
+        await waitFor(() =>
+          expect(getByText('Trash Journeys')).toBeInTheDocument()
+        )
+
+        fireEvent.click(getByRole('button', { name: 'Trash' }))
+
+        await waitFor(() =>
+          expect(getByText('Journeys Trashed')).toBeInTheDocument()
+        )
+      })
+    })
+
+    describe('Archived Templates', () => {
+      it('should show "Templates Restored" snackbar after restoring', async () => {
+        const restoreMutationMock: MockedResponse = {
+          request: {
+            query: RESTORE_ARCHIVED_JOURNEYS,
+            variables: { ids: [defaultJourney.id] }
+          },
+          result: {
+            data: {
+              journeysRestore: [
+                { id: defaultJourney.id, status: JourneyStatus.published }
+              ]
+            }
+          }
+        }
+
+        const { getByText, getByRole } = render(
+          <MockedProvider
+            mocks={[
+              archivedTemplatesMock,
+              restoreMutationMock,
+              archivedTemplatesMock
+            ]}
+          >
+            <ThemeProvider>
+              <SnackbarProvider>
+                <JourneyListContent
+                  contentType="templates"
+                  status="archived"
+                  event="restoreAllArchived"
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </MockedProvider>
+        )
+
+        await waitFor(() =>
+          expect(getByText('Unarchive Templates')).toBeInTheDocument()
+        )
+
+        fireEvent.click(getByRole('button', { name: 'Unarchive' }))
+
+        await waitFor(() =>
+          expect(getByText('Templates Restored')).toBeInTheDocument()
+        )
+      })
+
+      it('should show "Templates Trashed" snackbar after trashing', async () => {
+        const trashMutationMock: MockedResponse = {
+          request: {
+            query: TRASH_ARCHIVED_JOURNEYS,
+            variables: { ids: [defaultJourney.id] }
+          },
+          result: {
+            data: {
+              journeysTrash: [
+                { id: defaultJourney.id, status: JourneyStatus.trashed }
+              ]
+            }
+          }
+        }
+
+        const { getByText, getByRole } = render(
+          <MockedProvider
+            mocks={[
+              archivedTemplatesMock,
+              trashMutationMock,
+              archivedTemplatesMock
+            ]}
+          >
+            <ThemeProvider>
+              <SnackbarProvider>
+                <JourneyListContent
+                  contentType="templates"
+                  status="archived"
+                  event="trashAllArchived"
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </MockedProvider>
+        )
+
+        await waitFor(() =>
+          expect(getByText('Trash Templates')).toBeInTheDocument()
+        )
+
+        fireEvent.click(getByRole('button', { name: 'Trash' }))
+
+        await waitFor(() =>
+          expect(getByText('Templates Trashed')).toBeInTheDocument()
+        )
+      })
+    })
+
+    describe('Trashed Journeys', () => {
+      it('should show "Journeys Restored" snackbar after restoring', async () => {
+        const restoreMutationMock: MockedResponse = {
+          request: {
+            query: RESTORE_TRASHED_JOURNEYS,
+            variables: { ids: [defaultJourney.id] }
+          },
+          result: {
+            data: {
+              journeysRestore: [
+                { id: defaultJourney.id, status: JourneyStatus.published }
+              ]
+            }
+          }
+        }
+
+        const { getByText, getByRole } = render(
+          <MockedProvider
+            mocks={[
+              trashedJourneysMock,
+              restoreMutationMock,
+              trashedJourneysMock
+            ]}
+          >
+            <ThemeProvider>
+              <SnackbarProvider>
+                <JourneyListContent
+                  contentType="journeys"
+                  status="trashed"
+                  user={user}
+                  event="restoreAllTrashed"
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </MockedProvider>
+        )
+
+        await waitFor(() =>
+          expect(getByText('Restore Journeys')).toBeInTheDocument()
+        )
+
+        fireEvent.click(getByRole('button', { name: 'Restore' }))
+
+        await waitFor(() =>
+          expect(getByText('Journeys Restored')).toBeInTheDocument()
+        )
+      })
+
+      it('should show "Journeys Deleted" snackbar after deleting', async () => {
+        const deleteMutationMock: MockedResponse = {
+          request: {
+            query: DELETE_TRASHED_JOURNEYS,
+            variables: { ids: [defaultJourney.id] }
+          },
+          result: {
+            data: {
+              journeysDelete: [
+                { id: defaultJourney.id, status: JourneyStatus.deleted }
+              ]
+            }
+          }
+        }
+
+        const { getByText, getByRole } = render(
+          <MockedProvider
+            mocks={[
+              trashedJourneysMock,
+              deleteMutationMock,
+              trashedJourneysMock
+            ]}
+          >
+            <ThemeProvider>
+              <SnackbarProvider>
+                <JourneyListContent
+                  contentType="journeys"
+                  status="trashed"
+                  user={user}
+                  event="deleteAllTrashed"
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </MockedProvider>
+        )
+
+        await waitFor(() =>
+          expect(getByText('Delete Journeys Forever')).toBeInTheDocument()
+        )
+
+        fireEvent.click(getByRole('button', { name: 'Delete Forever' }))
+
+        await waitFor(() =>
+          expect(getByText('Journeys Deleted')).toBeInTheDocument()
+        )
+      })
+    })
+
+    describe('Trashed Templates', () => {
+      it('should show "Templates Restored" snackbar after restoring', async () => {
+        const restoreMutationMock: MockedResponse = {
+          request: {
+            query: RESTORE_TRASHED_JOURNEYS,
+            variables: { ids: [defaultJourney.id] }
+          },
+          result: {
+            data: {
+              journeysRestore: [
+                { id: defaultJourney.id, status: JourneyStatus.published }
+              ]
+            }
+          }
+        }
+
+        const { getByText, getByRole } = render(
+          <MockedProvider
+            mocks={[
+              trashedTemplatesMock,
+              restoreMutationMock,
+              trashedTemplatesMock
+            ]}
+          >
+            <ThemeProvider>
+              <SnackbarProvider>
+                <JourneyListContent
+                  contentType="templates"
+                  status="trashed"
+                  event="restoreAllTrashed"
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </MockedProvider>
+        )
+
+        await waitFor(() =>
+          expect(getByText('Restore Templates')).toBeInTheDocument()
+        )
+
+        fireEvent.click(getByRole('button', { name: 'Restore' }))
+
+        await waitFor(() =>
+          expect(getByText('Templates Restored')).toBeInTheDocument()
+        )
+      })
+
+      it('should show "Templates Deleted" snackbar after deleting', async () => {
+        const deleteMutationMock: MockedResponse = {
+          request: {
+            query: DELETE_TRASHED_JOURNEYS,
+            variables: { ids: [defaultJourney.id] }
+          },
+          result: {
+            data: {
+              journeysDelete: [
+                { id: defaultJourney.id, status: JourneyStatus.deleted }
+              ]
+            }
+          }
+        }
+
+        const { getByText, getByRole } = render(
+          <MockedProvider
+            mocks={[
+              trashedTemplatesMock,
+              deleteMutationMock,
+              trashedTemplatesMock
+            ]}
+          >
+            <ThemeProvider>
+              <SnackbarProvider>
+                <JourneyListContent
+                  contentType="templates"
+                  status="trashed"
+                  event="deleteAllTrashed"
+                />
+              </SnackbarProvider>
+            </ThemeProvider>
+          </MockedProvider>
+        )
+
+        await waitFor(() =>
+          expect(getByText('Delete Templates Forever')).toBeInTheDocument()
+        )
+
+        fireEvent.click(getByRole('button', { name: 'Delete Forever' }))
+
+        await waitFor(() =>
+          expect(getByText('Templates Deleted')).toBeInTheDocument()
+        )
+      })
     })
   })
 })
