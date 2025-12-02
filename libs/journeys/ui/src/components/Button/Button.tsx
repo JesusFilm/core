@@ -202,6 +202,7 @@ export function Button({
             }),
             templateKey: templateKeyify({
               event: 'buttonClick',
+              target: action,
               journeyId: journey?.id
             }),
             simpleTemplateKey: templateKeyify({

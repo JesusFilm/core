@@ -117,6 +117,7 @@ export function RadioQuestion({
             }),
             templateKey: templateKeyify({
               event: 'radioQuestionSubmit',
+              target: radioOptionBlock.action,
               journeyId: journey?.id
             }),
             simpleTemplateKey: templateKeyify({

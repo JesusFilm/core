@@ -126,6 +126,7 @@ export function SwipeNavigation({
               }),
               templateKey: templateKeyify({
                 event: 'navigateNextStep',
+                target: input.nextStepId,
                 journeyId: journey?.id
               }),
               simpleTemplateKey: templateKeyify({
@@ -199,6 +200,7 @@ export function SwipeNavigation({
               }),
               templateKey: templateKeyify({
                 event: 'navigatePreviousStep',
+                target: input.previousStepId,
                 journeyId: journey?.id
               }),
               simpleTemplateKey: templateKeyify({

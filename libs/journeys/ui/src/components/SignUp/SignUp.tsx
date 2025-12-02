@@ -137,6 +137,7 @@ export const SignUp = ({
               }),
               templateKey: templateKeyify({
                 event: 'signupSubmit',
+                target: action,
                 journeyId: journey?.id
               }),
               simpleTemplateKey: templateKeyify({

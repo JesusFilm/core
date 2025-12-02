@@ -47,7 +47,7 @@ export function JourneyPageWrapper({
       customDomain="/plausible"
       domain={`api-journeys-journey-${journeyId ?? ''}${
         teamId != null ? `,api-journeys-team-${teamId}` : ''
-      }, template-site`}
+      }, template-site`} // TODO: Remove template-site after testing
     >
       <JourneyProvider value={{ journey, variant: variant ?? 'default' }}>
         <ThemeProvider

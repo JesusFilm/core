@@ -89,6 +89,7 @@ export function Step({
             simpleKey: key,
             templateKey: templateKeyify({
               event: 'pageview',
+              target: blockId,
               journeyId: journey?.id
             }),
             simpleTemplateKey: templateKeyify({

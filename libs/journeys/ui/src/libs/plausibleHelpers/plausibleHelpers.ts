@@ -167,21 +167,33 @@ export function getTargetEventKey(action?: Action | null): string {
 
 interface TemplateKeyifyProps {
   event: keyof JourneyPlausibleEvents
+  target?: string | Action | null
   journeyId?: string
 }
 
 export function templateKeyify({
   event,
+  target,
   journeyId
 }: TemplateKeyifyProps): string {
+  let targetId = ''
+
+  if (typeof target === 'string' || target == null) {
+    targetId = target ?? ''
+  } else {
+    targetId = generateActionTargetKey(target)
+  }
+
   return JSON.stringify({
     event,
+    target: targetId,
     journeyId
   })
 }
 
 export function reverseTemplateKeyify(key: string): {
   event: keyof JourneyPlausibleEvents
+  target?: string
   journeyId?: string
 } {
   return JSON.parse(key)

@@ -89,6 +89,7 @@ export function VideoTrigger({
               }),
               templateKey: templateKeyify({
                 event: 'videoTrigger',
+                target: triggerAction,
                 journeyId: journey?.id
               }),
               simpleTemplateKey: templateKeyify({

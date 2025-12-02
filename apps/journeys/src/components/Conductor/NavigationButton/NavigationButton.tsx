@@ -156,6 +156,7 @@ export function NavigationButton({
           }),
           templateKey: templateKeyify({
             event: 'navigateNextStep',
+            target: input.nextStepId,
             journeyId: journey?.id
           }),
           simpleTemplateKey: templateKeyify({
@@ -229,6 +230,7 @@ export function NavigationButton({
           }),
           templateKey: templateKeyify({
             event: 'navigatePreviousStep',
+            target: input.previousStepId,
             journeyId: journey?.id
           }),
           simpleTemplateKey: templateKeyify({
