@@ -1,1 +1,1 @@
-export { PhoneField, getFullPhoneNumber, normalizeCallingCode } from './PhoneField'
+export { PhoneField } from './PhoneField'
