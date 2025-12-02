@@ -142,7 +142,7 @@ describe('Toolbar', () => {
     expect(screen.getByTestId('NextStepsLogo')).toHaveAttribute('href', '/')
   })
 
-  it('should render NextSteps tooltip on hover', async () => {
+  it('should render Back to Home tooltip on hover', async () => {
     render(toolbar(defaultJourney))
     fireEvent.mouseOver(screen.getByTestId('NextStepsLogo'))
     await waitFor(() => {

@@ -193,7 +193,7 @@ test.describe.fixme('Publisher page', () => {
     ) // added filter on the Collections filter field for the template
     await publisherPage.clickSaveBtn() // clicking on save button
     await publisherPage.verifyTemplateSettingSaveToastMessage() // verifying 'Template settings have been saved' toast message
-    await journeyPage.backToHome() // clicking on the next step logo Icon
+    await journeyPage.backToHome() // clicking on the NextStep logo Icon
     await templatesPage.navigateToTemplatePage() // navigating to templates page
     await publisherPage.verifyCreatedTemplatInEnteredFilterOption('Topics') // Verifying that the template with the added Topic filter is fetched by filtering the Topics.
     await publisherPage.verifyCreatedTemplatInEnteredFilterOption('Felt Needs') // Verifying that the template with the added 'Felt Needs' filter is fetched by filtering the 'Felt Needs'.
@@ -323,7 +323,7 @@ test.describe.fixme('Template page', () => {
     await templatesPage.verifySelectedTemplateInCustomJourneyPage() // verifying the page is navigated to the custom journey page of selected template
     await cardLevelActionPage.clickOnJourneyCard() // clicking on the card
     await cardLevelActionPage.editTextInJourneysTypographyField() // editing the typography content in the card
-    await journeyPage.backToHome() // clicking the next step logo icon
+    await journeyPage.backToHome() // clicking the NextStep logo icon
     await templatesPage.navigateToTemplatePage() // navigating to templates page
     await templatesPage.selectExistingTemplate() // clicking on existing template in template page
     await templatesPage.verifySelectedTemplatePage() // verifying the page is navigated to selected template page
@@ -410,7 +410,7 @@ test.describe.fixme('Template page', () => {
     ) // setting the template categories in the template setting popup
     await publisherAndTemplatesPage.clickSaveBtn() // clicking on the save btn
     await publisherAndTemplatesPage.verifyTemplateSettingSaveToastMessage() // verifying 'Template settings have been saved' toast message
-    await journeyPage.backToHome() // clicking on the next stap logo Icon
+    await journeyPage.backToHome() // clicking on the NextSteps logo Icon
 
     await templatesPage.navigateToTemplatePage() // navigating to templates page
     await templatesPage.selectSlideFilters(filterOptions[0]) // clicking on Acceptance slide filter
@@ -440,7 +440,7 @@ test.describe.fixme('Template page', () => {
     ) // setting the template categories in the template setting popup
     await publisherAndTemplatesPage.clickSaveBtn() // clicking on the save btn
     await publisherAndTemplatesPage.verifyTemplateSettingSaveToastMessage() // verifying 'Template settings have been saved' toast message
-    await journeyPage.backToHome() // clicking on the next step logo Icon
+    await journeyPage.backToHome() // clicking on the NextSteps logo Icon
 
     await templatesPage.navigateToTemplatePage() // navigating to templates page
     await templatesPage.selectFilterBtnBelowSlideFilters(filterOptions[0]) // clicking on 'Jesus Film' filter button
