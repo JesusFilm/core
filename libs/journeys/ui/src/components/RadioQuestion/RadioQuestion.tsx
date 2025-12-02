@@ -27,6 +27,7 @@ import {
 } from './__generated__/RadioQuestionSubmissionEventCreate'
 import { GridVariant } from './GridVariant'
 import { ListVariant } from './ListVariant'
+import { actionToTarget } from '../../libs/plausibleHelpers/plausibleHelpers'
 
 export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
   mutation RadioQuestionSubmissionEventCreate(
@@ -117,7 +118,7 @@ export function RadioQuestion({
             }),
             templateKey: templateKeyify({
               event: 'radioQuestionSubmit',
-              target: radioOptionBlock.action,
+              target: actionToTarget(radioOptionBlock.action),
               journeyId: journey?.id
             }),
             simpleTemplateKey: templateKeyify({

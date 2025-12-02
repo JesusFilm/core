@@ -108,7 +108,7 @@ export function ChatButtons(): ReactElement {
             }),
             templateKey: templateKeyify({
               event: 'footerChatButtonClick',
-              target: `link:${chatButton.link}:${chatButton.platform}`,
+              target: 'chat',
               journeyId: journey?.id
             }),
             simpleTemplateKey: templateKeyify({

@@ -44,6 +44,7 @@ import {
 import { findMessagePlatform } from './utils/findMessagePlatform'
 import { getActionLabel } from './utils/getActionLabel'
 import { getLinkActionGoal } from './utils/getLinkActionGoal'
+import { actionToTarget } from '../../libs/plausibleHelpers/plausibleHelpers'
 
 export const BUTTON_CLICK_EVENT_CREATE = gql`
   mutation ButtonClickEventCreate($input: ButtonClickEventCreateInput!) {
@@ -202,7 +203,7 @@ export function Button({
             }),
             templateKey: templateKeyify({
               event: 'buttonClick',
-              target: action,
+              target: actionToTarget(action),
               journeyId: journey?.id
             }),
             simpleTemplateKey: templateKeyify({
@@ -249,6 +250,7 @@ export function Button({
             }),
             templateKey: templateKeyify({
               event: 'chatButtonClick',
+              target: 'chat',
               journeyId: journey?.id
             }),
             simpleTemplateKey: templateKeyify({

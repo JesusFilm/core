@@ -34,6 +34,7 @@ import {
   SignUpSubmissionEventCreate,
   SignUpSubmissionEventCreateVariables
 } from './__generated__/SignUpSubmissionEventCreate'
+import { actionToTarget } from '../../libs/plausibleHelpers/plausibleHelpers'
 
 export const SIGN_UP_SUBMISSION_EVENT_CREATE = gql`
   mutation SignUpSubmissionEventCreate(
@@ -137,7 +138,7 @@ export const SignUp = ({
               }),
               templateKey: templateKeyify({
                 event: 'signupSubmit',
-                target: action,
+                target: actionToTarget(action),
                 journeyId: journey?.id
               }),
               simpleTemplateKey: templateKeyify({

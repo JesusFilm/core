@@ -15,6 +15,7 @@ import {
   VideoProgressEventCreateInput,
   VideoStartEventCreateInput
 } from '../../../__generated__/globalTypes'
+import { messagePlatforms } from '../../components/Button/utils/findMessagePlatform'
 import {
   BlockFields_ButtonBlock_action,
   BlockFields_RadioOptionBlock_action,
@@ -197,4 +198,25 @@ export function reverseTemplateKeyify(key: string): {
   journeyId?: string
 } {
   return JSON.parse(key)
+}
+
+export function actionToTarget(action: Action | null): 'link' | 'chat' | null {
+  if (action == null) return null
+
+  switch (action.__typename) {
+    case 'NavigateToBlockAction':
+      return null
+    case 'LinkAction': {
+      const isChatLink = messagePlatforms.find(({ url }: { url: string }) =>
+        action.url.includes(url)
+      )
+      return isChatLink != null ? 'chat' : 'link'
+    }
+    case 'EmailAction':
+      return null
+    case 'ChatAction':
+      return 'chat'
+    case 'PhoneAction':
+      return 'chat'
+  }
 }

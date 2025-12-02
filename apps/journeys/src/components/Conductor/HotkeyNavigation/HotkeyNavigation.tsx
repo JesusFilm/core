@@ -194,7 +194,6 @@ export function HotkeyNavigation({ rtl }: HotkeyNavigationProps): ReactElement {
               }),
               templateKey: templateKeyify({
                 event: 'navigatePreviousStep',
-                target: input.previousStepId,
                 journeyId: journey?.id
               }),
               simpleTemplateKey: templateKeyify({

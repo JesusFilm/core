@@ -17,6 +17,7 @@ import {
 } from '../../libs/plausibleHelpers'
 
 import { VideoTriggerFields } from './__generated__/VideoTriggerFields'
+import { actionToTarget } from '../../libs/plausibleHelpers/plausibleHelpers'
 
 type VideoTriggerProps = (
   | TreeBlock<VideoTriggerFields>
@@ -89,7 +90,7 @@ export function VideoTrigger({
               }),
               templateKey: templateKeyify({
                 event: 'videoTrigger',
-                target: triggerAction,
+                target: actionToTarget(triggerAction),
                 journeyId: journey?.id
               }),
               simpleTemplateKey: templateKeyify({
