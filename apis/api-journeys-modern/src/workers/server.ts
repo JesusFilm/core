@@ -1,8 +1,6 @@
 import { Job, Queue, Worker } from 'bullmq'
 import { Logger } from 'pino'
 
-import { env } from '../env'
-
 import { connection } from './lib/connection'
 import { runIfLeader } from './lib/leader'
 import { logger } from './lib/logger'
@@ -42,15 +40,11 @@ function run({
   if (repeat != null) {
     // Set up scheduled job
     const queue = new Queue(queueName, { connection })
-    void queue.add(
-      `${queueName}-job`,
-      jobData ?? {},
-      {
-        removeOnComplete: { age: ONE_HOUR },
-        removeOnFail: { age: ONE_DAY },
-        repeat: repeat != null ? { pattern: repeat } : undefined
-      }
-    )
+    void queue.add(`${queueName}-job`, jobData ?? {}, {
+      removeOnComplete: { age: ONE_HOUR },
+      removeOnFail: { age: ONE_DAY },
+      repeat: repeat != null ? { pattern: repeat } : undefined
+    })
     logger.info({ queue: queueName, repeat }, 'scheduled recurring job')
   }
 }
