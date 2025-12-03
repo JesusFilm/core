@@ -11,6 +11,13 @@ import { FooterLink } from './FooterLink'
 export function Footer(): ReactElement {
   const { t } = useTranslation('apps-resources')
 
+  const gitSha =
+    process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ??
+    process.env.VERCEL_GIT_COMMIT_SHA ??
+    ''
+  const shortSha = gitSha ? gitSha.substring(0, 7).toLowerCase() : 'dev'
+  const projectInfo = `Resources (${shortSha})`
+
   const navigationLinks = [
     { name: t('Share', { lng: 'en' }), href: '/partners/share/' },
     { name: t('Watch', { lng: 'en' }), href: '/watch/' },
@@ -178,6 +185,15 @@ export function Footer(): ReactElement {
               </Typography>
               <Typography variant="h6" fontSize={12} lineHeight={1.2}>
                 {t('Orlando, FL, 32832', { lng: 'en' })}
+              </Typography>
+              <Typography
+                variant="h6"
+                fontSize={12}
+                lineHeight={1.2}
+                color="textSecondary"
+                sx={{ opacity: 0.6 }}
+              >
+                {projectInfo}
               </Typography>
             </Stack>
 
