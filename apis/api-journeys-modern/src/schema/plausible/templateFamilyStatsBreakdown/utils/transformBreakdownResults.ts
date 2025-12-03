@@ -12,7 +12,10 @@ export interface TransformedResult {
  * Transforms Plausible breakdown results by grouping events by journey ID and aggregating statistics.
  * Merges events with the same event type by summing their visitor counts. Calculates aggregated
  * events for chatsClicked and linksClicked based on event targets. If an events filter is provided,
- * ensures all filtered events are included with 0 visitors if they don't exist in the results.
+ * filters the final results and ensures all filtered events are included with 0 visitors if they don't exist.
+ *
+ * Note: All events are processed and aggregated first, then filtered. This ensures derived events
+ * (chatsClicked, linksClicked) can be correctly calculated even when only derived events are in the filter.
  *
  * @param breakdownResults - Array of Plausible stats responses with JSON property data containing journeyId, event, and target
  * @param eventsFilter - Optional array of event names to filter. If null or empty, all events are included.
@@ -51,10 +54,6 @@ export function transformBreakdownResults(
           return acc
         }
 
-        if (allowedEvents != null && !allowedEvents.has(String(event))) {
-          return acc
-        }
-
         const visitors = result.visitors ?? 0
 
         if (!acc[journeyId]) {
@@ -73,10 +72,8 @@ export function transformBreakdownResults(
           (target != null && target.startsWith('chat:'))
         ) {
           acc[journeyId].chatsClicked += visitors
-          if (allowedEvents == null || allowedEvents.has('chatsClicked')) {
-            acc[journeyId].events['chatsClicked'] =
-              (acc[journeyId].events['chatsClicked'] ?? 0) + visitors
-          }
+          acc[journeyId].events['chatsClicked'] =
+            (acc[journeyId].events['chatsClicked'] ?? 0) + visitors
         }
 
         if (
@@ -84,10 +81,8 @@ export function transformBreakdownResults(
           (target != null && target.startsWith('link:'))
         ) {
           acc[journeyId].linksClicked += visitors
-          if (allowedEvents == null || allowedEvents.has('linksClicked')) {
-            acc[journeyId].events['linksClicked'] =
-              (acc[journeyId].events['linksClicked'] ?? 0) + visitors
-          }
+          acc[journeyId].events['linksClicked'] =
+            (acc[journeyId].events['linksClicked'] ?? 0) + visitors
         }
 
         return acc
@@ -106,12 +101,14 @@ export function transformBreakdownResults(
   )
 
   return Object.entries(grouped).map(([journeyId, data]) => {
-    const stats = Object.entries(data.events).map(([eventType, visitors]) => ({
+    let stats = Object.entries(data.events).map(([eventType, visitors]) => ({
       event: eventType as TemplateFamilyStatsEventResponse['event'],
       visitors
     }))
 
     if (allowedEvents != null) {
+      stats = stats.filter((stat) => allowedEvents.has(String(stat.event)))
+
       const existingEventTypes = new Set(
         stats.map((stat) => String(stat.event))
       )
