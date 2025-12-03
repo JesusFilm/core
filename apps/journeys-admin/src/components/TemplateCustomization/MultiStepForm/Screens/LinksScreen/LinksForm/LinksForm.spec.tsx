@@ -1,8 +1,8 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { Formik, FormikProvider } from 'formik'
 
-import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
 import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
+import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
 
 import { LinksForm } from './LinksForm'
 

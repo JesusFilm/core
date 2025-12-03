@@ -21,6 +21,10 @@ import {
   BlockActionLinkUpdateVariables
 } from '../../../../../../__generated__/BlockActionLinkUpdate'
 import {
+  BlockActionPhoneUpdate,
+  BlockActionPhoneUpdateVariables
+} from '../../../../../../__generated__/BlockActionPhoneUpdate'
+import {
   ContactActionType,
   MessagePlatform
 } from '../../../../../../__generated__/globalTypes'
@@ -35,10 +39,6 @@ import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/C
 import { JourneyLink } from '../../../utils/getJourneyLinks'
 
 import { LinksScreen } from './LinksScreen'
-import {
-  BlockActionPhoneUpdate,
-  BlockActionPhoneUpdateVariables
-} from '../../../../../../__generated__/BlockActionPhoneUpdate'
 
 describe('LinksScreen', () => {
   const journey = {

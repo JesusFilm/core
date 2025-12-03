@@ -8,19 +8,21 @@ import { object, string } from 'yup'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { JourneyFields_chatButtons as JourneyChatButton } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
-import { JourneyFields_blocks_ButtonBlock_action_PhoneAction as JourneyPhoneAction } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import {
+  JourneyFields_chatButtons as JourneyChatButton,
+  JourneyFields_blocks_ButtonBlock_action_PhoneAction as JourneyPhoneAction
+} from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { transformer } from '@core/journeys/ui/transformer'
 
 import {
   BlockFields,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../__generated__/BlockFields'
+import { ContactActionType } from '../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonUpdate } from '../../../../../../__generated__/JourneyChatButtonUpdate'
 import { useBlockActionEmailUpdateMutation } from '../../../../../libs/useBlockActionEmailUpdateMutation'
 import { useBlockActionLinkUpdateMutation } from '../../../../../libs/useBlockActionLinkUpdateMutation'
 import { useBlockActionPhoneUpdateMutation } from '../../../../../libs/useBlockActionPhoneUpdateMutation'
-import { ContactActionType } from '../../../../../../__generated__/globalTypes'
 import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/ChatOption/Details/Details'
 import { countries } from '../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/countriesList'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
@@ -285,7 +287,7 @@ export function LinksScreen({
                   (val) =>
                     val == null ||
                     val.trim() === '' ||
-                    /^[0-9\s\-\(\)]+$/.test(val.trim())
+                    /^[0-9\s\-()]+$/.test(val.trim())
                 )
               } else {
                 acc[link.id] = string().url(t('Enter a valid URL'))

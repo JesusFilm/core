@@ -1,4 +1,5 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+
 import { PhoneField } from './PhoneField'
 
 // Mock translations to return the key as-is
@@ -17,10 +18,8 @@ describe('PhoneField', () => {
       />
     )
 
-    const callingCodeInput = screen.getByLabelText(
-      'Country'
-    ) as HTMLInputElement
-    const phoneInput = screen.getByLabelText('Phone Number') as HTMLInputElement
+    const callingCodeInput = screen.getByLabelText('Country')
+    const phoneInput = screen.getByLabelText('Phone Number')
 
     expect(callingCodeInput.value).toBe('+7')
     expect(phoneInput.value).toBe('3333')

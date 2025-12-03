@@ -9,11 +9,11 @@ import { ReactElement } from 'react'
 
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 
-import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
 import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
 import { PhoneField } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/PhoneField/PhoneField'
 import { getFullPhoneNumber } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/utils/getFullPhoneNumber'
 import { normalizeCallingCode } from '../../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/utils/normalizeCallingCode'
+import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
 
 interface LinksFormProps {
   links: JourneyLink[]
