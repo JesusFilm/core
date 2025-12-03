@@ -31,7 +31,7 @@ export interface PlausibleStatsResponse {
   timeOnPage?: number | null
 }
 
-export interface TemplatePlausibleStatsEventResponse {
+export interface TemplateFamilyStatsEventResponse {
   event:
     | (typeof goals)[number]
     | 'chatsClicked'
@@ -41,11 +41,11 @@ export interface TemplatePlausibleStatsEventResponse {
   visitors: number
 }
 
-export interface TemplatePlausibleStatsBreakdownResponse {
+export interface TemplateFamilyStatsBreakdownResponse {
   journeyId: string
   journeyName: string
   teamName: string
-  stats: TemplatePlausibleStatsEventResponse[]
+  stats: TemplateFamilyStatsEventResponse[]
 }
 
 export const PlausibleStatsAggregateValueRef = builder
@@ -193,9 +193,9 @@ export const PlausibleStatsResponseRef = builder
     })
   })
 
-export const TemplatePlausibleStatsEventResponseRef = builder
-  .objectRef<TemplatePlausibleStatsEventResponse>(
-    'TemplatePlausibleStatsEventResponse'
+export const TemplateFamilyStatsEventResponseRef = builder
+  .objectRef<TemplateFamilyStatsEventResponse>(
+    'TemplateFamilyStatsEventResponse'
   )
   .implement({
     shareable: true,
@@ -211,9 +211,9 @@ export const TemplatePlausibleStatsEventResponseRef = builder
     })
   })
 
-export const TemplatePlausibleStatsBreakdownResponseRef = builder
-  .objectRef<TemplatePlausibleStatsBreakdownResponse>(
-    'TemplatePlausibleStatsBreakdownResponse'
+export const TemplateFamilyStatsBreakdownResponseRef = builder
+  .objectRef<TemplateFamilyStatsBreakdownResponse>(
+    'TemplateFamilyStatsBreakdownResponse'
   )
   .implement({
     shareable: true,
@@ -231,7 +231,7 @@ export const TemplatePlausibleStatsBreakdownResponseRef = builder
         resolve: (parent) => parent.teamName
       }),
       stats: t.field({
-        type: [TemplatePlausibleStatsEventResponseRef],
+        type: [TemplateFamilyStatsEventResponseRef],
         nullable: false,
         resolve: (parent) => parent.stats
       })

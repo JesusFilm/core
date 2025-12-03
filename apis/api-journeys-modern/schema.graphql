@@ -1661,7 +1661,7 @@ type Query {
   If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
   """
   journeysPlausibleStatsTimeseries(id: ID!, idType: IdType = slug, where: PlausibleStatsTimeseriesFilter!): [PlausibleStatsResponse!]
-  templatePlausibleStatsBreakdown(
+  templateFamilyStatsBreakdown(
     id: ID!
     idType: IdType = slug
     where: PlausibleStatsBreakdownFilter!
@@ -1670,7 +1670,7 @@ type Query {
     Filter results to only include the specified events. If null or empty, all events are returned.
     """
     events: [PlausibleEvent!]
-  ): [TemplatePlausibleStatsBreakdownResponse!]
+  ): [TemplateFamilyStatsBreakdownResponse!]
 }
 
 type RadioOptionBlock implements Block
@@ -1988,16 +1988,16 @@ input TeamUpdateInput {
   publicTitle: String
 }
 
-type TemplatePlausibleStatsBreakdownResponse
+type TemplateFamilyStatsBreakdownResponse
   @shareable
 {
   journeyId: String!
   journeyName: String!
   teamName: String!
-  stats: [TemplatePlausibleStatsEventResponse!]!
+  stats: [TemplateFamilyStatsEventResponse!]!
 }
 
-type TemplatePlausibleStatsEventResponse
+type TemplateFamilyStatsEventResponse
   @shareable
 {
   event: String!

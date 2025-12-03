@@ -798,7 +798,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
   """
   journeysPlausibleStatsTimeseries(id: ID!, idType: IdType = slug, where: PlausibleStatsTimeseriesFilter!) : [PlausibleStatsResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
-  templatePlausibleStatsBreakdown(
+  templateFamilyStatsBreakdown(
     id: ID!
     idType: IdType = slug
     where: PlausibleStatsBreakdownFilter!
@@ -806,7 +806,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     Filter results to only include the specified events. If null or empty, all events are returned.
     """
     events: [PlausibleEvent!]
-  ): [TemplatePlausibleStatsBreakdownResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
+  ): [TemplateFamilyStatsBreakdownResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
@@ -2486,14 +2486,14 @@ type Subscription @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress!
 }
 
-type TemplatePlausibleStatsBreakdownResponse @join__type(graph: API_JOURNEYS_MODERN)  {
+type TemplateFamilyStatsBreakdownResponse @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyId: String!
   journeyName: String!
   teamName: String!
-  stats: [TemplatePlausibleStatsEventResponse!]!
+  stats: [TemplateFamilyStatsEventResponse!]!
 }
 
-type TemplatePlausibleStatsEventResponse @join__type(graph: API_JOURNEYS_MODERN)  {
+type TemplateFamilyStatsEventResponse @join__type(graph: API_JOURNEYS_MODERN)  {
   event: String!
   visitors: Int!
 }

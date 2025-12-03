@@ -12,9 +12,9 @@ import { PlausibleStatsBreakdownFilter } from './inputs'
 import { loadJourneyOrThrow, normalizeIdType } from './journeyAccess'
 import {
   PlausibleStatsResponse,
-  TemplatePlausibleStatsBreakdownResponse,
-  TemplatePlausibleStatsBreakdownResponseRef,
-  TemplatePlausibleStatsEventResponse
+  TemplateFamilyStatsBreakdownResponse,
+  TemplateFamilyStatsBreakdownResponseRef,
+  TemplateFamilyStatsEventResponse
 } from './plausible'
 import { getJourneyStatsBreakdown } from './service'
 
@@ -28,9 +28,9 @@ const PlausibleEventEnum = builder.enumType('PlausibleEvent', {
   ] as readonly string[]
 })
 
-builder.queryField('templatePlausibleStatsBreakdown', (t) =>
+builder.queryField('templateFamilyStatsBreakdown', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
-    type: [TemplatePlausibleStatsBreakdownResponseRef],
+    type: [TemplateFamilyStatsBreakdownResponseRef],
     args: {
       id: t.arg.id({ required: true }),
       idType: t.arg({
@@ -54,7 +54,7 @@ builder.queryField('templatePlausibleStatsBreakdown', (t) =>
       { id, idType, where, events },
       context,
       info: GraphQLResolveInfo
-    ): Promise<TemplatePlausibleStatsBreakdownResponse[]> => {
+    ): Promise<TemplateFamilyStatsBreakdownResponse[]> => {
       if (context.type !== 'authenticated') {
         throw new GraphQLError('Not authenticated', {
           extensions: { code: 'UNAUTHENTICATED' }
@@ -177,7 +177,7 @@ builder.queryField('templatePlausibleStatsBreakdown', (t) =>
 
 interface TransformedResult {
   journeyId: string
-  stats: TemplatePlausibleStatsEventResponse[]
+  stats: TemplateFamilyStatsEventResponse[]
 }
 
 function transformBreakdownResults(
@@ -273,7 +273,7 @@ function transformBreakdownResults(
   return Object.entries(grouped).map(([journeyId, data]) => {
     // Convert merged events to stats array
     const stats = Object.entries(data.events).map(([eventType, visitors]) => ({
-      event: eventType as TemplatePlausibleStatsEventResponse['event'],
+      event: eventType as TemplateFamilyStatsEventResponse['event'],
       visitors
     }))
 
@@ -286,7 +286,7 @@ function transformBreakdownResults(
       for (const eventType of allowedEvents) {
         if (!existingEventTypes.has(String(eventType))) {
           stats.push({
-            event: eventType as TemplatePlausibleStatsEventResponse['event'],
+            event: eventType as TemplateFamilyStatsEventResponse['event'],
             visitors: 0
           })
         }
@@ -313,7 +313,7 @@ function addPermissionsAndNames(
   transformedResults: TransformedResult[],
   journeys: JourneyWithAcl[],
   user: User
-): TemplatePlausibleStatsBreakdownResponse[] {
+): TemplateFamilyStatsBreakdownResponse[] {
   const journeyById = new Map(journeys.map((journey) => [journey.id, journey]))
   const teamNameMap = buildTeamNameMap(journeys, user)
 
