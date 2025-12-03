@@ -32,17 +32,7 @@ export function transformBreakdownResults(
       : null
 
   const grouped = breakdownResults.reduce(
-    (
-      acc: Record<
-        string,
-        {
-          events: Record<string, number>
-          chatsClicked: number
-          linksClicked: number
-        }
-      >,
-      result
-    ) => {
+    (acc: Record<string, { events: Record<string, number> }>, result) => {
       try {
         const propertyData = JSON.parse(result.property)
 
@@ -58,9 +48,7 @@ export function transformBreakdownResults(
 
         if (!acc[journeyId]) {
           acc[journeyId] = {
-            events: {},
-            chatsClicked: 0,
-            linksClicked: 0
+            events: {}
           }
         }
 
@@ -71,7 +59,6 @@ export function transformBreakdownResults(
           target === 'chat' ||
           (target != null && target.startsWith('chat:'))
         ) {
-          acc[journeyId].chatsClicked += visitors
           acc[journeyId].events['chatsClicked'] =
             (acc[journeyId].events['chatsClicked'] ?? 0) + visitors
         }
@@ -80,7 +67,6 @@ export function transformBreakdownResults(
           target === 'link' ||
           (target != null && target.startsWith('link:'))
         ) {
-          acc[journeyId].linksClicked += visitors
           acc[journeyId].events['linksClicked'] =
             (acc[journeyId].events['linksClicked'] ?? 0) + visitors
         }
@@ -90,14 +76,7 @@ export function transformBreakdownResults(
         return acc
       }
     },
-    {} as Record<
-      string,
-      {
-        events: Record<string, number>
-        chatsClicked: number
-        linksClicked: number
-      }
-    >
+    {} as Record<string, { events: Record<string, number> }>
   )
 
   return Object.entries(grouped).map(([journeyId, data]) => {
