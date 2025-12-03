@@ -8,6 +8,17 @@ import { logger } from './lib/logger'
 const ONE_HOUR = 3600
 const ONE_DAY = 86_400
 
+/**
+ * Start a worker to process jobs from the specified queue and optionally schedule a recurring or one-off job.
+ *
+ * The provided `service` is invoked for each job; each invocation receives a job-scoped logger. If `repeat` or `jobData`
+ * is provided, a scheduled job is added to the queue with automatic removal on completion and failure.
+ *
+ * @param service - Worker function invoked for each job; receives the BullMQ `Job` and a scoped `Logger`
+ * @param queueName - Name of the BullMQ queue to consume and (optionally) schedule jobs on
+ * @param repeat - Optional cron-like pattern string to schedule a recurring job
+ * @param jobData - Optional payload for the scheduled job (used for one-off or recurring scheduled jobs)
+ */
 function run({
   service,
   queueName,
@@ -52,6 +63,11 @@ function run({
   }
 }
 
+/**
+ * Loads worker modules and starts their workers, running them only on the elected leader in production.
+ *
+ * In non-production environments, imports and starts all workers immediately. In production, defers starting workers until leadership is acquired via `runIfLeader`.
+ */
 async function main(): Promise<void> {
   async function importAndRunAllWorkers(): Promise<void> {
     run(

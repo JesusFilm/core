@@ -124,14 +124,32 @@ const client: ApolloClient<NormalizedCacheObject> = new ApolloClient({
 
 const BATCH_SIZE = 5
 
+/**
+ * Build the Plausible site identifier for a journey.
+ *
+ * @param journeyId - The journey's unique identifier
+ * @returns The site id in the form `api-journeys-journey-<journeyId>`
+ */
 function journeySiteId(journeyId: string): string {
   return `api-journeys-journey-${journeyId}`
 }
 
+/**
+ * Build the Plausible site identifier for a team.
+ *
+ * @param teamId - The team's unique identifier used to generate the site id
+ * @returns The Plausible site id in the form `api-journeys-team-<teamId>`
+ */
 function teamSiteId(teamId: string): string {
   return `api-journeys-team-${teamId}`
 }
 
+/**
+ * Creates a Plausible site for the given domain using the SITE_CREATE mutation.
+ *
+ * @param domain - The domain to register as the Plausible site (for example a generated site id or hostname).
+ * @returns The GraphQL mutation result (`MutationSiteCreateResult`) if available, or `undefined` when no data is returned.
+ */
 async function createSite(
   domain: string
 ): Promise<MutationSiteCreateResult | undefined> {
@@ -147,6 +165,16 @@ async function createSite(
   return data?.siteCreate
 }
 
+/**
+ * Create a Plausible site for a journey and persist its sharing slug to the journey record.
+ *
+ * Attempts to create a Plausible site for the given journeyId, updates the corresponding
+ * Journey.prisma record's `plausibleToken` with the site's first shared link slug on success,
+ * and logs warnings if site creation or slug extraction fails.
+ *
+ * @param param0 - Object containing the `journeyId` of the journey to create a site for
+ * @param logger - Optional pino logger used for informational and warning messages
+ */
 async function createJourneySite(
   { journeyId }: PlausibleCreateJourneySiteJob,
   logger?: Logger
@@ -175,6 +203,11 @@ async function createJourneySite(
   logger?.info({ journeyId }, 'journey site created in Plausible')
 }
 
+/**
+ * Creates a Plausible site for a team and stores the resulting shared link slug on the team record.
+ *
+ * If site creation fails or the response lacks a shared link slug, a warning is logged and no database update is performed. On success, the team's `plausibleToken` is updated with the returned slug and an informational log is emitted.
+ */
 async function createTeamSite(
   { teamId }: PlausibleCreateTeamSiteJob,
   logger?: Logger
@@ -200,6 +233,11 @@ async function createTeamSite(
   logger?.info({ teamId }, 'team site created in Plausible')
 }
 
+/**
+ * Creates Plausible sites for teams and journeys that do not have a `plausibleToken`.
+ *
+ * Processes teams and journeys in batches (size controlled by BATCH_SIZE), creates a site for each entity, and persists the returned Plausible site token onto the corresponding Team or Journey record.
+ */
 async function createSites(logger?: Logger): Promise<void> {
   logger?.info('creating team sites...')
   const teamIds = (
@@ -242,6 +280,14 @@ async function createSites(logger?: Logger): Promise<void> {
   }
 }
 
+/**
+ * Dispatches Plausible-related jobs to the matching handler based on the job's `__typename`.
+ *
+ * Processes three job variants: batch creation of sites, creation of a team site, and creation of a journey site. Logs a warning for unknown job types.
+ *
+ * @param job - The BullMQ job whose `data.__typename` determines which Plausible operation to run.
+ * @param logger - Optional pino logger used for progress and warning messages.
+ */
 export async function service(
   job: Job<PlausibleJob>,
   logger?: Logger
