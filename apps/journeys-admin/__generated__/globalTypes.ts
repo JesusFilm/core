@@ -697,6 +697,8 @@ export interface PhoneActionInput {
   phone: string;
   countryCode: string;
   contactAction?: ContactActionType | null;
+  customizable?: boolean | null;
+  parentStepId?: string | null;
 }
 
 export interface QrCodeCreateInput {

@@ -139,7 +139,7 @@ export function NavigationDrawer({
             LinkComponent={NextLink}
             href="/"
             selected={selectedPage === 'journeys' || selectedPage === ''}
-            data-testid="NavigationListItemDiscover"
+            data-testid="NavigationListItemProjects"
           >
             <ListItemIcon>
               <Badge
@@ -152,7 +152,7 @@ export function NavigationDrawer({
               </Badge>
             </ListItemIcon>
             <ListItemText
-              primary={t('Discover')}
+              primary={t('Projects')}
               primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
             />
           </ListItemButton>

@@ -1,12 +1,20 @@
 import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client'
+import FolderIcon from '@mui/icons-material/Folder'
+import LaunchIcon from '@mui/icons-material/Launch'
+import NorthEastIcon from '@mui/icons-material/NorthEast'
+import Accordion from '@mui/material/Accordion'
+import AccordionDetails from '@mui/material/AccordionDetails'
+import AccordionSummary from '@mui/material/AccordionSummary'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
 import FormControl from '@mui/material/FormControl'
 import IconButton from '@mui/material/IconButton'
+import Link from '@mui/material/Link'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
+import { useTheme } from '@mui/material/styles'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -16,6 +24,7 @@ import TableRow from '@mui/material/TableRow'
 import TextField from '@mui/material/TextField'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import { format } from 'date-fns'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useRouter } from 'next/router'
@@ -26,7 +35,6 @@ import { object, string } from 'yup'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
-import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
@@ -141,6 +149,8 @@ export function GoogleSheetsSyncDialog({
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const router = useRouter()
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
 
   const { data: journeyData } = useQuery(GET_JOURNEY_CREATED_AT, {
     variables: { id: journeyId }
@@ -150,6 +160,7 @@ export function GoogleSheetsSyncDialog({
   })
 
   const [googleDialogOpen, setGoogleDialogOpen] = useState(false)
+  const [pickerActive, setPickerActive] = useState(false)
 
   const [exportToSheets, { loading: sheetsLoading }] =
     useMutation(EXPORT_TO_SHEETS)
@@ -279,24 +290,16 @@ export function GoogleSheetsSyncDialog({
     integrationId: string | undefined,
     setFieldValue: (field: string, value: unknown) => void
   ): Promise<void> {
-    const shouldReopenGoogleDialog = googleDialogOpen
-
     try {
-      if (shouldReopenGoogleDialog) {
-        setGoogleDialogOpen(false)
-      }
-
       const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY
       if (apiKey == null || apiKey === '') {
         enqueueSnackbar(t('Missing Google API key'), { variant: 'error' })
-        if (shouldReopenGoogleDialog) setGoogleDialogOpen(true)
         return
       }
       if (integrationId == null || integrationId === '') {
         enqueueSnackbar(t('Select an integration account first'), {
           variant: 'error'
         })
-        if (shouldReopenGoogleDialog) setGoogleDialogOpen(true)
         return
       }
 
@@ -312,19 +315,21 @@ export function GoogleSheetsSyncDialog({
         enqueueSnackbar(t('Unable to authorize Google Picker'), {
           variant: 'error'
         })
-        if (shouldReopenGoogleDialog) setGoogleDialogOpen(true)
         return
       }
 
       await ensurePickerLoaded()
 
+      // Mark picker as active to lower dialog z-index
+      setPickerActive(true)
+
       const googleAny: any = (window as any).google
       const view =
         mode === 'sheet'
           ? new googleAny.picker.DocsView(googleAny.picker.ViewId.SPREADSHEETS)
-          : new googleAny.picker.DocsView()
-              .setIncludeFolders(true)
-              .setSelectFolderEnabled(true)
+          : new googleAny.picker.DocsView(
+              googleAny.picker.ViewId.FOLDERS
+            ).setSelectFolderEnabled(true)
 
       const picker = new googleAny.picker.PickerBuilder()
         .setOAuthToken(oauthToken)
@@ -334,11 +339,12 @@ export function GoogleSheetsSyncDialog({
           if (pickerData?.action === googleAny.picker.Action.PICKED) {
             const doc = pickerData.docs?.[0]
             if (doc != null) {
+              const docName = doc?.name ?? doc?.title ?? doc?.id ?? null
               if (mode === 'sheet') {
                 setFieldValue('existingSpreadsheetId', doc.id)
+                setFieldValue('existingSpreadsheetName', docName ?? undefined)
               } else {
                 setFieldValue('folderId', doc.id)
-                const docName = doc?.name ?? doc?.title ?? doc?.id ?? null
                 setFieldValue('folderName', docName ?? undefined)
               }
             }
@@ -348,7 +354,7 @@ export function GoogleSheetsSyncDialog({
             pickerData?.action === googleAny.picker.Action.PICKED ||
             pickerData?.action === googleAny.picker.Action.CANCEL
           ) {
-            if (shouldReopenGoogleDialog) setGoogleDialogOpen(true)
+            setPickerActive(false)
           }
         })
         .build()
@@ -357,7 +363,7 @@ export function GoogleSheetsSyncDialog({
       elevatePickerZIndexWithRetries()
     } catch (err) {
       enqueueSnackbar(t('Failed to open Google Picker'), { variant: 'error' })
-      if (shouldReopenGoogleDialog) setGoogleDialogOpen(true)
+      setPickerActive(false)
     }
   }
 
@@ -382,16 +388,22 @@ export function GoogleSheetsSyncDialog({
   }
 
   function elevatePickerZIndex(): void {
-    const dialog = document.querySelector<HTMLElement>('.picker-dialog')
-    const bg = document.querySelector<HTMLElement>('.picker-dialog-bg')
-    const modal = document.querySelector<HTMLElement>('.picker.modal-dialog')
-    const z = '2147483647'
-    if (dialog != null) dialog.style.zIndex = z
-    if (bg != null) bg.style.zIndex = z
-    if (modal != null) modal.style.zIndex = z
+    const pickerElements = document.querySelectorAll<HTMLElement>(
+      '.picker-dialog, .picker-dialog-bg, .picker.modal-dialog, [class*="picker"]'
+    )
+
+    if (pickerElements.length === 0) return
+
+    // Ensure the Google Picker is always above any MUI dialog or overlay.
+    // Use a very high static value to stay above custom MUI z-index configurations.
+    const pickerZIndex = '99999'
+
+    pickerElements.forEach((element) => {
+      element.style.zIndex = pickerZIndex
+    })
   }
 
-  function elevatePickerZIndexWithRetries(attempts = 10, delayMs = 50): void {
+  function elevatePickerZIndexWithRetries(attempts = 100, delayMs = 100): void {
     elevatePickerZIndex()
     if (attempts <= 1) return
     setTimeout(
@@ -481,17 +493,113 @@ export function GoogleSheetsSyncDialog({
   const validationSchema = object().shape({
     integrationId: string().required(t('Integration account is required')),
     sheetName: string().required(t('Sheet tab name is required')),
-    spreadsheetTitle: string().when('googleMode', {
-      is: 'create',
-      then: (schema) =>
-        schema.required(
-          journeyData?.journey?.title
-            ? t('Sheet name is required')
-            : t('Sheet name is required')
-        ),
-      otherwise: (schema) => schema.notRequired()
-    })
+    spreadsheetTitle: string().when(
+      'googleMode',
+      (googleMode: unknown, schema) =>
+        googleMode === 'create'
+          ? schema.required(t('Sheet name is required'))
+          : schema.notRequired()
+    )
   })
+
+  const RenderMobileSyncCard = ({
+    sync,
+    isHistory = false
+  }: {
+    sync: GoogleSheetsSyncItem
+    isHistory?: boolean
+  }): ReactElement => {
+    const spreadsheetUrl = getSpreadsheetUrl(sync)
+    const createdAtDate = new Date(sync.createdAt)
+    const formattedDate = !Number.isNaN(createdAtDate.getTime())
+      ? format(createdAtDate, 'yyyy-MM-dd')
+      : 'N/A'
+    const startedBy = getStartedByLabel(sync)
+    const isDeleting = deletingSyncId === sync.id
+
+    return (
+      <Box
+        sx={{
+          p: 2,
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 1
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <Link
+            href={spreadsheetUrl ?? undefined}
+            target="_blank"
+            rel="noopener noreferrer"
+            underline="always"
+            sx={{
+              fontWeight: 600,
+              color: 'text.primary',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 0.5,
+              textDecorationColor: 'text.primary'
+            }}
+            onClick={(e) => {
+              if (spreadsheetUrl == null) e.preventDefault()
+            }}
+          >
+            {sync.sheetName ?? sync.spreadsheetId ?? t('Not found')}
+            <LaunchIcon sx={{ fontSize: 16 }} />
+          </Link>
+        </Box>
+
+        <Box>
+          <Typography variant="body2">
+            <Box component="span" sx={{ fontWeight: 700 }}>
+              {t('Sync Start:')}{' '}
+            </Box>
+            {formattedDate}
+          </Typography>
+          <Typography variant="body2">
+            <Box component="span" sx={{ fontWeight: 700 }}>
+              {t('By:')}{' '}
+            </Box>
+            {startedBy}
+          </Typography>
+        </Box>
+
+        {!isHistory && (
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              mt: 1
+            }}
+          >
+            <Chip
+              label={t('Active')}
+              size="small"
+              sx={{
+                bgcolor: 'rgba(89,195,5,0.2)',
+                color: '#38893c',
+                fontWeight: 600
+              }}
+            />
+            <IconButton
+              onClick={() => handleRequestDeleteSync(sync.id)}
+              disabled={isDeleting}
+              size="small"
+            >
+              {isDeleting ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : (
+                <Trash2Icon />
+              )}
+            </IconButton>
+          </Box>
+        )}
+      </Box>
+    )
+  }
 
   return (
     <>
@@ -505,17 +613,19 @@ export function GoogleSheetsSyncDialog({
         divider={false}
         maxWidth="lg"
         dialogActionChildren={
-          <Button
-            variant="contained"
-            color="secondary"
-            startIcon={<Plus2Icon />}
-            onClick={() => {
-              setGoogleDialogOpen(true)
-            }}
-            disabled={isGoogleActionDisabled || syncsLoading}
-          >
-            {t('New Sync')}
-          </Button>
+          !isMobile ? (
+            <Button
+              variant="contained"
+              color="secondary"
+              startIcon={<Plus2Icon />}
+              onClick={() => {
+                setGoogleDialogOpen(true)
+              }}
+              disabled={isGoogleActionDisabled || syncsLoading}
+            >
+              {t('New Sync')}
+            </Button>
+          ) : undefined
         }
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -530,6 +640,73 @@ export function GoogleSheetsSyncDialog({
             >
               <CircularProgress size={24} aria-label={t('Loading')} />
             </Box>
+          ) : isMobile ? (
+            <Box sx={{ mx: -3, my: -2 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                {activeSyncs.length === 0 ? (
+                  <Box sx={{ p: 2 }}>
+                    <Typography variant="body2">
+                      {t(
+                        'There are no active Google Sheet syncs. Add a new sync to start syncing your data.'
+                      )}
+                    </Typography>
+                  </Box>
+                ) : (
+                  activeSyncs.map((sync) => (
+                    <RenderMobileSyncCard key={sync.id} sync={sync} />
+                  ))
+                )}
+              </Box>
+
+              <Box sx={{ p: 2 }}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  startIcon={<Plus2Icon />}
+                  onClick={() => setGoogleDialogOpen(true)}
+                  disabled={isGoogleActionDisabled}
+                  sx={{
+                    bgcolor: '#26262e',
+                    color: 'white',
+                    '&:hover': { bgcolor: '#1a1a1f' }
+                  }}
+                >
+                  {t('New Sync')}
+                </Button>
+              </Box>
+
+              <Box>
+                <Accordion
+                  disableGutters
+                  elevation={0}
+                  sx={{ '&:before': { display: 'none' } }}
+                  defaultExpanded
+                >
+                  <AccordionSummary expandIcon={<ChevronDown />} sx={{ px: 2 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                      {t('Sync History')}
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ p: 0 }}>
+                    {historySyncs.length === 0 ? (
+                      <Box sx={{ p: 2 }}>
+                        <Typography variant="body2">
+                          {t('No removed syncs yet.')}
+                        </Typography>
+                      </Box>
+                    ) : (
+                      historySyncs.map((sync) => (
+                        <RenderMobileSyncCard
+                          key={sync.id}
+                          sync={sync}
+                          isHistory
+                        />
+                      ))
+                    )}
+                  </AccordionDetails>
+                </Accordion>
+              </Box>
+            </Box>
           ) : activeSyncs.length === 0 ? (
             <Typography variant="body2">
               {t(
@@ -537,12 +714,17 @@ export function GoogleSheetsSyncDialog({
               )}
             </Typography>
           ) : (
-            <TableContainer sx={{ maxHeight: 320 }}>
+            <TableContainer
+              sx={{
+                maxHeight: 320,
+                overflowY: 'auto',
+                overflowX: 'auto'
+              }}
+            >
               <Table stickyHeader size="small" aria-label={t('Existing syncs')}>
                 <TableHead>
                   <TableRow>
-                    <TableCell>{t('Sheet ID')}</TableCell>
-                    <TableCell>{t('Tab Name')}</TableCell>
+                    <TableCell>{t('Sheet Name')}</TableCell>
                     <TableCell sx={{ width: 120 }}>{t('Sync Start')}</TableCell>
                     <TableCell>{t('Started By')}</TableCell>
                     <TableCell sx={{ width: 120 }}>{t('Status')}</TableCell>
@@ -582,40 +764,33 @@ export function GoogleSheetsSyncDialog({
                       >
                         <TableCell width="40%">
                           <Tooltip
-                            title={sync.spreadsheetId ?? ''}
-                            arrow
-                            placement="top"
-                          >
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                maxWidth: 240,
-                                whiteSpace: 'nowrap',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis'
-                              }}
-                            >
-                              {sync.spreadsheetId ?? 'N/A'}
-                            </Typography>
-                          </Tooltip>
-                        </TableCell>
-                        <TableCell>
-                          <Tooltip
                             title={sync.sheetName ?? ''}
                             arrow
                             placement="top"
                           >
-                            <Typography
-                              variant="body2"
+                            <Box
                               sx={{
-                                maxWidth: 200,
-                                whiteSpace: 'nowrap',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis'
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 0.5,
+                                maxWidth: 240
                               }}
                             >
-                              {sync.sheetName ?? 'N/A'}
-                            </Typography>
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  whiteSpace: 'nowrap',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  textDecoration: 'underline'
+                                }}
+                              >
+                                {sync.sheetName ?? 'N/A'}
+                              </Typography>
+                              <NorthEastIcon
+                                sx={{ fontSize: 14, flexShrink: 0 }}
+                              />
+                            </Box>
                           </Tooltip>
                         </TableCell>
                         <TableCell sx={{ width: 120 }}>
@@ -659,117 +834,115 @@ export function GoogleSheetsSyncDialog({
             </TableContainer>
           )}
 
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Typography variant="h6">{t('History')}</Typography>
-            {historySyncs.length === 0 ? (
-              <Typography variant="body2">
-                {t('No removed syncs yet.')}
-              </Typography>
-            ) : (
-              <TableContainer sx={{ maxHeight: 240 }}>
-                <Table
-                  stickyHeader
-                  size="small"
-                  aria-label={t('Removed syncs')}
+          {!isMobile && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Typography variant="h6">{t('History')}</Typography>
+              {historySyncs.length === 0 ? (
+                <Typography variant="body2">
+                  {t('No removed syncs yet.')}
+                </Typography>
+              ) : (
+                <TableContainer
+                  sx={{ maxHeight: 240, overflowY: 'auto', overflowX: 'auto' }}
                 >
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>{t('Sheet ID')}</TableCell>
-                      <TableCell>{t('Tab Name')}</TableCell>
-                      <TableCell sx={{ width: 120 }}>
-                        {t('Removed At')}
-                      </TableCell>
-                      <TableCell>{t('Started By')}</TableCell>
-                      <TableCell sx={{ width: 120 }}>{t('Status')}</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {historySyncs.map((sync) => {
-                      const removedAtDate = sync.deletedAt
-                        ? new Date(sync.deletedAt)
-                        : null
-                      const removedAt =
-                        removedAtDate != null &&
-                        !Number.isNaN(removedAtDate.getTime())
-                          ? format(removedAtDate, 'yyyy-MM-dd')
-                          : 'N/A'
-                      const startedBy = getStartedByLabel(sync)
+                  <Table
+                    stickyHeader
+                    size="small"
+                    aria-label={t('Removed syncs')}
+                  >
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>{t('Sheet Name')}</TableCell>
+                        <TableCell sx={{ width: 120 }}>
+                          {t('Removed At')}
+                        </TableCell>
+                        <TableCell>{t('Started By')}</TableCell>
+                        <TableCell sx={{ width: 120 }}>{t('Status')}</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {historySyncs.map((sync) => {
+                        const removedAtDate = sync.deletedAt
+                          ? new Date(sync.deletedAt)
+                          : null
+                        const removedAt =
+                          removedAtDate != null &&
+                          !Number.isNaN(removedAtDate.getTime())
+                            ? format(removedAtDate, 'yyyy-MM-dd')
+                            : 'N/A'
+                        const startedBy = getStartedByLabel(sync)
 
-                      return (
-                        <TableRow
-                          key={sync.id}
-                          hover
-                          role="button"
-                          tabIndex={0}
-                          aria-label={`${t('Open link in new tab')}: ${
-                            sync.sheetName ??
-                            sync.spreadsheetId ??
-                            t('Not found')
-                          }`}
-                          onClick={() => handleOpenSyncRow(sync)}
-                          onKeyDown={(event) =>
-                            handleSyncRowKeyDown(event, sync)
-                          }
-                          sx={{
-                            cursor: 'pointer',
-                            '&:focus-visible': {
-                              outline: (theme) =>
-                                `2px solid ${theme.palette.primary.main}`,
-                              outlineOffset: 2
+                        return (
+                          <TableRow
+                            key={sync.id}
+                            hover
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`${t('Open link in new tab')}: ${
+                              sync.sheetName ??
+                              sync.spreadsheetId ??
+                              t('Not found')
+                            }`}
+                            onClick={() => handleOpenSyncRow(sync)}
+                            onKeyDown={(event) =>
+                              handleSyncRowKeyDown(event, sync)
                             }
-                          }}
-                        >
-                          <TableCell width="40%">
-                            <Tooltip
-                              title={sync.spreadsheetId ?? ''}
-                              arrow
-                              placement="top"
-                            >
-                              <Typography
-                                variant="body2"
-                                sx={{
-                                  maxWidth: 240,
-                                  whiteSpace: 'nowrap',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis'
-                                }}
+                            sx={{
+                              cursor: 'pointer',
+                              '&:focus-visible': {
+                                outline: (theme) =>
+                                  `2px solid ${theme.palette.primary.main}`,
+                                outlineOffset: 2
+                              }
+                            }}
+                          >
+                            <TableCell width="40%">
+                              <Tooltip
+                                title={sync.sheetName ?? ''}
+                                arrow
+                                placement="top"
                               >
-                                {sync.spreadsheetId ?? 'N/A'}
-                              </Typography>
-                            </Tooltip>
-                          </TableCell>
-                          <TableCell>
-                            <Tooltip
-                              title={sync.sheetName ?? ''}
-                              arrow
-                              placement="top"
-                            >
-                              <Typography
-                                variant="body2"
-                                sx={{
-                                  maxWidth: 200,
-                                  whiteSpace: 'nowrap',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis'
-                                }}
-                              >
-                                {sync.sheetName ?? 'N/A'}
-                              </Typography>
-                            </Tooltip>
-                          </TableCell>
-                          <TableCell sx={{ width: 120 }}>{removedAt}</TableCell>
-                          <TableCell>{startedBy}</TableCell>
-                          <TableCell sx={{ width: 120 }}>
-                            <Chip label={t('Removed')} size="small" />
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            )}
-          </Box>
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 0.5,
+                                    maxWidth: 240
+                                  }}
+                                >
+                                  <Typography
+                                    variant="body2"
+                                    sx={{
+                                      whiteSpace: 'nowrap',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      textDecoration: 'underline'
+                                    }}
+                                  >
+                                    {sync.sheetName ?? 'N/A'}
+                                  </Typography>
+                                  <LaunchIcon
+                                    sx={{ fontSize: 14, flexShrink: 0 }}
+                                  />
+                                </Box>
+                              </Tooltip>
+                            </TableCell>
+                            <TableCell sx={{ width: 120 }}>
+                              {removedAt}
+                            </TableCell>
+                            <TableCell>{startedBy}</TableCell>
+                            <TableCell sx={{ width: 120 }}>
+                              <Chip label={t('Removed')} size="small" />
+                            </TableCell>
+                          </TableRow>
+                        )
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
+            </Box>
+          )}
         </Box>
       </Dialog>
 
@@ -781,7 +954,8 @@ export function GoogleSheetsSyncDialog({
           sheetName: '',
           folderId: undefined as string | undefined,
           folderName: undefined as string | undefined,
-          existingSpreadsheetId: undefined as string | undefined
+          existingSpreadsheetId: undefined as string | undefined,
+          existingSpreadsheetName: undefined as string | undefined
         }}
         validationSchema={validationSchema}
         onSubmit={handleExportToSheets}
@@ -794,7 +968,6 @@ export function GoogleSheetsSyncDialog({
           handleSubmit,
           errors,
           touched,
-          isValid,
           resetForm,
           setFieldValue
         }) => (
@@ -805,35 +978,65 @@ export function GoogleSheetsSyncDialog({
               resetForm()
             }}
             dialogTitle={{
-              title: t('Add Google Sheets Sync'),
+              title: t('Sync to Google Sheets'),
               closeButton: true
             }}
             divider={false}
+            maxWidth="sm"
+            sx={{
+              zIndex: pickerActive ? 1 : undefined
+            }}
             dialogActionChildren={
-              <Button
-                variant="contained"
-                color="secondary"
-                onClick={() => handleSubmit()}
-                loading={sheetsLoading}
-                disabled={
-                  values.integrationId === '' ||
-                  values.sheetName === '' ||
-                  (values.googleMode === 'create' &&
-                    values.spreadsheetTitle === '' &&
-                    (journeyData?.journey?.title ?? '') === '') ||
-                  (values.googleMode === 'existing' &&
-                    (values.existingSpreadsheetId == null ||
-                      values.existingSpreadsheetId === '')) ||
-                  (errors.integrationId != null &&
-                    touched.integrationId != null) ||
-                  (errors.sheetName != null && touched.sheetName != null) ||
-                  (values.googleMode === 'create' &&
-                    errors.spreadsheetTitle != null &&
-                    touched.spreadsheetTitle != null)
-                }
-              >
-                {t('Start Sync')}
-              </Button>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Button
+                  variant="text"
+                  color="primary"
+                  onClick={() => {
+                    setGoogleDialogOpen(false)
+                    resetForm()
+                  }}
+                  sx={{
+                    fontSize: '18px',
+                    fontWeight: 700,
+                    lineHeight: '20px',
+                    px: 2,
+                    py: '10px'
+                  }}
+                >
+                  {t('Cancel')}
+                </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => handleSubmit()}
+                  loading={sheetsLoading}
+                  disabled={
+                    values.integrationId === '' ||
+                    values.sheetName === '' ||
+                    (values.googleMode === 'create' &&
+                      values.spreadsheetTitle === '' &&
+                      (journeyData?.journey?.title ?? '') === '') ||
+                    (values.googleMode === 'existing' &&
+                      (values.existingSpreadsheetId == null ||
+                        values.existingSpreadsheetId === '')) ||
+                    (errors.integrationId != null &&
+                      touched.integrationId != null) ||
+                    (errors.sheetName != null && touched.sheetName != null) ||
+                    (values.googleMode === 'create' &&
+                      errors.spreadsheetTitle != null &&
+                      touched.spreadsheetTitle != null)
+                  }
+                  sx={{
+                    fontSize: '18px',
+                    fontWeight: 700,
+                    lineHeight: '20px',
+                    px: '12px',
+                    py: '10px'
+                  }}
+                >
+                  {t('Create Sync')}
+                </Button>
+              </Box>
             }
           >
             <Form>
@@ -852,6 +1055,11 @@ export function GoogleSheetsSyncDialog({
                 name="existingSpreadsheetId"
                 value={values.existingSpreadsheetId ?? ''}
               />
+              <input
+                type="hidden"
+                name="existingSpreadsheetName"
+                value={values.existingSpreadsheetName ?? ''}
+              />
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <FormControl
                   fullWidth
@@ -860,8 +1068,16 @@ export function GoogleSheetsSyncDialog({
                     touched.integrationId != null
                   }
                 >
-                  <Typography variant="subtitle2">
-                    {t('Integration Account')}
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontSize: '18px',
+                      fontWeight: 600,
+                      lineHeight: '24px',
+                      mb: 1
+                    }}
+                  >
+                    {t('Google Account')}
                   </Typography>
                   <Select
                     name="integrationId"
@@ -871,6 +1087,7 @@ export function GoogleSheetsSyncDialog({
                     displayEmpty
                     inputProps={{ 'aria-label': t('Integration account') }}
                     IconComponent={ChevronDown}
+                    sx={{ mb: 1 }}
                     renderValue={(selected) => {
                       if (selected === '')
                         return t('Select integration account')
@@ -902,14 +1119,14 @@ export function GoogleSheetsSyncDialog({
                       <Typography
                         variant="caption"
                         color="error"
-                        sx={{ mt: 0.5, ml: 1.75 }}
+                        sx={{ mt: 0.5, ml: 2 }}
                       >
                         {errors.integrationId as string}
                       </Typography>
                     )}
                   <Button
                     variant="text"
-                    startIcon={<GoogleIcon sizePx={16} />}
+                    color="primary"
                     href={(() => {
                       const teamId = journeyData?.journey?.team?.id
                       if (teamId == null) return undefined
@@ -926,96 +1143,156 @@ export function GoogleSheetsSyncDialog({
                         googleCreateIntegrationPath
                       )
                     })()}
-                    sx={{ alignSelf: 'flex-start', mt: 1 }}
+                    sx={{
+                      alignSelf: 'flex-end',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      lineHeight: '16px',
+                      px: 1,
+                      py: 0.75
+                    }}
                     disabled={journeyData?.journey?.team?.id == null}
                   >
-                    {t('Add new Google integration')}
+                    {t('Add New Google Account')}
                   </Button>
                 </FormControl>
 
-                <FormControl fullWidth>
-                  <Typography variant="subtitle2">
-                    {t('Spreadsheet Setup')}
-                  </Typography>
-                  <Select
-                    name="googleMode"
-                    value={values.googleMode}
-                    onChange={handleChange}
-                    IconComponent={ChevronDown}
-                    inputProps={{ 'aria-label': t('Destination') }}
-                    displayEmpty
-                    renderValue={(selected) => {
-                      if (selected === '') return t('Select an option')
-                      if (selected === 'create')
-                        return t('Create new spreadsheet')
-                      if (selected === 'existing')
-                        return t('Use existing spreadsheet')
-                      return ''
-                    }}
-                  >
-                    <MenuItem value="" disabled>
-                      {t('Select an option')}
-                    </MenuItem>
-                    <MenuItem value="create">
-                      {t('Create new spreadsheet')}
-                    </MenuItem>
-                    <MenuItem value="existing">
-                      {t('Use existing spreadsheet')}
-                    </MenuItem>
-                  </Select>
-                </FormControl>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  <FormControl fullWidth>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontSize: '18px',
+                        fontWeight: 600,
+                        lineHeight: '24px',
+                        mb: 1
+                      }}
+                    >
+                      {t('Spreadsheet Setup')}
+                    </Typography>
+                    <Select
+                      name="googleMode"
+                      value={values.googleMode}
+                      onChange={handleChange}
+                      IconComponent={ChevronDown}
+                      inputProps={{ 'aria-label': t('Destination') }}
+                      displayEmpty
+                      renderValue={(selected) => {
+                        if (selected === '') return t('Select an option')
+                        if (selected === 'create') return t('Create new sheet')
+                        if (selected === 'existing')
+                          return t('Use existing spreadsheet')
+                        return ''
+                      }}
+                    >
+                      <MenuItem value="" disabled>
+                        {t('Select an option')}
+                      </MenuItem>
+                      <MenuItem value="create">
+                        {t('Create new sheet')}
+                      </MenuItem>
+                      <MenuItem value="existing">
+                        {t('Use existing spreadsheet')}
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
 
-                {values.googleMode !== '' && (
-                  <Box
-                    sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-                  >
-                    {values.googleMode === 'create' ? (
-                      <>
+                  {values.googleMode !== '' && (
+                    <Box
+                      sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}
+                    >
+                      {values.googleMode === 'create' ? (
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 0.5
+                          }}
+                        >
+                          <Button
+                            variant="outlined"
+                            color="secondary"
+                            startIcon={<FolderIcon />}
+                            onClick={() =>
+                              handleOpenDrivePicker(
+                                'folder',
+                                values.integrationId || undefined,
+                                setFieldValue
+                              )
+                            }
+                            sx={{
+                              fontSize: '15px',
+                              fontWeight: 600,
+                              lineHeight: '18px',
+                              justifyContent: 'flex-start',
+                              alignSelf: 'flex-start',
+                              px: '9px',
+                              py: '7px',
+                              borderWidth: 2,
+                              '&:hover': {
+                                borderWidth: 2
+                              }
+                            }}
+                          >
+                            {values.folderId
+                              ? (values.folderName ?? values.folderId)
+                              : t('Choose folder')}
+                          </Button>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              fontSize: '12px',
+                              lineHeight: '16px',
+                              color: '#444451',
+                              ml: 2
+                            }}
+                          >
+                            {t(
+                              'Optional: Choose a folder in Google Drive to store your new spreadsheet.'
+                            )}
+                          </Typography>
+                        </Box>
+                      ) : (
                         <Button
                           variant="outlined"
                           color="secondary"
                           onClick={() =>
                             handleOpenDrivePicker(
-                              'folder',
+                              'sheet',
                               values.integrationId || undefined,
                               setFieldValue
                             )
                           }
+                          sx={{
+                            fontSize: '15px',
+                            fontWeight: 600,
+                            lineHeight: '18px',
+                            justifyContent: 'flex-start',
+                            alignSelf: 'flex-start',
+                            px: '9px',
+                            py: '7px',
+                            borderWidth: 2,
+                            '&:hover': {
+                              borderWidth: 2
+                            }
+                          }}
                         >
-                          {values.folderId
-                            ? (values.folderName ?? values.folderId)
-                            : t('Choose Folder')}
+                          {values.existingSpreadsheetId
+                            ? (values.existingSpreadsheetName ??
+                              values.existingSpreadsheetId)
+                            : t('Choose Spreadsheet')}
                         </Button>
-                      </>
-                    ) : (
-                      <Button
-                        variant="outlined"
-                        onClick={() =>
-                          handleOpenDrivePicker(
-                            'sheet',
-                            values.integrationId || undefined,
-                            setFieldValue
-                          )
-                        }
-                      >
-                        {values.existingSpreadsheetId
-                          ? t('Spreadsheet selected')
-                          : t('Choose Spreadsheet')}
-                      </Button>
-                    )}
-                    {values.googleMode === 'create' && (
-                      <>
-                        <Typography variant="subtitle2">
-                          {t('Spreadsheet Name')}
-                        </Typography>
+                      )}
+                      {values.googleMode === 'create' && (
                         <TextField
                           name="spreadsheetTitle"
                           value={values.spreadsheetTitle}
                           onChange={handleChange}
                           onBlur={handleBlur}
-                          placeholder={t('Enter Spreadsheet name')}
+                          label={t('Sheet name')}
+                          placeholder={t('Sheet name')}
                           inputProps={{ 'aria-label': t('Sheet title') }}
-                          size="small"
+                          fullWidth
                           required
                           error={
                             errors.spreadsheetTitle != null &&
@@ -1028,31 +1305,29 @@ export function GoogleSheetsSyncDialog({
                               : undefined
                           }
                         />
-                      </>
-                    )}
-                    <Typography variant="subtitle2">
-                      {t('Sheet Name')}
-                    </Typography>
-                    <TextField
-                      name="sheetName"
-                      value={values.sheetName}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      placeholder={t('Enter Sheet name')}
-                      inputProps={{ 'aria-label': t('Sheet tab name') }}
-                      size="small"
-                      required
-                      error={
-                        errors.sheetName != null && touched.sheetName != null
-                      }
-                      helperText={
-                        touched.sheetName != null && errors.sheetName != null
-                          ? (errors.sheetName as string)
-                          : undefined
-                      }
-                    />
-                  </Box>
-                )}
+                      )}
+                      <TextField
+                        name="sheetName"
+                        value={values.sheetName}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        label={t('Sheet tab name')}
+                        placeholder={t('Sheet tab name')}
+                        inputProps={{ 'aria-label': t('Sheet tab name') }}
+                        fullWidth
+                        required
+                        error={
+                          errors.sheetName != null && touched.sheetName != null
+                        }
+                        helperText={
+                          touched.sheetName != null && errors.sheetName != null
+                            ? (errors.sheetName as string)
+                            : t('Data will sync in this tab.')
+                        }
+                      />
+                    </Box>
+                  )}
+                </Box>
               </Box>
             </Form>
           </Dialog>

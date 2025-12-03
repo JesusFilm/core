@@ -103,14 +103,14 @@ export class JourneyPage {
 
   async navigateToDiscoverPage() {
     await expect(
-      this.page.locator('a[data-testid="NavigationListItemDiscover"]')
+      this.page.locator('a[data-testid="NavigationListItemProjects"]')
     ).toBeVisible()
     await this.page
-      .locator('a[data-testid="NavigationListItemDiscover"]')
+      .locator('a[data-testid="NavigationListItemProjects"]')
       .click()
     await expect(
       this.page.locator(
-        'a[data-testid="NavigationListItemDiscover"][class*="Mui-selected"]'
+        'a[data-testid="NavigationListItemProjects"][class*="Mui-selected"]'
       )
     ).toBeVisible({ timeout: thirtySecondsTimeout })
     await expect(

@@ -9,8 +9,24 @@ export const env = createEnv({
     throw new Error('Invalid environment variables')
   },
   server: {
-    INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET: z.string().trim().min(1),
+    CLOUDFLARE_UPLOAD_KEY: z.string().trim().min(1),
+    FACEBOOK_APP_ID: z.string().trim().min(1),
+    FACEBOOK_APP_SECRET: z.string().trim().min(1),
+    FIREBASE_API_KEY: z.string().trim().min(1),
+    GATEWAY_HMAC_SECRET: z.string().trim().min(1),
+    GATEWAY_URL: z.string().trim().min(1),
     GOOGLE_CLIENT_ID: z.string().trim().min(1),
-    GOOGLE_CLIENT_SECRET: z.string().trim().min(1)
+    GOOGLE_CLIENT_SECRET: z.string().trim().min(1),
+    GROWTH_SPACES_URL: z.string().trim().min(1),
+    INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET: z.string().trim().min(1),
+    INTEROP_TOKEN: z.string().trim().min(1),
+    JOURNEYS_ADMIN_URL: z.string().trim().min(1),
+    JOURNEYS_REVALIDATE_ACCESS_TOKEN: z.string().trim().min(1),
+    JOURNEYS_URL: z.string().trim().min(1),
+    PLAUSIBLE_API_KEY: z.string().trim().min(1),
+    PLAUSIBLE_URL: z.url(),
+    REDIS_PORT: z.coerce.number().int().positive().default(6379),
+    REDIS_URL: z.string().trim().min(1).default('redis'),
+    SERVICE_VERSION: z.string().trim().default('')
   }
 })
