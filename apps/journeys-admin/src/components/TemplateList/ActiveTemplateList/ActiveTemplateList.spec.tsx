@@ -19,7 +19,8 @@ const ActiveTemplateListMock = {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
-      template: true
+      template: true,
+      teamId: 'jfp-team'
     }
   },
   result: {
@@ -34,7 +35,8 @@ const noTemplatesMock = {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
-      template: true
+      template: true,
+      teamId: 'jfp-team'
     }
   },
   result: {
@@ -88,7 +90,8 @@ describe('ActiveTemplateList', () => {
               query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.draft, JourneyStatus.published],
-                template: true
+                template: true,
+                teamId: 'jfp-team'
               }
             },
             result: {
@@ -125,7 +128,8 @@ describe('ActiveTemplateList', () => {
               query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.draft, JourneyStatus.published],
-                template: true
+                template: true,
+                teamId: 'jfp-team'
               }
             },
             result: {

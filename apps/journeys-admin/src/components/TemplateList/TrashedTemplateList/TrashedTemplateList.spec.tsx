@@ -19,7 +19,8 @@ const trashedJourneysMock = {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.trashed],
-      template: true
+      template: true,
+      teamId: 'jfp-team'
     }
   },
   result: {
@@ -37,7 +38,8 @@ const noJourneysMock = {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.trashed],
-      template: true
+      template: true,
+      teamId: 'jfp-team'
     }
   },
   result: {
@@ -95,7 +97,8 @@ describe('TrashedTemplateList', () => {
               query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.trashed],
-                template: true
+                template: true,
+                teamId: 'jfp-team'
               }
             },
             result: {
@@ -132,7 +135,8 @@ describe('TrashedTemplateList', () => {
               query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.trashed],
-                template: true
+                template: true,
+                teamId: 'jfp-team'
               }
             },
             result: {
@@ -170,7 +174,8 @@ describe('TrashedTemplateList', () => {
               query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.trashed],
-                template: true
+                template: true,
+                teamId: 'jfp-team'
               }
             },
             result: {
