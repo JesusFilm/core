@@ -9,6 +9,7 @@ import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
 
 import { IntegrationType } from '../../../../__generated__/globalTypes'
 import { BreadcrumbNavigation } from '../BreadcrumbNavigation'
+
 import { IntegrationsButton } from './IntegrationsButton'
 
 export function Integrations(): ReactElement {

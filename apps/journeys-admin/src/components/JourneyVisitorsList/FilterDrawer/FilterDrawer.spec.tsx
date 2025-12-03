@@ -1,7 +1,7 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { useRouter } from 'next/router'
 import userEvent from '@testing-library/user-event'
+import { useRouter } from 'next/router'
 import mockRouter from 'next-router-mock'
 import { SnackbarProvider } from 'notistack'
 
