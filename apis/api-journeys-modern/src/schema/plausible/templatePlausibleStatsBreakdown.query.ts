@@ -82,6 +82,7 @@ builder.queryField('templatePlausibleStatsBreakdown', (t) =>
         },
         templateSiteId
       )
+
       const transformedResults = transformBreakdownResults(
         breakdownResults,
         events
@@ -105,7 +106,40 @@ builder.queryField('templatePlausibleStatsBreakdown', (t) =>
         context.user
       )
 
-      return resultsWithPermissions
+      const pageVisitors = await getJourneyStatsBreakdown(
+        templateJourney.id,
+        {
+          property: 'event:page',
+          metrics: 'visitors'
+        },
+        templateSiteId
+      )
+      const filteredPageVisitors = filterPageVisitors(pageVisitors, journeys)
+
+      const visitorsByJourneyId = new Map(
+        filteredPageVisitors.map((item) => [item.journeyId, item.visitors])
+      )
+
+      const resultsWithTotalVisitors = resultsWithPermissions.map((result) => {
+        const totalVisitors = visitorsByJourneyId.get(result.journeyId)
+
+        if (totalVisitors != null) {
+          return {
+            ...result,
+            stats: [
+              ...result.stats,
+              {
+                event: 'totalVisitors',
+                visitors: totalVisitors
+              }
+            ]
+          }
+        }
+
+        return result
+      })
+
+      return resultsWithTotalVisitors
     }
   })
 )
@@ -327,4 +361,46 @@ function buildTeamNameMap(
   }
 
   return teamNameMap
+}
+
+function filterPageVisitors(
+  pageVisitors: PlausibleStatsResponse[],
+  journeys: JourneyWithAcl[]
+): { journeyId: string; visitors: number }[] {
+  const journeySlugMap = new Map<string, string>()
+  for (const journey of journeys) {
+    journeySlugMap.set(journey.slug, journey.id)
+  }
+
+  const journeyVisitorsMap = new Map<string, number>()
+
+  for (const pageVisitor of pageVisitors) {
+    const property = pageVisitor.property ?? ''
+
+    const slashCount = (property.match(/\//g) ?? []).length
+
+    if (slashCount > 1) {
+      continue
+    }
+
+    if (slashCount === 1 && property.startsWith('/')) {
+      const slug = property.slice(1)
+      const journeyId = journeySlugMap.get(slug)
+
+      if (journeyId != null) {
+        const visitors = pageVisitor.visitors ?? 0
+        journeyVisitorsMap.set(
+          journeyId,
+          (journeyVisitorsMap.get(journeyId) ?? 0) + visitors
+        )
+      }
+    }
+  }
+
+  return Array.from(journeyVisitorsMap.entries()).map(
+    ([journeyId, visitors]) => ({
+      journeyId,
+      visitors
+    })
+  )
 }
