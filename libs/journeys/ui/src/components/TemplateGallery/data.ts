@@ -296,7 +296,8 @@ export const getLanguagesMock: MockedResponse<GetLanguages> = {
           '6788',
           '3804',
           '1927',
-          '1370'
+          '1370',
+          '1254'
         ]
       }
     }

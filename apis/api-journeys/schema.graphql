@@ -101,6 +101,8 @@ type PhoneAction implements Action
   phone: String!
   countryCode: String!
   contactAction: ContactActionType!
+  customizable: Boolean
+  parentStepId: String
 }
 
 type ChatAction implements Action
@@ -471,7 +473,6 @@ type Mutation {
   hostDelete(id: ID!, teamId: ID!): Host!
   integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces!
   integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces!
-  integrationDelete(id: ID!): Integration!
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
   journeyDuplicate(id: ID!, teamId: ID!): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
@@ -1313,6 +1314,7 @@ type VideoBlock implements Block
   """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit @shareable
   subtitleLanguage: Language @shareable
+  showGeneratedSubtitles: Boolean @shareable
 }
 
 """
@@ -2143,14 +2145,24 @@ input HostCreateInput {
   src2: String
 }
 
+type IntegrationGoogle implements Integration
+  @shareable
+{
+  id: ID!
+  team: Team!
+  type: IntegrationType!
+  user: User
+  accountEmail: String
+}
+
 type IntegrationGrowthSpaces implements Integration
   @shareable
 {
   id: ID!
   team: Team!
   type: IntegrationType!
-  accessId: String!
-  accessSecretPart: String!
+  accessId: String
+  accessSecretPart: String
   routes: [IntegrationGrowthSpacesRoute!]!
 }
 
@@ -2173,6 +2185,7 @@ type IntegrationGrowthSpacesRoute
 }
 
 enum IntegrationType {
+  google
   growthSpaces
 }
 
@@ -2434,6 +2447,7 @@ input JourneyEventsFilter {
   typenames: [String!]
   periodRangeStart: DateTime
   periodRangeEnd: DateTime
+  includeUnconnectedCards: Boolean
 }
 
 type JourneyNotification

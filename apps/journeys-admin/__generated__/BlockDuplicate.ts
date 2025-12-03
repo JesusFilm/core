@@ -530,6 +530,7 @@ export interface BlockDuplicate_blockDuplicate_VideoBlock {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
   subtitleLanguage: BlockDuplicate_blockDuplicate_VideoBlock_subtitleLanguage | null;
   mediaVideo: BlockDuplicate_blockDuplicate_VideoBlock_mediaVideo | null;
   /**

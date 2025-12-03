@@ -200,6 +200,7 @@ export enum MessagePlatform {
 }
 
 export enum IntegrationType {
+    google = "google",
     growthSpaces = "growthSpaces"
 }
 
@@ -927,6 +928,8 @@ export class PhoneAction implements Action {
     phone: string;
     countryCode: string;
     contactAction: ContactActionType;
+    customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
 }
 
 export class ChatAction implements Action {
@@ -1178,8 +1181,6 @@ export abstract class IMutation {
     abstract integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput): IntegrationGrowthSpaces | Promise<IntegrationGrowthSpaces>;
 
     abstract integrationGrowthSpacesUpdate(id: string, input: IntegrationGrowthSpacesUpdateInput): IntegrationGrowthSpaces | Promise<IntegrationGrowthSpaces>;
-
-    abstract integrationDelete(id: string): Integration | Promise<Integration>;
 
     abstract journeyCreate(input: JourneyCreateInput, teamId: string): Journey | Promise<Journey>;
 
@@ -1485,6 +1486,7 @@ export class VideoBlock implements Block {
     action?: Nullable<Action>;
     objectFit?: Nullable<VideoBlockObjectFit>;
     subtitleLanguage?: Nullable<Language>;
+    showGeneratedSubtitles?: Nullable<boolean>;
 }
 
 export class VideoTriggerBlock implements Block {
@@ -1720,13 +1722,22 @@ export class Host {
     src2?: Nullable<string>;
 }
 
+export class IntegrationGoogle implements Integration {
+    __typename?: 'IntegrationGoogle';
+    id: string;
+    team: Team;
+    type: IntegrationType;
+    user?: Nullable<User>;
+    accountEmail?: Nullable<string>;
+}
+
 export class IntegrationGrowthSpaces implements Integration {
     __typename?: 'IntegrationGrowthSpaces';
     id: string;
     team: Team;
     type: IntegrationType;
-    accessId: string;
-    accessSecretPart: string;
+    accessId?: Nullable<string>;
+    accessSecretPart?: Nullable<string>;
     routes: IntegrationGrowthSpacesRoute[];
 }
 

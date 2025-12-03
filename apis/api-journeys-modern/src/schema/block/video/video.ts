@@ -79,6 +79,9 @@ youTube source: videoId, title, description, and duration present`,
       }
     }),
     action: t.relation('action'),
+    showGeneratedSubtitles: t.exposeBoolean('showGeneratedSubtitles', {
+      nullable: true
+    }),
     mediaVideo: t.field({
       type: MediaVideo,
       nullable: true,

@@ -285,7 +285,6 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   hostDelete(id: ID!, teamId: ID!) : Host! @join__field(graph: API_JOURNEYS) 
   integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!) : IntegrationGrowthSpaces! @join__field(graph: API_JOURNEYS) 
   integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!) : IntegrationGrowthSpaces! @join__field(graph: API_JOURNEYS) 
-  integrationDelete(id: ID!) : Integration! @join__field(graph: API_JOURNEYS) 
   journeyCreate(input: JourneyCreateInput!, teamId: ID!) : Journey! @join__field(graph: API_JOURNEYS) 
   journeyDuplicate(id: ID!, teamId: ID!) : Journey! @join__field(graph: API_JOURNEYS) 
   journeyUpdate(id: ID!, input: JourneyUpdateInput!) : Journey! @join__field(graph: API_JOURNEYS) 
@@ -403,9 +402,25 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   chatOpenEventCreate(input: ChatOpenEventCreateInput!) : ChatOpenEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   multiselectSubmissionEventCreate(input: MultiselectSubmissionEventCreateInput!) : MultiselectSubmissionEvent! @join__field(graph: API_JOURNEYS_MODERN, override: "api-journeys") 
   journeySimpleUpdate(id: ID!, journey: Json!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
+  googleSheetsSyncCreate(input: CreateGoogleSheetsSyncInput!) : GoogleSheetsSync! @join__field(graph: API_JOURNEYS_MODERN) 
+  googleSheetsSyncDelete(id: ID!) : GoogleSheetsSync! @join__field(graph: API_JOURNEYS_MODERN) 
+  integrationGoogleCreate(input: IntegrationGoogleCreateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
+  integrationGoogleUpdate(id: ID!, input: IntegrationGoogleUpdateInput!) : IntegrationGoogle! @join__field(graph: API_JOURNEYS_MODERN) 
+  integrationDelete(id: ID!) : Integration! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!) : JourneyEventsExportLog! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!) : Boolean! @join__field(graph: API_JOURNEYS_MODERN) 
+  journeyVisitorExportToGoogleSheet(
+    journeyId: ID!
+    filter: JourneyEventsFilter
+    select: JourneyVisitorExportSelect
+    destination: JourneyVisitorGoogleSheetDestinationInput!
+    integrationId: ID!
+    """
+    IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.
+    """
+    timezone: String
+  ): JourneyVisitorGoogleSheetExportResult! @join__field(graph: API_JOURNEYS_MODERN) 
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewDelete(languageId: ID!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
@@ -444,6 +459,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     userGenerated: Boolean
     downloadable: Boolean = false
     maxResolution: MaxResolutionTier = fhd
+    generateSubtitlesInput: GenerateSubtitlesInput
   ): MuxVideo! @join__field(graph: API_MEDIA) 
   createMuxVideoUploadByUrl(
     url: String!
@@ -583,6 +599,8 @@ type PhoneAction implements Action @join__type(graph: API_JOURNEYS)  @join__type
   phone: String!
   countryCode: String!
   contactAction: ContactActionType!
+  customizable: Boolean
+  parentStepId: String
 }
 
 type ChatAction implements Action @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Action")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Action")  {
@@ -660,6 +678,10 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   journeyCustomizationFields: [JourneyCustomizationField!]! @join__field(graph: API_JOURNEYS) 
   journeyTheme: JourneyTheme
   userJourneys: [UserJourney!]
+  """
+  Distinct block typenames present on this journey (non-deleted blocks only)
+  """
+  blockTypenames: [String!]! @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
 type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_LANGUAGES)  @join__type(graph: API_MEDIA)  @join__type(graph: API_USERS)  {
@@ -780,6 +802,8 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   node(id: ID!) : Node @join__field(graph: API_JOURNEYS_MODERN) 
   nodes(ids: [ID!]!) : [Node]! @join__field(graph: API_JOURNEYS_MODERN) 
   journeySimpleGet(id: ID!) : Json @join__field(graph: API_JOURNEYS_MODERN) 
+  googleSheetsSyncs(filter: GoogleSheetsSyncsFilter!) : [GoogleSheetsSync!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  integrationGooglePickerToken(integrationId: ID!) : String! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Returns a CSV formatted string with journey visitor export data including headers and visitor data with event information
   """
@@ -787,6 +811,10 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     journeyId: ID!
     filter: JourneyEventsFilter
     select: JourneyVisitorExportSelect
+    """
+    IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.
+    """
+    timezone: String
   ): String @join__field(graph: API_JOURNEYS_MODERN) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
@@ -818,6 +846,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   getMyMuxVideos(offset: Int, limit: Int) : [MuxVideo!]! @join__field(graph: API_MEDIA) 
   getMyMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo! @join__field(graph: API_MEDIA) 
   getMuxVideo(id: ID!, userGenerated: Boolean) : MuxVideo @join__field(graph: API_MEDIA) 
+  getMyGeneratedMuxSubtitleTrack(muxVideoId: ID!, bcp47: String!, userGenerated: Boolean) : QueryGetMyGeneratedMuxSubtitleTrackResult! @join__field(graph: API_MEDIA) 
   playlists: [Playlist!] @join__field(graph: API_MEDIA) 
   playlist(id: ID!, idType: IdType! = databaseId) : QueryPlaylistResult @join__field(graph: API_MEDIA) 
   """
@@ -1249,6 +1278,7 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   """
   objectFit: VideoBlockObjectFit
   subtitleLanguage: Language
+  showGeneratedSubtitles: Boolean
   mediaVideo: MediaVideo @join__field(graph: API_JOURNEYS_MODERN) 
 }
 
@@ -1763,18 +1793,26 @@ type Host @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODE
   src2: String
 }
 
-type IntegrationGrowthSpaces implements Integration @join__type(graph: API_JOURNEYS)  @join__implements(graph: API_JOURNEYS, interface: "Integration")  {
+type IntegrationGoogle implements Integration @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Integration")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Integration")  {
   id: ID!
   team: Team!
   type: IntegrationType!
-  accessId: String!
-  accessSecretPart: String!
-  routes: [IntegrationGrowthSpacesRoute!]!
+  user: User
+  accountEmail: String
 }
 
-type IntegrationGrowthSpacesRoute @join__type(graph: API_JOURNEYS)  {
-  id: String!
-  name: String!
+type IntegrationGrowthSpaces implements Integration @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Integration")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Integration")  {
+  id: ID!
+  team: Team!
+  type: IntegrationType!
+  accessId: String
+  accessSecretPart: String
+  routes: [IntegrationGrowthSpacesRoute!] @join__field(graph: API_JOURNEYS, type: "[IntegrationGrowthSpacesRoute!]!")  @join__field(graph: API_JOURNEYS_MODERN, type: "[IntegrationGrowthSpacesRoute!]") 
+}
+
+type IntegrationGrowthSpacesRoute @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
+  name: String @join__field(graph: API_JOURNEYS, type: "String!")  @join__field(graph: API_JOURNEYS_MODERN, type: "String") 
 }
 
 type Tag @join__type(graph: API_JOURNEYS, key: "id", extension: true)  @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: true)  @join__type(graph: API_MEDIA, key: "id")  {
@@ -2400,6 +2438,22 @@ type Translation @join__type(graph: API_JOURNEYS)  {
   primary: Boolean!
 }
 
+type GoogleSheetsSync @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID!
+  teamId: ID!
+  journeyId: ID!
+  integrationId: ID
+  spreadsheetId: ID!
+  sheetName: String
+  folderId: String
+  email: String
+  deletedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  integration: Integration
+  journey: Journey!
+}
+
 type JourneyAiTranslateProgress @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   Translation progress as a percentage (0-100)
@@ -2423,6 +2477,12 @@ type JourneyEventsExportLog @join__type(graph: API_JOURNEYS_MODERN)  {
   eventsFilter: [String!]!
   dateRangeStart: DateTimeISO
   dateRangeEnd: DateTimeISO
+}
+
+type JourneyVisitorGoogleSheetExportResult @join__type(graph: API_JOURNEYS_MODERN)  {
+  spreadsheetId: ID!
+  spreadsheetUrl: String!
+  sheetName: String!
 }
 
 type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  @join__type(graph: API_MEDIA, key: "id primaryLanguageId")  {
@@ -2558,6 +2618,7 @@ type CloudflareImage @join__type(graph: API_MEDIA)  {
   mobileCinematicVeryLow: String
   thumbnail: String
   videoStill: String
+  blurhash: String
 }
 
 type CloudflareR2 @join__type(graph: API_MEDIA)  {
@@ -2661,6 +2722,15 @@ type MutationShortLinkUpdateSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLink!
 }
 
+type MuxSubtitleTrack @join__type(graph: API_MEDIA)  {
+  id: ID!
+  trackId: String!
+  source: String!
+  status: String!
+  bcp47: String!
+  muxVideoId: ID!
+}
+
 type NotFoundError implements BaseError @join__type(graph: API_MEDIA)  @join__implements(graph: API_MEDIA, interface: "BaseError")  {
   message: String
   """
@@ -2720,6 +2790,10 @@ type PlaylistItem @join__type(graph: API_MEDIA)  {
   updatedAt: DateTime!
   videoVariant: VideoVariant!
   playlist: Playlist!
+}
+
+type QueryGetMyGeneratedMuxSubtitleTrackSuccess @join__type(graph: API_MEDIA)  {
+  data: MuxSubtitleTrack!
 }
 
 type QueryPlaylistSuccess @join__type(graph: API_MEDIA)  {
@@ -3112,7 +3186,7 @@ union MutationPlaylistItemRemoveResult @join__type(graph: API_MEDIA)  @join__uni
 
 union MutationPlaylistItemsReorderResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistItemsReorderSuccess")  = NotFoundError | MutationPlaylistItemsReorderSuccess
 
-union MutationPlaylistUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistUpdateSuccess")  = ZodError | NotFoundError | MutationPlaylistUpdateSuccess
+union MutationPlaylistUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistUpdateSuccess")  = NotFoundError | ZodError | MutationPlaylistUpdateSuccess
 
 union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
 
@@ -3124,7 +3198,9 @@ union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__
 
 union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = NotFoundError | MutationShortLinkDomainUpdateSuccess
 
-union MutationShortLinkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkUpdateSuccess")  = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
+union MutationShortLinkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkUpdateSuccess")  = NotFoundError | ZodError | MutationShortLinkUpdateSuccess
+
+union QueryGetMyGeneratedMuxSubtitleTrackResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "Error")  @join__unionMember(graph: API_MEDIA, member: "QueryGetMyGeneratedMuxSubtitleTrackSuccess")  = Error | QueryGetMyGeneratedMuxSubtitleTrackSuccess
 
 union QueryPlaylistResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryPlaylistSuccess")  = NotFoundError | QueryPlaylistSuccess
 
@@ -3134,7 +3210,7 @@ union QueryShortLinkDomainResult @join__type(graph: API_MEDIA)  @join__unionMemb
 
 union QueryShortLinkResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkSuccess")  = NotFoundError | QueryShortLinkSuccess
 
-union QueryYoutubeClosedCaptionLanguagesResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "Error")  @join__unionMember(graph: API_MEDIA, member: "QueryYoutubeClosedCaptionLanguagesSuccess")  = ZodError | Error | QueryYoutubeClosedCaptionLanguagesSuccess
+union QueryYoutubeClosedCaptionLanguagesResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "Error")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "QueryYoutubeClosedCaptionLanguagesSuccess")  = Error | ZodError | QueryYoutubeClosedCaptionLanguagesSuccess
 
 enum ThemeMode @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   dark @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -3387,6 +3463,7 @@ enum ButtonAction @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURN
 }
 
 enum IntegrationType @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
+  google @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
   growthSpaces @join__enumValue(graph: API_JOURNEYS)  @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
@@ -3454,6 +3531,11 @@ enum EventType @join__type(graph: API_JOURNEYS_MODERN)  {
   VideoExpandEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
   VideoCollapseEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
   VideoProgressEvent @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+enum GoogleSheetExportMode @join__type(graph: API_JOURNEYS_MODERN)  {
+  create @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  existing @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
@@ -4183,13 +4265,13 @@ input HostCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_J
   src2: String
 }
 
-input IntegrationGrowthSpacesCreateInput @join__type(graph: API_JOURNEYS)  {
+input IntegrationGrowthSpacesCreateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   accessId: String!
   accessSecret: String!
   teamId: String!
 }
 
-input IntegrationGrowthSpacesUpdateInput @join__type(graph: API_JOURNEYS)  {
+input IntegrationGrowthSpacesUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
   accessId: String!
   accessSecret: String!
 }
@@ -4301,6 +4383,7 @@ input JourneyEventsFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: A
   typenames: [String!]
   periodRangeStart: DateTime
   periodRangeEnd: DateTime
+  includeUnconnectedCards: Boolean
 }
 
 input JourneyNotificationUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4593,11 +4676,35 @@ input ChatOpenEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   value: MessagePlatform
 }
 
+input CreateGoogleSheetsSyncInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyId: ID!
+  integrationId: ID!
+  spreadsheetId: ID!
+  sheetName: String!
+  folderId: String
+}
+
 input EmailActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   gtmEventName: String
   email: String!
   customizable: Boolean
   parentStepId: String
+}
+
+input GoogleSheetsSyncsFilter @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyId: ID
+  integrationId: ID
+}
+
+input IntegrationGoogleCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  teamId: String!
+  code: String!
+  redirectUri: String!
+}
+
+input IntegrationGoogleUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  code: String!
+  redirectUri: String!
 }
 
 input JourneyAiTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4620,6 +4727,26 @@ input JourneyVisitorExportSelect @join__type(graph: API_JOURNEYS_MODERN)  {
   email: Boolean
   phone: Boolean
   createdAt: Boolean
+}
+
+input JourneyVisitorGoogleSheetDestinationInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  mode: GoogleSheetExportMode!
+  """
+  Required when mode is "create". The title for the new spreadsheet.
+  """
+  spreadsheetTitle: String
+  """
+  Optional when mode is "create". The Drive folder ID to create the spreadsheet in. If omitted, it will be created in My Drive.
+  """
+  folderId: String
+  """
+  Required when mode is "existing". The ID of the existing spreadsheet to export to.
+  """
+  spreadsheetId: String
+  """
+  Required when mode is "existing". The name of the sheet within the existing spreadsheet.
+  """
+  sheetName: String
 }
 
 input LinkActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4680,6 +4807,8 @@ input PhoneActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   phone: String!
   countryCode: String!
   contactAction: ContactActionType = call
+  customizable: Boolean
+  parentStepId: String
 }
 
 input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4705,6 +4834,7 @@ input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   fullsize: Boolean
   posterBlockId: ID
   subtitleLanguageId: ID
+  showGeneratedSubtitles: Boolean
 }
 
 input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4728,6 +4858,7 @@ input VideoBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
     youTube source: videoId required
   """
   source: VideoBlockSource
+  showGeneratedSubtitles: Boolean
 }
 
 input LanguagesFilter @join__type(graph: API_LANGUAGES)  {
@@ -4776,6 +4907,11 @@ input CloudflareR2CreateInput @join__type(graph: API_MEDIA)  {
   the id of the Video object this file relates to in the database
   """
   videoId: String!
+}
+
+input GenerateSubtitlesInput @join__type(graph: API_MEDIA)  {
+  languageCode: String!
+  languageName: String!
 }
 
 input ImageInput @join__type(graph: API_MEDIA)  {
