@@ -37,7 +37,7 @@ import {
   UpdatePlausibleJourneyFlowViewed,
   UpdatePlausibleJourneyFlowViewedVariables
 } from '../../../../__generated__/UpdatePlausibleJourneyFlowViewed'
-import logo from '../../../../public/taskbar-icon-45x32.svg'
+import logo from '../../../../public/taskbar-icon.svg'
 import { HelpScoutBeacon } from '../../HelpScoutBeacon'
 import { NotificationPopover } from '../../NotificationPopover'
 import { EDIT_TOOLBAR_HEIGHT } from '../constants'
