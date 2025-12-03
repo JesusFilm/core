@@ -79,6 +79,7 @@ builder.queryField('templatePlausibleStatsBreakdown', (t) =>
       const { property: _, ...whereWithoutProperty } = where
       const templateSiteId = `template-site`
       // const templateSiteId = `api-journeys-template-${templateJourney.id}`
+
       const breakdownResults = await getJourneyStatsBreakdown(
         templateJourney.id,
         {
@@ -97,34 +98,36 @@ builder.queryField('templatePlausibleStatsBreakdown', (t) =>
       const journeyIds = [
         ...new Set(transformedResults.map((result) => result.journeyId))
       ]
-      const journeys = await prisma.journey.findMany({
-        where: { id: { in: journeyIds } },
-        include: {
-          userJourneys: true,
-          team: {
-            include: { userTeams: true }
+
+      const [journeys, pageVisitors] = await Promise.all([
+        prisma.journey.findMany({
+          where: { id: { in: journeyIds } },
+          include: {
+            userJourneys: true,
+            team: {
+              include: { userTeams: true }
+            }
           }
-        }
-      })
+        }),
+        getJourneyStatsBreakdown(
+          templateJourney.id,
+          {
+            property: 'event:page',
+            metrics: 'visitors'
+          },
+          templateSiteId
+        )
+      ])
 
-      const resultsWithPermissions = addPermissionsAndNames(
-        transformedResults,
-        journeys,
-        context.user
-      )
-
-      const pageVisitors = await getJourneyStatsBreakdown(
-        templateJourney.id,
-        {
-          property: 'event:page',
-          metrics: 'visitors'
-        },
-        templateSiteId
-      )
       const filteredPageVisitors = filterPageVisitors(pageVisitors, journeys)
+      const journeysResponses = await getJourneysResponses(journeys)
 
       const visitorsByJourneyId = new Map(
         filteredPageVisitors.map((item) => [item.journeyId, item.visitors])
+      )
+
+      const responsesByJourneyId = new Map(
+        journeysResponses.map((item) => [item.journeyId, item.visitors])
       )
 
       const allowedEvents =
@@ -132,53 +135,42 @@ builder.queryField('templatePlausibleStatsBreakdown', (t) =>
           ? new Set(events.map((e) => String(e)))
           : null
 
-      const resultsWithTotalVisitors = resultsWithPermissions.map((result) => {
-        const totalVisitors = visitorsByJourneyId.get(result.journeyId)
-
-        if (
-          totalVisitors != null &&
-          (allowedEvents == null || allowedEvents.has('journeyVisitors'))
-        ) {
-          return {
-            ...result,
-            stats: [
-              ...result.stats,
-              {
-                event: 'journeyVisitors',
-                visitors: totalVisitors
-              }
-            ]
-          }
-        }
-
-        return result
-      })
-
-      const journeysResponses = await getJourneysResponses(journeys)
-      const journeysResponsesMap = new Map(
-        journeysResponses.map((item) => [item.journeyId, item.visitors])
+      const resultsWithPermissions = addPermissionsAndNames(
+        transformedResults,
+        journeys,
+        context.user
       )
 
-      const resultsWithResponses = resultsWithTotalVisitors.map((result) => {
-        const responses = journeysResponsesMap.get(result.journeyId)
+      return resultsWithPermissions.map((result) => {
+        const stats = [...result.stats]
 
+        const journeyVisitorsCount = visitorsByJourneyId.get(result.journeyId)
         if (
-          responses != null &&
-          (allowedEvents == null || allowedEvents.has('journeyResponses'))
+          journeyVisitorsCount != null &&
+          (allowedEvents == null || allowedEvents.has('journeyVisitors'))
         ) {
-          return {
-            ...result,
-            stats: [
-              ...result.stats,
-              { event: 'journeyResponses', visitors: responses }
-            ]
-          }
+          stats.push({
+            event: 'journeyVisitors',
+            visitors: journeyVisitorsCount
+          })
         }
 
-        return result
-      })
+        const responsesCount = responsesByJourneyId.get(result.journeyId)
+        if (
+          responsesCount != null &&
+          (allowedEvents == null || allowedEvents.has('journeyResponses'))
+        ) {
+          stats.push({
+            event: 'journeyResponses',
+            visitors: responsesCount
+          })
+        }
 
-      return resultsWithResponses
+        return {
+          ...result,
+          stats
+        }
+      })
     }
   })
 )
