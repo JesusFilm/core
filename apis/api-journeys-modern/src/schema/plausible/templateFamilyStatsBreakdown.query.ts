@@ -145,25 +145,41 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
         const stats = [...result.stats]
 
         const journeyVisitorsCount = visitorsByJourneyId.get(result.journeyId)
-        if (
-          journeyVisitorsCount != null &&
-          (allowedEvents == null || allowedEvents.has('journeyVisitors'))
-        ) {
-          stats.push({
-            event: 'journeyVisitors',
-            visitors: journeyVisitorsCount
-          })
+        if (allowedEvents == null || allowedEvents.has('journeyVisitors')) {
+          const existingIndex = stats.findIndex(
+            (stat) => stat.event === 'journeyVisitors'
+          )
+          const visitors = journeyVisitorsCount ?? 0
+          if (existingIndex >= 0) {
+            stats[existingIndex] = {
+              event: 'journeyVisitors',
+              visitors
+            }
+          } else {
+            stats.push({
+              event: 'journeyVisitors',
+              visitors
+            })
+          }
         }
 
         const responsesCount = responsesByJourneyId.get(result.journeyId)
-        if (
-          responsesCount != null &&
-          (allowedEvents == null || allowedEvents.has('journeyResponses'))
-        ) {
-          stats.push({
-            event: 'journeyResponses',
-            visitors: responsesCount
-          })
+        if (allowedEvents == null || allowedEvents.has('journeyResponses')) {
+          const existingIndex = stats.findIndex(
+            (stat) => stat.event === 'journeyResponses'
+          )
+          const visitors = responsesCount ?? 0
+          if (existingIndex >= 0) {
+            stats[existingIndex] = {
+              event: 'journeyResponses',
+              visitors
+            }
+          } else {
+            stats.push({
+              event: 'journeyResponses',
+              visitors
+            })
+          }
         }
 
         return {
@@ -439,21 +455,25 @@ function filterPageVisitors(
 async function getJourneysResponses(
   journeys: JourneyWithAcl[]
 ): Promise<{ journeyId: string; visitors: number }[]> {
-  const results = await Promise.all(
-    journeys.map(async (journey) => {
-      const response = await prisma.journeyVisitor.findMany({
-        where: {
-          journeyId: journey.id,
-          lastTextResponse: { not: null }
-        }
-      })
+  if (journeys.length === 0) {
+    return []
+  }
 
-      return {
-        journeyId: journey.id,
-        visitors: response.length
-      }
-    })
-  )
+  const journeyIds = journeys.map((journey) => journey.id)
 
-  return results
+  const results = await prisma.journeyVisitor.groupBy({
+    by: ['journeyId'],
+    where: {
+      journeyId: { in: journeyIds },
+      lastTextResponse: { not: null }
+    },
+    _count: {
+      journeyId: true
+    }
+  })
+
+  return results.map((result) => ({
+    journeyId: result.journeyId,
+    visitors: result._count.journeyId
+  }))
 }
