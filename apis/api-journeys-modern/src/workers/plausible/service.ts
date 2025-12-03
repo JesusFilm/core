@@ -159,7 +159,10 @@ async function createJourneySite(
 
   const slug = site.data.sharedLinks?.[0]?.slug
   if (slug == null) {
-    logger?.warn({ journeyId }, 'missing plausible slug in journey site sharedLinks')
+    logger?.warn(
+      { journeyId },
+      'missing plausible slug in journey site sharedLinks'
+    )
     return
   }
 
