@@ -118,12 +118,15 @@ describe('CreateTemplateItem', () => {
         shallow: true
       })
     })
-    expect(journeyDuplicateMock).toHaveBeenCalledWith({
-      variables: {
-        id: 'journeyId',
-        teamId: 'jfp-team'
-      }
-    })
+    expect(journeyDuplicateMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        variables: {
+          id: 'journeyId',
+          teamId: 'jfp-team'
+        },
+        update: expect.any(Function)
+      })
+    )
   })
 
   it('should create a local template on menu card click', async () => {
@@ -222,11 +225,14 @@ describe('CreateTemplateItem', () => {
         shallow: true
       })
     })
-    expect(journeyDuplicateMock).toHaveBeenCalledWith({
-      variables: {
-        id: 'journeyId',
-        teamId: 'local-team-id'
-      }
-    })
+    expect(journeyDuplicateMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        variables: {
+          id: 'journeyId',
+          teamId: 'local-team-id'
+        },
+        update: expect.any(Function)
+      })
+    )
   })
 })

@@ -28,7 +28,13 @@ export function useJourneyDuplicateMutation(
         if (data?.journeyDuplicate != null) {
           cache.modify({
             fields: {
-              adminJourneys(existingAdminJourneyRefs = []) {
+              adminJourneys(existingAdminJourneyRefs = [], details) {
+                const args = (details as { args?: { template?: boolean } }).args
+                // Only add duplicated journey to journeys cache (template: false)
+                // Skip template queries (template: true)
+                if (args?.template === true) {
+                  return existingAdminJourneyRefs
+                }
                 const duplicatedJourneyRef = cache.writeFragment({
                   data: data.journeyDuplicate,
                   fragment: gql`
