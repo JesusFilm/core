@@ -1422,6 +1422,7 @@ export type JourneysFilter = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   orderByRecent?: InputMaybe<Scalars['Boolean']['input']>;
   tagIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  teamId?: InputMaybe<Scalars['String']['input']>;
   template?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
