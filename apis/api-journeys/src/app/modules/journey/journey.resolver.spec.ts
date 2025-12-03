@@ -706,6 +706,26 @@ describe('JourneyResolver', () => {
       })
     })
 
+    it('returns a list of journeys filtered by teamId', async () => {
+      const teamJourney = {
+        ...journey,
+        teamId: 'filteredTeamId'
+      }
+      prismaService.journey.findMany.mockResolvedValueOnce([teamJourney])
+      const result = await resolver.journeys({ teamId: 'filteredTeamId' })
+
+      expect(result).toEqual([teamJourney])
+      expect(result.every((j) => j.teamId === 'filteredTeamId')).toBe(true)
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          teamId: 'filteredTeamId',
+          status: 'published',
+          journeyCollectionJourneys: { none: {} },
+          team: { customDomains: { none: { routeAllTeamJourneys: true } } }
+        }
+      })
+    })
+
     it('returns limited number of published journeys', async () => {
       prismaService.journey.findMany.mockResolvedValueOnce([journey, journey])
       expect(await resolver.journeys({ limit: 2 })).toEqual([journey, journey])
