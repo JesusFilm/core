@@ -218,3 +218,4 @@ describe('journeysPlausibleStatsAggregate', () => {
     })
   })
 })
+

@@ -17,15 +17,15 @@ builder.queryField('journeysPlausibleStatsAggregate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: PlausibleStatsAggregateResponseRef,
     args: {
+      where: t.arg({
+        type: PlausibleStatsAggregateFilter,
+        required: true
+      }),
       id: t.arg.id({ required: true }),
       idType: t.arg({
         type: IdType,
         required: false,
         defaultValue: 'slug'
-      }),
-      where: t.arg({
-        type: PlausibleStatsAggregateFilter,
-        required: true
       })
     },
     resolve: async (
@@ -34,12 +34,6 @@ builder.queryField('journeysPlausibleStatsAggregate', (t) =>
       context,
       info: GraphQLResolveInfo
     ): Promise<PlausibleStatsAggregateResponse> => {
-      if (context.type !== 'authenticated') {
-        throw new GraphQLError('Not authenticated', {
-          extensions: { code: 'UNAUTHENTICATED' }
-        })
-      }
-
       const journey = await loadJourneyOrThrow(id, normalizeIdType(idType))
 
       if (!ability(Action.Update, subject('Journey', journey), context.user)) {
