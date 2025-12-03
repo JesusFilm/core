@@ -129,13 +129,13 @@ export function Button({
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
-  const startIcon = children.find((block) => block.id === startIconId) as
-    | TreeBlock<BlockFields_IconBlock>
-    | undefined
+  const startIcon = children.find(
+    (block) => block.id === startIconId && block.__typename === 'IconBlock'
+  ) as TreeBlock<BlockFields_IconBlock> | undefined
 
-  const endIcon = children.find((block) => block.id === endIconId) as
-    | TreeBlock<BlockFields_IconBlock>
-    | undefined
+  const endIcon = children.find(
+    (block) => block.id === endIconId && block.__typename === 'IconBlock'
+  ) as TreeBlock<BlockFields_IconBlock> | undefined
 
   const messagePlatform = useMemo(() => findMessagePlatform(action), [action])
   const actionValue = useMemo(
