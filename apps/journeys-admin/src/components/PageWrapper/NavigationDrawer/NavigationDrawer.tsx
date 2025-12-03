@@ -139,7 +139,7 @@ export function NavigationDrawer({
             LinkComponent={NextLink}
             href="/"
             selected={selectedPage === 'journeys' || selectedPage === ''}
-            data-testid="NavigationListItemDiscover"
+            data-testid="NavigationListItemProjects"
           >
             <ListItemIcon>
               <Badge

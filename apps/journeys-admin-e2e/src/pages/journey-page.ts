@@ -47,7 +47,7 @@ export class JourneyPage {
     await this.enterTitle()
     await this.clickSaveBtn()
     await this.verifyJourneyTitleGotUpdated()
-    await this.backIcon()
+    await this.backToHome()
     await this.verifyCreatedCustomJourneyInActiveList()
   }
   async createANewCustomJourney() {
@@ -62,7 +62,7 @@ export class JourneyPage {
   async createAndVerifyTemplateFromNewJourney() {
     await this.clickThreeDotBtnOfCustomJourney()
     await this.clickCreateTempleteOrTemplateSettingsOption('Create Template')
-    await this.backIcon()
+    await this.backToHome()
     await this.verifyCreatedCustomJourneyInActiveList()
     await this.navigateToPublisherPage()
     await this.verifyCreatedJourneyInTemplateList()
@@ -71,7 +71,7 @@ export class JourneyPage {
     await this.clickOnTheCreatedCustomJourney()
     await this.clickThreeDotBtnOfCustomJourney()
     await this.clickCreateTempleteOrTemplateSettingsOption('Create Template')
-    await this.backIcon()
+    await this.backToHome()
     await this.navigateToPublisherPage()
     await this.verifyCreatedJourneyInTemplateList()
   }
@@ -103,14 +103,14 @@ export class JourneyPage {
 
   async navigateToDiscoverPage() {
     await expect(
-      this.page.locator('a[data-testid="NavigationListItemDiscover"]')
+      this.page.locator('a[data-testid="NavigationListItemProjects"]')
     ).toBeVisible()
     await this.page
-      .locator('a[data-testid="NavigationListItemDiscover"]')
+      .locator('a[data-testid="NavigationListItemProjects"]')
       .click()
     await expect(
       this.page.locator(
-        'a[data-testid="NavigationListItemDiscover"][class*="Mui-selected"]'
+        'a[data-testid="NavigationListItemProjects"][class*="Mui-selected"]'
       )
     ).toBeVisible({ timeout: thirtySecondsTimeout })
     await expect(
@@ -217,7 +217,7 @@ export class JourneyPage {
     await this.enterTitle()
     await this.clickSaveBtn()
     await this.verifyJourneyTitleGotUpdated()
-    await this.backIcon()
+    await this.backToHome()
     await this.verifyCreatedCustomJourneyInActiveList()
   }
 
@@ -348,8 +348,8 @@ export class JourneyPage {
       .click({ delay: 3000 })
   }
 
-  async backIcon() {
-    await this.page.locator('a[data-testid="ToolbarBackButton"]').click()
+  async backToHome() {
+    await this.page.locator('a[data-testid="NextStepsLogo"]').click()
   }
 
   async verifyCreatedCustomJourneyInActiveList() {
