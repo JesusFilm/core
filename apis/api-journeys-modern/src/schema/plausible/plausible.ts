@@ -36,7 +36,8 @@ export interface TemplatePlausibleStatsEventResponse {
     | (typeof goals)[number]
     | 'chatsClicked'
     | 'linksClicked'
-    | 'totalVisitors'
+    | 'journeyVisitors'
+    | 'journeyResponses'
   visitors: number
 }
 

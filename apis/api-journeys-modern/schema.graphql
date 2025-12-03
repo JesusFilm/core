@@ -1416,6 +1416,8 @@ enum PlausibleEvent {
   videoTrigger
   chatsClicked
   linksClicked
+  journeyVisitors
+  journeyResponses
 }
 
 input PlausibleStatsAggregateFilter {

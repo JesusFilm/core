@@ -19,7 +19,13 @@ import {
 import { getJourneyStatsBreakdown } from './service'
 
 const PlausibleEventEnum = builder.enumType('PlausibleEvent', {
-  values: [...goals, 'chatsClicked', 'linksClicked'] as readonly string[]
+  values: [
+    ...goals,
+    'chatsClicked',
+    'linksClicked',
+    'journeyVisitors',
+    'journeyResponses'
+  ] as readonly string[]
 })
 
 builder.queryField('templatePlausibleStatsBreakdown', (t) =>
@@ -100,6 +106,7 @@ builder.queryField('templatePlausibleStatsBreakdown', (t) =>
           }
         }
       })
+
       const resultsWithPermissions = addPermissionsAndNames(
         transformedResults,
         journeys,
@@ -120,16 +127,24 @@ builder.queryField('templatePlausibleStatsBreakdown', (t) =>
         filteredPageVisitors.map((item) => [item.journeyId, item.visitors])
       )
 
+      const allowedEvents =
+        events != null && events.length > 0
+          ? new Set(events.map((e) => String(e)))
+          : null
+
       const resultsWithTotalVisitors = resultsWithPermissions.map((result) => {
         const totalVisitors = visitorsByJourneyId.get(result.journeyId)
 
-        if (totalVisitors != null) {
+        if (
+          totalVisitors != null &&
+          (allowedEvents == null || allowedEvents.has('journeyVisitors'))
+        ) {
           return {
             ...result,
             stats: [
               ...result.stats,
               {
-                event: 'totalVisitors',
+                event: 'journeyVisitors',
                 visitors: totalVisitors
               }
             ]
@@ -139,7 +154,31 @@ builder.queryField('templatePlausibleStatsBreakdown', (t) =>
         return result
       })
 
-      return resultsWithTotalVisitors
+      const journeysResponses = await getJourneysResponses(journeys)
+      const journeysResponsesMap = new Map(
+        journeysResponses.map((item) => [item.journeyId, item.visitors])
+      )
+
+      const resultsWithResponses = resultsWithTotalVisitors.map((result) => {
+        const responses = journeysResponsesMap.get(result.journeyId)
+
+        if (
+          responses != null &&
+          (allowedEvents == null || allowedEvents.has('journeyResponses'))
+        ) {
+          return {
+            ...result,
+            stats: [
+              ...result.stats,
+              { event: 'journeyResponses', visitors: responses }
+            ]
+          }
+        }
+
+        return result
+      })
+
+      return resultsWithResponses
     }
   })
 )
@@ -403,4 +442,26 @@ function filterPageVisitors(
       visitors
     })
   )
+}
+
+async function getJourneysResponses(
+  journeys: JourneyWithAcl[]
+): Promise<{ journeyId: string; visitors: number }[]> {
+  const results = await Promise.all(
+    journeys.map(async (journey) => {
+      const response = await prisma.journeyVisitor.findMany({
+        where: {
+          journeyId: journey.id,
+          lastTextResponse: { not: null }
+        }
+      })
+
+      return {
+        journeyId: journey.id,
+        visitors: response.length
+      }
+    })
+  )
+
+  return results
 }
