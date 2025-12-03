@@ -1,6 +1,15 @@
 import { PlausibleStatsResponse } from '../../plausible'
 import { JourneyWithAcl } from '../templateFamilyStatsBreakdown.query'
 
+/**
+ * Filters page visitors from Plausible stats and aggregates them by journey ID.
+ * Only processes properties with exactly one slash (first-level pages like "/journey-slug")
+ * and matches them to journey slugs. Aggregates visitor counts for each matching journey.
+ *
+ * @param pageVisitors - Array of Plausible stats responses with page properties
+ * @param journeys - Array of journeys to match against page properties
+ * @returns Array of journey IDs with aggregated visitor counts. Returns an empty array if no matches are found.
+ */
 export function filterPageVisitors(
   pageVisitors: PlausibleStatsResponse[],
   journeys: JourneyWithAcl[]

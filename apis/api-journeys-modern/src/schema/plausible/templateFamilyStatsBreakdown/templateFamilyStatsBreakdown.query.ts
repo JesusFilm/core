@@ -90,8 +90,7 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
       }
 
       const { property: _, ...whereWithoutProperty } = where
-      const templateSiteId = `template-site`
-      // const templateSiteId = `api-journeys-template-${templateJourney.id}`
+      const templateSiteId = `api-journeys-template-${templateJourney.id}`
 
       const breakdownResults = await getJourneyStatsBreakdown(
         templateJourney.id,
@@ -116,6 +115,16 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
         )
       ]
 
+      const allowedEvents =
+        events != null && events.length > 0
+          ? new Set(events.map((e) => String(e)))
+          : null
+
+      const shouldIncludeJourneyVisitors =
+        allowedEvents == null || allowedEvents.has('journeyVisitors')
+      const shouldIncludeJourneyResponses =
+        allowedEvents == null || allowedEvents.has('journeyResponses')
+
       const [journeys, pageVisitors] = await Promise.all([
         prisma.journey.findMany({
           where: { id: { in: journeyIds } },
@@ -126,18 +135,24 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
             }
           }
         }),
-        getJourneyStatsBreakdown(
-          templateJourney.id,
-          {
-            property: 'event:page',
-            metrics: 'visitors'
-          },
-          templateSiteId
-        )
+        shouldIncludeJourneyVisitors
+          ? getJourneyStatsBreakdown(
+              templateJourney.id,
+              {
+                property: 'event:page',
+                metrics: 'visitors'
+              },
+              templateSiteId
+            )
+          : Promise.resolve([])
       ])
 
-      const filteredPageVisitors = filterPageVisitors(pageVisitors, journeys)
-      const journeysResponses = await getJourneysResponses(journeys)
+      const filteredPageVisitors = shouldIncludeJourneyVisitors
+        ? filterPageVisitors(pageVisitors, journeys)
+        : []
+      const journeysResponses = shouldIncludeJourneyResponses
+        ? await getJourneysResponses(journeys)
+        : []
 
       const visitorsByJourneyId = new Map(
         filteredPageVisitors.map((item) => [item.journeyId, item.visitors])
@@ -146,11 +161,6 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
       const responsesByJourneyId = new Map(
         journeysResponses.map((item) => [item.journeyId, item.visitors])
       )
-
-      const allowedEvents =
-        events != null && events.length > 0
-          ? new Set(events.map((e) => String(e)))
-          : null
 
       const resultsWithPermissions = addPermissionsAndNames(
         transformedResults,

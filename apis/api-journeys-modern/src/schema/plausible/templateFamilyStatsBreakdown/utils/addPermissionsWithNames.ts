@@ -6,6 +6,17 @@ import { JourneyWithAcl } from '../templateFamilyStatsBreakdown.query'
 
 import { TransformedResult } from './transformBreakdownResults'
 
+/**
+ * Adds journey and team names to transformed results based on user permissions.
+ * Journeys the user can read will show their actual names, while inaccessible
+ * journeys will be labeled as "unknown journey" with an index. Teams are similarly
+ * labeled based on whether the user can access any journey in that team.
+ *
+ * @param transformedResults - The transformed breakdown results with journey IDs and stats
+ * @param journeys - Array of journeys with ACL information
+ * @param user - The current user for permission checking
+ * @returns Array of breakdown responses with journey names, team names, and stats
+ */
 export function addPermissionsAndNames(
   transformedResults: TransformedResult[],
   journeys: JourneyWithAcl[],
@@ -54,6 +65,15 @@ export function addPermissionsAndNames(
   })
 }
 
+/**
+ * Builds a map of team IDs to team names based on user permissions.
+ * If the user can read any journey in a team, the actual team name is used.
+ * Otherwise, teams are labeled as "unknown team" with an index.
+ *
+ * @param journeys - Array of journeys with ACL information
+ * @param user - The current user for permission checking
+ * @returns Map of team ID (or null) to team name string
+ */
 function buildTeamNameMap(
   journeys: JourneyWithAcl[],
   user: User
