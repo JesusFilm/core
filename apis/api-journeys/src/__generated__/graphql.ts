@@ -375,6 +375,7 @@ export type ChatOpenEventCreateInput = {
 export type CloudflareImage = {
   __typename?: 'CloudflareImage';
   aspectRatio?: Maybe<ImageAspectRatio>;
+  blurhash?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['Date']['output'];
   id: Scalars['ID']['output'];
   mobileCinematicHigh?: Maybe<Scalars['String']['output']>;
@@ -655,10 +656,10 @@ export type GoogleSheetsSync = {
   integration?: Maybe<Integration>;
   integrationId?: Maybe<Scalars['ID']['output']>;
   journey: Journey;
-  journeyId: Scalars['String']['output'];
+  journeyId: Scalars['ID']['output'];
   sheetName?: Maybe<Scalars['String']['output']>;
   spreadsheetId: Scalars['ID']['output'];
-  teamId?: Maybe<Scalars['String']['output']>;
+  teamId: Scalars['ID']['output'];
   updatedAt: Scalars['DateTime']['output'];
 };
 
@@ -1422,6 +1423,7 @@ export type JourneysFilter = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   orderByRecent?: InputMaybe<Scalars['Boolean']['input']>;
   tagIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  teamId?: InputMaybe<Scalars['String']['input']>;
   template?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -3229,16 +3231,20 @@ export type PhoneAction = Action & {
   __typename?: 'PhoneAction';
   contactAction: ContactActionType;
   countryCode: Scalars['String']['output'];
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   gtmEventName?: Maybe<Scalars['String']['output']>;
   parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
+  parentStepId?: Maybe<Scalars['String']['output']>;
   phone: Scalars['String']['output'];
 };
 
 export type PhoneActionInput = {
   contactAction?: InputMaybe<ContactActionType>;
   countryCode: Scalars['String']['input'];
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  parentStepId?: InputMaybe<Scalars['String']['input']>;
   phone: Scalars['String']['input'];
 };
 
