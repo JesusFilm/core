@@ -95,7 +95,7 @@ export const getServerSideProps = withUserTokenSSR({
 
   if (redirect != null) return { redirect }
 
-  let variables: GetAdminJourneysVariables = {
+  const variables: GetAdminJourneysVariables = {
     template: true,
     teamId: 'jfp-team'
   }
