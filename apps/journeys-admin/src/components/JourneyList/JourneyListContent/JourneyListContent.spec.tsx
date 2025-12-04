@@ -4,10 +4,10 @@ import '../../../../test/i18n'
 
 import {
   activeJourneysMock,
-  archivedJourneysMock,
-  archivedTemplatesMock,
   archiveActiveJourneysMutationMock,
   archiveActiveTemplatesMutationMock,
+  archivedJourneysMock,
+  archivedTemplatesMock,
   deleteTrashedJourneysMutationMock,
   deleteTrashedTemplatesMutationMock,
   noArchivedMock,
@@ -20,13 +20,13 @@ import {
   restoreArchivedTemplatesMutationMock,
   restoreTrashedJourneysMutationMock,
   restoreTrashedTemplatesMutationMock,
+  templatesMock,
   trashActiveJourneysMutationMock,
   trashActiveTemplatesMutationMock,
   trashArchivedJourneysMutationMock,
   trashArchivedTemplatesMutationMock,
   trashedJourneysMock,
   trashedTemplatesMock,
-  templatesMock,
   user
 } from './JourneyListContent.mocks'
 import { renderJourneyListContent } from './JourneyListContent.testUtils'

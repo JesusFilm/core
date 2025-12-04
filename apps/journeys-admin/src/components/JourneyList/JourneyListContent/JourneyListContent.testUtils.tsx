@@ -1,12 +1,12 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { render, RenderResult } from '@testing-library/react'
+import { RenderResult, render } from '@testing-library/react'
 import { User } from 'next-firebase-auth'
 import { SnackbarProvider } from 'notistack'
 
+import { ThemeProvider } from '../../ThemeProvider'
 import type { JourneyListEvent } from '../JourneyList'
 import type { ContentType, JourneyStatusFilter } from '../JourneyListView'
 import { SortOrder } from '../JourneySort'
-import { ThemeProvider } from '../../ThemeProvider'
 
 import { JourneyListContent } from './JourneyListContent'
 
