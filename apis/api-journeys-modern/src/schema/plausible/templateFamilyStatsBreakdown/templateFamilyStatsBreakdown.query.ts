@@ -1,4 +1,4 @@
-import { GraphQLError, GraphQLResolveInfo } from 'graphql'
+import { GraphQLError } from 'graphql'
 
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
@@ -65,14 +65,8 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
     resolve: async (
       _parent,
       { id, idType, where, events },
-      context,
-      info: GraphQLResolveInfo
+      context
     ): Promise<TemplateFamilyStatsBreakdownResponse[]> => {
-      if (context.type !== 'authenticated') {
-        throw new GraphQLError('Not authenticated', {
-          extensions: { code: 'UNAUTHENTICATED' }
-        })
-      }
       const templateJourney = await loadJourneyOrThrow(
         id,
         normalizeIdType(idType)
@@ -90,7 +84,7 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
       }
 
       const { property: _, ...whereWithoutProperty } = where
-      const templateSiteId = `api-journeys-template-${templateJourney.id}`
+      const templateSiteId = `template-site`
 
       const breakdownResults = await getJourneyStatsBreakdown(
         templateJourney.id,
