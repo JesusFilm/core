@@ -66,6 +66,8 @@ export interface TextResponseWithButtonCreate_button_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonCreate_button_action = TextResponseWithButtonCreate_button_action_NavigateToBlockAction | TextResponseWithButtonCreate_button_action_LinkAction | TextResponseWithButtonCreate_button_action_EmailAction | TextResponseWithButtonCreate_button_action_ChatAction | TextResponseWithButtonCreate_button_action_PhoneAction;
@@ -155,6 +157,8 @@ export interface TextResponseWithButtonCreate_buttonUpdate_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type TextResponseWithButtonCreate_buttonUpdate_action = TextResponseWithButtonCreate_buttonUpdate_action_NavigateToBlockAction | TextResponseWithButtonCreate_buttonUpdate_action_LinkAction | TextResponseWithButtonCreate_buttonUpdate_action_EmailAction | TextResponseWithButtonCreate_buttonUpdate_action_ChatAction | TextResponseWithButtonCreate_buttonUpdate_action_PhoneAction;
