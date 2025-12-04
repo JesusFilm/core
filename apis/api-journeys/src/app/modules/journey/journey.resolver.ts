@@ -610,7 +610,7 @@ export class JourneyResolver {
                 status: JourneyStatus.published,
                 publishedAt: new Date(),
                 featuredAt: null,
-                template: false,
+                template: journey.teamId !== 'jfp-team' ? journey.template : false,
                 fromTemplateId: journey.template
                   ? id
                   : (journey.fromTemplateId ?? null),

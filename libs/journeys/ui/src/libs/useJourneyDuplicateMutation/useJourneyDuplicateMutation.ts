@@ -14,6 +14,7 @@ export const JOURNEY_DUPLICATE = gql`
   mutation JourneyDuplicate($id: ID!, $teamId: ID!) {
     journeyDuplicate(id: $id, teamId: $teamId) {
       id
+      template
     }
   }
 `
@@ -40,6 +41,7 @@ export function useJourneyDuplicateMutation(
                   fragment: gql`
                     fragment DuplicatedJourney on Journey {
                       id
+                      template
                     }
                   `
                 })
