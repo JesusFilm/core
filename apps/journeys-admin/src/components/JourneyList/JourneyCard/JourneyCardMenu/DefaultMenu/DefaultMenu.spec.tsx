@@ -245,6 +245,7 @@ describe('DefaultMenu', () => {
         queryByRole('menuitem', { name: 'Make Global Template' })
       ).not.toBeInTheDocument()
     )
+    expect(queryByRole('menuitem', { name: 'Use This Template' })).not.toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Translate' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
     await waitFor(() => {
@@ -325,6 +326,7 @@ describe('DefaultMenu', () => {
 
     expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Use This Template' })).toBeInTheDocument()
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     })
@@ -338,6 +340,8 @@ describe('DefaultMenu', () => {
       queryByRole('menuitem', { name: 'Translate' })
     ).not.toBeInTheDocument()
     expect(queryByRole('menuitem', { name: 'Copy to' })).not.toBeInTheDocument()
+    expect(queryByRole('menuitem', { name: 'Make Template' })).not.toBeInTheDocument()
+    expect(queryByRole('menuitem', { name: 'Make Global Template' })).not.toBeInTheDocument()
   })
 
   it('should call correct functions on Access click', () => {

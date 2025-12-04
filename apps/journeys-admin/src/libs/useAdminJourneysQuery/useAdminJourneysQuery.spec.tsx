@@ -59,7 +59,17 @@ describe('useAdminJourneysQuery', () => {
             ],
             team: {
               id: 'team-id'
-            }
+            },
+            journeyCustomizationDescription: 'Customize this journey',
+            journeyCustomizationFields: [
+              {
+                id: 'journey-customization-field-id',
+                journeyId: 'journey.id',
+                key: 'key',
+                value: 'value',
+                defaultValue: 'defaultValue'
+              }
+            ]
           }
         ]
       }
@@ -101,6 +111,16 @@ describe('useAdminJourneysQuery', () => {
     expect(hookResult.current.data?.journeys?.length).toBeGreaterThan(0)
     hookResult.current.data?.journeys?.forEach((journey) => {
       expect((journey as any).team?.id).toBe('team-id')
+      expect((journey as any).journeyCustomizationDescription).toBe('Customize this journey')
+      expect((journey as any).journeyCustomizationFields).toEqual([
+        {
+          id: 'journey-customization-field-id',
+          journeyId: 'journey.id',
+          key: 'key',
+          value: 'value',
+          defaultValue: 'defaultValue'
+        }
+      ])
     })
   })
 })
