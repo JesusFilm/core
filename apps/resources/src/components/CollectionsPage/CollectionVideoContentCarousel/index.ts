@@ -1,0 +1,1 @@
+export { CollectionVideoContentCarousel } from './CollectionVideoContentCarousel'

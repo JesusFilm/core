@@ -1126,6 +1126,7 @@ input JourneysFilter {
   limit: Int
   orderByRecent: Boolean
   fromTemplateId: ID
+  teamId: String
 }
 
 input JourneysQueryOptions {
@@ -1328,7 +1329,18 @@ type Mutation {
   journeyAiTranslateCreate(input: JourneyAiTranslateInput!): Journey!
   createJourneyEventsExportLog(input: JourneyEventsExportLogInput!): JourneyEventsExportLog!
   journeyLanguageAiDetect(input: MutationJourneyLanguageAiDetectInput!): Boolean!
-  journeyVisitorExportToGoogleSheet(journeyId: ID!, filter: JourneyEventsFilter, select: JourneyVisitorExportSelect, destination: JourneyVisitorGoogleSheetDestinationInput!, integrationId: ID!): JourneyVisitorGoogleSheetExportResult!
+  journeyVisitorExportToGoogleSheet(
+    journeyId: ID!
+    filter: JourneyEventsFilter
+    select: JourneyVisitorExportSelect
+    destination: JourneyVisitorGoogleSheetDestinationInput!
+    integrationId: ID!
+
+    """
+    IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.
+    """
+    timezone: String
+  ): JourneyVisitorGoogleSheetExportResult!
 }
 
 input MutationJourneyLanguageAiDetectInput {
@@ -1382,6 +1394,8 @@ type PhoneAction implements Action
   phone: String!
   countryCode: String!
   contactAction: ContactActionType!
+  customizable: Boolean
+  parentStepId: String
 }
 
 input PhoneActionInput {
@@ -1389,6 +1403,8 @@ input PhoneActionInput {
   phone: String!
   countryCode: String!
   contactAction: ContactActionType = call
+  customizable: Boolean
+  parentStepId: String
 }
 
 input PlausibleStatsAggregateFilter {

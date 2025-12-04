@@ -55,7 +55,7 @@ import { PrismaService } from '../../lib/prisma.service'
 import { RevalidateJob } from '../../lib/prisma.types'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockService } from '../block/block.service'
-import { PlausibleJob } from '../plausible/plausible.consumer'
+import { PlausibleJob } from '../plausible/plausible.service'
 import { QrCodeService } from '../qrCode/qrCode.service'
 
 type BlockWithAction = Block & { action: BlockAction | null }
@@ -267,6 +267,7 @@ export class JourneyResolver {
       filter.languageId = { in: where?.languageIds }
     if (where?.fromTemplateId != null)
       filter.fromTemplateId = where.fromTemplateId
+    if (where?.teamId != null) filter.teamId = where.teamId
 
     if (OR.length > 0) filter.OR = OR
 

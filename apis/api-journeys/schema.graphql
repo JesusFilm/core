@@ -101,6 +101,8 @@ type PhoneAction implements Action
   phone: String!
   countryCode: String!
   contactAction: ContactActionType!
+  customizable: Boolean
+  parentStepId: String
 }
 
 type ChatAction implements Action
@@ -2232,6 +2234,7 @@ input JourneysFilter {
   limit: Int
   orderByRecent: Boolean
   fromTemplateId: ID
+  teamId: String
 }
 
 input JourneysQueryOptions {

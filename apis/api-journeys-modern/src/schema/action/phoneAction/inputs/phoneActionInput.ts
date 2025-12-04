@@ -10,6 +10,8 @@ export const PhoneActionInput = builder.inputType('PhoneActionInput', {
       type: ContactActionType,
       required: false,
       defaultValue: 'call'
-    })
+    }),
+    customizable: t.boolean({ required: false }),
+    parentStepId: t.string({ required: false })
   })
 })
