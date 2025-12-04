@@ -372,14 +372,14 @@ describe('LinksForm', () => {
       </Formik>
     )
 
-    const phoneInput = screen.getByLabelText('Edit Phone Link Country')
+    const countryInput = screen.getByLabelText('Country')
 
-    phoneInput.focus()
-    expect(document.activeElement).toBe(phoneInput)
+    countryInput.focus()
+    expect(document.activeElement).toBe(countryInput)
 
-    fireEvent.keyDown(phoneInput, { key: 'Enter' })
+    fireEvent.keyDown(countryInput, { key: 'Enter' })
 
-    const phoneNumberInput = screen.getByLabelText('Edit Phone Link')
+    const phoneNumberInput = screen.getByLabelText('Phone Number')
     expect(document.activeElement).toBe(phoneNumberInput)
   })
 })

@@ -352,8 +352,8 @@ describe('LinksScreen', () => {
           label: 'Call Us',
           action: {
             __typename: 'PhoneAction',
-            phone: '+123456789',
-            countryCode: 'US',
+            phone: '+6434953',
+            countryCode: 'NZ',
             contactAction: ContactActionType.call,
             parentStepId: 'step-1',
             customizable: true
@@ -371,8 +371,8 @@ describe('LinksScreen', () => {
         variables: {
           id: 'btn-phone',
           input: {
-            phone: '+1987654321',
-            countryCode: 'US',
+            phone: '+64987654321',
+            countryCode: 'NZ',
             contactAction: ContactActionType.call,
             customizable: true,
             parentStepId: 'step-1'
@@ -385,8 +385,8 @@ describe('LinksScreen', () => {
             __typename: 'PhoneAction',
             parentBlockId: 'btn-phone',
             gtmEventName: '',
-            phone: '+1987654321',
-            countryCode: 'US',
+            phone: '+64987654321',
+            countryCode: 'NZ',
             contactAction: ContactActionType.call,
             customizable: true,
             parentStepId: 'step-1'
@@ -410,9 +410,16 @@ describe('LinksScreen', () => {
       )
     })
 
-    const phoneGroup = screen.getByLabelText('Edit Call Us')
-    const phoneInput = within(phoneGroup).getByRole('textbox')
-    fireEvent.change(phoneInput, { target: { value: '+1987654321' } })
+    const phoneLabel = screen.getByText('Call Us')
+    expect(phoneLabel).toBeInTheDocument()
+    const phoneNumberInput = screen.getByLabelText('Phone Number')
+    fireEvent.change(phoneNumberInput, { target: { value: '987654321' } })
+    fireEvent.blur(phoneNumberInput)
+
+    // Wait for React to finish updating parent Formik state
+    await waitFor(() => {
+      expect(phoneNumberInput).toHaveValue('987654321')
+    })
 
     fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
 
@@ -471,13 +478,22 @@ describe('LinksScreen', () => {
       )
     })
 
-    const phoneGroup = screen.getByLabelText('Edit Support')
-    const phoneInput = within(phoneGroup).getByRole('textbox')
-    fireEvent.change(phoneInput, { target: { value: 'not-a-phone' } })
+    const phoneLabel = screen.getByText('Support')
+    expect(phoneLabel).toBeInTheDocument()
+    const phoneNumberInput = screen.getByLabelText('Phone Number')
+    fireEvent.change(phoneNumberInput, { target: { value: 'not-a-phone' } })
+    fireEvent.blur(phoneNumberInput)
+
+    // Wait for React to finish updating parent Formik state
+    await waitFor(() => {
+      expect(phoneNumberInput).toHaveValue('not-a-phone')
+    })
 
     fireEvent.click(screen.getByTestId('CustomizeFlowNextButton'))
     await waitFor(() =>
-      expect(screen.getByText('Enter a valid phone number')).toBeInTheDocument()
+      expect(
+        screen.getByText('Phone number must use valid digits.')
+      ).toBeInTheDocument()
     )
   })
 })
