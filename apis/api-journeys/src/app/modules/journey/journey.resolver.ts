@@ -581,6 +581,7 @@ export class JourneyResolver {
         journeyId: duplicateJourneyId
       })
     )
+    const isLocalTemplate = journey.teamId !== "jfp-team" && journey.template
 
     let retry = true
     while (retry) {
@@ -610,7 +611,7 @@ export class JourneyResolver {
                 status: JourneyStatus.published,
                 publishedAt: new Date(),
                 featuredAt: null,
-                template: false,
+                template: isLocalTemplate,
                 fromTemplateId: journey.template
                   ? id
                   : (journey.fromTemplateId ?? null),
