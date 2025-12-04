@@ -131,7 +131,7 @@ describe('algoliaVideoVariantUpdate', () => {
           restrictViewPlatforms: [],
           videoPublished: true,
           image:
-            'https://imagedelivery.net/test-account/banner-image-id/f=jpg,w=1280,h=600,q=95',
+            'https://imagedelivery.net/test-account/banner-image-id/f=jpg,w=1280,h=600,q=95?v=1',
           imageAlt: 'Test alt text',
           childrenCount: 2,
           manualRanking: 0
