@@ -94,12 +94,10 @@ describe('algoliaLanguageUpdate', () => {
       id: '529',
       bcp47: 'en',
       iso3: 'eng',
-      nameNative: 'English',
-      primaryCountryId: 'GB',
       name: [
-        { value: 'English', languageId: '529', primary: true },
-        { value: 'Anglais', languageId: '496', primary: false },
-        { value: '英语', languageId: '21754', primary: false }
+        { value: 'English', primary: true, language: { id: '529', bcp47: 'en' } },
+        { value: 'Anglais', primary: false, language: { id: '496', bcp47: 'fr' } },
+        { value: '英语', primary: false, language: { id: '21754', bcp47: 'zh-Hans' } }
       ],
       countryLanguages: [
         {
