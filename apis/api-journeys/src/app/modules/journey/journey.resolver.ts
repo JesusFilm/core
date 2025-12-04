@@ -581,7 +581,7 @@ export class JourneyResolver {
         journeyId: duplicateJourneyId
       })
     )
-    const isLocalTemplate = journey.teamId !== "jfp-team" && journey.template
+    const isLocalTemplate = journey.teamId !== 'jfp-team' && journey.template
 
     let retry = true
     while (retry) {
