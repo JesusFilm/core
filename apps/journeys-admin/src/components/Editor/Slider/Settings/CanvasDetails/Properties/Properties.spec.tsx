@@ -19,6 +19,7 @@ import {
   ThemeName
 } from '../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../libs/TestEditorState'
+import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
 
 import { Properties } from '.'
 
@@ -140,7 +141,9 @@ describe('Properties', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <Properties block={block} />
+          <MuxVideoUploadProvider>
+            <Properties block={block} />
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
