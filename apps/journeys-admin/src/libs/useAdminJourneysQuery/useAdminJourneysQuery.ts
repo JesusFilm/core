@@ -64,6 +64,14 @@ export const GET_ADMIN_JOURNEYS = gql`
         id
       }
       fromTemplateId
+      journeyCustomizationDescription
+      journeyCustomizationFields {
+        id
+        journeyId
+        key
+        value
+        defaultValue
+      }
     }
   }
 `

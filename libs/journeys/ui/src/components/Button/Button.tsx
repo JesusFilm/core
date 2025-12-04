@@ -19,7 +19,6 @@ import {
 } from '../../../__generated__/globalTypes'
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
-import { BlockFields_IconBlock } from '../../libs/block/__generated__/BlockFields'
 import { useBlocks } from '../../libs/block'
 import { BlockFields_IconBlock } from '../../libs/block/__generated__/BlockFields'
 import { getNextStepSlug } from '../../libs/getNextStepSlug'

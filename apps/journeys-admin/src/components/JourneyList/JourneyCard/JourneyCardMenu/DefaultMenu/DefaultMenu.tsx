@@ -35,6 +35,7 @@ import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
 import { DuplicateJourneyMenuItem } from '../DuplicateJourneyMenuItem'
+import { TemplateActionButton } from '@core/journeys/ui/TemplateView/TemplateViewHeader/TemplateActionButton'
 
 import { ArchiveJourney } from './ArchiveJourney'
 
@@ -227,7 +228,6 @@ export function DefaultMenu({
           />
         </>
       )}
-
       {template !== true && (
         <>
           <Divider />
@@ -237,7 +237,7 @@ export function DefaultMenu({
           )}
         </>
       )}
-
+      {template === true && <TemplateActionButton variant="menu-item" />}
       <Divider />
       <CopyToTeamMenuItem
         id={id}
