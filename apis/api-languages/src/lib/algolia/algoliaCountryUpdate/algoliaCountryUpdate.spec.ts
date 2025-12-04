@@ -9,11 +9,6 @@ jest.mock('../algoliaClient', () => ({
   getAlgoliaClient: jest.fn()
 }))
 
-// Mock the languages helper
-jest.mock('../languages', () => ({
-  getLanguages: jest.fn()
-}))
-
 describe('algoliaCountryUpdate', () => {
   const saveObjectsSpy = jest
     .fn()
@@ -21,24 +16,6 @@ describe('algoliaCountryUpdate', () => {
 
   const mockAlgoliaClient = {
     saveObjects: saveObjectsSpy
-  }
-
-  const mockLanguages = {
-    '529': {
-      english: 'English',
-      primary: 'English',
-      bcp47: 'en'
-    },
-    '21754': {
-      english: 'Chinese, Simplified',
-      primary: '简体中文',
-      bcp47: 'zh-Hans'
-    },
-    '496': {
-      english: 'French',
-      primary: 'Français',
-      bcp47: 'fr'
-    }
   }
 
   const mockLogger: Logger = {
@@ -49,7 +26,6 @@ describe('algoliaCountryUpdate', () => {
 
   // Get the mocked functions
   const { getAlgoliaClient } = require('../algoliaClient')
-  const { getLanguages } = require('../languages')
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -59,7 +35,6 @@ describe('algoliaCountryUpdate', () => {
     saveObjectsSpy.mockResolvedValue([{ taskID: 'test-task-123' }])
 
     getAlgoliaClient.mockResolvedValue(mockAlgoliaClient)
-    getLanguages.mockResolvedValue(mockLanguages)
   })
 
   afterEach(() => {
@@ -98,9 +73,9 @@ describe('algoliaCountryUpdate', () => {
       flagPngSrc: 'gb-flag.png',
       flagWebpSrc: 'gb-flag.webp',
       name: [
-        { value: 'United Kingdom', languageId: '529', primary: true },
-        { value: 'Royaume-Uni', languageId: '496', primary: false },
-        { value: '英国', languageId: '21754', primary: false }
+        { value: 'United Kingdom', language: { id: '529', bcp47: 'en' }, primary: true },
+        { value: 'Royaume-Uni', language: { id: '496', bcp47: 'fr' }, primary: false },
+        { value: '英国', language: { id: '21754', bcp47: 'zh-Hans' }, primary: false }
       ],
       continent: {
         id: 'europe',
@@ -190,7 +165,7 @@ describe('algoliaCountryUpdate', () => {
       longitude: null,
       flagPngSrc: null,
       flagWebpSrc: null,
-      name: [{ value: 'Null Country', languageId: '529', primary: true }],
+      name: [{ value: 'Null Country', language: { id: '529', bcp47: 'en' }, primary: true }],
       continent: {
         id: 'null-continent',
         name: 'Null Continent'

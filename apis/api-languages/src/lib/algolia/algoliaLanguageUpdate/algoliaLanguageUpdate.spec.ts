@@ -9,11 +9,6 @@ jest.mock('../algoliaClient', () => ({
   getAlgoliaClient: jest.fn()
 }))
 
-// Mock the languages helper
-jest.mock('../languages', () => ({
-  getLanguages: jest.fn()
-}))
-
 describe('algoliaLanguageUpdate', () => {
   const saveObjectsSpy = jest
     .fn()
@@ -21,24 +16,6 @@ describe('algoliaLanguageUpdate', () => {
 
   const mockAlgoliaClient = {
     saveObjects: saveObjectsSpy
-  }
-
-  const mockLanguages = {
-    '529': {
-      english: 'English',
-      primary: 'English',
-      bcp47: 'en'
-    },
-    '21754': {
-      english: 'Chinese, Simplified',
-      primary: '简体中文',
-      bcp47: 'zh-Hans'
-    },
-    '496': {
-      english: 'French',
-      primary: 'Français',
-      bcp47: 'fr'
-    }
   }
 
   const mockLogger: Logger = {
@@ -49,7 +26,6 @@ describe('algoliaLanguageUpdate', () => {
 
   // Get the mocked functions
   const { getAlgoliaClient } = require('../algoliaClient')
-  const { getLanguages } = require('../languages')
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -59,7 +35,6 @@ describe('algoliaLanguageUpdate', () => {
     saveObjectsSpy.mockResolvedValue([{ taskID: 'test-task-123' }])
 
     getAlgoliaClient.mockResolvedValue(mockAlgoliaClient)
-    getLanguages.mockResolvedValue(mockLanguages)
   })
 
   afterEach(() => {
@@ -169,8 +144,6 @@ describe('algoliaLanguageUpdate', () => {
       id: 'test-id',
       bcp47: 'test',
       iso3: 'tst',
-      nameNative: 'Test Language',
-      primaryCountryId: 'US',
       name: [],
       countryLanguages: [
         {
@@ -192,7 +165,7 @@ describe('algoliaLanguageUpdate', () => {
           languageId: 'test-id',
           bcp47: 'test',
           iso3: 'tst',
-          nameNative: 'Test Language',
+          nameNative: '',
           speakersCount: 1000,
           primaryCountryId: 'US',
           names: []
