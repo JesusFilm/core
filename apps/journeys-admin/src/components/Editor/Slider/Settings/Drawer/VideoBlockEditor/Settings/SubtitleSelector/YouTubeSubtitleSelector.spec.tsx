@@ -67,14 +67,14 @@ describe('YouTubeSubtitleSelector', () => {
   it('renders with "Off" when selectedSubtitleId is not in availableLanguages', () => {
     render(
       <YouTubeSubtitleSelector
-        selectedSubtitleId='lang-ru'
+        selectedSubtitleId="lang-ru"
         availableLanguages={mockYouTubeLanguages}
         onChange={jest.fn()}
       />
-     )
+    )
 
-     expect(screen.getByRole('combobox')).toHaveTextContent('Off')
-    })
+    expect(screen.getByRole('combobox')).toHaveTextContent('Off')
+  })
 
   it('displays available subtitle languages in dropdown', () => {
     render(
