@@ -1,10 +1,8 @@
 import { InjectQueue } from '@nestjs/bullmq'
-import { Injectable, OnModuleInit } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
 
 import { JourneyPlausibleEvents } from '@core/journeys/ui/plausibleHelpers'
-
-const FIVE_DAYS = 5 * 24 * 60 * 60 // in seconds
 
 interface PlausibleCreateTeamSiteJob {
   __typename: 'plausibleCreateTeamSite'
@@ -51,22 +49,9 @@ export const goals: Array<keyof JourneyPlausibleEvents> = [
 ]
 
 @Injectable()
-export class PlausibleService implements OnModuleInit {
+export class PlausibleService {
   constructor(
     @InjectQueue('api-journeys-plausible')
     private readonly plausibleQueue: Queue<PlausibleJob>
   ) {}
-
-  async onModuleInit(): Promise<void> {
-    await this.plausibleQueue.add(
-      'plausibleCreateSites',
-      {
-        __typename: 'plausibleCreateSites'
-      },
-      {
-        removeOnComplete: true,
-        removeOnFail: { age: FIVE_DAYS, count: 50 }
-      }
-    )
-  }
 }
