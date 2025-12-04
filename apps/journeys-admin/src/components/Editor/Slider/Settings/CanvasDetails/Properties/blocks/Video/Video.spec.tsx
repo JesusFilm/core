@@ -7,8 +7,8 @@ import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../../../__generated__/globalTypes'
-import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
+import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 
 import { Video } from './Video'
 
