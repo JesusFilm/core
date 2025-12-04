@@ -62,7 +62,9 @@ describe('UseThisTemplateButton', () => {
     )
 
     expect(screen.getByTestId('UseThisTemplateButton')).toBeInTheDocument()
-    expect(screen.queryByTestId('UseThisTemplateMenuItem')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('UseThisTemplateMenuItem')
+    ).not.toBeInTheDocument()
   })
 
   it('should render use this template menu item when variant is menu-item', () => {
@@ -78,7 +80,9 @@ describe('UseThisTemplateButton', () => {
     )
 
     expect(screen.getByTestId('UseThisTemplateMenuItem')).toBeInTheDocument()
-    expect(screen.queryByTestId('UseThisTemplateButton')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('UseThisTemplateButton')
+    ).not.toBeInTheDocument()
   })
 
   describe('signed in', () => {

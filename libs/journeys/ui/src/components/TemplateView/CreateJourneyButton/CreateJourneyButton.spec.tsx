@@ -256,7 +256,9 @@ describe('CreateJourneyButton', () => {
     )
 
     expect(screen.getByTestId('CreateJourneyButton')).toBeInTheDocument()
-    expect(screen.queryByTestId('CreateJourneyMenuItem')).not.toBeInTheDocument()
+    expect(
+      screen.queryByTestId('CreateJourneyMenuItem')
+    ).not.toBeInTheDocument()
   })
 
   it('should render create journey menu item when variant is menu-item', () => {
@@ -266,14 +268,16 @@ describe('CreateJourneyButton', () => {
     } as unknown as NextRouter)
 
     render(
-      <MockedProvider mocks={[
-        {
-          request: {
-            query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
-          },
-          result: teamResult
-        }
-      ]}>
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          }
+        ]}
+      >
         <SnackbarProvider>
           <CreateJourneyButton variant="menu-item" />
         </SnackbarProvider>
@@ -283,7 +287,7 @@ describe('CreateJourneyButton', () => {
     expect(screen.getByTestId('CreateJourneyMenuItem')).toBeInTheDocument()
     expect(screen.queryByTestId('CreateJourneyButton')).not.toBeInTheDocument()
   })
-  
+
   it('should not open team dialog if url query set to createNew and openTeamDialogOnSignIn is not set', async () => {
     mockUseRouter.mockReturnValue({
       query: { createNew: 'true' }
