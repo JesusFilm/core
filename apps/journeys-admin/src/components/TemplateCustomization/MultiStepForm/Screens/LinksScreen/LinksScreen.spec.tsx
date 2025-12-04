@@ -412,7 +412,9 @@ describe('LinksScreen', () => {
 
     const phoneLabel = screen.getByText('Call Us')
     expect(phoneLabel).toBeInTheDocument()
-    const phoneNumberInput = screen.getByLabelText('Phone Number')
+    const phoneNumberInput = screen.getByRole('textbox', {
+      name: 'Phone Number'
+    })
     fireEvent.change(phoneNumberInput, { target: { value: '987654321' } })
     fireEvent.blur(phoneNumberInput)
 
@@ -480,7 +482,9 @@ describe('LinksScreen', () => {
 
     const phoneLabel = screen.getByText('Support')
     expect(phoneLabel).toBeInTheDocument()
-    const phoneNumberInput = screen.getByLabelText('Phone Number')
+    const phoneNumberInput = screen.getByRole('textbox', {
+      name: 'Phone Number'
+    })
     fireEvent.change(phoneNumberInput, { target: { value: 'not-a-phone' } })
     fireEvent.blur(phoneNumberInput)
 
