@@ -8,17 +8,23 @@ import { object, string } from 'yup'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
-import { JourneyFields_chatButtons as JourneyChatButton } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
+import {
+  JourneyFields_chatButtons as JourneyChatButton,
+  JourneyFields_blocks_ButtonBlock_action_PhoneAction as JourneyPhoneAction
+} from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { transformer } from '@core/journeys/ui/transformer'
 
 import {
   BlockFields,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../__generated__/BlockFields'
+import { ContactActionType } from '../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonUpdate } from '../../../../../../__generated__/JourneyChatButtonUpdate'
 import { useBlockActionEmailUpdateMutation } from '../../../../../libs/useBlockActionEmailUpdateMutation'
 import { useBlockActionLinkUpdateMutation } from '../../../../../libs/useBlockActionLinkUpdateMutation'
+import { useBlockActionPhoneUpdateMutation } from '../../../../../libs/useBlockActionPhoneUpdateMutation'
 import { JOURNEY_CHAT_BUTTON_UPDATE } from '../../../../Editor/Slider/Settings/CanvasDetails/JourneyAppearance/Chat/ChatOption/Details/Details'
+import { countries } from '../../../../Editor/Slider/Settings/CanvasDetails/Properties/controls/Action/PhoneAction/countriesList'
 import { CustomizationScreen } from '../../../utils/getCustomizeFlowConfig'
 import { getJourneyLinks } from '../../../utils/getJourneyLinks'
 import { CustomizeFlowNextButton } from '../../CustomizeFlowNextButton'
@@ -44,11 +50,15 @@ export function LinksScreen({
     useBlockActionLinkUpdateMutation()
   const [updateEmailAction, { loading: emailLoading }] =
     useBlockActionEmailUpdateMutation()
+  const [updatePhoneAction, { loading: phoneLoading }] =
+    useBlockActionPhoneUpdateMutation()
 
   const treeBlocks = transformer(journey?.blocks ?? []).filter((block) =>
     links?.some(
       (link) =>
-        (link.linkType === 'url' || link.linkType === 'email') &&
+        (link.linkType === 'url' ||
+          link.linkType === 'email' ||
+          link.linkType === 'phone') &&
         link.parentStepId === block.id
     )
   ) as Array<TreeBlock<StepBlock>>
@@ -70,10 +80,28 @@ export function LinksScreen({
     }
 
     const updatePromises = links.map((link) => {
-      const newValueRaw = (values[link.id] ?? '').trim()
       const oldValueRaw = (link.url ?? '').trim()
+      const newValueRaw =
+        link.linkType === 'phone'
+          ? (() => {
+              const cc = (values[`${link.id}__cc`] ?? '').trim()
+              const local = (values[`${link.id}__local`] ?? '').trim()
+              const normalizedCc =
+                cc === '' ? '' : cc.startsWith('+') ? cc : `+${cc}`
+              const ccDigits = normalizedCc.replace(/[^\d]/g, '')
+              const localDigits = local.replace(/[^\d]/g, '')
+              if (ccDigits === '' && localDigits === '') return ''
+              return `+${ccDigits}${localDigits}`
+            })()
+          : (values[link.id] ?? '').trim()
 
-      if (errors[link.id] != null) return Promise.resolve(undefined)
+      if (
+        (link.linkType !== 'phone' && errors[link.id] != null) ||
+        (link.linkType === 'phone' &&
+          (errors[`${link.id}__cc`] != null ||
+            errors[`${link.id}__local`] != null))
+      )
+        return Promise.resolve(undefined)
 
       if (link.linkType === 'chatButtons') {
         const chatButton = journey?.chatButtons?.find(
@@ -115,19 +143,45 @@ export function LinksScreen({
           .__typename
       } as Pick<BlockFields, 'id' | '__typename'>
 
-      return link.linkType === 'email'
-        ? updateEmailAction(
-            blockRef,
-            newValueRaw,
-            link.customizable ?? null,
-            link.parentStepId ?? null
-          )
-        : updateLinkAction(
-            blockRef,
-            newValueRaw,
-            link.customizable ?? null,
-            link.parentStepId ?? null
-          )
+      if (link.linkType === 'email') {
+        return updateEmailAction(
+          blockRef,
+          newValueRaw,
+          link.customizable ?? null,
+          link.parentStepId ?? null
+        )
+      }
+
+      if (link.linkType === 'phone') {
+        const action =
+          (block as any)?.action?.__typename === 'PhoneAction'
+            ? ((block as any).action as JourneyPhoneAction)
+            : undefined
+        const cc = (values[`${link.id}__cc`] ?? '').trim()
+        const normalizedCc = cc === '' ? '' : cc.startsWith('+') ? cc : `+${cc}`
+        const matchedCountry =
+          countries.find((c) => c.callingCode === normalizedCc) ??
+          (action?.countryCode != null
+            ? countries.find((c) => c.countryCode === action.countryCode)
+            : undefined)
+        const countryCode = matchedCountry?.countryCode ?? 'US'
+        const contactAction = action?.contactAction ?? ContactActionType.call
+        return updatePhoneAction(
+          blockRef,
+          newValueRaw,
+          countryCode,
+          contactAction,
+          link.customizable ?? null,
+          link.parentStepId ?? null
+        )
+      }
+
+      return updateLinkAction(
+        blockRef,
+        newValueRaw,
+        link.customizable ?? null,
+        link.parentStepId ?? null
+      )
     })
 
     await Promise.allSettled(updatePromises)
@@ -189,7 +243,27 @@ export function LinksScreen({
       <Formik
         enableReinitialize
         initialValues={links.reduce<Record<string, string>>((acc, link) => {
-          acc[link.id] = link.url ?? ''
+          if (link.linkType === 'phone') {
+            const block = journey?.blocks?.find((b) => b.id === link.id)
+            const action =
+              (block as any)?.action?.__typename === 'PhoneAction'
+                ? ((block as any).action as JourneyPhoneAction)
+                : undefined
+            const country =
+              action?.countryCode != null
+                ? countries.find((c) => c.countryCode === action.countryCode)
+                : undefined
+            const callingCode = country?.callingCode ?? '+'
+            const ccDigits = callingCode.replace(/[^\d]/g, '')
+            const prefix = ccDigits === '' ? '' : `+${ccDigits}`
+            const local = (action?.phone ?? '').startsWith(prefix)
+              ? (action?.phone ?? '').slice(prefix.length)
+              : (action?.phone ?? '').replace(/^\+/, '')
+            acc[`${link.id}__cc`] = callingCode
+            acc[`${link.id}__local`] = local
+          } else {
+            acc[link.id] = link.url ?? ''
+          }
           return acc
         }, {})}
         validationSchema={object().shape(
@@ -197,6 +271,24 @@ export function LinksScreen({
             (acc, link) => {
               if (link.linkType === 'email') {
                 acc[link.id] = string().email(t('Enter a valid email'))
+              } else if (link.linkType === 'phone') {
+                acc[`${link.id}__cc`] = string().test(
+                  'valid-cc',
+                  t('Enter a valid calling code'),
+                  (val) => {
+                    if (val == null || val.trim() === '') return false
+                    const normalized = val.startsWith('+') ? val : `+${val}`
+                    return countries.some((c) => c.callingCode === normalized)
+                  }
+                )
+                acc[`${link.id}__local`] = string().test(
+                  'valid-local',
+                  t('Enter a valid phone number'),
+                  (val) =>
+                    val == null ||
+                    val.trim() === '' ||
+                    /^[0-9\s\-()]+$/.test(val.trim())
+                )
               } else {
                 acc[link.id] = string().url(t('Enter a valid URL'))
               }
@@ -220,7 +312,8 @@ export function LinksScreen({
                 formik.isSubmitting ||
                 chatLoading ||
                 linkLoading ||
-                emailLoading
+                emailLoading ||
+                phoneLoading
               }
               ariaLabel={t('Replace the links')}
             />

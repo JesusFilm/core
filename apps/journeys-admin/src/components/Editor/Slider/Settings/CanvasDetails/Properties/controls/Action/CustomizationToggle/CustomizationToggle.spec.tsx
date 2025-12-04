@@ -8,14 +8,21 @@ import {
   BlockFields_ButtonBlock as ButtonBlock,
   BlockFields_StepBlock as StepBlock
 } from '../../../../../../../../../../__generated__/BlockFields'
+import { ContactActionType } from '../../../../../../../../../../__generated__/globalTypes'
 
 import { CustomizationToggle } from './CustomizationToggle'
 
+const mockAddAction = jest.fn()
 jest.mock('../../../../../../../utils/useActionCommand', () => ({
-  useActionCommand: () => ({ addAction: jest.fn() })
+  useActionCommand: () => ({ addAction: mockAddAction })
 }))
 
 describe('CustomizationToggle', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    jest.restoreAllMocks()
+  })
+
   it('renders toggle for LinkAction and reflects checked state', () => {
     const selectedBlock = {
       id: 'button-1',
@@ -33,6 +40,7 @@ describe('CustomizationToggle', () => {
       parentBlockId: 'journeyId',
       parentOrder: 0,
       locked: false,
+      nextBlockId: null,
       slug: 'slug'
     } as unknown as TreeBlock<StepBlock>
 
@@ -59,6 +67,7 @@ describe('CustomizationToggle', () => {
       parentBlockId: 'journeyId',
       parentOrder: 0,
       locked: false,
+      nextBlockId: null,
       slug: 'slug'
     } as unknown as TreeBlock<StepBlock>
 
@@ -89,6 +98,7 @@ describe('CustomizationToggle', () => {
       parentBlockId: 'journeyId',
       parentOrder: 0,
       locked: false,
+      nextBlockId: null,
       slug: 'slug'
     } as unknown as TreeBlock<StepBlock>
 
@@ -128,6 +138,7 @@ describe('CustomizationToggle', () => {
       parentBlockId: 'journeyId',
       parentOrder: 0,
       locked: false,
+      nextBlockId: null,
       slug: 'slug'
     } as unknown as TreeBlock<StepBlock>
 
@@ -178,6 +189,7 @@ describe('CustomizationToggle', () => {
       parentBlockId: 'journeyId',
       parentOrder: 0,
       locked: false,
+      nextBlockId: null,
       slug: 'slug'
     } as unknown as TreeBlock<StepBlock>
 
@@ -201,6 +213,41 @@ describe('CustomizationToggle', () => {
         })
       })
     )
+  })
+
+  it('renders toggle for PhoneAction and reflects checked state', () => {
+    const selectedBlock = {
+      id: 'button-5',
+      __typename: 'ButtonBlock',
+      action: {
+        __typename: 'PhoneAction',
+        parentBlockId: 'button-5',
+        gtmEventName: '',
+        phone: '+1234567890',
+        countryCode: 'US',
+        contactAction: ContactActionType.call,
+        customizable: true
+      }
+    } as unknown as TreeBlock<ButtonBlock>
+
+    const selectedStep = {
+      id: 'step-5',
+      __typename: 'StepBlock',
+      parentBlockId: 'journeyId',
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      slug: 'slug'
+    } as unknown as TreeBlock<StepBlock>
+
+    render(
+      <EditorProvider initialState={{ selectedBlock, selectedStep }}>
+        <CustomizationToggle />
+      </EditorProvider>
+    )
+
+    const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
+    expect(toggle).toBeChecked()
   })
 
   it('renders toggle for ChatAction and reflects checked state', () => {
@@ -230,8 +277,61 @@ describe('CustomizationToggle', () => {
     )
 
     expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-    const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
+    const toggle = screen.getByRole('checkbox', {
+      name: 'Toggle customizable'
+    })
     expect(toggle).toBeChecked()
+  })
+
+  it('handles toggle change for PhoneAction', () => {
+    const selectedBlock = {
+      id: 'button-6',
+      __typename: 'ButtonBlock',
+      action: {
+        __typename: 'PhoneAction',
+        parentBlockId: 'button-6',
+        gtmEventName: '',
+        phone: '+1234567890',
+        countryCode: 'US',
+        contactAction: ContactActionType.call,
+        customizable: false,
+        parentStepId: 'step-6'
+      }
+    } as unknown as TreeBlock<ButtonBlock>
+
+    const selectedStep = {
+      id: 'step-6',
+      __typename: 'StepBlock',
+      parentBlockId: 'journeyId',
+      parentOrder: 0,
+      locked: false,
+      nextBlockId: null,
+      slug: 'slug'
+    } as unknown as TreeBlock<StepBlock>
+
+    render(
+      <EditorProvider initialState={{ selectedBlock, selectedStep }}>
+        <CustomizationToggle />
+      </EditorProvider>
+    )
+
+    const toggle = screen.getByRole('checkbox', {
+      name: 'Toggle customizable'
+    })
+    fireEvent.click(toggle)
+    expect(mockAddAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        blockId: 'button-6',
+        action: expect.objectContaining({
+          __typename: 'PhoneAction',
+          phone: '+1234567890',
+          countryCode: 'US',
+          contactAction: ContactActionType.call,
+          customizable: true,
+          parentStepId: 'step-6'
+        })
+      })
+    )
   })
 
   it('renders toggle for ChatAction and reflects unchecked state', () => {
@@ -245,6 +345,7 @@ describe('CustomizationToggle', () => {
         parentStepId: 'step-6'
       }
     } as unknown as TreeBlock<ButtonBlock>
+
     const selectedStep = {
       id: 'step-6',
       __typename: 'StepBlock',
@@ -261,7 +362,9 @@ describe('CustomizationToggle', () => {
     )
 
     expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-    const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
+    const toggle = screen.getByRole('checkbox', {
+      name: 'Toggle customizable'
+    })
     expect(toggle).not.toBeChecked()
   })
 
@@ -299,7 +402,9 @@ describe('CustomizationToggle', () => {
       </EditorProvider>
     )
 
-    const toggle = screen.getByRole('checkbox', { name: 'Toggle customizable' })
+    const toggle = screen.getByRole('checkbox', {
+      name: 'Toggle customizable'
+    })
     fireEvent.click(toggle)
 
     expect(addAction).toHaveBeenCalledWith(
