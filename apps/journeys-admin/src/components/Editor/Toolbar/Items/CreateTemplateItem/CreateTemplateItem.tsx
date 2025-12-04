@@ -50,10 +50,15 @@ export function CreateTemplateItem({
   const handleCreateTemplate = async (): Promise<void> => {
     if (journey == null) return
 
+    // Duplicate journey but don't add to journeys cache since we're converting to template immediately
     const { data } = await journeyDuplicate({
       variables: {
         id: journey?.id,
         teamId: globalPublish ? 'jfp-team' : (journey.team?.id ?? '')
+      },
+      update() {
+        // Override default cache update - we'll handle cache update after converting to template
+        // This prevents the duplicate from appearing in journeys cache
       }
     })
 
@@ -70,16 +75,26 @@ export function CreateTemplateItem({
           if (data?.journeyTemplate != null) {
             cache.modify({
               fields: {
-                adminJourneys(existingAdminJourneyRefs = []) {
-                  const journeyTemplate = cache.writeFragment({
-                    data: data.journeyTemplate,
-                    fragment: gql`
-                      fragment journeyTemplate on Journey {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingAdminJourneyRefs, journeyTemplate]
+                adminJourneys(existingAdminJourneyRefs = [], details) {
+                  const args = (
+                    details as {
+                      args?: { template?: boolean }
+                    }
+                  ).args
+                  // Only add template to templates cache (template: true)
+                  // Skip journeys cache (template: false) since we never added the duplicate there
+                  if (args?.template === true) {
+                    const journeyTemplate = cache.writeFragment({
+                      data: data.journeyTemplate,
+                      fragment: gql`
+                        fragment journeyTemplate on Journey {
+                          id
+                        }
+                      `
+                    })
+                    return [...existingAdminJourneyRefs, journeyTemplate]
+                  }
+                  return existingAdminJourneyRefs
                 }
               }
             })

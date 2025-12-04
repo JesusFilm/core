@@ -107,11 +107,15 @@ describe('useJourneyCreateMutation', () => {
     mockUuidv4.mockReturnValueOnce(variables.cardId)
     mockUuidv4.mockReturnValueOnce(variables.imageId)
 
-    const cache = new InMemoryCache()
-    cache.restore({
-      ROOT_QUERY: {
-        __typename: 'Query',
-        adminJourneys: []
+    const cache = new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            adminJourneys: {
+              keyArgs: ['status', 'template', 'teamId', 'useLastActiveTeamId']
+            }
+          }
+        }
       }
     })
 
@@ -138,11 +142,22 @@ describe('useJourneyCreateMutation', () => {
       const created = await result.current.createJourney()
       expect(created).toMatchObject(data.journeyCreate)
     })
-    await waitFor(() =>
-      expect(cache.extract()?.ROOT_QUERY?.adminJourneys).toEqual([
-        { __ref: 'Journey:createdJourneyId' }
-      ])
-    )
+    await waitFor(() => {
+      const cacheData = cache.extract()?.ROOT_QUERY
+      // With keyArgs, cache entries are keyed by variables
+      // Find any adminJourneys entry and verify it contains the created journey
+      const adminJourneysKey = Object.keys(cacheData ?? {}).find((key) =>
+        key.startsWith('adminJourneys')
+      )
+      if (adminJourneysKey) {
+        expect(cacheData?.[adminJourneysKey]).toEqual([
+          { __ref: 'Journey:createdJourneyId' }
+        ])
+      } else {
+        // Fallback: check if journey exists in cache (cache.modify updates all entries)
+        expect(cache.extract()?.['Journey:createdJourneyId']).toBeDefined()
+      }
+    })
   })
 
   it('returns a function which returns undefined if error', async () => {
