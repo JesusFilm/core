@@ -39,7 +39,7 @@ export function VideoOptions(): ReactElement {
     VideoBlockUpdateVariables
   >(VIDEO_BLOCK_UPDATE)
 
-  const selectedBlock = stateSelectedBlock
+  const selectedBlock = stateSelectedBlock as TreeBlock<VideoBlock> | undefined
 
   function handleChange(
     input: VideoBlockUpdateInput,
