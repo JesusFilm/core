@@ -52,7 +52,9 @@ export async function updateCountryInAlgolia(
       return
     }
 
-    logger?.info(`Found country: ${country.id} with ${country.name.length} names`)
+    logger?.info(
+      `Found country: ${country.id} with ${country.name.length} names`
+    )
 
     // Transform country names with bcp47 codes
     const names = country.name.map((name) => ({
@@ -85,7 +87,9 @@ export async function updateCountryInAlgolia(
     logger?.info(
       `Successfully saved country to Algolia. Tasks: ${result.map((r) => r.taskID).join(', ')}`
     )
-    logger?.info(`Record ${country.id} is now available in index ${countriesIndex}`)
+    logger?.info(
+      `Record ${country.id} is now available in index ${countriesIndex}`
+    )
   } catch (error) {
     logger?.error(error, `failed to update country ${countryId} in algolia`)
   }

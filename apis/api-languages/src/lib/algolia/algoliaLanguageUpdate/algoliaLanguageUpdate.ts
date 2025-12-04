@@ -28,12 +28,12 @@ export async function updateLanguageInAlgolia(
             value: true,
             primary: true,
             language: {
-            select: {
+              select: {
                 id: true,
                 bcp47: true
+              }
             }
-        }    
-        }
+          }
         },
         countryLanguages: {
           select: {
@@ -55,7 +55,9 @@ export async function updateLanguageInAlgolia(
       return
     }
 
-    logger?.info(`Found language: ${language.bcp47} with ${language.name.length} names`)
+    logger?.info(
+      `Found language: ${language.bcp47} with ${language.name.length} names`
+    )
 
     // Calculate speaker count from countryLanguages (excluding suggested)
     const nonSuggestedCountryLanguages = language.countryLanguages.filter(
@@ -67,11 +69,19 @@ export async function updateLanguageInAlgolia(
     )
 
     // Get primary country ID
-    const primaryCountryLanguage = language.countryLanguages.find(({ primary }) => primary)
-    const primaryCountryId = primaryCountryLanguage?.country.id ?? language.countryLanguages[0]?.country.id ?? 'US'
+    const primaryCountryLanguage = language.countryLanguages.find(
+      ({ primary }) => primary
+    )
+    const primaryCountryId =
+      primaryCountryLanguage?.country.id ??
+      language.countryLanguages[0]?.country.id ??
+      'US'
 
     // Get native name (primary name)
-    const nameNative = language.name.find(({ primary }) => primary)?.value ?? language.name[0]?.value ?? ''
+    const nameNative =
+      language.name.find(({ primary }) => primary)?.value ??
+      language.name[0]?.value ??
+      ''
 
     // Transform language names with bcp47 codes
     const names = language.name.map((name) => ({
@@ -100,7 +110,9 @@ export async function updateLanguageInAlgolia(
     logger?.info(
       `Successfully saved language to Algolia. Tasks: ${result.map((r: any) => r.taskID).join(', ')}`
     )
-    logger?.info(`Record ${language.id} is now available in index ${languagesIndex}`)
+    logger?.info(
+      `Record ${language.id} is now available in index ${languagesIndex}`
+    )
   } catch (error) {
     logger?.error(error, `failed to update language ${languageId} in algolia`)
   }

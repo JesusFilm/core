@@ -190,9 +190,7 @@ describe('algoliaCountryUpdate', () => {
       longitude: null,
       flagPngSrc: null,
       flagWebpSrc: null,
-      name: [
-        { value: 'Null Country', languageId: '529', primary: true }
-      ],
+      name: [{ value: 'Null Country', languageId: '529', primary: true }],
       continent: {
         id: 'null-continent',
         name: 'Null Continent'
@@ -216,9 +214,7 @@ describe('algoliaCountryUpdate', () => {
             id: 'null-continent',
             name: 'Null Continent'
           },
-          names: [
-            { value: 'Null Country', languageId: '529', bcp47: 'en' }
-          ]
+          names: [{ value: 'Null Country', languageId: '529', bcp47: 'en' }]
         })
       ],
       waitForTasks: true

@@ -102,9 +102,24 @@ describe('algoliaLanguageUpdate', () => {
         { value: '英语', languageId: '21754', primary: false }
       ],
       countryLanguages: [
-        { speakers: 40000000000, suggested: false, primary: true, country: { id: 'GB' } },
-        { speakers: 48368586015, suggested: false, primary: false, country: { id: 'US' } },
-        { speakers: 1000000, suggested: true, primary: false, country: { id: 'CA' } } // This should be excluded
+        {
+          speakers: 40000000000,
+          suggested: false,
+          primary: true,
+          country: { id: 'GB' }
+        },
+        {
+          speakers: 48368586015,
+          suggested: false,
+          primary: false,
+          country: { id: 'US' }
+        },
+        {
+          speakers: 1000000,
+          suggested: true,
+          primary: false,
+          country: { id: 'CA' }
+        } // This should be excluded
       ]
     } as any)
 
@@ -148,7 +163,12 @@ describe('algoliaLanguageUpdate', () => {
       primaryCountryId: 'US',
       name: [],
       countryLanguages: [
-        { speakers: 1000, suggested: false, primary: true, country: { id: 'US' } }
+        {
+          speakers: 1000,
+          suggested: false,
+          primary: true,
+          country: { id: 'US' }
+        }
       ]
     } as any)
 
