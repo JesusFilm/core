@@ -11,6 +11,13 @@ import { FooterLink } from './FooterLink'
 export function Footer(): ReactElement {
   const { t } = useTranslation('apps-resources')
 
+  const gitSha =
+    process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ??
+    process.env.VERCEL_GIT_COMMIT_SHA ??
+    ''
+  const shortSha = gitSha ? gitSha.substring(0, 7).toLowerCase() : 'dev'
+  const projectInfo = `Resources (${shortSha})`
+
   const navigationLinks = [
     { name: t('Share', { lng: 'en' }), href: '/partners/share/' },
     { name: t('Watch', { lng: 'en' }), href: '/watch/' },
@@ -163,45 +170,56 @@ export function Footer(): ReactElement {
           gap={5}
           rowGap={8}
         >
-          <Stack
-            direction="row"
-            justifyContent={{ xs: 'center', sm: 'flex-start' }}
-            flexGrow={1}
-            alignItems="center"
-            divider={<Divider orientation="vertical" flexItem />}
-            gap={5}
-          >
-            {/* Address and Contact */}
-            <Stack>
-              <Typography variant="h6" fontSize={12} lineHeight={1.2}>
-                {t('100 Lake Hart Drive', { lng: 'en' })}
-              </Typography>
-              <Typography variant="h6" fontSize={12} lineHeight={1.2}>
-                {t('Orlando, FL, 32832', { lng: 'en' })}
-              </Typography>
-            </Stack>
+          <Stack direction="column">
+            <Stack
+              direction="row"
+              justifyContent={{ xs: 'center', sm: 'flex-start' }}
+              flexGrow={1}
+              alignItems="center"
+              divider={<Divider orientation="vertical" flexItem />}
+              gap={5}
+            >
+              {/* Address and Contact */}
+              <Stack>
+                <Typography variant="h6" fontSize={12} lineHeight={1.2}>
+                  {t('100 Lake Hart Drive', { lng: 'en' })}
+                </Typography>
+                <Typography variant="h6" fontSize={12} lineHeight={1.2}>
+                  {t('Orlando, FL, 32832', { lng: 'en' })}
+                </Typography>
+              </Stack>
 
-            <Stack>
-              <Typography variant="h6" fontSize={12} lineHeight={1.2}>
-                {t('Office: (407) 826-2300', { lng: 'en' })}
-              </Typography>
-              <Typography variant="h6" fontSize={12} lineHeight={1.2}>
-                {t('Fax: (407) 826-2375', { lng: 'en' })}
-              </Typography>
+              <Stack>
+                <Typography variant="h6" fontSize={12} lineHeight={1.2}>
+                  {t('Office: (407) 826-2300', { lng: 'en' })}
+                </Typography>
+                <Typography variant="h6" fontSize={12} lineHeight={1.2}>
+                  {t('Fax: (407) 826-2375', { lng: 'en' })}
+                </Typography>
+              </Stack>
+              {/* Legal Links */}
+              <Stack>
+                <FooterLink
+                  url="/privacy/"
+                  label={t('Privacy Policy', { lng: 'en' })}
+                  sx={{ fontSize: 12, lineHeight: 1.2 }}
+                />
+                <FooterLink
+                  url="/legal/"
+                  label={t('Legal Statement', { lng: 'en' })}
+                  sx={{ fontSize: 12, lineHeight: 1.2 }}
+                />
+              </Stack>
             </Stack>
-            {/* Legal Links */}
-            <Stack>
-              <FooterLink
-                url="/privacy/"
-                label={t('Privacy Policy', { lng: 'en' })}
-                sx={{ fontSize: 12, lineHeight: 1.2 }}
-              />
-              <FooterLink
-                url="/legal/"
-                label={t('Legal Statement', { lng: 'en' })}
-                sx={{ fontSize: 12, lineHeight: 1.2 }}
-              />
-            </Stack>
+            <Typography
+              variant="h6"
+              fontSize={12}
+              lineHeight={1.2}
+              color="textSecondary"
+              sx={{ opacity: 0.6 }}
+            >
+              {projectInfo}
+            </Typography>
           </Stack>
           {/* Newsletter Section */}
           <Stack flexGrow={1} alignItems={{ xs: 'center', sm: 'flex-end' }}>
