@@ -47,9 +47,8 @@ export function VideoOptions(): ReactElement {
   ): void {
     if (selectedBlock == null) return
 
-    if (input.source !== VideoBlockSource.mux) {
+    if (input.source !== VideoBlockSource.mux)
       cancelUploadForBlock(selectedBlock)
-    }
 
     const inverseInput: VideoBlockUpdateInput = {}
     if (input.startAt !== undefined)
