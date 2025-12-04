@@ -39,7 +39,6 @@ builder.mutationField('buttonClickEventCreate', (t) =>
       })
 
       const updates: Array<Promise<unknown>> = []
-      // live sync to Google Sheets (fire and forget)
       if (teamId) {
         appendEventToGoogleSheets({
           journeyId,
