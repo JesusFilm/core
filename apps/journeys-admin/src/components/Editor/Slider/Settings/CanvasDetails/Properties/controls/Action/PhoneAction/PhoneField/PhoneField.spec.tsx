@@ -20,8 +20,8 @@ describe('PhoneField', () => {
 
     const callingCodeInput = screen.getByLabelText(
       'Country'
-    ) as HTMLInputElement
-    const phoneInput = screen.getByLabelText('Phone Number') as HTMLInputElement
+    )
+    const phoneInput = screen.getByLabelText('Phone Number')
 
     expect(callingCodeInput.value).toBe('+7')
     expect(phoneInput.value).toBe('3333')
