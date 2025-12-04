@@ -1,11 +1,7 @@
 import { BullModule, getQueueToken } from '@nestjs/bullmq'
 import { Test, TestingModule } from '@nestjs/testing'
-import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { mockDeep } from 'jest-mock-extended'
 import { setupServer } from 'msw/node'
-
-import { Journey, Team } from '@core/prisma/journeys/client'
-
-import { PrismaService } from '../../lib/prisma.service'
 
 import {
   getRealTimeVisitors,
@@ -15,16 +11,12 @@ import {
   getStatsBreakdown,
   getStatsBreakdownResponse,
   getStatsTimeseries,
-  getStatsTimeseriesResponse,
-  siteCreate,
-  siteCreateResponse
+  getStatsTimeseriesResponse
 } from './plausible.handlers'
 import { PlausibleService } from './plausible.service'
 
 describe('PlausibleService', () => {
-  let service: PlausibleService,
-    prismaService: DeepMockProxy<PrismaService>,
-    plausibleQueue: { add: jest.Mock }
+  let service: PlausibleService, plausibleQueue: { add: jest.Mock }
 
   const OLD_ENV = process.env
 
@@ -45,21 +37,12 @@ describe('PlausibleService', () => {
     }
     const module: TestingModule = await Test.createTestingModule({
       imports: [BullModule.registerQueue({ name: 'api-journeys-plausible' })],
-      providers: [
-        PlausibleService,
-        {
-          provide: PrismaService,
-          useValue: mockDeep<PrismaService>()
-        }
-      ]
+      providers: [PlausibleService]
     })
       .overrideProvider(getQueueToken('api-journeys-plausible'))
       .useValue(plausibleQueue)
       .compile()
     service = module.get<PlausibleService>(PlausibleService)
-    prismaService = module.get<PrismaService>(
-      PrismaService
-    ) as DeepMockProxy<PrismaService>
 
     await service.onModuleInit()
   })
@@ -72,95 +55,6 @@ describe('PlausibleService', () => {
 
   afterAll(() => {
     server.close()
-  })
-
-  describe('createSites', () => {
-    it('should create journey and team sites for existing journeys and teams without a site', async () => {
-      service.createTeamSite = jest.fn()
-      service.createJourneySite = jest.fn()
-
-      prismaService.team.findMany.mockResolvedValueOnce([
-        { id: 'teamId' } as unknown as Team
-      ])
-      prismaService.journey.findMany.mockResolvedValueOnce([
-        { id: 'journeyId' } as unknown as Journey
-      ])
-
-      await service.createSites()
-
-      expect(service.createTeamSite).toHaveBeenCalledTimes(1)
-      expect(service.createTeamSite).toHaveBeenCalledWith({ teamId: 'teamId' })
-      expect(service.createJourneySite).toHaveBeenCalledTimes(1)
-      expect(service.createJourneySite).toHaveBeenCalledWith({
-        journeyId: 'journeyId'
-      })
-    })
-  })
-
-  describe('createJourneySite', () => {
-    it('should create a journey site', async () => {
-      service.createSite = jest.fn().mockResolvedValue({
-        __typename: 'MutationSiteCreateSuccess',
-        data: {
-          sharedLinks: [
-            {
-              slug: 'slug'
-            }
-          ]
-        }
-      })
-
-      await service.createJourneySite({ journeyId: 'journeyId' })
-
-      expect(service.createSite).toHaveBeenCalledWith(
-        'api-journeys-journey-journeyId'
-      )
-      expect(prismaService.journey.update).toHaveBeenCalledWith({
-        where: { id: 'journeyId' },
-        data: {
-          plausibleToken: 'slug'
-        }
-      })
-    })
-  })
-
-  describe('createTeamSite', () => {
-    it('should create a team site', async () => {
-      service.createSite = jest.fn().mockResolvedValue({
-        __typename: 'MutationSiteCreateSuccess',
-        data: {
-          sharedLinks: [
-            {
-              slug: 'slug'
-            }
-          ]
-        }
-      })
-
-      await service.createTeamSite({ teamId: 'teamId' })
-
-      expect(service.createSite).toHaveBeenCalledWith(
-        'api-journeys-team-teamId'
-      )
-      expect(prismaService.team.update).toHaveBeenCalledWith({
-        where: { id: 'teamId' },
-        data: {
-          plausibleToken: 'slug'
-        }
-      })
-    })
-  })
-
-  describe('createSite', () => {
-    beforeEach(() => {
-      server.use(siteCreate)
-    })
-
-    it('should create a site', async () => {
-      expect(await service.createSite('site-name')).toEqual(
-        siteCreateResponse.data.siteCreate
-      )
-    })
   })
 
   describe('getStatsRealtimeVisitors', () => {
