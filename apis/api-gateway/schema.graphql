@@ -815,6 +815,15 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
   """
   journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType = slug) : [PlausibleStatsResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
+  templateFamilyStatsBreakdown(
+    id: ID!
+    idType: IdType = slug
+    where: PlausibleStatsBreakdownFilter!
+    """
+    Filter results to only include the specified events. If null or empty, all events are returned.
+    """
+    events: [PlausibleEvent!]
+  ): [TemplateFamilyStatsBreakdownResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
@@ -2494,6 +2503,18 @@ type Subscription @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress!
 }
 
+type TemplateFamilyStatsBreakdownResponse @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyId: String!
+  journeyName: String!
+  teamName: String!
+  stats: [TemplateFamilyStatsEventResponse!]!
+}
+
+type TemplateFamilyStatsEventResponse @join__type(graph: API_JOURNEYS_MODERN)  {
+  event: String!
+  visitors: Int!
+}
+
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {
   id: ID!
   primaryLanguageId: ID
@@ -3524,6 +3545,35 @@ enum EventType @join__type(graph: API_JOURNEYS_MODERN)  {
 enum GoogleSheetExportMode @join__type(graph: API_JOURNEYS_MODERN)  {
   create @join__enumValue(graph: API_JOURNEYS_MODERN) 
   existing @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+enum PlausibleEvent @join__type(graph: API_JOURNEYS_MODERN)  {
+  footerThumbsUpButtonClick @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  footerThumbsDownButtonClick @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  shareButtonClick @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  pageview @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  navigatePreviousStep @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  navigateNextStep @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  buttonClick @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  chatButtonClick @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  footerChatButtonClick @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  radioQuestionSubmit @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  signUpSubmit @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  textResponseSubmit @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoPlay @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoPause @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoExpand @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoCollapse @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoStart @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoProgress25 @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoProgress50 @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoProgress75 @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoComplete @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoTrigger @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  chatsClicked @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  linksClicked @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  journeyVisitors @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  journeyResponses @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum LanguageIdType @join__type(graph: API_LANGUAGES)  {

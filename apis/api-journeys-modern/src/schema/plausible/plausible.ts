@@ -1,3 +1,4 @@
+import { goals } from '../../workers/plausible/service'
 import { builder } from '../builder'
 
 export interface PlausibleStatsAggregateValue {
@@ -28,6 +29,23 @@ export interface PlausibleStatsResponse {
   events?: number | null
   conversionRate?: number | null
   timeOnPage?: number | null
+}
+
+export interface TemplateFamilyStatsEventResponse {
+  event:
+    | (typeof goals)[number]
+    | 'chatsClicked'
+    | 'linksClicked'
+    | 'journeyVisitors'
+    | 'journeyResponses'
+  visitors: number
+}
+
+export interface TemplateFamilyStatsBreakdownResponse {
+  journeyId: string
+  journeyName: string
+  teamName: string
+  stats: TemplateFamilyStatsEventResponse[]
 }
 
 export const PlausibleStatsAggregateValueRef = builder
@@ -171,6 +189,51 @@ export const PlausibleStatsResponseRef = builder
         description:
           'The average time users spend on viewing a single page. Requires an `event:page` filter or `event:page` property in the breakdown endpoint.',
         resolve: (parent) => parent.timeOnPage
+      })
+    })
+  })
+
+export const TemplateFamilyStatsEventResponseRef = builder
+  .objectRef<TemplateFamilyStatsEventResponse>(
+    'TemplateFamilyStatsEventResponse'
+  )
+  .implement({
+    shareable: true,
+    fields: (t) => ({
+      event: t.string({
+        nullable: false,
+        resolve: (parent) => parent.event as string
+      }),
+      visitors: t.int({
+        nullable: false,
+        resolve: (parent) => parent.visitors
+      })
+    })
+  })
+
+export const TemplateFamilyStatsBreakdownResponseRef = builder
+  .objectRef<TemplateFamilyStatsBreakdownResponse>(
+    'TemplateFamilyStatsBreakdownResponse'
+  )
+  .implement({
+    shareable: true,
+    fields: (t) => ({
+      journeyId: t.string({
+        nullable: false,
+        resolve: (parent) => parent.journeyId
+      }),
+      journeyName: t.string({
+        nullable: false,
+        resolve: (parent) => parent.journeyName
+      }),
+      teamName: t.string({
+        nullable: false,
+        resolve: (parent) => parent.teamName
+      }),
+      stats: t.field({
+        type: [TemplateFamilyStatsEventResponseRef],
+        nullable: false,
+        resolve: (parent) => parent.stats
       })
     })
   })

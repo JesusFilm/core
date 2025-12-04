@@ -1407,6 +1407,35 @@ input PhoneActionInput {
   parentStepId: String
 }
 
+enum PlausibleEvent {
+  footerThumbsUpButtonClick
+  footerThumbsDownButtonClick
+  shareButtonClick
+  pageview
+  navigatePreviousStep
+  navigateNextStep
+  buttonClick
+  chatButtonClick
+  footerChatButtonClick
+  radioQuestionSubmit
+  signUpSubmit
+  textResponseSubmit
+  videoPlay
+  videoPause
+  videoExpand
+  videoCollapse
+  videoStart
+  videoProgress25
+  videoProgress50
+  videoProgress75
+  videoComplete
+  videoTrigger
+  chatsClicked
+  linksClicked
+  journeyVisitors
+  journeyResponses
+}
+
 input PlausibleStatsAggregateFilter {
   """
   See [time periods](https://plausible.io/docs/stats-api#time-periods).
@@ -1659,6 +1688,16 @@ type Query {
   If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
   """
   journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType = slug): [PlausibleStatsResponse!]
+  templateFamilyStatsBreakdown(
+    id: ID!
+    idType: IdType = slug
+    where: PlausibleStatsBreakdownFilter!
+
+    """
+    Filter results to only include the specified events. If null or empty, all events are returned.
+    """
+    events: [PlausibleEvent!]
+  ): [TemplateFamilyStatsBreakdownResponse!]
 }
 
 type RadioOptionBlock implements Block
@@ -1974,6 +2013,22 @@ input TeamCreateInput {
 input TeamUpdateInput {
   title: String!
   publicTitle: String
+}
+
+type TemplateFamilyStatsBreakdownResponse
+  @shareable
+{
+  journeyId: String!
+  journeyName: String!
+  teamName: String!
+  stats: [TemplateFamilyStatsEventResponse!]!
+}
+
+type TemplateFamilyStatsEventResponse
+  @shareable
+{
+  event: String!
+  visitors: Int!
 }
 
 type TextResponseBlock implements Block
