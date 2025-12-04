@@ -71,6 +71,8 @@ export interface GetJourney_journey_blocks_ButtonBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetJourney_journey_blocks_ButtonBlock_action = GetJourney_journey_blocks_ButtonBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_ButtonBlock_action_LinkAction | GetJourney_journey_blocks_ButtonBlock_action_EmailAction | GetJourney_journey_blocks_ButtonBlock_action_ChatAction | GetJourney_journey_blocks_ButtonBlock_action_PhoneAction;
@@ -223,6 +225,8 @@ export interface GetJourney_journey_blocks_RadioOptionBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetJourney_journey_blocks_RadioOptionBlock_action = GetJourney_journey_blocks_RadioOptionBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_RadioOptionBlock_action_LinkAction | GetJourney_journey_blocks_RadioOptionBlock_action_EmailAction | GetJourney_journey_blocks_RadioOptionBlock_action_ChatAction | GetJourney_journey_blocks_RadioOptionBlock_action_PhoneAction;
@@ -291,6 +295,8 @@ export interface GetJourney_journey_blocks_SignUpBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetJourney_journey_blocks_SignUpBlock_action = GetJourney_journey_blocks_SignUpBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_SignUpBlock_action_LinkAction | GetJourney_journey_blocks_SignUpBlock_action_EmailAction | GetJourney_journey_blocks_SignUpBlock_action_ChatAction | GetJourney_journey_blocks_SignUpBlock_action_PhoneAction;
@@ -472,6 +478,8 @@ export interface GetJourney_journey_blocks_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetJourney_journey_blocks_VideoBlock_action = GetJourney_journey_blocks_VideoBlock_action_NavigateToBlockAction | GetJourney_journey_blocks_VideoBlock_action_LinkAction | GetJourney_journey_blocks_VideoBlock_action_EmailAction | GetJourney_journey_blocks_VideoBlock_action_ChatAction | GetJourney_journey_blocks_VideoBlock_action_PhoneAction;
@@ -594,6 +602,8 @@ export interface GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_Phone
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type GetJourney_journey_blocks_VideoTriggerBlock_triggerAction = GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_NavigateToBlockAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_LinkAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_EmailAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_ChatAction | GetJourney_journey_blocks_VideoTriggerBlock_triggerAction_PhoneAction;
