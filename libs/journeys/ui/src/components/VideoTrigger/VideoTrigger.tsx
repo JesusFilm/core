@@ -10,7 +10,11 @@ import { handleAction } from '../../libs/action'
 import { type TreeBlock, useBlocks } from '../../libs/block'
 import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { useJourney } from '../../libs/JourneyProvider'
-import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
+import {
+  JourneyPlausibleEvents,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers'
 
 import { VideoTriggerFields } from './__generated__/VideoTriggerFields'
 
@@ -74,12 +78,21 @@ export function VideoTrigger({
                 stepId: blockId,
                 event: 'videoTrigger',
                 blockId,
-                target: triggerAction
+                target: triggerAction,
+                journeyId: journey?.id
               }),
               simpleKey: keyify({
                 stepId: blockId,
                 event: 'videoTrigger',
-                blockId
+                blockId,
+                journeyId: journey?.id
+              }),
+              templateKey: templateKeyify({
+                event: 'videoTrigger',
+                journeyId: journey?.id
+              }),
+              simpleTemplateKey: templateKeyify({
+                event: 'videoTrigger'
               })
             }
           }

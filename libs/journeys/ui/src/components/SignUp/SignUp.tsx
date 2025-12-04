@@ -20,7 +20,11 @@ import { useEditor } from '../../libs/EditorProvider'
 import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
-import { JourneyPlausibleEvents, keyify } from '../../libs/plausibleHelpers'
+import {
+  JourneyPlausibleEvents,
+  keyify,
+  templateKeyify
+} from '../../libs/plausibleHelpers'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { TextField } from '../TextField'
@@ -122,12 +126,21 @@ export const SignUp = ({
                 stepId: input.stepId ?? '',
                 event: 'signupSubmit',
                 blockId: input.blockId,
-                target: action
+                target: action,
+                journeyId: journey?.id
               }),
               simpleKey: keyify({
                 stepId: input.stepId ?? '',
                 event: 'signupSubmit',
-                blockId: input.blockId
+                blockId: input.blockId,
+                journeyId: journey?.id
+              }),
+              templateKey: templateKeyify({
+                event: 'signupSubmit',
+                journeyId: journey?.id
+              }),
+              simpleTemplateKey: templateKeyify({
+                event: 'signupSubmit'
               })
             }
           })

@@ -8,7 +8,8 @@ import { useBlocks } from '../../../../libs/block'
 import { useJourney } from '../../../../libs/JourneyProvider'
 import {
   JourneyPlausibleEvents,
-  keyify
+  keyify,
+  templateKeyify
 } from '../../../../libs/plausibleHelpers'
 import { StyledFooterButton } from '../StyledFooterButton'
 
@@ -40,13 +41,21 @@ export function ReactionButton({ variant }: ReactionButtonProps): ReactElement {
         const key = keyify({
           stepId: input.blockId,
           event,
-          blockId: input.blockId
+          blockId: input.blockId,
+          journeyId: journey?.id
         })
         plausible(event, {
           props: {
             ...input,
             key,
-            simpleKey: key
+            simpleKey: key,
+            templateKey: templateKeyify({
+              event,
+              journeyId: journey?.id
+            }),
+            simpleTemplateKey: templateKeyify({
+              event
+            })
           }
         })
       }

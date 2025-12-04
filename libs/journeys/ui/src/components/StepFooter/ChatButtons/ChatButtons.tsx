@@ -15,7 +15,11 @@ import { useBlocks } from '../../../libs/block'
 import { useJourney } from '../../../libs/JourneyProvider'
 import { JourneyFields_chatButtons as ChatButton } from '../../../libs/JourneyProvider/__generated__/JourneyFields'
 import { MessageChatIcon } from '../../../libs/MessageChatIcon'
-import { JourneyPlausibleEvents, keyify } from '../../../libs/plausibleHelpers'
+import {
+  JourneyPlausibleEvents,
+  keyify,
+  templateKeyify
+} from '../../../libs/plausibleHelpers'
 import { getJourneyRTL } from '../../../libs/rtl'
 
 import {
@@ -93,12 +97,21 @@ export function ChatButtons(): ReactElement {
               stepId: input.stepId ?? '',
               event: 'footerChatButtonClick',
               blockId: input.blockId,
-              target: `link:${chatButton.link}:${chatButton.platform}`
+              target: `link:${chatButton.link}:${chatButton.platform}`,
+              journeyId: journey?.id
             }),
             simpleKey: keyify({
               stepId: input.stepId ?? '',
               event: 'footerChatButtonClick',
-              blockId: input.blockId
+              blockId: input.blockId,
+              journeyId: journey?.id
+            }),
+            templateKey: templateKeyify({
+              event: 'footerChatButtonClick',
+              journeyId: journey?.id
+            }),
+            simpleTemplateKey: templateKeyify({
+              event: 'footerChatButtonClick'
             })
           }
         })
