@@ -237,7 +237,13 @@ jobs:
     if: ${{ github.event_name != 'merge_group' && needs.build-e2e-matrix.result == 'success' && needs.build-e2e-matrix.outputs.apps != '[]' && needs.build-e2e-matrix.outputs.apps != '' && !(github.event_name == 'push' && github.ref == 'refs/heads/stage') && (github.event_name != 'pull_request' || !github.event.pull_request.draft) }}
     permissions:
       contents: read
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith
+    container:
+      image: mcr.microsoft.com/playwright:v1.57.0
+      env:
+        BLACKSMITH_CACHE_TOKEN: ${{ env.BLACKSMITH_CACHE_TOKEN }}
+        BLACKSMITH_CACHE_URL: ${{ env.BLACKSMITH_CACHE_URL }}
+        GITHUB_REPO_NAME: ${{ env.GITHUB_REPO_NAME }}
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     strategy:
@@ -259,13 +265,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --silent
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-node-${{ matrix.node-version }}-playwright-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-node-${{ matrix.node-version }}-playwright-
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
       - name: Run Playwright tests

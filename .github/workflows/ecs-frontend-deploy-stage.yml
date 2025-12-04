@@ -75,7 +75,13 @@ jobs:
     name: E2E Arclight (stage)
     needs: [affected, arclight]
     if: ${{ needs.affected.outputs.arclight == 'true' }}
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith
+    container:
+      image: mcr.microsoft.com/playwright:v1.57.0
+      env:
+        BLACKSMITH_CACHE_TOKEN: ${{ env.BLACKSMITH_CACHE_TOKEN }}
+        BLACKSMITH_CACHE_URL: ${{ env.BLACKSMITH_CACHE_URL }}
+        GITHUB_REPO_NAME: ${{ env.GITHUB_REPO_NAME }}
     steps:
       - uses: actions/checkout@v4
         with:
