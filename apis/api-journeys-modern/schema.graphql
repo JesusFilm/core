@@ -1688,6 +1688,7 @@ type Query {
   If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
   """
   journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType = slug): [PlausibleStatsResponse!]
+  templateFamilyStatsAggregate(id: ID!, idType: IdType = slug, where: PlausibleStatsAggregateFilter!): TemplateFamilyStatsAggregateResponse
   templateFamilyStatsBreakdown(
     id: ID!
     idType: IdType = slug
@@ -2013,6 +2014,14 @@ input TeamCreateInput {
 input TeamUpdateInput {
   title: String!
   publicTitle: String
+}
+
+type TemplateFamilyStatsAggregateResponse
+  @shareable
+{
+  childJourneysCount: Int!
+  totalJourneysViews: Int!
+  totalJourneysResponses: Int!
 }
 
 type TemplateFamilyStatsBreakdownResponse

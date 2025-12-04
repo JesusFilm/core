@@ -48,6 +48,12 @@ export interface TemplateFamilyStatsBreakdownResponse {
   stats: TemplateFamilyStatsEventResponse[]
 }
 
+export interface TemplateFamilyStatsAggregateResponse {
+  childJourneysCount: number
+  totalJourneysViews: number
+  totalJourneysResponses: number
+}
+
 export const PlausibleStatsAggregateValueRef = builder
   .objectRef<PlausibleStatsAggregateValue>('PlausibleStatsAggregateValue')
   .implement({
@@ -234,6 +240,28 @@ export const TemplateFamilyStatsBreakdownResponseRef = builder
         type: [TemplateFamilyStatsEventResponseRef],
         nullable: false,
         resolve: (parent) => parent.stats
+      })
+    })
+  })
+
+export const TemplateFamilyStatsAggregateResponseRef = builder
+  .objectRef<TemplateFamilyStatsAggregateResponse>(
+    'TemplateFamilyStatsAggregateResponse'
+  )
+  .implement({
+    shareable: true,
+    fields: (t) => ({
+      childJourneysCount: t.int({
+        nullable: false,
+        resolve: (parent) => parent.childJourneysCount
+      }),
+      totalJourneysViews: t.int({
+        nullable: false,
+        resolve: (parent) => parent.totalJourneysViews
+      }),
+      totalJourneysResponses: t.int({
+        nullable: false,
+        resolve: (parent) => parent.totalJourneysResponses
       })
     })
   })
