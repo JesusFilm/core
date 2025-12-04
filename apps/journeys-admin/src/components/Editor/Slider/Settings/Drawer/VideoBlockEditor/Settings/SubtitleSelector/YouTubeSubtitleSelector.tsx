@@ -53,8 +53,9 @@ export function YouTubeSubtitleSelector({
     setSearchQuery(event.target.value)
   }
 
-  const displayValue = selectedSubtitleId ?? 'off'
+  const displayValue = filteredLanguages.find((language) => language.id === selectedSubtitleId)?.id ?? 'off'
 
+  
   const getLanguageDisplayName = (language: YouTubeLanguage): string => {
     const primaryName = language.name?.find((n) => n.primary)?.value
     const nonPrimaryName = language.name?.find((n) => !n.primary)?.value
