@@ -19,7 +19,10 @@ import {
   VideoBlockObjectFit,
   VideoBlockSource
 } from '../../../../../../../../../../__generated__/globalTypes'
-import { MuxVideoUploadProvider } from '../../../../../../../../MuxVideoUploadProvider'
+import {
+  MuxVideoUploadProvider,
+  useMuxVideoUpload
+} from '../../../../../../../../MuxVideoUploadProvider'
 import { ThemeProvider } from '../../../../../../../../ThemeProvider'
 import { CommandUndoItem } from '../../../../../../../Toolbar/Items/CommandUndoItem'
 import { videoItems } from '../../../../../Drawer/VideoLibrary/data'
@@ -28,6 +31,13 @@ import { GET_VIDEO } from '../../../../../Drawer/VideoLibrary/VideoFromLocal/Loc
 import { VIDEO_BLOCK_UPDATE, VideoOptions } from './VideoOptions'
 
 jest.mock('react-instantsearch')
+
+jest.mock('../../../../../../../../MuxVideoUploadProvider', () => ({
+  ...jest.requireActual('../../../../../../../../MuxVideoUploadProvider'),
+  useMuxVideoUpload: jest.fn(() => ({
+    cancelUploadForBlock: jest.fn()
+  }))
+}))
 
 const mockUseSearchBox = useSearchBox as jest.MockedFunction<
   typeof useSearchBox
@@ -38,6 +48,13 @@ const mockUseInstantSearch = useInstantSearch as jest.MockedFunction<
 const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
   typeof useInfiniteHits
 >
+const mockUseMuxVideoUpload = useMuxVideoUpload as jest.MockedFunction<
+  typeof useMuxVideoUpload
+>
+
+const cancelUploadForBlock = jest.fn()
+const getUploadStatus = jest.fn()
+const addUploadTask = jest.fn()
 
 const video: TreeBlock<VideoBlock> = {
   id: 'video1.id',
@@ -167,6 +184,11 @@ describe('VideoOptions', () => {
     mockUseSearchBox.mockReturnValue(searchBox)
     mockUseInfiniteHits.mockReturnValue(infiniteHits)
     mockUseInstantSearch.mockReturnValue(instantSearch)
+    mockUseMuxVideoUpload.mockReturnValue({
+      getUploadStatus,
+      addUploadTask,
+      cancelUploadForBlock
+    })
     jest.clearAllMocks()
   })
 
@@ -378,6 +400,75 @@ describe('VideoOptions', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Select' }))
     await waitFor(() =>
       expect(videoBlockResult).toHaveBeenCalledWith(videoBlockUpdateVariables)
+    )
+  })
+
+  it('should cancel video upload when changing to different video source', async () => {
+    const videoBlockResult = jest.fn(() => {
+      return {
+        data: {
+          videoBlockUpdate: video
+        }
+      }
+    })
+    const result = jest.fn().mockReturnValue(getVideoMock.result)
+    const videoBlockUpdateVariables = {
+      id: video.id,
+      input: {
+        videoId: 'videoId',
+        videoVariantLanguageId: '529',
+        source: VideoBlockSource.internal,
+        startAt: 0,
+        endAt: 144,
+        duration: 144,
+        subtitleLanguageId: null,
+        showGeneratedSubtitles: null
+      }
+    }
+
+    const selectedBlock = { ...video, videoId: null }
+    render(
+      <MockedProvider
+        mocks={[
+          { ...getVideoMock, result },
+
+          {
+            request: {
+              query: VIDEO_BLOCK_UPDATE,
+              variables: videoBlockUpdateVariables
+            },
+            result: videoBlockResult
+          }
+        ]}
+      >
+        <MuxVideoUploadProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock,
+              selectedAttributeId: video.id
+            }}
+          >
+            <ThemeProvider>
+              <VideoOptions />
+            </ThemeProvider>
+          </EditorProvider>
+        </MuxVideoUploadProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'Select Video' }))
+    )
+    await waitFor(() => fireEvent.click(screen.getByText('title1')))
+    await waitFor(() =>
+      expect(result).toHaveBeenCalledWith(getVideoMock.request.variables)
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Select' }))
+    await waitFor(() =>
+      expect(videoBlockResult).toHaveBeenCalledWith(videoBlockUpdateVariables)
+    )
+
+    await waitFor(() =>
+      expect(cancelUploadForBlock).toHaveBeenCalledWith(selectedBlock)
     )
   })
 })
