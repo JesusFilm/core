@@ -15,8 +15,8 @@ import {
   VideoBlockUpdate,
   VideoBlockUpdateVariables
 } from '../../../../../../../../../../__generated__/VideoBlockUpdate'
-import { VideoBlockEditor } from '../../../../../Drawer/VideoBlockEditor'
 import { useMuxVideoUpload } from '../../../../../../../../MuxVideoUploadProvider'
+import { VideoBlockEditor } from '../../../../../Drawer/VideoBlockEditor'
 
 export const VIDEO_BLOCK_UPDATE = gql`
   ${VIDEO_FIELDS}
@@ -39,7 +39,7 @@ export function VideoOptions(): ReactElement {
     VideoBlockUpdateVariables
   >(VIDEO_BLOCK_UPDATE)
 
-  const selectedBlock = stateSelectedBlock as TreeBlock<VideoBlock> | undefined
+  const selectedBlock = stateSelectedBlock
 
   function handleChange(
     input: VideoBlockUpdateInput,
