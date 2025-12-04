@@ -13,6 +13,9 @@ jest.mock('firebase/auth', () => ({
   }),
   FacebookAuthProvider: jest.fn().mockImplementation(() => {
     return { setCustomParameters: mockSetCustomParameters }
+  }),
+  OAuthProvider: jest.fn().mockImplementation(() => {
+    return { setCustomParameters: mockSetCustomParameters }
   })
 }))
 
@@ -36,6 +39,15 @@ describe('SignInServiceButton', () => {
     const { getByRole } = render(<SignInServiceButton service="facebook.com" />)
 
     fireEvent.click(getByRole('button'))
+    await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
+  })
+
+  it('should handle Okta sign-in correctly', async () => {
+    mockSignInWithPopup.mockResolvedValueOnce({} as unknown as UserCredential)
+
+    const { getByRole } = render(<SignInServiceButton service="oidc.okta" />)
+
+    fireEvent.click(getByRole('button', { name: 'Continue with Okta' }))
     await waitFor(() => expect(mockSignInWithPopup).toHaveBeenCalled())
   })
 })

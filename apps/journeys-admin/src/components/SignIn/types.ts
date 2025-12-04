@@ -4,6 +4,7 @@ export type ActivePage =
   | 'register'
   | 'google.com'
   | 'facebook.com'
+  | 'oidc.okta'
   | 'help'
   | 'reset'
 
@@ -14,5 +15,5 @@ export interface PageProps {
   setUserPassword?: (userPassword: string) => void
   activePage?: ActivePage
   setActivePage?: (activePage: ActivePage) => void
-  service?: 'google.com' | 'facebook.com'
+  service?: 'google.com' | 'facebook.com' | 'oidc.okta'
 }
