@@ -92,5 +92,9 @@
   "Short Film": "短片",
   "Behind The Scenes": "幕后花絮",
   "Trailer": "预告片",
-  "Available in {{count}} languages._other": "{{count}} 语言版本。"
+  "Available in {{count}} languages._other": "{{count}} 语言版本。",
+  "localeSuggestion": {
+    "message": "We noticed your browser prefers {{localeName}}. Would you like to view the site in this language?",
+    "action": "Switch to {{localeName}}"
+  }
 }

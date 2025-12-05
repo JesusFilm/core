@@ -92,5 +92,9 @@
   "Short Film": "Film Pendek",
   "Behind The Scenes": "Di Balik Layar",
   "Trailer": "Trailer",
-  "Available in {{count}} languages._other": "Tersedia dalam berbagai bahasa {{count}} ."
+  "Available in {{count}} languages._other": "Tersedia dalam berbagai bahasa {{count}} .",
+  "localeSuggestion": {
+    "message": "We noticed your browser prefers {{localeName}}. Would you like to view the site in this language?",
+    "action": "Switch to {{localeName}}"
+  }
 }
