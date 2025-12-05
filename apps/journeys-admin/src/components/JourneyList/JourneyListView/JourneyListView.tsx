@@ -201,7 +201,7 @@ export function JourneyListView({
         <Box
           sx={{
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-end',
             ml: 'auto',
             mr: 2
           }}
@@ -215,7 +215,7 @@ export function JourneyListView({
         <Box
           sx={{
             display: { xs: 'none', sm: 'flex' },
-            alignItems: 'center'
+            alignItems: 'flex-end'
           }}
         >
           <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
@@ -224,7 +224,7 @@ export function JourneyListView({
         <Box
           sx={{
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-end',
             mr: router?.query?.type === 'templates' ? -12 : -8
           }}
         >
