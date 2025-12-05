@@ -1,10 +1,6 @@
 import Box from '@mui/material/Box'
-import FormControl from '@mui/material/FormControl'
-import MenuItem from '@mui/material/MenuItem'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
-import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import {
@@ -21,6 +17,7 @@ import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import type { JourneyListEvent } from '../JourneyList'
 import { JourneyListMenu } from '../JourneyListMenu'
 import { JourneySort, SortOrder } from '../JourneySort'
+import { JourneyStatusFilter } from '../JourneyStatusFilter'
 
 export type ContentType = 'journeys' | 'templates'
 export type JourneyStatus = 'active' | 'archived' | 'trashed'
@@ -38,11 +35,6 @@ interface ContentTypeOption {
   queryParam: ContentType
   displayValue: string
   tabIndex: number
-}
-
-interface StatusOption {
-  queryParam: JourneyStatus
-  displayValue: string
 }
 
 // Helper function to get refetch event based on status
@@ -77,22 +69,6 @@ export function JourneyListView({
       queryParam: 'templates',
       displayValue: t('Team Templates'),
       tabIndex: 1
-    }
-  ]
-
-  // Status filter options (Active, Archived, Trashed)
-  const statusOptions: StatusOption[] = [
-    {
-      queryParam: 'active',
-      displayValue: t('Active')
-    },
-    {
-      queryParam: 'archived',
-      displayValue: t('Archived')
-    },
-    {
-      queryParam: 'trashed',
-      displayValue: t('Trash')
     }
   ]
 
@@ -166,10 +142,7 @@ export function JourneyListView({
   }
 
   // Handle status filter dropdown change
-  const handleStatusChange = (
-    event: SelectChangeEvent<JourneyStatus>
-  ): void => {
-    const newStatus = event.target.value as JourneyStatus
+  const handleStatusChange = (newStatus: JourneyStatus): void => {
     setSelectedStatus(newStatus)
 
     // Trigger refetch event for the new status
@@ -233,59 +206,10 @@ export function JourneyListView({
             mr: 2
           }}
         >
-          <FormControl size="small">
-            <Select
-              id="status-filter-select"
-              value={selectedStatus}
-              onChange={handleStatusChange}
-              inputProps={{ 'aria-label': t('Filter by status') }}
-              IconComponent={KeyboardArrowDown}
-              autoWidth
-              sx={{
-                borderRadius: '8px',
-                height: '32px',
-                fontFamily: "'Montserrat', sans-serif",
-                fontWeight: 600,
-                '& .MuiOutlinedInput-root': {
-                  height: '32px'
-                },
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderWidth: '2px',
-                  borderColor: (theme) => theme.palette.text.secondary
-                },
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderWidth: '2px'
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderWidth: '2px',
-                  borderColor: (theme) => theme.palette.text.secondary
-                },
-                '& .MuiOutlinedInput-input': {
-                  padding: '0 !important',
-                  height: '32px',
-                  boxSizing: 'border-box'
-                },
-                '& .MuiSelect-select': {
-                  display: 'flex',
-                  alignItems: 'center',
-                  fontSize: '14px',
-                  paddingTop: '6px !important',
-                  paddingBottom: '6px !important',
-                  paddingLeft: '14px !important',
-                  paddingRight: '28px !important'
-                },
-                '& .MuiSelect-icon': {
-                  fontSize: '1rem'
-                }
-              }}
-            >
-              {statusOptions.map((status) => (
-                <MenuItem key={status.queryParam} value={status.queryParam}>
-                  {status.displayValue}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <JourneyStatusFilter
+            status={selectedStatus}
+            onChange={handleStatusChange}
+          />
         </Box>
         {/* Sort component */}
         <Box
