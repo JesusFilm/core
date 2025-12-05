@@ -73,9 +73,21 @@ describe('algoliaCountryUpdate', () => {
       flagPngSrc: 'gb-flag.png',
       flagWebpSrc: 'gb-flag.webp',
       name: [
-        { value: 'United Kingdom', language: { id: '529', bcp47: 'en' }, primary: true },
-        { value: 'Royaume-Uni', language: { id: '496', bcp47: 'fr' }, primary: false },
-        { value: '英国', language: { id: '21754', bcp47: 'zh-Hans' }, primary: false }
+        {
+          value: 'United Kingdom',
+          language: { id: '529', bcp47: 'en' },
+          primary: true
+        },
+        {
+          value: 'Royaume-Uni',
+          language: { id: '496', bcp47: 'fr' },
+          primary: false
+        },
+        {
+          value: '英国',
+          language: { id: '21754', bcp47: 'zh-Hans' },
+          primary: false
+        }
       ],
       continent: {
         id: 'europe',
@@ -165,7 +177,13 @@ describe('algoliaCountryUpdate', () => {
       longitude: null,
       flagPngSrc: null,
       flagWebpSrc: null,
-      name: [{ value: 'Null Country', language: { id: '529', bcp47: 'en' }, primary: true }],
+      name: [
+        {
+          value: 'Null Country',
+          language: { id: '529', bcp47: 'en' },
+          primary: true
+        }
+      ],
       continent: {
         id: 'null-continent',
         name: 'Null Continent'
