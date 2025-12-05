@@ -11,6 +11,7 @@ import { TransformedResult } from './transformBreakdownResults'
  * Journeys the user can read will show their actual names, while inaccessible
  * journeys will be labeled as "unknown journey" with an index. Teams are similarly
  * labeled based on whether the user can access any journey in that team.
+ * Filters out results for journeys that cannot be matched.
  *
  * @param transformedResults - The transformed breakdown results with journey IDs and stats
  * @param journeys - Array of journeys with ACL information
@@ -27,42 +28,39 @@ export function addPermissionsAndNames(
 
   let anonymousJourneyIndex = 0
 
-  return transformedResults.map((transformedResult) => {
-    const journey = journeyById.get(transformedResult.journeyId)
+  return transformedResults
+    .filter((transformedResult) => {
+      // Filter out events where we can't match a journey
+      return journeyById.has(transformedResult.journeyId)
+    })
+    .map((transformedResult) => {
+      const journey = journeyById.get(transformedResult.journeyId)!
 
-    if (journey == null) {
+      const userCanReadJourney = ability(
+        Action.Read,
+        subject('Journey', journey),
+        user
+      )
+
+      if (userCanReadJourney) {
+        return {
+          journeyId: transformedResult.journeyId,
+          journeyName: journey.title ?? 'Untitled Journey',
+          teamName: journey.team?.title ?? 'No Team',
+          status: journey.status,
+          stats: transformedResult.stats
+        }
+      }
+
       anonymousJourneyIndex++
       return {
         journeyId: transformedResult.journeyId,
         journeyName: `unknown journey ${anonymousJourneyIndex}`,
-        teamName: 'No Team',
+        teamName: teamNameMap.get(journey.teamId) ?? 'No Team',
+        status: journey.status,
         stats: transformedResult.stats
       }
-    }
-
-    const userCanReadJourney = ability(
-      Action.Read,
-      subject('Journey', journey),
-      user
-    )
-
-    if (userCanReadJourney) {
-      return {
-        journeyId: transformedResult.journeyId,
-        journeyName: journey.title ?? 'Untitled Journey',
-        teamName: journey.team?.title ?? 'No Team',
-        stats: transformedResult.stats
-      }
-    }
-
-    anonymousJourneyIndex++
-    return {
-      journeyId: transformedResult.journeyId,
-      journeyName: `unknown journey ${anonymousJourneyIndex}`,
-      teamName: teamNameMap.get(journey.teamId) ?? 'No Team',
-      stats: transformedResult.stats
-    }
-  })
+    })
 }
 
 /**

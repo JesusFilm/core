@@ -36,6 +36,7 @@ describe('addPermissionsAndNames', () => {
         id: 'journey-1',
         title: 'Journey One',
         teamId: 'team-1',
+        status: 'published',
         team: { title: 'Team One', userTeams: [] },
         userJourneys: []
       } as unknown as JourneyWithAcl,
@@ -43,6 +44,7 @@ describe('addPermissionsAndNames', () => {
         id: 'journey-2',
         title: 'Journey Two',
         teamId: 'team-2',
+        status: 'published',
         team: { title: 'Team Two', userTeams: [] },
         userJourneys: []
       } as unknown as JourneyWithAcl
@@ -61,12 +63,14 @@ describe('addPermissionsAndNames', () => {
         journeyId: 'journey-1',
         journeyName: 'Journey One',
         teamName: 'Team One',
+        status: 'published',
         stats: [{ event: 'buttonClick', visitors: 10 }]
       },
       {
         journeyId: 'journey-2',
         journeyName: 'Journey Two',
         teamName: 'Team Two',
+        status: 'published',
         stats: [{ event: 'pageview', visitors: 5 }]
       }
     ])
@@ -89,6 +93,7 @@ describe('addPermissionsAndNames', () => {
         id: 'journey-1',
         title: 'Journey One',
         teamId: 'team-1',
+        status: 'draft',
         team: { title: 'Team One', userTeams: [] },
         userJourneys: []
       } as unknown as JourneyWithAcl,
@@ -96,6 +101,7 @@ describe('addPermissionsAndNames', () => {
         id: 'journey-2',
         title: 'Journey Two',
         teamId: 'team-1',
+        status: 'draft',
         team: { title: 'Team One', userTeams: [] },
         userJourneys: []
       } as unknown as JourneyWithAcl
@@ -114,12 +120,14 @@ describe('addPermissionsAndNames', () => {
         journeyId: 'journey-1',
         journeyName: 'unknown journey 1',
         teamName: 'unknown team 1',
+        status: 'draft',
         stats: [{ event: 'buttonClick', visitors: 10 }]
       },
       {
         journeyId: 'journey-2',
         journeyName: 'unknown journey 2',
         teamName: 'unknown team 1',
+        status: 'draft',
         stats: [{ event: 'pageview', visitors: 5 }]
       }
     ])
@@ -146,6 +154,7 @@ describe('addPermissionsAndNames', () => {
         id: 'journey-1',
         title: 'Journey One',
         teamId: 'team-1',
+        status: 'published',
         team: { title: 'Team One', userTeams: [] },
         userJourneys: []
       } as unknown as JourneyWithAcl,
@@ -153,6 +162,7 @@ describe('addPermissionsAndNames', () => {
         id: 'journey-2',
         title: 'Journey Two',
         teamId: 'team-1',
+        status: 'published',
         team: { title: 'Team One', userTeams: [] },
         userJourneys: []
       } as unknown as JourneyWithAcl,
@@ -160,6 +170,7 @@ describe('addPermissionsAndNames', () => {
         id: 'journey-3',
         title: 'Journey Three',
         teamId: 'team-2',
+        status: 'published',
         team: { title: 'Team Two', userTeams: [] },
         userJourneys: []
       } as unknown as JourneyWithAcl
@@ -178,18 +189,21 @@ describe('addPermissionsAndNames', () => {
         journeyId: 'journey-1',
         journeyName: 'unknown journey 1',
         teamName: 'unknown team 1',
+        status: 'published',
         stats: [{ event: 'buttonClick', visitors: 10 }]
       },
       {
         journeyId: 'journey-2',
         journeyName: 'unknown journey 2',
         teamName: 'unknown team 1',
+        status: 'published',
         stats: [{ event: 'pageview', visitors: 5 }]
       },
       {
         journeyId: 'journey-3',
         journeyName: 'unknown journey 3',
         teamName: 'unknown team 2',
+        status: 'published',
         stats: [{ event: 'videoPlay', visitors: 3 }]
       }
     ])
@@ -220,6 +234,7 @@ describe('addPermissionsAndNames', () => {
         id: 'journey-1',
         title: 'Journey One',
         teamId: 'team-1',
+        status: 'published',
         team: { title: 'Team One', userTeams: [] },
         userJourneys: []
       } as unknown as JourneyWithAcl,
@@ -227,6 +242,7 @@ describe('addPermissionsAndNames', () => {
         id: 'journey-2',
         title: 'Journey Two',
         teamId: 'team-1',
+        status: 'draft',
         team: { title: 'Team One', userTeams: [] },
         userJourneys: []
       } as unknown as JourneyWithAcl,
@@ -234,6 +250,7 @@ describe('addPermissionsAndNames', () => {
         id: 'journey-3',
         title: 'Journey Three',
         teamId: 'team-2',
+        status: 'published',
         team: { title: 'Team Two', userTeams: [] },
         userJourneys: []
       } as unknown as JourneyWithAcl,
@@ -241,6 +258,7 @@ describe('addPermissionsAndNames', () => {
         id: 'journey-4',
         title: 'Journey Four',
         teamId: null,
+        status: 'archived',
         team: null,
         userJourneys: []
       } as unknown as JourneyWithAcl
@@ -262,24 +280,28 @@ describe('addPermissionsAndNames', () => {
         journeyId: 'journey-1',
         journeyName: 'Journey One',
         teamName: 'Team One',
+        status: 'published',
         stats: [{ event: 'buttonClick', visitors: 10 }]
       },
       {
         journeyId: 'journey-2',
         journeyName: 'unknown journey 1',
         teamName: 'Team One',
+        status: 'draft',
         stats: [{ event: 'pageview', visitors: 5 }]
       },
       {
         journeyId: 'journey-3',
         journeyName: 'Journey Three',
         teamName: 'Team Two',
+        status: 'published',
         stats: [{ event: 'videoPlay', visitors: 3 }]
       },
       {
         journeyId: 'journey-4',
         journeyName: 'unknown journey 2',
         teamName: 'No Team',
+        status: 'archived',
         stats: [{ event: 'signUpSubmit', visitors: 2 }]
       }
     ])

@@ -1,11 +1,14 @@
-import axios, { isAxiosError } from 'axios'
+import axios, { AxiosError, AxiosResponse, isAxiosError } from 'axios'
 
+import { UserRole } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { ability } from '../../../lib/auth/ability'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
+
+import { JourneyWithAcl } from './templateFamilyStatsBreakdown.query'
 
 jest.mock('axios')
 jest.mock('@core/yoga/firebaseClient', () => ({
@@ -51,16 +54,19 @@ describe('templateFamilyStatsBreakdown', () => {
       $idType: IdType
       $where: PlausibleStatsBreakdownFilter!
       $events: [PlausibleEvent!]
+      $status: [JourneyStatus!]
     ) {
       templateFamilyStatsBreakdown(
         id: $id
         idType: $idType
         where: $where
         events: $events
+        status: $status
       ) {
         journeyId
         journeyName
         teamName
+        status
         stats {
           event
           visitors
@@ -80,7 +86,7 @@ describe('templateFamilyStatsBreakdown', () => {
     prismaMock.userRole.findUnique.mockResolvedValue({
       userId: mockUser.id,
       roles: []
-    } as any)
+    } as unknown as UserRole)
     mockAbility.mockReturnValue(true)
     mockAxios.get.mockResolvedValue({
       data: {
@@ -95,7 +101,7 @@ describe('templateFamilyStatsBreakdown', () => {
           }
         ]
       }
-    } as any)
+    } as unknown as AxiosResponse)
     mockIsAxiosError.mockReturnValue(false)
   })
 
@@ -112,7 +118,9 @@ describe('templateFamilyStatsBreakdown', () => {
       team: { userTeams: [] }
     }
 
-    prismaMock.journey.findUnique.mockResolvedValue(templateJourney as any)
+    prismaMock.journey.findUnique.mockResolvedValue(
+      templateJourney as unknown as JourneyWithAcl
+    )
     prismaMock.journey.findMany.mockResolvedValue([
       {
         id: 'journey-1',
@@ -122,7 +130,7 @@ describe('templateFamilyStatsBreakdown', () => {
         team: { title: 'Team One', userTeams: [] },
         userJourneys: []
       }
-    ] as any)
+    ] as unknown as JourneyWithAcl[])
     prismaMock.journeyVisitor.groupBy.mockResolvedValue([])
 
     mockAxios.get
@@ -139,7 +147,7 @@ describe('templateFamilyStatsBreakdown', () => {
             }
           ]
         }
-      } as any)
+      } as unknown as AxiosResponse)
       .mockResolvedValueOnce({
         data: {
           results: [
@@ -149,7 +157,7 @@ describe('templateFamilyStatsBreakdown', () => {
             }
           ]
         }
-      } as any)
+      } as unknown as AxiosResponse)
 
     const result = await authClient({
       document: QUERY,
@@ -221,7 +229,7 @@ describe('templateFamilyStatsBreakdown', () => {
       id: 'template-journey-id',
       userJourneys: [],
       team: { userTeams: [] }
-    } as any)
+    } as unknown as JourneyWithAcl)
     mockAbility.mockReturnValueOnce(false)
 
     const result = await authClient({
@@ -251,7 +259,9 @@ describe('templateFamilyStatsBreakdown', () => {
       team: { userTeams: [] }
     }
 
-    prismaMock.journey.findUnique.mockResolvedValue(templateJourney as any)
+    prismaMock.journey.findUnique.mockResolvedValue(
+      templateJourney as unknown as JourneyWithAcl
+    )
     prismaMock.journey.findMany.mockResolvedValue([
       {
         id: 'journey-1',
@@ -261,13 +271,13 @@ describe('templateFamilyStatsBreakdown', () => {
         team: { title: 'Team One', userTeams: [] },
         userJourneys: []
       }
-    ] as any)
+    ] as unknown as JourneyWithAcl[])
     prismaMock.journeyVisitor.groupBy.mockResolvedValue([
       {
         journeyId: 'journey-1',
         _count: { journeyId: 5 }
       }
-    ] as any)
+    ] as Awaited<ReturnType<typeof prismaMock.journeyVisitor.groupBy>>)
 
     mockAxios.get
       .mockResolvedValueOnce({
@@ -283,7 +293,7 @@ describe('templateFamilyStatsBreakdown', () => {
             }
           ]
         }
-      } as any)
+      } as unknown as AxiosResponse)
       .mockResolvedValueOnce({
         data: {
           results: [
@@ -293,7 +303,7 @@ describe('templateFamilyStatsBreakdown', () => {
             }
           ]
         }
-      } as any)
+      } as unknown as AxiosResponse)
 
     const result = await authClient({
       document: QUERY,
@@ -336,7 +346,9 @@ describe('templateFamilyStatsBreakdown', () => {
       team: { userTeams: [] }
     }
 
-    prismaMock.journey.findUnique.mockResolvedValue(templateJourney as any)
+    prismaMock.journey.findUnique.mockResolvedValue(
+      templateJourney as unknown as JourneyWithAcl
+    )
     prismaMock.journey.findMany.mockResolvedValue([
       {
         id: 'journey-1',
@@ -346,7 +358,7 @@ describe('templateFamilyStatsBreakdown', () => {
         team: { title: 'Team One', userTeams: [] },
         userJourneys: []
       }
-    ] as any)
+    ] as unknown as JourneyWithAcl[])
 
     mockAxios.get.mockResolvedValueOnce({
       data: {
@@ -361,7 +373,7 @@ describe('templateFamilyStatsBreakdown', () => {
           }
         ]
       }
-    } as any)
+    } as unknown as AxiosResponse)
 
     const result = await authClient({
       document: QUERY,
@@ -401,11 +413,11 @@ describe('templateFamilyStatsBreakdown', () => {
       id: 'template-journey-id',
       userJourneys: [],
       team: { userTeams: [] }
-    } as any)
+    } as unknown as JourneyWithAcl)
     mockIsAxiosError.mockReturnValueOnce(true)
     mockAxios.get.mockRejectedValueOnce({
       response: { data: { error: 'Invalid property' } }
-    } as any)
+    } as unknown as AxiosError)
 
     const result = await authClient({
       document: QUERY,
@@ -423,5 +435,124 @@ describe('templateFamilyStatsBreakdown', () => {
         })
       ]
     })
+  })
+
+  it('filters journeys by multiple statuses', async () => {
+    const templateJourney = {
+      id: 'template-journey-id',
+      slug: 'template-slug',
+      title: 'Template Journey',
+      userJourneys: [],
+      team: { userTeams: [] }
+    }
+
+    prismaMock.journey.findUnique.mockResolvedValue(
+      templateJourney as unknown as JourneyWithAcl
+    )
+    prismaMock.journey.findMany.mockResolvedValue([
+      {
+        id: 'journey-1',
+        slug: 'journey-1-slug',
+        title: 'Journey One',
+        status: 'published',
+        teamId: 'team-1',
+        team: { title: 'Team One', userTeams: [] },
+        userJourneys: []
+      },
+      {
+        id: 'journey-2',
+        slug: 'journey-2-slug',
+        title: 'Journey Two',
+        status: 'draft',
+        teamId: 'team-1',
+        team: { title: 'Team One', userTeams: [] },
+        userJourneys: []
+      }
+    ] as unknown as JourneyWithAcl[])
+    prismaMock.journeyVisitor.groupBy.mockResolvedValue([])
+
+    mockAxios.get
+      .mockResolvedValueOnce({
+        data: {
+          results: [
+            {
+              templateKey: JSON.stringify({
+                journeyId: 'journey-1',
+                event: 'buttonClick',
+                target: null
+              }),
+              visitors: 10
+            },
+            {
+              templateKey: JSON.stringify({
+                journeyId: 'journey-2',
+                event: 'buttonClick',
+                target: null
+              }),
+              visitors: 5
+            },
+            {
+              templateKey: JSON.stringify({
+                journeyId: 'journey-3',
+                event: 'buttonClick',
+                target: null
+              }),
+              visitors: 3
+            }
+          ]
+        }
+      } as unknown as AxiosResponse)
+      .mockResolvedValueOnce({
+        data: {
+          results: [
+            {
+              page: '/journey-1-slug',
+              visitors: 20
+            },
+            {
+              page: '/journey-2-slug',
+              visitors: 15
+            }
+          ]
+        }
+      } as unknown as AxiosResponse)
+
+    const result = await authClient({
+      document: QUERY,
+      variables: {
+        id: 'template-journey-id',
+        where: { property: 'event:goal' },
+        status: ['published', 'draft']
+      }
+    })
+
+    expect(prismaMock.journey.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          id: { in: ['journey-1', 'journey-2', 'journey-3'] },
+          status: { in: ['published', 'draft'] }
+        })
+      })
+    )
+
+    const resultData = result as {
+      data?: {
+        templateFamilyStatsBreakdown?: Array<{
+          journeyId: string
+          status: string
+        }>
+      }
+    }
+
+    expect(resultData.data?.templateFamilyStatsBreakdown).toEqual([
+      expect.objectContaining({
+        journeyId: 'journey-1',
+        status: 'published'
+      }),
+      expect.objectContaining({
+        journeyId: 'journey-2',
+        status: 'draft'
+      })
+    ])
   })
 })

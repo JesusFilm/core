@@ -823,6 +823,10 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     Filter results to only include the specified events. If null or empty, all events are returned.
     """
     events: [PlausibleEvent!]
+    """
+    Filter results to only include the specified status. If null or empty, all statuses are returned.
+    """
+    status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
@@ -2507,6 +2511,7 @@ type TemplateFamilyStatsBreakdownResponse @join__type(graph: API_JOURNEYS_MODERN
   journeyId: String!
   journeyName: String!
   teamName: String!
+  status: JourneyStatus!
   stats: [TemplateFamilyStatsEventResponse!]!
 }
 

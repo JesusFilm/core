@@ -1,5 +1,8 @@
+import { JourneyStatus as PrismaJourneyStatus } from '@core/prisma/journeys/client'
+
 import { goals } from '../../workers/plausible/service'
 import { builder } from '../builder'
+import { JourneyStatus } from '../journey/enums'
 
 export interface PlausibleStatsAggregateValue {
   value: number
@@ -45,6 +48,7 @@ export interface TemplateFamilyStatsBreakdownResponse {
   journeyId: string
   journeyName: string
   teamName: string
+  status: PrismaJourneyStatus
   stats: TemplateFamilyStatsEventResponse[]
 }
 
@@ -229,6 +233,11 @@ export const TemplateFamilyStatsBreakdownResponseRef = builder
       teamName: t.string({
         nullable: false,
         resolve: (parent) => parent.teamName
+      }),
+      status: t.field({
+        type: JourneyStatus,
+        nullable: false,
+        resolve: (parent) => parent.status
       }),
       stats: t.field({
         type: [TemplateFamilyStatsEventResponseRef],
