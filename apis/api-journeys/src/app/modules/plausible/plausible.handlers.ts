@@ -1,14 +1,4 @@
-import difference from 'lodash/difference'
-import {
-  GraphQLQuery,
-  GraphQLVariables,
-  HttpResponse,
-  RequestHandler,
-  graphql,
-  http
-} from 'msw'
-
-import { goals } from './plausible.service'
+import { HttpResponse, RequestHandler, http } from 'msw'
 
 const journeySiteId = 'api-journeys-journey-journeyId'
 const teamSiteId = 'api-journeys-team-teamId'
@@ -17,49 +7,6 @@ const mockAxiosError = new HttpResponse(null, {
   status: 404,
   statusText: 'Mock request failed due to a mismatch of params'
 })
-
-export const siteCreateResponse = {
-  data: {
-    siteCreate: {
-      data: {
-        id: 'site.id',
-        domain: 'site-name',
-        goals,
-        memberships: [
-          {
-            id: 'siteMember.id',
-            role: 'admin'
-          }
-        ],
-        sharedLinks: [
-          {
-            id: 'sharedLink.id',
-            slug: 'site-slug'
-          }
-        ]
-      }
-    }
-  }
-}
-
-export const siteCreate = graphql.mutation<GraphQLQuery, GraphQLVariables>(
-  'SiteCreate',
-  ({ variables }) => {
-    const domainVar = variables.input.domain
-    const goalsVar = variables.input.goals
-
-    if (
-      domainVar !== 'site-name' ||
-      difference(goals, [...goalsVar]).length > 0
-    ) {
-      return HttpResponse.json({
-        errors: [{ message: 'Mock request failed due to a mismatch of params' }]
-      })
-    }
-
-    return HttpResponse.json(siteCreateResponse)
-  }
-)
 
 export const getRealTimeVisitorsResponse = 10
 
