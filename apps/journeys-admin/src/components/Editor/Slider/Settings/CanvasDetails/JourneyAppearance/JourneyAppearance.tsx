@@ -1,13 +1,15 @@
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 
 import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
-import { Drawer } from '../../Drawer'
+import { Drawer, DrawerTitle } from '../../Drawer'
 import { WebsiteToggle } from '../WebsiteToggle'
+import Stack from '@mui/material/Stack'
+import Paper from '@mui/material/Paper'
 
 const Reactions = dynamic(
   async () =>
@@ -70,15 +72,22 @@ export function JourneyAppearance(): ReactElement {
     })
   }
 
-  useEffect(() => {
-    dispatch({
-      type: 'SetSelectedAttributeIdAction',
-      selectedAttributeId: undefined
-    })
-  }, [dispatch])
-
   return (
-    <Drawer title={t('Journey Appearance')} onClose={onClose}>
+    <Stack
+      component={Paper}
+      elevation={0}
+      sx={{
+        height: '100%',
+        borderRadius: 3,
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
+        overflow: 'hidden'
+      }}
+      border={1}
+      borderColor="divider"
+      data-testid="SettingsDrawer"
+    >
+      <DrawerTitle title={t('Journey Appearance')} onClose={onClose} />
       {websiteMode && <WebsiteToggle />}
       {journey?.website === true ? (
         <>
@@ -95,6 +104,6 @@ export function JourneyAppearance(): ReactElement {
           <Chat />
         </>
       )}
-    </Drawer>
+    </Stack>
   )
 }
