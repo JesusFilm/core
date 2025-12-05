@@ -1,3 +1,5 @@
+import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
 import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
@@ -8,8 +10,6 @@ import { useFlags } from '@core/shared/ui/FlagsProvider'
 
 import { Drawer, DrawerTitle } from '../../Drawer'
 import { WebsiteToggle } from '../WebsiteToggle'
-import Stack from '@mui/material/Stack'
-import Paper from '@mui/material/Paper'
 
 const Reactions = dynamic(
   async () =>

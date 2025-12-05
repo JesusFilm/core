@@ -1,4 +1,6 @@
 import Grid from '@mui/material/GridLegacy'
+import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 
@@ -19,8 +21,6 @@ import { NewSpacerButton } from './NewSpacerButton'
 import { NewTextResponseButton } from './NewTextResponseButton'
 import { NewTypographyButton } from './NewTypographyButton'
 import { NewVideoButton } from './NewVideoButton'
-import Paper from '@mui/material/Paper'
-import Stack from '@mui/material/Stack'
 
 export function AddBlock(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
