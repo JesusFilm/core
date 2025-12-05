@@ -1,4 +1,3 @@
-import { goals } from '../../workers/plausible/service'
 import { builder } from '../builder'
 
 export interface PlausibleStatsAggregateValue {
@@ -29,23 +28,6 @@ export interface PlausibleStatsResponse {
   events?: number | null
   conversionRate?: number | null
   timeOnPage?: number | null
-}
-
-export interface TemplateFamilyStatsEventResponse {
-  event:
-    | (typeof goals)[number]
-    | 'chatsClicked'
-    | 'linksClicked'
-    | 'journeyVisitors'
-    | 'journeyResponses'
-  visitors: number
-}
-
-export interface TemplateFamilyStatsBreakdownResponse {
-  journeyId: string
-  journeyName: string
-  teamName: string
-  stats: TemplateFamilyStatsEventResponse[]
 }
 
 export const PlausibleStatsAggregateValueRef = builder
