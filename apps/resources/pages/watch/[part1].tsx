@@ -28,6 +28,7 @@ import {
   WatchProvider,
   WatchState
 } from '../../src/libs/watchContext/WatchContext'
+import { slugMap } from '../../src/libs/slugMap'
 
 interface HomeLanguagePageProps {
   initialApolloState?: NormalizedCacheObject
@@ -85,6 +86,24 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
   params,
   locale
 }) => {
+  const [languageId, languageIdExtension] = (params?.part1 as string).split('.')
+
+  if (slugMap[languageId] != null)
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/watch/${slugMap[languageId]}.html`
+      }
+    }
+
+  if (languageIdExtension !== 'html')
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/watch/${languageId}.html`
+      }
+    }
+
   const languages = await fetch(
     `${process.env.NODE_ENV === 'development' ? 'http://localhost:4310' : 'https://www.jesusfilm.org'}/api/languages`
   )
