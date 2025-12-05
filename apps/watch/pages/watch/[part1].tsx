@@ -86,24 +86,6 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
   params,
   locale
 }) => {
-  const [languageId, languageIdExtension] = (params?.part1 as string).split('.')
-
-  if (slugMap[languageId] != null)
-    return {
-      redirect: {
-        permanent: false,
-        destination: `/watch/${slugMap[languageId]}.html`
-      }
-    }
-
-  if (languageIdExtension !== 'html')
-    return {
-      redirect: {
-        permanent: false,
-        destination: `/watch/${languageId}.html`
-      }
-    }
-
   const languages = await fetch(
     `${process.env.NODE_ENV === 'development' ? 'http://localhost:4300' : 'https://www.jesusfilm.org'}/api/languages`
   )
