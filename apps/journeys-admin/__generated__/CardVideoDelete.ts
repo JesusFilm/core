@@ -111,6 +111,8 @@ export interface CardVideoDelete_video_VideoBlock_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type CardVideoDelete_video_VideoBlock_action = CardVideoDelete_video_VideoBlock_action_NavigateToBlockAction | CardVideoDelete_video_VideoBlock_action_LinkAction | CardVideoDelete_video_VideoBlock_action_EmailAction | CardVideoDelete_video_VideoBlock_action_ChatAction | CardVideoDelete_video_VideoBlock_action_PhoneAction;

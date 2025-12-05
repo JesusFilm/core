@@ -21,6 +21,7 @@ export function StepHeader({
   sx
 }: StepHeaderProps): ReactElement {
   const { journey, variant } = useJourney()
+  const { journey, variant } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const { menuButtonIcon } = journey ?? {}
   const hasMenuButtonIcon = menuButtonIcon != null
@@ -89,6 +90,7 @@ export function StepHeader({
                 {journey?.displayTitle ?? journey?.seoTitle}
               </Typography>
             </Stack>
+            {hasMenuButtonIcon ? <StepHeaderMenu /> : <InformationButton />}
             {hasMenuButtonIcon ? (
               <StepHeaderMenu />
             ) : (
@@ -99,7 +101,9 @@ export function StepHeader({
       ) : (
         <>
           <PaginationBullets />
-          <InformationButton sx={{ px: { xs: variant === 'default' ? 6 : 3, lg: 0} }} />
+          <InformationButton
+            sx={{ px: { xs: variant === 'default' ? 6 : 3, lg: 0 } }}
+          />
         </>
       )}
     </Stack>

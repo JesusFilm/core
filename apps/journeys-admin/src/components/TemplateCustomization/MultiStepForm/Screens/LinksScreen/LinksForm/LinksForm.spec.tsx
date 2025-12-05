@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { Formik, FormikProvider } from 'formik'
 
+import { ContactActionType } from '../../../../../../../__generated__/globalTypes'
 import { JourneyLink } from '../../../../utils/getJourneyLinks/getJourneyLinks'
 
 import { LinksForm } from './LinksForm'
@@ -231,6 +232,78 @@ describe('LinksForm', () => {
     openSpy.mockRestore()
   })
 
+  it('should open phone link with tel: protocol', () => {
+    const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
+    const links: JourneyLink[] = [
+      {
+        id: 'phone-1',
+        linkType: 'phone',
+        url: '+15551234',
+        label: 'Call Us',
+        parentStepId: 'step-1',
+        customizable: true,
+        contactAction: ContactActionType.call
+      }
+    ]
+    render(
+      <Formik
+        initialValues={{ 'phone-1__cc': '+1', 'phone-1__local': '5551234' }}
+        onSubmit={jest.fn()}
+      >
+        {(formik) => (
+          <FormikProvider value={formik}>
+            <LinksForm links={links} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Open link in new tab' })
+    )
+    expect(openSpy).toHaveBeenCalledWith(
+      'tel:+15551234',
+      '_blank',
+      'noopener,noreferrer'
+    )
+    openSpy.mockRestore()
+  })
+
+  it('should open phone link with sms: protocol', () => {
+    const openSpy = jest.spyOn(window, 'open').mockImplementation(jest.fn())
+    const links: JourneyLink[] = [
+      {
+        id: 'phone-2',
+        linkType: 'phone',
+        url: '+15559876',
+        label: 'Text Us',
+        parentStepId: 'step-1',
+        customizable: true,
+        contactAction: ContactActionType.text
+      }
+    ]
+    render(
+      <Formik
+        initialValues={{ 'phone-2__cc': '+1', 'phone-2__local': '5559876' }}
+        onSubmit={jest.fn()}
+      >
+        {(formik) => (
+          <FormikProvider value={formik}>
+            <LinksForm links={links} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Open link in new tab' })
+    )
+    expect(openSpy).toHaveBeenCalledWith(
+      'sms:+15559876',
+      '_blank',
+      'noopener,noreferrer'
+    )
+    openSpy.mockRestore()
+  })
+
   it('calls formik setFieldValue when input changes', () => {
     const links: JourneyLink[] = [
       {
@@ -259,5 +332,54 @@ describe('LinksForm', () => {
     )
     fireEvent.change(input, { target: { value: 'example.com' } })
     expect(setFieldValue).toHaveBeenCalledWith('url-1', 'https://example.com')
+  })
+
+  it('should focus next input on enter keypress in phone field', () => {
+    const links: JourneyLink[] = [
+      {
+        id: 'phone-1',
+        linkType: 'phone',
+        url: '+73333',
+        label: 'Phone Link',
+        parentStepId: null,
+        customizable: null,
+        contactAction: ContactActionType.call
+      },
+      {
+        id: 'url-1',
+        linkType: 'url',
+        url: 'https://example.com',
+        label: 'URL Link',
+        parentStepId: null,
+        customizable: null
+      }
+    ]
+
+    render(
+      <Formik
+        initialValues={{
+          'phone-1__cc': '+7',
+          'phone-1__local': '3333',
+          'url-1': ''
+        }}
+        onSubmit={jest.fn()}
+      >
+        {(formik) => (
+          <FormikProvider value={formik}>
+            <LinksForm links={links} />
+          </FormikProvider>
+        )}
+      </Formik>
+    )
+
+    const countryInput = screen.getByLabelText('Country')
+
+    countryInput.focus()
+    expect(document.activeElement).toBe(countryInput)
+
+    fireEvent.keyDown(countryInput, { key: 'Enter' })
+
+    const phoneNumberInput = screen.getByLabelText('Phone Number')
+    expect(document.activeElement).toBe(phoneNumberInput)
   })
 })

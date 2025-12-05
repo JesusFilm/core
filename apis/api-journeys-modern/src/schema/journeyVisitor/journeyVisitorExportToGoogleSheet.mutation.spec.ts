@@ -187,7 +187,21 @@ describe('journeyVisitorExportToGoogleSheet', () => {
       include: {
         team: { include: { userTeams: true } },
         userJourneys: true,
-        blocks: { select: { id: true }, orderBy: { updatedAt: 'asc' } }
+        blocks: {
+          select: {
+            id: true,
+            typename: true,
+            parentBlockId: true,
+            parentOrder: true,
+            nextBlockId: true,
+            action: true,
+            content: true,
+            x: true,
+            y: true,
+            deletedAt: true
+          },
+          orderBy: { updatedAt: 'asc' }
+        }
       }
     })
 
@@ -214,15 +228,15 @@ describe('journeyVisitorExportToGoogleSheet', () => {
         spreadsheetId: 'spreadsheet-id',
         sheetTitle: '2024-01-01 test-journey',
         values: expect.arrayContaining([
+          // Single header row
           expect.arrayContaining([
-            'visitorId',
-            'createdAt',
-            'name',
-            'email',
-            'phone',
-            'block-1-Button Click',
-            'block-2-Text Response'
-          ])
+            'Visitor ID',
+            'Date',
+            'Button Click',
+            'Text Response'
+          ]),
+          // Data row
+          expect.arrayContaining(['visitor-1'])
         ]),
         append: false
       })
