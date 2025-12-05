@@ -3,6 +3,7 @@ enum ButtonAction {
   LinkAction
   EmailAction
   PhoneAction
+  ChatAction
 }
 
 type ButtonClickEvent implements Event @shareable {
@@ -72,22 +73,6 @@ enum MessagePlatform {
   settings
 }
 
-input ChatOpenEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-  """
-  id of the parent stepBlock
-  """
-  stepId: ID
-  """
-  messagePlatform of the link used for chat
-  """
-  value: MessagePlatform
-}
-
 type ChatOpenEvent implements Event @shareable {
   id: ID!
   """
@@ -110,8 +95,4 @@ type ChatOpenEvent implements Event @shareable {
   messagePlatform of the link used for chat (based on the messagePlatform in the value field)
   """
   messagePlatform: MessagePlatform
-}
-
-extend type Mutation {
-  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
 }

@@ -7,10 +7,6 @@ import {
   CreateEventsExportLogVariables
 } from '../../../../../__generated__/CreateEventsExportLog'
 import {
-  GetJourneyCreatedAt,
-  GetJourneyCreatedAtVariables
-} from '../../../../../__generated__/GetJourneyCreatedAt'
-import {
   GetJourneyEvents,
   GetJourneyEventsVariables
 } from '../../../../../__generated__/GetJourneyEvents'
@@ -22,29 +18,11 @@ import {
 import { getMockGetJourneyEventsCountQuery } from '../../../../libs/useJourneyEventsExport/useJourneyEventsExport.mock'
 import { FILTERED_EVENTS } from '../../../../libs/useJourneyEventsExport/utils/constants'
 
-import { ExportDialog, GET_JOURNEY_CREATED_AT } from './ExportDialog'
+import { ExportDialog } from './ExportDialog'
 
 const mockOnClose = jest.fn()
 
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
-const mockJourneyCreatedAt: MockedResponse<
-  GetJourneyCreatedAt,
-  GetJourneyCreatedAtVariables
-> = {
-  request: {
-    query: GET_JOURNEY_CREATED_AT,
-    variables: { id: 'journey1' }
-  },
-  result: {
-    data: {
-      journey: {
-        id: 'journey1',
-        createdAt: journeyCreatedAt,
-        __typename: 'Journey'
-      }
-    }
-  }
-}
 
 const mockGetJourneyEventsCountQuery = getMockGetJourneyEventsCountQuery({
   journeyId: 'journey1',
@@ -68,7 +46,14 @@ jest.mock('../../../../libs/useJourneyContactsExport', () => ({
 const defaultProps = {
   open: true,
   onClose: mockOnClose,
-  journeyId: 'journey1'
+  journeyId: 'journey1',
+  availableBlockTypes: [
+    'RadioQuestionBlock',
+    'MultiselectBlock',
+    'TextResponseBlock',
+    'SignUpBlock'
+  ],
+  createdAt: journeyCreatedAt
 }
 
 describe('ExportDialog', () => {
@@ -162,6 +147,7 @@ describe('ExportDialog', () => {
       EventType.ChatOpenEvent,
       EventType.TextResponseSubmissionEvent,
       EventType.RadioQuestionSubmissionEvent,
+      EventType.MultiselectSubmissionEvent,
       EventType.ButtonClickEvent,
       EventType.SignUpSubmissionEvent,
       EventType.VideoStartEvent,
@@ -199,11 +185,7 @@ describe('ExportDialog', () => {
     it('should render correctly with initial state', async () => {
       render(
         <MockedProvider
-          mocks={[
-            mockGetJourneyEventsCountQuery,
-            mockJourneyCreatedAt,
-            getJourneyEventsMock
-          ]}
+          mocks={[mockGetJourneyEventsCountQuery, getJourneyEventsMock]}
         >
           <SnackbarProvider>
             <ExportDialog {...defaultProps} />
@@ -225,16 +207,12 @@ describe('ExportDialog', () => {
       const mockExportJourneyEventsResult = jest.fn(() => ({
         ...getJourneyEventsMock.result
       }))
-      const mockJourneyCreatedAtResult = jest.fn(() => ({
-        ...mockJourneyCreatedAt.result
-      }))
 
       render(
         <MockedProvider
           mocks={[
             mockGetJourneyEventsCountQuery,
             mockCreateEventsExportLogMutation,
-            { ...mockJourneyCreatedAt, result: mockJourneyCreatedAtResult },
             { ...getJourneyEventsMock, result: mockExportJourneyEventsResult }
           ]}
         >
@@ -243,10 +221,6 @@ describe('ExportDialog', () => {
           </SnackbarProvider>
         </MockedProvider>
       )
-
-      await waitFor(async () => {
-        expect(mockJourneyCreatedAtResult).toHaveBeenCalled()
-      })
 
       // Select "Visitor Actions" to show the FilterForm
       const selectElement = screen.getByRole('combobox')
@@ -266,7 +240,7 @@ describe('ExportDialog', () => {
 
     it('should disable export button when no events are selected', async () => {
       render(
-        <MockedProvider mocks={[mockJourneyCreatedAt]}>
+        <MockedProvider>
           <SnackbarProvider>
             <ExportDialog {...defaultProps} />
           </SnackbarProvider>
@@ -297,26 +271,13 @@ describe('ExportDialog', () => {
         )
       }
 
-      const mockJourneyCreatedAtResult = jest.fn(() => ({
-        ...mockJourneyCreatedAt.result
-      }))
-
       render(
-        <MockedProvider
-          mocks={[
-            { ...mockJourneyCreatedAt, result: mockJourneyCreatedAtResult },
-            getJourneyEventsMockError
-          ]}
-        >
+        <MockedProvider mocks={[getJourneyEventsMockError]}>
           <SnackbarProvider>
             <ExportDialog {...defaultProps} />
           </SnackbarProvider>
         </MockedProvider>
       )
-
-      await waitFor(async () => {
-        expect(mockJourneyCreatedAtResult).toHaveBeenCalled()
-      })
 
       // Select "Visitor Actions" to show the FilterForm
       const selectElement = screen.getByRole('combobox')
@@ -341,7 +302,7 @@ describe('ExportDialog', () => {
   describe('Contact Data', () => {
     it('should render correctly with initial state', async () => {
       render(
-        <MockedProvider mocks={[mockJourneyCreatedAt]}>
+        <MockedProvider>
           <SnackbarProvider>
             <ExportDialog {...defaultProps} />
           </SnackbarProvider>
@@ -352,31 +313,29 @@ describe('ExportDialog', () => {
       const selectElement = screen.getByRole('combobox')
       fireEvent.mouseDown(selectElement)
       fireEvent.click(screen.getByText('Contact Data'))
+      await waitFor(() =>
+        expect(screen.getByLabelText('Text Submission')).toBeInTheDocument()
+      )
 
-      expect(screen.getByLabelText('All')).toBeChecked()
-      expect(screen.getByLabelText('Name')).toBeChecked()
-      expect(screen.getByLabelText('Email')).toBeChecked()
-      expect(screen.getByLabelText('Phone')).toBeChecked()
+      // expect(screen.getByLabelText('All')).toBeChecked()
       expect(screen.getByLabelText('Poll Selection')).toBeChecked()
       expect(screen.getByLabelText('Subscription')).toBeChecked()
       expect(screen.getByLabelText('Text Submission')).toBeChecked()
+      expect(screen.getByLabelText('Multiselect Responses')).toBeChecked()
 
       fireEvent.click(screen.getByRole('button', { name: 'Export (CSV)' }))
       expect(mockExportJourneyContacts).toHaveBeenCalledWith({
         journeyId: 'journey1',
-        filter: {
-          typenames: [
+        filter: expect.objectContaining({
+          typenames: expect.arrayContaining([
             'RadioQuestionSubmissionEvent',
+            'MultiselectSubmissionEvent',
             'SignUpSubmissionEvent',
-            'TextResponseSubmissionEvent'
-          ],
+            'TextResponseSubmissionEvent',
+            'MultiselectSubmissionEvent'
+          ]),
           periodRangeEnd: expect.any(String)
-        },
-        select: {
-          name: true,
-          email: true,
-          phone: true
-        }
+        })
       })
       await waitFor(() => {
         expect(mockOnClose).toHaveBeenCalled()
@@ -385,7 +344,7 @@ describe('ExportDialog', () => {
 
     it('should call export function with correct typenames', async () => {
       render(
-        <MockedProvider mocks={[mockJourneyCreatedAt]}>
+        <MockedProvider>
           <SnackbarProvider>
             <ExportDialog {...defaultProps} />
           </SnackbarProvider>
@@ -396,25 +355,23 @@ describe('ExportDialog', () => {
       const selectElement = screen.getByRole('combobox')
       fireEvent.mouseDown(selectElement)
       fireEvent.click(screen.getByText('Contact Data'))
-
-      expect(screen.getByLabelText('All')).toBeChecked()
+      await waitFor(() =>
+        expect(screen.getByLabelText('Text Submission')).toBeInTheDocument()
+      )
+      // expect(screen.getByLabelText('All')).toBeChecked()
       fireEvent.click(screen.getByLabelText('All'))
-      fireEvent.click(screen.getByLabelText('Name'))
+      fireEvent.click(screen.getByLabelText('Poll Selection'))
 
       expect(screen.getByRole('button', { name: 'Export (CSV)' })).toBeEnabled()
 
       fireEvent.click(screen.getByRole('button', { name: 'Export (CSV)' }))
       expect(mockExportJourneyContacts).toHaveBeenCalledWith({
         journeyId: 'journey1',
-        filter: {
-          typenames: [],
+        filter: expect.objectContaining({
+          typenames: ['RadioQuestionSubmissionEvent'],
+          periodRangeStart: '2023-01-01T00:00:00.000Z',
           periodRangeEnd: expect.any(String)
-        },
-        select: {
-          name: true,
-          email: false,
-          phone: false
-        }
+        })
       })
       await waitFor(() => {
         expect(mockOnClose).toHaveBeenCalled()

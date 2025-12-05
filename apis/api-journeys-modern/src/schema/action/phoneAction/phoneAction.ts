@@ -11,16 +11,18 @@ export const PhoneActionRef = builder.prismaObject('Action', {
   fields: (t) => ({
     phone: t.string({
       nullable: false,
-      resolve: ({ phone }) => phone ?? ''
+      resolve: (action) => action.phone ?? ''
     }),
     countryCode: t.string({
       nullable: false,
-      resolve: ({ countryCode }) => countryCode ?? ''
+      resolve: (action) => action.countryCode ?? ''
     }),
     contactAction: t.field({
       type: ContactActionType,
       nullable: false,
       resolve: (action: any) => action.contactAction ?? 'call'
-    })
+    }),
+    customizable: t.exposeBoolean('customizable', { nullable: true }),
+    parentStepId: t.exposeString('parentStepId', { nullable: true })
   })
 })

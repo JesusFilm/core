@@ -1,14 +1,14 @@
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { SxProps, Theme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 
 import {
-  BUTTON_NEXT_STEP_WIDTH,
-  BUTTON_NEXT_STEP_HEIGHT
+  BUTTON_NEXT_STEP_HEIGHT,
+  BUTTON_NEXT_STEP_WIDTH
 } from '../../utils/sharedStyles'
 
 interface CustomizeFlowNextButtonProps {

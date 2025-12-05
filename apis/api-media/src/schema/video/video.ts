@@ -401,6 +401,11 @@ builder.prismaObjectField(Video, 'children', (t) =>
         published: true,
         availableLanguages: { isEmpty: false }
       }
+      // Display unpublished and incomplete children in videos-admin
+      if (context.clientName != null && context.clientName === 'videos-admin') {
+        whereCondition.published = undefined
+        whereCondition.availableLanguages = undefined
+      }
       if (isValidClientName(context.clientName)) {
         whereCondition.NOT = {
           restrictViewPlatforms: {
@@ -957,7 +962,11 @@ builder.mutationFields((t) => ({
       }
 
       // Use shared helper to recalculate and update availableLanguages
-      await updateVideoAvailableLanguages(videoId)
+      try {
+        await updateVideoAvailableLanguages(videoId)
+      } catch (error) {
+        console.error('Language management update error:', error)
+      }
 
       return true
     }

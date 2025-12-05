@@ -32,14 +32,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile --silent
-      - name: Cache lint artifacts
-        uses: actions/cache@v4
-        with:
-          path: ./.cache
-          key: ${{ runner.os }}-node-${{ matrix.node-version }}-lint-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-node-${{ matrix.node-version }}-lint-
+        run: pnpm install
       - name: generate prisma imports
         uses: mansagroup/nrwl-nx-action@v3
         with:
@@ -56,15 +49,22 @@ jobs:
           all: true
       - name: Run Prettier
         run: pnpm run prettier:fix --check '!./.cache'
+      - name: Type Check
+        uses: mansagroup/nrwl-nx-action@v3
+        with:
+          targets: type-check
+      - name: Cache lint artifacts # after prettier and type-check
+        uses: actions/cache@v4
+        with:
+          path: ./.cache
+          key: ${{ runner.os }}-node-${{ matrix.node-version }}-lint-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.node-version }}-lint-
       - name: Run ESLint
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: lint
           args: --fix
-      - name: Type Check
-        uses: mansagroup/nrwl-nx-action@v3
-        with:
-          targets: type-check
       - name: Extract Translations
         uses: mansagroup/nrwl-nx-action@v3
         with:

@@ -577,16 +577,23 @@ builder.mutationFields((t) => ({
         }
 
         // Update availableLanguages array based on published status change
-        if (isNowPublished) {
-          await addLanguageToVideo(
-            currentVariant.videoId,
-            currentVariant.languageId
-          )
-        } else {
-          await removeLanguageFromVideoIfUnused(
-            currentVariant.videoId,
-            currentVariant.languageId
-          )
+        try {
+          if (isNowPublished) {
+            await addLanguageToVideo(
+              currentVariant.videoId,
+              currentVariant.languageId
+            )
+          } else {
+            await removeLanguageFromVideoIfUnused(
+              currentVariant.videoId,
+              currentVariant.languageId
+            )
+          }
+
+          // Cascade update to parent collections
+          await updateParentCollectionLanguages(currentVariant.videoId)
+        } catch (error) {
+          console.error('Language management update error:', error)
         }
 
         // Cascade update to parent collections
@@ -719,10 +726,14 @@ builder.mutationFields((t) => ({
       }
 
       // Update availableLanguages array when variant is deleted
-      await removeLanguageFromVideoIfUnused(videoId, languageId)
+      try {
+        await removeLanguageFromVideoIfUnused(videoId, languageId)
 
-      // Cascade update to parent collections
-      await updateParentCollectionLanguages(videoId)
+        // Cascade update to parent collections
+        await updateParentCollectionLanguages(videoId)
+      } catch (error) {
+        console.error('Language management cleanup error:', error)
+      }
 
       try {
         await updateVideoVariantInAlgolia(id)

@@ -150,18 +150,16 @@ export default function TroubleshootingPage(): ReactElement {
                 Title:
               </Typography>
               <Typography variant="body1">
-                {
-                  (data.adminVideo.title as Array<{ value: string }>)[0]
-                    ?.value ?? 'N/A'
-                }
+                {(data.adminVideo.title as Array<{ value: string }>)[0]
+                  ?.value ?? 'N/A'}
               </Typography>
             </Box>
             <Box>
               <Typography variant="body2" color="text.secondary">
                 Available Languages:
               </Typography>
-              {((data.adminVideo.availableLanguages as string[]) ?? [])
-                .length > 0 ? (
+              {((data.adminVideo.availableLanguages as string[]) ?? []).length >
+              0 ? (
                 <Stack spacing={1} sx={{ mt: 1 }}>
                   {(data.adminVideo.availableLanguages as string[]).map(
                     (languageId) => (

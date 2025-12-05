@@ -158,7 +158,8 @@ export enum ButtonAction {
     NavigateToBlockAction = "NavigateToBlockAction",
     LinkAction = "LinkAction",
     EmailAction = "EmailAction",
-    PhoneAction = "PhoneAction"
+    PhoneAction = "PhoneAction",
+    ChatAction = "ChatAction"
 }
 
 export enum MessagePlatform {
@@ -199,6 +200,7 @@ export enum MessagePlatform {
 }
 
 export enum IntegrationType {
+    google = "google",
     growthSpaces = "growthSpaces"
 }
 
@@ -512,13 +514,6 @@ export class CustomDomainUpdateInput {
     routeAllTeamJourneys?: Nullable<boolean>;
 }
 
-export class ChatOpenEventCreateInput {
-    id?: Nullable<string>;
-    blockId: string;
-    stepId?: Nullable<string>;
-    value?: Nullable<MessagePlatform>;
-}
-
 export class JourneyViewEventCreateInput {
     id?: Nullable<string>;
     journeyId: string;
@@ -671,6 +666,7 @@ export class JourneysFilter {
     limit?: Nullable<number>;
     orderByRecent?: Nullable<boolean>;
     fromTemplateId?: Nullable<string>;
+    teamId?: Nullable<string>;
 }
 
 export class JourneysQueryOptions {
@@ -748,6 +744,7 @@ export class JourneyEventsFilter {
     typenames?: Nullable<string[]>;
     periodRangeStart?: Nullable<DateTime>;
     periodRangeEnd?: Nullable<DateTime>;
+    includeUnconnectedCards?: Nullable<boolean>;
 }
 
 export class JourneyNotificationUpdateInput {
@@ -933,6 +930,19 @@ export class PhoneAction implements Action {
     phone: string;
     countryCode: string;
     contactAction: ContactActionType;
+    customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
+}
+
+export class ChatAction implements Action {
+    __typename?: 'ChatAction';
+    parentBlockId: string;
+    parentBlock: Block;
+    gtmEventName?: Nullable<string>;
+    chatUrl: string;
+    target?: Nullable<string>;
+    customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
 }
 
 export class Journey {
@@ -1136,8 +1146,6 @@ export abstract class IMutation {
 
     abstract customDomainCheck(id: string): CustomDomainCheck | Promise<CustomDomainCheck>;
 
-    abstract chatOpenEventCreate(input: ChatOpenEventCreateInput): ChatOpenEvent | Promise<ChatOpenEvent>;
-
     abstract journeyViewEventCreate(input: JourneyViewEventCreateInput): Nullable<JourneyViewEvent> | Promise<Nullable<JourneyViewEvent>>;
 
     abstract radioQuestionSubmissionEventCreate(input: RadioQuestionSubmissionEventCreateInput): RadioQuestionSubmissionEvent | Promise<RadioQuestionSubmissionEvent>;
@@ -1175,8 +1183,6 @@ export abstract class IMutation {
     abstract integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput): IntegrationGrowthSpaces | Promise<IntegrationGrowthSpaces>;
 
     abstract integrationGrowthSpacesUpdate(id: string, input: IntegrationGrowthSpacesUpdateInput): IntegrationGrowthSpaces | Promise<IntegrationGrowthSpaces>;
-
-    abstract integrationDelete(id: string): Integration | Promise<Integration>;
 
     abstract journeyCreate(input: JourneyCreateInput, teamId: string): Journey | Promise<Journey>;
 
@@ -1481,6 +1487,8 @@ export class VideoBlock implements Block {
     duration?: Nullable<number>;
     action?: Nullable<Action>;
     objectFit?: Nullable<VideoBlockObjectFit>;
+    subtitleLanguage?: Nullable<Language>;
+    showGeneratedSubtitles?: Nullable<boolean>;
 }
 
 export class VideoTriggerBlock implements Block {
@@ -1716,13 +1724,22 @@ export class Host {
     src2?: Nullable<string>;
 }
 
+export class IntegrationGoogle implements Integration {
+    __typename?: 'IntegrationGoogle';
+    id: string;
+    team: Team;
+    type: IntegrationType;
+    user?: Nullable<User>;
+    accountEmail?: Nullable<string>;
+}
+
 export class IntegrationGrowthSpaces implements Integration {
     __typename?: 'IntegrationGrowthSpaces';
     id: string;
     team: Team;
     type: IntegrationType;
-    accessId: string;
-    accessSecretPart: string;
+    accessId?: Nullable<string>;
+    accessSecretPart?: Nullable<string>;
     routes: IntegrationGrowthSpacesRoute[];
 }
 

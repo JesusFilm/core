@@ -60,6 +60,7 @@ jobs:
           DOPPLER_WATCH_TOKEN: ${{ secrets.DOPPLER_WATCH_TOKEN }}
           DOPPLER_WATCH_MODERN_TOKEN: ${{ secrets.DOPPLER_WATCH_MODERN_TOKEN }}
           DOPPLER_WATCH_ADMIN_TOKEN: ${{ secrets.DOPPLER_WATCH_ADMIN_TOKEN }}
+          DOPPLER_RESOURCES_TOKEN: ${{ secrets.DOPPLER_RESOURCES_TOKEN }}
           DOPPLER_VIDEOS_ADMIN_TOKEN: ${{ secrets.DOPPLER_VIDEOS_ADMIN_TOKEN }}
           DOPPLER_VIDEO_IMPORTER_TOKEN: ${{ secrets.DOPPLER_VIDEO_IMPORTER_TOKEN }}
           DOPPLER_GITHUB_SERVICE_TOKEN: ${{ secrets.DOPPLER_GITHUB_SERVICE_TOKEN }}
@@ -107,7 +108,7 @@ jobs:
         uses: mansagroup/nrwl-nx-action@v3
         with:
           targets: test
-          args: --ci --silent --max-workers ${{ steps.cpu-cores.outputs.count }} --shard=${{ matrix.shard }}
+          args: --ci --max-workers ${{ steps.cpu-cores.outputs.count }} --shard=${{ matrix.shard }}
           parallel: 1
       - name: download codecov
         run: |

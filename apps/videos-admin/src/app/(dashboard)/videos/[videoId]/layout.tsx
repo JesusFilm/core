@@ -55,7 +55,13 @@ export default function VideoViewLayout({
   const router = useRouter()
   const { videoId } = useParams<{ videoId: string }>()
   // keep metadata visible when modal is open
-  const availableTabs = ['metadata', 'audio', 'children', 'editions', 'troubleshooting']
+  const availableTabs = [
+    'metadata',
+    'audio',
+    'children',
+    'editions',
+    'troubleshooting'
+  ]
   const segment = useSelectedLayoutSegment() ?? 'metadata'
   const currentTab = availableTabs.includes(segment ?? '')
     ? segment

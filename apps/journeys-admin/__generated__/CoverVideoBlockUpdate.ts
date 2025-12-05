@@ -3,11 +3,17 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit } from "./globalTypes";
+import { VideoBlockUpdateInput, VideoBlockSource, VideoBlockObjectFit, ContactActionType } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CoverVideoBlockUpdate
 // ====================================================
+
+export interface CoverVideoBlockUpdate_videoBlockUpdate_subtitleLanguage {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+}
 
 export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video_title {
   __typename: "VideoTitle";
@@ -60,12 +66,6 @@ export interface CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube {
 
 export type CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo = CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_Video | CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_MuxVideo | CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo_YouTube;
 
-export interface CoverVideoBlockUpdate_videoBlockUpdate_action_PhoneAction {
-  __typename: "PhoneAction";
-  parentBlockId: string;
-  gtmEventName: string | null;
-}
-
 export interface CoverVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction {
   __typename: "NavigateToBlockAction";
   parentBlockId: string;
@@ -91,7 +91,27 @@ export interface CoverVideoBlockUpdate_videoBlockUpdate_action_EmailAction {
   parentStepId: string | null;
 }
 
-export type CoverVideoBlockUpdate_videoBlockUpdate_action = CoverVideoBlockUpdate_videoBlockUpdate_action_PhoneAction | CoverVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | CoverVideoBlockUpdate_videoBlockUpdate_action_LinkAction | CoverVideoBlockUpdate_videoBlockUpdate_action_EmailAction;
+export interface CoverVideoBlockUpdate_videoBlockUpdate_action_ChatAction {
+  __typename: "ChatAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  chatUrl: string;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export interface CoverVideoBlockUpdate_videoBlockUpdate_action_PhoneAction {
+  __typename: "PhoneAction";
+  parentBlockId: string;
+  gtmEventName: string | null;
+  phone: string;
+  countryCode: string;
+  contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
+}
+
+export type CoverVideoBlockUpdate_videoBlockUpdate_action = CoverVideoBlockUpdate_videoBlockUpdate_action_NavigateToBlockAction | CoverVideoBlockUpdate_videoBlockUpdate_action_LinkAction | CoverVideoBlockUpdate_videoBlockUpdate_action_EmailAction | CoverVideoBlockUpdate_videoBlockUpdate_action_ChatAction | CoverVideoBlockUpdate_videoBlockUpdate_action_PhoneAction;
 
 export interface CoverVideoBlockUpdate_videoBlockUpdate {
   __typename: "VideoBlock";
@@ -161,6 +181,8 @@ export interface CoverVideoBlockUpdate_videoBlockUpdate {
    * how the video should display within the VideoBlock
    */
   objectFit: VideoBlockObjectFit | null;
+  showGeneratedSubtitles: boolean | null;
+  subtitleLanguage: CoverVideoBlockUpdate_videoBlockUpdate_subtitleLanguage | null;
   mediaVideo: CoverVideoBlockUpdate_videoBlockUpdate_mediaVideo | null;
   /**
    * action that should be performed when the video ends
