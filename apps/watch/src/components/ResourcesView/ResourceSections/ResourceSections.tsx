@@ -14,8 +14,8 @@ export const indexes = [
   `${process.env.NEXT_PUBLIC_ALGOLIA_WP_PREFIX}_posts_equipment`,
   `${process.env.NEXT_PUBLIC_ALGOLIA_WP_PREFIX}_posts_training_strategies`,
   `${process.env.NEXT_PUBLIC_ALGOLIA_WP_PREFIX}_posts_outreach_resources`,
-  `${process.env.NEXT_PUBLIC_ALGOLIA_WP_PREFIX}_posts_prayer_resources`,
-  `${process.env.NEXT_PUBLIC_ALGOLIA_WP_PREFIX}_posts_digital_strategies`
+  `${process.env.NEXT_PUBLIC_ALGOLIA_WP_PREFIX}_posts_digital_strategies`,
+  `${process.env.NEXT_PUBLIC_ALGOLIA_WP_PREFIX}_posts_prayer_resources`
 ]
 
 export function ResourceSections({
