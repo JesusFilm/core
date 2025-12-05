@@ -37,16 +37,3 @@ export const env = {
     return 'https://example.com'
   }
 }
-
-export function getPlausibleEnv():
-  | {
-      PLAUSIBLE_URL: string
-      PLAUSIBLE_API_KEY: string
-    }
-  | null {
-  const PLAUSIBLE_URL = process.env.PLAUSIBLE_URL
-  const PLAUSIBLE_API_KEY = process.env.PLAUSIBLE_API_KEY
-
-  if (PLAUSIBLE_URL == null || PLAUSIBLE_API_KEY == null) return null
-  return { PLAUSIBLE_URL, PLAUSIBLE_API_KEY }
-}

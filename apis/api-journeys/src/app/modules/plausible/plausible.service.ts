@@ -2,8 +2,7 @@ import {
   ApolloClient,
   InMemoryCache,
   NormalizedCacheObject,
-  createHttpLink,
-  gql
+  createHttpLink
 } from '@apollo/client'
 import { InjectQueue } from '@nestjs/bullmq'
 import { Injectable, OnModuleInit } from '@nestjs/common'
