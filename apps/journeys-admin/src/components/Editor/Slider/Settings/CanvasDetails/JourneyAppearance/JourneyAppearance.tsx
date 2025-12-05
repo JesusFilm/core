@@ -8,7 +8,7 @@ import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 
-import { Drawer, DrawerTitle } from '../../Drawer'
+import { DrawerTitle } from '../../Drawer'
 import { WebsiteToggle } from '../WebsiteToggle'
 
 const Reactions = dynamic(
