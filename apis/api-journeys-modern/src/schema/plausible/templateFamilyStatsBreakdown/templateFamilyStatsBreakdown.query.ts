@@ -83,15 +83,14 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
         })
       }
 
-      const { property: _, ...whereWithoutProperty } = where
-      const templateSiteId = `template-site`
+      const templateSiteId = `api-journeys-template-${templateJourney.id}`
 
       const breakdownResults = await getJourneyStatsBreakdown(
         templateJourney.id,
         {
+          ...where,
           property: 'event:props:templateKey',
-          metrics: 'visitors',
-          ...whereWithoutProperty
+          metrics: 'visitors'
         },
         templateSiteId
       )
@@ -133,6 +132,7 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
           ? getJourneyStatsBreakdown(
               templateJourney.id,
               {
+                ...where,
                 property: 'event:page',
                 metrics: 'visitors'
               },

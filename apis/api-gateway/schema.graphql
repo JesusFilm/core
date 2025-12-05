@@ -815,6 +815,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
   """
   journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType = slug) : [PlausibleStatsResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
+  templateFamilyStatsAggregate(id: ID!, idType: IdType = slug, where: PlausibleStatsAggregateFilter!) : TemplateFamilyStatsAggregateResponse @join__field(graph: API_JOURNEYS_MODERN) 
   templateFamilyStatsBreakdown(
     id: ID!
     idType: IdType = slug
@@ -2501,6 +2502,12 @@ type PlausibleStatsResponse @join__type(graph: API_JOURNEYS_MODERN)  {
 
 type Subscription @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress!
+}
+
+type TemplateFamilyStatsAggregateResponse @join__type(graph: API_JOURNEYS_MODERN)  {
+  childJourneysCount: Int!
+  totalJourneysViews: Int!
+  totalJourneysResponses: Int!
 }
 
 type TemplateFamilyStatsBreakdownResponse @join__type(graph: API_JOURNEYS_MODERN)  {
