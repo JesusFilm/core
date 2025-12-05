@@ -39,7 +39,8 @@ export function ActiveTemplateList({
   const { enqueueSnackbar } = useSnackbar()
   const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published],
-    template: true
+    template: true,
+    teamId: 'jfp-team'
   })
   const [archive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
