@@ -123,6 +123,14 @@ export const publishedJourney: Journey = {
   status: JourneyStatus.published
 }
 
+export const templateJourney: Journey = {
+  ...defaultJourney,
+  id: 'template-journey-id',
+  title: 'Template Journey Heading',
+  description: 'a template journey',
+  template: true
+}
+
 export const descriptiveJourney: Journey = {
   ...defaultJourney,
   id: 'descriptive-journey-id',
