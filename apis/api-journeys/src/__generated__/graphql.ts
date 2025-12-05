@@ -1423,6 +1423,7 @@ export type JourneysFilter = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   orderByRecent?: InputMaybe<Scalars['Boolean']['input']>;
   tagIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+  teamId?: InputMaybe<Scalars['String']['input']>;
   template?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -3230,16 +3231,20 @@ export type PhoneAction = Action & {
   __typename?: 'PhoneAction';
   contactAction: ContactActionType;
   countryCode: Scalars['String']['output'];
+  customizable?: Maybe<Scalars['Boolean']['output']>;
   gtmEventName?: Maybe<Scalars['String']['output']>;
   parentBlock: Block;
   parentBlockId: Scalars['ID']['output'];
+  parentStepId?: Maybe<Scalars['String']['output']>;
   phone: Scalars['String']['output'];
 };
 
 export type PhoneActionInput = {
   contactAction?: InputMaybe<ContactActionType>;
   countryCode: Scalars['String']['input'];
+  customizable?: InputMaybe<Scalars['Boolean']['input']>;
   gtmEventName?: InputMaybe<Scalars['String']['input']>;
+  parentStepId?: InputMaybe<Scalars['String']['input']>;
   phone: Scalars['String']['input'];
 };
 
@@ -3588,7 +3593,7 @@ export type Query = {
    * make multiple queries for each date.
    */
   journeysPlausibleStatsBreakdown: Array<PlausibleStatsResponse>;
-  journeysPlausibleStatsRealtimeVisitors?: Maybe<Scalars['Int']['output']>;
+  journeysPlausibleStatsRealtimeVisitors: Scalars['Int']['output'];
   /**
    * This endpoint provides timeseries data over a certain time period.
    * If you are familiar with the Plausible dashboard, this endpoint

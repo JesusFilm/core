@@ -92,6 +92,7 @@ describe('PlausibleResolver', () => {
         {
           provide: PlausibleService,
           useValue: {
+            getStatsRealtimeVisitors: jest.fn(),
             getStatsAggregate: jest.fn(),
             getStatsBreakdown: jest.fn(),
             getStatsTimeseries: jest.fn()

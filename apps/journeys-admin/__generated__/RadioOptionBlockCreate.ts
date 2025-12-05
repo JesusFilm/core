@@ -50,6 +50,8 @@ export interface RadioOptionBlockCreate_radioOptionBlockCreate_action_PhoneActio
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type RadioOptionBlockCreate_radioOptionBlockCreate_action = RadioOptionBlockCreate_radioOptionBlockCreate_action_NavigateToBlockAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_LinkAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_EmailAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_ChatAction | RadioOptionBlockCreate_radioOptionBlockCreate_action_PhoneAction;
