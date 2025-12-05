@@ -1,10 +1,10 @@
 import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
-import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
+import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import {
@@ -233,15 +233,51 @@ export function JourneyListView({
             mr: 2
           }}
         >
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel id="status-filter-label">{t('Status')}</InputLabel>
+          <FormControl size="small">
             <Select
-              labelId="status-filter-label"
               id="status-filter-select"
               value={selectedStatus}
-              label={t('Status')}
               onChange={handleStatusChange}
               inputProps={{ 'aria-label': t('Filter by status') }}
+              IconComponent={KeyboardArrowDown}
+              autoWidth
+              sx={{
+                borderRadius: '8px',
+                height: '32px',
+                fontFamily: "'Montserrat', sans-serif",
+                fontWeight: 600,
+                '& .MuiOutlinedInput-root': {
+                  height: '32px'
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderWidth: '2px',
+                  borderColor: (theme) => theme.palette.text.secondary
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderWidth: '2px'
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderWidth: '2px',
+                  borderColor: (theme) => theme.palette.text.secondary
+                },
+                '& .MuiOutlinedInput-input': {
+                  padding: '0 !important',
+                  height: '32px',
+                  boxSizing: 'border-box'
+                },
+                '& .MuiSelect-select': {
+                  display: 'flex',
+                  alignItems: 'center',
+                  fontSize: '14px',
+                  paddingTop: '6px !important',
+                  paddingBottom: '6px !important',
+                  paddingLeft: '14px !important',
+                  paddingRight: '28px !important'
+                },
+                '& .MuiSelect-icon': {
+                  fontSize: '1rem'
+                }
+              }}
             >
               {statusOptions.map((status) => (
                 <MenuItem key={status.queryParam} value={status.queryParam}>
