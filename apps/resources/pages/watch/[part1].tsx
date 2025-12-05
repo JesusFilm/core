@@ -23,6 +23,7 @@ import {
 import { getCookie } from '../../src/libs/cookieHandler'
 import { getFlags } from '../../src/libs/getFlags'
 import { LANGUAGE_MAPPINGS } from '../../src/libs/localeMapping'
+import { slugMap } from '../../src/libs/slugMap'
 import { transformData } from '../../src/libs/useLanguages/util/transformData'
 import {
   WatchProvider,
