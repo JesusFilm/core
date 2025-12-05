@@ -28,7 +28,7 @@ export function getGoalDetails(
   switch (goalType) {
     case GoalType.Chat:
       return {
-        label: t('Start a Conversation'),
+        label: t('Start a Chat'),
         icon: <MessageChat1Icon sx={iconStyle} />
       }
     case GoalType.Bible:
@@ -42,15 +42,16 @@ export function getGoalDetails(
         icon: <EmailIcon sx={iconStyle} />
       }
     case 'Text':
-      return {
-        label: t('Text (SMS)'),
-        icon: <PhoneIcon sx={iconStyle} />
-      }
     case 'Call':
       return {
-        label: t('Call'),
+        label: t('Text or Call'),
         icon: <PhoneIcon sx={iconStyle} />
       }
+    // case 'Call':
+    //   return {
+    //     label: t('Call'),
+    //     icon: <PhoneIcon sx={iconStyle} />
+    //   }
     case GoalType.Website:
     default:
       return {
