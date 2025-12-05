@@ -51,4 +51,3 @@ describe('buildJourneyUrl', () => {
     expect(result).toBe('https://your.nextstep.is/my-journey-slug')
   })
 })
-// dsiofsdifusfsdfiejdjjbzsrara0rr a90 urfasif ooasdiofdfsasdasdasdasdaassdaaaaaassaaaaaaassaaaaaaaaaaaaaaaa
