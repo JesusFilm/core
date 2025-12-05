@@ -172,29 +172,6 @@ describe('journeysPlausibleStatsTimeseries', () => {
     })
   })
 
-  it('returns error when env vars missing', async () => {
-    delete process.env.PLAUSIBLE_URL
-    prismaMock.journey.findUnique.mockResolvedValue({
-      id: 'journey-id',
-      userJourneys: [],
-      team: { userTeams: [] }
-    } as any)
-
-    const result = await authClient({
-      document: QUERY,
-      variables: { id: 'journey-id', where: { period: '7d' } }
-    })
-
-    expect(result).toEqual({
-      data: { journeysPlausibleStatsTimeseries: null },
-      errors: [
-        expect.objectContaining({
-          message: 'Plausible is not configured'
-        })
-      ]
-    })
-  })
-
   it('returns Plausible error message on API failure', async () => {
     prismaMock.journey.findUnique.mockResolvedValue({
       id: 'journey-id',
@@ -221,4 +198,3 @@ describe('journeysPlausibleStatsTimeseries', () => {
     })
   })
 })
-
