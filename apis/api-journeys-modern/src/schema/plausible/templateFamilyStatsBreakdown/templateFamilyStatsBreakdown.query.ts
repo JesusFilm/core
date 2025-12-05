@@ -36,7 +36,10 @@ export type JourneyWithAcl = Prisma.JourneyGetPayload<{
   include: {
     userJourneys: true
     team: {
-      include: { userTeams: true }
+      include: {
+        userTeams: true
+        customDomains: true
+      }
     }
   }
 }>
@@ -135,7 +138,25 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
           include: {
             userJourneys: true,
             team: {
-              include: { userTeams: true }
+              include: {
+                userTeams: true,
+                customDomains: {
+                  where: {
+                    OR: [
+                      { routeAllTeamJourneys: true },
+                      {
+                        journeyCollection: {
+                          journeyCollectionJourneys: {
+                            some: {
+                              journeyId: { in: journeyIds }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
             }
           }
         }),

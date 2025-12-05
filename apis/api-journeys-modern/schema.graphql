@@ -2028,6 +2028,11 @@ type TemplateFamilyStatsBreakdownResponse
   teamName: String!
   status: JourneyStatus!
   stats: [TemplateFamilyStatsEventResponse!]!
+
+  """
+  The URL to visit this journey. Uses custom domain if available, otherwise URL based on environment
+  """
+  journeyUrl: String!
 }
 
 type TemplateFamilyStatsEventResponse

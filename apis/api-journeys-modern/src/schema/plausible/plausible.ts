@@ -50,6 +50,7 @@ export interface TemplateFamilyStatsBreakdownResponse {
   teamName: string
   status: PrismaJourneyStatus
   stats: TemplateFamilyStatsEventResponse[]
+  journeyUrl: string
 }
 
 export const PlausibleStatsAggregateValueRef = builder
@@ -243,6 +244,12 @@ export const TemplateFamilyStatsBreakdownResponseRef = builder
         type: [TemplateFamilyStatsEventResponseRef],
         nullable: false,
         resolve: (parent) => parent.stats
+      }),
+      journeyUrl: t.string({
+        nullable: false,
+        description:
+          'The URL to visit this journey. Uses custom domain if available, otherwise URL based on environment',
+        resolve: (parent) => parent.journeyUrl
       })
     })
   })

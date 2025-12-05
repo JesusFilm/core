@@ -4,6 +4,7 @@ import { Action, ability, subject } from '../../../../lib/auth/ability'
 import { TemplateFamilyStatsBreakdownResponse } from '../../plausible'
 import { JourneyWithAcl } from '../templateFamilyStatsBreakdown.query'
 
+import { buildJourneyUrl } from './buildJourneyUrls'
 import { TransformedResult } from './transformBreakdownResults'
 
 /**
@@ -42,13 +43,17 @@ export function addPermissionsAndNames(
         user
       )
 
+      const customDomains = journey.team?.customDomains ?? []
+      const journeyUrl = buildJourneyUrl(journey.slug, customDomains)
+
       if (userCanReadJourney) {
         return {
           journeyId: transformedResult.journeyId,
           journeyName: journey.title ?? 'Untitled Journey',
           teamName: journey.team?.title ?? 'No Team',
           status: journey.status,
-          stats: transformedResult.stats
+          stats: transformedResult.stats,
+          journeyUrl
         }
       }
 
@@ -58,7 +63,8 @@ export function addPermissionsAndNames(
         journeyName: `unknown journey ${anonymousJourneyIndex}`,
         teamName: teamNameMap.get(journey.teamId) ?? 'No Team',
         status: journey.status,
-        stats: transformedResult.stats
+        stats: transformedResult.stats,
+        journeyUrl
       }
     })
 }
