@@ -24,9 +24,13 @@ export const env = createEnv({
     JOURNEYS_REVALIDATE_ACCESS_TOKEN: z.string().trim().min(1),
     JOURNEYS_URL: z.string().trim().min(1),
     PLAUSIBLE_API_KEY: z.string().trim().min(1),
-    PLAUSIBLE_URL: z.url(),
+    PLAUSIBLE_URL: z.url().refine((url) => !url.endsWith('/'), {
+      message: 'PLAUSIBLE_URL must not end with a trailing slash'
+    }),
     REDIS_PORT: z.coerce.number().int().positive().default(6379),
     REDIS_URL: z.string().trim().min(1).default('redis'),
     SERVICE_VERSION: z.string().trim().default('')
   }
 })
+
+// getPlausibleEnv has been removed in favor of using env directly in Plausible services.

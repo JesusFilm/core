@@ -166,7 +166,7 @@ describe('templateFamilyStatsBreakdown', () => {
       expect.stringContaining('/api/v1/stats/breakdown'),
       expect.objectContaining({
         params: expect.objectContaining({
-          site_id: 'api-journeys-template-template-journey-id',
+          site_id: 'template-site',
           property: 'event:props:templateKey',
           metrics: 'visitors'
         })
@@ -177,7 +177,7 @@ describe('templateFamilyStatsBreakdown', () => {
       expect.stringContaining('/api/v1/stats/breakdown'),
       expect.objectContaining({
         params: expect.objectContaining({
-          site_id: 'api-journeys-template-template-journey-id',
+          site_id: 'template-site',
           property: 'event:page',
           metrics: 'visitors'
         })
