@@ -23,12 +23,12 @@ import {
 import { getCookie } from '../../src/libs/cookieHandler'
 import { getFlags } from '../../src/libs/getFlags'
 import { LANGUAGE_MAPPINGS } from '../../src/libs/localeMapping'
+import { slugMap } from '../../src/libs/slugMap'
 import { transformData } from '../../src/libs/useLanguages/util/transformData'
 import {
   WatchProvider,
   WatchState
 } from '../../src/libs/watchContext/WatchContext'
-import { slugMap } from '../../src/libs/slugMap'
 
 interface HomeLanguagePageProps {
   initialApolloState?: NormalizedCacheObject
@@ -73,7 +73,10 @@ function HomeLanguagePage({
               }
             })}
           >
-            <Configure ruleContexts={['home_page']} />
+            <Configure
+              ruleContexts={['home_page']}
+              filters="NOT restrictViewPlatforms:watch AND published:true AND videoPublished:true"
+            />
             <VideoHomePage languageId={languageId} />
           </InstantSearch>
         </WatchProvider>
