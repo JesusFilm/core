@@ -104,6 +104,12 @@ export function JourneyStatusFilter({
           defaultValue={status ?? 'active'}
           name="status-filter-buttons-group"
           onChange={handleSubmit}
+          sx={{
+            gap: 0,
+            '& .MuiFormControlLabel-root': {
+              margin: 0
+            }
+          }}
         >
           {statusOptions.map((option) => (
             <FormControlLabel
@@ -112,8 +118,9 @@ export function JourneyStatusFilter({
               control={<Radio size="small" />}
               label={option.displayValue}
               sx={{
-                m: 0,
-                py: 0.5,
+                margin: 0,
+                paddingTop: '0',
+                paddingBottom: '0',
                 '& .MuiFormControlLabel-label': {
                   fontFamily: "'Open Sans', sans-serif",
                   fontWeight: 400,

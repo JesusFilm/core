@@ -32,6 +32,11 @@ interface JourneySortProps {
   disabled?: boolean
 }
 
+interface SortOption {
+  sortOrder: SortOrder
+  displayValue: string
+}
+
 export function JourneySort({
   sortOrder,
   onChange: handleChange,
@@ -49,6 +54,21 @@ export function JourneySort({
     title: t('Name'),
     updatedAt: t('Last Modified')
   }
+
+  const sortOptions: SortOption[] = [
+    {
+      sortOrder: SortOrder.CREATED_AT,
+      displayValue: sortOrderLabel.createdAt
+    },
+    {
+      sortOrder: SortOrder.TITLE,
+      displayValue: sortOrderLabel.title
+    },
+    {
+      sortOrder: SortOrder.UPDATED_AT,
+      displayValue: sortOrderLabel.updatedAt
+    }
+  ]
 
   useEffect(() => {
     setAnchorEl(triggerRef.current)
@@ -88,52 +108,32 @@ export function JourneySort({
           defaultValue={sortOrder ?? SortOrder.UPDATED_AT}
           name="sort-by-buttons-group"
           onChange={handleSubmit}
+          sx={{
+            gap: 0,
+            '& .MuiFormControlLabel-root': {
+              margin: 0
+            }
+          }}
         >
-          <FormControlLabel
-            value={SortOrder.CREATED_AT}
-            control={<Radio size="small" />}
-            label={sortOrderLabel.createdAt}
-            sx={{
-              m: 0,
-              py: 0.5,
-              '& .MuiFormControlLabel-label': {
-                fontFamily: "'Open Sans', sans-serif",
-                fontWeight: 400,
-                fontSize: '14px',
-                lineHeight: '22px'
-              }
-            }}
-          />
-          <FormControlLabel
-            value={SortOrder.TITLE}
-            control={<Radio size="small" />}
-            label={sortOrderLabel.title}
-            sx={{
-              m: 0,
-              py: 0.5,
-              '& .MuiFormControlLabel-label': {
-                fontFamily: "'Open Sans', sans-serif",
-                fontWeight: 400,
-                fontSize: '14px',
-                lineHeight: '22px'
-              }
-            }}
-          />
-          <FormControlLabel
-            value={SortOrder.UPDATED_AT}
-            control={<Radio size="small" />}
-            label={sortOrderLabel.updatedAt}
-            sx={{
-              m: 0,
-              py: 0.5,
-              '& .MuiFormControlLabel-label': {
-                fontFamily: "'Open Sans', sans-serif",
-                fontWeight: 400,
-                fontSize: '14px',
-                lineHeight: '22px'
-              }
-            }}
-          />
+          {sortOptions.map((option) => (
+            <FormControlLabel
+              key={option.sortOrder}
+              value={option.sortOrder}
+              control={<Radio size="small" />}
+              label={option.displayValue}
+              sx={{
+                margin: 0,
+                paddingTop: '0',
+                paddingBottom: '0',
+                '& .MuiFormControlLabel-label': {
+                  fontFamily: "'Open Sans', sans-serif",
+                  fontWeight: 400,
+                  fontSize: '14px',
+                  lineHeight: '22px'
+                }
+              }}
+            />
+          ))}
         </RadioGroup>
         <Box
           sx={{
