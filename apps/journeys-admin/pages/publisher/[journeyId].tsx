@@ -78,7 +78,7 @@ function TemplateEditPage(): ReactElement {
           />
         </>
       )}
-      {(isGlobalTemplate && !isPublisher) && (
+      {isGlobalTemplate && !isPublisher && (
         <>
           <NextSeo title={t('Access Denied')} />
           <PublisherInvite />

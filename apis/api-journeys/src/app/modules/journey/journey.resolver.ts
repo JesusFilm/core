@@ -1040,7 +1040,10 @@ export class JourneyResolver {
       throw new GraphQLError('journey not found', {
         extensions: { code: 'NOT_FOUND' }
       })
-    if (isGlobalTemplate && ability.cannot(Action.Manage, subject('Journey', journey), 'template'))
+    if (
+      isGlobalTemplate &&
+      ability.cannot(Action.Manage, subject('Journey', journey), 'template')
+    )
       throw new GraphQLError(
         'user is not allowed to change journey to or from a template',
         {
