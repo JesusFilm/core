@@ -1,5 +1,5 @@
+import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
 import Box from '@mui/material/Box'
-import Chip from '@mui/material/Chip'
 import Drawer from '@mui/material/Drawer'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -9,6 +9,7 @@ import RadioGroup from '@mui/material/RadioGroup'
 import { useTranslation } from 'next-i18next'
 import {
   ChangeEvent,
+  KeyboardEvent,
   MouseEvent,
   ReactElement,
   useEffect,
@@ -41,7 +42,7 @@ export function JourneySort({
   const [showSortOrder, setShowSortOrder] = useState(open ?? false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const breakpoints = useBreakpoints()
-  const chipRef = useRef(null)
+  const triggerRef = useRef<HTMLDivElement>(null)
 
   const sortOrderLabel = {
     createdAt: t('Date Created'),
@@ -50,12 +51,22 @@ export function JourneySort({
   }
 
   useEffect(() => {
-    setAnchorEl(chipRef.current)
-  }, [chipRef])
+    setAnchorEl(triggerRef.current)
+  }, [triggerRef])
 
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
+    if (disabled) return
     setAnchorEl(event.currentTarget)
     setShowSortOrder(true)
+  }
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLElement>): void => {
+    if (disabled) return
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      setAnchorEl(event.currentTarget)
+      setShowSortOrder(true)
+    }
   }
 
   const handleClose = (): void => {
@@ -70,7 +81,7 @@ export function JourneySort({
   }
 
   const Form = (): ReactElement => (
-    <Box sx={{ p: 4 }}>
+    <Box sx={{ py: 2, px: 4 }}>
       <FormControl component="fieldset" fullWidth>
         <RadioGroup
           aria-label="sort-by-options"
@@ -80,18 +91,48 @@ export function JourneySort({
         >
           <FormControlLabel
             value={SortOrder.CREATED_AT}
-            control={<Radio />}
+            control={<Radio size="small" />}
             label={sortOrderLabel.createdAt}
+            sx={{
+              m: 0,
+              py: 0.5,
+              '& .MuiFormControlLabel-label': {
+                fontFamily: "'Open Sans', sans-serif",
+                fontWeight: 400,
+                fontSize: '14px',
+                lineHeight: '22px'
+              }
+            }}
           />
           <FormControlLabel
             value={SortOrder.TITLE}
-            control={<Radio />}
+            control={<Radio size="small" />}
             label={sortOrderLabel.title}
+            sx={{
+              m: 0,
+              py: 0.5,
+              '& .MuiFormControlLabel-label': {
+                fontFamily: "'Open Sans', sans-serif",
+                fontWeight: 400,
+                fontSize: '14px',
+                lineHeight: '22px'
+              }
+            }}
           />
           <FormControlLabel
             value={SortOrder.UPDATED_AT}
-            control={<Radio />}
+            control={<Radio size="small" />}
             label={sortOrderLabel.updatedAt}
+            sx={{
+              m: 0,
+              py: 0.5,
+              '& .MuiFormControlLabel-label': {
+                fontFamily: "'Open Sans', sans-serif",
+                fontWeight: 400,
+                fontSize: '14px',
+                lineHeight: '22px'
+              }
+            }}
           />
         </RadioGroup>
         <Box
@@ -107,18 +148,56 @@ export function JourneySort({
 
   return (
     <>
-      <Chip
-        label={sortOrder != null ? sortOrderLabel[sortOrder] : t('Sort By')}
+      <Box
+        ref={triggerRef}
         onClick={handleClick}
-        ref={chipRef}
+        onKeyDown={handleKeyDown}
+        tabIndex={disabled ? -1 : 0}
+        role="button"
+        aria-label={t('Sort by')}
+        aria-haspopup="listbox"
+        aria-expanded={showSortOrder}
         sx={{
-          backgroundColor: 'white',
-          border: '1px solid',
-          borderColor: 'divider',
-          color: 'secondar.light'
+          display: 'inline-flex',
+          alignItems: 'center',
+          borderRadius: '8px',
+          border: '2px solid',
+          borderColor: (theme) => theme.palette.secondary.light,
+          fontFamily: "'Montserrat', sans-serif",
+          fontWeight: 600,
+          fontSize: '14px',
+          color: (theme) =>
+            disabled
+              ? theme.palette.action.disabled
+              : theme.palette.secondary.main,
+          paddingTop: '4px',
+          paddingBottom: '4px',
+          paddingLeft: '14px',
+          paddingRight: '8px',
+          cursor: disabled ? 'default' : 'pointer',
+          opacity: disabled ? 0.5 : 1,
+          '&:hover': {
+            borderColor: (theme) =>
+              disabled
+                ? theme.palette.secondary.light
+                : theme.palette.secondary.main
+          },
+          '&:focus': {
+            outline: 'none',
+            borderColor: (theme) => theme.palette.secondary.main
+          }
         }}
-        disabled={disabled != null && disabled}
-      />
+      >
+        {t('Sort By: ')}
+        {sortOrderLabel[sortOrder ?? SortOrder.UPDATED_AT]}
+        <KeyboardArrowDown
+          sx={{
+            fontSize: '1rem',
+            ml: 1,
+            pl: 1
+          }}
+        />
+      </Box>
       {breakpoints.md ? (
         <Popover
           open={showSortOrder}
@@ -131,6 +210,14 @@ export function JourneySort({
           transformOrigin={{
             vertical: 'top',
             horizontal: 'right'
+          }}
+          slotProps={{
+            paper: {
+              sx: {
+                mt: '6px',
+                borderRadius: '8px'
+              }
+            }
           }}
         >
           <Form />

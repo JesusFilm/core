@@ -1,15 +1,30 @@
-import FormControl from '@mui/material/FormControl'
-import MenuItem from '@mui/material/MenuItem'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
 import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown'
+import Box from '@mui/material/Box'
+import Drawer from '@mui/material/Drawer'
+import FormControl from '@mui/material/FormControl'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Popover from '@mui/material/Popover'
+import Radio from '@mui/material/Radio'
+import RadioGroup from '@mui/material/RadioGroup'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import {
+  ChangeEvent,
+  KeyboardEvent,
+  MouseEvent,
+  ReactElement,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
+
+import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 import type { JourneyStatus } from '../JourneyListView/JourneyListView'
 
 interface JourneyStatusFilterProps {
   status?: JourneyStatus
   onChange: (value: JourneyStatus) => void
+  open?: boolean // for testing
   disabled?: boolean
 }
 
@@ -21,11 +36,15 @@ interface StatusOption {
 export function JourneyStatusFilter({
   status,
   onChange: handleChange,
+  open,
   disabled
 }: JourneyStatusFilterProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const [showOptions, setShowOptions] = useState(open ?? false)
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+  const breakpoints = useBreakpoints()
+  const triggerRef = useRef<HTMLDivElement>(null)
 
-  // Status filter options (Active, Archived, Trashed)
   const statusOptions: StatusOption[] = [
     {
       queryParam: 'active',
@@ -41,70 +60,155 @@ export function JourneyStatusFilter({
     }
   ]
 
-  const handleStatusChange = (
-    event: SelectChangeEvent<JourneyStatus>
-  ): void => {
-    handleChange(event.target.value as JourneyStatus)
+  const statusLabel: Record<JourneyStatus, string> = {
+    active: t('Active'),
+    archived: t('Archived'),
+    trashed: t('Trash')
   }
 
+  useEffect(() => {
+    setAnchorEl(triggerRef.current)
+  }, [triggerRef])
+
+  const handleClick = (event: MouseEvent<HTMLElement>): void => {
+    if (disabled) return
+    setAnchorEl(event.currentTarget)
+    setShowOptions(true)
+  }
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLElement>): void => {
+    if (disabled) return
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      setAnchorEl(event.currentTarget)
+      setShowOptions(true)
+    }
+  }
+
+  const handleClose = (): void => {
+    setAnchorEl(null)
+    setShowOptions(false)
+  }
+
+  const handleSubmit = (event: ChangeEvent<HTMLInputElement>): void => {
+    event.preventDefault()
+    handleChange(event.currentTarget.value as JourneyStatus)
+    handleClose()
+  }
+
+  const Form = (): ReactElement => (
+    <Box sx={{ py: 2, px: 4 }}>
+      <FormControl component="fieldset" fullWidth>
+        <RadioGroup
+          aria-label="status-filter-options"
+          defaultValue={status ?? 'active'}
+          name="status-filter-buttons-group"
+          onChange={handleSubmit}
+        >
+          {statusOptions.map((option) => (
+            <FormControlLabel
+              key={option.queryParam}
+              value={option.queryParam}
+              control={<Radio size="small" />}
+              label={option.displayValue}
+              sx={{
+                m: 0,
+                py: 0.5,
+                '& .MuiFormControlLabel-label': {
+                  fontFamily: "'Open Sans', sans-serif",
+                  fontWeight: 400,
+                  fontSize: '14px',
+                  lineHeight: '22px'
+                }
+              }}
+            />
+          ))}
+        </RadioGroup>
+      </FormControl>
+    </Box>
+  )
+
   return (
-    <FormControl size="small">
-      <Select
-        id="status-filter-select"
-        value={status ?? 'active'}
-        onChange={handleStatusChange}
-        inputProps={{ 'aria-label': t('Filter by status') }}
-        IconComponent={KeyboardArrowDown}
-        autoWidth
-        disabled={disabled != null && disabled}
+    <>
+      <Box
+        ref={triggerRef}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        tabIndex={disabled ? -1 : 0}
+        role="button"
+        aria-label={t('Filter by status')}
+        aria-haspopup="listbox"
+        aria-expanded={showOptions}
         sx={{
+          display: 'inline-flex',
+          alignItems: 'center',
           borderRadius: '8px',
-          height: 'auto',
+          border: '2px solid',
+          borderColor: (theme) => theme.palette.secondary.light,
           fontFamily: "'Montserrat', sans-serif",
           fontWeight: 600,
-          fontSize: '13px',
-          color: (theme) => theme.palette.secondary.main,
-          '& .MuiOutlinedInput-root': {
-            height: '32px'
+          fontSize: '14px',
+          color: (theme) =>
+            disabled
+              ? theme.palette.action.disabled
+              : theme.palette.secondary.main,
+          paddingTop: '4px',
+          paddingBottom: '4px',
+          paddingLeft: '14px',
+          paddingRight: '8px',
+          marginRight: '12px',
+          cursor: disabled ? 'default' : 'pointer',
+          opacity: disabled ? 0.5 : 1,
+          '&:hover': {
+            borderColor: (theme) =>
+              disabled
+                ? theme.palette.secondary.light
+                : theme.palette.secondary.main
           },
-          '& .MuiOutlinedInput-notchedOutline': {
-            borderWidth: '2px',
-            borderColor: (theme) => theme.palette.secondary.light
-          },
-          '&:hover .MuiOutlinedInput-notchedOutline': {
-            borderWidth: '2px'
-          },
-          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderWidth: '2px',
+          '&:focus': {
+            outline: 'none',
             borderColor: (theme) => theme.palette.secondary.main
-          },
-          '& .MuiOutlinedInput-input': {
-            padding: '0 !important',
-            height: '32px',
-            boxSizing: 'border-box'
-          },
-          '& .MuiSelect-select': {
-            display: 'flex',
-            alignItems: 'center',
-            paddingTop: '8px !important',
-            paddingBottom: '8px !important',
-            paddingLeft: '14px !important',
-            paddingRight: '28px !important'
-          },
-          '& .MuiSelect-icon': {
-            fontSize: '1rem'
           }
         }}
       >
-        {statusOptions.map((statusOption) => (
-          <MenuItem
-            key={statusOption.queryParam}
-            value={statusOption.queryParam}
-          >
-            {statusOption.displayValue}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+        {status != null ? statusLabel[status] : statusLabel.active}
+        <KeyboardArrowDown
+          sx={{
+            fontSize: '1rem',
+            ml: 1,
+            pl: 1
+          }}
+        />
+      </Box>
+      {breakpoints.md ? (
+        <Popover
+          open={showOptions}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right'
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
+          slotProps={{
+            paper: {
+              sx: {
+                mt: '6px',
+                borderRadius: '8px'
+              }
+            }
+          }}
+        >
+          <Form />
+        </Popover>
+      ) : (
+        <Drawer anchor="bottom" open={showOptions} onClose={handleClose}>
+          <Form />
+        </Drawer>
+      )}
+    </>
   )
 }
