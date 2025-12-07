@@ -76,6 +76,10 @@ jobs:
     needs: [affected, arclight]
     if: ${{ needs.affected.outputs.arclight == 'true' }}
     runs-on: blacksmith
+    env:
+      BLACKSMITH_CACHE_TOKEN: ${{ env.BLACKSMITH_CACHE_TOKEN }}
+      BLACKSMITH_CACHE_URL: ${{ env.BLACKSMITH_CACHE_URL }}
+      GITHUB_REPO_NAME: ${{ env.GITHUB_REPO_NAME }}
     container:
       image: mcr.microsoft.com/playwright:v1.57.0
       env:

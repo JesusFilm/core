@@ -165,6 +165,10 @@ jobs:
     if: inputs.TargetTests != 'all-e2e' && github.event_name != 'schedule'
     timeout-minutes: 60
     runs-on: blacksmith
+    env:
+      BLACKSMITH_CACHE_TOKEN: ${{ env.BLACKSMITH_CACHE_TOKEN }}
+      BLACKSMITH_CACHE_URL: ${{ env.BLACKSMITH_CACHE_URL }}
+      GITHUB_REPO_NAME: ${{ env.GITHUB_REPO_NAME }}
     container:
       image: mcr.microsoft.com/playwright:v1.57.0
       env:
