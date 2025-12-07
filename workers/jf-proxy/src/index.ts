@@ -2,9 +2,8 @@ import { Hono } from 'hono'
 
 const app = new Hono<{
   Bindings: {
+    RESOURCES_PROXY_DEST?: string
     WATCH_PROXY_DEST?: string
-    WATCH_MODERN_PROXY_DEST?: string
-    WATCH_MODERN_PROXY_PATHS?: string[]
   }
 }>()
 
@@ -12,29 +11,18 @@ app.get('*', async (c) => {
   const url = new URL(c.req.url)
   const pathname = url.pathname
 
-  // Check if path should route to modern proxy
-  const modernProxyPaths = c.env.WATCH_MODERN_PROXY_PATHS || []
-  const shouldUseModernProxy = modernProxyPaths.some((pattern) => {
-    try {
-      const regex = new RegExp(pattern)
-      return regex.test(pathname)
-    } catch (error) {
-      console.error('Invalid regex pattern:', pattern, error)
-      return false
-    }
-  })
+  // Check if path is /watch and has EXPERIMENTAL cookie
+  const cookieHeader = c.req.header('cookie')
+  const hasExperimentalCookie = cookieHeader?.includes('EXPERIMENTAL')
+  const isWatchPath = pathname.startsWith('/watch')
 
-  // Set destination based on path matching
-  const proxyDest = shouldUseModernProxy
-    ? (c.env.WATCH_MODERN_PROXY_DEST ?? url.hostname)
-    : (c.env.WATCH_PROXY_DEST ?? url.hostname)
+  // Set destination based on path and cookie
+  const proxyDest =
+    isWatchPath && hasExperimentalCookie
+      ? (c.env.WATCH_PROXY_DEST ?? url.hostname)
+      : (c.env.RESOURCES_PROXY_DEST ?? url.hostname)
 
   url.hostname = proxyDest
-
-  // Modify path for /watch/modern/* routes by removing 'modern/' part
-  if (shouldUseModernProxy && pathname.startsWith('/watch/modern/')) {
-    url.pathname = pathname.replace('/watch/modern/', '/watch/')
-  }
 
   let response: Response
 
@@ -52,7 +40,6 @@ app.get('*', async (c) => {
   }
 
   // Ensure cookies are properly passed
-  const cookieHeader = c.req.header('cookie')
   if (cookieHeader) {
     headers.set('cookie', cookieHeader)
   }
