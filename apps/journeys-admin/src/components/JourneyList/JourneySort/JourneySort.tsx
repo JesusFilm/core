@@ -154,7 +154,7 @@ export function JourneySort({
         onKeyDown={handleKeyDown}
         tabIndex={disabled ? -1 : 0}
         role="button"
-        aria-label={t('Sort by')}
+        aria-label={t('Sort By')}
         aria-haspopup="listbox"
         aria-expanded={showSortOrder}
         sx={{
