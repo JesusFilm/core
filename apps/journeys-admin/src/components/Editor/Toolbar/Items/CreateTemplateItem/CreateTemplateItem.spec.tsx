@@ -122,7 +122,7 @@ describe('CreateTemplateItem', () => {
       expect.objectContaining({
         variables: {
           id: 'journeyId',
-          teamId: 'jfp-team'
+          teamId: 'jfp-team' // global template team
         },
         update: expect.any(Function)
       })
