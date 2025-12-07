@@ -416,6 +416,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     select: JourneyVisitorExportSelect
     destination: JourneyVisitorGoogleSheetDestinationInput!
     integrationId: ID!
+    """
+    IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.
+    """
+    timezone: String
   ): JourneyVisitorGoogleSheetExportResult! @join__field(graph: API_JOURNEYS_MODERN) 
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
@@ -595,6 +599,8 @@ type PhoneAction implements Action @join__type(graph: API_JOURNEYS)  @join__type
   phone: String!
   countryCode: String!
   contactAction: ContactActionType!
+  customizable: Boolean
+  parentStepId: String
 }
 
 type ChatAction implements Action @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Action")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Action")  {
@@ -736,33 +742,6 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
   """
   journeyVisitorCount(filter: JourneyVisitorFilter!) : Int! @join__field(graph: API_JOURNEYS) 
   journeysEmailPreference(email: String!) : JourneysEmailPreference @join__field(graph: API_JOURNEYS) 
-  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType) : Int! @join__field(graph: API_JOURNEYS) 
-  journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter!, id: ID!, idType: IdType) : PlausibleStatsAggregateResponse! @join__field(graph: API_JOURNEYS) 
-  """
-  This endpoint allows you to break down your stats by some property.
-  If you are familiar with SQL family databases, this endpoint corresponds to
-  running `GROUP BY` on a certain property in your stats, then ordering by the
-  count.
-  Check out the [properties](https://plausible.io/docs/stats-api#properties)
-  section for a reference of all the properties you can use in this query.
-  This endpoint can be used to fetch data for `Top sources`, `Top pages`,
-  `Top countries` and similar reports.
-  Currently, it is only possible to break down on one property at a time.
-  Using a list of properties with one query is not supported. So if you want
-  a breakdown by both `event:page` and `visit:source` for example, you would
-  have to make multiple queries (break down on one property and filter on
-  another) and then manually/programmatically group the results together in one
-  report. This also applies for breaking down by time periods. To get a daily
-  breakdown for every page, you would have to break down on `event:page` and
-  make multiple queries for each date.
-  """
-  journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter!, id: ID!, idType: IdType) : [PlausibleStatsResponse!]! @join__field(graph: API_JOURNEYS) 
-  """
-  This endpoint provides timeseries data over a certain time period.
-  If you are familiar with the Plausible dashboard, this endpoint
-  corresponds to the main visitor graph.
-  """
-  journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType) : [PlausibleStatsResponse!]! @join__field(graph: API_JOURNEYS) 
   qrCode(id: ID!) : QrCode! @join__field(graph: API_JOURNEYS) 
   qrCodes(where: QrCodesFilter!) : [QrCode!]! @join__field(graph: API_JOURNEYS) 
   teams: [Team!]! @join__field(graph: API_JOURNEYS) 
@@ -810,6 +789,41 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS)  
     """
     timezone: String
   ): String @join__field(graph: API_JOURNEYS_MODERN) 
+  journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter!, id: ID!, idType: IdType = slug) : PlausibleStatsAggregateResponse @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  This endpoint allows you to break down your stats by some property.
+  If you are familiar with SQL family databases, this endpoint corresponds to
+  running `GROUP BY` on a certain property in your stats, then ordering by the
+  count.
+  Check out the [properties](https://plausible.io/docs/stats-api#properties)
+  section for a reference of all the properties you can use in this query.
+  This endpoint can be used to fetch data for `Top sources`, `Top pages`,
+  `Top countries` and similar reports.
+  Currently, it is only possible to break down on one property at a time.
+  Using a list of properties with one query is not supported. So if you want
+  a breakdown by both `event:page` and `visit:source` for example, you would
+  have to make multiple queries (break down on one property and filter on
+   another) and then manually/programmatically group the results together in one
+   report. This also applies for breaking down by time periods. To get a daily
+   breakdown for every page, you would have to break down on `event:page` and
+   make multiple queries for each date.
+  """
+  journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter!, id: ID!, idType: IdType = slug) : [PlausibleStatsResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
+  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType = slug) : Int @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  This endpoint provides timeseries data over a certain time period.
+  If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
+  """
+  journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType = slug) : [PlausibleStatsResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
+  templateFamilyStatsBreakdown(
+    id: ID!
+    idType: IdType = slug
+    where: PlausibleStatsBreakdownFilter!
+    """
+    Filter results to only include the specified events. If null or empty, all events are returned.
+    """
+    events: [PlausibleEvent!]
+  ): [TemplateFamilyStatsBreakdownResponse!] @join__field(graph: API_JOURNEYS_MODERN) 
   language(id: ID!, idType: LanguageIdType = databaseId) : Language @join__field(graph: API_LANGUAGES) 
   languages(offset: Int, limit: Int, where: LanguagesFilter, term: String) : [Language!]! @join__field(graph: API_LANGUAGES) 
   languagesCount(where: LanguagesFilter, term: String) : Int! @join__field(graph: API_LANGUAGES) 
@@ -2057,104 +2071,6 @@ type JourneysEmailPreference @join__type(graph: API_JOURNEYS)  @join__type(graph
   accountNotifications: Boolean!
 }
 
-type PlausibleStatsAggregateValue @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  value: Float!
-  change: Int
-}
-
-type PlausibleStatsAggregateResponse @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  The number of unique visitors.
-  """
-  visitors: PlausibleStatsAggregateValue
-  """
-  The number of visits/sessions.
-  """
-  visits: PlausibleStatsAggregateValue
-  """
-  The number of pageview events.
-  """
-  pageviews: PlausibleStatsAggregateValue
-  """
-  The number of pageviews divided by the number of visits.
-  Returns a floating point number. Currently only supported in Aggregate and
-  Timeseries endpoints.
-  """
-  viewsPerVisit: PlausibleStatsAggregateValue
-  """
-  Bounce rate percentage.
-  """
-  bounceRate: PlausibleStatsAggregateValue
-  """
-  Visit duration in seconds.
-  """
-  visitDuration: PlausibleStatsAggregateValue
-  """
-  The number of events (pageviews + custom events). When filtering by a goal,
-   this metric corresponds to "Total Conversions" in the dashboard.
-  """
-  events: PlausibleStatsAggregateValue
-  """
-  The percentage of visitors who completed the goal. Requires an `event:goal`
-  filter or `event:goal` property in the breakdown endpoint
-  """
-  conversionRate: PlausibleStatsAggregateValue
-  """
-  The average time users spend on viewing a single page. Requires an
-  `event:page` filter or `event:page` property in the breakdown endpoint.
-  """
-  timeOnPage: PlausibleStatsAggregateValue
-}
-
-type PlausibleStatsResponse @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  On breakdown queries, this is the property that was broken down by.
-  On aggregate queries, this is the date the stats are for.
-  """
-  property: String!
-  """
-  The number of unique visitors.
-  """
-  visitors: Int
-  """
-  The number of visits/sessions.
-  """
-  visits: Int
-  """
-  The number of pageview events.
-  """
-  pageviews: Int
-  """
-  The number of pageviews divided by the number of visits.
-  Returns a floating point number. Currently only supported in Aggregate and
-  Timeseries endpoints.
-  """
-  viewsPerVisit: Float
-  """
-  Bounce rate percentage.
-  """
-  bounceRate: Int
-  """
-  Visit duration in seconds.
-  """
-  visitDuration: Int
-  """
-  The number of events (pageviews + custom events). When filtering by a goal,
-   this metric corresponds to "Total Conversions" in the dashboard.
-  """
-  events: Int
-  """
-  The percentage of visitors who completed the goal. Requires an `event:goal`
-  filter or `event:goal` property in the breakdown endpoint
-  """
-  conversionRate: Int
-  """
-  The average time users spend on viewing a single page. Requires an
-  `event:page` filter or `event:page` property in the breakdown endpoint.
-  """
-  timeOnPage: Float
-}
-
 """
 A short link that redirects to a full URL
 """
@@ -2496,8 +2412,107 @@ type MuxVideo @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId
   videoVariants: [VideoVariant!]! @join__field(graph: API_MEDIA) 
 }
 
+type PlausibleStatsAggregateResponse @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  The number of unique visitors.
+  """
+  visitors: PlausibleStatsAggregateValue
+  """
+  The number of visits/sessions.
+  """
+  visits: PlausibleStatsAggregateValue
+  """
+  The number of pageview events.
+  """
+  pageviews: PlausibleStatsAggregateValue
+  """
+  The number of pageviews divided by the number of visits. Returns a floating point number. Currently only supported in Aggregate and Timeseries endpoints.
+  """
+  viewsPerVisit: PlausibleStatsAggregateValue
+  """
+  Bounce rate percentage.
+  """
+  bounceRate: PlausibleStatsAggregateValue
+  """
+  Visit duration in seconds.
+  """
+  visitDuration: PlausibleStatsAggregateValue
+  """
+  The number of events (pageviews + custom events). When filtering by a goal, this metric corresponds to "Total Conversions" in the dashboard.
+  """
+  events: PlausibleStatsAggregateValue
+  """
+  The percentage of visitors who completed the goal. Requires an `event:goal` filter or `event:goal` property in the breakdown endpoint.
+  """
+  conversionRate: PlausibleStatsAggregateValue
+  """
+  The average time users spend on viewing a single page. Requires an `event:page` filter or `event:page` property in the breakdown endpoint.
+  """
+  timeOnPage: PlausibleStatsAggregateValue
+}
+
+type PlausibleStatsAggregateValue @join__type(graph: API_JOURNEYS_MODERN)  {
+  value: Float!
+  change: Int
+}
+
+type PlausibleStatsResponse @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  On breakdown queries, this is the property that was broken down by. On aggregate queries, this is the date the stats are for.
+  """
+  property: String!
+  """
+  The number of unique visitors.
+  """
+  visitors: Int
+  """
+  The number of visits/sessions.
+  """
+  visits: Int
+  """
+  The number of pageview events.
+  """
+  pageviews: Int
+  """
+  The number of pageviews divided by the number of visits. Returns a floating point number. Currently only supported in Aggregate and Timeseries endpoints.
+  """
+  viewsPerVisit: Float
+  """
+  Bounce rate percentage.
+  """
+  bounceRate: Int
+  """
+  Visit duration in seconds.
+  """
+  visitDuration: Int
+  """
+  The number of events (pageviews + custom events). When filtering by a goal, this metric corresponds to "Total Conversions" in the dashboard.
+  """
+  events: Int
+  """
+  The percentage of visitors who completed the goal. Requires an `event:goal` filter or `event:goal` property in the breakdown endpoint.
+  """
+  conversionRate: Int
+  """
+  The average time users spend on viewing a single page. Requires an `event:page` filter or `event:page` property in the breakdown endpoint.
+  """
+  timeOnPage: Float
+}
+
 type Subscription @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress!
+}
+
+type TemplateFamilyStatsBreakdownResponse @join__type(graph: API_JOURNEYS_MODERN)  {
+  journeyId: String!
+  journeyName: String!
+  teamName: String!
+  stats: [TemplateFamilyStatsEventResponse!]!
+}
+
+type TemplateFamilyStatsEventResponse @join__type(graph: API_JOURNEYS_MODERN)  {
+  event: String!
+  visitors: Int!
 }
 
 type YouTube @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", extension: true)  {
@@ -3532,6 +3547,35 @@ enum GoogleSheetExportMode @join__type(graph: API_JOURNEYS_MODERN)  {
   existing @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
+enum PlausibleEvent @join__type(graph: API_JOURNEYS_MODERN)  {
+  footerThumbsUpButtonClick @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  footerThumbsDownButtonClick @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  shareButtonClick @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  pageview @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  navigatePreviousStep @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  navigateNextStep @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  buttonClick @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  chatButtonClick @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  footerChatButtonClick @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  radioQuestionSubmit @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  signUpSubmit @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  textResponseSubmit @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoPlay @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoPause @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoExpand @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoCollapse @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoStart @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoProgress25 @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoProgress50 @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoProgress75 @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoComplete @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  videoTrigger @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  chatsClicked @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  linksClicked @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  journeyVisitors @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  journeyResponses @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
 enum LanguageIdType @join__type(graph: API_LANGUAGES)  {
   databaseId @join__enumValue(graph: API_LANGUAGES) 
   bcp47 @join__enumValue(graph: API_LANGUAGES) 
@@ -4280,6 +4324,7 @@ input JourneysFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JO
   limit: Int
   orderByRecent: Boolean
   fromTemplateId: ID
+  teamId: String
 }
 
 input JourneysQueryOptions @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4378,7 +4423,6 @@ input JourneyEventsFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: A
   typenames: [String!]
   periodRangeStart: DateTime
   periodRangeEnd: DateTime
-  includeUnconnectedCards: Boolean
 }
 
 input JourneyNotificationUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4421,95 +4465,6 @@ input JourneysEmailPreferenceUpdateInput @join__type(graph: API_JOURNEYS)  @join
   email: String!
   preference: String!
   value: Boolean!
-}
-
-input PlausibleStatsAggregateFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  See [time periods](https://plausible.io/docs/stats-api#time-periods).
-  If not specified, it will default to 30d.
-  """
-  period: String
-  """
-  date in the standard ISO-8601 format (YYYY-MM-DD).
-  When using a custom range, the date parameter expects two ISO-8601 formatted
-  dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
-  for the whole date range inclusive of the start and end dates.
-  """
-  date: String
-  """
-  See [filtering](https://plausible.io/docs/stats-api#filtering)
-  section for more details.
-  """
-  filters: String
-  """
-  Off by default. You can specify `previous_period` to calculate the percent
-  difference with the previous period for each metric. The previous period
-  will be of the exact same length as specified in the period parameter.
-  """
-  interval: String
-}
-
-input PlausibleStatsBreakdownFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  Which [property](https://plausible.io/docs/stats-api#properties)
-  to break down the stats by.
-  """
-  property: String!
-  """
-  See [time periods](https://plausible.io/docs/stats-api#time-periods).
-  If not specified, it will default to 30d.
-  """
-  period: String
-  """
-  date in the standard ISO-8601 format (YYYY-MM-DD).
-  When using a custom range, the date parameter expects two ISO-8601 formatted
-  dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
-  for the whole date range inclusive of the start and end dates.
-  """
-  date: String
-  """
-  Limit the number of results. Maximum value is 1000. Defaults to 100.
-  If you want to get more than 1000 results, you can make multiple requests
-  and paginate the results by specifying the page parameter (e.g. make the
-  same request with page=1, then page=2, etc)
-  """
-  limit: Int
-  """
-  Number of the page, used to paginate results.
-  Importantly, the page numbers start from 1 not 0.
-  """
-  page: Int
-  """
-  See [filtering](https://plausible.io/docs/stats-api#filtering)
-  section for more details.
-  """
-  filters: String
-}
-
-input PlausibleStatsTimeseriesFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
-  """
-  See [time periods](https://plausible.io/docs/stats-api#time-periods).
-  If not specified, it will default to 30d.
-  """
-  period: String
-  """
-  date in the standard ISO-8601 format (YYYY-MM-DD).
-  When using a custom range, the date parameter expects two ISO-8601 formatted
-  dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
-  for the whole date range inclusive of the start and end dates.
-  """
-  date: String
-  """
-  See [filtering](https://plausible.io/docs/stats-api#filtering)
-  section for more details.
-  """
-  filters: String
-  """
-  Choose your reporting interval. Valid options are date (always) and month
-  (when specified period is longer than one calendar month). Defaults to month
-  for 6mo and 12mo, otherwise falls back to date.
-  """
-  interval: String
 }
 
 input QrCodesFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4802,6 +4757,80 @@ input PhoneActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   phone: String!
   countryCode: String!
   contactAction: ContactActionType = call
+  customizable: Boolean
+  parentStepId: String
+}
+
+input PlausibleStatsAggregateFilter @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  See [time periods](https://plausible.io/docs/stats-api#time-periods).
+  If not specified, it will default to 30d.
+  """
+  period: String
+  """
+  date in the standard ISO-8601 format (YYYY-MM-DD).
+  When using a custom range, the date parameter expects two ISO-8601 formatted dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned for the whole date range inclusive of the start and end dates.
+  """
+  date: String
+  """
+  See [filtering](https://plausible.io/docs/stats-api#filtering) section for more details.
+  """
+  filters: String
+  """
+  Off by default. You can specify `previous_period` to calculate the percent difference with the previous period for each metric. The previous period will be of the exact same length as specified in the period parameter.
+  """
+  interval: String
+}
+
+input PlausibleStatsBreakdownFilter @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Which [property](https://plausible.io/docs/stats-api#properties) to break down the stats by.
+  """
+  property: String!
+  """
+  See [time periods](https://plausible.io/docs/stats-api#time-periods).
+  If not specified, it will default to 30d.
+  """
+  period: String
+  """
+  date in the standard ISO-8601 format (YYYY-MM-DD).
+  When using a custom range, the date parameter expects two ISO-8601 formatted dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned for the whole date range inclusive of the start and end dates.
+  """
+  date: String
+  """
+  Limit the number of results. Maximum value is 1000. Defaults to 100.
+  If you want to get more than 1000 results, you can make multiple requests and paginate the results by specifying the page parameter (e.g. make the same request with page=1, then page=2, etc).
+  """
+  limit: Int
+  """
+  Number of the page, used to paginate results. Importantly, the page numbers start from 1 not 0.
+  """
+  page: Int
+  """
+  See [filtering](https://plausible.io/docs/stats-api#filtering) section for more details.
+  """
+  filters: String
+}
+
+input PlausibleStatsTimeseriesFilter @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  See [time periods](https://plausible.io/docs/stats-api#time-periods).
+  If not specified, it will default to 30d.
+  """
+  period: String
+  """
+  date in the standard ISO-8601 format (YYYY-MM-DD).
+  When using a custom range, the date parameter expects two ISO-8601 formatted dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned for the whole date range inclusive of the start and end dates.
+  """
+  date: String
+  """
+  See [filtering](https://plausible.io/docs/stats-api#filtering) section for more details.
+  """
+  filters: String
+  """
+  Choose your reporting interval. Valid options are date (always) and month (when specified period is longer than one calendar month). Defaults to month for 6mo and 12mo, otherwise falls back to date.
+  """
+  interval: String
 }
 
 input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {

@@ -666,6 +666,7 @@ export class JourneysFilter {
     limit?: Nullable<number>;
     orderByRecent?: Nullable<boolean>;
     fromTemplateId?: Nullable<string>;
+    teamId?: Nullable<string>;
 }
 
 export class JourneysQueryOptions {
@@ -743,6 +744,7 @@ export class JourneyEventsFilter {
     typenames?: Nullable<string[]>;
     periodRangeStart?: Nullable<DateTime>;
     periodRangeEnd?: Nullable<DateTime>;
+    includeUnconnectedCards?: Nullable<boolean>;
 }
 
 export class JourneyNotificationUpdateInput {
@@ -785,29 +787,6 @@ export class JourneysEmailPreferenceUpdateInput {
     email: string;
     preference: string;
     value: boolean;
-}
-
-export class PlausibleStatsAggregateFilter {
-    period?: Nullable<string>;
-    date?: Nullable<string>;
-    filters?: Nullable<string>;
-    interval?: Nullable<string>;
-}
-
-export class PlausibleStatsBreakdownFilter {
-    property: string;
-    period?: Nullable<string>;
-    date?: Nullable<string>;
-    limit?: Nullable<number>;
-    page?: Nullable<number>;
-    filters?: Nullable<string>;
-}
-
-export class PlausibleStatsTimeseriesFilter {
-    period?: Nullable<string>;
-    date?: Nullable<string>;
-    filters?: Nullable<string>;
-    interval?: Nullable<string>;
 }
 
 export class QrCodesFilter {
@@ -928,6 +907,8 @@ export class PhoneAction implements Action {
     phone: string;
     countryCode: string;
     contactAction: ContactActionType;
+    customizable?: Nullable<boolean>;
+    parentStepId?: Nullable<string>;
 }
 
 export class ChatAction implements Action {
@@ -1039,14 +1020,6 @@ export abstract class IQuery {
     abstract journeyVisitorCount(filter: JourneyVisitorFilter): number | Promise<number>;
 
     abstract journeysEmailPreference(email: string): Nullable<JourneysEmailPreference> | Promise<Nullable<JourneysEmailPreference>>;
-
-    abstract journeysPlausibleStatsRealtimeVisitors(id: string, idType?: Nullable<IdType>): number | Promise<number>;
-
-    abstract journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsAggregateResponse | Promise<PlausibleStatsAggregateResponse>;
-
-    abstract journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
-
-    abstract journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter, id: string, idType?: Nullable<IdType>): PlausibleStatsResponse[] | Promise<PlausibleStatsResponse[]>;
 
     abstract qrCode(id: string): QrCode | Promise<QrCode>;
 
@@ -1902,39 +1875,6 @@ export class JourneysEmailPreference {
     email: string;
     unsubscribeAll: boolean;
     accountNotifications: boolean;
-}
-
-export class PlausibleStatsAggregateValue {
-    __typename?: 'PlausibleStatsAggregateValue';
-    value: number;
-    change?: Nullable<number>;
-}
-
-export class PlausibleStatsAggregateResponse {
-    __typename?: 'PlausibleStatsAggregateResponse';
-    visitors?: Nullable<PlausibleStatsAggregateValue>;
-    visits?: Nullable<PlausibleStatsAggregateValue>;
-    pageviews?: Nullable<PlausibleStatsAggregateValue>;
-    viewsPerVisit?: Nullable<PlausibleStatsAggregateValue>;
-    bounceRate?: Nullable<PlausibleStatsAggregateValue>;
-    visitDuration?: Nullable<PlausibleStatsAggregateValue>;
-    events?: Nullable<PlausibleStatsAggregateValue>;
-    conversionRate?: Nullable<PlausibleStatsAggregateValue>;
-    timeOnPage?: Nullable<PlausibleStatsAggregateValue>;
-}
-
-export class PlausibleStatsResponse {
-    __typename?: 'PlausibleStatsResponse';
-    property: string;
-    visitors?: Nullable<number>;
-    visits?: Nullable<number>;
-    pageviews?: Nullable<number>;
-    viewsPerVisit?: Nullable<number>;
-    bounceRate?: Nullable<number>;
-    visitDuration?: Nullable<number>;
-    events?: Nullable<number>;
-    conversionRate?: Nullable<number>;
-    timeOnPage?: Nullable<number>;
 }
 
 export class QrCode {

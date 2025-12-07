@@ -1,69 +1,27 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  NormalizedCacheObject,
-  createHttpLink,
-  gql
-} from '@apollo/client'
 import { InjectQueue } from '@nestjs/bullmq'
-import { Injectable, OnModuleInit } from '@nestjs/common'
-import axios, { AxiosInstance } from 'axios'
+import { Injectable } from '@nestjs/common'
 import { Queue } from 'bullmq'
-import { GraphQLError } from 'graphql'
-import camelCase from 'lodash/camelCase'
-import chunk from 'lodash/chunk'
-import get from 'lodash/get'
-import last from 'lodash/last'
-import reduce from 'lodash/reduce'
 
 import { JourneyPlausibleEvents } from '@core/journeys/ui/plausibleHelpers'
 
-import { MutationSiteCreateResult } from '../../../__generated__/graphql'
-import {
-  PlausibleStatsAggregateFilter,
-  PlausibleStatsAggregateResponse,
-  PlausibleStatsBreakdownFilter,
-  PlausibleStatsResponse,
-  PlausibleStatsTimeseriesFilter
-} from '../../__generated__/graphql'
-import { PrismaService } from '../../lib/prisma.service'
+interface PlausibleCreateTeamSiteJob {
+  __typename: 'plausibleCreateTeamSite'
+  teamId: string
+}
 
-import { PlausibleJob } from './plausible.consumer'
+interface PlausibleCreateJourneySiteJob {
+  __typename: 'plausibleCreateJourneySite'
+  journeyId: string
+}
 
-export const SITE_CREATE = gql(`
-  mutation SiteCreate($input: SiteCreateInput!) {
-    siteCreate(input: $input) {
-      ... on Error {
-        message
-        __typename
-      }
-      ... on MutationSiteCreateSuccess {
-        data {
-          id
-          domain
-          __typename
-          memberships {
-            id
-            role
-            __typename
-          }
-          goals {
-            id
-            eventName
-            __typename
-          }
-          sharedLinks {
-            id
-            slug
-            __typename
-          }
-        }
-      }
-    }
-  }
-`)
+interface PlausibleCreateSitesJob {
+  __typename: 'plausibleCreateSites'
+}
 
-const FIVE_DAYS = 5 * 24 * 60 * 60 // in seconds
+export type PlausibleJob =
+  | PlausibleCreateTeamSiteJob
+  | PlausibleCreateJourneySiteJob
+  | PlausibleCreateSitesJob
 
 export const goals: Array<keyof JourneyPlausibleEvents> = [
   'footerThumbsUpButtonClick',
@@ -103,44 +61,8 @@ export const goals: Array<keyof JourneyPlausibleEvents> = [
   'custom5Capture'
 ]
 
-interface PlausibleAPIStatsBreakdownResponse extends PlausibleAPIStatsResponse {
-  [key: string]: unknown
-}
-
-interface PlausibleAPIStatsTimeseriesResponse
-  extends PlausibleAPIStatsResponse {
-  date: string
-}
-
-interface PlausibleAPIStatsResponse {
-  visitors?: number
-  visits?: number
-  pageviews?: number
-  views_per_visit?: number
-  bounce_rate?: number
-  visit_duration?: number
-  events?: number
-  conversion_rate?: number
-  time_on_page?: number
-}
-
-interface PlausibleAPIStatsAggregateResponse {
-  visitors?: { value: number; change?: number }
-  visits?: { value: number; change?: number }
-  pageviews?: { value: number; change?: number }
-  views_per_visit?: { value: number; change?: number }
-  bounce_rate?: { value: number; change?: number }
-  visit_duration?: { value: number; change?: number }
-  events?: { value: number; change?: number }
-  conversion_rate?: { value: number; change?: number }
-  time_on_page?: { value: number; change?: number }
-}
-
 @Injectable()
-export class PlausibleService implements OnModuleInit {
-  client: ApolloClient<NormalizedCacheObject>
-  plausibleClient: AxiosInstance
-
+export class PlausibleService {
   constructor(
     @InjectQueue('api-journeys-plausible')
     private readonly plausibleQueue: Queue<PlausibleJob>,

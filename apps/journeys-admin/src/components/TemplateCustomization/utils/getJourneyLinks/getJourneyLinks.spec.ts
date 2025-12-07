@@ -2,6 +2,7 @@
 import { TFunction } from 'i18next'
 
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
+import { ContactActionType } from '../../../../../__generated__/globalTypes'
 
 import { getJourneyLinks } from './getJourneyLinks'
 
@@ -79,6 +80,19 @@ describe('getJourneyLinks', () => {
         {
           __typename: 'ButtonBlock',
           id: 'btn-3',
+          label: 'Call us',
+          action: {
+            __typename: 'PhoneAction',
+            phone: '+1234567890',
+            countryCode: 'US',
+            contactAction: ContactActionType.call,
+            customizable: true,
+            parentStepId: 'step-6'
+          }
+        },
+        {
+          __typename: 'ButtonBlock',
+          id: 'btn-4',
           label: 'Chat Support',
           action: {
             __typename: 'ChatAction',
@@ -126,11 +140,90 @@ describe('getJourneyLinks', () => {
       },
       {
         id: 'btn-3',
+        linkType: 'phone',
+        url: '+1234567890',
+        label: 'Call us',
+        parentStepId: 'step-6',
+        customizable: true,
+        contactAction: ContactActionType.call
+      },
+      {
+        id: 'btn-4',
         linkType: 'url',
         url: 'https://chat.example.com',
         label: 'Chat Support',
         parentStepId: 'step-6',
         customizable: true
+      }
+    ])
+  })
+
+  it('should extract customizable phone actions', () => {
+    const journey = {
+      journeyCustomizationFields: [],
+      chatButtons: [],
+      blocks: [
+        {
+          __typename: 'ButtonBlock',
+          id: 'phone-btn-1',
+          label: 'Call Support',
+          action: {
+            __typename: 'PhoneAction',
+            phone: '+1234567890',
+            countryCode: 'US',
+            contactAction: ContactActionType.call,
+            customizable: true,
+            parentStepId: 'step-1'
+          }
+        },
+        {
+          __typename: 'ButtonBlock',
+          id: 'phone-btn-2',
+          label: 'Text Us',
+          action: {
+            __typename: 'PhoneAction',
+            phone: '+1987654321',
+            countryCode: 'US',
+            contactAction: ContactActionType.text,
+            customizable: true,
+            parentStepId: 'step-2'
+          }
+        },
+        {
+          __typename: 'ButtonBlock',
+          id: 'phone-btn-3',
+          label: 'Not Customizable',
+          action: {
+            __typename: 'PhoneAction',
+            phone: '+1555555555',
+            countryCode: 'US',
+            contactAction: ContactActionType.call,
+            customizable: false,
+            parentStepId: 'step-3'
+          }
+        }
+      ]
+    } as unknown as Journey
+
+    const links = getJourneyLinks(t, journey)
+    expect(links).toEqual([
+      {
+        id: 'phone-btn-1',
+        linkType: 'phone',
+        url: '+1234567890',
+        label: 'Call Support',
+        parentStepId: 'step-1',
+        customizable: true,
+        contactAction: ContactActionType.call
+      },
+      {
+        id: 'phone-btn-2',
+        linkType: 'phone',
+        url: '+1987654321',
+        label: 'Text Us',
+        parentStepId: 'step-2',
+        customizable: true,
+        contactAction: ContactActionType.text
       }
     ])
   })

@@ -21,7 +21,7 @@ export interface GetJourneyPlausibleVisitors_journeyAggregateVisitors {
 }
 
 export interface GetJourneyPlausibleVisitors {
-  journeyAggregateVisitors: GetJourneyPlausibleVisitors_journeyAggregateVisitors;
+  journeyAggregateVisitors: GetJourneyPlausibleVisitors_journeyAggregateVisitors | null;
 }
 
 export interface GetJourneyPlausibleVisitorsVariables {

@@ -1,0 +1,1 @@
+export { CollectionsVideoContent } from './CollectionsVideoContent'

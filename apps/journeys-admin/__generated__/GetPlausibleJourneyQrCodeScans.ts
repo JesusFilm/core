@@ -21,7 +21,7 @@ export interface GetPlausibleJourneyQrCodeScans_journeysPlausibleStatsAggregate 
 }
 
 export interface GetPlausibleJourneyQrCodeScans {
-  journeysPlausibleStatsAggregate: GetPlausibleJourneyQrCodeScans_journeysPlausibleStatsAggregate;
+  journeysPlausibleStatsAggregate: GetPlausibleJourneyQrCodeScans_journeysPlausibleStatsAggregate | null;
 }
 
 export interface GetPlausibleJourneyQrCodeScansVariables {
