@@ -2,6 +2,7 @@ import Button from '@mui/material/Button'
 import {
   FacebookAuthProvider,
   GoogleAuthProvider,
+  OAuthProvider,
   getAuth,
   signInWithPopup
 } from 'firebase/auth'
@@ -10,9 +11,10 @@ import { ReactElement } from 'react'
 
 import { FacebookIcon } from '@core/shared/ui/icons/FacebookIcon'
 import { GoogleIcon } from '@core/shared/ui/icons/GoogleIcon'
+import { OktaIcon } from '@core/shared/ui/icons/OktaIcon'
 
 interface SignInServiceButtonProps {
-  service: 'google.com' | 'facebook.com'
+  service: 'google.com' | 'facebook.com' | 'oidc.okta'
 }
 
 export function SignInServiceButton({
@@ -25,7 +27,9 @@ export function SignInServiceButton({
     const authProvider =
       service === 'google.com'
         ? new GoogleAuthProvider()
-        : new FacebookAuthProvider()
+        : service === 'facebook.com'
+          ? new FacebookAuthProvider()
+          : new OAuthProvider('oidc.okta')
     authProvider.setCustomParameters({ prompt: 'select_account' })
     try {
       await signInWithPopup(auth, authProvider)
@@ -39,12 +43,25 @@ export function SignInServiceButton({
       variant="outlined"
       size="large"
       color="secondary"
-      startIcon={service === 'google.com' ? <GoogleIcon /> : <FacebookIcon />}
+      startIcon={
+        service === 'google.com' ? (
+          <GoogleIcon />
+        ) : service === 'facebook.com' ? (
+          <FacebookIcon />
+        ) : (
+          <OktaIcon />
+        )
+      }
       onClick={handleSignIn}
       fullWidth
     >
       {t('Continue with {{service}}', {
-        service: service === 'google.com' ? t('Google') : t('Facebook')
+        service:
+          service === 'google.com'
+            ? t('Google')
+            : service === 'facebook.com'
+              ? t('Facebook')
+              : t('Okta')
       })}
     </Button>
   )
