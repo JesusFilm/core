@@ -1332,7 +1332,7 @@ describe('JourneyResolver', () => {
         .mockResolvedValueOnce({
           ...journeyWithTags,
           template: true,
-          teamId: 'jfp-team'
+          teamId: 'jfp-team' // global template team
         } as unknown as Prisma.JourneyGetPayload<{
           include: {
             journeyTags: true
