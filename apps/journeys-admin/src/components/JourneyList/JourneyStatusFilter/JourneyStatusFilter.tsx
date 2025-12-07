@@ -62,19 +62,21 @@ export function JourneyStatusFilter({
           height: 'auto',
           fontFamily: "'Montserrat', sans-serif",
           fontWeight: 600,
+          fontSize: '13px',
+          color: (theme) => theme.palette.secondary.main,
           '& .MuiOutlinedInput-root': {
             height: '32px'
           },
           '& .MuiOutlinedInput-notchedOutline': {
             borderWidth: '2px',
-            borderColor: (theme) => theme.palette.text.secondary
+            borderColor: (theme) => theme.palette.secondary.light
           },
           '&:hover .MuiOutlinedInput-notchedOutline': {
             borderWidth: '2px'
           },
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
             borderWidth: '2px',
-            borderColor: (theme) => theme.palette.text.secondary
+            borderColor: (theme) => theme.palette.secondary.main
           },
           '& .MuiOutlinedInput-input': {
             padding: '0 !important',
@@ -84,7 +86,6 @@ export function JourneyStatusFilter({
           '& .MuiSelect-select': {
             display: 'flex',
             alignItems: 'center',
-            fontSize: '13px',
             paddingTop: '8px !important',
             paddingBottom: '8px !important',
             paddingLeft: '14px !important',
