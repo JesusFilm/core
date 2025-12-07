@@ -27,7 +27,7 @@ type User
   id: ID!
   firstName: String!
   lastName: String
-  email: String!
+  email: String
   imageUrl: String
   superAdmin: Boolean
   emailVerified: Boolean!
