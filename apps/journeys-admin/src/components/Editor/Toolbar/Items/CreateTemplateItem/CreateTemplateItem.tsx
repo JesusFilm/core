@@ -5,7 +5,8 @@ import { ComponentProps, ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
-import Bag5Icon from '@core/shared/ui/icons/Bag5'
+import Layout1Icon from '@core/shared/ui/icons/Layout1'
+import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
 
 import { CreateTemplate } from '../../../../../../__generated__/CreateTemplate'
 import { RemoveUserJourney } from '../../../../../../__generated__/RemoveUserJourney'
@@ -30,15 +31,16 @@ export const CREATE_TEMPLATE = gql`
 
 interface CreateTemplateItemProps {
   variant: ComponentProps<typeof Item>['variant']
+  globalPublish?: boolean
 }
 
 export function CreateTemplateItem({
-  variant
+  variant,
+  globalPublish = false
 }: CreateTemplateItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
   const router = useRouter()
-
   const [journeyDuplicate] = useJourneyDuplicateMutation()
 
   const [removeUserJourney] =
@@ -48,8 +50,16 @@ export function CreateTemplateItem({
   const handleCreateTemplate = async (): Promise<void> => {
     if (journey == null) return
 
+    // Duplicate journey but don't add to journeys cache since we're converting to template immediately
     const { data } = await journeyDuplicate({
-      variables: { id: journey?.id, teamId: 'jfp-team' }
+      variables: {
+        id: journey?.id,
+        teamId: globalPublish ? 'jfp-team' : (journey.team?.id ?? '')
+      },
+      update() {
+        // Override default cache update - we'll handle cache update after converting to template
+        // This prevents the duplicate from appearing in journeys cache
+      }
     })
 
     // Convert duplicated journey to a template
@@ -65,16 +75,26 @@ export function CreateTemplateItem({
           if (data?.journeyTemplate != null) {
             cache.modify({
               fields: {
-                adminJourneys(existingAdminJourneyRefs = []) {
-                  const journeyTemplate = cache.writeFragment({
-                    data: data.journeyTemplate,
-                    fragment: gql`
-                      fragment journeyTemplate on Journey {
-                        id
-                      }
-                    `
-                  })
-                  return [...existingAdminJourneyRefs, journeyTemplate]
+                adminJourneys(existingAdminJourneyRefs = [], details) {
+                  const args = (
+                    details as {
+                      args?: { template?: boolean }
+                    }
+                  ).args
+                  // Only add template to templates cache (template: true)
+                  // Skip journeys cache (template: false) since we never added the duplicate there
+                  if (args?.template === true) {
+                    const journeyTemplate = cache.writeFragment({
+                      data: data.journeyTemplate,
+                      fragment: gql`
+                        fragment journeyTemplate on Journey {
+                          id
+                        }
+                      `
+                    })
+                    return [...existingAdminJourneyRefs, journeyTemplate]
+                  }
+                  return existingAdminJourneyRefs
                 }
               }
             })
@@ -101,8 +121,8 @@ export function CreateTemplateItem({
   return (
     <Item
       variant={variant}
-      label={t('Create Template')}
-      icon={<Bag5Icon />}
+      label={globalPublish ? t('Make Global Template') : t('Make Template')}
+      icon={globalPublish ? <Layout1Icon /> : <LayoutTopIcon />}
       onClick={handleCreateTemplate}
     />
   )

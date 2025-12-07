@@ -38,7 +38,8 @@ export function TemplateSections({
         languageIds:
           languageIds != null && languageIds?.length > 0
             ? languageIds
-            : undefined
+            : undefined,
+        teamId: 'jfp-team'
       }
     }
   })

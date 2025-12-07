@@ -19,7 +19,8 @@ const archivedJourneysMock = {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.archived],
-      template: true
+      template: true,
+      teamId: 'jfp-team'
     }
   },
   result: {
@@ -34,7 +35,8 @@ const noJourneysMock = {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.archived],
-      template: true
+      template: true,
+      teamId: 'jfp-team'
     }
   },
   result: {
@@ -87,7 +89,8 @@ describe('ArchivedTemplateList', () => {
               query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.archived],
-                template: true
+                template: true,
+                teamId: 'jfp-team'
               }
             },
             result: {
@@ -124,7 +127,8 @@ describe('ArchivedTemplateList', () => {
               query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.archived],
-                template: true
+                template: true,
+                teamId: 'jfp-team'
               }
             },
             result: {

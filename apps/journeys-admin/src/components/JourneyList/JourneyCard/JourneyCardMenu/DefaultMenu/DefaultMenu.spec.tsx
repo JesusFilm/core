@@ -1,5 +1,5 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import { fireEvent, queryByRole, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
@@ -201,7 +201,7 @@ const teamMockForNonManager = {
 
 describe('DefaultMenu', () => {
   it('should render menu for journey', async () => {
-    const { getByRole } = render(
+    const { getByRole, queryByRole } = render(
       <MockedProvider
         mocks={[
           teamWithManagerMock,
@@ -235,12 +235,65 @@ describe('DefaultMenu', () => {
     await waitFor(() =>
       expect(getByRole('menuitem', { name: 'Duplicate' })).toBeInTheDocument()
     )
+    await waitFor(() =>
+      expect(
+        getByRole('menuitem', { name: 'Make Template' })
+      ).toBeInTheDocument()
+    )
+    await waitFor(() =>
+      expect(
+        queryByRole('menuitem', { name: 'Make Global Template' })
+      ).not.toBeInTheDocument()
+    )
+    expect(
+      queryByRole('menuitem', { name: 'Use This Template' })
+    ).not.toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Translate' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     })
     expect(getByRole('menuitem', { name: 'Trash' })).toBeInTheDocument()
+  })
+
+  it('should render menu for journey with publisher role', async () => {
+    const { getByRole } = render(
+      <MockedProvider
+        mocks={[
+          teamWithManagerMock,
+          currentUserMock,
+          userRolePublisherMock,
+          makeJourneyMock('journey-id')
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="journey-id"
+              slug="journey-slug"
+              status={JourneyStatus.draft}
+              journeyId="journey-id"
+              published={false}
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(
+        getByRole('menuitem', { name: 'Make Template' })
+      ).toBeInTheDocument()
+    )
+    await waitFor(() =>
+      expect(
+        getByRole('menuitem', { name: 'Make Global Template' })
+      ).toBeInTheDocument()
+    )
   })
 
   it('should render menu for templates', async () => {
@@ -275,6 +328,9 @@ describe('DefaultMenu', () => {
 
     expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
+    expect(
+      getByRole('menuitem', { name: 'Use This Template' })
+    ).toBeInTheDocument()
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     })
@@ -288,6 +344,12 @@ describe('DefaultMenu', () => {
       queryByRole('menuitem', { name: 'Translate' })
     ).not.toBeInTheDocument()
     expect(queryByRole('menuitem', { name: 'Copy to' })).not.toBeInTheDocument()
+    expect(
+      queryByRole('menuitem', { name: 'Make Template' })
+    ).not.toBeInTheDocument()
+    expect(
+      queryByRole('menuitem', { name: 'Make Global Template' })
+    ).not.toBeInTheDocument()
   })
 
   it('should call correct functions on Access click', () => {

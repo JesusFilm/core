@@ -1331,7 +1331,8 @@ describe('JourneyResolver', () => {
         // lookup journey to duplicate and authorize
         .mockResolvedValueOnce({
           ...journeyWithTags,
-          template: true
+          template: true,
+          teamId: 'jfp-team'
         } as unknown as Prisma.JourneyGetPayload<{
           include: {
             journeyTags: true
@@ -1374,6 +1375,99 @@ describe('JourneyResolver', () => {
         featuredAt: null,
         fromTemplateId: 'journeyId',
         template: false,
+        team: {
+          connect: { id: 'teamId' }
+        },
+        userJourneys: {
+          create: {
+            userId: 'userId',
+            role: UserJourneyRole.owner
+          }
+        }
+      }
+
+      expect(plausibleQueue.add).toHaveBeenCalledWith(
+        'create-journey-site',
+        {
+          __typename: 'plausibleCreateJourneySite',
+          journeyId: 'duplicateJourneyId'
+        },
+        {
+          removeOnComplete: true,
+          removeOnFail: { age: 432000, count: 50 }
+        }
+      )
+      expect(plausibleQueue.add).toHaveBeenCalledWith(
+        'create-team-site',
+        {
+          __typename: 'plausibleCreateTeamSite',
+          teamId: 'teamId'
+        },
+        {
+          removeOnComplete: true,
+          removeOnFail: { age: 432000, count: 50 }
+        }
+      )
+
+      expect(prismaService.journey.create).toHaveBeenNthCalledWith(1, { data })
+      expect(prismaService.journey.create).toHaveBeenLastCalledWith({
+        data: { ...data, slug: `${journey.title}-duplicateJourneyId` }
+      })
+    })
+
+    it('duplicates a local template journey', async () => {
+      const journeyTags = [
+        {
+          id: 'id',
+          tagId: 'tagId',
+          journeyId: 'journeyId'
+        }
+      ]
+      const journeyWithTags = {
+        ...journeyWithUserTeamAndCustomizationFields,
+        journeyTags
+      }
+      prismaService.journey.findUnique
+        .mockReset()
+        .mockResolvedValueOnce({
+          ...journeyWithTags,
+          template: true
+        } as unknown as Prisma.JourneyGetPayload<{
+          include: {
+            journeyTags: true
+          }
+        }>)
+        .mockResolvedValueOnce(journeyWithTags)
+      prismaService.journey.findMany.mockReset().mockResolvedValueOnce([])
+      prismaService.journey.create.mockRejectedValueOnce({
+        code: ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
+      })
+
+      await resolver.journeyDuplicate(ability, 'journeyId', 'userId', 'teamId')
+
+      const data = {
+        ...omit(journey, [
+          'parentBlockId',
+          'nextBlockId',
+          'hostId',
+          'primaryImageBlockId',
+          'creatorImageBlockId',
+          'creatorDescription',
+          'publishedAt',
+          'teamId',
+          'createdAt',
+          'strategySlug',
+          'logoImageBlockId',
+          'menuStepBlockId'
+        ]),
+        id: 'duplicateJourneyId',
+        status: JourneyStatus.published,
+        publishedAt: new Date(),
+        slug: journey.title,
+        title: journey.title,
+        featuredAt: null,
+        fromTemplateId: 'journeyId',
+        template: true,
         team: {
           connect: { id: 'teamId' }
         },
@@ -2339,13 +2433,29 @@ describe('JourneyResolver', () => {
       ).rejects.toThrow('journey not found')
     })
 
-    it('throws error if not authorized', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+    it('throws error if not authorized for global template publishing', async () => {
+      const journeyWithJfpTeam = {
+        ...journey,
+        teamId: 'jfp-team',
+        team: { id: 'jfp-team', userTeams: [] }
+      }
+      prismaService.journey.findUnique.mockResolvedValueOnce(journeyWithJfpTeam)
       await expect(
         resolver.journeyTemplate(ability, 'journeyId', { template: true })
       ).rejects.toThrow(
         'user is not allowed to change journey to or from a template'
       )
+    })
+
+    it('should not throw error when publishing a local template', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      await resolver.journeyTemplate(ability, 'journeyId', { template: true })
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: { id: 'journeyId' },
+        data: { template: true }
+      })
     })
 
     describe('when user is publisher', () => {

@@ -10,6 +10,7 @@
 export interface JourneyDuplicate_journeyDuplicate {
   __typename: "Journey";
   id: string;
+  template: boolean | null;
 }
 
 export interface JourneyDuplicate {
