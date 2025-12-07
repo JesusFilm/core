@@ -1035,11 +1035,12 @@ export class JourneyResolver {
         }
       }
     })
+    const isGlobalTemplate = journey?.team?.id === 'jfp-team'
     if (journey == null)
       throw new GraphQLError('journey not found', {
         extensions: { code: 'NOT_FOUND' }
       })
-    if (ability.cannot(Action.Manage, subject('Journey', journey), 'template'))
+    if (isGlobalTemplate && ability.cannot(Action.Manage, subject('Journey', journey), 'template'))
       throw new GraphQLError(
         'user is not allowed to change journey to or from a template',
         {

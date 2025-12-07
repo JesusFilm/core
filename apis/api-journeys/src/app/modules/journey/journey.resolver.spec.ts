@@ -2433,13 +2433,29 @@ describe('JourneyResolver', () => {
       ).rejects.toThrow('journey not found')
     })
 
-    it('throws error if not authorized', async () => {
-      prismaService.journey.findUnique.mockResolvedValueOnce(journey)
+    it('throws error if not authorized for global template publishing', async () => {
+      const journeyWithJfpTeam = {
+        ...journey,
+        teamId: 'jfp-team',
+        team: { id: 'jfp-team', userTeams: [] }
+      }
+      prismaService.journey.findUnique.mockResolvedValueOnce(journeyWithJfpTeam)
       await expect(
         resolver.journeyTemplate(ability, 'journeyId', { template: true })
       ).rejects.toThrow(
         'user is not allowed to change journey to or from a template'
       )
+    })
+
+    it('should not throw error when publishing a local template', async () => {
+      prismaService.journey.findUnique.mockResolvedValueOnce(
+        journeyWithUserTeam
+      )
+      await resolver.journeyTemplate(ability, 'journeyId', { template: true })
+      expect(prismaService.journey.update).toHaveBeenCalledWith({
+        where: { id: 'journeyId' },
+        data: { template: true }
+      })
     })
 
     describe('when user is publisher', () => {
