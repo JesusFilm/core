@@ -3596,6 +3596,7 @@ export type Query = {
   taxonomies: Array<Taxonomy>;
   team: Team;
   teams: Array<Team>;
+  templateFamilyStatsAggregate?: Maybe<TemplateFamilyStatsAggregateResponse>;
   templateFamilyStatsBreakdown?: Maybe<Array<TemplateFamilyStatsBreakdownResponse>>;
   user?: Maybe<User>;
   userByEmail?: Maybe<User>;
@@ -3974,10 +3975,18 @@ export type QueryTeamArgs = {
 };
 
 
+export type QueryTemplateFamilyStatsAggregateArgs = {
+  id: Scalars['ID']['input'];
+  idType?: InputMaybe<IdType>;
+  where: PlausibleStatsAggregateFilter;
+};
+
+
 export type QueryTemplateFamilyStatsBreakdownArgs = {
   events?: InputMaybe<Array<PlausibleEvent>>;
   id: Scalars['ID']['input'];
   idType?: InputMaybe<IdType>;
+  status?: InputMaybe<Array<JourneyStatus>>;
   where: PlausibleStatsBreakdownFilter;
 };
 
@@ -4624,11 +4633,21 @@ export type TeamUpdateInput = {
   title: Scalars['String']['input'];
 };
 
+export type TemplateFamilyStatsAggregateResponse = {
+  __typename?: 'TemplateFamilyStatsAggregateResponse';
+  childJourneysCount: Scalars['Int']['output'];
+  totalJourneysResponses: Scalars['Int']['output'];
+  totalJourneysViews: Scalars['Int']['output'];
+};
+
 export type TemplateFamilyStatsBreakdownResponse = {
   __typename?: 'TemplateFamilyStatsBreakdownResponse';
   journeyId: Scalars['String']['output'];
   journeyName: Scalars['String']['output'];
+  /** The URL to visit this journey. Uses custom domain if available, otherwise URL based on environment */
+  journeyUrl: Scalars['String']['output'];
   stats: Array<TemplateFamilyStatsEventResponse>;
+  status: JourneyStatus;
   teamName: Scalars['String']['output'];
 };
 
