@@ -1697,6 +1697,11 @@ type Query {
     Filter results to only include the specified events. If null or empty, all events are returned.
     """
     events: [PlausibleEvent!]
+
+    """
+    Filter results to only include the specified status. If null or empty, all statuses are returned.
+    """
+    status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!]
 }
 
@@ -2021,7 +2026,13 @@ type TemplateFamilyStatsBreakdownResponse
   journeyId: String!
   journeyName: String!
   teamName: String!
+  status: JourneyStatus!
   stats: [TemplateFamilyStatsEventResponse!]!
+
+  """
+  The URL to visit this journey. Uses custom domain if available, otherwise URL based on environment
+  """
+  journeyUrl: String!
 }
 
 type TemplateFamilyStatsEventResponse
