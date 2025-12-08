@@ -21,6 +21,19 @@ jest.mock('../../../lib/auth/ability', () => ({
   ability: jest.fn(),
   subject: jest.fn((_type, object) => ({ subject: _type, object }))
 }))
+jest.mock('../../../../env', () => ({
+  env: {
+    get JOURNEYS_URL(): string | undefined {
+      return process.env.JOURNEYS_URL
+    },
+    get PLAUSIBLE_URL(): string {
+      return process.env.PLAUSIBLE_URL ?? 'https://plausible.example'
+    },
+    get PLAUSIBLE_API_KEY(): string {
+      return process.env.PLAUSIBLE_API_KEY ?? 'plausible-key'
+    }
+  }
+}))
 
 const mockAxios = axios as jest.Mocked<typeof axios>
 const mockIsAxiosError = isAxiosError as jest.MockedFunction<
@@ -67,7 +80,7 @@ describe('templateFamilyStatsBreakdown', () => {
         journeyName
         teamName
         status
-        url
+        journeyUrl
         stats {
           event
           visitors
@@ -129,6 +142,7 @@ describe('templateFamilyStatsBreakdown', () => {
         id: 'journey-1',
         slug: 'journey-1-slug',
         title: 'Journey One',
+        status: 'published',
         teamId: 'team-1',
         team: { title: 'Team One', userTeams: [], customDomains: [] },
         userJourneys: []
@@ -283,6 +297,7 @@ describe('templateFamilyStatsBreakdown', () => {
         id: 'journey-1',
         slug: 'journey-1-slug',
         title: 'Journey One',
+        status: 'published',
         teamId: 'team-1',
         team: { title: 'Team One', userTeams: [] },
         userJourneys: []
@@ -370,6 +385,7 @@ describe('templateFamilyStatsBreakdown', () => {
         id: 'journey-1',
         slug: 'journey-1-slug',
         title: 'Journey One',
+        status: 'published',
         teamId: 'team-1',
         team: { title: 'Team One', userTeams: [] },
         userJourneys: []
