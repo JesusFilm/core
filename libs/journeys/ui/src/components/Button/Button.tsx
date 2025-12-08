@@ -270,7 +270,7 @@ export function Button({
       const errors = await formik.validateForm(formik.values)
 
       // Always call submitForm() to touch all fields, ensuring validation errors are displayed.
-      // Per Formik docs, submitForm() does not complete submission if validation errors exist.
+      // Per Formik docs, submitForm() will abort submission if validation errors exist.
       await formik.submitForm()
       if (Object.keys(errors).length > 0) return
     }
