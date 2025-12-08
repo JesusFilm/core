@@ -220,6 +220,7 @@ describe('Button', () => {
       fireEvent.click(submitButton)
 
       await waitFor(() => {
+        expect(validateFormMock).toHaveBeenCalled()
         expect(submitFormMock).toHaveBeenCalled()
         expect(mockButtonClickEvent.result).toHaveBeenCalled()
       })
