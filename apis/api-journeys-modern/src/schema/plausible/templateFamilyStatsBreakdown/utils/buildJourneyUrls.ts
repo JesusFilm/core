@@ -19,6 +19,6 @@ export function buildJourneyUrl(
     return `https://${customDomains[0].name}/${slug}`
   }
 
-  const baseUrl = env.JOURNEYS_URL ?? 'https://your.nextstep.is'
+  const baseUrl = env.JOURNEYS_URL
   return `${baseUrl}/${slug}`
 }

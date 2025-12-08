@@ -40,13 +40,4 @@ describe('buildJourneyUrl', () => {
 
     expect(result).toBe('https://env-journeys-url.com/my-journey-slug')
   })
-
-  it('should fallback to default production URL when no custom domain and no JOURNEYS_URL', () => {
-    delete process.env.JOURNEYS_URL
-    const slug = 'my-journey-slug'
-
-    const result = buildJourneyUrl(slug, [])
-
-    expect(result).toBe('https://your.nextstep.is/my-journey-slug')
-  })
 })
