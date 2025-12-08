@@ -261,15 +261,6 @@ export function Button({
     }
   }
 
-  function isEmptyForm(): boolean {
-    if (formik == null) return true
-    const values = formik.values
-    if (values == null || typeof values !== 'object') return true
-    return Object.values(values as Record<string, unknown>).every(
-      (value) => value === ''
-    )
-  }
-
   const handleClick = async (e: MouseEvent): Promise<void> => {
     e.stopPropagation()
 
