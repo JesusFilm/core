@@ -203,7 +203,7 @@ describe('Button', () => {
       const formikContextMock = {
         values: { field1: '', field2: '' },
         validateForm: validateFormMock,
-        submitForm: submitFormMock,
+        submitForm: submitFormMock
       }
 
       const useFormikContextMock = useFormikContext as jest.Mock
@@ -240,7 +240,7 @@ describe('Button', () => {
       const formikContextMock = {
         values: { field1: 'asd', field2: '' },
         validateForm: validateFormMock,
-        submitForm: submitFormMock,
+        submitForm: submitFormMock
       }
 
       const useFormikContextMock = useFormikContext as jest.Mock
@@ -275,7 +275,7 @@ describe('Button', () => {
       const formikContextMock = {
         values: { field1: 'asd', field2: '' },
         validateForm: validateFormMock,
-        submitForm: submitFormMock,
+        submitForm: submitFormMock
       }
 
       const useFormikContextMock = useFormikContext as jest.Mock
