@@ -114,6 +114,10 @@ describe('templateFamilyStatsAggregate', () => {
       data: {
         results: [
           {
+            page: '/',
+            visitors: 100
+          },
+          {
             page: '/journey-1-slug',
             visitors: 20
           },

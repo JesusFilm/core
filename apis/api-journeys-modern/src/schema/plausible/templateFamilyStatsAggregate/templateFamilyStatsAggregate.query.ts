@@ -97,6 +97,7 @@ function transformBreakdownResults(
 
     if (slashCount === 1 && property.startsWith('/')) {
       const slug = property.slice(1)
+      if (!slug) continue
       uniqueSlugs.add(slug)
 
       const visitors = result.visitors ?? 0
@@ -105,8 +106,8 @@ function transformBreakdownResults(
   }
 
   return {
-    childJourneysCount: uniqueSlugs.size ?? 0,
-    totalJourneysViews: totalJourneysViews ?? 0
+    childJourneysCount: uniqueSlugs.size,
+    totalJourneysViews
   }
 }
 
