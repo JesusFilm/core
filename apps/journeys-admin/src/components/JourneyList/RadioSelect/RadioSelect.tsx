@@ -34,6 +34,7 @@ export interface RadioSelectProps<T extends string> {
   open?: boolean
   disabled?: boolean
   sx?: SxProps<Theme>
+  mobileIcon?: ReactElement
 }
 
 export function RadioSelect<T extends string>({
@@ -45,7 +46,8 @@ export function RadioSelect<T extends string>({
   ariaLabel,
   open,
   disabled,
-  sx
+  sx,
+  mobileIcon
 }: RadioSelectProps<T>): ReactElement {
   const [showOptions, setShowOptions] = useState(open ?? false)
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -125,6 +127,8 @@ export function RadioSelect<T extends string>({
     </Box>
   )
 
+  const showMobileIcon = !breakpoints.sm && mobileIcon != null
+
   return (
     <>
       <Box
@@ -139,6 +143,7 @@ export function RadioSelect<T extends string>({
         sx={{
           display: 'inline-flex',
           alignItems: 'center',
+          justifyContent: 'center',
           borderRadius: '8px',
           border: '2px solid',
           borderColor: (theme) => theme.palette.secondary.light,
@@ -149,10 +154,10 @@ export function RadioSelect<T extends string>({
             disabled
               ? theme.palette.action.disabled
               : theme.palette.secondary.main,
-          paddingTop: '4px',
-          paddingBottom: '4px',
-          paddingLeft: '14px',
-          paddingRight: '8px',
+          paddingTop: showMobileIcon ? '4px' : '4px',
+          paddingBottom: showMobileIcon ? '4px' : '4px',
+          paddingLeft: showMobileIcon ? '4px' : '14px',
+          paddingRight: showMobileIcon ? '4px' : '8px',
           cursor: disabled ? 'default' : 'pointer',
           opacity: disabled ? 0.5 : 1,
           '&:hover': {
@@ -168,15 +173,21 @@ export function RadioSelect<T extends string>({
           ...sx
         }}
       >
-        {triggerPrefix}
-        {currentLabel}
-        <KeyboardArrowDown
-          sx={{
-            fontSize: '1rem',
-            ml: 1,
-            pl: 1
-          }}
-        />
+        {showMobileIcon ? (
+          mobileIcon
+        ) : (
+          <>
+            {triggerPrefix}
+            {currentLabel}
+            <KeyboardArrowDown
+              sx={{
+                fontSize: '1rem',
+                ml: 0,
+                pl: 0
+              }}
+            />
+          </>
+        )}
       </Box>
       {breakpoints.md ? (
         <Popover

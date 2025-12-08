@@ -13,6 +13,7 @@ import {
 } from 'react'
 
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
+import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 import type { JourneyListEvent } from '../JourneyList'
 import { JourneyListMenu } from '../JourneyListMenu'
@@ -57,17 +58,19 @@ export function JourneyListView({
 }: JourneyListViewProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
+  const breakpoints = useBreakpoints()
 
   // Content type options (Journeys, Templates)
+  // Use shorter labels on mobile to prevent overflow
   const contentTypeOptions: ContentTypeOption[] = [
     {
       queryParam: 'journeys',
-      displayValue: t('Team Projects'),
+      displayValue: breakpoints.sm ? t('Team Projects') : t('Projects'),
       tabIndex: 0
     },
     {
       queryParam: 'templates',
-      displayValue: t('Team Templates'),
+      displayValue: breakpoints.sm ? t('Team Templates') : t('Templates'),
       tabIndex: 1
     }
   ]
@@ -202,8 +205,8 @@ export function JourneyListView({
           sx={{
             display: 'flex',
             alignItems: 'flex-end',
-            ml: 'auto',
-            mr: 2
+            ml: { xs: 'auto', sm: 'auto' },
+            mr: { xs: 0, sm: 2 }
           }}
         >
           <JourneyStatusFilter
@@ -214,8 +217,9 @@ export function JourneyListView({
         {/* Sort component */}
         <Box
           sx={{
-            display: { xs: 'none', sm: 'flex' },
-            alignItems: 'flex-end'
+            display: 'flex',
+            alignItems: 'flex-end',
+            ml: { xs: 1, sm: 0 }
           }}
         >
           <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
@@ -225,7 +229,11 @@ export function JourneyListView({
           sx={{
             display: 'flex',
             alignItems: 'flex-end',
-            mr: router?.query?.type === 'templates' ? -12 : -8
+            ml: { xs: 1, sm: 0 },
+            mr: {
+              xs: 1,
+              sm: router?.query?.type === 'templates' ? -12 : -8
+            }
           }}
         >
           <JourneyListMenu onClick={setActiveEvent} />

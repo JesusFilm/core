@@ -1,3 +1,4 @@
+import Sort from '@mui/icons-material/Sort'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -49,6 +50,7 @@ export function JourneySort({
       ariaLabel={t('Sort By')}
       open={open}
       disabled={disabled}
+      mobileIcon={<Sort sx={{ fontSize: '1.25rem' }} />}
     />
   )
 }

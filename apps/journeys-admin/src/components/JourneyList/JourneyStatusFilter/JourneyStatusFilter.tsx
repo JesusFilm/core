@@ -1,5 +1,8 @@
+import Tune from '@mui/icons-material/Tune'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
+
+import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 import { RadioSelect, RadioSelectOption } from '../RadioSelect'
 
@@ -19,6 +22,7 @@ export function JourneyStatusFilter({
   disabled
 }: JourneyStatusFilterProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const breakpoints = useBreakpoints()
 
   const statusOptions: RadioSelectOption<JourneyStatus>[] = [
     {
@@ -44,7 +48,8 @@ export function JourneyStatusFilter({
       ariaLabel={t('Filter by status')}
       open={open}
       disabled={disabled}
-      sx={{ marginRight: '12px' }}
+      sx={{ marginRight: breakpoints.sm ? '12px' : '4px' }}
+      mobileIcon={<Tune sx={{ fontSize: '1.25rem' }} />}
     />
   )
 }

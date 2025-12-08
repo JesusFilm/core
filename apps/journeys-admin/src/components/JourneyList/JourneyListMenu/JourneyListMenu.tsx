@@ -43,7 +43,7 @@ export function JourneyListMenu({
           <IconButton
             edge="end"
             color="inherit"
-            sx={{ mx: 3 }}
+            sx={{ mx: { xs: 0, sm: 3 } }}
             onClick={handleShowMenu}
             data-testid="JourneyListMenuButton"
           >
