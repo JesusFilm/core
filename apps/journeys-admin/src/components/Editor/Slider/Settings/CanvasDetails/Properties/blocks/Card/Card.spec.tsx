@@ -17,9 +17,9 @@ import {
   VideoBlockSource
 } from '../../../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
+import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 
 import { Card } from '.'
-import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 
 // Helper function to create a basic card
 const createCard = (
