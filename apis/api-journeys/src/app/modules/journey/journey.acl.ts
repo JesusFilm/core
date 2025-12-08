@@ -85,6 +85,32 @@ export const journeyAcl: AppAclFn = ({
     status: JourneyStatus.published
   })
   cannot(Action.Manage, 'Journey', 'template')
+  // allow team members to manage non-jfp-team template journeys
+  can(Action.Manage, 'Journey', 'template', {
+    template: true,
+    teamId: { not: 'jfp-team' },
+    team: {
+      is: {
+        userTeams: {
+          some: {
+            userId: user.id,
+            role: { in: [UserTeamRole.manager, UserTeamRole.member] }
+          }
+        }
+      }
+    }
+  })
+  // allow journey owners to manage non-jfp-team template journeys
+  can(Action.Manage, 'Journey', 'template', {
+    template: true,
+    teamId: { not: 'jfp-team' },
+    userJourneys: {
+      some: {
+        userId: user.id,
+        role: UserJourneyRole.owner
+      }
+    }
+  })
   if (user.roles?.includes('publisher') === true) {
     can(Action.Create, 'Journey', { teamId: 'jfp-team' })
 
