@@ -771,6 +771,9 @@ type Journey
   userJourneys: [UserJourney!]
   strategySlug: String
 
+  """used to see if a template has a site created for it"""
+  templateSite: Boolean
+
   """used in a plausible share link to embed report"""
   plausibleToken: String
   fromTemplateId: String

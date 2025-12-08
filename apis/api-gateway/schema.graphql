@@ -652,6 +652,10 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   tags: [Tag!]!
   journeyCollections: [JourneyCollection!]!
   """
+  used to see if a template has a site created for it
+  """
+  templateSite: Boolean
+  """
   used in a plausible share link to embed report
   """
   plausibleToken: String
@@ -4433,6 +4437,7 @@ input JourneyEventsFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: A
   typenames: [String!]
   periodRangeStart: DateTime
   periodRangeEnd: DateTime
+  includeUnconnectedCards: Boolean
 }
 
 input JourneyNotificationUpdateInput @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {

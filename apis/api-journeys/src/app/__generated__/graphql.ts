@@ -955,6 +955,7 @@ export class Journey {
     strategySlug?: Nullable<string>;
     tags: Tag[];
     journeyCollections: JourneyCollection[];
+    templateSite?: Nullable<boolean>;
     plausibleToken?: Nullable<string>;
     website?: Nullable<boolean>;
     showShareButton?: Nullable<boolean>;

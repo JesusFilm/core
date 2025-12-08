@@ -163,6 +163,10 @@ type Journey
   strategySlug: String
   tags: [Tag!]!
   journeyCollections: [JourneyCollection!]!
+  """
+  used to see if a template has a site created for it
+  """
+  templateSite: Boolean
 
   """used in a plausible share link to embed report"""
   plausibleToken: String
@@ -2419,6 +2423,7 @@ input JourneyEventsFilter {
   typenames: [String!]
   periodRangeStart: DateTime
   periodRangeEnd: DateTime
+  includeUnconnectedCards: Boolean
 }
 
 type JourneyNotification

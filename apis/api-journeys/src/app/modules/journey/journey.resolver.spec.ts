@@ -109,7 +109,8 @@ describe('JourneyResolver', () => {
     socialNodeY: null,
     fromTemplateId: null,
     journeyCustomizationDescription: null,
-    showAssistant: null
+    showAssistant: null,
+    templateSite: null
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -1291,7 +1292,8 @@ describe('JourneyResolver', () => {
             'createdAt',
             'strategySlug',
             'logoImageBlockId',
-            'menuStepBlockId'
+            'menuStepBlockId',
+            'templateSite'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
@@ -1364,7 +1366,8 @@ describe('JourneyResolver', () => {
           'createdAt',
           'strategySlug',
           'logoImageBlockId',
-          'menuStepBlockId'
+          'menuStepBlockId',
+          'templateSite'
         ]),
         id: 'duplicateJourneyId',
         status: JourneyStatus.published,
@@ -1498,7 +1501,8 @@ describe('JourneyResolver', () => {
             'createdAt',
             'strategySlug',
             'logoImageBlockId',
-            'menuStepBlockId'
+            'menuStepBlockId',
+            'templateSite'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,

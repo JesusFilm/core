@@ -602,7 +602,8 @@ export class JourneyResolver {
                   'logoImageBlockId',
                   'menuStepBlockId',
                   'journeyCustomizationFields',
-                  'journeyTheme'
+                  'journeyTheme',
+                  'templateSite'
                 ]),
                 id: duplicateJourneyId,
                 slug,
