@@ -595,9 +595,6 @@ builder.mutationFields((t) => ({
         } catch (error) {
           console.error('Language management update error:', error)
         }
-
-        // Cascade update to parent collections
-        await updateParentCollectionLanguages(currentVariant.videoId)
       }
 
       // Store the videoId before the try/catch block
