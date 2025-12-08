@@ -206,7 +206,7 @@ export function JourneyListView({
             display: 'flex',
             alignItems: 'flex-end',
             ml: { xs: 'auto', sm: 'auto' },
-            mr: { xs: 0, sm: 2 }
+            mr: { xs: 0, sm: 0 }
           }}
         >
           <JourneyStatusFilter

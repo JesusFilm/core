@@ -18,6 +18,7 @@ import {
 } from 'react'
 
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
+import { palette } from '@core/shared/ui/themes/journeysAdmin/tokens/colors'
 
 export interface RadioSelectOption<T extends string> {
   value: T
@@ -85,7 +86,7 @@ export function RadioSelect<T extends string>({
   }
 
   const Form = (): ReactElement => (
-    <Box sx={{ py: 2, px: 4 }}>
+    <Box>
       <FormControl component="fieldset" fullWidth>
         <RadioGroup
           aria-label={`${ariaLabel}-options`}
@@ -103,12 +104,22 @@ export function RadioSelect<T extends string>({
             <FormControlLabel
               key={option.value}
               value={option.value}
-              control={<Radio size="small" />}
+              control={
+                <Radio
+                  size="small"
+                  sx={{
+                    height: '20px',
+                    width: '20px',
+                    marginRight: '10px'
+                  }}
+                />
+              }
               label={option.label}
               sx={{
-                margin: 0,
-                paddingTop: '0',
-                paddingBottom: '0',
+                padding: '8px 20px 8px 12px',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.1)'
+                },
                 '& .MuiFormControlLabel-label': {
                   fontFamily: "'Open Sans', sans-serif",
                   fontWeight: 400,
@@ -141,21 +152,26 @@ export function RadioSelect<T extends string>({
           justifyContent: 'center',
           borderRadius: '8px',
           border: '2px solid',
-          borderColor: (theme) => theme.palette.secondary.light,
+          borderColor: palette[700],
           fontFamily: "'Montserrat', sans-serif",
           fontWeight: 600,
           fontSize: '14px',
-          color: (theme) => theme.palette.secondary.main,
+          color: palette[700],
           paddingTop: showMobileIcon ? '4px' : '4px',
           paddingBottom: showMobileIcon ? '4px' : '4px',
           paddingLeft: showMobileIcon ? '4px' : '14px',
           paddingRight: showMobileIcon ? '4px' : '8px',
           '&:hover': {
-            borderColor: (theme) => theme.palette.secondary.main
+            borderColor: palette[700],
+            color: palette[700],
+            backgroundColor: 'rgba(220, 221, 229, 0.15)',
+            '& .MuiSvgIcon-root': {
+              color: palette[700]
+            }
           },
           '&:focus': {
             outline: 'none',
-            borderColor: (theme) => theme.palette.secondary.main
+            borderColor: palette[700]
           },
           ...sx
         }}
@@ -169,8 +185,9 @@ export function RadioSelect<T extends string>({
             <KeyboardArrowDown
               sx={{
                 fontSize: '1rem',
-                ml: 0,
-                pl: 0
+                ml: 1,
+                pl: 0,
+                color: palette[700]
               }}
             />
           </>
