@@ -268,7 +268,7 @@ export function Button({
       // Control submission flow to ensure events are recorded before navigation
       e.preventDefault()
       const errors = await formik.validateForm(formik.values)
-     
+
       await formik.submitForm()
       if (Object.keys(errors).length > 0) return
     }
