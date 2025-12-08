@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import SvgIcon from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -82,6 +82,7 @@ const getIconTestId = (
 }
 
 export function MenuIconSelect(): ReactElement {
+  const [open, setOpen] = useState(false)
   const { journey } = useJourney()
   const { add } = useCommand()
   const [journeyUpdate] = useJourneyUpdateMutation()
@@ -139,6 +140,8 @@ export function MenuIconSelect(): ReactElement {
       </Typography>
       <CardActionArea sx={{ width: 112 }}>
         <Select
+          open={open}
+          onClick={() => setOpen((prev) => !prev)}
           value={journey?.menuButtonIcon ?? ''}
           onChange={handleChange}
           displayEmpty
