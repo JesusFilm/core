@@ -28,7 +28,6 @@ import {
   WatchProvider,
   WatchState
 } from '../../src/libs/watchContext/WatchContext'
-import { slugMap } from '../../src/libs/slugMap'
 
 interface HomeLanguagePageProps {
   initialApolloState?: NormalizedCacheObject
