@@ -52,6 +52,26 @@ describe('journeyAcl', () => {
       }
     ]
   } as unknown as Journey)
+  const localTemplateUserTeamManager = subject('Journey', {
+    id: 'journeyId',
+    template: true,
+    teamId: 'local-team-id',
+    team: {
+      userTeams: [{ userId: user.id, role: UserTeamRole.manager }]
+    }
+  } as unknown as Journey)
+  const localTemplateUserJourneyOwner = subject('Journey', {
+    id: 'journeyId',
+    template: true,
+    teamId: 'local-team-id',
+    userJourneys: [{ userId: user.id, role: UserJourneyRole.owner }]
+  } as unknown as Journey)
+  const localTemplateUserTeamMember = subject('Journey', {
+    id: 'journeyId',
+    template: true,
+    teamId: 'local-team-id',
+    team: { userTeams: [{ userId: user.id, role: UserTeamRole.member }] }
+  } as unknown as Journey)
   const journeyEmpty = subject('Journey', {
     id: 'journeyId',
     userJourneys: [],
@@ -103,6 +123,18 @@ describe('journeyAcl', () => {
 
     it('allow when user is journey owner', () => {
       expect(ability.can(Action.Manage, journeyUserJourneyOwner)).toBe(true)
+    })
+
+    it('allow when user is team manager of local template journey team', () => {
+      expect(ability.can(Action.Manage, localTemplateUserTeamManager)).toBe(true)
+    })
+
+    it('allow when user is journey owner of local template journey', () => {
+      expect(ability.can(Action.Manage, localTemplateUserJourneyOwner)).toBe(true)
+    })
+
+    it('allow when user is team member of local template journey team', () => {
+      expect(ability.can(Action.Manage, localTemplateUserTeamMember)).toBe(true)
     })
 
     it('deny when user is team member', () => {
