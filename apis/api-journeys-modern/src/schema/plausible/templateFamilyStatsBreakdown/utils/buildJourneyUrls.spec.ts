@@ -13,6 +13,7 @@ describe('buildJourneyUrl', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    process.env = { ...originalEnv }
   })
 
   afterEach(() => {
@@ -33,20 +34,18 @@ describe('buildJourneyUrl', () => {
 
   it('should use JOURNEYS_URL environment variable when no custom domain', () => {
     process.env.JOURNEYS_URL = 'https://env-journeys-url.com'
-    const customDomains: never[] = []
     const slug = 'my-journey-slug'
 
-    const result = buildJourneyUrl(slug, customDomains)
+    const result = buildJourneyUrl(slug, [])
 
     expect(result).toBe('https://env-journeys-url.com/my-journey-slug')
   })
 
   it('should fallback to default production URL when no custom domain and no JOURNEYS_URL', () => {
     delete process.env.JOURNEYS_URL
-    const customDomains: never[] = []
     const slug = 'my-journey-slug'
 
-    const result = buildJourneyUrl(slug, customDomains)
+    const result = buildJourneyUrl(slug, [])
 
     expect(result).toBe('https://your.nextstep.is/my-journey-slug')
   })
