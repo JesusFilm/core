@@ -43,11 +43,11 @@ type VideoBlock implements Block @key(fields: "id") @shareable {
   """
   startAt dictates at which point of time the video should start playing
   """
-  startAt: Int @shareable
+  startAt: Float @shareable
   """
   endAt dictates at which point of time the video should end
   """
-  endAt: Int @shareable
+  endAt: Float @shareable
   muted: Boolean @shareable
   autoplay: Boolean @shareable
   """

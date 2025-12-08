@@ -1208,11 +1208,11 @@ type VideoBlock implements Block @join__type(graph: API_JOURNEYS, key: "id")  @j
   """
   startAt dictates at which point of time the video should start playing
   """
-  startAt: Int
+  startAt: Float
   """
   endAt dictates at which point of time the video should end
   """
-  endAt: Int
+  endAt: Float
   muted: Boolean
   autoplay: Boolean
   """
