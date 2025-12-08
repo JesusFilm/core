@@ -17,12 +17,14 @@ import {
   useInstantSearch,
   useSearchBox
 } from 'react-instantsearch'
+import { SWRConfig } from 'swr'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
+import { mswServer } from '../../../../../../../test/mswServer'
 import {
   MuxVideoUploadProvider,
   useMuxVideoUpload
@@ -34,10 +36,8 @@ import {
   getPlaylistItemsEmpty,
   getVideosWithOffsetAndUrl
 } from './VideoFromYouTube/VideoFromYouTube.handlers'
-import { mswServer } from '../../../../../../../test/mswServer'
 
 import { VideoLibrary } from '.'
-import { SWRConfig } from 'swr'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -79,6 +79,7 @@ const mockUseMuxVideoUpload = useMuxVideoUpload as jest.MockedFunction<
 const mockGetUploadStatus = jest.fn()
 const mockCancelUploadForBlock = jest.fn()
 const mockAddUploadTask = jest.fn()
+
 describe('VideoLibrary', () => {
   const push = jest.fn()
   const on = jest.fn()

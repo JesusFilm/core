@@ -8,6 +8,7 @@ import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import MediaStrip1Icon from '@core/shared/ui/icons/MediaStrip1'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 import YoutubeIcon from '@core/shared/ui/icons/Youtube'
@@ -19,7 +20,6 @@ import { useMuxVideoUpload } from '../../../../../MuxVideoUploadProvider'
 import { Drawer } from '../Drawer'
 
 import { VideoFromLocal } from './VideoFromLocal'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 const VideoDetails = dynamic(
   async () =>
