@@ -53,6 +53,12 @@ export interface TemplateFamilyStatsBreakdownResponse {
   journeyUrl: string
 }
 
+export interface TemplateFamilyStatsAggregateResponse {
+  childJourneysCount: number
+  totalJourneysViews: number
+  totalJourneysResponses: number
+}
+
 export const PlausibleStatsAggregateValueRef = builder
   .objectRef<PlausibleStatsAggregateValue>('PlausibleStatsAggregateValue')
   .implement({
@@ -250,6 +256,28 @@ export const TemplateFamilyStatsBreakdownResponseRef = builder
         description:
           'The URL to visit this journey. Uses custom domain if available, otherwise URL based on environment',
         resolve: (parent) => parent.journeyUrl
+      })
+    })
+  })
+
+export const TemplateFamilyStatsAggregateResponseRef = builder
+  .objectRef<TemplateFamilyStatsAggregateResponse>(
+    'TemplateFamilyStatsAggregateResponse'
+  )
+  .implement({
+    shareable: true,
+    fields: (t) => ({
+      childJourneysCount: t.int({
+        nullable: false,
+        resolve: (parent) => parent.childJourneysCount
+      }),
+      totalJourneysViews: t.int({
+        nullable: false,
+        resolve: (parent) => parent.totalJourneysViews
+      }),
+      totalJourneysResponses: t.int({
+        nullable: false,
+        resolve: (parent) => parent.totalJourneysResponses
       })
     })
   })
