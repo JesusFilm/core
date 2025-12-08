@@ -18,10 +18,16 @@ interface PlausibleCreateSitesJob {
   __typename: 'plausibleCreateSites'
 }
 
+interface PlausibleCreateTemplateSiteJob {
+  __typename: 'plausibleCreateTemplateSite'
+  templateId: string
+}
+
 export type PlausibleJob =
   | PlausibleCreateTeamSiteJob
   | PlausibleCreateJourneySiteJob
   | PlausibleCreateSitesJob
+  | PlausibleCreateTemplateSiteJob
 
 export const goals: Array<keyof JourneyPlausibleEvents> = [
   'footerThumbsUpButtonClick',
