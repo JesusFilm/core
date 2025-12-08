@@ -125,7 +125,6 @@ export const TextResponse = ({
       return resolvedHint
     }
     if (required && (hideLabel || resolvedLabel.trim() === '')) {
-      console.log ("Returning helper text")
       return t('This field is required.')
     }
     return ''

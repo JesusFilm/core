@@ -195,8 +195,7 @@ describe('Button', () => {
     it('should not submit form on empty form', async () => {
       mockUuidv4.mockReturnValueOnce('uuid')
       const validateFormMock = jest.fn().mockResolvedValue({})
-      const handleSubmitMock = jest.fn()
-      const submitFormMock = jest.fn()
+      const submitFormMock = jest.fn().mockResolvedValue(undefined)
 
       blockHistoryVar([activeBlock])
       treeBlocksVar([activeBlock])
@@ -205,7 +204,6 @@ describe('Button', () => {
         values: { field1: '', field2: '' },
         validateForm: validateFormMock,
         submitForm: submitFormMock,
-        handleSubmit: handleSubmitMock
       }
 
       const useFormikContextMock = useFormikContext as jest.Mock
@@ -222,9 +220,8 @@ describe('Button', () => {
       fireEvent.click(submitButton)
 
       await waitFor(() => {
-        expect(validateFormMock).toHaveBeenCalled()
-         expect(mockButtonClickEvent.result).toHaveBeenCalled()
-        expect(handleSubmitMock).not.toHaveBeenCalled()
+        expect(submitFormMock).toHaveBeenCalled()
+        expect(mockButtonClickEvent.result).toHaveBeenCalled()
       })
     })
 
@@ -243,7 +240,6 @@ describe('Button', () => {
         values: { field1: 'asd', field2: '' },
         validateForm: validateFormMock,
         submitForm: submitFormMock,
-        handleSubmit: handleSubmitMock
       }
 
       const useFormikContextMock = useFormikContext as jest.Mock
@@ -260,7 +256,7 @@ describe('Button', () => {
       fireEvent.click(submitButton)
 
       await waitFor(() => {
-        expect(validateFormMock).toHaveBeenCalled()
+        expect(submitFormMock).toHaveBeenCalled()
         expect(mockButtonClickEvent.result).not.toHaveBeenCalled()
         expect(handleAction).not.toHaveBeenCalled()
       })
@@ -279,7 +275,6 @@ describe('Button', () => {
         values: { field1: 'asd', field2: '' },
         validateForm: validateFormMock,
         submitForm: submitFormMock,
-        handleSubmit: handleSubmitMock
       }
 
       const useFormikContextMock = useFormikContext as jest.Mock
