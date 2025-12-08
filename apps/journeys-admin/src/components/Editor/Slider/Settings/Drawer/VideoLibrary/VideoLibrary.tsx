@@ -114,7 +114,7 @@ export function VideoLibrary({
   ): void => {
     const shouldFocus = shouldCloseDrawer
 
-    // use editor provider selected block as this accounts for background videos where the video blockd does not yet exist, hence the selectedBlock prop is null
+    // use editor provider selected block as this accounts for background videos where the video block does not yet exist, hence the selectedBlock prop is null
     if (editorSelectedBlock != null) cancelUploadForBlock(editorSelectedBlock)
 
     if (handleSelect != null) handleSelect(block, shouldFocus)
