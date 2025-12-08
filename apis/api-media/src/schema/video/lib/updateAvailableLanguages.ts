@@ -32,32 +32,22 @@ export async function calculateAvailableLanguages(
     return []
   }
 
-  const isCollection = ['collection', 'series', 'featureFilm'].includes(
-    video.label
-  )
+  const languageSet = new Set<string>()
+  // Always include published variants on the video itself
+  for (const variant of video.variants) {
+    languageSet.add(variant.languageId)
+  }
 
-  if (isCollection && video.children.length > 0) {
-    // For collections: aggregate availableLanguages from all published children
-    // PLUS any published variants that live directly on the collection itself.
-    // (Some collections, like Jesus Film, carry variants on the parent record.)
-    const languageSet = new Set<string>()
+  // If there are children, include their availableLanguages
+  if (video.children.length > 0) {
     for (const child of video.children) {
       for (const lang of child.availableLanguages) {
         languageSet.add(lang)
       }
     }
-    for (const variant of video.variants) {
-      languageSet.add(variant.languageId)
-    }
-    return Array.from(languageSet).sort((a, b) => Number(a) - Number(b))
-  } else if (!isCollection) {
-    // For regular videos: get languages from published variants
-    return video.variants
-      .map((v) => v.languageId)
-      .sort((a, b) => Number(a) - Number(b))
   }
 
-  return []
+  return Array.from(languageSet).sort((a, b) => Number(a) - Number(b))
 }
 
 // Updates a video's availableLanguages field based on current state
