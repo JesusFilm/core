@@ -36,12 +36,4 @@ describe('JourneyList/JourneySort', () => {
 
     expect(getByRole('button', { name: 'Sort By' })).toBeInTheDocument()
   })
-
-  it('should be disabled', () => {
-    const { getByRole } = render(<JourneySortMock disabled />)
-    expect(getByRole('button', { name: 'Sort By' })).toHaveAttribute(
-      'tabindex',
-      '-1'
-    )
-  })
 })

@@ -32,7 +32,6 @@ export interface RadioSelectProps<T extends string> {
   triggerPrefix?: string
   ariaLabel: string
   open?: boolean
-  disabled?: boolean
   sx?: SxProps<Theme>
   mobileIcon?: ReactElement
 }
@@ -45,7 +44,6 @@ export function RadioSelect<T extends string>({
   triggerPrefix,
   ariaLabel,
   open,
-  disabled,
   sx,
   mobileIcon
 }: RadioSelectProps<T>): ReactElement {
@@ -63,13 +61,11 @@ export function RadioSelect<T extends string>({
   }, [triggerRef])
 
   const handleClick = (event: MouseEvent<HTMLElement>): void => {
-    if (disabled) return
     setAnchorEl(event.currentTarget)
     setShowOptions(true)
   }
 
   const handleKeyDown = (event: KeyboardEvent<HTMLElement>): void => {
-    if (disabled) return
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
       setAnchorEl(event.currentTarget)
@@ -135,7 +131,6 @@ export function RadioSelect<T extends string>({
         ref={triggerRef}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
-        tabIndex={disabled ? -1 : 0}
         role="button"
         aria-label={ariaLabel}
         aria-haspopup="listbox"
@@ -150,21 +145,13 @@ export function RadioSelect<T extends string>({
           fontFamily: "'Montserrat', sans-serif",
           fontWeight: 600,
           fontSize: '14px',
-          color: (theme) =>
-            disabled
-              ? theme.palette.action.disabled
-              : theme.palette.secondary.main,
+          color: (theme) => theme.palette.secondary.main,
           paddingTop: showMobileIcon ? '4px' : '4px',
           paddingBottom: showMobileIcon ? '4px' : '4px',
           paddingLeft: showMobileIcon ? '4px' : '14px',
           paddingRight: showMobileIcon ? '4px' : '8px',
-          cursor: disabled ? 'default' : 'pointer',
-          opacity: disabled ? 0.5 : 1,
           '&:hover': {
-            borderColor: (theme) =>
-              disabled
-                ? theme.palette.secondary.light
-                : theme.palette.secondary.main
+            borderColor: (theme) => theme.palette.secondary.main
           },
           '&:focus': {
             outline: 'none',

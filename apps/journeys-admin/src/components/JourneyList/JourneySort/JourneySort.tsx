@@ -14,14 +14,12 @@ interface JourneySortProps {
   sortOrder?: SortOrder
   onChange: (value: SortOrder) => void
   open?: boolean
-  disabled?: boolean
 }
 
 export function JourneySort({
   sortOrder,
   onChange,
-  open,
-  disabled
+  open
 }: JourneySortProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -49,7 +47,6 @@ export function JourneySort({
       triggerPrefix={t('Sort By: ')}
       ariaLabel={t('Sort By')}
       open={open}
-      disabled={disabled}
       mobileIcon={<Sort sx={{ fontSize: '1.25rem' }} />}
     />
   )

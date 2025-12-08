@@ -41,15 +41,4 @@ describe('JourneyList/JourneyStatusFilter', () => {
 
     expect(mockOnChange).toHaveBeenCalledWith('archived')
   })
-
-  it('should be disabled when disabled prop is true', () => {
-    const { getByRole } = render(
-      <JourneyStatusFilter onChange={mockOnChange} disabled />
-    )
-
-    expect(getByRole('button', { name: 'Filter by status' })).toHaveAttribute(
-      'tabindex',
-      '-1'
-    )
-  })
 })

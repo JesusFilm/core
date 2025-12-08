@@ -12,14 +12,12 @@ interface JourneyStatusFilterProps {
   status?: JourneyStatus
   onChange: (value: JourneyStatus) => void
   open?: boolean
-  disabled?: boolean
 }
 
 export function JourneyStatusFilter({
   status,
   onChange,
-  open,
-  disabled
+  open
 }: JourneyStatusFilterProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const breakpoints = useBreakpoints()
@@ -47,7 +45,6 @@ export function JourneyStatusFilter({
       onChange={onChange}
       ariaLabel={t('Filter by status')}
       open={open}
-      disabled={disabled}
       sx={{ marginRight: breakpoints.sm ? '12px' : '4px' }}
       mobileIcon={<Tune sx={{ fontSize: '1.25rem' }} />}
     />
