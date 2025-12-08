@@ -59,8 +59,6 @@ export function TextField({
 
   const hasError =
     formik?.errors?.[name] !== undefined && formik?.touched?.[name]
-
-  // const hasError = true
   const hint = helperText != null ? helperText : ' '
 
   return (

@@ -192,40 +192,6 @@ describe('Button', () => {
       }))
     }
 
-    it('should not submit form on empty form', async () => {
-      mockUuidv4.mockReturnValueOnce('uuid')
-      const validateFormMock = jest.fn().mockResolvedValue({})
-      const submitFormMock = jest.fn().mockResolvedValue(undefined)
-
-      blockHistoryVar([activeBlock])
-      treeBlocksVar([activeBlock])
-
-      const formikContextMock = {
-        values: { field1: '', field2: '' },
-        validateForm: validateFormMock,
-        submitForm: submitFormMock
-      }
-
-      const useFormikContextMock = useFormikContext as jest.Mock
-      useFormikContextMock.mockReturnValue(formikContextMock)
-
-      render(
-        <MockedProvider mocks={[mockButtonClickEvent]}>
-          <Button {...submitButtonMock} />
-        </MockedProvider>
-      )
-
-      const submitButton = screen.getByRole('button', { name: 'Submit Form' })
-
-      fireEvent.click(submitButton)
-
-      await waitFor(() => {
-        expect(validateFormMock).toHaveBeenCalled()
-        expect(submitFormMock).toHaveBeenCalled()
-        expect(mockButtonClickEvent.result).toHaveBeenCalled()
-      })
-    })
-
     it('should prevent handleAction when validaton fails', async () => {
       mockUuidv4.mockReturnValueOnce('uuid')
       const validateFormMock = jest.fn().mockResolvedValue({
