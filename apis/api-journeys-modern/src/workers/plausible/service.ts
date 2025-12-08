@@ -108,7 +108,7 @@ export const goals: Array<keyof JourneyPlausibleEvents> = [
 ]
 
 const httpLink = createHttpLink({
-  uri: process.env.GATEWAY_URL,
+  uri: env.GATEWAY_URL,
   fetch,
   headers: {
     Authorization: `Bearer ${env.PLAUSIBLE_API_KEY}`,
@@ -157,10 +157,19 @@ async function createJourneySite(
     return
   }
 
+  const slug = site.data.sharedLinks?.[0]?.slug
+  if (slug == null) {
+    logger?.warn(
+      { journeyId },
+      'missing plausible slug in journey site sharedLinks'
+    )
+    return
+  }
+
   await prisma.journey.update({
     where: { id: journeyId },
     data: {
-      plausibleToken: site.data.sharedLinks[0].slug
+      plausibleToken: slug
     }
   })
   logger?.info({ journeyId }, 'journey site created in Plausible')
@@ -176,10 +185,16 @@ async function createTeamSite(
     return
   }
 
+  const slug = site.data.sharedLinks?.[0]?.slug
+  if (slug == null) {
+    logger?.warn({ teamId }, 'missing plausible slug in team site sharedLinks')
+    return
+  }
+
   await prisma.team.update({
     where: { id: teamId },
     data: {
-      plausibleToken: site.data.sharedLinks[0].slug
+      plausibleToken: slug
     }
   })
   logger?.info({ teamId }, 'team site created in Plausible')
