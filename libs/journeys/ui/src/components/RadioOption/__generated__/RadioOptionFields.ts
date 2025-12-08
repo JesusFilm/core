@@ -50,6 +50,8 @@ export interface RadioOptionFields_action_PhoneAction {
   phone: string;
   countryCode: string;
   contactAction: ContactActionType;
+  customizable: boolean | null;
+  parentStepId: string | null;
 }
 
 export type RadioOptionFields_action = RadioOptionFields_action_NavigateToBlockAction | RadioOptionFields_action_LinkAction | RadioOptionFields_action_EmailAction | RadioOptionFields_action_ChatAction | RadioOptionFields_action_PhoneAction;

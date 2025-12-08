@@ -55,7 +55,7 @@ import { PrismaService } from '../../lib/prisma.service'
 import { RevalidateJob } from '../../lib/prisma.types'
 import { ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED } from '../../lib/prismaErrors'
 import { BlockService } from '../block/block.service'
-import { PlausibleJob } from '../plausible/plausible.consumer'
+import { PlausibleJob } from '../plausible/plausible.service'
 import { QrCodeService } from '../qrCode/qrCode.service'
 
 type BlockWithAction = Block & { action: BlockAction | null }
@@ -267,6 +267,7 @@ export class JourneyResolver {
       filter.languageId = { in: where?.languageIds }
     if (where?.fromTemplateId != null)
       filter.fromTemplateId = where.fromTemplateId
+    if (where?.teamId != null) filter.teamId = where.teamId
 
     if (OR.length > 0) filter.OR = OR
 
@@ -580,6 +581,7 @@ export class JourneyResolver {
         journeyId: duplicateJourneyId
       })
     )
+    const isLocalTemplate = journey.teamId !== 'jfp-team' && journey.template
 
     let retry = true
     while (retry) {
@@ -609,7 +611,7 @@ export class JourneyResolver {
                 status: JourneyStatus.published,
                 publishedAt: new Date(),
                 featuredAt: null,
-                template: false,
+                template: isLocalTemplate,
                 fromTemplateId: journey.template
                   ? id
                   : (journey.fromTemplateId ?? null),
@@ -1033,11 +1035,15 @@ export class JourneyResolver {
         }
       }
     })
+    const isGlobalTemplate = journey?.team?.id === 'jfp-team'
     if (journey == null)
       throw new GraphQLError('journey not found', {
         extensions: { code: 'NOT_FOUND' }
       })
-    if (ability.cannot(Action.Manage, subject('Journey', journey), 'template'))
+    if (
+      isGlobalTemplate &&
+      ability.cannot(Action.Manage, subject('Journey', journey), 'template')
+    )
       throw new GraphQLError(
         'user is not allowed to change journey to or from a template',
         {

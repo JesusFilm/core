@@ -482,7 +482,9 @@ describe('transformSteps', () => {
                   gtmEventName: null,
                   phone: '+1234567890',
                   countryCode: '+1',
-                  contactAction: ContactActionType.call
+                  contactAction: ContactActionType.call,
+                  customizable: false,
+                  parentStepId: 'step1.id'
                 },
                 children: [],
                 settings: null
@@ -623,7 +625,9 @@ describe('transformSteps', () => {
                   gtmEventName: null,
                   phone: '+1234567890',
                   countryCode: '+1',
-                  contactAction: ContactActionType.call
+                  contactAction: ContactActionType.call,
+                  customizable: false,
+                  parentStepId: 'step1.id'
                 },
                 children: [],
                 settings: null

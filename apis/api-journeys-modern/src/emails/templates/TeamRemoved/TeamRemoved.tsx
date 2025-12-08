@@ -21,6 +21,8 @@ import {
 } from '@core/yoga/email/components'
 import { User } from '@core/yoga/firebaseClient'
 
+import { env } from '../../../env'
+
 interface TeamRemovedEmailProps {
   teamName?: string
   recipient: Omit<User, 'id' | 'emailVerified'>
@@ -61,7 +63,7 @@ export const TeamRemovedEmail = ({
               <Row className="px-[28px]">
                 <Column align="center">
                   <ActionButton
-                    url={`${process.env.JOURNEYS_ADMIN_URL}`}
+                    url={`${env.JOURNEYS_ADMIN_URL}`}
                     buttonText="View Your Teams"
                   />
                 </Column>
