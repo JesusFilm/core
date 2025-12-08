@@ -31,13 +31,25 @@ const FIX_VIDEO_LANGUAGES = graphql(`
 
 const CHECK_VIDEO_IN_ALGOLIA = graphql(`
   query CheckVideoInAlgolia($videoId: ID!) {
-    checkVideoInAlgolia(videoId: $videoId)
+    checkVideoInAlgolia(videoId: $videoId) {
+      ok
+      mismatches {
+        field
+        expected
+        actual
+      }
+      recordUrl
+    }
   }
 `)
 
 const CHECK_VIDEO_VARIANTS_IN_ALGOLIA = graphql(`
   query CheckVideoVariantsInAlgolia($videoId: ID!) {
-    checkVideoVariantsInAlgolia(videoId: $videoId)
+    checkVideoVariantsInAlgolia(videoId: $videoId) {
+      ok
+      missingVariants
+      browseUrl
+    }
   }
 `)
 
@@ -244,7 +256,7 @@ export default function TroubleshootingPage(): ReactElement {
             borderRadius: 1
           }}
         >
-          <Typography color="error.main">Error: {error.message}</Typography>
+          <Typography color="text.primary">Error: {error.message}</Typography>
         </Box>
       )}
 
@@ -256,7 +268,7 @@ export default function TroubleshootingPage(): ReactElement {
             borderRadius: 1
           }}
         >
-          <Typography color="error.main">
+          <Typography color="text.primary">
             Fix Error: {fixError.message}
           </Typography>
         </Box>
@@ -312,7 +324,7 @@ export default function TroubleshootingPage(): ReactElement {
             borderRadius: 1
           }}
         >
-          <Typography color="error.main">
+          <Typography color="text.primary">
             Algolia Video Error: {algoliaVideoError.message}
           </Typography>
         </Box>
@@ -326,7 +338,7 @@ export default function TroubleshootingPage(): ReactElement {
             borderRadius: 1
           }}
         >
-          <Typography color="error.main">
+          <Typography color="text.primary">
             Algolia Variants Error: {algoliaVariantsError.message}
           </Typography>
         </Box>
@@ -340,7 +352,7 @@ export default function TroubleshootingPage(): ReactElement {
             borderRadius: 1
           }}
         >
-          <Typography color="error.main">
+          <Typography color="text.primary">
             Update Video Error: {updateVideoAlgoliaError.message}
           </Typography>
         </Box>
@@ -354,7 +366,7 @@ export default function TroubleshootingPage(): ReactElement {
             borderRadius: 1
           }}
         >
-          <Typography color="error.main">
+          <Typography color="text.primary">
             Update Variants Error: {updateVariantsAlgoliaError.message}
           </Typography>
         </Box>
@@ -407,14 +419,51 @@ export default function TroubleshootingPage(): ReactElement {
               <Typography
                 variant="body1"
                 sx={{
-                  color: algoliaVideoData.checkVideoInAlgolia
+                  color: algoliaVideoData.checkVideoInAlgolia.ok
                     ? 'success.main'
                     : 'error.main',
                   fontWeight: 'bold'
                 }}
               >
-                {algoliaVideoData.checkVideoInAlgolia ? 'Found ✓' : 'Not Found ✗'}
+                {algoliaVideoData.checkVideoInAlgolia.ok
+                  ? 'Found ✓'
+                  : 'Not Found ✗'}
               </Typography>
+              {(algoliaVideoData.checkVideoInAlgolia.mismatches ?? []).length >
+                0 && (
+                <Stack spacing={1} sx={{ mt: 1 }}>
+                  {(algoliaVideoData.checkVideoInAlgolia.mismatches ?? []).map(
+                    ({ field, expected, actual }) => (
+                      <Typography
+                        key={field}
+                        variant="body2"
+                        sx={{
+                          px: 2,
+                          py: 1,
+                          bgcolor: 'warning.light',
+                          borderRadius: 1,
+                          fontFamily: 'monospace'
+                        }}
+                      >
+                        {field}: expected {expected ?? 'null'}, got{' '}
+                        {actual ?? 'null'}
+                      </Typography>
+                    )
+                  )}
+                  {algoliaVideoData.checkVideoInAlgolia.recordUrl != null && (
+                    <Button
+                      variant="text"
+                      size="small"
+                      href={algoliaVideoData.checkVideoInAlgolia.recordUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      sx={{ alignSelf: 'flex-start' }}
+                    >
+                      Open in Algolia
+                    </Button>
+                  )}
+                </Stack>
+              )}
             </Box>
           </Stack>
         </Box>
@@ -437,34 +486,46 @@ export default function TroubleshootingPage(): ReactElement {
                 Variants in Index:
               </Typography>
               {(
-                (algoliaVariantsData.checkVideoVariantsInAlgolia as string[]) ??
-                []
-              ).length > 0 ? (
-                <Stack spacing={1} sx={{ mt: 1 }}>
-                  {(
-                    (algoliaVariantsData.checkVideoVariantsInAlgolia as string[]) ??
-                    []
-                  ).map((variantId) => (
-                    <Typography
-                      key={variantId}
-                      variant="body1"
-                      sx={{
-                        px: 2,
-                        py: 1,
-                        bgcolor: 'success.light',
-                        borderRadius: 1,
-                        fontFamily: 'monospace',
-                        color: 'success.main'
-                      }}
-                    >
-                      {variantId} ✓
-                    </Typography>
-                  ))}
-                </Stack>
+                algoliaVariantsData.checkVideoVariantsInAlgolia
+                  .missingVariants ?? []
+              ).length === 0 ? (
+                <Typography
+                  variant="body1"
+                  sx={{
+                    px: 2,
+                    py: 1,
+                    bgcolor: 'success.light',
+                    borderRadius: 1,
+                    fontFamily: 'monospace',
+                    color: 'success.main',
+                    mt: 1
+                  }}
+                >
+                  All variants found ✓
+                </Typography>
               ) : (
                 <Typography variant="body1" color="error.main">
-                  No variants found in Algolia ✗
+                  Missing variants:{' '}
+                  {(
+                    algoliaVariantsData.checkVideoVariantsInAlgolia
+                      .missingVariants ?? []
+                  ).join(', ')}
                 </Typography>
+              )}
+              {algoliaVariantsData.checkVideoVariantsInAlgolia.browseUrl !=
+                null && (
+                <Button
+                  variant="text"
+                  size="small"
+                  href={
+                    algoliaVariantsData.checkVideoVariantsInAlgolia.browseUrl
+                  }
+                  target="_blank"
+                  rel="noreferrer"
+                  sx={{ mt: 1, alignSelf: 'flex-start' }}
+                >
+                  Open variants in Algolia
+                </Button>
               )}
             </Box>
           </Stack>
