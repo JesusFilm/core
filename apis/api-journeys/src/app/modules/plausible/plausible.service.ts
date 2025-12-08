@@ -51,14 +51,16 @@ export const goals: Array<keyof JourneyPlausibleEvents> = [
   'christDecisionCapture',
   'gospelStartCapture',
   'gospelCompleteCapture',
-  'shareCapture',
+  // 'shareCapture',
   'rsvpCapture',
   'inviteFriendCapture',
   'custom1Capture',
   'custom2Capture',
   'custom3Capture',
-  'custom4Capture',
-  'custom5Capture'
+  // 'custom4Capture',
+  // 'custom5Capture'
+  'specialVideoStartCapture',
+  'specialVideoCompleteCapture'
 ]
 
 @Injectable()
