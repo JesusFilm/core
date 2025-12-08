@@ -50,6 +50,11 @@ const nextConfig = {
         source: '/publisher/:slug/edit',
         destination: '/publisher/:slug',
         permanent: true
+      },
+      {
+        source: '/privacy',
+        destination: 'https://www.cru.org/us/en/about/privacy.html',
+        permanent: true
       }
     ]
   },
