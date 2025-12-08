@@ -223,7 +223,7 @@ describe('Button', () => {
 
       await waitFor(() => {
         expect(validateFormMock).toHaveBeenCalled()
-         expect(mockButtonClickEvent.result).toHaveBeenCalled()
+        expect(mockButtonClickEvent.result).toHaveBeenCalled()
         expect(handleSubmitMock).not.toHaveBeenCalled()
       })
     })
