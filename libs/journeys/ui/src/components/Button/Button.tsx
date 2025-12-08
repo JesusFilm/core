@@ -277,11 +277,25 @@ export function Button({
       // Control submission flow to ensure events are recorded before navigation
       e.preventDefault()
       const errors = await formik.validateForm(formik.values)
+     // console.log(errors)
+     //  if (!isEmptyForm()) {
+      await formik.submitForm()
+      if (Object.keys(errors).length > 0) return
+      // } 
 
-      if (!isEmptyForm()) {
-        if (Object.keys(errors).length > 0) return
-        await formik.submitForm()
-      }
+      
+      // if (isEmptyForm()){
+      //   console.log("Form is empty")
+      // }
+      // console.log("Errors: ", errors)
+
+      // if (!isEmptyForm()) {
+      //   if (Object.keys(errors).length > 0) return
+      //   await formik.submitForm()
+      // } else {
+      //   if (Object.keys === null) return
+        
+      //}
     }
 
     const hasMessagePlatform = messagePlatform != null

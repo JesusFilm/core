@@ -196,6 +196,7 @@ describe('Button', () => {
       mockUuidv4.mockReturnValueOnce('uuid')
       const validateFormMock = jest.fn().mockResolvedValue({})
       const handleSubmitMock = jest.fn()
+      const submitFormMock = jest.fn()
 
       blockHistoryVar([activeBlock])
       treeBlocksVar([activeBlock])
@@ -203,6 +204,7 @@ describe('Button', () => {
       const formikContextMock = {
         values: { field1: '', field2: '' },
         validateForm: validateFormMock,
+        submitForm: submitFormMock,
         handleSubmit: handleSubmitMock
       }
 
@@ -221,7 +223,7 @@ describe('Button', () => {
 
       await waitFor(() => {
         expect(validateFormMock).toHaveBeenCalled()
-        expect(mockButtonClickEvent.result).toHaveBeenCalled()
+         expect(mockButtonClickEvent.result).toHaveBeenCalled()
         expect(handleSubmitMock).not.toHaveBeenCalled()
       })
     })
@@ -232,6 +234,7 @@ describe('Button', () => {
         field1: 'Error'
       })
       const handleSubmitMock = jest.fn()
+      const submitFormMock = jest.fn()
 
       blockHistoryVar([activeBlock])
       treeBlocksVar([activeBlock])
@@ -239,6 +242,7 @@ describe('Button', () => {
       const formikContextMock = {
         values: { field1: 'asd', field2: '' },
         validateForm: validateFormMock,
+        submitForm: submitFormMock,
         handleSubmit: handleSubmitMock
       }
 
