@@ -84,6 +84,12 @@ async function main(): Promise<void> {
         './shortlinkUpdater'
       )
     )
+    run(
+      await import(
+        /* webpackChunkName: 'profileCreate' */
+        './profileCreate'
+      )
+    )
   }
 
   if (process.env.NODE_ENV !== 'production') {
