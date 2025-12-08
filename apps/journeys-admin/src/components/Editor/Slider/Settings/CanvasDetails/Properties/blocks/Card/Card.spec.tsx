@@ -19,6 +19,7 @@ import {
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 
 import { Card } from '.'
+import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 
 // Helper function to create a basic card
 const createCard = (
@@ -68,7 +69,7 @@ const renderWithProviders = (
           <EditorProvider
             initialState={{ selectedBlock: selectedBlock ?? undefined }}
           >
-            {component}
+            <MuxVideoUploadProvider>{component}</MuxVideoUploadProvider>
           </EditorProvider>
         </JourneyProvider>
       </SnackbarProvider>

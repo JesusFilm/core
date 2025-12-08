@@ -44,7 +44,9 @@ describe('Properties', () => {
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={state}>
-            <Properties block={block} />
+            <MuxVideoUploadProvider>
+              <Properties block={block} />
+            </MuxVideoUploadProvider>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -73,7 +75,9 @@ describe('Properties', () => {
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={state}>
-            <Properties />
+            <MuxVideoUploadProvider>
+              <Properties />
+            </MuxVideoUploadProvider>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -95,7 +99,9 @@ describe('Properties', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <Properties block={block} />
+          <MuxVideoUploadProvider>
+            <Properties block={block} />
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -121,7 +127,9 @@ describe('Properties', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <Properties block={block} />
+          <MuxVideoUploadProvider>
+            <Properties block={block} />
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -163,7 +171,9 @@ describe('Properties', () => {
     render(
       <MockedProvider>
         <SnackbarProvider>
-          <Properties block={block} />
+          <MuxVideoUploadProvider>
+            <Properties block={block} />
+          </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -359,8 +369,10 @@ describe('Properties', () => {
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={state}>
-            <TestEditorState />
-            <Properties />
+            <MuxVideoUploadProvider>
+              <TestEditorState />
+              <Properties />
+            </MuxVideoUploadProvider>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -416,8 +428,10 @@ describe('Properties', () => {
       <MockedProvider>
         <SnackbarProvider>
           <EditorProvider initialState={state}>
-            <TestEditorState />
-            <Properties />
+            <MuxVideoUploadProvider>
+              <TestEditorState />
+              <Properties />
+            </MuxVideoUploadProvider>
           </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>

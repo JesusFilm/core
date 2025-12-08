@@ -77,10 +77,10 @@ export function BackgroundMedia(): ReactElement {
       : selectedBlock?.children.find(
           (child) => child.__typename === 'CardBlock'
         )
-  )
+  ) as TreeBlock<CardBlock> | undefined
   const coverBlock = cardBlock?.children.find(
     (child) => child.id === cardBlock?.coverBlockId
-  )
+  ) as TreeBlock<ImageBlock> | TreeBlock<VideoBlock> | undefined
   const [blockType, setBlockType] = useState<BackgroundMediaBlockType>(
     coverBlock?.__typename ?? 'VideoBlock'
   )
