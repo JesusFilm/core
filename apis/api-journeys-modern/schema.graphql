@@ -1430,6 +1430,17 @@ enum PlausibleEvent {
   videoProgress75
   videoComplete
   videoTrigger
+  prayerRequestCapture
+  christDecisionCapture
+  gospelStartCapture
+  gospelCompleteCapture
+  rsvpCapture
+  inviteFriendCapture
+  custom1Capture
+  custom2Capture
+  custom3Capture
+  specialVideoStartCapture
+  specialVideoCompleteCapture
   chatsClicked
   linksClicked
   journeyVisitors
