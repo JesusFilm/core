@@ -428,8 +428,6 @@ describe('VideoLibrary', () => {
   })
 
   it('should render video details if videoId is not null', async () => {
-    // Set up MSW handlers for YouTube requests - both playlistItems and videos
-    // since YouTubeDetails component fetches from /videos endpoint
     mswServer.use(getPlaylistItemsEmpty, getVideosWithOffsetAndUrl)
     const onSelect = jest.fn()
     const onClose = jest.fn()
