@@ -19,6 +19,7 @@ import { useMuxVideoUpload } from '../../../../../MuxVideoUploadProvider'
 import { Drawer } from '../Drawer'
 
 import { VideoFromLocal } from './VideoFromLocal'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 
 const VideoDetails = dynamic(
   async () =>
@@ -66,7 +67,11 @@ export function VideoLibrary({
     selectedBlock?.videoId != null && open
   )
 
-  const { getUploadStatus } = useMuxVideoUpload()
+  const {
+    state: { selectedBlock: editorSelectedBlock }
+  } = useEditor()
+
+  const { getUploadStatus, cancelUploadForBlock } = useMuxVideoUpload()
   const uploadStatus = getUploadStatus(selectedBlock?.id ?? '')
 
   const [activeTab, setActiveTab] = useState(
@@ -108,6 +113,10 @@ export function VideoLibrary({
     shouldCloseDrawer = true
   ): void => {
     const shouldFocus = shouldCloseDrawer
+
+    // use editor provider selected block as this accounts for background videos where the video blockd does not yet exist, hence the selectedBlock prop is null
+    if (editorSelectedBlock != null) cancelUploadForBlock(editorSelectedBlock)
+
     if (handleSelect != null) handleSelect(block, shouldFocus)
     setOpenVideoDetails(false)
   }

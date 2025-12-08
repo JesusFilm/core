@@ -18,24 +18,36 @@ import {
   useSearchBox
 } from 'react-instantsearch'
 
+import type { TreeBlock } from '@core/journeys/ui/block'
+import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+
+import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../__generated__/BlockFields'
 import { VideoBlockSource } from '../../../../../../../__generated__/globalTypes'
-import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
+import {
+  MuxVideoUploadProvider,
+  useMuxVideoUpload
+} from '../../../../../MuxVideoUploadProvider'
 
 import { videoItems } from './data'
 import { GET_VIDEO } from './VideoFromLocal/LocalDetails/LocalDetails'
+import {
+  getPlaylistItemsEmpty,
+  getVideosWithOffsetAndUrl
+} from './VideoFromYouTube/VideoFromYouTube.handlers'
+import { mswServer } from '../../../../../../../test/mswServer'
 
 import { VideoLibrary } from '.'
+import { SWRConfig } from 'swr'
 
 jest.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: jest.fn()
 }))
 
-const mockGetUploadStatus = jest.fn()
 jest.mock('../../../../../MuxVideoUploadProvider', () => ({
   ...jest.requireActual('../../../../../MuxVideoUploadProvider'),
   useMuxVideoUpload: jest.fn(() => ({
-    getUploadStatus: mockGetUploadStatus,
+    getUploadStatus: jest.fn(),
     addUploadTask: jest.fn(),
     cancelUploadForBlock: jest.fn()
   }))
@@ -60,13 +72,19 @@ const mockUseInfiniteHits = useInfiniteHits as jest.MockedFunction<
   typeof useInfiniteHits
 >
 
+const mockUseMuxVideoUpload = useMuxVideoUpload as jest.MockedFunction<
+  typeof useMuxVideoUpload
+>
+
+const mockGetUploadStatus = jest.fn()
+const mockCancelUploadForBlock = jest.fn()
+const mockAddUploadTask = jest.fn()
 describe('VideoLibrary', () => {
   const push = jest.fn()
   const on = jest.fn()
 
   beforeEach(() => {
     jest.clearAllMocks()
-
     mockUseSearchBox.mockReturnValue({
       refine: jest.fn()
     } as unknown as SearchBoxRenderState)
@@ -92,11 +110,16 @@ describe('VideoLibrary', () => {
         on
       }
     } as unknown as NextRouter)
+
+    mockUseMuxVideoUpload.mockReturnValue({
+      getUploadStatus: mockGetUploadStatus,
+      addUploadTask: mockAddUploadTask,
+      cancelUploadForBlock: mockCancelUploadForBlock
+    })
   })
 
   afterEach(async () => {
     cleanup()
-    jest.clearAllTimers()
   })
 
   describe('smUp', () => {
@@ -362,9 +385,22 @@ describe('VideoLibrary', () => {
     render(
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
-          <MuxVideoUploadProvider>
-            <VideoLibrary open onSelect={onSelect} onClose={onClose} />
-          </MuxVideoUploadProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: {
+                id: 'video1.id',
+                __typename: 'VideoBlock',
+                parentBlockId: 'card1.id',
+                parentOrder: 0,
+                triggerStart: 0,
+                triggerAction: 'play'
+              } as unknown as TreeBlock<VideoBlock>
+            }}
+          >
+            <MuxVideoUploadProvider>
+              <VideoLibrary open onSelect={onSelect} onClose={onClose} />
+            </MuxVideoUploadProvider>
+          </EditorProvider>
         </SnackbarProvider>
       </MockedProvider>
     )
@@ -391,6 +427,9 @@ describe('VideoLibrary', () => {
   })
 
   it('should render video details if videoId is not null', async () => {
+    // Set up MSW handlers for YouTube requests - both playlistItems and videos
+    // since YouTubeDetails component fetches from /videos endpoint
+    mswServer.use(getPlaylistItemsEmpty, getVideosWithOffsetAndUrl)
     const onSelect = jest.fn()
     const onClose = jest.fn()
 
@@ -398,40 +437,42 @@ describe('VideoLibrary', () => {
       <MockedProvider>
         <SnackbarProvider>
           <MuxVideoUploadProvider>
-            <VideoLibrary
-              open
-              selectedBlock={{
-                id: 'video1.id',
-                __typename: 'VideoBlock',
-                parentBlockId: 'card1.id',
-                description:
-                  'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
-                duration: 348,
-                endAt: 348,
-                fullsize: true,
-                image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
-                muted: false,
-                autoplay: true,
-                startAt: 0,
-                title: 'What is the Bible?',
-                videoId: 'ak06MSETeo4',
-                videoVariantLanguageId: null,
-                parentOrder: 0,
-                action: null,
-                source: VideoBlockSource.youTube,
-                mediaVideo: {
-                  __typename: 'YouTube',
-                  id: 'videoId'
-                },
-                objectFit: null,
-                subtitleLanguage: null,
-                showGeneratedSubtitles: null,
-                posterBlockId: 'poster1.id',
-                children: []
-              }}
-              onSelect={onSelect}
-              onClose={onClose}
-            />
+            <SWRConfig value={{ provider: () => new Map() }}>
+              <VideoLibrary
+                open
+                selectedBlock={{
+                  id: 'video1.id',
+                  __typename: 'VideoBlock',
+                  parentBlockId: 'card1.id',
+                  description:
+                    'This is episode 1 of an ongoing series that explores the origins, content, and purpose of the Bible.',
+                  duration: 348,
+                  endAt: 348,
+                  fullsize: true,
+                  image: 'https://i.ytimg.com/vi/ak06MSETeo4/default.jpg',
+                  muted: false,
+                  autoplay: true,
+                  startAt: 0,
+                  title: 'What is the Bible?',
+                  videoId: 'ak06MSETeo4',
+                  videoVariantLanguageId: null,
+                  parentOrder: 0,
+                  action: null,
+                  source: VideoBlockSource.youTube,
+                  mediaVideo: {
+                    __typename: 'YouTube',
+                    id: 'videoId'
+                  },
+                  objectFit: null,
+                  subtitleLanguage: null,
+                  showGeneratedSubtitles: null,
+                  posterBlockId: 'poster1.id',
+                  children: []
+                }}
+                onSelect={onSelect}
+                onClose={onClose}
+              />
+            </SWRConfig>
           </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -441,6 +482,8 @@ describe('VideoLibrary', () => {
   })
 
   it('should render YouTube', async () => {
+    mswServer.use(getPlaylistItemsEmpty)
+
     mockedUseRouter.mockReturnValue({
       query: { param: null },
       push,
@@ -453,7 +496,9 @@ describe('VideoLibrary', () => {
       <MockedProvider>
         <SnackbarProvider>
           <MuxVideoUploadProvider>
-            <VideoLibrary open />
+            <SWRConfig value={{ provider: () => new Map() }}>
+              <VideoLibrary open />
+            </SWRConfig>
           </MuxVideoUploadProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -533,6 +578,119 @@ describe('VideoLibrary', () => {
         undefined,
         { shallow: true }
       )
+    })
+  })
+
+  it('should cancel video upload when changing to different video source', async () => {
+    const onSelect = jest.fn()
+    const selectedBlock: TreeBlock<VideoBlock> = {
+      id: 'video1.id',
+      __typename: 'VideoBlock',
+      parentBlockId: 'card1.id',
+      parentOrder: 0,
+      startAt: 0,
+      endAt: null,
+      muted: false,
+      autoplay: true,
+      fullsize: true,
+      action: null,
+      videoId: null,
+      videoVariantLanguageId: null,
+      source: VideoBlockSource.mux,
+      title: null,
+      description: null,
+      duration: null,
+      image: null,
+      objectFit: null,
+      subtitleLanguage: null,
+      showGeneratedSubtitles: null,
+      mediaVideo: null,
+      posterBlockId: null,
+      children: []
+    }
+
+    const mocks = [
+      {
+        request: {
+          query: GET_VIDEO,
+          variables: { id: 'videoId', languageId: '529' }
+        },
+        result: {
+          data: {
+            video: {
+              id: 'videoId',
+              primaryLanguageId: '529',
+              images: [],
+              title: [
+                { primary: true, value: 'title1', __typename: 'Language' }
+              ],
+              description: [
+                { primary: true, value: 'desc', __typename: 'Language' }
+              ],
+              variant: {
+                id: 'v1',
+                duration: 144,
+                hls: 'https://example.com/video.m3u8',
+                __typename: 'VideoVariant'
+              },
+              variantLanguages: [
+                {
+                  __typename: 'Language',
+                  id: '529',
+                  slug: 'english',
+                  name: [
+                    {
+                      value: 'English',
+                      primary: true,
+                      __typename: 'LanguageName'
+                    }
+                  ]
+                }
+              ],
+              __typename: 'Video'
+            }
+          }
+        }
+      }
+    ]
+
+    mockedUseRouter.mockReturnValue({
+      query: { param: null },
+      push,
+      events: {
+        on
+      }
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider mocks={mocks}>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock,
+              selectedAttributeId: selectedBlock.id
+            }}
+          >
+            <MuxVideoUploadProvider>
+              <VideoLibrary open onSelect={onSelect} />
+            </MuxVideoUploadProvider>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(screen.getByText('title1')).toBeInTheDocument())
+    await waitFor(() =>
+      fireEvent.click(screen.getByTestId('VideoListItem-videoId'))
+    )
+    // wait for Select button to be enabled after data load
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Select' })).toBeEnabled()
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Select' }))
+
+    await waitFor(() => {
+      expect(mockCancelUploadForBlock).toHaveBeenCalledWith(selectedBlock)
     })
   })
 })

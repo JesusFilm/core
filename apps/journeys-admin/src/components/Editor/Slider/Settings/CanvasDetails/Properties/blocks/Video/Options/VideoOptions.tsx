@@ -15,7 +15,6 @@ import {
   VideoBlockUpdate,
   VideoBlockUpdateVariables
 } from '../../../../../../../../../../__generated__/VideoBlockUpdate'
-import { useMuxVideoUpload } from '../../../../../../../../MuxVideoUploadProvider'
 import { VideoBlockEditor } from '../../../../../Drawer/VideoBlockEditor'
 
 export const VIDEO_BLOCK_UPDATE = gql`
@@ -29,7 +28,6 @@ export const VIDEO_BLOCK_UPDATE = gql`
 
 export function VideoOptions(): ReactElement {
   const { add } = useCommand()
-  const { cancelUploadForBlock } = useMuxVideoUpload()
   const {
     state: { selectedStep, selectedBlock: stateSelectedBlock },
     dispatch
@@ -46,9 +44,6 @@ export function VideoOptions(): ReactElement {
     shouldFocus = true
   ): void {
     if (selectedBlock == null) return
-
-    if (input.source !== VideoBlockSource.mux)
-      cancelUploadForBlock(selectedBlock)
 
     const inverseInput: VideoBlockUpdateInput = {}
     if (input.startAt !== undefined)
