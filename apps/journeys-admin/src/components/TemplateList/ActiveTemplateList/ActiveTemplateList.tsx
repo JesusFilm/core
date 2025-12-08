@@ -16,7 +16,7 @@ import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
-} from '../../JourneyList/ActiveJourneyList/ActiveJourneyList'
+} from '../../JourneyList/JourneyListContent/JourneyListContent'
 import { JourneyCard } from '../../JourneyList/JourneyCard'
 import type { JourneyListProps } from '../../JourneyList/JourneyList'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'

@@ -7,7 +7,7 @@ import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdmin
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
-} from '../../JourneyList/ActiveJourneyList/ActiveJourneyList'
+} from '../../JourneyList/JourneyListContent/JourneyListContent'
 import { SortOrder } from '../../JourneyList/JourneySort'
 import { ThemeProvider } from '../../ThemeProvider'
 import { defaultTemplate, fakeDate, oldTemplate } from '../data'
