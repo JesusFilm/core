@@ -233,7 +233,6 @@ describe('Button', () => {
     it('should create button click event if form is valid and not empty', async () => {
       mockUuidv4.mockReturnValueOnce('uuid')
       const validateFormMock = jest.fn().mockResolvedValue({})
-      const handleSubmitMock = jest.fn()
       const submitFormMock = jest.fn().mockResolvedValue(undefined)
 
       blockHistoryVar([activeBlock])
