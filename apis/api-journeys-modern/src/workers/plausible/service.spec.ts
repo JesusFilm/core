@@ -152,6 +152,75 @@ describe('plausible worker service', () => {
     })
   })
 
+  describe('plausibleCreateTemplateSite', () => {
+    const templateJob: Job<
+      { __typename: 'plausibleCreateTemplateSite'; templateId: string },
+      unknown,
+      string
+    > = {
+      name: 'plausibleCreateTemplateSite',
+      data: {
+        __typename: 'plausibleCreateTemplateSite',
+        templateId: 'template-id'
+      }
+    } as unknown as Job<
+      { __typename: 'plausibleCreateTemplateSite'; templateId: string },
+      unknown,
+      string
+    >
+
+    it('should create template site', async () => {
+      const mutateSpy = jest
+        .spyOn(ApolloClient.prototype, 'mutate')
+        .mockResolvedValueOnce({
+          data: {
+            siteCreate: {
+              __typename: 'MutationSiteCreateSuccess',
+              data: {}
+            }
+          }
+        } as unknown as ReturnType<ApolloClient<unknown>['mutate']>)
+
+      await service(templateJob, logger)
+
+      expect(mutateSpy).toHaveBeenCalled()
+      expect(mutateSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          variables: expect.objectContaining({
+            input: expect.objectContaining({
+              domain: 'api-journeys-template-template-id',
+              disableSharedLinks: true
+            })
+          })
+        })
+      )
+      expect(logger.info).toHaveBeenCalledWith(
+        { templateId: 'template-id' },
+        'template site created in Plausible'
+      )
+      expect(logger.warn).not.toHaveBeenCalled()
+    })
+
+    it('logs warning when site creation fails', async () => {
+      jest.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValueOnce({
+        data: {
+          siteCreate: {
+            __typename: 'Error',
+            message: 'failed'
+          }
+        }
+      } as unknown as ReturnType<ApolloClient<unknown>['mutate']>)
+
+      await service(templateJob, logger)
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        { templateId: 'template-id' },
+        'failed to create template site in Plausible'
+      )
+      expect(logger.info).not.toHaveBeenCalled()
+    })
+  })
+
   describe('plausibleCreateSites', () => {
     const createSitesJob: Job<
       { __typename: 'plausibleCreateSites' },

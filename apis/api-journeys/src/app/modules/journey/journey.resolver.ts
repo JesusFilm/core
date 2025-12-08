@@ -1046,7 +1046,6 @@ export class JourneyResolver {
         }
       )
 
-    // If setting journey as template, create template site
     if (input.template === true) {
       await this.plausibleQueue.add(
         'create-template-site',

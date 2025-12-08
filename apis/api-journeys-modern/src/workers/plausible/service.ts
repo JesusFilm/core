@@ -278,25 +278,25 @@ async function createSites(logger?: Logger): Promise<void> {
     )
   }
 
-  logger?.info('creating template sites...')
-  const templateIds = (
-    await prisma.journey.findMany({
-      where: { template: true },
-      select: { id: true }
-    })
-  ).map(({ id }) => id)
+  // logger?.info('creating template sites...')
+  // const templateIds = (
+  //   await prisma.journey.findMany({
+  //     where: { template: true },
+  //     select: { id: true }
+  //   })
+  // ).map(({ id }) => id)
 
-  for (const ids of chunk(templateIds, BATCH_SIZE)) {
-    await Promise.all(
-      ids.map(
-        async (templateId) =>
-          await createTemplateSite(
-            { __typename: 'plausibleCreateTemplateSite', templateId },
-            logger
-          )
-      )
-    )
-  }
+  // for (const ids of chunk(templateIds, BATCH_SIZE)) {
+  //   await Promise.all(
+  //     ids.map(
+  //       async (templateId) =>
+  //         await createTemplateSite(
+  //           { __typename: 'plausibleCreateTemplateSite', templateId },
+  //           logger
+  //         )
+  //     )
+  //   )
+  // }
 }
 
 export async function service(

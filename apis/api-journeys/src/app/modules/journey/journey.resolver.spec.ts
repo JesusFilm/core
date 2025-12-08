@@ -2366,6 +2366,24 @@ describe('JourneyResolver', () => {
           data: { template: true }
         })
       })
+
+      it('creates template site in plausible when setting template to true', async () => {
+        prismaService.journey.findUnique.mockResolvedValueOnce(
+          journeyWithUserTeam
+        )
+        await resolver.journeyTemplate(ability, 'journeyId', { template: true })
+        expect(plausibleQueue.add).toHaveBeenCalledWith(
+          'create-template-site',
+          {
+            __typename: 'plausibleCreateTemplateSite',
+            templateId: 'journeyId'
+          },
+          {
+            removeOnComplete: true,
+            removeOnFail: { age: 432000, count: 50 }
+          }
+        )
+      })
     })
   })
 
