@@ -231,8 +231,7 @@ describe('Button', () => {
       const validateFormMock = jest.fn().mockResolvedValue({
         field1: 'Error'
       })
-      const handleSubmitMock = jest.fn()
-      const submitFormMock = jest.fn()
+      const submitFormMock = jest.fn().mockResolvedValue(undefined)
 
       blockHistoryVar([activeBlock])
       treeBlocksVar([activeBlock])
