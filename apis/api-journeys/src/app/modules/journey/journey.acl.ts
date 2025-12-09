@@ -84,8 +84,34 @@ export const journeyAcl: AppAclFn = ({
     template: true,
     status: JourneyStatus.published
   })
+  // Team members can manage local templates
+  can(Action.Manage, 'Journey', {
+    template: true,
+    teamId: { not: 'jfp-team' },
+    team: {
+      is: {
+        userTeams: {
+          some: {
+            userId: user.id,
+            role: UserTeamRole.member
+          }
+        }
+      }
+    }
+  })
+  // Journey editors can manage local templates
+  can(Action.Manage, 'Journey', {
+    template: true,
+    teamId: { not: 'jfp-team' },
+    userJourneys: {
+      some: {
+        userId: user.id,
+        role: UserJourneyRole.editor
+      }
+    }
+  })
   cannot(Action.Manage, 'Journey', 'template')
-  // allow team members to manage non-jfp-team template journeys
+  // Team managers/members can manage template field for local templates
   can(Action.Manage, 'Journey', 'template', {
     template: true,
     teamId: { not: 'jfp-team' },
@@ -100,14 +126,14 @@ export const journeyAcl: AppAclFn = ({
       }
     }
   })
-  // allow journey owners to manage non-jfp-team template journeys
+  // Journey owners/editors can manage template field for local templates
   can(Action.Manage, 'Journey', 'template', {
     template: true,
     teamId: { not: 'jfp-team' },
     userJourneys: {
       some: {
         userId: user.id,
-        role: UserJourneyRole.owner
+        role: { in: [UserJourneyRole.owner, UserJourneyRole.editor] }
       }
     }
   })
