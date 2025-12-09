@@ -1701,6 +1701,7 @@ type Query {
   If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
   """
   journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType = slug): [PlausibleStatsResponse!]
+  templateFamilyStatsAggregate(id: ID!, idType: IdType = slug, where: PlausibleStatsAggregateFilter!): TemplateFamilyStatsAggregateResponse
   templateFamilyStatsBreakdown(
     id: ID!
     idType: IdType = slug
@@ -1710,6 +1711,11 @@ type Query {
     Filter results to only include the specified events. If null or empty, all events are returned.
     """
     events: [PlausibleEvent!]
+
+    """
+    Filter results to only include the specified status. If null or empty, all statuses are returned.
+    """
+    status: [JourneyStatus!]
   ): [TemplateFamilyStatsBreakdownResponse!]
 }
 
@@ -2028,13 +2034,27 @@ input TeamUpdateInput {
   publicTitle: String
 }
 
+type TemplateFamilyStatsAggregateResponse
+  @shareable
+{
+  childJourneysCount: Int!
+  totalJourneysViews: Int!
+  totalJourneysResponses: Int!
+}
+
 type TemplateFamilyStatsBreakdownResponse
   @shareable
 {
   journeyId: String!
   journeyName: String!
   teamName: String!
+  status: JourneyStatus!
   stats: [TemplateFamilyStatsEventResponse!]!
+
+  """
+  The URL to visit this journey. Uses custom domain if available, otherwise URL based on environment
+  """
+  journeyUrl: String!
 }
 
 type TemplateFamilyStatsEventResponse

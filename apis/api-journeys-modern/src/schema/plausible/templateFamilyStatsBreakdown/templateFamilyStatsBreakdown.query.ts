@@ -5,7 +5,7 @@ import { Prisma, prisma } from '@core/prisma/journeys/client'
 import { Action, ability, subject } from '../../../lib/auth/ability'
 import { goals } from '../../../workers/plausible/service'
 import { builder } from '../../builder'
-import { IdType } from '../../journey/enums'
+import { IdType, JourneyStatus } from '../../journey/enums'
 import { PlausibleStatsBreakdownFilter } from '../inputs'
 import { loadJourneyOrThrow, normalizeIdType } from '../journeyAccess'
 import {
@@ -36,7 +36,10 @@ export type JourneyWithAcl = Prisma.JourneyGetPayload<{
   include: {
     userJourneys: true
     team: {
-      include: { userTeams: true }
+      include: {
+        userTeams: true
+        customDomains: true
+      }
     }
   }
 }>
@@ -60,11 +63,17 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
         required: false,
         description:
           'Filter results to only include the specified events. If null or empty, all events are returned.'
+      }),
+      status: t.arg({
+        type: [JourneyStatus],
+        required: false,
+        description:
+          'Filter results to only include the specified status. If null or empty, all statuses are returned.'
       })
     },
     resolve: async (
       _parent,
-      { id, idType, where, events },
+      { id, idType, where, events, status },
       context
     ): Promise<TemplateFamilyStatsBreakdownResponse[]> => {
       const templateJourney = await loadJourneyOrThrow(
@@ -83,15 +92,14 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
         })
       }
 
-      const { property: _, ...whereWithoutProperty } = where
-      const templateSiteId = `template-site`
+      const templateSiteId = `api-journeys-template-${templateJourney.id}`
 
       const breakdownResults = await getJourneyStatsBreakdown(
         templateJourney.id,
         {
+          ...where,
           property: 'event:props:templateKey',
-          metrics: 'visitors',
-          ...whereWithoutProperty
+          metrics: 'visitors'
         },
         templateSiteId
       )
@@ -121,11 +129,34 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
 
       const [journeys, pageVisitors] = await Promise.all([
         prisma.journey.findMany({
-          where: { id: { in: journeyIds } },
+          where: {
+            id: { in: journeyIds },
+            ...(status != null && status.length > 0
+              ? { status: { in: status } }
+              : {})
+          },
           include: {
             userJourneys: true,
             team: {
-              include: { userTeams: true }
+              include: {
+                userTeams: true,
+                customDomains: {
+                  where: {
+                    OR: [
+                      { routeAllTeamJourneys: true },
+                      {
+                        journeyCollection: {
+                          journeyCollectionJourneys: {
+                            some: {
+                              journeyId: { in: journeyIds }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
             }
           }
         }),
@@ -133,6 +164,7 @@ builder.queryField('templateFamilyStatsBreakdown', (t) =>
           ? getJourneyStatsBreakdown(
               templateJourney.id,
               {
+                ...where,
                 property: 'event:page',
                 metrics: 'visitors'
               },
