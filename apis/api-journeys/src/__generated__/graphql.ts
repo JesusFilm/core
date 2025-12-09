@@ -3543,7 +3543,7 @@ export type Query = {
   journeyVisitorsConnection: JourneyVisitorsConnection;
   journeys: Array<Journey>;
   journeysEmailPreference?: Maybe<JourneysEmailPreference>;
-  journeysPlausibleStatsAggregate?: Maybe<PlausibleStatsAggregateResponse>;
+  journeysPlausibleStatsAggregate: PlausibleStatsAggregateResponse;
   /**
    * This endpoint allows you to break down your stats by some property.
    * If you are familiar with SQL family databases, this endpoint corresponds to
@@ -3562,13 +3562,13 @@ export type Query = {
    *  breakdown for every page, you would have to break down on `event:page` and
    *  make multiple queries for each date.
    */
-  journeysPlausibleStatsBreakdown?: Maybe<Array<PlausibleStatsResponse>>;
-  journeysPlausibleStatsRealtimeVisitors?: Maybe<Scalars['Int']['output']>;
+  journeysPlausibleStatsBreakdown: Array<PlausibleStatsResponse>;
+  journeysPlausibleStatsRealtimeVisitors: Scalars['Int']['output'];
   /**
    * This endpoint provides timeseries data over a certain time period.
    * If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
    */
-  journeysPlausibleStatsTimeseries?: Maybe<Array<PlausibleStatsResponse>>;
+  journeysPlausibleStatsTimeseries: Array<PlausibleStatsResponse>;
   keywords: Array<Keyword>;
   language?: Maybe<Language>;
   languages: Array<Language>;

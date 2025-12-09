@@ -10,6 +10,7 @@ import { buildJourneySiteId, getPlausibleConfig } from './service'
 
 builder.queryField('journeysPlausibleStatsRealtimeVisitors', (t) =>
   t.withAuth({ isAuthenticated: true }).int({
+    nullable: false,
     args: {
       id: t.arg.id({ required: true }),
       idType: t.arg({

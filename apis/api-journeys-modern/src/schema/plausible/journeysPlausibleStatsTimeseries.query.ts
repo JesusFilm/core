@@ -22,6 +22,7 @@ type PlausibleTimeseriesParams = {
 builder.queryField('journeysPlausibleStatsTimeseries', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: [PlausibleStatsResponseRef],
+    nullable: false,
     description:
       'This endpoint provides timeseries data over a certain time period.\nIf you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.',
     args: {

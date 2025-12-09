@@ -115,7 +115,7 @@ export interface GetJourneyAnalytics {
    *  breakdown for every page, you would have to break down on `event:page` and
    *  make multiple queries for each date.
    */
-  journeySteps: GetJourneyAnalytics_journeySteps[] | null;
+  journeySteps: GetJourneyAnalytics_journeySteps[];
   /**
    * This endpoint allows you to break down your stats by some property.
    * If you are familiar with SQL family databases, this endpoint corresponds to
@@ -134,7 +134,7 @@ export interface GetJourneyAnalytics {
    *  breakdown for every page, you would have to break down on `event:page` and
    *  make multiple queries for each date.
    */
-  journeyStepsActions: GetJourneyAnalytics_journeyStepsActions[] | null;
+  journeyStepsActions: GetJourneyAnalytics_journeyStepsActions[];
   /**
    * This endpoint allows you to break down your stats by some property.
    * If you are familiar with SQL family databases, this endpoint corresponds to
@@ -153,7 +153,7 @@ export interface GetJourneyAnalytics {
    *  breakdown for every page, you would have to break down on `event:page` and
    *  make multiple queries for each date.
    */
-  journeyReferrer: GetJourneyAnalytics_journeyReferrer[] | null;
+  journeyReferrer: GetJourneyAnalytics_journeyReferrer[];
   /**
    * This endpoint allows you to break down your stats by some property.
    * If you are familiar with SQL family databases, this endpoint corresponds to
@@ -172,7 +172,7 @@ export interface GetJourneyAnalytics {
    *  breakdown for every page, you would have to break down on `event:page` and
    *  make multiple queries for each date.
    */
-  journeyUtmCampaign: GetJourneyAnalytics_journeyUtmCampaign[] | null;
+  journeyUtmCampaign: GetJourneyAnalytics_journeyUtmCampaign[];
   /**
    * This endpoint allows you to break down your stats by some property.
    * If you are familiar with SQL family databases, this endpoint corresponds to
@@ -191,7 +191,7 @@ export interface GetJourneyAnalytics {
    *  breakdown for every page, you would have to break down on `event:page` and
    *  make multiple queries for each date.
    */
-  journeyVisitorsPageExits: GetJourneyAnalytics_journeyVisitorsPageExits[] | null;
+  journeyVisitorsPageExits: GetJourneyAnalytics_journeyVisitorsPageExits[];
   /**
    * This endpoint allows you to break down your stats by some property.
    * If you are familiar with SQL family databases, this endpoint corresponds to
@@ -210,8 +210,8 @@ export interface GetJourneyAnalytics {
    *  breakdown for every page, you would have to break down on `event:page` and
    *  make multiple queries for each date.
    */
-  journeyActionsSums: GetJourneyAnalytics_journeyActionsSums[] | null;
-  journeyAggregateVisitors: GetJourneyAnalytics_journeyAggregateVisitors | null;
+  journeyActionsSums: GetJourneyAnalytics_journeyActionsSums[];
+  journeyAggregateVisitors: GetJourneyAnalytics_journeyAggregateVisitors;
 }
 
 export interface GetJourneyAnalyticsVariables {

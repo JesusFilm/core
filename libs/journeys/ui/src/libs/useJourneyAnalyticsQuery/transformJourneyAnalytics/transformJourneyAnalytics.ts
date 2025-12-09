@@ -49,9 +49,9 @@ export function transformJourneyAnalytics(
     journeyActionsSums
   } = data
 
-  const journeyEvents = getJourneyEvents(journeyStepsActions ?? [])
-  const journeyEventsSums = getJourneyEvents(journeyActionsSums ?? [])
-  const stepExits = getStepExits(journeyVisitorsPageExits ?? [], journeyId)
+  const journeyEvents = getJourneyEvents(journeyStepsActions)
+  const journeyEventsSums = getJourneyEvents(journeyActionsSums)
+  const stepExits = getStepExits(journeyVisitorsPageExits, journeyId)
   const { chatsStarted, linksVisited } = getLinkClicks(journeyEvents)
 
   const stepMap = new Map()
