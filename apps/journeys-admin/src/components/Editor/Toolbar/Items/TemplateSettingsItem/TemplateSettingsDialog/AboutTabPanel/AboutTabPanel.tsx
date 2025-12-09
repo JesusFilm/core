@@ -12,12 +12,13 @@ import { ImageEdit } from '../../../../../Slider/Settings/Drawer/ImageEdit/Image
 import { useTemplateSettingsForm } from '../useTemplateSettingsForm'
 
 import { CustomizeTemplate } from './CustomizeTemplate'
+
 interface AboutTabPanelProps {
   showStrategySection?: boolean
 }
 
-export function AboutTabPanel({ 
-  showStrategySection = false 
+export function AboutTabPanel({
+  showStrategySection = false
 }: AboutTabPanelProps): ReactElement {
   const { values, handleChange, errors } = useTemplateSettingsForm()
   const { t } = useTranslation('apps-journeys-admin')

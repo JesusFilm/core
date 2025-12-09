@@ -7,8 +7,8 @@ import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__ge
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import {
-  publishedLocalTemplate,
-  publishedGlobalTemplate
+  publishedGlobalTemplate,
+  publishedLocalTemplate
 } from '../../../../../../JourneyList/journeyListData'
 import { TemplateSettingsFormValues } from '../useTemplateSettingsForm'
 
@@ -19,13 +19,13 @@ describe('MetadataTabPanel', () => {
 
   it('shows published date', () => {
     const handleChange = jest.fn()
-    const publishedGlobalTemplateJourney = publishedGlobalTemplate as unknown as Journey
-    const showFeaturedSettings = publishedGlobalTemplateJourney.team?.id === 'jfp-team'
+    const publishedGlobalTemplateJourney =
+      publishedGlobalTemplate as unknown as Journey
+    const showFeaturedSettings =
+      publishedGlobalTemplateJourney.team?.id === 'jfp-team'
     const { getByRole } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{ journey: publishedGlobalTemplateJourney }}
-        >
+        <JourneyProvider value={{ journey: publishedGlobalTemplateJourney }}>
           <FormikProvider
             value={
               {
@@ -119,9 +119,7 @@ describe('MetadataTabPanel', () => {
       publishedLocalTemplateJourney.team?.id === 'jfp-team'
     const { queryByRole } = render(
       <MockedProvider>
-        <JourneyProvider
-          value={{ journey: publishedLocalTemplateJourney }}
-        >
+        <JourneyProvider value={{ journey: publishedLocalTemplateJourney }}>
           <FormikProvider
             value={
               {
