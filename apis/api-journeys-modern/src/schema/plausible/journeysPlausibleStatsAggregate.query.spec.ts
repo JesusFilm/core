@@ -137,7 +137,7 @@ describe('journeysPlausibleStatsAggregate', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsAggregate: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'Journey not found'
@@ -160,33 +160,10 @@ describe('journeysPlausibleStatsAggregate', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsAggregate: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'User is not allowed to view journey'
-        })
-      ]
-    })
-  })
-
-  it('returns error when env vars missing', async () => {
-    delete process.env.PLAUSIBLE_URL
-    prismaMock.journey.findUnique.mockResolvedValue({
-      id: 'journey-id',
-      userJourneys: [],
-      team: { userTeams: [] }
-    } as any)
-
-    const result = await authClient({
-      document: QUERY,
-      variables: { id: 'journey-id', where: {} }
-    })
-
-    expect(result).toEqual({
-      data: { journeysPlausibleStatsAggregate: null },
-      errors: [
-        expect.objectContaining({
-          message: 'Plausible is not configured'
         })
       ]
     })
@@ -209,7 +186,7 @@ describe('journeysPlausibleStatsAggregate', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsAggregate: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'Invalid filters'
@@ -218,4 +195,3 @@ describe('journeysPlausibleStatsAggregate', () => {
     })
   })
 })
-

@@ -2277,6 +2277,7 @@ export type MutationJourneyCustomizationFieldUserUpdateArgs = {
 
 
 export type MutationJourneyDuplicateArgs = {
+  forceNonTemplate?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['ID']['input'];
   teamId: Scalars['ID']['input'];
 };
@@ -3270,7 +3271,6 @@ export enum PlausibleEvent {
   FooterThumbsUpButtonClick = 'footerThumbsUpButtonClick',
   GospelCompleteCapture = 'gospelCompleteCapture',
   GospelStartCapture = 'gospelStartCapture',
-  InviteFriendCapture = 'inviteFriendCapture',
   JourneyResponses = 'journeyResponses',
   JourneyVisitors = 'journeyVisitors',
   LinksClicked = 'linksClicked',
@@ -3556,7 +3556,7 @@ export type Query = {
   journeyVisitorsConnection: JourneyVisitorsConnection;
   journeys: Array<Journey>;
   journeysEmailPreference?: Maybe<JourneysEmailPreference>;
-  journeysPlausibleStatsAggregate?: Maybe<PlausibleStatsAggregateResponse>;
+  journeysPlausibleStatsAggregate: PlausibleStatsAggregateResponse;
   /**
    * This endpoint allows you to break down your stats by some property.
    * If you are familiar with SQL family databases, this endpoint corresponds to
@@ -3575,13 +3575,13 @@ export type Query = {
    *  breakdown for every page, you would have to break down on `event:page` and
    *  make multiple queries for each date.
    */
-  journeysPlausibleStatsBreakdown?: Maybe<Array<PlausibleStatsResponse>>;
-  journeysPlausibleStatsRealtimeVisitors?: Maybe<Scalars['Int']['output']>;
+  journeysPlausibleStatsBreakdown: Array<PlausibleStatsResponse>;
+  journeysPlausibleStatsRealtimeVisitors: Scalars['Int']['output'];
   /**
    * This endpoint provides timeseries data over a certain time period.
    * If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
    */
-  journeysPlausibleStatsTimeseries?: Maybe<Array<PlausibleStatsResponse>>;
+  journeysPlausibleStatsTimeseries: Array<PlausibleStatsResponse>;
   keywords: Array<Keyword>;
   language?: Maybe<Language>;
   languages: Array<Language>;
@@ -3609,6 +3609,7 @@ export type Query = {
   taxonomies: Array<Taxonomy>;
   team: Team;
   teams: Array<Team>;
+  templateFamilyStatsAggregate?: Maybe<TemplateFamilyStatsAggregateResponse>;
   templateFamilyStatsBreakdown?: Maybe<Array<TemplateFamilyStatsBreakdownResponse>>;
   user?: Maybe<User>;
   userByEmail?: Maybe<User>;
@@ -3987,10 +3988,18 @@ export type QueryTeamArgs = {
 };
 
 
+export type QueryTemplateFamilyStatsAggregateArgs = {
+  id: Scalars['ID']['input'];
+  idType?: InputMaybe<IdType>;
+  where: PlausibleStatsAggregateFilter;
+};
+
+
 export type QueryTemplateFamilyStatsBreakdownArgs = {
   events?: InputMaybe<Array<PlausibleEvent>>;
   id: Scalars['ID']['input'];
   idType?: InputMaybe<IdType>;
+  status?: InputMaybe<Array<JourneyStatus>>;
   where: PlausibleStatsBreakdownFilter;
 };
 
@@ -4360,6 +4369,7 @@ export type Site = {
 };
 
 export type SiteCreateInput = {
+  disableSharedLinks?: InputMaybe<Scalars['Boolean']['input']>;
   domain: Scalars['String']['input'];
   goals?: InputMaybe<Array<Scalars['String']['input']>>;
 };
@@ -4637,11 +4647,21 @@ export type TeamUpdateInput = {
   title: Scalars['String']['input'];
 };
 
+export type TemplateFamilyStatsAggregateResponse = {
+  __typename?: 'TemplateFamilyStatsAggregateResponse';
+  childJourneysCount: Scalars['Int']['output'];
+  totalJourneysResponses: Scalars['Int']['output'];
+  totalJourneysViews: Scalars['Int']['output'];
+};
+
 export type TemplateFamilyStatsBreakdownResponse = {
   __typename?: 'TemplateFamilyStatsBreakdownResponse';
   journeyId: Scalars['String']['output'];
   journeyName: Scalars['String']['output'];
+  /** The URL to visit this journey. Uses custom domain if available, otherwise URL based on environment */
+  journeyUrl: Scalars['String']['output'];
   stats: Array<TemplateFamilyStatsEventResponse>;
+  status: JourneyStatus;
   teamName: Scalars['String']['output'];
 };
 

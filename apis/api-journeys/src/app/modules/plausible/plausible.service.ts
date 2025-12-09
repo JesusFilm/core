@@ -1,7 +1,3 @@
-import { InjectQueue } from '@nestjs/bullmq'
-import { Injectable } from '@nestjs/common'
-import { Queue } from 'bullmq'
-
 import { JourneyPlausibleEvents } from '@core/journeys/ui/plausibleHelpers'
 
 interface PlausibleCreateTeamSiteJob {
@@ -64,11 +60,3 @@ export const goals: Array<keyof JourneyPlausibleEvents> = [
   'custom2Capture',
   'custom3Capture'
 ]
-
-@Injectable()
-export class PlausibleService {
-  constructor(
-    @InjectQueue('api-journeys-plausible')
-    private readonly plausibleQueue: Queue<PlausibleJob>
-  ) {}
-}
