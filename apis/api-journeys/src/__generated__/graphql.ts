@@ -1127,6 +1127,7 @@ export type JourneyEventsExportLogInput = {
 };
 
 export type JourneyEventsFilter = {
+  includeUnconnectedCards?: InputMaybe<Scalars['Boolean']['input']>;
   periodRangeEnd?: InputMaybe<Scalars['DateTime']['input']>;
   periodRangeStart?: InputMaybe<Scalars['DateTime']['input']>;
   typenames?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -2274,6 +2275,7 @@ export type MutationJourneyCustomizationFieldUserUpdateArgs = {
 
 
 export type MutationJourneyDuplicateArgs = {
+  forceNonTemplate?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['ID']['input'];
   teamId: Scalars['ID']['input'];
 };
@@ -2350,6 +2352,7 @@ export type MutationJourneyVisitorExportToGoogleSheetArgs = {
   integrationId: Scalars['ID']['input'];
   journeyId: Scalars['ID']['input'];
   select?: InputMaybe<JourneyVisitorExportSelect>;
+  timezone?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -3253,6 +3256,35 @@ export enum Platform {
   Watch = 'watch'
 }
 
+export enum PlausibleEvent {
+  ButtonClick = 'buttonClick',
+  ChatButtonClick = 'chatButtonClick',
+  ChatsClicked = 'chatsClicked',
+  FooterChatButtonClick = 'footerChatButtonClick',
+  FooterThumbsDownButtonClick = 'footerThumbsDownButtonClick',
+  FooterThumbsUpButtonClick = 'footerThumbsUpButtonClick',
+  JourneyResponses = 'journeyResponses',
+  JourneyVisitors = 'journeyVisitors',
+  LinksClicked = 'linksClicked',
+  NavigateNextStep = 'navigateNextStep',
+  NavigatePreviousStep = 'navigatePreviousStep',
+  Pageview = 'pageview',
+  RadioQuestionSubmit = 'radioQuestionSubmit',
+  ShareButtonClick = 'shareButtonClick',
+  SignUpSubmit = 'signUpSubmit',
+  TextResponseSubmit = 'textResponseSubmit',
+  VideoCollapse = 'videoCollapse',
+  VideoComplete = 'videoComplete',
+  VideoExpand = 'videoExpand',
+  VideoPause = 'videoPause',
+  VideoPlay = 'videoPlay',
+  VideoProgress25 = 'videoProgress25',
+  VideoProgress50 = 'videoProgress50',
+  VideoProgress75 = 'videoProgress75',
+  VideoStart = 'videoStart',
+  VideoTrigger = 'videoTrigger'
+}
+
 export type PlausibleStatsAggregateFilter = {
   /**
    * date in the standard ISO-8601 format (YYYY-MM-DD).
@@ -3512,21 +3544,32 @@ export type Query = {
   journeyVisitorsConnection: JourneyVisitorsConnection;
   journeys: Array<Journey>;
   journeysEmailPreference?: Maybe<JourneysEmailPreference>;
-  journeysPlausibleStatsAggregate?: Maybe<PlausibleStatsAggregateResponse>;
+  journeysPlausibleStatsAggregate: PlausibleStatsAggregateResponse;
   /**
    * This endpoint allows you to break down your stats by some property.
-   * If you are familiar with SQL family databases, this endpoint corresponds to running `GROUP BY` on a certain property in your stats, then ordering by the count.
-   * Check out the [properties](https://plausible.io/docs/stats-api#properties) section for a reference of all the properties you can use in this query.
-   * This endpoint can be used to fetch data for `Top sources`, `Top pages`, `Top countries` and similar reports.
-   * Currently, it is only possible to break down on one property at a time. Using a list of properties with one query is not supported. So if you want a breakdown by both `event:page` and `visit:source` for example, you would have to make multiple queries (break down on one property and filter on another) and then manually/programmatically group the results together in one report. This also applies for breaking down by time periods. To get a daily breakdown for every page, you would have to break down on `event:page` and make multiple queries for each date.
+   * If you are familiar with SQL family databases, this endpoint corresponds to
+   * running `GROUP BY` on a certain property in your stats, then ordering by the
+   * count.
+   * Check out the [properties](https://plausible.io/docs/stats-api#properties)
+   * section for a reference of all the properties you can use in this query.
+   * This endpoint can be used to fetch data for `Top sources`, `Top pages`,
+   * `Top countries` and similar reports.
+   * Currently, it is only possible to break down on one property at a time.
+   * Using a list of properties with one query is not supported. So if you want
+   * a breakdown by both `event:page` and `visit:source` for example, you would
+   * have to make multiple queries (break down on one property and filter on
+   *  another) and then manually/programmatically group the results together in one
+   *  report. This also applies for breaking down by time periods. To get a daily
+   *  breakdown for every page, you would have to break down on `event:page` and
+   *  make multiple queries for each date.
    */
-  journeysPlausibleStatsBreakdown?: Maybe<Array<PlausibleStatsResponse>>;
-  journeysPlausibleStatsRealtimeVisitors?: Maybe<Scalars['Int']['output']>;
+  journeysPlausibleStatsBreakdown: Array<PlausibleStatsResponse>;
+  journeysPlausibleStatsRealtimeVisitors: Scalars['Int']['output'];
   /**
    * This endpoint provides timeseries data over a certain time period.
    * If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
    */
-  journeysPlausibleStatsTimeseries?: Maybe<Array<PlausibleStatsResponse>>;
+  journeysPlausibleStatsTimeseries: Array<PlausibleStatsResponse>;
   keywords: Array<Keyword>;
   language?: Maybe<Language>;
   languages: Array<Language>;
@@ -3554,6 +3597,8 @@ export type Query = {
   taxonomies: Array<Taxonomy>;
   team: Team;
   teams: Array<Team>;
+  templateFamilyStatsAggregate?: Maybe<TemplateFamilyStatsAggregateResponse>;
+  templateFamilyStatsBreakdown?: Maybe<Array<TemplateFamilyStatsBreakdownResponse>>;
   user?: Maybe<User>;
   userByEmail?: Maybe<User>;
   userInvites?: Maybe<Array<UserInvite>>;
@@ -3928,6 +3973,22 @@ export type QueryTaxonomiesArgs = {
 
 export type QueryTeamArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryTemplateFamilyStatsAggregateArgs = {
+  id: Scalars['ID']['input'];
+  idType?: InputMaybe<IdType>;
+  where: PlausibleStatsAggregateFilter;
+};
+
+
+export type QueryTemplateFamilyStatsBreakdownArgs = {
+  events?: InputMaybe<Array<PlausibleEvent>>;
+  id: Scalars['ID']['input'];
+  idType?: InputMaybe<IdType>;
+  status?: InputMaybe<Array<JourneyStatus>>;
+  where: PlausibleStatsBreakdownFilter;
 };
 
 
@@ -4571,6 +4632,30 @@ export type TeamCreateInput = {
 export type TeamUpdateInput = {
   publicTitle?: InputMaybe<Scalars['String']['input']>;
   title: Scalars['String']['input'];
+};
+
+export type TemplateFamilyStatsAggregateResponse = {
+  __typename?: 'TemplateFamilyStatsAggregateResponse';
+  childJourneysCount: Scalars['Int']['output'];
+  totalJourneysResponses: Scalars['Int']['output'];
+  totalJourneysViews: Scalars['Int']['output'];
+};
+
+export type TemplateFamilyStatsBreakdownResponse = {
+  __typename?: 'TemplateFamilyStatsBreakdownResponse';
+  journeyId: Scalars['String']['output'];
+  journeyName: Scalars['String']['output'];
+  /** The URL to visit this journey. Uses custom domain if available, otherwise URL based on environment */
+  journeyUrl: Scalars['String']['output'];
+  stats: Array<TemplateFamilyStatsEventResponse>;
+  status: JourneyStatus;
+  teamName: Scalars['String']['output'];
+};
+
+export type TemplateFamilyStatsEventResponse = {
+  __typename?: 'TemplateFamilyStatsEventResponse';
+  event: Scalars['String']['output'];
+  visitors: Scalars['Int']['output'];
 };
 
 export type TextResponseBlock = Block & {

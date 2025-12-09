@@ -13,6 +13,7 @@ import { getJourneyStatsBreakdown } from './service'
 builder.queryField('journeysPlausibleStatsBreakdown', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: [PlausibleStatsResponseRef],
+    nullable: false,
     description: `This endpoint allows you to break down your stats by some property.
 If you are familiar with SQL family databases, this endpoint corresponds to
 running \`GROUP BY\` on a certain property in your stats, then ordering by the

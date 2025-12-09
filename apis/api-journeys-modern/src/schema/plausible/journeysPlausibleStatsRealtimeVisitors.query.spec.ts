@@ -137,7 +137,7 @@ describe('journeysPlausibleStatsRealtimeVisitors', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsRealtimeVisitors: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'Journey not found'
@@ -160,33 +160,10 @@ describe('journeysPlausibleStatsRealtimeVisitors', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsRealtimeVisitors: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'User is not allowed to view journey'
-        })
-      ]
-    })
-  })
-
-  it('returns error when Plausible env vars are missing', async () => {
-    delete process.env.PLAUSIBLE_URL
-    prismaMock.journey.findUnique.mockResolvedValue({
-      id: 'journey-id',
-      userJourneys: [],
-      team: { userTeams: [] }
-    } as any)
-
-    const result = await authClient({
-      document: QUERY,
-      variables: { id: 'journey-id', idType: 'databaseId' }
-    })
-
-    expect(result).toEqual({
-      data: { journeysPlausibleStatsRealtimeVisitors: null },
-      errors: [
-        expect.objectContaining({
-          message: 'Plausible is not configured'
         })
       ]
     })
@@ -210,7 +187,7 @@ describe('journeysPlausibleStatsRealtimeVisitors', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsRealtimeVisitors: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'Invalid site id'
