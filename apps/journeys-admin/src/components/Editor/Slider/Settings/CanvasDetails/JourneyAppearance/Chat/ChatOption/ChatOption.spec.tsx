@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { MessagePlatform } from '../../../../../../../../../__generated__/globalTypes'
@@ -89,7 +89,7 @@ describe('ChatOption', () => {
       </MockedProvider>
     )
 
-    fireEvent.mouseDown(screen.getByText('TikTok'))
+    fireEvent.click(screen.getByText('TikTok'))
     fireEvent.click(screen.getByText('Snapchat'))
     expect(screen.getByRole('combobox')).toHaveTextContent('Snapchat')
   })
