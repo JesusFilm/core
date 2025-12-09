@@ -72,6 +72,12 @@ describe('journeyAcl', () => {
     teamId: 'local-team-id',
     team: { userTeams: [{ userId: user.id, role: UserTeamRole.member }] }
   } as unknown as Journey)
+  const localTemplateUserJourneyEditor = subject('Journey', {
+    id: 'journeyId',
+    template: true,
+    teamId: 'local-team-id',
+    userJourneys: [{ userId: user.id, role: UserJourneyRole.editor }]
+  } as unknown as Journey)
   const journeyEmpty = subject('Journey', {
     id: 'journeyId',
     userJourneys: [],
@@ -95,6 +101,18 @@ describe('journeyAcl', () => {
   describe('create', () => {
     it('allow when user is team member', () => {
       expect(ability.can(Action.Create, journeyUserTeamMember)).toBe(true)
+    })
+
+    it('allow when user is team manager', () => {
+      expect(ability.can(Action.Create, journeyUserTeamManager)).toBe(true)
+    })
+
+    it('allow when user is team member creating local template', () => {
+      expect(ability.can(Action.Create, localTemplateUserTeamMember)).toBe(true)
+    })
+
+    it('allow when user is team manager creating local template', () => {
+      expect(ability.can(Action.Create, localTemplateUserTeamManager)).toBe(true)
     })
 
     it('deny when user has no userTeam', () => {
@@ -126,22 +144,34 @@ describe('journeyAcl', () => {
     })
 
     it('allow when user is team manager of local template journey team', () => {
-      expect(ability.can(Action.Manage, localTemplateUserTeamManager)).toBe(true)
+      expect(ability.can(Action.Manage, localTemplateUserTeamManager, 'template')).toBe(true)
     })
 
     it('allow when user is journey owner of local template journey', () => {
-      expect(ability.can(Action.Manage, localTemplateUserJourneyOwner)).toBe(true)
+      expect(ability.can(Action.Manage, localTemplateUserJourneyOwner, 'template')).toBe(true)
     })
 
     it('allow when user is team member of local template journey team', () => {
+      expect(ability.can(Action.Manage, localTemplateUserTeamMember, 'template')).toBe(true)
+    })
+
+    it('allow when user is journey editor of local template journey', () => {
+      expect(ability.can(Action.Manage, localTemplateUserJourneyEditor, 'template')).toBe(true)
+    })
+
+    it('allow when user is team member managing local template journey', () => {
       expect(ability.can(Action.Manage, localTemplateUserTeamMember)).toBe(true)
     })
 
-    it('deny when user is team member', () => {
+    it('allow when user is journey editor managing local template journey', () => {
+      expect(ability.can(Action.Manage, localTemplateUserJourneyEditor)).toBe(true)
+    })
+
+    it('deny when user is team member of regular journey', () => {
       expect(ability.can(Action.Manage, journeyUserTeamMember)).toBe(false)
     })
 
-    it('deny when user is journey editor', () => {
+    it('deny when user is journey editor of regular journey', () => {
       expect(ability.can(Action.Manage, journeyUserJourneyEditor)).toBe(false)
     })
 
