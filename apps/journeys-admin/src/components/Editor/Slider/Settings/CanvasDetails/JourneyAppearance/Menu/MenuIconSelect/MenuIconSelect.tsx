@@ -139,6 +139,7 @@ export function MenuIconSelect(): ReactElement {
       </Typography>
       <CardActionArea sx={{ width: 112 }}>
         <Select
+          autoWidth
           value={journey?.menuButtonIcon ?? ''}
           onChange={handleChange}
           displayEmpty
