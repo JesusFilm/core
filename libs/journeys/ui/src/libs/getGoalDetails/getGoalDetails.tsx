@@ -43,7 +43,7 @@ export function getGoalDetails(
       }
     case 'Text':
       return {
-        label: t('Text'),
+        label: t('Text (SMS)'),
         icon: <PhoneIcon sx={iconStyle} />
       }
     case 'Call':
