@@ -117,7 +117,7 @@ export const config = {
   matcher: ['/watch/((?!assets).*)', '/watch']
 }
 
-export async function middleware(req: NextRequest): Promise<NextResponse> {
+export async function proxy(req: NextRequest): Promise<NextResponse> {
   const locale = getLocale(req) ?? DEFAULT_LOCALE
   const rewriteUrl = req.nextUrl.clone()
   const pathname = req.nextUrl.pathname
