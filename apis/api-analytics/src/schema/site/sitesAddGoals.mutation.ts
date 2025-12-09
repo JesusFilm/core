@@ -38,7 +38,7 @@ async function processSiteBatch(
       )
 
       if (newGoals.length > 0) {
-        await prisma.goals.createMany({
+        const result = await prisma.goals.createMany({
           data: newGoals.map((eventName) => ({
             site_id: site.id,
             event_name: eventName,
@@ -47,7 +47,7 @@ async function processSiteBatch(
           })),
           skipDuplicates: true
         })
-        added += newGoals.length
+        added += result.count
       }
     } catch (error) {
       failed++

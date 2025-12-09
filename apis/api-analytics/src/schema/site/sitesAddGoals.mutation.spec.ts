@@ -246,6 +246,7 @@ describe('sitesAddGoals', () => {
     prismaMock.goals.findMany
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
     prismaMock.goals.createMany
       .mockResolvedValueOnce({ count: 2 })
       .mockRejectedValueOnce(new Error('Database error'))
