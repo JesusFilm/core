@@ -25,16 +25,16 @@ export function JourneySort({
 
   const sortOptions: RadioSelectOption<SortOrder>[] = [
     {
-      value: SortOrder.CREATED_AT,
-      label: t('Date Created')
+      value: SortOrder.UPDATED_AT,
+      label: t('Last Modified')
     },
     {
       value: SortOrder.TITLE,
       label: t('Name')
     },
     {
-      value: SortOrder.UPDATED_AT,
-      label: t('Last Modified')
+      value: SortOrder.CREATED_AT,
+      label: t('Date Created')
     }
   ]
 

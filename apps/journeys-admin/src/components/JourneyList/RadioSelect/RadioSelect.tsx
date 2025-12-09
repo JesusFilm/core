@@ -18,7 +18,6 @@ import {
 } from 'react'
 
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
-import { palette } from '@core/shared/ui/themes/journeysAdmin/tokens/colors'
 
 export interface RadioSelectOption<T extends string> {
   value: T
@@ -121,10 +120,7 @@ export function RadioSelect<T extends string>({
                   backgroundColor: 'rgba(0, 0, 0, 0.1)'
                 },
                 '& .MuiFormControlLabel-label': {
-                  fontFamily: "'Open Sans', sans-serif",
-                  fontWeight: 400,
-                  fontSize: '14px',
-                  lineHeight: '22px'
+                  typography: 'body2'
                 }
               }}
             />
@@ -152,26 +148,24 @@ export function RadioSelect<T extends string>({
           justifyContent: 'center',
           borderRadius: '8px',
           border: '2px solid',
-          borderColor: palette[700],
-          fontFamily: "'Montserrat', sans-serif",
-          fontWeight: 600,
-          fontSize: '14px',
-          color: palette[700],
-          paddingTop: showMobileIcon ? '4px' : '4px',
-          paddingBottom: showMobileIcon ? '4px' : '4px',
-          paddingLeft: showMobileIcon ? '4px' : '14px',
-          paddingRight: showMobileIcon ? '4px' : '8px',
+          borderColor: 'secondary.light',
+          typography: 'subtitle3',
+          color: 'secondary.light',
+          paddingTop: 1,
+          paddingBottom: 1,
+          paddingLeft: showMobileIcon ? 1 : 3.5,
+          paddingRight: showMobileIcon ? 1 : 2,
           '&:hover': {
-            borderColor: palette[700],
-            color: palette[700],
+            borderColor: 'secondary.light',
+            color: 'secondary.light',
             backgroundColor: 'rgba(220, 221, 229, 0.15)',
             '& .MuiSvgIcon-root': {
-              color: palette[700]
+              color: 'secondary.light'
             }
           },
           '&:focus': {
             outline: 'none',
-            borderColor: palette[700]
+            borderColor: 'secondary.light'
           },
           ...sx
         }}
@@ -187,7 +181,7 @@ export function RadioSelect<T extends string>({
                 fontSize: '1rem',
                 ml: 1,
                 pl: 0,
-                color: palette[700]
+                color: 'secondary.light'
               }}
             />
           </>

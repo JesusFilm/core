@@ -45,7 +45,7 @@ export function JourneyStatusFilter({
       onChange={onChange}
       ariaLabel={t('Filter by status')}
       open={open}
-      sx={{ marginRight: breakpoints.sm ? '12px' : '4px' }}
+      sx={{ marginRight: breakpoints.sm ? 3 : 1 }}
       mobileIcon={<Tune sx={{ fontSize: '1.25rem' }} />}
     />
   )
