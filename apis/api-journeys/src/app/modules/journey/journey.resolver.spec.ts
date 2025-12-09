@@ -1374,7 +1374,7 @@ describe('JourneyResolver', () => {
         title: journey.title,
         featuredAt: null,
         fromTemplateId: 'journeyId',
-        template: false,
+        template: false, // journey being duplicated for customization should be false
         team: {
           connect: { id: 'teamId' }
         },
