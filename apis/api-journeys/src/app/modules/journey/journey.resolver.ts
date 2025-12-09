@@ -459,7 +459,8 @@ export class JourneyResolver {
     @CaslAbility() ability: AppAbility,
     @Args('id') id: string,
     @CurrentUserId() userId: string,
-    @Args('teamId') teamId: string
+    @Args('teamId') teamId: string,
+    @Args('forceNonTemplate') forceNonTemplate?: boolean
   ): Promise<Journey | undefined> {
     const journey = await this.prismaService.journey.findUnique({
       where: { id },
@@ -582,6 +583,7 @@ export class JourneyResolver {
       })
     )
     const isLocalTemplate = journey.teamId !== 'jfp-team' && journey.template
+    const duplicateAsTemplate = forceNonTemplate ? false : isLocalTemplate
 
     let retry = true
     while (retry) {
@@ -611,7 +613,7 @@ export class JourneyResolver {
                 status: JourneyStatus.published,
                 publishedAt: new Date(),
                 featuredAt: null,
-                template: isLocalTemplate,
+                template: duplicateAsTemplate,
                 fromTemplateId: journey.template
                   ? id
                   : (journey.fromTemplateId ?? null),
