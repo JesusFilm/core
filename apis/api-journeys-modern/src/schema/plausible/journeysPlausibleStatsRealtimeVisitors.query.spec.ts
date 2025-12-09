@@ -137,7 +137,7 @@ describe('journeysPlausibleStatsRealtimeVisitors', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsRealtimeVisitors: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'Journey not found'
@@ -160,7 +160,7 @@ describe('journeysPlausibleStatsRealtimeVisitors', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsRealtimeVisitors: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'User is not allowed to view journey'
@@ -187,7 +187,7 @@ describe('journeysPlausibleStatsRealtimeVisitors', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsRealtimeVisitors: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'Invalid site id'

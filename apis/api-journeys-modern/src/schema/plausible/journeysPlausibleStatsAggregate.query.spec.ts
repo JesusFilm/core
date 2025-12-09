@@ -137,7 +137,7 @@ describe('journeysPlausibleStatsAggregate', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsAggregate: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'Journey not found'
@@ -160,7 +160,7 @@ describe('journeysPlausibleStatsAggregate', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsAggregate: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'User is not allowed to view journey'
@@ -186,7 +186,7 @@ describe('journeysPlausibleStatsAggregate', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsAggregate: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'Invalid filters'

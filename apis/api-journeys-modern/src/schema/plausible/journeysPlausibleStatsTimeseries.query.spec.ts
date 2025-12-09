@@ -140,7 +140,7 @@ describe('journeysPlausibleStatsTimeseries', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsTimeseries: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'Journey not found'
@@ -163,7 +163,7 @@ describe('journeysPlausibleStatsTimeseries', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsTimeseries: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'User is not allowed to view journey'
@@ -189,7 +189,7 @@ describe('journeysPlausibleStatsTimeseries', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsTimeseries: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'Invalid period'

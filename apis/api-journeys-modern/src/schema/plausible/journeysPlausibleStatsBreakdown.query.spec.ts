@@ -141,7 +141,7 @@ describe('journeysPlausibleStatsBreakdown', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsBreakdown: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'Journey not found'
@@ -167,7 +167,7 @@ describe('journeysPlausibleStatsBreakdown', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsBreakdown: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'User is not allowed to view journey'
@@ -196,7 +196,7 @@ describe('journeysPlausibleStatsBreakdown', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsBreakdown: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'Invalid property'
