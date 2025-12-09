@@ -2274,6 +2274,7 @@ export type MutationJourneyCustomizationFieldUserUpdateArgs = {
 
 
 export type MutationJourneyDuplicateArgs = {
+  forceNonTemplate?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['ID']['input'];
   teamId: Scalars['ID']['input'];
 };
