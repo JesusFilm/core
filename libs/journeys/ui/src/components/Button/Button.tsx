@@ -261,15 +261,6 @@ export function Button({
     }
   }
 
-  function isEmptyForm(): boolean {
-    if (formik == null) return true
-    const values = formik.values
-    if (values == null || typeof values !== 'object') return true
-    return Object.values(values as Record<string, unknown>).every(
-      (value) => value === ''
-    )
-  }
-
   const handleClick = async (e: MouseEvent): Promise<void> => {
     e.stopPropagation()
 
@@ -278,10 +269,10 @@ export function Button({
       e.preventDefault()
       const errors = await formik.validateForm(formik.values)
 
-      if (!isEmptyForm()) {
-        if (Object.keys(errors).length > 0) return
-        await formik.submitForm()
-      }
+      // Always call submitForm() to touch all fields, ensuring validation errors are displayed.
+      // Per Formik docs, submitForm() will abort submission if validation errors exist.
+      await formik.submitForm()
+      if (Object.keys(errors).length > 0) return
     }
 
     const hasMessagePlatform = messagePlatform != null
