@@ -32,5 +32,3 @@ export const env = createEnv({
     SERVICE_VERSION: z.string().trim().default('')
   }
 })
-
-// getPlausibleEnv has been removed in favor of using env directly in Plausible services.
