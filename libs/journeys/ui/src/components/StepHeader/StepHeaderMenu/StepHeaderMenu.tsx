@@ -83,15 +83,15 @@ export function StepHeaderMenu(): ReactElement {
   return (
     <Box
       sx={{
-        borderRadius: 400,
+        borderRadius: 100,
         border: isEmpty ? 'dashed' : null,
-        borderWidth: 3,
+        borderWidth: 2,
         minHeight: 46,
         minWidth: 46,
         display: 'grid',
         placeItems: 'center',
         maxWidth: 'min-content',
-        opacity: menuButtonIcon == null ? 1 : undefined
+        opacity: menuButtonIcon == null ? 0.5 : 1
       }}
       data-testid="StepHeaderMenu"
     >
