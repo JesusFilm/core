@@ -117,12 +117,11 @@ export const goals: Array<keyof JourneyPlausibleEvents> = [
   'gospelStartCapture',
   'gospelCompleteCapture',
   'rsvpCapture',
-  'inviteFriendCapture',
+  'specialVideoStartCapture',
+  'specialVideoCompleteCapture',
   'custom1Capture',
   'custom2Capture',
-  'custom3Capture',
-  'specialVideoStartCapture',
-  'specialVideoCompleteCapture'
+  'custom3Capture'
 ]
 
 const httpLink = createHttpLink({
@@ -229,11 +228,36 @@ async function createTemplateSite(
   { templateId }: PlausibleCreateTemplateSiteJob,
   logger?: Logger
 ): Promise<void> {
+  // Verify the journey exists, is a template, and doesn't already have a template site
+  const journey = await prisma.journey.findFirst({
+    where: {
+      id: templateId,
+      template: true,
+      templateSite: { not: true }
+    },
+    select: { id: true }
+  })
+
+  if (journey == null) {
+    logger?.warn(
+      { templateId },
+      'Cannot create template site for journey. Make sure the journey exists, is a template, and does not already have a template site.'
+    )
+    return
+  }
+
   const site = await createSite(templateSiteId(templateId), true)
   if (site == null || site.__typename !== 'MutationSiteCreateSuccess') {
     logger?.warn({ templateId }, 'failed to create template site in Plausible')
     return
   }
+
+  await prisma.journey.update({
+    where: { id: templateId },
+    data: {
+      templateSite: true
+    }
+  })
   logger?.info({ templateId }, 'template site created in Plausible')
 }
 
@@ -278,25 +302,28 @@ async function createSites(logger?: Logger): Promise<void> {
     )
   }
 
-  // logger?.info('creating template sites...')
-  // const templateIds = (
-  //   await prisma.journey.findMany({
-  //     where: { template: true },
-  //     select: { id: true }
-  //   })
-  // ).map(({ id }) => id)
+  logger?.info('creating template sites...')
+  const templateIds = (
+    await prisma.journey.findMany({
+      where: {
+        template: true,
+        templateSite: { not: true }
+      },
+      select: { id: true }
+    })
+  ).map(({ id }) => id)
 
-  // for (const ids of chunk(templateIds, BATCH_SIZE)) {
-  //   await Promise.all(
-  //     ids.map(
-  //       async (templateId) =>
-  //         await createTemplateSite(
-  //           { __typename: 'plausibleCreateTemplateSite', templateId },
-  //           logger
-  //         )
-  //     )
-  //   )
-  // }
+  for (const ids of chunk(templateIds, BATCH_SIZE)) {
+    await Promise.all(
+      ids.map(
+        async (templateId) =>
+          await createTemplateSite(
+            { __typename: 'plausibleCreateTemplateSite', templateId },
+            logger
+          )
+      )
+    )
+  }
 }
 
 export async function service(

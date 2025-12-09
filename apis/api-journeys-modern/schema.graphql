@@ -1438,12 +1438,11 @@ enum PlausibleEvent {
   gospelStartCapture
   gospelCompleteCapture
   rsvpCapture
-  inviteFriendCapture
+  specialVideoStartCapture
+  specialVideoCompleteCapture
   custom1Capture
   custom2Capture
   custom3Capture
-  specialVideoStartCapture
-  specialVideoCompleteCapture
   chatsClicked
   linksClicked
   journeyVisitors
