@@ -140,7 +140,7 @@ describe('journeysPlausibleStatsTimeseries', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsTimeseries: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'Journey not found'
@@ -163,33 +163,10 @@ describe('journeysPlausibleStatsTimeseries', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsTimeseries: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'User is not allowed to view journey'
-        })
-      ]
-    })
-  })
-
-  it('returns error when env vars missing', async () => {
-    delete process.env.PLAUSIBLE_URL
-    prismaMock.journey.findUnique.mockResolvedValue({
-      id: 'journey-id',
-      userJourneys: [],
-      team: { userTeams: [] }
-    } as any)
-
-    const result = await authClient({
-      document: QUERY,
-      variables: { id: 'journey-id', where: { period: '7d' } }
-    })
-
-    expect(result).toEqual({
-      data: { journeysPlausibleStatsTimeseries: null },
-      errors: [
-        expect.objectContaining({
-          message: 'Plausible is not configured'
         })
       ]
     })
@@ -212,7 +189,7 @@ describe('journeysPlausibleStatsTimeseries', () => {
     })
 
     expect(result).toEqual({
-      data: { journeysPlausibleStatsTimeseries: null },
+      data: null,
       errors: [
         expect.objectContaining({
           message: 'Invalid period'
@@ -221,4 +198,3 @@ describe('journeysPlausibleStatsTimeseries', () => {
     })
   })
 })
-

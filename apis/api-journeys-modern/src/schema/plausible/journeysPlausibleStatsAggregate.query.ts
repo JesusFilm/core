@@ -16,6 +16,7 @@ import { getJourneyStatsAggregate } from './service'
 builder.queryField('journeysPlausibleStatsAggregate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: PlausibleStatsAggregateResponseRef,
+    nullable: false,
     args: {
       where: t.arg({
         type: PlausibleStatsAggregateFilter,

@@ -1660,7 +1660,7 @@ type Query {
     """
     timezone: String
   ): String
-  journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter!, id: ID!, idType: IdType = slug): PlausibleStatsAggregateResponse
+  journeysPlausibleStatsAggregate(where: PlausibleStatsAggregateFilter!, id: ID!, idType: IdType = slug): PlausibleStatsAggregateResponse!
 
   """
   This endpoint allows you to break down your stats by some property.
@@ -1680,14 +1680,14 @@ type Query {
    breakdown for every page, you would have to break down on `event:page` and
    make multiple queries for each date.
   """
-  journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter!, id: ID!, idType: IdType = slug): [PlausibleStatsResponse!]
-  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType = slug): Int
+  journeysPlausibleStatsBreakdown(where: PlausibleStatsBreakdownFilter!, id: ID!, idType: IdType = slug): [PlausibleStatsResponse!]!
+  journeysPlausibleStatsRealtimeVisitors(id: ID!, idType: IdType = slug): Int!
 
   """
   This endpoint provides timeseries data over a certain time period.
   If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
   """
-  journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType = slug): [PlausibleStatsResponse!]
+  journeysPlausibleStatsTimeseries(where: PlausibleStatsTimeseriesFilter!, id: ID!, idType: IdType = slug): [PlausibleStatsResponse!]!
   templateFamilyStatsAggregate(id: ID!, idType: IdType = slug, where: PlausibleStatsAggregateFilter!): TemplateFamilyStatsAggregateResponse
   templateFamilyStatsBreakdown(
     id: ID!
