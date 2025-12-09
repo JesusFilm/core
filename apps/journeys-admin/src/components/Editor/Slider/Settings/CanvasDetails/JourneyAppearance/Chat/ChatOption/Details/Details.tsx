@@ -307,6 +307,10 @@ export function Details({
     }
   }
 
+  function handleClick(): void {
+    if (!open) setOpen(true)
+  }
+
   return (
     <Box sx={{ px: 6 }} data-testid="ChatOptionDetails">
       <Stack direction="column" spacing={8} sx={{ pb: 4 }}>
@@ -314,7 +318,8 @@ export function Details({
           <FormControl variant="filled" fullWidth hiddenLabel>
             <Select
               open={open}
-              onClick={() => setOpen((prev) => !prev)}
+              onClose={() => setOpen(false)}
+              onClick={handleClick}
               labelId="icon-select"
               value={currentPlatform}
               displayEmpty

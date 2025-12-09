@@ -126,6 +126,10 @@ export function MenuIconSelect(): ReactElement {
     }
   }
 
+  function handleClick(): void {
+    if (!open) setOpen(true)
+  }
+
   return (
     <Stack
       direction="row"
@@ -138,10 +142,11 @@ export function MenuIconSelect(): ReactElement {
       <Typography variant="subtitle2" sx={{ color: 'secondary.light' }}>
         {t('Select Icon')}
       </Typography>
-      <CardActionArea sx={{ width: 112 }}>
+      <Box sx={{ width: 112 }}>
         <Select
           open={open}
-          onClick={() => setOpen((prev) => !prev)}
+          onClose={() => setOpen(false)}
+          onClick={handleClick}
           value={journey?.menuButtonIcon ?? ''}
           onChange={handleChange}
           displayEmpty
@@ -202,7 +207,7 @@ export function MenuIconSelect(): ReactElement {
             </MenuItem>
           ))}
         </Select>
-      </CardActionArea>
+      </Box>
     </Stack>
   )
 }
