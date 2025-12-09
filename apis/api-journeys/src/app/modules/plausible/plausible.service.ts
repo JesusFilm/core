@@ -14,10 +14,16 @@ interface PlausibleCreateSitesJob {
   __typename: 'plausibleCreateSites'
 }
 
+interface PlausibleCreateTemplateSiteJob {
+  __typename: 'plausibleCreateTemplateSite'
+  templateId: string
+}
+
 export type PlausibleJob =
   | PlausibleCreateTeamSiteJob
   | PlausibleCreateJourneySiteJob
   | PlausibleCreateSitesJob
+  | PlausibleCreateTemplateSiteJob
 
 export const goals: Array<keyof JourneyPlausibleEvents> = [
   'footerThumbsUpButtonClick',
@@ -41,5 +47,16 @@ export const goals: Array<keyof JourneyPlausibleEvents> = [
   'videoProgress50',
   'videoProgress75',
   'videoComplete',
-  'videoTrigger'
+  'videoTrigger',
+  // Capture events are triggered by journey events above
+  'prayerRequestCapture',
+  'christDecisionCapture',
+  'gospelStartCapture',
+  'gospelCompleteCapture',
+  'rsvpCapture',
+  'specialVideoStartCapture',
+  'specialVideoCompleteCapture',
+  'custom1Capture',
+  'custom2Capture',
+  'custom3Capture'
 ]

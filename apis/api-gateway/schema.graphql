@@ -652,6 +652,10 @@ type Journey @join__type(graph: API_JOURNEYS, key: "id")  @join__type(graph: API
   tags: [Tag!]!
   journeyCollections: [JourneyCollection!]!
   """
+  used to see if a template has a site created for it
+  """
+  templateSite: Boolean
+  """
   used in a plausible share link to embed report
   """
   plausibleToken: String
@@ -3586,6 +3590,16 @@ enum PlausibleEvent @join__type(graph: API_JOURNEYS_MODERN)  {
   videoProgress75 @join__enumValue(graph: API_JOURNEYS_MODERN) 
   videoComplete @join__enumValue(graph: API_JOURNEYS_MODERN) 
   videoTrigger @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  prayerRequestCapture @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  christDecisionCapture @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  gospelStartCapture @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  gospelCompleteCapture @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  rsvpCapture @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  specialVideoStartCapture @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  specialVideoCompleteCapture @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  custom1Capture @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  custom2Capture @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  custom3Capture @join__enumValue(graph: API_JOURNEYS_MODERN) 
   chatsClicked @join__enumValue(graph: API_JOURNEYS_MODERN) 
   linksClicked @join__enumValue(graph: API_JOURNEYS_MODERN) 
   journeyVisitors @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -3716,6 +3730,7 @@ enum VideoVariantDownloadQuality @join__type(graph: API_MEDIA)  {
 input SiteCreateInput @join__type(graph: API_ANALYTICS)  {
   domain: String!
   goals: [String!]
+  disableSharedLinks: Boolean
 }
 
 input BlocksFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {

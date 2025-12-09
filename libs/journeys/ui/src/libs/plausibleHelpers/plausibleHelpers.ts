@@ -65,6 +65,17 @@ export interface JourneyPlausibleEvents extends Events {
   videoProgress75: VideoProgressEventCreateInput & Props
   videoComplete: VideoCompleteEventCreateInput & Props
   videoTrigger: Props
+  // Capture events are triggered by journey events above
+  prayerRequestCapture: Props
+  christDecisionCapture: Props
+  gospelStartCapture: Props
+  gospelCompleteCapture: Props
+  rsvpCapture: Props
+  specialVideoStartCapture: Props
+  specialVideoCompleteCapture: Props
+  custom1Capture: Props
+  custom2Capture: Props
+  custom3Capture: Props
 }
 
 interface KeyifyProps {
