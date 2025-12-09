@@ -20,7 +20,7 @@ import { LoadingJourneyList } from '../../JourneyList/LoadingJourneyList'
 import {
   DELETE_TRASHED_JOURNEYS,
   RESTORE_TRASHED_JOURNEYS
-} from '../../JourneyList/TrashedJourneyList/TrashedJourneyList'
+} from '../../JourneyList/JourneyListContent/JourneyListContent'
 
 const Dialog = dynamic(
   async () =>

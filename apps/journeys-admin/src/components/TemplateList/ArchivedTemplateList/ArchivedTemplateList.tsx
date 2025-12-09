@@ -16,7 +16,7 @@ import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
-} from '../../JourneyList/ArchivedJourneyList/ArchivedJourneyList'
+} from '../../JourneyList/JourneyListContent/JourneyListContent'
 import { JourneyCard } from '../../JourneyList/JourneyCard'
 import type { JourneyListProps } from '../../JourneyList/JourneyList'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
