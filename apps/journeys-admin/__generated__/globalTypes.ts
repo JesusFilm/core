@@ -66,6 +66,11 @@ export enum EventType {
   VideoStartEvent = "VideoStartEvent",
 }
 
+export enum GoogleSheetExportMode {
+  create = "create",
+  existing = "existing",
+}
+
 export enum IconColor {
   action = "action",
   disabled = "disabled",
@@ -588,6 +593,13 @@ export interface JourneyUpdateInput {
   socialNodeY?: number | null;
 }
 
+export interface JourneyVisitorExportSelect {
+  name?: boolean | null;
+  email?: boolean | null;
+  phone?: boolean | null;
+  createdAt?: boolean | null;
+}
+
 export interface JourneyVisitorFilter {
   journeyId: string;
   hasChatStarted?: boolean | null;
@@ -597,6 +609,14 @@ export interface JourneyVisitorFilter {
   hasIcon?: boolean | null;
   hideInactive?: boolean | null;
   countryCode?: string | null;
+}
+
+export interface JourneyVisitorGoogleSheetDestinationInput {
+  mode: GoogleSheetExportMode;
+  spreadsheetTitle?: string | null;
+  folderId?: string | null;
+  spreadsheetId?: string | null;
+  sheetName?: string | null;
 }
 
 export interface JourneysEmailPreferenceUpdateInput {
@@ -678,6 +698,8 @@ export interface PhoneActionInput {
   phone: string;
   countryCode: string;
   contactAction?: ContactActionType | null;
+  customizable?: boolean | null;
+  parentStepId?: string | null;
 }
 
 export interface QrCodeCreateInput {
