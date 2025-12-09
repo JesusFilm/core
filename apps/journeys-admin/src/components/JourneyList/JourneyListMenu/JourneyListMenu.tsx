@@ -23,7 +23,7 @@ export function JourneyListMenu({
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
 
-  const activeTab = router?.query.tab?.toString() ?? 'active'
+  const currentStatus = router?.query.status?.toString() ?? 'active'
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
   const handleShowMenu = (event: React.MouseEvent<HTMLButtonElement>): void => {
     setAnchorEl(event.currentTarget)
@@ -38,7 +38,7 @@ export function JourneyListMenu({
   }
   return (
     <>
-      {['active', 'archived', 'trashed'].includes(activeTab) && (
+      {['active', 'archived', 'trashed'].includes(currentStatus) && (
         <>
           <IconButton
             edge="end"
@@ -67,7 +67,7 @@ export function JourneyListMenu({
             }}
             data-testid="JourneyListMenu"
           >
-            {activeTab === 'active' && [
+            {currentStatus === 'active' && [
               <MenuItem
                 label={t('Archive All')}
                 icon={<FolderUp1Icon />}
@@ -81,7 +81,7 @@ export function JourneyListMenu({
                 key="trashAllActive"
               />
             ]}
-            {activeTab === 'archived' && [
+            {currentStatus === 'archived' && [
               <MenuItem
                 label={t('Unarchive All')}
                 icon={<FolderDown1Icon />}
@@ -95,7 +95,7 @@ export function JourneyListMenu({
                 key="trashAllArchived"
               />
             ]}
-            {activeTab === 'trashed' && [
+            {currentStatus === 'trashed' && [
               <MenuItem
                 label={t('Restore All')}
                 icon={<CheckContainedIcon />}

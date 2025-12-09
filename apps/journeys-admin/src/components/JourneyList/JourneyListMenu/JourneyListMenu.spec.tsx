@@ -5,7 +5,7 @@ import { JourneyListMenu } from '.'
 
 jest.mock('next/router', () => ({
   __esModule: true,
-  useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
+  useRouter: jest.fn(() => ({ query: { status: 'active' } }))
 }))
 
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
@@ -13,7 +13,7 @@ const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 describe('JourneyListMenu', () => {
   it('should be empty if not needed', () => {
     mockedUseRouter.mockReturnValue({
-      query: { tab: '' }
+      query: { status: '' }
     } as unknown as NextRouter)
     const { queryByRole } = render(<JourneyListMenu onClick={jest.fn()} />)
     expect(queryByRole('button')).not.toBeInTheDocument()
@@ -22,7 +22,7 @@ describe('JourneyListMenu', () => {
   describe('active', () => {
     beforeEach(() => {
       mockedUseRouter.mockReturnValue({
-        query: { tab: 'active' }
+        query: { status: 'active' }
       } as unknown as NextRouter)
     })
 
@@ -59,7 +59,7 @@ describe('JourneyListMenu', () => {
   describe('archived', () => {
     beforeEach(() => {
       mockedUseRouter.mockReturnValue({
-        query: { tab: 'archived' }
+        query: { status: 'archived' }
       } as unknown as NextRouter)
     })
 
@@ -96,7 +96,7 @@ describe('JourneyListMenu', () => {
   describe('trashed', () => {
     beforeEach(() => {
       mockedUseRouter.mockReturnValue({
-        query: { tab: 'trashed' }
+        query: { status: 'trashed' }
       } as unknown as NextRouter)
     })
 

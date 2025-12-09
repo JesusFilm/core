@@ -1,17 +1,24 @@
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import MenuItem from '@mui/material/MenuItem'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import { type ReactElement, useEffect, useState } from 'react'
+
+import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
 
 import { useJourney } from '../../../libs/JourneyProvider'
 import { AccountCheckDialog } from '../AccountCheckDialog'
 
 interface UseThisTemplateButtonProps {
+  variant?: 'menu-item' | 'button'
   signedIn?: boolean
 }
 
 export function UseThisTemplateButton({
+  variant = 'button',
   signedIn = false
 }: UseThisTemplateButtonProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
@@ -28,7 +35,8 @@ export function UseThisTemplateButton({
   }
 
   const handleCheckSignIn = async (): Promise<void> => {
-    if (signedIn) {
+    // For menu-item variant, assume user is signed in
+    if (variant === 'menu-item' || signedIn) {
       setLoading(true)
       await handleCustomizeNavigation()
     } else {
@@ -58,11 +66,25 @@ export function UseThisTemplateButton({
   }
 
   useEffect(() => {
-    if (!signedIn) {
+    if (!signedIn && variant === 'button') {
       // Prefetch the dashboard page
       void router.prefetch('/users/sign-in')
     }
-  }, [signedIn, router])
+  }, [signedIn, router, variant])
+
+  if (variant === 'menu-item') {
+    return (
+      <MenuItem
+        onClick={handleCheckSignIn}
+        data-testid="UseThisTemplateMenuItem"
+      >
+        <ListItemIcon sx={{ color: 'secondary.main' }}>
+          <LayoutTopIcon />
+        </ListItemIcon>
+        <ListItemText>{t('Use This Template')}</ListItemText>
+      </MenuItem>
+    )
+  }
 
   return (
     <>

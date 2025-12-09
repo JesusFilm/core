@@ -10,4 +10,5 @@
 export interface DuplicatedJourney {
   __typename: "Journey";
   id: string;
+  template: boolean | null;
 }

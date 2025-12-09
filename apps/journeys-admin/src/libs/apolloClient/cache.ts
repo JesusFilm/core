@@ -56,6 +56,9 @@ export const cache = (): InMemoryCache =>
               return [...(existing ?? []), ...incoming]
             }
           },
+          adminJourneys: {
+            keyArgs: ['status', 'template', 'teamId', 'useLastActiveTeamId']
+          },
           adminJourney(_, { args, toReference }) {
             if (args?.idType === 'databaseId' && args?.id != null)
               return toReference({

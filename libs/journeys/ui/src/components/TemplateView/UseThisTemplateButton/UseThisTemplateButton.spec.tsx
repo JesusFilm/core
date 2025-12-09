@@ -49,6 +49,42 @@ describe('UseThisTemplateButton', () => {
     jest.clearAllMocks()
   })
 
+  it('should render use this template button when variant is button', () => {
+    mockUseRouter.mockReturnValue({
+      prefetch,
+      query: { createNew: false }
+    } as unknown as NextRouter)
+
+    render(
+      <JourneyProvider value={{ journey }}>
+        <UseThisTemplateButton variant="button" />
+      </JourneyProvider>
+    )
+
+    expect(screen.getByTestId('UseThisTemplateButton')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('UseThisTemplateMenuItem')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should render use this template menu item when variant is menu-item', () => {
+    mockUseRouter.mockReturnValue({
+      prefetch,
+      query: { createNew: false }
+    } as unknown as NextRouter)
+
+    render(
+      <JourneyProvider value={{ journey }}>
+        <UseThisTemplateButton variant="menu-item" />
+      </JourneyProvider>
+    )
+
+    expect(screen.getByTestId('UseThisTemplateMenuItem')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('UseThisTemplateButton')
+    ).not.toBeInTheDocument()
+  })
+
   describe('signed in', () => {
     beforeEach(() => {
       mockUseRouter.mockReturnValue({

@@ -7,7 +7,7 @@ import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdmin
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
-} from '../../JourneyList/ActiveJourneyList/ActiveJourneyList'
+} from '../../JourneyList/JourneyListContent/JourneyListContent'
 import { SortOrder } from '../../JourneyList/JourneySort'
 import { ThemeProvider } from '../../ThemeProvider'
 import { defaultTemplate, fakeDate, oldTemplate } from '../data'
@@ -19,7 +19,8 @@ const ActiveTemplateListMock = {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
-      template: true
+      template: true,
+      teamId: 'jfp-team'
     }
   },
   result: {
@@ -34,7 +35,8 @@ const noTemplatesMock = {
     query: GET_ADMIN_JOURNEYS,
     variables: {
       status: [JourneyStatus.draft, JourneyStatus.published],
-      template: true
+      template: true,
+      teamId: 'jfp-team'
     }
   },
   result: {
@@ -88,7 +90,8 @@ describe('ActiveTemplateList', () => {
               query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.draft, JourneyStatus.published],
-                template: true
+                template: true,
+                teamId: 'jfp-team'
               }
             },
             result: {
@@ -125,7 +128,8 @@ describe('ActiveTemplateList', () => {
               query: GET_ADMIN_JOURNEYS,
               variables: {
                 status: [JourneyStatus.draft, JourneyStatus.published],
-                template: true
+                template: true,
+                teamId: 'jfp-team'
               }
             },
             result: {
