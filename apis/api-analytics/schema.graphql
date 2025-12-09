@@ -13,12 +13,19 @@ type Error implements BaseError
 
 type Mutation {
   siteCreate(input: SiteCreateInput!): MutationSiteCreateResult!
+  sitesAddGoals(input: SitesAddGoalsInput!): MutationSitesAddGoalsResult!
 }
 
 union MutationSiteCreateResult = Error | MutationSiteCreateSuccess
 
 type MutationSiteCreateSuccess {
   data: Site!
+}
+
+union MutationSitesAddGoalsResult = Error | MutationSitesAddGoalsSuccess
+
+type MutationSitesAddGoalsSuccess {
+  data: Int!
 }
 
 type Site {
@@ -47,4 +54,8 @@ type SiteMembership {
 type SiteSharedLink {
   id: String!
   slug: String!
+}
+
+input SitesAddGoalsInput {
+  goals: [String!]!
 }
