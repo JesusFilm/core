@@ -979,6 +979,8 @@ export type Journey = {
   tags: Array<Tag>;
   team?: Maybe<Team>;
   template?: Maybe<Scalars['Boolean']['output']>;
+  /** used to see if a template has a site created for it */
+  templateSite?: Maybe<Scalars['Boolean']['output']>;
   themeMode: ThemeMode;
   themeName: ThemeName;
   /** private title for creators */
@@ -3260,18 +3262,28 @@ export enum PlausibleEvent {
   ButtonClick = 'buttonClick',
   ChatButtonClick = 'chatButtonClick',
   ChatsClicked = 'chatsClicked',
+  ChristDecisionCapture = 'christDecisionCapture',
+  Custom1Capture = 'custom1Capture',
+  Custom2Capture = 'custom2Capture',
+  Custom3Capture = 'custom3Capture',
   FooterChatButtonClick = 'footerChatButtonClick',
   FooterThumbsDownButtonClick = 'footerThumbsDownButtonClick',
   FooterThumbsUpButtonClick = 'footerThumbsUpButtonClick',
+  GospelCompleteCapture = 'gospelCompleteCapture',
+  GospelStartCapture = 'gospelStartCapture',
   JourneyResponses = 'journeyResponses',
   JourneyVisitors = 'journeyVisitors',
   LinksClicked = 'linksClicked',
   NavigateNextStep = 'navigateNextStep',
   NavigatePreviousStep = 'navigatePreviousStep',
   Pageview = 'pageview',
+  PrayerRequestCapture = 'prayerRequestCapture',
   RadioQuestionSubmit = 'radioQuestionSubmit',
+  RsvpCapture = 'rsvpCapture',
   ShareButtonClick = 'shareButtonClick',
   SignUpSubmit = 'signUpSubmit',
+  SpecialVideoCompleteCapture = 'specialVideoCompleteCapture',
+  SpecialVideoStartCapture = 'specialVideoStartCapture',
   TextResponseSubmit = 'textResponseSubmit',
   VideoCollapse = 'videoCollapse',
   VideoComplete = 'videoComplete',
@@ -4357,6 +4369,7 @@ export type Site = {
 };
 
 export type SiteCreateInput = {
+  disableSharedLinks?: InputMaybe<Scalars['Boolean']['input']>;
   domain: Scalars['String']['input'];
   goals?: InputMaybe<Array<Scalars['String']['input']>>;
 };

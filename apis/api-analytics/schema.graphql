@@ -39,6 +39,7 @@ type Site {
 input SiteCreateInput {
   domain: String!
   goals: [String!]
+  disableSharedLinks: Boolean
 }
 
 type SiteGoal {
