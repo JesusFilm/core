@@ -1461,7 +1461,8 @@ describe('JourneyResolver', () => {
           'createdAt',
           'strategySlug',
           'logoImageBlockId',
-          'menuStepBlockId'
+          'menuStepBlockId',
+          'templateSite'
         ]),
         id: 'duplicateJourneyId',
         status: JourneyStatus.published,
