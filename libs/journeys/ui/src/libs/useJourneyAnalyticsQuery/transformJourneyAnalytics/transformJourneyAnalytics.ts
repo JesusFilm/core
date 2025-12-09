@@ -93,7 +93,7 @@ export function transformJourneyAnalytics(
     targetMap.set(key, target)
   })
 
-  const stepsStats: StepStat[] = (journeySteps ?? []).map((step) => {
+  const stepsStats: StepStat[] = journeySteps.map((step) => {
     const stepId = getStepId(step.property, journeyId)
     return {
       stepId,
@@ -104,10 +104,10 @@ export function transformJourneyAnalytics(
     }
   })
 
-  const referrers = transformReferrers(journeyReferrer ?? undefined)
+  const referrers = transformReferrers(journeyReferrer)
 
   return {
-    totalVisitors: journeyAggregateVisitors?.visitors?.value ?? 0,
+    totalVisitors: journeyAggregateVisitors.visitors?.value ?? 0,
     chatsStarted,
     linksVisited,
     referrers,
