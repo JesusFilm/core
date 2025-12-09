@@ -112,7 +112,9 @@ describe('journeyAcl', () => {
     })
 
     it('allow when user is team manager creating local template', () => {
-      expect(ability.can(Action.Create, localTemplateUserTeamManager)).toBe(true)
+      expect(ability.can(Action.Create, localTemplateUserTeamManager)).toBe(
+        true
+      )
     })
 
     it('deny when user has no userTeam', () => {
@@ -144,23 +146,27 @@ describe('journeyAcl', () => {
     })
 
     it('allow when user is team manager of local template journey team', () => {
-      expect(ability.can(Action.Manage, localTemplateUserTeamManager, 'template')).toBe(
-        true
-      )
+      expect(
+        ability.can(Action.Manage, localTemplateUserTeamManager, 'template')
+      ).toBe(true)
     })
 
     it('allow when user is journey owner of local template journey', () => {
-      expect(ability.can(Action.Manage, localTemplateUserJourneyOwner, 'template')).toBe(
-        true
-      )
+      expect(
+        ability.can(Action.Manage, localTemplateUserJourneyOwner, 'template')
+      ).toBe(true)
     })
 
     it('allow when user is team member of local template journey team', () => {
-      expect(ability.can(Action.Manage, localTemplateUserTeamMember, 'template')).toBe(true)
+      expect(
+        ability.can(Action.Manage, localTemplateUserTeamMember, 'template')
+      ).toBe(true)
     })
 
     it('allow when user is journey editor of local template journey', () => {
-      expect(ability.can(Action.Manage, localTemplateUserJourneyEditor, 'template')).toBe(true)
+      expect(
+        ability.can(Action.Manage, localTemplateUserJourneyEditor, 'template')
+      ).toBe(true)
     })
 
     it('allow when user is team member managing local template journey', () => {
@@ -168,7 +174,9 @@ describe('journeyAcl', () => {
     })
 
     it('allow when user is journey editor managing local template journey', () => {
-      expect(ability.can(Action.Manage, localTemplateUserJourneyEditor)).toBe(true)
+      expect(ability.can(Action.Manage, localTemplateUserJourneyEditor)).toBe(
+        true
+      )
     })
 
     it('deny when user is team member of regular journey', () => {
