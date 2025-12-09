@@ -144,11 +144,15 @@ describe('journeyAcl', () => {
     })
 
     it('allow when user is team manager of local template journey team', () => {
-      expect(ability.can(Action.Manage, localTemplateUserTeamManager, 'template')).toBe(true)
+      expect(ability.can(Action.Manage, localTemplateUserTeamManager, 'template')).toBe(
+        true
+      )
     })
 
     it('allow when user is journey owner of local template journey', () => {
-      expect(ability.can(Action.Manage, localTemplateUserJourneyOwner, 'template')).toBe(true)
+      expect(ability.can(Action.Manage, localTemplateUserJourneyOwner, 'template')).toBe(
+        true
+      )
     })
 
     it('allow when user is team member of local template journey team', () => {
