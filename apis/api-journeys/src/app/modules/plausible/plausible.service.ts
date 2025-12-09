@@ -51,7 +51,18 @@ export const goals: Array<keyof JourneyPlausibleEvents> = [
   'videoProgress50',
   'videoProgress75',
   'videoComplete',
-  'videoTrigger'
+  'videoTrigger',
+  // Capture events are triggered by journey events above
+  'prayerRequestCapture',
+  'christDecisionCapture',
+  'gospelStartCapture',
+  'gospelCompleteCapture',
+  'rsvpCapture',
+  'specialVideoStartCapture',
+  'specialVideoCompleteCapture',
+  'custom1Capture',
+  'custom2Capture',
+  'custom3Capture'
 ]
 
 @Injectable()
