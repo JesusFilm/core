@@ -372,4 +372,99 @@ describe('siteCreateMutation', () => {
       }
     })
   })
+
+  it('should create a site without shared links when disableSharedLinks is true', async () => {
+    const site = {
+      id: 'siteId',
+      domain: 'https://test-site.com',
+      site_memberships: [
+        {
+          id: 'membershipId',
+          role: 'owner'
+        }
+      ],
+      goals: [
+        {
+          id: 'goalId',
+          event_name: 'test-goal'
+        }
+      ],
+      shared_links: []
+    } as unknown as sites
+    prismaMock.sites.create.mockResolvedValue(site)
+    prismaMock.sites.findUniqueOrThrow.mockResolvedValue(site)
+    const data = await client({
+      document: SITE_CREATE_MUTATION,
+      variables: {
+        input: {
+          domain: 'https://test-site.com',
+          goals: ['test-goal'],
+          disableSharedLinks: true
+        }
+      }
+    })
+    expect(prismaMock.sites.create).toHaveBeenCalledWith({
+      data: {
+        domain: 'https://test-site.com',
+        goals: {
+          createMany: {
+            data: [
+              {
+                event_name: 'test-goal',
+                inserted_at: date,
+                updated_at: date
+              }
+            ]
+          }
+        },
+        inserted_at: date,
+        shared_links: undefined,
+        site_memberships: {
+          create: {
+            inserted_at: date,
+            role: 'owner',
+            updated_at: date,
+            users: {
+              connect: {
+                id: 1
+              }
+            }
+          }
+        },
+        timezone: 'Etc/UTC',
+        updated_at: date
+      },
+      include: {
+        goals: true,
+        shared_links: true,
+        site_memberships: true
+      }
+    })
+    expect(data).toEqual({
+      data: {
+        siteCreate: {
+          data: {
+            __typename: 'Site',
+            domain: 'https://test-site.com',
+            goals: [
+              {
+                __typename: 'SiteGoal',
+                id: 'goalId',
+                eventName: 'test-goal'
+              }
+            ],
+            id: 'siteId',
+            memberships: [
+              {
+                __typename: 'SiteMembership',
+                id: 'membershipId',
+                role: 'owner'
+              }
+            ],
+            sharedLinks: []
+          }
+        }
+      }
+    })
+  })
 })

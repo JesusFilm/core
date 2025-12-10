@@ -152,6 +152,95 @@ describe('plausible worker service', () => {
     })
   })
 
+  describe('plausibleCreateTemplateSite', () => {
+    const templateJob: Job<
+      { __typename: 'plausibleCreateTemplateSite'; templateId: string },
+      unknown,
+      string
+    > = {
+      name: 'plausibleCreateTemplateSite',
+      data: {
+        __typename: 'plausibleCreateTemplateSite',
+        templateId: 'template-id'
+      }
+    } as unknown as Job<
+      { __typename: 'plausibleCreateTemplateSite'; templateId: string },
+      unknown,
+      string
+    >
+
+    it('should create template site', async () => {
+      prismaMock.journey.findFirst.mockResolvedValueOnce({
+        id: 'template-id'
+      } as unknown as Awaited<ReturnType<typeof prismaMock.journey.findFirst>>)
+
+      const mutateSpy = jest
+        .spyOn(ApolloClient.prototype, 'mutate')
+        .mockResolvedValueOnce({
+          data: {
+            siteCreate: {
+              __typename: 'MutationSiteCreateSuccess',
+              data: {}
+            }
+          }
+        } as unknown as ReturnType<ApolloClient<unknown>['mutate']>)
+
+      await service(templateJob, logger)
+
+      expect(prismaMock.journey.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: 'template-id',
+          template: true,
+          templateSite: { not: true }
+        },
+        select: { id: true }
+      })
+      expect(mutateSpy).toHaveBeenCalled()
+      expect(mutateSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          variables: expect.objectContaining({
+            input: expect.objectContaining({
+              domain: 'api-journeys-template-template-id',
+              disableSharedLinks: true
+            })
+          })
+        })
+      )
+      expect(prismaMock.journey.update).toHaveBeenCalledWith({
+        where: { id: 'template-id' },
+        data: { templateSite: true }
+      })
+      expect(logger.info).toHaveBeenCalledWith(
+        { templateId: 'template-id' },
+        'template site created in Plausible'
+      )
+      expect(logger.warn).not.toHaveBeenCalled()
+    })
+
+    it('logs warning when site creation fails', async () => {
+      prismaMock.journey.findFirst.mockResolvedValueOnce({
+        id: 'template-id'
+      } as unknown as Awaited<ReturnType<typeof prismaMock.journey.findFirst>>)
+
+      jest.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValueOnce({
+        data: {
+          siteCreate: {
+            __typename: 'Error',
+            message: 'failed'
+          }
+        }
+      } as unknown as ReturnType<ApolloClient<unknown>['mutate']>)
+
+      await service(templateJob, logger)
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        { templateId: 'template-id' },
+        'failed to create template site in Plausible'
+      )
+      expect(logger.info).not.toHaveBeenCalled()
+    })
+  })
+
   describe('plausibleCreateSites', () => {
     const createSitesJob: Job<
       { __typename: 'plausibleCreateSites' },
@@ -185,9 +274,15 @@ describe('plausible worker service', () => {
         } as unknown as (typeof prismaMock.team.findMany)['mock']['calls'][number]
       ] as unknown as Awaited<ReturnType<typeof prismaMock.team.findMany>>)
 
-      prismaMock.journey.findMany.mockResolvedValueOnce([
-        { id: 'journey-1' }
-      ] as unknown as Awaited<ReturnType<typeof prismaMock.journey.findMany>>)
+      prismaMock.journey.findMany
+        .mockResolvedValueOnce([{ id: 'journey-1' }] as unknown as Awaited<
+          ReturnType<typeof prismaMock.journey.findMany>
+        >)
+        .mockResolvedValueOnce(
+          [] as unknown as Awaited<
+            ReturnType<typeof prismaMock.journey.findMany>
+          >
+        )
 
       await service(createSitesJob, logger)
 
@@ -209,6 +304,74 @@ describe('plausible worker service', () => {
 
       expect(logger.info).toHaveBeenCalledWith('creating team sites...')
       expect(logger.info).toHaveBeenCalledWith('creating journey sites...')
+    })
+
+    it('creates template sites for templates without a site', async () => {
+      jest.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValue({
+        data: {
+          siteCreate: {
+            __typename: 'MutationSiteCreateSuccess',
+            data: {}
+          }
+        }
+      } as unknown as ReturnType<ApolloClient<unknown>['mutate']>)
+
+      prismaMock.team.findMany.mockResolvedValueOnce(
+        [] as unknown as Awaited<ReturnType<typeof prismaMock.team.findMany>>
+      )
+
+      prismaMock.journey.findMany
+        .mockResolvedValueOnce(
+          [] as unknown as Awaited<
+            ReturnType<typeof prismaMock.journey.findMany>
+          >
+        )
+        .mockResolvedValueOnce([
+          { id: 'template-1' },
+          { id: 'template-2' }
+        ] as unknown as Awaited<ReturnType<typeof prismaMock.journey.findMany>>)
+
+      prismaMock.journey.findFirst
+        .mockResolvedValueOnce({
+          id: 'template-1'
+        } as unknown as Awaited<
+          ReturnType<typeof prismaMock.journey.findFirst>
+        >)
+        .mockResolvedValueOnce({
+          id: 'template-2'
+        } as unknown as Awaited<
+          ReturnType<typeof prismaMock.journey.findFirst>
+        >)
+
+      await service(createSitesJob, logger)
+
+      expect(prismaMock.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          template: true,
+          templateSite: { not: true }
+        },
+        select: { id: true }
+      })
+
+      expect(prismaMock.journey.update).toHaveBeenCalledTimes(2)
+      expect(prismaMock.journey.update).toHaveBeenCalledWith({
+        where: { id: 'template-1' },
+        data: { templateSite: true }
+      })
+      expect(prismaMock.journey.update).toHaveBeenCalledWith({
+        where: { id: 'template-2' },
+        data: { templateSite: true }
+      })
+
+      expect(logger.info).toHaveBeenCalledWith('creating template sites...')
+      expect(logger.info).toHaveBeenCalledWith(
+        { templateId: 'template-1' },
+        'template site created in Plausible'
+      )
+      expect(logger.info).toHaveBeenCalledWith(
+        { templateId: 'template-2' },
+        'template site created in Plausible'
+      )
     })
   })
 })

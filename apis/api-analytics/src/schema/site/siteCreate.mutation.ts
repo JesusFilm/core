@@ -7,7 +7,8 @@ import { builder } from '../builder'
 const SiteCreateInput = builder.inputType('SiteCreateInput', {
   fields: (t) => ({
     domain: t.string({ required: true }),
-    goals: t.stringList()
+    goals: t.stringList(),
+    disableSharedLinks: t.boolean({ required: false })
   })
 })
 
@@ -42,14 +43,17 @@ builder.mutationType({
                   updated_at: new Date()
                 }
               },
-              shared_links: {
-                create: {
-                  name: 'api-analytics',
-                  inserted_at: new Date(),
-                  updated_at: new Date(),
-                  slug: uid.rnd()
-                }
-              },
+              shared_links:
+                input.disableSharedLinks === true
+                  ? undefined
+                  : {
+                      create: {
+                        name: 'api-analytics',
+                        inserted_at: new Date(),
+                        updated_at: new Date(),
+                        slug: uid.rnd()
+                      }
+                    },
               goals:
                 input.goals != null
                   ? {
