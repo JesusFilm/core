@@ -74,9 +74,7 @@ describe('SignUp Attributes', () => {
         <SignUp {...block} />
       </MockedProvider>
     )
-    expect(
-      getByRole('button', { name: 'Action Website' })
-    ).toBeInTheDocument()
+    expect(getByRole('button', { name: 'Action Website' })).toBeInTheDocument()
     expect(
       getByRole('button', { name: 'Button Icon Arrow Right' })
     ).toBeInTheDocument()
