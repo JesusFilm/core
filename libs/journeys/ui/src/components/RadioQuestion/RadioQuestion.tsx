@@ -97,7 +97,7 @@ export function RadioQuestion({
         (child) =>
           child.id === radioOptionBlockId &&
           child.__typename === 'RadioOptionBlock'
-      )
+      ) as TreeBlock<RadioOptionFields> | undefined
       if (journey != null && radioOptionBlock != null) {
         plausible('radioQuestionSubmit', {
           u: `${window.location.origin}/${journey.id}/${input.stepId}`,

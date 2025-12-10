@@ -70,7 +70,9 @@ export const SignUp = ({
 }: SignUpProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
 
-  const submitIcon = children.find((block) => block.id === submitIconId)
+  const submitIcon = children.find((block) => block.id === submitIconId) as
+    | TreeBlock<IconFields>
+    | undefined
 
   const plausible = usePlausible<JourneyPlausibleEvents>()
   const { variant, journey } = useJourney()

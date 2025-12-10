@@ -134,11 +134,11 @@ export function Button({
 
   const startIcon = children.find(
     (block) => block.id === startIconId && block.__typename === 'IconBlock'
-  )
+  ) as TreeBlock<BlockFields_IconBlock> | undefined
 
   const endIcon = children.find(
     (block) => block.id === endIconId && block.__typename === 'IconBlock'
-  )
+  ) as TreeBlock<BlockFields_IconBlock> | undefined
 
   const messagePlatform = useMemo(() => findMessagePlatform(action), [action])
   const actionValue = useMemo(

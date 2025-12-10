@@ -38,7 +38,9 @@ export function VideoTrigger({
   const [triggered, setTriggered] = useState(false)
   const triggeredRef = useRef(false)
   const { blockHistory } = useBlocks()
-  const activeBlock = blockHistory[blockHistory.length - 1]
+  const activeBlock = blockHistory[blockHistory.length - 1] as
+    | TreeBlock
+    | undefined
   const plausible = usePlausible<JourneyPlausibleEvents>()
 
   // Reset triggered state when player changes
