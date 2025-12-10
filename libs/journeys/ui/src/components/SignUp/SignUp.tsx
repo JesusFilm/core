@@ -140,9 +140,6 @@ export const SignUp = ({
                 event: 'signupSubmit',
                 target: actionToTarget(action),
                 journeyId: journey?.id
-              }),
-              simpleTemplateKey: templateKeyify({
-                event: 'signupSubmit'
               })
             }
           })

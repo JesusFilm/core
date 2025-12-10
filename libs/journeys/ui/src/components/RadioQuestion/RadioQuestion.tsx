@@ -120,9 +120,6 @@ export function RadioQuestion({
               event: 'radioQuestionSubmit',
               target: actionToTarget(radioOptionBlock.action),
               journeyId: journey?.id
-            }),
-            simpleTemplateKey: templateKeyify({
-              event: 'radioQuestionSubmit'
             })
           }
         })

@@ -90,9 +90,6 @@ export function Step({
             templateKey: templateKeyify({
               event: 'pageview',
               journeyId: journey?.id
-            }),
-            simpleTemplateKey: templateKeyify({
-              event: 'pageview'
             })
           }
         })

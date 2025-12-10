@@ -206,9 +206,6 @@ export function VideoEvents({
               templateKey: templateKeyify({
                 event: 'videoPlay',
                 journeyId: journey?.id
-              }),
-              simpleTemplateKey: templateKeyify({
-                event: 'videoPlay'
               })
             }
           })
@@ -272,9 +269,6 @@ export function VideoEvents({
             templateKey: templateKeyify({
               event: 'videoPause',
               journeyId: journey?.id
-            }),
-            simpleTemplateKey: templateKeyify({
-              event: 'videoPause'
             })
           }
         })
@@ -338,9 +332,6 @@ export function VideoEvents({
               templateKey: templateKeyify({
                 event: 'videoExpand',
                 journeyId: journey?.id
-              }),
-              simpleTemplateKey: templateKeyify({
-                event: 'videoExpand'
               })
             }
           })
@@ -404,9 +395,6 @@ export function VideoEvents({
               templateKey: templateKeyify({
                 event: 'videoCollapse',
                 journeyId: journey?.id
-              }),
-              simpleTemplateKey: templateKeyify({
-                event: 'videoCollapse'
               })
             }
           })
@@ -470,9 +458,6 @@ export function VideoEvents({
               templateKey: templateKeyify({
                 event: 'videoStart',
                 journeyId: journey?.id
-              }),
-              simpleTemplateKey: templateKeyify({
-                event: 'videoStart'
               })
             }
           })
@@ -539,9 +524,6 @@ export function VideoEvents({
               templateKey: templateKeyify({
                 event: 'videoProgress25',
                 journeyId: journey?.id
-              }),
-              simpleTemplateKey: templateKeyify({
-                event: 'videoProgress25'
               })
             }
           })
@@ -609,9 +591,6 @@ export function VideoEvents({
               templateKey: templateKeyify({
                 event: 'videoProgress50',
                 journeyId: journey?.id
-              }),
-              simpleTemplateKey: templateKeyify({
-                event: 'videoProgress50'
               })
             }
           })
@@ -679,9 +658,6 @@ export function VideoEvents({
               templateKey: templateKeyify({
                 event: 'videoProgress75',
                 journeyId: journey?.id
-              }),
-              simpleTemplateKey: templateKeyify({
-                event: 'videoProgress75'
               })
             }
           })
@@ -754,9 +730,6 @@ export function VideoEvents({
               templateKey: templateKeyify({
                 event: 'videoComplete',
                 journeyId: journey?.id
-              }),
-              simpleTemplateKey: templateKeyify({
-                event: 'videoComplete'
               })
             }
           })

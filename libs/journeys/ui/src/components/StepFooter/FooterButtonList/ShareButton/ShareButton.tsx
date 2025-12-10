@@ -50,9 +50,6 @@ export function ShareButton(): ReactElement {
           templateKey: templateKeyify({
             event: 'shareButtonClick',
             journeyId: journey?.id
-          }),
-          simpleTemplateKey: templateKeyify({
-            event: 'shareButtonClick'
           })
         }
       })

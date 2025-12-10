@@ -2,7 +2,6 @@ export {
   generateActionTargetKey,
   keyify,
   reverseKeyify,
-  templateKeyify,
-  reverseTemplateKeyify
+  templateKeyify
 } from './plausibleHelpers'
 export type { JourneyPlausibleEvents } from './plausibleHelpers'

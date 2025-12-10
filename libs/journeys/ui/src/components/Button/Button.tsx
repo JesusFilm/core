@@ -205,9 +205,6 @@ export function Button({
               event: 'buttonClick',
               target: actionToTarget(action),
               journeyId: journey?.id
-            }),
-            simpleTemplateKey: templateKeyify({
-              event: 'buttonClick'
             })
           }
         })
@@ -252,9 +249,6 @@ export function Button({
               event: 'chatButtonClick',
               target: 'chat',
               journeyId: journey?.id
-            }),
-            simpleTemplateKey: templateKeyify({
-              event: 'chatButtonClick'
             })
           }
         })

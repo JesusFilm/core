@@ -12,7 +12,7 @@ import { TreeBlock, blockHistoryVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { keyify } from '../../libs/plausibleHelpers'
+import { keyify, templateKeyify } from '../../libs/plausibleHelpers'
 import { VideoTriggerFields_triggerAction } from '../VideoTrigger/__generated__/VideoTriggerFields'
 
 import {
@@ -489,12 +489,18 @@ describe('VideoEvents', () => {
         key: keyify({
           stepId: activeBlock.id,
           event: 'videoExpand',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoExpand',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'videoExpand',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -924,12 +930,18 @@ describe('VideoEvents', () => {
         key: keyify({
           stepId: activeBlock.id,
           event: 'videoProgress75',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoProgress75',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'videoProgress75',
+          journeyId: 'journey.id'
         })
       }
     })

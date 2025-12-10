@@ -80,18 +80,6 @@ export interface JourneyPlausibleEvents extends Events {
   videoProgress75: VideoProgressEventCreateInput & Props
   videoComplete: VideoCompleteEventCreateInput & Props
   videoTrigger: Props
-  // New events
-  prayerRequestCapture: Props
-  christDecisionCapture: Props
-  gospelStartCapture: Props
-  gospelCompleteCapture: Props
-  shareCapture: Props
-  rsvpCapture: Props
-  inviteFriendCapture: Props
-  custom2Capture: Props
-  custom3Capture: Props
-  custom4Capture: Props
-  custom5Capture: Props
 }
 
 interface KeyifyProps {
@@ -190,14 +178,6 @@ export function templateKeyify({
     target: targetId,
     journeyId
   })
-}
-
-export function reverseTemplateKeyify(key: string): {
-  event: keyof JourneyPlausibleEvents
-  target?: string
-  journeyId?: string
-} {
-  return JSON.parse(key)
 }
 
 export function actionToTarget(action: Action | null): 'link' | 'chat' | null {
