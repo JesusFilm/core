@@ -21,11 +21,13 @@ import {
   Header,
   UnsubscribeLink
 } from '@core/yoga/email/components'
+import { Logo } from '@core/yoga/email/types'
 
 interface VerifyEmailProps {
   inviteLink: string
   token: string
   story?: boolean
+  logo?: Logo
   recipient: {
     firstName: string
     lastName: string
@@ -42,7 +44,8 @@ export const EmailVerifyEmail = ({
   inviteLink,
   recipient,
   token,
-  story = false
+  story = false,
+  logo
 }: VerifyEmailProps): ReactElement => {
   const previewText = `Verify your email address on Next Steps`
   const tailwindWrapper = ({ children }: WrapperProps): ReactElement => {
@@ -55,7 +58,7 @@ export const EmailVerifyEmail = ({
   }
   const emailBody: ReactNode = (
     <>
-      <Header />
+      <Header logo={logo} />
       <EmailContainer>
         <BodyWrapper>
           <ActionCard recipient={recipient}>
@@ -142,7 +145,8 @@ EmailVerifyEmail.PreviewProps = {
     imageUrl:
       'https://images.unsplash.com/photo-1706565026381-29cd21eb9a7c?q=80&w=5464&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   },
-  inviteLink: 'https://admin.nextstep.is/users/verify'
+  inviteLink: 'https://admin.nextstep.is/users/verify',
+  logo: 'NextSteps'
 } satisfies VerifyEmailProps
 
 export default EmailVerifyEmail
