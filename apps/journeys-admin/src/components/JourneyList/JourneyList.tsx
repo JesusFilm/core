@@ -3,6 +3,8 @@ import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
+
 import { JourneyStatus } from '../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { usePageWrapperStyles } from '../PageWrapper/utils/usePageWrapperStyles'
@@ -41,6 +43,7 @@ export function JourneyList({
     useLastActiveTeamId: true
   })
   const { navbar, sidePanel } = usePageWrapperStyles()
+  const breakpoints = useBreakpoints()
 
   useEffect(() => {
     const handleRouteChange = (url: string) => {
@@ -116,7 +119,9 @@ export function JourneyList({
           sortOrder={sortOrder}
         />
       </Box>
-      {activeTab === 'active' && <AddJourneyFab />}
+      {activeTab === 'active' &&
+        currentContentType === 'journeys' &&
+        !breakpoints.md && <AddJourneyFab />}
     </>
   )
 }
