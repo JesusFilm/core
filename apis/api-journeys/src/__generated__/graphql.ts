@@ -34,6 +34,11 @@ export type Action = {
   parentBlockId: Scalars['ID']['output'];
 };
 
+export enum App {
+  JesusFilmApp = 'JesusFilmApp',
+  NextSteps = 'NextSteps'
+}
+
 export type ArclightApiKey = {
   __typename?: 'ArclightApiKey';
   defaultPlatform: DefaultPlatform;
@@ -372,6 +377,27 @@ export type ChatOpenEventCreateInput = {
   value?: InputMaybe<MessagePlatform>;
 };
 
+export type CheckVideoInAlgoliaMismatch = {
+  __typename?: 'CheckVideoInAlgoliaMismatch';
+  actual?: Maybe<Scalars['String']['output']>;
+  expected?: Maybe<Scalars['String']['output']>;
+  field?: Maybe<Scalars['String']['output']>;
+};
+
+export type CheckVideoInAlgoliaResult = {
+  __typename?: 'CheckVideoInAlgoliaResult';
+  mismatches?: Maybe<Array<CheckVideoInAlgoliaMismatch>>;
+  ok?: Maybe<Scalars['Boolean']['output']>;
+  recordUrl?: Maybe<Scalars['String']['output']>;
+};
+
+export type CheckVideoVariantsInAlgoliaResult = {
+  __typename?: 'CheckVideoVariantsInAlgoliaResult';
+  browseUrl?: Maybe<Scalars['String']['output']>;
+  missingVariants?: Maybe<Array<Scalars['String']['output']>>;
+  ok?: Maybe<Scalars['Boolean']['output']>;
+};
+
 export type CloudflareImage = {
   __typename?: 'CloudflareImage';
   aspectRatio?: Maybe<ImageAspectRatio>;
@@ -491,6 +517,7 @@ export type CreateGoogleSheetsSyncInput = {
 };
 
 export type CreateVerificationRequestInput = {
+  app?: InputMaybe<App>;
   redirect?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1534,6 +1561,7 @@ export enum MaxResolutionTier {
 }
 
 export type MeInput = {
+  app?: InputMaybe<App>;
   redirect?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1786,6 +1814,7 @@ export type Mutation = {
   signUpBlockUpdate?: Maybe<SignUpBlock>;
   signUpSubmissionEventCreate: SignUpSubmissionEvent;
   siteCreate: MutationSiteCreateResult;
+  sitesAddGoals: MutationSitesAddGoalsResult;
   spacerBlockCreate: SpacerBlock;
   spacerBlockUpdate: SpacerBlock;
   stepBlockCreate: StepBlock;
@@ -1803,6 +1832,8 @@ export type Mutation = {
   typographyBlockCreate: TypographyBlock;
   typographyBlockUpdate: TypographyBlock;
   updateJourneysEmailPreference?: Maybe<JourneysEmailPreference>;
+  updateVideoAlgoliaIndex: Scalars['Boolean']['output'];
+  updateVideoVariantAlgoliaIndex: Scalars['Boolean']['output'];
   userImpersonate?: Maybe<Scalars['String']['output']>;
   userInviteAcceptAll: Array<UserInvite>;
   userInviteCreate?: Maybe<UserInvite>;
@@ -2544,6 +2575,11 @@ export type MutationSiteCreateArgs = {
 };
 
 
+export type MutationSitesAddGoalsArgs = {
+  input: SitesAddGoalsInput;
+};
+
+
 export type MutationSpacerBlockCreateArgs = {
   input: SpacerBlockCreateInput;
 };
@@ -2634,6 +2670,16 @@ export type MutationTypographyBlockUpdateArgs = {
 
 export type MutationUpdateJourneysEmailPreferenceArgs = {
   input: JourneysEmailPreferenceUpdateInput;
+};
+
+
+export type MutationUpdateVideoAlgoliaIndexArgs = {
+  videoId: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateVideoVariantAlgoliaIndexArgs = {
+  videoId: Scalars['ID']['input'];
 };
 
 
@@ -3126,6 +3172,13 @@ export type MutationSiteCreateSuccess = {
   data: Site;
 };
 
+export type MutationSitesAddGoalsResult = Error | MutationSitesAddGoalsSuccess;
+
+export type MutationSitesAddGoalsSuccess = {
+  __typename?: 'MutationSitesAddGoalsSuccess';
+  data: Scalars['Int']['output'];
+};
+
 export type MutationVideoOriginCreateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
@@ -3525,6 +3578,8 @@ export type Query = {
   bibleCitations: Array<BibleCitation>;
   block: Block;
   blocks: Array<Block>;
+  checkVideoInAlgolia: CheckVideoInAlgoliaResult;
+  checkVideoVariantsInAlgolia: CheckVideoVariantsInAlgoliaResult;
   countries: Array<Country>;
   country?: Maybe<Country>;
   customDomain: CustomDomain;
@@ -3692,6 +3747,16 @@ export type QueryBlockArgs = {
 
 export type QueryBlocksArgs = {
   where?: InputMaybe<BlocksFilter>;
+};
+
+
+export type QueryCheckVideoInAlgoliaArgs = {
+  videoId: Scalars['ID']['input'];
+};
+
+
+export type QueryCheckVideoVariantsInAlgoliaArgs = {
+  videoId: Scalars['ID']['input'];
 };
 
 
@@ -4390,6 +4455,10 @@ export type SiteSharedLink = {
   __typename?: 'SiteSharedLink';
   id: Scalars['String']['output'];
   slug: Scalars['String']['output'];
+};
+
+export type SitesAddGoalsInput = {
+  goals: Array<Scalars['String']['input']>;
 };
 
 export type SpacerBlock = Block & {
