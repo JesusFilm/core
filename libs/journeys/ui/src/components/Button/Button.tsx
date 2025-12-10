@@ -27,9 +27,9 @@ import { useJourney } from '../../libs/JourneyProvider'
 import {
   JourneyPlausibleEvents,
   keyify,
-  templateKeyify
+  templateKeyify,
+  actionToTarget
 } from '../../libs/plausibleHelpers'
-import { actionToTarget } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { Icon } from '../Icon'
 
@@ -193,18 +193,18 @@ export function Button({
               event: 'buttonClick',
               blockId: input.blockId,
               target: action,
-              journeyId: journey?.id
+              journeyId: journey.id
             }),
             simpleKey: keyify({
               stepId: input.stepId ?? '',
               event: 'buttonClick',
               blockId: input.blockId,
-              journeyId: journey?.id
+              journeyId: journey.id
             }),
             templateKey: templateKeyify({
               event: 'buttonClick',
               target: actionToTarget(action),
-              journeyId: journey?.id
+              journeyId: journey.id
             })
           }
         })
@@ -237,18 +237,18 @@ export function Button({
               event: 'chatButtonClick',
               blockId: input.blockId,
               target: action,
-              journeyId: journey?.id
+              journeyId: journey.id
             }),
             simpleKey: keyify({
               stepId: input.stepId ?? '',
               event: 'chatButtonClick',
               blockId: input.blockId,
-              journeyId: journey?.id
+              journeyId: journey.id
             }),
             templateKey: templateKeyify({
               event: 'chatButtonClick',
               target: 'chat',
-              journeyId: journey?.id
+              journeyId: journey.id
             })
           }
         })
