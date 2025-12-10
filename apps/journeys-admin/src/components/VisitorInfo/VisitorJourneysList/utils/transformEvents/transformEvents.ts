@@ -50,7 +50,6 @@ export function transformEvents(events: Event[]): TransformedEvents {
 
   const eventsWithDuration: TimelineItem[] = []
 
-  // fnc1
   filteredEvents.forEach((event, i) => {
     eventsWithDuration.push({ event })
     if (i - 1 >= 0) {
@@ -69,7 +68,6 @@ export function transformEvents(events: Event[]): TransformedEvents {
   const timelineItems: Array<TimelineItem | TimelineItem[]> = []
   let pointer = 0
 
-  // fnc 2
   forEachRight(eventsWithDuration, (timelineEvent) => {
     if (featured.includes(timelineEvent.event.__typename)) {
       if (timelineItems[pointer] != null) pointer++
