@@ -1,3 +1,5 @@
+import { duration } from '@mui/material/styles'
+
 import {
   GetVisitorEvents_visitor_events_ButtonClickEvent as ButtonClickEvent,
   GetVisitorEvents_visitor_events_ChatOpenEvent as ChatOpenEvent,
@@ -21,7 +23,6 @@ import {
 import { getDuration } from './transformEvents'
 
 import { TimelineItem, transformEvents } from '.'
-import { duration } from '@mui/material/styles'
 
 const journeyViewEvent: JourneyViewEvent = {
   __typename: 'JourneyViewEvent',
@@ -232,7 +233,7 @@ describe('transformEvents', () => {
           ],
           { event: multiselectSubmissionEvent, duration: '0:59' },
           { event: signUpSubmissionEvent, duration: '0:01' },
-          { event: radioQuestionResponseEvent, duration: '0:01'},
+          { event: radioQuestionResponseEvent, duration: '0:01' },
           { event: buttonClickEvent, duration: '0:10' },
           { event: textResponseEvent, duration: '3:00' },
           { event: chatOpenEvent, duration: '10:00' },
