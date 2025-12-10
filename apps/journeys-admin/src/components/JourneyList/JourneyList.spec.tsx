@@ -127,6 +127,26 @@ describe('JourneyList', () => {
     expect(queryByRole('button', { name: 'Add' })).toBeNull()
   })
 
+  it('should hide add journey button when type is templates', () => {
+    mockedUseRouter.mockReturnValue({
+      query: { status: 'active', type: 'templates' },
+      events: {
+        on: jest.fn(),
+        off: jest.fn()
+      }
+    } as unknown as NextRouter)
+    const { queryByRole } = render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyList />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+    expect(queryByRole('button', { name: 'Add' })).toBeNull()
+  })
+
   it('should call refetch when route changes to /publisher', () => {
     const onMock = jest.fn()
     const offMock = jest.fn()
