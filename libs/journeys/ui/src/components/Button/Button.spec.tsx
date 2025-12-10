@@ -671,12 +671,19 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'chatButtonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'chatButtonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'chatButtonClick',
+          target: 'chat',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -749,12 +756,19 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'chatButtonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'chatButtonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'chatButtonClick',
+          target: 'chat',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -829,12 +843,19 @@ describe('Button', () => {
           stepId: 'step.id',
           event: 'chatButtonClick',
           blockId: 'button',
-          target: action
+          target: action,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step.id',
           event: 'chatButtonClick',
-          blockId: 'button'
+          blockId: 'button',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'chatButtonClick',
+          target: 'chat',
+          journeyId: 'journey.id'
         })
       }
     })

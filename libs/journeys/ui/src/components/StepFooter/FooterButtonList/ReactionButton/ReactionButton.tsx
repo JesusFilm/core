@@ -52,9 +52,6 @@ export function ReactionButton({ variant }: ReactionButtonProps): ReactElement {
             templateKey: templateKeyify({
               event,
               journeyId: journey?.id
-            }),
-            simpleTemplateKey: templateKeyify({
-              event
             })
           }
         })

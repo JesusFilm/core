@@ -1,4 +1,5 @@
 export {
+  actionToTarget,
   generateActionTargetKey,
   keyify,
   reverseKeyify,
