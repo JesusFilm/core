@@ -116,7 +116,9 @@ export function JourneyList({
           sortOrder={sortOrder}
         />
       </Box>
-      {activeTab === 'active' && <AddJourneyFab />}
+      {activeTab === 'active' && currentContentType === 'journeys' && (
+        <AddJourneyFab />
+      )}
     </>
   )
 }
