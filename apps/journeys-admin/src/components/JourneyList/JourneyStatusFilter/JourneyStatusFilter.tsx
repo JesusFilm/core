@@ -4,9 +4,8 @@ import { ReactElement } from 'react'
 
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
-import { RadioSelect, RadioSelectOption } from '../RadioSelect'
-
 import type { JourneyStatus } from '../JourneyListView/JourneyListView'
+import { RadioSelect, RadioSelectOption } from '../RadioSelect'
 
 interface JourneyStatusFilterProps {
   status?: JourneyStatus

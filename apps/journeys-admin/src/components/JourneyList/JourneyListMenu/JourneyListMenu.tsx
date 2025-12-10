@@ -11,6 +11,7 @@ import FolderUp1Icon from '@core/shared/ui/icons/FolderUp1'
 import MoreIcon from '@core/shared/ui/icons/More'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import { palette } from '@core/shared/ui/themes/journeysAdmin/tokens/colors'
+
 import { MenuItem } from '../../MenuItem'
 
 interface JourneyListMenuProps {
