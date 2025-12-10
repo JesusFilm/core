@@ -10,7 +10,7 @@ import FolderDown1Icon from '@core/shared/ui/icons/FolderDown1'
 import FolderUp1Icon from '@core/shared/ui/icons/FolderUp1'
 import MoreIcon from '@core/shared/ui/icons/More'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
-
+import { palette } from '@core/shared/ui/themes/journeysAdmin/tokens/colors'
 import { MenuItem } from '../../MenuItem'
 
 interface JourneyListMenuProps {
@@ -43,11 +43,27 @@ export function JourneyListMenu({
           <IconButton
             edge="end"
             color="inherit"
-            sx={{ mx: 3 }}
+            sx={{
+              mx: { xs: 0, sm: 3 },
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              '&:hover': {
+                borderRadius: '8px'
+              }
+            }}
             onClick={handleShowMenu}
             data-testid="JourneyListMenuButton"
           >
-            <MoreIcon data-testid="MoreIcon" />
+            <MoreIcon
+              data-testid="MoreIcon"
+              sx={{
+                width: '20px',
+                height: '20px',
+                color: palette[700]
+              }}
+            />
           </IconButton>
           <Menu
             id="edit-journey-actions"
@@ -64,6 +80,14 @@ export function JourneyListMenu({
             transformOrigin={{
               vertical: 'top',
               horizontal: 'right'
+            }}
+            slotProps={{
+              paper: {
+                sx: {
+                  mt: '6px',
+                  borderRadius: '8px'
+                }
+              }
             }}
             data-testid="JourneyListMenu"
           >

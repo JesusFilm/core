@@ -1,8 +1,4 @@
 import Box from '@mui/material/Box'
-import FormControl from '@mui/material/FormControl'
-import InputLabel from '@mui/material/InputLabel'
-import MenuItem from '@mui/material/MenuItem'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import { useRouter } from 'next/router'
@@ -17,10 +13,12 @@ import {
 } from 'react'
 
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
+import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 import type { JourneyListEvent } from '../JourneyList'
 import { JourneyListMenu } from '../JourneyListMenu'
 import { JourneySort, SortOrder } from '../JourneySort'
+import { JourneyStatusFilter } from '../JourneyStatusFilter'
 
 export type ContentType = 'journeys' | 'templates'
 export type JourneyStatus = 'active' | 'archived' | 'trashed'
@@ -38,11 +36,6 @@ interface ContentTypeOption {
   queryParam: ContentType
   displayValue: string
   tabIndex: number
-}
-
-interface StatusOption {
-  queryParam: JourneyStatus
-  displayValue: string
 }
 
 // Helper function to get refetch event based on status
@@ -65,34 +58,20 @@ export function JourneyListView({
 }: JourneyListViewProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
+  const breakpoints = useBreakpoints()
 
   // Content type options (Journeys, Templates)
+  // Use shorter labels on mobile to prevent overflow
   const contentTypeOptions: ContentTypeOption[] = [
     {
       queryParam: 'journeys',
-      displayValue: t('Team Projects'),
+      displayValue: breakpoints.sm ? t('Team Projects') : t('Projects'),
       tabIndex: 0
     },
     {
       queryParam: 'templates',
-      displayValue: t('Team Templates'),
+      displayValue: breakpoints.sm ? t('Team Templates') : t('Templates'),
       tabIndex: 1
-    }
-  ]
-
-  // Status filter options (Active, Archived, Trashed)
-  const statusOptions: StatusOption[] = [
-    {
-      queryParam: 'active',
-      displayValue: t('Active')
-    },
-    {
-      queryParam: 'archived',
-      displayValue: t('Archived')
-    },
-    {
-      queryParam: 'trashed',
-      displayValue: t('Trash')
     }
   ]
 
@@ -166,10 +145,7 @@ export function JourneyListView({
   }
 
   // Handle status filter dropdown change
-  const handleStatusChange = (
-    event: SelectChangeEvent<JourneyStatus>
-  ): void => {
-    const newStatus = event.target.value as JourneyStatus
+  const handleStatusChange = (newStatus: JourneyStatus): void => {
     setSelectedStatus(newStatus)
 
     // Trigger refetch event for the new status
@@ -228,34 +204,22 @@ export function JourneyListView({
         <Box
           sx={{
             display: 'flex',
-            alignItems: 'center',
+            alignItems: 'flex-end',
             ml: 'auto',
-            mr: 2
+            mr: 0
           }}
         >
-          <FormControl size="small" sx={{ minWidth: 120 }}>
-            <InputLabel id="status-filter-label">{t('Status')}</InputLabel>
-            <Select
-              labelId="status-filter-label"
-              id="status-filter-select"
-              value={selectedStatus}
-              label={t('Status')}
-              onChange={handleStatusChange}
-              inputProps={{ 'aria-label': t('Filter by status') }}
-            >
-              {statusOptions.map((status) => (
-                <MenuItem key={status.queryParam} value={status.queryParam}>
-                  {status.displayValue}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <JourneyStatusFilter
+            status={selectedStatus}
+            onChange={handleStatusChange}
+          />
         </Box>
         {/* Sort component */}
         <Box
           sx={{
-            display: { xs: 'none', sm: 'flex' },
-            alignItems: 'center'
+            display: 'flex',
+            alignItems: 'flex-end',
+            ml: { xs: 1, sm: 0 }
           }}
         >
           <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
@@ -264,8 +228,12 @@ export function JourneyListView({
         <Box
           sx={{
             display: 'flex',
-            alignItems: 'center',
-            mr: router?.query?.type === 'templates' ? -12 : -8
+            alignItems: 'flex-end',
+            ml: { xs: 1, sm: 0 },
+            mr: {
+              xs: 1,
+              sm: router?.query?.type === 'templates' ? -12 : -8
+            }
           }}
         >
           <JourneyListMenu onClick={setActiveEvent} />

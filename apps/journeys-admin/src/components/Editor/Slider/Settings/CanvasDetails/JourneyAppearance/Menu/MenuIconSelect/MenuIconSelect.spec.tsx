@@ -72,7 +72,7 @@ describe('MenuIconSelect', () => {
       </MockedProvider>
     )
 
-    fireEvent.mouseDown(screen.getByRole('combobox'))
+    fireEvent.click(screen.getByRole('combobox'))
 
     const options = screen.getAllByRole('option')
     fireEvent.click(options[6])
@@ -110,7 +110,7 @@ describe('MenuIconSelect', () => {
       </MockedProvider>
     )
 
-    fireEvent.mouseDown(screen.getByRole('combobox'))
+    fireEvent.click(screen.getByRole('combobox'))
 
     const options = screen.getAllByRole('option')
     fireEvent.click(options[0])
@@ -147,7 +147,7 @@ describe('MenuIconSelect', () => {
       </MockedProvider>
     )
 
-    fireEvent.mouseDown(screen.getByRole('combobox'))
+    fireEvent.click(screen.getByRole('combobox'))
 
     const options = screen.getAllByRole('option')
     fireEvent.click(options[6])

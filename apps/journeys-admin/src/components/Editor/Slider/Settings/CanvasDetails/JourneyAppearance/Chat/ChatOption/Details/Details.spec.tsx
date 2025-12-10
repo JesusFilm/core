@@ -177,7 +177,7 @@ describe('Details', () => {
       </MockedProvider>
     )
 
-    fireEvent.mouseDown(getByRole('combobox'))
+    fireEvent.click(getByRole('combobox'))
     fireEvent.click(getByText('Snapchat'))
     await waitFor(() => expect(result).toHaveBeenCalled())
   })

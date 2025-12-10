@@ -1,12 +1,11 @@
 import Box from '@mui/material/Box'
-import CardActionArea from '@mui/material/CardActionArea'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import SvgIcon from '@mui/material/SvgIcon'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -82,6 +81,7 @@ const getIconTestId = (
 }
 
 export function MenuIconSelect(): ReactElement {
+  const [open, setOpen] = useState(false)
   const { journey } = useJourney()
   const { add } = useCommand()
   const [journeyUpdate] = useJourneyUpdateMutation()
@@ -125,6 +125,10 @@ export function MenuIconSelect(): ReactElement {
     }
   }
 
+  function handleClick(): void {
+    if (!open) setOpen(true)
+  }
+
   return (
     <Stack
       direction="row"
@@ -137,8 +141,11 @@ export function MenuIconSelect(): ReactElement {
       <Typography variant="subtitle2" sx={{ color: 'secondary.light' }}>
         {t('Select Icon')}
       </Typography>
-      <CardActionArea sx={{ width: 112 }}>
+      <Box sx={{ width: 112 }}>
         <Select
+          open={open}
+          onClose={() => setOpen(false)}
+          onClick={handleClick}
           value={journey?.menuButtonIcon ?? ''}
           onChange={handleChange}
           displayEmpty
@@ -199,7 +206,7 @@ export function MenuIconSelect(): ReactElement {
             </MenuItem>
           ))}
         </Select>
-      </CardActionArea>
+      </Box>
     </Stack>
   )
 }

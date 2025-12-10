@@ -52,7 +52,7 @@ export function AddBlock(): ReactElement {
         borderRadius: 3,
         borderBottomLeftRadius: 0,
         borderBottomRightRadius: 0,
-        overflow: 'hidden'
+        overflowY: 'auto'
       }}
       border={1}
       borderColor="divider"
