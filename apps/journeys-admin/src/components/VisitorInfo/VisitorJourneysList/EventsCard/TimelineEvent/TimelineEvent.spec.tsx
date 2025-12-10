@@ -97,7 +97,7 @@ describe('TimelineEvent', () => {
     const { getByText } = render(
       <TimelineEvent timelineItem={multiselectSubmissionEvent} />
     )
-    expect(getByText('Multiselect submission:')).toBeInTheDocument()
+    expect(getByText('Multiselect:')).toBeInTheDocument()
     expect(getByText('What did you enjoy most?')).toBeInTheDocument()
     expect(getByText('Adventure, Friends, Food')).toBeInTheDocument()
   })
