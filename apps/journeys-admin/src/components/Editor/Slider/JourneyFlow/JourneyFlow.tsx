@@ -574,6 +574,8 @@ export function JourneyFlow(): ReactElement {
     setReferrerEdges((eds) => eds.map(hideReferrers(showAnalytics === false)))
   }, [setReferrerEdges, setReferrerNodes, showAnalytics])
 
+  const isLocalTemplate =
+    journey?.team?.id !== 'jfp-team' && journey?.template === true
   return (
     <Box
       sx={{
@@ -623,9 +625,7 @@ export function JourneyFlow(): ReactElement {
               )}
             </Panel>
             {/* Hide analytics overlay switch for local templates */}
-            {!(
-              journey?.team?.id !== 'jfp-team' && journey?.template === true
-            ) &&
+            {!isLocalTemplate &&
               /* Only show analytics panel when editorAnalytics feature flag is enabled */
               editorAnalytics && (
                 <Panel position="top-left">
