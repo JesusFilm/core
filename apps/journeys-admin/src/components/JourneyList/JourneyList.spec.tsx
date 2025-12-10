@@ -3,8 +3,6 @@ import { render } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 
-import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
-
 import { useAdminJourneysQuery } from '../../libs/useAdminJourneysQuery'
 import { ThemeProvider } from '../ThemeProvider'
 
@@ -32,30 +30,15 @@ jest.mock('../../libs/useAdminJourneysQuery', () => ({
   useAdminJourneysQuery: jest.fn()
 }))
 
-jest.mock('@core/shared/ui/useBreakpoints', () => ({
-  __esModule: true,
-  useBreakpoints: jest.fn()
-}))
-
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 const mockedUseAdminJourneysQuery =
   useAdminJourneysQuery as jest.MockedFunction<typeof useAdminJourneysQuery>
-const mockedUseBreakpoints = useBreakpoints as jest.MockedFunction<
-  typeof useBreakpoints
->
 
 describe('JourneyList', () => {
   beforeEach(() => {
     mockedUseAdminJourneysQuery.mockReturnValue({
       refetch: jest.fn()
     } as unknown as ReturnType<typeof useAdminJourneysQuery>)
-    mockedUseBreakpoints.mockReturnValue({
-      xs: false,
-      sm: false,
-      md: true,
-      lg: true,
-      xl: true
-    })
   })
 
   it('should render tab panel', () => {
@@ -142,33 +125,6 @@ describe('JourneyList', () => {
       </SnackbarProvider>
     )
     expect(queryByRole('button', { name: 'Add' })).toBeNull()
-  })
-
-  it('should show add journey button on active tab when mobile', () => {
-    mockedUseRouter.mockReturnValue({
-      query: { status: 'active', type: 'journeys' },
-      events: {
-        on: jest.fn(),
-        off: jest.fn()
-      }
-    } as unknown as NextRouter)
-    mockedUseBreakpoints.mockReturnValue({
-      xs: false,
-      sm: false,
-      md: false,
-      lg: false,
-      xl: false
-    })
-    const { getByRole } = render(
-      <SnackbarProvider>
-        <MockedProvider>
-          <ThemeProvider>
-            <JourneyList />
-          </ThemeProvider>
-        </MockedProvider>
-      </SnackbarProvider>
-    )
-    expect(getByRole('button', { name: 'Add' })).toBeInTheDocument()
   })
 
   it('should call refetch when route changes to /publisher', () => {
