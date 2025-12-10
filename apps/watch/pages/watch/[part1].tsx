@@ -23,12 +23,12 @@ import {
 import { getCookie } from '../../src/libs/cookieHandler'
 import { getFlags } from '../../src/libs/getFlags'
 import { LANGUAGE_MAPPINGS } from '../../src/libs/localeMapping'
+import { slugMap } from '../../src/libs/slugMap'
 import { transformData } from '../../src/libs/useLanguages/util/transformData'
 import {
   WatchProvider,
   WatchState
 } from '../../src/libs/watchContext/WatchContext'
-import { slugMap } from '../../src/libs/slugMap'
 
 interface HomeLanguagePageProps {
   initialApolloState?: NormalizedCacheObject
@@ -153,12 +153,13 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const slugsWithRedirect = Object.keys(slugMap)
   const paths = Object.keys(LANGUAGE_MAPPINGS).flatMap((locale) => {
     const mapping = LANGUAGE_MAPPINGS[locale]
-    return mapping.languageSlugs
-      .filter((slug) => !slugsWithRedirect.includes(slug))
-      .map((slug) => ({
-        params: { part1: slug },
-        locale: mapping.locale
-      }))
+    const slugs = mapping.languageSlugs.filter(
+      (slug) => !slugsWithRedirect.includes(slug.replace('.html', ''))
+    )
+    return slugs.map((slug) => ({
+      params: { part1: slug },
+      locale: mapping.locale
+    }))
   })
 
   return {
