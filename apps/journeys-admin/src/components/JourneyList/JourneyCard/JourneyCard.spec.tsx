@@ -113,4 +113,64 @@ describe('JourneyCard', () => {
     expect(screen.getByTestId('new-journey-badge')).toBeInTheDocument()
     expect(screen.getByText('New')).toBeInTheDocument()
   })
+
+  it('should show JourneyCardInfo when journey is not a template', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={defaultJourney} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByTestId('JourneyCardInfo')).toBeInTheDocument()
+  })
+
+  it('should show JourneyCardInfo when journey is a template with jfp-team teamId', () => {
+    const templateJourneyWithJfpTeam = {
+      ...defaultJourney,
+      template: true,
+      team: {
+        __typename: 'Team' as const,
+        id: 'jfp-team'
+      }
+    }
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={templateJourneyWithJfpTeam} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByTestId('JourneyCardInfo')).toBeInTheDocument()
+  })
+
+  it('should not show JourneyCardInfo when journey is a template without jfp-team teamId', () => {
+    const templateJourney = {
+      ...defaultJourney,
+      template: true,
+      team: {
+        __typename: 'Team' as const,
+        id: 'other-team-id'
+      }
+    }
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={templateJourney} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.queryByTestId('JourneyCardInfo')).not.toBeInTheDocument()
+  })
 })

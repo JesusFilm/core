@@ -254,7 +254,10 @@ export function JourneyCard({
             zIndex: 3
           }}
         >
-          <JourneyCardInfo journey={journey} variant={variant} />
+          {(!journey.template ||
+            (journey.template && journey.team?.id === 'jfp-team')) && (
+            <JourneyCardInfo journey={journey} variant={variant} />
+          )}
         </Box>
       </>
     </Card>

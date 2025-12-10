@@ -39,6 +39,9 @@ export const GET_ADMIN_JOURNEYS = gql`
       seoTitle
       seoDescription
       template
+      team {
+        id
+      }
       userJourneys {
         id
         role
