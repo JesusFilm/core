@@ -137,7 +137,7 @@ describe('MultiStepForm', () => {
     )
 
     const editButton = screen.getByText('Edit Manually')
-    expect(editButton).toHaveStyle('visibility: hidden')
+    expect(editButton).toHaveStyle('display: none')
   })
 
   it('should show edit manually button when on any screen after the first screen', () => {
@@ -152,10 +152,10 @@ describe('MultiStepForm', () => {
     )
 
     const editButton = screen.getByText('Edit Manually')
-    expect(editButton).toHaveStyle('visibility: hidden')
+    expect(editButton).toHaveStyle('display: none')
 
     fireEvent.click(screen.getByTestId('language-next'))
-    expect(editButton).toHaveStyle('visibility: visible')
+    expect(editButton).toHaveStyle('display: inline-flex')
     expect(editButton).toHaveAttribute('href', '/journeys/test-journey-id')
   })
 
