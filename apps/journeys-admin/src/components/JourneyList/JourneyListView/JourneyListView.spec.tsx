@@ -72,7 +72,7 @@ describe('JourneyListView', () => {
       </ThemeProvider>
     )
 
-    expect(getByLabelText('Status')).toBeInTheDocument()
+    expect(getByLabelText('Filter by status')).toBeInTheDocument()
   })
 
   it('should render journey list view test id', () => {
@@ -203,9 +203,9 @@ describe('JourneyListView', () => {
       </ThemeProvider>
     )
 
-    const statusSelect = getByLabelText('Status')
-    fireEvent.mouseDown(statusSelect)
-    const archivedOption = getByRole('option', { name: 'Archived' })
+    const statusFilterButton = getByRole('button', { name: 'Filter by status' })
+    fireEvent.click(statusFilterButton)
+    const archivedOption = getByLabelText('Archived')
     fireEvent.click(archivedOption)
 
     expect(pushMock).toHaveBeenCalledWith(
