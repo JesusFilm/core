@@ -7,7 +7,7 @@ import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdmin
 import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
-} from '../../JourneyList/ArchivedJourneyList/ArchivedJourneyList'
+} from '../../JourneyList/JourneyListContent/JourneyListContent'
 import { SortOrder } from '../../JourneyList/JourneySort'
 import { ThemeProvider } from '../../ThemeProvider'
 import { defaultTemplate, fakeDate, oldTemplate } from '../data'

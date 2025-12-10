@@ -8,7 +8,7 @@ import { SortOrder } from '../../JourneyList/JourneySort'
 import {
   DELETE_TRASHED_JOURNEYS,
   RESTORE_TRASHED_JOURNEYS
-} from '../../JourneyList/TrashedJourneyList/TrashedJourneyList'
+} from '../../JourneyList/JourneyListContent/JourneyListContent'
 import { ThemeProvider } from '../../ThemeProvider'
 import { defaultTemplate, fakeDate, oldTemplate } from '../data'
 
