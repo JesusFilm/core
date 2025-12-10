@@ -25,6 +25,7 @@ import {
   keyify,
   templateKeyify
 } from '../../libs/plausibleHelpers'
+import { actionToTarget } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { Icon } from '../Icon'
 import { IconFields } from '../Icon/__generated__/IconFields'
 import { TextField } from '../TextField'
@@ -34,7 +35,6 @@ import {
   SignUpSubmissionEventCreate,
   SignUpSubmissionEventCreateVariables
 } from './__generated__/SignUpSubmissionEventCreate'
-import { actionToTarget } from '../../libs/plausibleHelpers/plausibleHelpers'
 
 export const SIGN_UP_SUBMISSION_EVENT_CREATE = gql`
   mutation SignUpSubmissionEventCreate(
@@ -70,9 +70,7 @@ export const SignUp = ({
 }: SignUpProps): ReactElement => {
   const { t } = useTranslation('libs-journeys-ui')
 
-  const submitIcon = children.find((block) => block.id === submitIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const submitIcon = children.find((block) => block.id === submitIconId)
 
   const plausible = usePlausible<JourneyPlausibleEvents>()
   const { variant, journey } = useJourney()

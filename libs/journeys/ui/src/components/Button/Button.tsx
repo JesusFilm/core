@@ -29,6 +29,7 @@ import {
   keyify,
   templateKeyify
 } from '../../libs/plausibleHelpers'
+import { actionToTarget } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { Icon } from '../Icon'
 
@@ -44,7 +45,6 @@ import {
 import { findMessagePlatform } from './utils/findMessagePlatform'
 import { getActionLabel } from './utils/getActionLabel'
 import { getLinkActionGoal } from './utils/getLinkActionGoal'
-import { actionToTarget } from '../../libs/plausibleHelpers/plausibleHelpers'
 
 export const BUTTON_CLICK_EVENT_CREATE = gql`
   mutation ButtonClickEventCreate($input: ButtonClickEventCreateInput!) {
@@ -134,11 +134,11 @@ export function Button({
 
   const startIcon = children.find(
     (block) => block.id === startIconId && block.__typename === 'IconBlock'
-  ) as TreeBlock<BlockFields_IconBlock> | undefined
+  )
 
   const endIcon = children.find(
     (block) => block.id === endIconId && block.__typename === 'IconBlock'
-  ) as TreeBlock<BlockFields_IconBlock> | undefined
+  )
 
   const messagePlatform = useMemo(() => findMessagePlatform(action), [action])
   const actionValue = useMemo(

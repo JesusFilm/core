@@ -16,6 +16,7 @@ import {
   templateKeyify
 } from '../../libs/plausibleHelpers'
 // eslint-disable-next-line import/no-cycle
+import { actionToTarget } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { RadioOption } from '../RadioOption'
 import { RadioOptionFields } from '../RadioOption/__generated__/RadioOptionFields'
@@ -27,7 +28,6 @@ import {
 } from './__generated__/RadioQuestionSubmissionEventCreate'
 import { GridVariant } from './GridVariant'
 import { ListVariant } from './ListVariant'
-import { actionToTarget } from '../../libs/plausibleHelpers/plausibleHelpers'
 
 export const RADIO_QUESTION_SUBMISSION_EVENT_CREATE = gql`
   mutation RadioQuestionSubmissionEventCreate(
@@ -97,7 +97,7 @@ export function RadioQuestion({
         (child) =>
           child.id === radioOptionBlockId &&
           child.__typename === 'RadioOptionBlock'
-      ) as TreeBlock<RadioOptionFields> | undefined
+      )
       if (journey != null && radioOptionBlock != null) {
         plausible('radioQuestionSubmit', {
           u: `${window.location.origin}/${journey.id}/${input.stepId}`,
