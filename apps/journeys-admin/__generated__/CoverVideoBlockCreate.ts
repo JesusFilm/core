@@ -31,6 +31,18 @@ export interface CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_variant
   hls: string | null;
 }
 
+export interface CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_variants_language;
+}
+
 export interface CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -49,6 +61,7 @@ export interface CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video {
   title: CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_title[];
   images: CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_images[];
   variant: CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_variant | null;
+  variants: CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_variants[];
   variantLanguages: CoverVideoBlockCreate_videoBlockCreate_mediaVideo_Video_variantLanguages[];
 }
 

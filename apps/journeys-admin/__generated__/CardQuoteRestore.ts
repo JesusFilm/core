@@ -388,6 +388,18 @@ export interface CardQuoteRestore_image_VideoBlock_mediaVideo_Video_variant {
   hls: string | null;
 }
 
+export interface CardQuoteRestore_image_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CardQuoteRestore_image_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: CardQuoteRestore_image_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface CardQuoteRestore_image_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -406,6 +418,7 @@ export interface CardQuoteRestore_image_VideoBlock_mediaVideo_Video {
   title: CardQuoteRestore_image_VideoBlock_mediaVideo_Video_title[];
   images: CardQuoteRestore_image_VideoBlock_mediaVideo_Video_images[];
   variant: CardQuoteRestore_image_VideoBlock_mediaVideo_Video_variant | null;
+  variants: CardQuoteRestore_image_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: CardQuoteRestore_image_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
@@ -988,6 +1001,18 @@ export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_variant {
   hls: string | null;
 }
 
+export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -1006,6 +1031,7 @@ export interface CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video {
   title: CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_title[];
   images: CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_images[];
   variant: CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_variant | null;
+  variants: CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: CardQuoteRestore_subtitle_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
@@ -1588,6 +1614,18 @@ export interface CardQuoteRestore_title_VideoBlock_mediaVideo_Video_variant {
   hls: string | null;
 }
 
+export interface CardQuoteRestore_title_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CardQuoteRestore_title_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: CardQuoteRestore_title_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface CardQuoteRestore_title_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -1606,6 +1644,7 @@ export interface CardQuoteRestore_title_VideoBlock_mediaVideo_Video {
   title: CardQuoteRestore_title_VideoBlock_mediaVideo_Video_title[];
   images: CardQuoteRestore_title_VideoBlock_mediaVideo_Video_images[];
   variant: CardQuoteRestore_title_VideoBlock_mediaVideo_Video_variant | null;
+  variants: CardQuoteRestore_title_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: CardQuoteRestore_title_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
@@ -2188,6 +2227,18 @@ export interface CardQuoteRestore_body_VideoBlock_mediaVideo_Video_variant {
   hls: string | null;
 }
 
+export interface CardQuoteRestore_body_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CardQuoteRestore_body_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: CardQuoteRestore_body_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface CardQuoteRestore_body_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -2206,6 +2257,7 @@ export interface CardQuoteRestore_body_VideoBlock_mediaVideo_Video {
   title: CardQuoteRestore_body_VideoBlock_mediaVideo_Video_title[];
   images: CardQuoteRestore_body_VideoBlock_mediaVideo_Video_images[];
   variant: CardQuoteRestore_body_VideoBlock_mediaVideo_Video_variant | null;
+  variants: CardQuoteRestore_body_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: CardQuoteRestore_body_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 

@@ -398,6 +398,18 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_V
   hls: string | null;
 }
 
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -416,6 +428,7 @@ export interface StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_V
   title: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_title[];
   images: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_images[];
   variant: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variant | null;
+  variants: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: StepBlockRestoreFromAction_blockRestore_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 

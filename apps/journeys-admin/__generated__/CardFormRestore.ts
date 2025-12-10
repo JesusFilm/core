@@ -388,6 +388,18 @@ export interface CardFormRestore_image_VideoBlock_mediaVideo_Video_variant {
   hls: string | null;
 }
 
+export interface CardFormRestore_image_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CardFormRestore_image_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: CardFormRestore_image_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface CardFormRestore_image_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -406,6 +418,7 @@ export interface CardFormRestore_image_VideoBlock_mediaVideo_Video {
   title: CardFormRestore_image_VideoBlock_mediaVideo_Video_title[];
   images: CardFormRestore_image_VideoBlock_mediaVideo_Video_images[];
   variant: CardFormRestore_image_VideoBlock_mediaVideo_Video_variant | null;
+  variants: CardFormRestore_image_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: CardFormRestore_image_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
@@ -988,6 +1001,18 @@ export interface CardFormRestore_subtitle_VideoBlock_mediaVideo_Video_variant {
   hls: string | null;
 }
 
+export interface CardFormRestore_subtitle_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CardFormRestore_subtitle_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: CardFormRestore_subtitle_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface CardFormRestore_subtitle_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -1006,6 +1031,7 @@ export interface CardFormRestore_subtitle_VideoBlock_mediaVideo_Video {
   title: CardFormRestore_subtitle_VideoBlock_mediaVideo_Video_title[];
   images: CardFormRestore_subtitle_VideoBlock_mediaVideo_Video_images[];
   variant: CardFormRestore_subtitle_VideoBlock_mediaVideo_Video_variant | null;
+  variants: CardFormRestore_subtitle_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: CardFormRestore_subtitle_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
@@ -1588,6 +1614,18 @@ export interface CardFormRestore_title_VideoBlock_mediaVideo_Video_variant {
   hls: string | null;
 }
 
+export interface CardFormRestore_title_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CardFormRestore_title_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: CardFormRestore_title_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface CardFormRestore_title_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -1606,6 +1644,7 @@ export interface CardFormRestore_title_VideoBlock_mediaVideo_Video {
   title: CardFormRestore_title_VideoBlock_mediaVideo_Video_title[];
   images: CardFormRestore_title_VideoBlock_mediaVideo_Video_images[];
   variant: CardFormRestore_title_VideoBlock_mediaVideo_Video_variant | null;
+  variants: CardFormRestore_title_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: CardFormRestore_title_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
@@ -2188,6 +2227,18 @@ export interface CardFormRestore_textResponse_VideoBlock_mediaVideo_Video_varian
   hls: string | null;
 }
 
+export interface CardFormRestore_textResponse_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CardFormRestore_textResponse_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: CardFormRestore_textResponse_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface CardFormRestore_textResponse_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -2206,6 +2257,7 @@ export interface CardFormRestore_textResponse_VideoBlock_mediaVideo_Video {
   title: CardFormRestore_textResponse_VideoBlock_mediaVideo_Video_title[];
   images: CardFormRestore_textResponse_VideoBlock_mediaVideo_Video_images[];
   variant: CardFormRestore_textResponse_VideoBlock_mediaVideo_Video_variant | null;
+  variants: CardFormRestore_textResponse_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: CardFormRestore_textResponse_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
@@ -2788,6 +2840,18 @@ export interface CardFormRestore_button_VideoBlock_mediaVideo_Video_variant {
   hls: string | null;
 }
 
+export interface CardFormRestore_button_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CardFormRestore_button_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: CardFormRestore_button_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface CardFormRestore_button_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -2806,6 +2870,7 @@ export interface CardFormRestore_button_VideoBlock_mediaVideo_Video {
   title: CardFormRestore_button_VideoBlock_mediaVideo_Video_title[];
   images: CardFormRestore_button_VideoBlock_mediaVideo_Video_images[];
   variant: CardFormRestore_button_VideoBlock_mediaVideo_Video_variant | null;
+  variants: CardFormRestore_button_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: CardFormRestore_button_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
@@ -3388,6 +3453,18 @@ export interface CardFormRestore_startIcon_VideoBlock_mediaVideo_Video_variant {
   hls: string | null;
 }
 
+export interface CardFormRestore_startIcon_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CardFormRestore_startIcon_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: CardFormRestore_startIcon_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface CardFormRestore_startIcon_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -3406,6 +3483,7 @@ export interface CardFormRestore_startIcon_VideoBlock_mediaVideo_Video {
   title: CardFormRestore_startIcon_VideoBlock_mediaVideo_Video_title[];
   images: CardFormRestore_startIcon_VideoBlock_mediaVideo_Video_images[];
   variant: CardFormRestore_startIcon_VideoBlock_mediaVideo_Video_variant | null;
+  variants: CardFormRestore_startIcon_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: CardFormRestore_startIcon_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
@@ -3988,6 +4066,18 @@ export interface CardFormRestore_endIcon_VideoBlock_mediaVideo_Video_variant {
   hls: string | null;
 }
 
+export interface CardFormRestore_endIcon_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CardFormRestore_endIcon_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: CardFormRestore_endIcon_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface CardFormRestore_endIcon_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -4006,6 +4096,7 @@ export interface CardFormRestore_endIcon_VideoBlock_mediaVideo_Video {
   title: CardFormRestore_endIcon_VideoBlock_mediaVideo_Video_title[];
   images: CardFormRestore_endIcon_VideoBlock_mediaVideo_Video_images[];
   variant: CardFormRestore_endIcon_VideoBlock_mediaVideo_Video_variant | null;
+  variants: CardFormRestore_endIcon_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: CardFormRestore_endIcon_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
@@ -4588,6 +4679,18 @@ export interface CardFormRestore_body_VideoBlock_mediaVideo_Video_variant {
   hls: string | null;
 }
 
+export interface CardFormRestore_body_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CardFormRestore_body_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: CardFormRestore_body_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface CardFormRestore_body_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -4606,6 +4709,7 @@ export interface CardFormRestore_body_VideoBlock_mediaVideo_Video {
   title: CardFormRestore_body_VideoBlock_mediaVideo_Video_title[];
   images: CardFormRestore_body_VideoBlock_mediaVideo_Video_images[];
   variant: CardFormRestore_body_VideoBlock_mediaVideo_Video_variant | null;
+  variants: CardFormRestore_body_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: CardFormRestore_body_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 

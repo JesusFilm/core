@@ -402,6 +402,18 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaV
   hls: string | null;
 }
 
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -420,6 +432,7 @@ export interface GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaV
   title: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_title[];
   images: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_images[];
   variant: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_variant | null;
+  variants: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: GetPublisherTemplate_publisherTemplate_blocks_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 

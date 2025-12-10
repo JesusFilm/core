@@ -40,6 +40,13 @@ export const VIDEO_FIELDS = gql`
           id
           hls
         }
+        variants {
+          id
+          duration
+          language {
+            id
+          }
+        }
         variantLanguages {
           id
           name {

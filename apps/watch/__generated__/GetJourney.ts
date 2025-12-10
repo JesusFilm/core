@@ -402,6 +402,18 @@ export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variant {
   hls: string | null;
 }
 
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -420,6 +432,7 @@ export interface GetJourney_journey_blocks_VideoBlock_mediaVideo_Video {
   title: GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_title[];
   images: GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_images[];
   variant: GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variant | null;
+  variants: GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: GetJourney_journey_blocks_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 

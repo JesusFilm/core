@@ -388,6 +388,18 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVide
   hls: string | null;
 }
 
+export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -406,6 +418,7 @@ export interface TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVide
   title: TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_title[];
   images: TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_images[];
   variant: TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_variant | null;
+  variants: TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: TextResponseWithButtonRestore_textResponse_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
@@ -988,6 +1001,18 @@ export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Vide
   hls: string | null;
 }
 
+export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -1006,6 +1031,7 @@ export interface TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Vide
   title: TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_title[];
   images: TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_images[];
   variant: TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_variant | null;
+  variants: TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: TextResponseWithButtonRestore_button_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
@@ -1588,6 +1614,18 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_V
   hls: string | null;
 }
 
+export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -1606,6 +1644,7 @@ export interface TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_V
   title: TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_title[];
   images: TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_images[];
   variant: TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_variant | null;
+  variants: TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: TextResponseWithButtonRestore_startIcon_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
@@ -2188,6 +2227,18 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Vid
   hls: string | null;
 }
 
+export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -2206,6 +2257,7 @@ export interface TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Vid
   title: TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_title[];
   images: TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_images[];
   variant: TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_variant | null;
+  variants: TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: TextResponseWithButtonRestore_endIcon_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 

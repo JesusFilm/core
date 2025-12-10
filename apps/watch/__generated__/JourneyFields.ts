@@ -402,6 +402,18 @@ export interface JourneyFields_blocks_VideoBlock_mediaVideo_Video_variant {
   hls: string | null;
 }
 
+export interface JourneyFields_blocks_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface JourneyFields_blocks_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: JourneyFields_blocks_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface JourneyFields_blocks_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -420,6 +432,7 @@ export interface JourneyFields_blocks_VideoBlock_mediaVideo_Video {
   title: JourneyFields_blocks_VideoBlock_mediaVideo_Video_title[];
   images: JourneyFields_blocks_VideoBlock_mediaVideo_Video_images[];
   variant: JourneyFields_blocks_VideoBlock_mediaVideo_Video_variant | null;
+  variants: JourneyFields_blocks_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: JourneyFields_blocks_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 

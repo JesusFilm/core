@@ -35,6 +35,18 @@ export interface CardVideoDelete_video_VideoBlock_mediaVideo_Video_variant {
   hls: string | null;
 }
 
+export interface CardVideoDelete_video_VideoBlock_mediaVideo_Video_variants_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CardVideoDelete_video_VideoBlock_mediaVideo_Video_variants {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  language: CardVideoDelete_video_VideoBlock_mediaVideo_Video_variants_language;
+}
+
 export interface CardVideoDelete_video_VideoBlock_mediaVideo_Video_variantLanguages_name {
   __typename: "LanguageName";
   value: string;
@@ -53,6 +65,7 @@ export interface CardVideoDelete_video_VideoBlock_mediaVideo_Video {
   title: CardVideoDelete_video_VideoBlock_mediaVideo_Video_title[];
   images: CardVideoDelete_video_VideoBlock_mediaVideo_Video_images[];
   variant: CardVideoDelete_video_VideoBlock_mediaVideo_Video_variant | null;
+  variants: CardVideoDelete_video_VideoBlock_mediaVideo_Video_variants[];
   variantLanguages: CardVideoDelete_video_VideoBlock_mediaVideo_Video_variantLanguages[];
 }
 
