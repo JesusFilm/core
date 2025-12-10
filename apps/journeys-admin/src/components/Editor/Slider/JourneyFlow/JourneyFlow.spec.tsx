@@ -475,4 +475,165 @@ describe('JourneyFlow', () => {
       'background-color': 'rgb(222, 232, 239)'
     })
   })
+
+  it('should hide analytics panel for local templates', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+
+    const localTemplateJourney = {
+      ...defaultJourney,
+      team: {
+        __typename: 'Team' as const,
+        id: 'my-team-id',
+        title: 'My Team',
+        publicTitle: null
+      },
+      template: true
+    }
+
+    render(
+      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+        <SnackbarProvider>
+          <FlagsProvider flags={{ editorAnalytics: true }}>
+            <JourneyProvider value={{ journey: localTemplateJourney }}>
+              <EditorProvider
+                initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+              >
+                <MuxVideoUploadProvider>
+                  <Box sx={{ width: '100vw', height: '100vh' }}>
+                    <JourneyFlow />
+                  </Box>
+                </MuxVideoUploadProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(
+      screen.queryByRole('checkbox', { name: 'Analytics Overlay' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should show analytics panel for global templates', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+
+    const jfpTeamTemplateJourney = {
+      ...defaultJourney,
+      team: {
+        __typename: 'Team' as const,
+        id: 'jfp-team',
+        title: 'JFP Team',
+        publicTitle: null
+      },
+      template: true
+    }
+
+    render(
+      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+        <SnackbarProvider>
+          <FlagsProvider flags={{ editorAnalytics: true }}>
+            <JourneyProvider value={{ journey: jfpTeamTemplateJourney }}>
+              <EditorProvider
+                initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+              >
+                <MuxVideoUploadProvider>
+                  <Box sx={{ width: '100vw', height: '100vh' }}>
+                    <JourneyFlow />
+                  </Box>
+                </MuxVideoUploadProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(
+      screen.getByRole('checkbox', { name: 'Analytics Overlay' })
+    ).toBeInTheDocument()
+  })
+
+  it('should show analytics panel for journeys', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+
+    const jfpTeamTemplateJourney = {
+      ...defaultJourney,
+      team: {
+        __typename: 'Team' as const,
+        id: 'my-team',
+        title: 'My Team',
+        publicTitle: null
+      },
+      template: false
+    }
+
+    render(
+      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+        <SnackbarProvider>
+          <FlagsProvider flags={{ editorAnalytics: true }}>
+            <JourneyProvider value={{ journey: jfpTeamTemplateJourney }}>
+              <EditorProvider
+                initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+              >
+                <MuxVideoUploadProvider>
+                  <Box sx={{ width: '100vw', height: '100vh' }}>
+                    <JourneyFlow />
+                  </Box>
+                </MuxVideoUploadProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(
+      screen.getByRole('checkbox', { name: 'Analytics Overlay' })
+    ).toBeInTheDocument()
+  })
+
+  it('should hide analytics panel when editorAnalytics feature flag is false', async () => {
+    const result = jest
+      .fn()
+      .mockReturnValue(mockGetStepBlocksWithPosition.result)
+
+    render(
+      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+        <SnackbarProvider>
+          <FlagsProvider flags={{ editorAnalytics: false }}>
+            <JourneyProvider value={{ journey: defaultJourney }}>
+              <EditorProvider
+                initialState={{ steps, activeSlide: ActiveSlide.JourneyFlow }}
+              >
+                <MuxVideoUploadProvider>
+                  <Box sx={{ width: '100vw', height: '100vh' }}>
+                    <JourneyFlow />
+                  </Box>
+                </MuxVideoUploadProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(
+      screen.queryByRole('checkbox', { name: 'Analytics Overlay' })
+    ).not.toBeInTheDocument()
+  })
 })
