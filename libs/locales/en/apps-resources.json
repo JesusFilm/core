@@ -91,5 +91,9 @@
   "Series": "Series",
   "Short Film": "Short Film",
   "Behind The Scenes": "Behind The Scenes",
-  "Trailer": "Trailer"
+  "Trailer": "Trailer",
+  "betaBanner": {
+    "message": "Try the new Watch beta experience.",
+    "cta": "Switch to beta"
+  }
 }
