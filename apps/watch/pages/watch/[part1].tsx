@@ -28,6 +28,7 @@ import {
   WatchProvider,
   WatchState
 } from '../../src/libs/watchContext/WatchContext'
+import { slugMap } from '../../src/libs/slugMap'
 
 interface HomeLanguagePageProps {
   initialApolloState?: NormalizedCacheObject
@@ -85,6 +86,26 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
   params,
   locale
 }) => {
+  const [languageId, languageIdExtension] = (params?.part1 as string).split('.')
+
+  if (slugMap[languageId] != null)
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/watch/${slugMap[languageId]}.html`
+      }
+    }
+
+  if (languageIdExtension !== 'html')
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/watch/${encodeURIComponent(
+          languageId
+        )}.html/${languageId}.html`
+      }
+    }
+
   const languages = await fetch(
     `${process.env.NODE_ENV === 'development' ? 'http://localhost:4300' : 'https://www.jesusfilm.org'}/api/languages`
   )
@@ -129,12 +150,15 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
+  const slugsWithRedirect = Object.keys(slugMap)
   const paths = Object.keys(LANGUAGE_MAPPINGS).flatMap((locale) => {
     const mapping = LANGUAGE_MAPPINGS[locale]
-    return mapping.languageSlugs.map((slug) => ({
-      params: { part1: slug },
-      locale: mapping.locale
-    }))
+    return mapping.languageSlugs
+      .filter((slug) => !slugsWithRedirect.includes(slug))
+      .map((slug) => ({
+        params: { part1: slug },
+        locale: mapping.locale
+      }))
   })
 
   return {
