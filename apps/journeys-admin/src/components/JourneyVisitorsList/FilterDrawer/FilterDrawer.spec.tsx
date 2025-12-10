@@ -1,9 +1,23 @@
 import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import mockRouter from 'next-router-mock'
 import { SnackbarProvider } from 'notistack'
 
 import { FilterDrawer, GET_JOURNEY_BLOCK_TYPENAMES } from './FilterDrawer'
+
+const mockGoogleSheetsSyncDialog = jest.fn()
+
+jest.mock('./GoogleSheetsSyncDialog', () => ({
+  GoogleSheetsSyncDialog: (props) => {
+    mockGoogleSheetsSyncDialog(props)
+    return props.open ? (
+      <div data-testid="google-sheets-sync-dialog">
+        Google Sheets Sync Dialog
+      </div>
+    ) : null
+  }
+}))
 
 const journeyCreatedAt = '2023-01-01T00:00:00.000Z'
 const mockJourneyCreatedAt: MockedResponse = {
@@ -45,6 +59,8 @@ describe('FilterDrawer', () => {
   beforeEach(() => {
     props.handleClearAll.mockClear()
     props.handleChange.mockClear()
+    mockGoogleSheetsSyncDialog.mockClear()
+    mockRouter.setCurrentUrl('/journeys')
   })
 
   it('calls handleClearAll when the clear all button is clicked', async () => {
@@ -161,6 +177,49 @@ describe('FilterDrawer', () => {
       await waitFor(() => {
         expect(screen.queryByText('Export Analytics')).not.toBeInTheDocument()
       })
+    })
+  })
+
+  describe('google sheets sync dialog interactions', () => {
+    it('opens the sync dialog when the button is clicked', async () => {
+      mockRouter.setCurrentUrl('/journeys?flag=sheets')
+      const user = userEvent.setup()
+      render(
+        <MockedProvider mocks={[mockJourneyCreatedAt]}>
+          <FilterDrawer {...props} />
+        </MockedProvider>
+      )
+
+      expect(
+        screen.queryByTestId('google-sheets-sync-dialog')
+      ).not.toBeInTheDocument()
+
+      const syncButton = screen.getByRole('button', {
+        name: 'Sync to Google Sheets'
+      })
+      await user.click(syncButton)
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId('google-sheets-sync-dialog')
+        ).toBeInTheDocument()
+      )
+    })
+
+    it('automatically opens the sync dialog when the URL has openSyncDialog', async () => {
+      mockRouter.setCurrentUrl('/journeys?flag=sheets&openSyncDialog=true')
+
+      render(
+        <MockedProvider mocks={[mockJourneyCreatedAt]}>
+          <FilterDrawer {...props} />
+        </MockedProvider>
+      )
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId('google-sheets-sync-dialog')
+        ).toBeInTheDocument()
+      )
     })
   })
 })
