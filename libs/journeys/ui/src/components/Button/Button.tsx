@@ -26,9 +26,9 @@ import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import {
   JourneyPlausibleEvents,
+  actionToTarget,
   keyify,
-  templateKeyify,
-  actionToTarget
+  templateKeyify
 } from '../../libs/plausibleHelpers'
 import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { Icon } from '../Icon'
