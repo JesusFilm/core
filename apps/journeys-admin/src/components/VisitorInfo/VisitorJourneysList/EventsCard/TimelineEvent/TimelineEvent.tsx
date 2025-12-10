@@ -100,7 +100,7 @@ export function TimelineEvent({
       break
     case 'MultiselectSubmissionEvent':
       icon = <CheckContainedIcon />
-      activity = `${t('Multiselect submission')}:`
+      activity = `${t('Multiselect')}:`
       label = event.label
       variant = EventVariant.featured
       break
