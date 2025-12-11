@@ -106,12 +106,12 @@ export function PlaylistPage({ playlist }: PlaylistPageProps): ReactElement {
           </div>
         </div>
         <div className="flex w-full pt-2 lg:w-auto lg:max-w-[400px] lg:pt-0">
-          <div className="flex aspect-video w-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white">
+          <div className="flex aspect-video w-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-black">
             <div className="flex-shrink-0 p-4 pb-2">
-              <h1 className="mb-1 text-lg font-semibold text-gray-900">
+              <h1 className="mb-1 text-lg font-semibold text-gray-900 dark:text-white">
                 {playlist.name}
               </h1>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 {playlist.owner.firstName}
                 {playlist.owner.lastName ? ` ${playlist.owner.lastName}` : ''}
               </p>

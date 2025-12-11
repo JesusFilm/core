@@ -65,7 +65,9 @@ export function PlaylistList({
             key={item.id}
             onClick={() => onVideoSelect(index)}
             className={`w-full text-left transition-colors ${
-              isActive ? 'bg-purple-50' : 'hover:bg-gray-50'
+              isActive
+                ? 'bg-purple-50 dark:bg-red-900'
+                : 'hover:bg-gray-50 dark:hover:bg-gray-800'
             } ${!hasHls ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
             disabled={!hasHls}
             aria-label={`Play ${title}`}
@@ -74,7 +76,7 @@ export function PlaylistList({
               <div className="flex flex-shrink-0 items-center">
                 {isActive && (
                   <svg
-                    className="mr-2 h-4 w-4 text-gray-700"
+                    className="mr-2 h-4 w-4 text-gray-700 dark:text-white"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -84,7 +86,7 @@ export function PlaylistList({
                 {!isActive && <div className="mr-2 w-4" />}
               </div>
               {thumbnail ? (
-                <div className="relative h-14 w-24 flex-shrink-0 overflow-hidden rounded bg-gray-200">
+                <div className="relative h-14 w-24 flex-shrink-0 overflow-hidden rounded bg-gray-200 dark:bg-gray-800">
                   <img
                     src={thumbnail}
                     alt={title}
@@ -95,7 +97,7 @@ export function PlaylistList({
                   </div>
                 </div>
               ) : (
-                <div className="relative flex h-14 w-24 flex-shrink-0 items-center justify-center rounded bg-gray-200">
+                <div className="relative flex h-14 w-24 flex-shrink-0 items-center justify-center rounded bg-gray-200 dark:bg-gray-800">
                   <div className="text-xs text-gray-400">No thumbnail</div>
                   <div className="absolute right-1 bottom-1 rounded bg-black/80 px-1.5 py-0.5 text-xs text-white">
                     {formatDuration(duration)}
@@ -103,15 +105,13 @@ export function PlaylistList({
                 </div>
               )}
               <div className="flex min-w-0 flex-1 flex-col justify-center">
-                <div
-                  className={`mb-0.5 line-clamp-2 text-sm font-medium ${
-                    isActive ? 'text-gray-900' : 'text-gray-900'
-                  }`}
-                >
+                <div className="mb-0.5 line-clamp-2 text-sm font-medium text-gray-900 dark:text-white">
                   {title}
                 </div>
                 {languageName && (
-                  <div className="text-xs text-gray-600">{languageName}</div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400">
+                    {languageName}
+                  </div>
                 )}
               </div>
             </div>

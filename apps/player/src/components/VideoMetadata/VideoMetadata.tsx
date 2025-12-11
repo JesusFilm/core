@@ -85,10 +85,12 @@ export function VideoMetadata({
 
   return (
     <>
-      <h1 className="mb-3 text-xl font-semibold text-gray-900">{title}</h1>
+      <h1 className="mb-3 text-xl font-semibold text-gray-900 dark:text-white">
+        {title}
+      </h1>
       {descriptionText && (
         <div className="mb-4">
-          <div className="text-sm text-gray-700">
+          <div className="text-sm text-gray-700 dark:text-gray-400">
             <p className="whitespace-pre-wrap">
               {renderTextWithLinks(descriptionText)}
             </p>

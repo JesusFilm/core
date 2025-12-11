@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans:
     'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
@@ -18,6 +20,7 @@
   --color-text-disabled: #aaacbb;
   --color-background: #ffffff;
   --color-background-paper: #ffffff;
+  --color-background-dark: #0f0f0f;
 }
 
 @layer utilities {
