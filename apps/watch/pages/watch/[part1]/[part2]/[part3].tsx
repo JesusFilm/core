@@ -112,6 +112,16 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
     context.params?.part3 as string
   ).split('.')
 
+  if (slugMap[languageId] != null)
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/watch/${containerId}.html/${encodeURIComponent(
+          contentId
+        )}/${slugMap[languageId]}.html`
+      }
+    }
+
   if (
     containerIdExtension !== 'html' ||
     contentIdExtension !== undefined ||
@@ -126,15 +136,6 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
       }
     }
 
-  if (slugMap[languageId] != null)
-    return {
-      redirect: {
-        permanent: false,
-        destination: `/watch/${containerId}.html/${encodeURIComponent(
-          contentId
-        )}/${slugMap[languageId]}.html`
-      }
-    }
   const client = createApolloClient()
   const languageIdFromLocale = getLanguageIdFromLocale(context.locale)
   try {

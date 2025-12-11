@@ -148,7 +148,15 @@ export class JourneyResolver {
         throw new GraphQLError('journey profile not found', {
           extensions: { code: 'NOT_FOUND' }
         })
-      filter.teamId = profile.lastActiveTeamId ?? undefined
+      if (profile.lastActiveTeamId !== null) {
+        filter.teamId = profile.lastActiveTeamId
+      } else {
+        // Fetch "Shared with me" journeys and filter out global templates
+        filter.NOT = {
+          template: true,
+          teamId: 'jfp-team'
+        }
+      }
     }
     if (teamId != null) {
       filter.teamId = teamId
