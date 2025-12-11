@@ -1,6 +1,10 @@
-import { Box, Container, Typography, useMediaQuery, useTheme } from '@mui/material'
+import Box from '@mui/material/Box'
+import Container from '@mui/material/Container'
+import { useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
+import useMediaQuery from '@mui/material/useMediaQuery'
+import { useRouter } from 'next/compat/router'
 import { useTranslation } from 'next-i18next'
-import { useRouter } from 'next/router'
 import { type KeyboardEvent, type ReactElement, useEffect, useRef } from 'react'
 
 interface Particle {
@@ -21,7 +25,7 @@ export function BetaBanner(): ReactElement | null {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number | null>(null)
   const particlesRef = useRef<Particle[]>([])
-  const isWatchRoute = router.isReady && router.pathname.startsWith('/watch')
+  const isWatchRoute = router?.pathname?.startsWith('/watch') ?? false
 
   useEffect(() => {
     if (!isWatchRoute || !canvasRef.current) return
@@ -49,7 +53,7 @@ export function BetaBanner(): ReactElement | null {
 
     const initParticles = () => {
       particlesRef.current = []
-      for (let i = 0; i < 350; i++) {
+      for (let i = 0; i < 200; i++) {
         particlesRef.current.push(createParticle())
       }
     }
@@ -116,14 +120,19 @@ export function BetaBanner(): ReactElement | null {
     }
   }, [isWatchRoute])
 
-  if (!router.isReady || !isWatchRoute) return null
+  if (!isWatchRoute || router == null) return null
 
   const activateExperimentalMode = (): void => {
-    document.cookie = 'EXPERIMENTAL=true; path=/'
+    const isHttps = window.location.protocol === 'https:'
+    document.cookie = `EXPERIMENTAL=true; max-age=2592000; path=/; SameSite=Lax${isHttps ? '; Secure' : ''}`
     window.location.reload()
   }
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>): void => {
+  const handleActivateExperimentalMode = (): void => {
+    activateExperimentalMode()
+  }
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>): void => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
       activateExperimentalMode()
@@ -132,17 +141,12 @@ export function BetaBanner(): ReactElement | null {
 
   return (
     <Box
-      role="button"
-      tabIndex={0}
+      role="banner"
       component="section"
-      onClick={activateExperimentalMode}
-      onKeyDown={handleKeyDown}
-      aria-label={t('Try the new design.')}
       sx={{
         width: '100%',
         backgroundColor: 'primary.main',
         color: 'primary.contrastText',
-        cursor: 'pointer',
         position: 'relative',
         overflow: 'hidden',
         transition: 'background-color 0.3s ease',
@@ -172,15 +176,37 @@ export function BetaBanner(): ReactElement | null {
           textAlign: 'center'
         }}
       >
-        <Typography variant="h6">
-        ✨ {isMobile ? t('Better search, languages, and collections.') : t('Better search. Better language support. Better collections.')}{' '}
-         <Box component="span" sx={{ display: 'inline-block', pr: 4, pl:2 }}>
-            →
-          </Box>
-          <Box component="span" sx={{ fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '3px', textDecorationColor: 'rgba(255, 255, 255, 0.7)' }}>
-            {isMobile ? t('New Design') : t('Try the new design.')}
-          </Box>
-        </Typography>
+        <Box
+          component="button"
+          tabIndex={0}
+          onClick={handleActivateExperimentalMode}
+          onKeyDown={handleKeyDown}
+          aria-label={t('Try the new design.')}
+          sx={{
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            font: 'inherit',
+            color: 'inherit',
+            cursor: 'pointer',
+            width: '100%',
+            textAlign: 'center',
+            '&:focus': {
+              outline: '2px solid white',
+              outlineOffset: '2px'
+            }
+          }}
+        >
+          <Typography variant="h6">
+            ✨ {isMobile ? t('Better search, languages, and collections.') : t('Better search. Better language support. Better collections.')}{' '}
+            <Box component="span" sx={{ display: 'inline-block', pr: 4, pl:2 }}>
+              →
+            </Box>
+            <Box component="span" sx={{ fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '3px', textDecorationColor: 'rgba(255, 255, 255, 0.7)' }}>
+              {isMobile ? t('New Design') : t('Try the new design.')}
+            </Box>
+          </Typography>
+        </Box>
       </Container>
     </Box>
   )

@@ -93,5 +93,9 @@
   "Behind The Scenes": "Sa Likod ng mga Eksena",
   "Trailer": "Trailer",
   "Available in {{count}} languages._one": "Available sa {{count}} wika.",
-  "Available in {{count}} languages._other": "Available sa {{count}} mga wika."
+  "Available in {{count}} languages._other": "Available sa {{count}} mga wika.",
+  "Better search. Better language support. Better collections.": "Better search. Better language support. Better collections.",
+  "Better search, languages, and collections.": "Better search, languages, and collections.",
+  "Try the new design.": "Try the new design.",
+  "New Design": "New Design"
 }

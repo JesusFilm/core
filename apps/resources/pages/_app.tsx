@@ -18,7 +18,7 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import i18nConfig from '../next-i18next.config'
-import { BetaBanner } from '../src/components/BetaBanner'
+import { BetaBanner } from '../src/components/BetaBanner/index'
 import { useApolloClient } from '../src/libs/apolloClient'
 
 import 'swiper/css'

@@ -3,8 +3,7 @@
 ## Context & stack
 
 - **Location:** `apps/resources` in the Nx monorepo (Next.js pages router).
-- **Tech:** React, TypeScript, Apollo Client with generated GraphQL types, `next-i18next` for localization, Tailwind CSS + shadcn/ui primitives.
-- **Design direction:** We are migrating to shadcn/Tailwind. Do **not** introduce new MUI usage even though the lint rule is relaxed. New shadcn work should coexist with core shells/wrappers that are still using MUI until explicit migration tasks retire them.
+- **Tech:** React, TypeScript, Apollo Client with generated GraphQL types, `next-i18next` for localization.
 - **Sister project:** E2E coverage lives in `apps/resources-e2e`; reuse its Playwright setup instead of creating new tooling.
 
 ## Workspace setup
@@ -123,15 +122,6 @@ done
 echo "✅ Page renders cleanly after $max_retries attempts"
 ```
 
-## Shadcn & Monorepo
-
-1. Since it's a monorepo, shadcn components live in the root of the repo in /core/libs/ui/. When adding new shadcn components add it to the root.
-
-### UI Component Hierarchy (order of preference)
-
-1. **Shadcn/ui components** - Primary choice for all UI needs
-2. **Custom Tailwind components** - If shadcn/ui doesn't exist, build with Tailwind CSS
-3. **Semantic HTML + Tailwind** - For basic elements when neither above applies
 
 ## Core Nx targets (run with `pnpm dlx nx run <target>`)
 
@@ -145,7 +135,7 @@ echo "✅ Page renders cleanly after $max_retries attempts"
 
 Run these before opening a PR. If a command fails due to pre-existing issues, ensure your changes introduce no new violations and note the exception in the PRD log.
 
-- Format check: `pnpm run prettier` (use `pnpm run prettier:fix` to apply fixes; Tailwind classes are auto-sorted by the plugin).
+- Format check: `pnpm run prettier` (use `pnpm run prettier:fix` to apply fixes).
 - Resources lint: `pnpm dlx nx run resources:lint`.
 - Resources type-check: `pnpm dlx nx run resources:type-check` (targets `tsc -b apps/resources/tsconfig.json`).
 - Resources unit tests: `pnpm dlx nx run resources:test`.
@@ -164,7 +154,7 @@ Run these before opening a PR. If a command fails due to pre-existing issues, en
 3. **Interactions**: User interactions (clicks, keyboard, form inputs)
 4. **Accessibility**: ARIA labels, keyboard navigation, semantic HTML
 5. **Conditional logic**: Different states and prop combinations
-6. **CSS classes**: Correct Tailwind classes applied
+6. **Styling**: Correct styling applied
 
 ### Example Test Patterns
 
@@ -183,7 +173,7 @@ describe('MyComponent', () => {
     expect(handleClick).toHaveBeenCalledTimes(1)
   })
 
-  it('should apply correct CSS classes', () => {
+  it('should apply correct styling', () => {
     render(<MyComponent className="custom-class" />)
     expect(screen.getByRole('button')).toHaveClass('custom-class')
   })
@@ -223,13 +213,12 @@ describe('MyComponent', () => {
 - Strive for simple, reusable components with clear responsibilities and early returns.
 - Use semantic HTML elements: `<header>`, `<main>`, `<footer>`
 - Keep handlers prefixed with `handle*`, type everything explicitly, and lean on generated GraphQL helpers (`ResultOf`, `VariablesOf`).
-- Compose UI with shadcn/ui primitives or semantic HTML styled via Tailwind. Use the shared `cn` helper for conditional classes.
-- Tailwind utilities should stay semantically grouped—Prettier sorts the lists, but ensure responsive and state variants remain readable.
-- Meet high visual polish: consistent typography, deliberate spacing, and tasteful Tailwind-driven animations inspired by Apple TV+, Airbnb, YouTube, Vimeo, and Netflix.
+- Meet high visual polish: consistent typography, deliberate spacing, and tasteful animations inspired by Apple TV+, Airbnb, YouTube, Vimeo, and Netflix.
 - Use descriptive variable and function/const names. Also, event functions should be named with a "handle" prefix, like "handleClick" for onClick and "handleKeyDown" for onKeyDown.
 - Implement accessibility features on elements. For example, a tag should have a tabindex="0", aria-label, on:click, and on:keydown, and similar attributes.Build accessible experiences (aria attributes, keyboard support, focus states) as part of every component.
 - Verify that every clickable elements has cursor:pointer defined.
 - When calling `t(...)`, inline the human-readable copy with interpolation placeholders (e.g., `t('Switch to {{localeName}}', { localeName: localeDetails.nativeName })`) instead of referencing stored translation keys like `t('localeSuggestion.action', ...)`.
+- Use direct English strings in `t()` function calls instead of translation keys. Use `t('Welcome back')` instead of `t('welcomeBack')` or nested structures like `t('user.profile.name')`.
 - All components and functions must be fully typed with TypeScript.
 - Export all components through index.ts files
 - Use alphabetical order for imports and exports

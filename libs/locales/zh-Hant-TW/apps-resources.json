@@ -92,5 +92,9 @@
   "Short Film": "短片",
   "Behind The Scenes": "幕後花絮",
   "Trailer": "預告片",
-  "Available in {{count}} languages._other": "提供 {{count}} 語言版本。"
+  "Available in {{count}} languages._other": "提供 {{count}} 語言版本。",
+  "Better search. Better language support. Better collections.": "Better search. Better language support. Better collections.",
+  "Better search, languages, and collections.": "Better search, languages, and collections.",
+  "Try the new design.": "Try the new design.",
+  "New Design": "New Design"
 }
