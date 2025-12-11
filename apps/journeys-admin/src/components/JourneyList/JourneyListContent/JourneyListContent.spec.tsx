@@ -114,7 +114,7 @@ describe('JourneyListContent', () => {
       })
 
       await waitFor(() =>
-        expect(getByText('No templates to display.')).toBeInTheDocument()
+        expect(getByText('Make your first template.')).toBeInTheDocument()
       )
     })
 
@@ -444,13 +444,13 @@ describe('JourneyListContent', () => {
         status: 'active'
       })
 
-      await waitFor(() =>
+      await waitFor(() => {
         expect(
           getByText(
-            'You can archive a template to hide it from the Template Library.'
+            /Templates you make from your projects will appear here\.\s*Monitor the performance of all journeys created from these templates\./
           )
         ).toBeInTheDocument()
-      )
+      })
     })
 
     it('should display helper text for archived templates', async () => {
