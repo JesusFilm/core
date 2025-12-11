@@ -32,12 +32,11 @@ describe('OnboardingPageWrapper', () => {
       </MockedProvider>
     )
 
-    await waitFor(() => expect(
-      screen.getAllByRole('link', { name: 'Privacy Policy' })[0]
-    ).toHaveAttribute(
-      'href',
-      `https://www.cru.org/us/en/about/privacy.html`
-    ))
+    await waitFor(() =>
+      expect(
+        screen.getAllByRole('link', { name: 'Privacy Policy' })[0]
+      ).toHaveAttribute('href', `https://www.cru.org/us/en/about/privacy.html`)
+    )
 
     expect(
       screen.getAllByRole('link', { name: 'Feedback & Support' })[0]
@@ -48,7 +47,7 @@ describe('OnboardingPageWrapper', () => {
 
     fireEvent.click(screen.getAllByRole('button', { name: 'Language' })[0])
 
-   await waitFor(() =>
+    await waitFor(() =>
       expect(
         screen.getByRole('dialog', { name: 'Change Language' })
       ).toBeInTheDocument()
