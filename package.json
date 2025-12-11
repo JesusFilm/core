@@ -121,6 +121,7 @@
     "@react-email/components": "^0.0.36",
     "@react-email/render": "^1.0.5",
     "@react-email/tailwind": "1.0.4",
+    "@t3-oss/env-core": "^0.13.8",
     "@t3-oss/env-nextjs": "^0.13.8",
     "@types/mailchimp__mailchimp_marketing": "^3.0.19",
     "@types/node-fetch": "^2.6.13",
@@ -173,7 +174,7 @@
     "nanoid": "^3.3.7",
     "nestjs-ddtrace": "6.0.0",
     "nestjs-pino": "^4.0.0",
-    "next": "^15.1.7",
+    "next": "^15.5.7",
     "next-absolute-url": "^1.2.2",
     "next-firebase-auth": "^1.0.1",
     "next-firebase-auth-edge": "^1.7.0-canary.2",
@@ -283,7 +284,7 @@
     "@nx/web": "22.0.2",
     "@nx/webpack": "22.0.2",
     "@nx/workspace": "22.0.2",
-    "@playwright/test": "^1.54.2",
+    "@playwright/test": "^1.56.1",
     "@storybook/addon-a11y": "^9.0.17",
     "@storybook/addon-docs": "^9.1.4",
     "@storybook/nextjs": "^9.0.17",
@@ -370,8 +371,8 @@
     "nx": "22.0.2",
     "nx-mcp": "^0.6.0",
     "pino-pretty": "^13.0.0",
-    "playwright": "1.54.2",
-    "playwright-core": "1.54.2",
+    "playwright": "1.56.1",
+    "playwright-core": "1.56.1",
     "playwright-lighthouse": "^2.2.2",
     "postcss": "^8.5.3",
     "postject": "^1.0.0-alpha.6",
@@ -407,6 +408,7 @@
     "workerDirectory": "./.storybook/static"
   },
   "overrides": {
+    "next": "15.5.7",
     "react-is": "^19.0.0",
     "html-tokenize": {
       "readable-stream": "^3.6.0"

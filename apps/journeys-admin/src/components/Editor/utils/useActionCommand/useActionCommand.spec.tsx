@@ -255,7 +255,9 @@ describe('useActionCommand', () => {
           countryCode: 'US',
           contactAction: ContactActionType.call,
           parentBlockId: 'button2.id',
-          gtmEventName: ''
+          gtmEventName: '',
+          customizable: false,
+          parentStepId: 'step1.id'
         },
         undoAction: null
       })

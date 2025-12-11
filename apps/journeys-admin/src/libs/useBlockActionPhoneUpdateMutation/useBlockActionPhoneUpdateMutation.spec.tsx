@@ -47,7 +47,9 @@ describe('useBlockActionPhoneUpdateMutation', () => {
         block1,
         '+19876543210',
         'US',
-        ContactActionType.call
+        ContactActionType.call,
+        false,
+        'step1.id'
       )
 
       expect(mockResult).toHaveBeenCalled()
@@ -75,7 +77,9 @@ describe('useBlockActionPhoneUpdateMutation', () => {
         block1,
         '+19876543210',
         'US',
-        ContactActionType.call
+        ContactActionType.call,
+        false,
+        'step1.id'
       )
 
       await waitFor(() =>
@@ -87,7 +91,9 @@ describe('useBlockActionPhoneUpdateMutation', () => {
             parentBlockId: 'button2.id',
             phone: '+19876543210',
             countryCode: 'US',
-            contactAction: ContactActionType.call
+            contactAction: ContactActionType.call,
+            customizable: false,
+            parentStepId: 'step1.id'
           }
         })
       )

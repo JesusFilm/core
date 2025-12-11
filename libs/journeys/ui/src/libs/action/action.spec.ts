@@ -62,7 +62,9 @@ describe('action', () => {
         gtmEventName: null,
         phone: '+1234567890',
         countryCode: 'US',
-        contactAction: ContactActionType.call
+        contactAction: ContactActionType.call,
+        customizable: null,
+        parentStepId: null
       })
       expect(window.location.href).toBe('tel:+1234567890')
     })
@@ -75,7 +77,9 @@ describe('action', () => {
         gtmEventName: null,
         phone: '+1234567890',
         countryCode: 'US',
-        contactAction: ContactActionType.text
+        contactAction: ContactActionType.text,
+        customizable: null,
+        parentStepId: null
       })
       expect(window.location.href).toBe('sms:+1234567890')
     })

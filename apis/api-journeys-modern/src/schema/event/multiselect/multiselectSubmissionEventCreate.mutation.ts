@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { validateBlockEvent } from '../utils'
+import { appendEventToGoogleSheets, validateBlockEvent } from '../utils'
 
 import { MultiselectSubmissionEventCreateInput } from './inputs/multiselectSubmissionEventCreateInput'
 import { MultiselectSubmissionEventRef } from './multiselectSubmissionEvent'
@@ -29,11 +29,8 @@ builder.mutationField('multiselectSubmissionEventCreate', (t) =>
         throw new Error('User not authenticated')
       }
 
-      const { visitor, journeyVisitor, journeyId } = await validateBlockEvent(
-        userId,
-        input.blockId,
-        input.stepId ?? null
-      )
+      const { visitor, journeyVisitor, journeyId, teamId } =
+        await validateBlockEvent(userId, input.blockId, input.stepId ?? null)
 
       const event = await prisma.event.create({
         data: {
@@ -55,6 +52,24 @@ builder.mutationField('multiselectSubmissionEventCreate', (t) =>
           lastMultiselectSubmission: input.label || null
         }
       })
+
+      if (teamId) {
+        appendEventToGoogleSheets({
+          journeyId,
+          teamId,
+          row: [
+            visitor.id,
+            event.createdAt.toISOString(),
+            '',
+            '',
+            '',
+            `${input.blockId}-${input.label ?? ''}`,
+            input.values.join(', ')
+          ]
+        }).catch((error) => {
+          console.error('Failed to append event to Google Sheets:', error)
+        })
+      }
 
       return event
     }

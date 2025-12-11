@@ -1,3 +1,4 @@
+import { useQuery } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
@@ -10,14 +11,29 @@ import RadioGroup from '@mui/material/RadioGroup'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
+import { graphql } from '@core/shared/gql'
 import LinkExternal from '@core/shared/ui/icons/LinkExternal'
 import X2Icon from '@core/shared/ui/icons/X2'
 
+import { Tooltip } from '../../Tooltip/Tooltip'
+
 import { ClearAllButton } from './ClearAllButton'
 import { ExportDialog } from './ExportDialog'
+import { GoogleSheetsSyncDialog } from './GoogleSheetsSyncDialog'
+
+export const GET_JOURNEY_BLOCK_TYPENAMES = graphql(`
+  query GetJourneyBlockTypes($id: ID!) {
+    journey: adminJourney(id: $id, idType: databaseId) {
+      id
+      createdAt
+      blockTypenames
+    }
+  }
+`)
 
 interface FilterDrawerProps {
   handleClose?: () => void
@@ -49,7 +65,30 @@ export function FilterDrawer({
   disableExportButton = false
 }: FilterDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const router = useRouter()
   const [showExportDialog, setShowExportDialog] = useState(false)
+  const [showSyncsDialog, setShowSyncsDialog] = useState(false)
+
+  const flagQueryParam = router.query.flag
+  const isSheetsSyncEnabled =
+    flagQueryParam === 'sheets' ||
+    (Array.isArray(flagQueryParam) && flagQueryParam.includes('sheets'))
+
+  // Check for query parameter to open sync dialog after integration creation
+  useEffect(() => {
+    if (journeyId == null) return
+    const openSyncDialog = router.query.openSyncDialog === 'true'
+    if (openSyncDialog) {
+      setShowSyncsDialog(true)
+    }
+  }, [journeyId, router])
+
+  const { data: blockTypesData } = useQuery(GET_JOURNEY_BLOCK_TYPENAMES, {
+    skip: journeyId == null,
+    variables: { id: journeyId! }
+  })
+  const availableBlockTypes: string[] =
+    blockTypesData?.journey?.blockTypenames ?? []
 
   return (
     <Stack sx={{ height: '100vh' }} data-testid="FilterDrawer">
@@ -80,34 +119,42 @@ export function FilterDrawer({
             onChange={handleChange}
             checked={chatStarted}
           />
-          <FormControlLabel
-            control={<Checkbox />}
-            label={t('Poll Answers')}
-            value="Poll Answers"
-            onChange={handleChange}
-            checked={withPollAnswers}
-          />
-          <FormControlLabel
-            control={<Checkbox />}
-            label={t('Multiselect Answers')}
-            value="Multiselect Answers"
-            onChange={handleChange}
-            checked={withMultiselectAnswers ?? false}
-          />
-          <FormControlLabel
-            control={<Checkbox />}
-            label={t('Submitted Text')}
-            value="Submitted Text"
-            onChange={handleChange}
-            checked={withSubmittedText}
-          />
-          <FormControlLabel
-            control={<Checkbox />}
-            label={t('Icon')}
-            value="Icon"
-            onChange={handleChange}
-            checked={withIcon}
-          />
+          {availableBlockTypes.includes('RadioQuestionBlock') && (
+            <FormControlLabel
+              control={<Checkbox />}
+              label={t('Poll Answers')}
+              value="Poll Answers"
+              onChange={handleChange}
+              checked={withPollAnswers}
+            />
+          )}
+          {availableBlockTypes.includes('MultiselectBlock') && (
+            <FormControlLabel
+              control={<Checkbox />}
+              label={t('Multiselect Answers')}
+              value="Multiselect Answers"
+              onChange={handleChange}
+              checked={withMultiselectAnswers ?? false}
+            />
+          )}
+          {availableBlockTypes.includes('TextResponseBlock') && (
+            <FormControlLabel
+              control={<Checkbox />}
+              label={t('Submitted Text')}
+              value="Submitted Text"
+              onChange={handleChange}
+              checked={withSubmittedText}
+            />
+          )}
+          {availableBlockTypes.includes('IconBlock') && (
+            <FormControlLabel
+              control={<Checkbox />}
+              label={t('Icon')}
+              value="Icon"
+              onChange={handleChange}
+              checked={withIcon}
+            />
+          )}
           <FormControlLabel
             control={<Checkbox />}
             label={t('Hide Inactive')}
@@ -147,15 +194,49 @@ export function FilterDrawer({
       {journeyId != null && (
         <>
           <Box sx={{ px: 6, py: 5, mt: 'auto' }}>
-            <Button
-              variant="contained"
-              color="secondary"
-              sx={{ width: '100%' }}
-              onClick={() => setShowExportDialog(true)}
-              disabled={disableExportButton}
-            >
-              {t('Export Data')}
-            </Button>
+            {isSheetsSyncEnabled && (
+              <Button
+                variant="contained"
+                color="secondary"
+                sx={{ width: '100%', mb: 2 }}
+                onClick={() => setShowSyncsDialog(true)}
+                disabled={disableExportButton}
+              >
+                {t('Sync to Google Sheets')}
+              </Button>
+            )}
+            {disableExportButton ? (
+              <Tooltip
+                title={t(
+                  'Only team members and journey owners can export data.'
+                )}
+                placement="top"
+              >
+                <span>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    sx={{ width: '100%' }}
+                    aria-label={`${t('Export Data')} - ${t(
+                      'Only team members and journey owners can export data.'
+                    )}`}
+                    onClick={() => setShowExportDialog(true)}
+                    disabled
+                  >
+                    {t('Export Data')}
+                  </Button>
+                </span>
+              </Tooltip>
+            ) : (
+              <Button
+                variant="outlined"
+                color="secondary"
+                sx={{ width: '100%' }}
+                onClick={() => setShowExportDialog(true)}
+              >
+                {t('Export Data')}
+              </Button>
+            )}
             <Button
               size="small"
               component={Link}
@@ -176,7 +257,22 @@ export function FilterDrawer({
             open={showExportDialog}
             onClose={() => setShowExportDialog(false)}
             journeyId={journeyId}
+            availableBlockTypes={availableBlockTypes}
+            createdAt={
+              typeof blockTypesData?.journey?.createdAt === 'string'
+                ? blockTypesData.journey.createdAt
+                : blockTypesData?.journey?.createdAt instanceof Date
+                  ? blockTypesData.journey.createdAt.toISOString()
+                  : null
+            }
           />
+          {isSheetsSyncEnabled && (
+            <GoogleSheetsSyncDialog
+              open={showSyncsDialog}
+              onClose={() => setShowSyncsDialog(false)}
+              journeyId={journeyId}
+            />
+          )}
         </>
       )}
     </Stack>
