@@ -18,7 +18,8 @@ import { useJourney } from '../../libs/JourneyProvider'
 // eslint-disable-next-line import/no-cycle
 import {
   JourneyPlausibleEvents,
-  keyify
+  keyify,
+  templateKeyify
 } from '../../libs/plausibleHelpers/plausibleHelpers'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
@@ -260,16 +261,21 @@ export function Card({
             ...input,
             key: keyify({
               stepId: input.blockId,
-              event: 'navigatePreviousStep',
+              event: 'multiselectSubmit',
               blockId: input.blockId,
-              target: input.values
+              target: input.values,
+              journeyId: journey.id
             }),
             simpleKey: keyify({
               stepId: input.blockId,
-              event: 'navigatePreviousStep',
-              blockId: input.blockId
+              event: 'multiselectSubmit',
+              blockId: input.blockId,
+              journeyId: journey.id
+            }),
+            templateKey: templateKeyify({
+              event: 'multiselectSubmit',
+              journeyId: journey.id
             })
-            // TODO: templateKeyify
           }
         })
         return multiselectSubmissionEventCreate({

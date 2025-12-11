@@ -82,7 +82,7 @@ interface KeyifyProps {
   stepId: string
   event: keyof JourneyPlausibleEvents
   blockId: string
-  target?: string | Action | null
+  target?: string | string[] | Action | null
   journeyId?: string
 }
 
