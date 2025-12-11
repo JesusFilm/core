@@ -11,7 +11,7 @@ import { FormikValues, useFormik } from 'formik'
 import noop from 'lodash/noop'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import TimeField from 'react-simple-timefield'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -41,6 +41,14 @@ import {
 import { MuxSubtitleSwitch } from './MuxSubtitles'
 import { VideoBlockEditorSettingsPoster } from './Poster/VideoBlockEditorSettingsPoster'
 import { YouTubeSubtitleSelector } from './SubtitleSelector'
+import { useQuery } from '@apollo/client'
+import {
+  GetAdminJourney,
+  GetAdminJourneyVariables
+} from '../../../../../../../../__generated__/GetAdminJourney'
+import { GET_ADMIN_JOURNEY } from '../../../../../../../../pages/journeys/[journeyId]'
+import { Router, useRouter } from 'next/router'
+import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 
 export type { YouTubeLanguage }
 
@@ -85,6 +93,33 @@ export function VideoBlockEditorSettings({
     objectFit: selectedBlock?.objectFit ?? ObjectFit.fill,
     subtitleLanguageId: selectedBlock?.subtitleLanguage?.id ?? null
   }
+
+  // Set maxDuration to limit video end time-
+  const currentVariantId =
+    selectedBlock?.mediaVideo?.__typename === 'Video'
+      ? selectedBlock?.mediaVideo.variant?.id
+      : null
+  const maxDuration =
+    selectedBlock?.mediaVideo?.__typename === 'Video'
+      ? selectedBlock?.mediaVideo.variants.filter(
+          (x) => x.id === currentVariantId
+        )[0].duration
+      : 0
+
+  // const [hello, setHello] = useState('hi' setHello)
+  const handleEndAtChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    value: string
+  ): void => {
+    const convertedEndAt = timeFormatToSeconds(value)
+    if (maxDuration > 0 && convertedEndAt > maxDuration) {
+      const correctedValue = secondsToTimeFormat(maxDuration)
+      setFieldValue('endAt', correctedValue, true) // Updates form field immediately
+    } else {
+      handleChange(event) // Let normal Formik handling proceed
+    }
+  }
+
   const { values, errors, handleChange, setFieldValue, setValues } =
     useFormik<Values>({
       initialValues,
@@ -115,12 +150,13 @@ export function VideoBlockEditorSettings({
             preventDuplicate: true
           })
         } else if (
-          selectedBlock?.duration != null &&
-          convertedEndAt > selectedBlock?.duration
+          // selectedBlock?.duration != null &&
+          // convertedEndAt > selectedBlock?.duration
+          convertedEndAt > maxDuration
         ) {
           const message = t(
             'End time has to be no more than video duration {{ time }}',
-            { time: secondsToTimeFormat(selectedBlock?.duration) }
+            { time: secondsToTimeFormat(maxDuration) }
           )
           errors.endAt = message
           enqueueSnackbar(message, {
@@ -128,12 +164,42 @@ export function VideoBlockEditorSettings({
             preventDuplicate: true
           })
         } else {
+          // console.log(convertedEndAt, maxDuration, typeof maxDuration)
+          // if (convertedEndAt > maxDuration) {
+          //   console.log('exceeded')
+          //   console.log('maxDuration: ', maxDuration)
+          //   console.log('convertedEndAt: ', convertedEndAt)
+
+          // const correctedValue = secondsToTimeFormat(maxDuration)
+          // setFieldValue('endAt', correctedValue, false)
+          // await onChange({
+          //   ...values,
+          //   startAt: convertedStartAt,
+          //   endAt: maxDuration
+          // })
+          // setFieldValue(values.endAt, '12')
+          // } else {
           await onChange({
             ...values,
             startAt: convertedStartAt,
             endAt: convertedEndAt
           })
         }
+        // }
+        // if (convertedEndAt >= maxDuration) {
+        //   console.log('exceeded')
+        //   console.log('maxDuration: ', maxDuration)
+        //   console.log('convertedEndAt: ', convertedEndAt)
+
+        //   console.log('values.endAt: ', values.endAt)
+        //   console.log('values before: ', values)
+        //   await onChange({
+        //     ...values,
+        //     startAt: convertedStartAt,
+        //     endAt: maxDuration
+        //   })
+        //   console.log('values after: ', values)
+        // }
         return errors
       },
       onSubmit: noop
