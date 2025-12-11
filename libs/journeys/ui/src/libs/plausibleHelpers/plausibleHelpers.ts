@@ -41,7 +41,7 @@ interface Props {
    * used for aggregate stats for journey*/
   simpleKey: string
   /**
-   * compound of event name, journeyId.
+   * compound of event name, journeyId, target.
    * Needed to run plausible /api/v1/stats/breakdown api call with
    * property=event:templateKey param
    * used for journey breakdown stats by template*/

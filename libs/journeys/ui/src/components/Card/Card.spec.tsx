@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider, MockedResponse } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
 import { SnackbarProvider } from 'notistack'
@@ -16,6 +16,7 @@ import {
 } from '../../libs/block'
 import {
   BlockFields_CardBlock as CardBlock,
+  BlockFields_MultiselectBlock as MultiselectBlock,
   BlockFields_StepBlock as StepBlock,
   BlockFields_TextResponseBlock as TextResponseBlock
 } from '../../libs/block/__generated__/BlockFields'
@@ -43,6 +44,9 @@ import {
   textResponseBlock,
   videoBlock
 } from './Card.mock'
+
+import { MULTISELECT_SUBMISSION_EVENT_CREATE } from '../MultiselectQuestion'
+import { MultiselectSubmissionEventCreate } from '../MultiselectQuestion/__generated__/MultiselectSubmissionEventCreate'
 
 import { Card } from '.'
 
@@ -560,6 +564,124 @@ describe('CardBlock', () => {
 
     await waitFor(() => {
       expect(mockButtonClickEvent.result).toHaveBeenCalled()
+    })
+  })
+
+  it('should handle multiselect submission', async () => {
+    const mockPlausible = jest.fn()
+    mockUsePlausible.mockReturnValue(mockPlausible)
+
+    const multiselectBlock: TreeBlock<MultiselectBlock> = {
+      id: 'multiselectBlockId',
+      __typename: 'MultiselectBlock',
+      parentBlockId: card1.id,
+      parentOrder: 0,
+      min: null,
+      max: null,
+      children: [
+        {
+          id: 'option1',
+          __typename: 'MultiselectOptionBlock',
+          parentBlockId: 'multiselectBlockId',
+          parentOrder: 0,
+          label: 'Option 1',
+          children: []
+        },
+        {
+          id: 'option2',
+          __typename: 'MultiselectOptionBlock',
+          parentBlockId: 'multiselectBlockId',
+          parentOrder: 1,
+          label: 'Option 2',
+          children: []
+        },
+        {
+          id: 'option3',
+          __typename: 'MultiselectOptionBlock',
+          parentBlockId: 'multiselectBlockId',
+          parentOrder: 2,
+          label: 'Option 3',
+          children: []
+        }
+      ]
+    }
+
+    const multiselectCard: TreeBlock<CardBlock> = {
+      ...card1,
+      children: [step1, { ...multiselectBlock, parentBlockId: card1.id }]
+    }
+
+    const mockMultiselectSubmissionEventCreate: MockedResponse<MultiselectSubmissionEventCreate> =
+      {
+        request: {
+          query: MULTISELECT_SUBMISSION_EVENT_CREATE,
+          variables: {
+            input: {
+              id: 'uuid',
+              blockId: 'multiselectBlockId',
+              stepId: 'step1.id',
+              label: 'Step {{number}}',
+              values: ['Option 1', 'Option 2']
+            }
+          }
+        },
+        result: jest.fn(() => ({
+          data: {
+            multiselectSubmissionEventCreate: {
+              id: 'uuid',
+              __typename: 'MultiselectSubmissionEvent'
+            }
+          }
+        }))
+      }
+
+    treeBlocksVar([step1, step2, step3])
+    blockHistoryVar([step1])
+
+    const { getByTestId, getByRole } = render(
+      <MockedProvider
+        mocks={[
+          mockStepNextEventCreate,
+          mockMultiselectSubmissionEventCreate,
+          getStepViewEventMock(step1.id, 'Step {{number}}')
+        ]}
+      >
+        <SnackbarProvider>
+          <JourneyProvider value={{ journey }}>
+            <Card {...multiselectCard} />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Option 1' })).toBeInTheDocument()
+    })
+
+    fireEvent.click(getByRole('button', { name: 'Option 1' }))
+    fireEvent.click(getByRole('button', { name: 'Option 2' }))
+
+    const form = getByTestId(`card-form-${card1.id}`)
+    fireEvent.submit(form)
+
+    await waitFor(() => {
+      expect(mockMultiselectSubmissionEventCreate.result).toHaveBeenCalled()
+    })
+
+    await waitFor(() => {
+      expect(mockPlausible).toHaveBeenCalledWith('multiselectSubmit', {
+        u: `${window.location.origin}/${journey.id}/multiselectBlockId`,
+        props: expect.objectContaining({
+          id: 'uuid',
+          blockId: 'multiselectBlockId',
+          stepId: 'step1.id',
+          label: 'Step {{number}}',
+          values: ['Option 1', 'Option 2'],
+          key: expect.stringContaining('multiselectSubmit'),
+          simpleKey: expect.stringContaining('multiselectSubmit'),
+          templateKey: expect.stringContaining('multiselectSubmit')
+        })
+      })
     })
   })
 })
