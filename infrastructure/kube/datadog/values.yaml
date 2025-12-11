@@ -1,0 +1,10 @@
+datadog:
+  site: datadoghq.com
+  containerStrategy: single
+  credentials:
+    apiSecret:
+      secretName: datadog-secret
+      keyName: api-key
+  logs:
+    enabled: true
+    containerCollectAll: true

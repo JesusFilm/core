@@ -1,0 +1,7 @@
+dependencies:
+  - name: datadog-operator
+    version: 2.15.2
+    repository: https://helm.datadoghq.com
+  - name: datadog #agent
+    version: 3.153.0
+    repository: https://helm.datadoghq.com
