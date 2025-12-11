@@ -185,6 +185,16 @@ function OnboardingUtilities({
         <Button size="small" onClick={() => setOpen(true)}>
           <Typography variant="body2">{t('Language')}</Typography>
         </Button>
+        <Button size="small">
+          <Typography
+            variant="body2"
+            sx={{ color: 'primary.main', cursor: 'pointer' }}
+            component="a"
+            href={`mailto:support@nextstep.is?subject=${emailSubject}`}
+          >
+            {t('Feedback & Support')}
+          </Typography>
+        </Button>
       </Stack>
       {open && (
         <LanguageSwitcher open={open} handleClose={() => setOpen(false)} />
