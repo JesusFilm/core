@@ -83,7 +83,7 @@ describe('Action', () => {
     )
   })
 
-  it('shows url input text box when URL/Website is selected', async () => {
+  it('shows url input text box when Website is selected', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider>
         <Action />
@@ -91,7 +91,7 @@ describe('Action', () => {
     )
     fireEvent.mouseDown(getByRole('combobox'))
     await waitFor(() => expect(getByText('Selected Card')).toBeInTheDocument())
-    fireEvent.click(getByRole('option', { name: 'URL/Website' }))
+    fireEvent.click(getByRole('option', { name: 'Website' }))
     await waitFor(() =>
       expect(getByText('Paste URL here...')).toBeInTheDocument()
     )
@@ -111,7 +111,7 @@ describe('Action', () => {
     )
   })
 
-  it('shows customization toggle when URL/Website is selected', async () => {
+  it('shows customization toggle when Website is selected', async () => {
     const { getByRole, getByText } = render(
       <MockedProvider
         mocks={[
@@ -151,9 +151,9 @@ describe('Action', () => {
 
     fireEvent.mouseDown(getByRole('combobox'))
     await waitFor(() =>
-      expect(getByRole('option', { name: 'URL/Website' })).toBeInTheDocument()
+      expect(getByRole('option', { name: 'Website' })).toBeInTheDocument()
     )
-    fireEvent.click(getByRole('option', { name: 'URL/Website' }))
+    fireEvent.click(getByRole('option', { name: 'Website' }))
 
     await waitFor(() => {
       expect(getByText('Needs Customization')).toBeInTheDocument()
@@ -283,7 +283,7 @@ describe('Action', () => {
 
     fireEvent.mouseDown(screen.getByRole('combobox'))
 
-    expect(screen.queryByText('URL/Website')).not.toBeInTheDocument()
+    expect(screen.queryByText('Website')).not.toBeInTheDocument()
     expect(screen.queryByText('Send Email')).not.toBeInTheDocument()
     expect(screen.queryByText('Chat')).not.toBeInTheDocument()
 
@@ -349,9 +349,9 @@ describe('Action', () => {
         </JourneyProvider>
       </MockedProvider>
     )
-    expect(getByText('URL/Website')).toBeInTheDocument()
+    expect(getByText('Website')).toBeInTheDocument()
 
-    expect(getByRole('combobox')).toHaveTextContent('URL/Website')
+    expect(getByRole('combobox')).toHaveTextContent('Website')
     fireEvent.mouseDown(getByRole('combobox'))
     fireEvent.click(getByRole('option', { name: 'None' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
