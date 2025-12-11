@@ -45,12 +45,6 @@ interface Props {
    * property=event:templateKey param
    * used for journey breakdown stats by template*/
   templateKey?: string
-  /**
-   * compound of event name.
-   * Needed to run plausible /api/v1/stats/breakdown api call with
-   * property=event:simpleTemplateKey param
-   * used for aggregate stats of template*/
-  simpleTemplateKey?: string
 }
 
 interface Events {
