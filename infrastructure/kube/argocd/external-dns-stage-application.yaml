@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: external-dns-stage
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: external-dns
+    app.kubernetes.io/part-of: dns
+    environment: stage
+spec:
+  project: default
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: external-dns
+
+  source:
+    repoURL: https://github.com/JesusFilm/core.git
+    targetRevision: main
+    path: infrastructure/kube/external-dns/chart
+    helm:
+      releaseName: external-dns
+      valueFiles:
+        - values-stage.yaml
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
