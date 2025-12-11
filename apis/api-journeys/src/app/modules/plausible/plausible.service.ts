@@ -48,6 +48,7 @@ export const goals: Array<keyof JourneyPlausibleEvents> = [
   'videoProgress75',
   'videoComplete',
   'videoTrigger',
+  'multiSelectSubmit',
   // Capture events are triggered by journey events above
   'prayerRequestCapture',
   'christDecisionCapture',
