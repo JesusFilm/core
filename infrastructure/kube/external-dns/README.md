@@ -6,7 +6,70 @@ This directory contains configuration files for deploying External-DNS to manage
 
 External-DNS automatically manages DNS records in AWS Route53 based on Kubernetes resources like Services and Ingresses. This helps ensure that your applications are always accessible at the correct DNS addresses, even when the underlying infrastructure changes.
 
-## Prerequisites
+## Deployment via ArgoCD (recommended)
+
+External-DNS is managed declaratively via ArgoCD using the official External-DNS Helm chart.
+
+### Prerequisites
+
+- A Kubernetes cluster with access to AWS Route53
+- ArgoCD installed in the cluster (namespace: `argocd`)
+- Doppler Kubernetes Operator installed in the cluster
+- AWS credentials stored in Doppler for both environments:
+  - Staging: project: `kubernetes`, config: `stage`
+  - Production: project: `kubernetes`, config: `prod`
+
+### Helm chart and values files
+
+External-DNS is installed via a small wrapper Helm chart in this repo that depends on the official `external-dns` chart:
+
+- Chart: `infrastructure/kube/external-dns/chart`
+  - `Chart.yaml` – defines dependency on the official `external-dns` chart
+  - `values.yaml` – **production** configuration
+  - `values-stage.yaml` – **staging** configuration
+
+Both values files:
+
+- Configure `external-dns` with the same settings as the legacy Helm scripts
+- Read AWS credentials from the Doppler-managed Kubernetes secret `externaldns-aws-credentials` (via `env.valueFrom.secretKeyRef`)
+
+### ArgoCD Applications
+
+Two ArgoCD `Application` resources are provided:
+
+- Staging: `infrastructure/kube/argocd/external-dns-stage-application.yaml`
+- Production: `infrastructure/kube/argocd/external-dns-prod-application.yaml`
+
+Both Applications:
+
+- Use this repo as a Helm source, pointing to `infrastructure/kube/external-dns/chart`
+- Deploy into the `external-dns` namespace
+- Use:
+  - `values-stage.yaml` for staging
+  - `values.yaml` for production
+
+### Apply ArgoCD Applications
+
+From the repository root, apply the ArgoCD Applications to the cluster:
+
+```bash
+kubectl apply -n argocd -f infrastructure/kube/argocd/external-dns-stage-application.yaml
+kubectl apply -n argocd -f infrastructure/kube/argocd/external-dns-prod-application.yaml
+```
+
+After applying, you can manage and sync them from the ArgoCD UI or via `kubectl`:
+
+```bash
+kubectl get applications -n argocd
+```
+
+The ArgoCD Applications use automated sync with prune and self-heal enabled, so External-DNS will be reconciled continuously according to the Git configuration.
+
+## Legacy: Direct Helm-based Deployment
+
+The following section documents the previous, manually triggered Helm deployment approach. It is kept for reference and possible emergency/one-off usage, but **ArgoCD is now the preferred deployment mechanism**.
+
+### Prerequisites
 
 - A Kubernetes cluster with access to AWS Route53
 - Doppler Kubernetes Operator installed in the cluster
@@ -15,7 +78,7 @@ External-DNS automatically manages DNS records in AWS Route53 based on Kubernete
   - Production: project: `kubernetes`, config: `prod`
 - Helm
 
-## Deployment
+## Deployment (legacy)
 
 ### Helm-based Deployment
 
