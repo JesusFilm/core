@@ -153,6 +153,7 @@ describe('HotkeyNavigation', () => {
     await waitFor(() => expect(stepNextResult).toHaveBeenCalled())
 
     expect(mockPlausible).toHaveBeenCalledWith('navigateNextStep', {
+      u: 'http://localhost/journey.id/step1.id',
       props: {
         id: 'uuid',
         blockId: 'step1.id',
@@ -206,6 +207,7 @@ describe('HotkeyNavigation', () => {
     await waitFor(() => expect(stepPreviousResult).toHaveBeenCalled())
 
     expect(mockPlausible).toHaveBeenCalledWith('navigatePreviousStep', {
+      u: 'http://localhost/journey.id/step2.id',
       props: {
         id: 'uuid',
         blockId: 'step2.id',
