@@ -109,7 +109,8 @@ describe('JourneyResolver', () => {
     socialNodeY: null,
     fromTemplateId: null,
     journeyCustomizationDescription: null,
-    showAssistant: null
+    showAssistant: null,
+    templateSite: null
   }
   const journeyWithUserTeam = {
     ...journey,
@@ -1291,7 +1292,8 @@ describe('JourneyResolver', () => {
             'createdAt',
             'strategySlug',
             'logoImageBlockId',
-            'menuStepBlockId'
+            'menuStepBlockId',
+            'templateSite'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
@@ -1365,7 +1367,8 @@ describe('JourneyResolver', () => {
           'createdAt',
           'strategySlug',
           'logoImageBlockId',
-          'menuStepBlockId'
+          'menuStepBlockId',
+          'templateSite'
         ]),
         id: 'duplicateJourneyId',
         status: JourneyStatus.published,
@@ -1458,7 +1461,8 @@ describe('JourneyResolver', () => {
           'createdAt',
           'strategySlug',
           'logoImageBlockId',
-          'menuStepBlockId'
+          'menuStepBlockId',
+          'templateSite'
         ]),
         id: 'duplicateJourneyId',
         status: JourneyStatus.published,
@@ -1592,7 +1596,8 @@ describe('JourneyResolver', () => {
             'createdAt',
             'strategySlug',
             'logoImageBlockId',
-            'menuStepBlockId'
+            'menuStepBlockId',
+            'templateSite'
           ]),
           id: 'duplicateJourneyId',
           status: JourneyStatus.published,
@@ -2475,6 +2480,24 @@ describe('JourneyResolver', () => {
           where: { id: 'journeyId' },
           data: { template: true }
         })
+      })
+
+      it('creates template site in plausible when setting template to true', async () => {
+        prismaService.journey.findUnique.mockResolvedValueOnce(
+          journeyWithUserTeam
+        )
+        await resolver.journeyTemplate(ability, 'journeyId', { template: true })
+        expect(plausibleQueue.add).toHaveBeenCalledWith(
+          'create-template-site',
+          {
+            __typename: 'plausibleCreateTemplateSite',
+            templateId: 'journeyId'
+          },
+          {
+            removeOnComplete: true,
+            removeOnFail: { age: 432000, count: 50 }
+          }
+        )
       })
     })
   })

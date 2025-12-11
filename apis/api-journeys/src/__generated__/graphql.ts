@@ -979,6 +979,8 @@ export type Journey = {
   tags: Array<Tag>;
   team?: Maybe<Team>;
   template?: Maybe<Scalars['Boolean']['output']>;
+  /** used to see if a template has a site created for it */
+  templateSite?: Maybe<Scalars['Boolean']['output']>;
   themeMode: ThemeMode;
   themeName: ThemeName;
   /** private title for creators */
@@ -3256,24 +3258,54 @@ export enum Platform {
   Watch = 'watch'
 }
 
+export enum PlausibleEvent {
+  ButtonClick = 'buttonClick',
+  ChatButtonClick = 'chatButtonClick',
+  ChatsClicked = 'chatsClicked',
+  ChristDecisionCapture = 'christDecisionCapture',
+  Custom1Capture = 'custom1Capture',
+  Custom2Capture = 'custom2Capture',
+  Custom3Capture = 'custom3Capture',
+  FooterChatButtonClick = 'footerChatButtonClick',
+  FooterThumbsDownButtonClick = 'footerThumbsDownButtonClick',
+  FooterThumbsUpButtonClick = 'footerThumbsUpButtonClick',
+  GospelCompleteCapture = 'gospelCompleteCapture',
+  GospelStartCapture = 'gospelStartCapture',
+  JourneyResponses = 'journeyResponses',
+  JourneyVisitors = 'journeyVisitors',
+  LinksClicked = 'linksClicked',
+  NavigateNextStep = 'navigateNextStep',
+  NavigatePreviousStep = 'navigatePreviousStep',
+  Pageview = 'pageview',
+  PrayerRequestCapture = 'prayerRequestCapture',
+  RadioQuestionSubmit = 'radioQuestionSubmit',
+  RsvpCapture = 'rsvpCapture',
+  ShareButtonClick = 'shareButtonClick',
+  SignUpSubmit = 'signUpSubmit',
+  SpecialVideoCompleteCapture = 'specialVideoCompleteCapture',
+  SpecialVideoStartCapture = 'specialVideoStartCapture',
+  TextResponseSubmit = 'textResponseSubmit',
+  VideoCollapse = 'videoCollapse',
+  VideoComplete = 'videoComplete',
+  VideoExpand = 'videoExpand',
+  VideoPause = 'videoPause',
+  VideoPlay = 'videoPlay',
+  VideoProgress25 = 'videoProgress25',
+  VideoProgress50 = 'videoProgress50',
+  VideoProgress75 = 'videoProgress75',
+  VideoStart = 'videoStart',
+  VideoTrigger = 'videoTrigger'
+}
+
 export type PlausibleStatsAggregateFilter = {
   /**
    * date in the standard ISO-8601 format (YYYY-MM-DD).
-   * When using a custom range, the date parameter expects two ISO-8601 formatted
-   * dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
-   * for the whole date range inclusive of the start and end dates.
+   * When using a custom range, the date parameter expects two ISO-8601 formatted dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned for the whole date range inclusive of the start and end dates.
    */
   date?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * See [filtering](https://plausible.io/docs/stats-api#filtering)
-   * section for more details.
-   */
+  /** See [filtering](https://plausible.io/docs/stats-api#filtering) section for more details. */
   filters?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * Off by default. You can specify `previous_period` to calculate the percent
-   * difference with the previous period for each metric. The previous period
-   * will be of the exact same length as specified in the period parameter.
-   */
+  /** Off by default. You can specify `previous_period` to calculate the percent difference with the previous period for each metric. The previous period will be of the exact same length as specified in the period parameter. */
   interval?: InputMaybe<Scalars['String']['input']>;
   /**
    * See [time periods](https://plausible.io/docs/stats-api#time-periods).
@@ -3286,28 +3318,15 @@ export type PlausibleStatsAggregateResponse = {
   __typename?: 'PlausibleStatsAggregateResponse';
   /** Bounce rate percentage. */
   bounceRate?: Maybe<PlausibleStatsAggregateValue>;
-  /**
-   * The percentage of visitors who completed the goal. Requires an `event:goal`
-   * filter or `event:goal` property in the breakdown endpoint
-   */
+  /** The percentage of visitors who completed the goal. Requires an `event:goal` filter or `event:goal` property in the breakdown endpoint. */
   conversionRate?: Maybe<PlausibleStatsAggregateValue>;
-  /**
-   * The number of events (pageviews + custom events). When filtering by a goal,
-   *  this metric corresponds to "Total Conversions" in the dashboard.
-   */
+  /** The number of events (pageviews + custom events). When filtering by a goal, this metric corresponds to "Total Conversions" in the dashboard. */
   events?: Maybe<PlausibleStatsAggregateValue>;
   /** The number of pageview events. */
   pageviews?: Maybe<PlausibleStatsAggregateValue>;
-  /**
-   * The average time users spend on viewing a single page. Requires an
-   * `event:page` filter or `event:page` property in the breakdown endpoint.
-   */
+  /** The average time users spend on viewing a single page. Requires an `event:page` filter or `event:page` property in the breakdown endpoint. */
   timeOnPage?: Maybe<PlausibleStatsAggregateValue>;
-  /**
-   * The number of pageviews divided by the number of visits.
-   * Returns a floating point number. Currently only supported in Aggregate and
-   * Timeseries endpoints.
-   */
+  /** The number of pageviews divided by the number of visits. Returns a floating point number. Currently only supported in Aggregate and Timeseries endpoints. */
   viewsPerVisit?: Maybe<PlausibleStatsAggregateValue>;
   /** Visit duration in seconds. */
   visitDuration?: Maybe<PlausibleStatsAggregateValue>;
@@ -3326,37 +3345,24 @@ export type PlausibleStatsAggregateValue = {
 export type PlausibleStatsBreakdownFilter = {
   /**
    * date in the standard ISO-8601 format (YYYY-MM-DD).
-   * When using a custom range, the date parameter expects two ISO-8601 formatted
-   * dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
-   * for the whole date range inclusive of the start and end dates.
+   * When using a custom range, the date parameter expects two ISO-8601 formatted dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned for the whole date range inclusive of the start and end dates.
    */
   date?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * See [filtering](https://plausible.io/docs/stats-api#filtering)
-   * section for more details.
-   */
+  /** See [filtering](https://plausible.io/docs/stats-api#filtering) section for more details. */
   filters?: InputMaybe<Scalars['String']['input']>;
   /**
    * Limit the number of results. Maximum value is 1000. Defaults to 100.
-   * If you want to get more than 1000 results, you can make multiple requests
-   * and paginate the results by specifying the page parameter (e.g. make the
-   * same request with page=1, then page=2, etc)
+   * If you want to get more than 1000 results, you can make multiple requests and paginate the results by specifying the page parameter (e.g. make the same request with page=1, then page=2, etc).
    */
   limit?: InputMaybe<Scalars['Int']['input']>;
-  /**
-   * Number of the page, used to paginate results.
-   * Importantly, the page numbers start from 1 not 0.
-   */
+  /** Number of the page, used to paginate results. Importantly, the page numbers start from 1 not 0. */
   page?: InputMaybe<Scalars['Int']['input']>;
   /**
    * See [time periods](https://plausible.io/docs/stats-api#time-periods).
    * If not specified, it will default to 30d.
    */
   period?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * Which [property](https://plausible.io/docs/stats-api#properties)
-   * to break down the stats by.
-   */
+  /** Which [property](https://plausible.io/docs/stats-api#properties) to break down the stats by. */
   property: Scalars['String']['input'];
 };
 
@@ -3364,33 +3370,17 @@ export type PlausibleStatsResponse = {
   __typename?: 'PlausibleStatsResponse';
   /** Bounce rate percentage. */
   bounceRate?: Maybe<Scalars['Int']['output']>;
-  /**
-   * The percentage of visitors who completed the goal. Requires an `event:goal`
-   * filter or `event:goal` property in the breakdown endpoint
-   */
+  /** The percentage of visitors who completed the goal. Requires an `event:goal` filter or `event:goal` property in the breakdown endpoint. */
   conversionRate?: Maybe<Scalars['Int']['output']>;
-  /**
-   * The number of events (pageviews + custom events). When filtering by a goal,
-   *  this metric corresponds to "Total Conversions" in the dashboard.
-   */
+  /** The number of events (pageviews + custom events). When filtering by a goal, this metric corresponds to "Total Conversions" in the dashboard. */
   events?: Maybe<Scalars['Int']['output']>;
   /** The number of pageview events. */
   pageviews?: Maybe<Scalars['Int']['output']>;
-  /**
-   * On breakdown queries, this is the property that was broken down by.
-   * On aggregate queries, this is the date the stats are for.
-   */
+  /** On breakdown queries, this is the property that was broken down by. On aggregate queries, this is the date the stats are for. */
   property: Scalars['String']['output'];
-  /**
-   * The average time users spend on viewing a single page. Requires an
-   * `event:page` filter or `event:page` property in the breakdown endpoint.
-   */
+  /** The average time users spend on viewing a single page. Requires an `event:page` filter or `event:page` property in the breakdown endpoint. */
   timeOnPage?: Maybe<Scalars['Float']['output']>;
-  /**
-   * The number of pageviews divided by the number of visits.
-   * Returns a floating point number. Currently only supported in Aggregate and
-   * Timeseries endpoints.
-   */
+  /** The number of pageviews divided by the number of visits. Returns a floating point number. Currently only supported in Aggregate and Timeseries endpoints. */
   viewsPerVisit?: Maybe<Scalars['Float']['output']>;
   /** Visit duration in seconds. */
   visitDuration?: Maybe<Scalars['Int']['output']>;
@@ -3403,21 +3393,12 @@ export type PlausibleStatsResponse = {
 export type PlausibleStatsTimeseriesFilter = {
   /**
    * date in the standard ISO-8601 format (YYYY-MM-DD).
-   * When using a custom range, the date parameter expects two ISO-8601 formatted
-   * dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned
-   * for the whole date range inclusive of the start and end dates.
+   * When using a custom range, the date parameter expects two ISO-8601 formatted dates joined with a comma e.g `2021-01-01,2021-01-31`. Stats will be returned for the whole date range inclusive of the start and end dates.
    */
   date?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * See [filtering](https://plausible.io/docs/stats-api#filtering)
-   * section for more details.
-   */
+  /** See [filtering](https://plausible.io/docs/stats-api#filtering) section for more details. */
   filters?: InputMaybe<Scalars['String']['input']>;
-  /**
-   * Choose your reporting interval. Valid options are date (always) and month
-   * (when specified period is longer than one calendar month). Defaults to month
-   * for 6mo and 12mo, otherwise falls back to date.
-   */
+  /** Choose your reporting interval. Valid options are date (always) and month (when specified period is longer than one calendar month). Defaults to month for 6mo and 12mo, otherwise falls back to date. */
   interval?: InputMaybe<Scalars['String']['input']>;
   /**
    * See [time periods](https://plausible.io/docs/stats-api#time-periods).
@@ -3589,17 +3570,16 @@ export type Query = {
    * Using a list of properties with one query is not supported. So if you want
    * a breakdown by both `event:page` and `visit:source` for example, you would
    * have to make multiple queries (break down on one property and filter on
-   * another) and then manually/programmatically group the results together in one
-   * report. This also applies for breaking down by time periods. To get a daily
-   * breakdown for every page, you would have to break down on `event:page` and
-   * make multiple queries for each date.
+   *  another) and then manually/programmatically group the results together in one
+   *  report. This also applies for breaking down by time periods. To get a daily
+   *  breakdown for every page, you would have to break down on `event:page` and
+   *  make multiple queries for each date.
    */
   journeysPlausibleStatsBreakdown: Array<PlausibleStatsResponse>;
   journeysPlausibleStatsRealtimeVisitors: Scalars['Int']['output'];
   /**
    * This endpoint provides timeseries data over a certain time period.
-   * If you are familiar with the Plausible dashboard, this endpoint
-   * corresponds to the main visitor graph.
+   * If you are familiar with the Plausible dashboard, this endpoint corresponds to the main visitor graph.
    */
   journeysPlausibleStatsTimeseries: Array<PlausibleStatsResponse>;
   keywords: Array<Keyword>;
@@ -3629,6 +3609,8 @@ export type Query = {
   taxonomies: Array<Taxonomy>;
   team: Team;
   teams: Array<Team>;
+  templateFamilyStatsAggregate?: Maybe<TemplateFamilyStatsAggregateResponse>;
+  templateFamilyStatsBreakdown?: Maybe<Array<TemplateFamilyStatsBreakdownResponse>>;
   user?: Maybe<User>;
   userByEmail?: Maybe<User>;
   userInvites?: Maybe<Array<UserInvite>>;
@@ -4006,6 +3988,22 @@ export type QueryTeamArgs = {
 };
 
 
+export type QueryTemplateFamilyStatsAggregateArgs = {
+  id: Scalars['ID']['input'];
+  idType?: InputMaybe<IdType>;
+  where: PlausibleStatsAggregateFilter;
+};
+
+
+export type QueryTemplateFamilyStatsBreakdownArgs = {
+  events?: InputMaybe<Array<PlausibleEvent>>;
+  id: Scalars['ID']['input'];
+  idType?: InputMaybe<IdType>;
+  status?: InputMaybe<Array<JourneyStatus>>;
+  where: PlausibleStatsBreakdownFilter;
+};
+
+
 export type QueryUserArgs = {
   id: Scalars['ID']['input'];
 };
@@ -4371,6 +4369,7 @@ export type Site = {
 };
 
 export type SiteCreateInput = {
+  disableSharedLinks?: InputMaybe<Scalars['Boolean']['input']>;
   domain: Scalars['String']['input'];
   goals?: InputMaybe<Array<Scalars['String']['input']>>;
 };
@@ -4646,6 +4645,30 @@ export type TeamCreateInput = {
 export type TeamUpdateInput = {
   publicTitle?: InputMaybe<Scalars['String']['input']>;
   title: Scalars['String']['input'];
+};
+
+export type TemplateFamilyStatsAggregateResponse = {
+  __typename?: 'TemplateFamilyStatsAggregateResponse';
+  childJourneysCount: Scalars['Int']['output'];
+  totalJourneysResponses: Scalars['Int']['output'];
+  totalJourneysViews: Scalars['Int']['output'];
+};
+
+export type TemplateFamilyStatsBreakdownResponse = {
+  __typename?: 'TemplateFamilyStatsBreakdownResponse';
+  journeyId: Scalars['String']['output'];
+  journeyName: Scalars['String']['output'];
+  /** The URL to visit this journey. Uses custom domain if available, otherwise URL based on environment */
+  journeyUrl: Scalars['String']['output'];
+  stats: Array<TemplateFamilyStatsEventResponse>;
+  status: JourneyStatus;
+  teamName: Scalars['String']['output'];
+};
+
+export type TemplateFamilyStatsEventResponse = {
+  __typename?: 'TemplateFamilyStatsEventResponse';
+  event: Scalars['String']['output'];
+  visitors: Scalars['Int']['output'];
 };
 
 export type TextResponseBlock = Block & {

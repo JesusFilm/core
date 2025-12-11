@@ -202,6 +202,10 @@ export const JourneyRef = builder.prismaObject('Journey', {
     strategySlug: t.exposeString('strategySlug', {
       nullable: true
     }),
+    templateSite: t.exposeBoolean('templateSite', {
+      nullable: true,
+      description: 'used to see if a template has a site created for it'
+    }),
     plausibleToken: t.exposeString('plausibleToken', {
       nullable: true,
       description: 'used in a plausible share link to embed report'
