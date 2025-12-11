@@ -444,7 +444,7 @@ export function JourneyListContent({
     if (contentType === 'templates') {
       switch (status) {
         case 'active':
-          return t('No templates to display.')
+          return t('Make your first template.')
         case 'archived':
           return t('No archived templates.')
         case 'trashed':
@@ -470,17 +470,14 @@ export function JourneyListContent({
   const getHelperText = (): string => {
     if (contentType === 'templates') {
       switch (status) {
-        case 'active':
-          return t(
-            'You can archive a template to hide it from the Template Library.'
-          )
         case 'archived':
           return t('Archived templates are hidden from the Template Library.')
         case 'trashed':
           return t('Trashed templates are moved here for up to 40 days.')
+        case 'active':
         default:
           return t(
-            'You can archive a template to hide it from the Template Library.'
+            'Templates you make from your projects will appear here.\nMonitor the performance of all journeys created from these templates.'
           )
       }
     } else {
@@ -604,7 +601,7 @@ export function JourneyListContent({
           variant="caption"
           align="center"
           component="div"
-          sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
+          sx={{ py: { xs: 3, sm: 5 }, maxWidth: 400, whiteSpace: 'pre-line' }}
         >
           {getHelperText()}
         </Typography>
