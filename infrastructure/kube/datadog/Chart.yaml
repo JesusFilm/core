@@ -1,3 +1,9 @@
+apiVersion: v2
+name: datadog
+description: Datadog
+type: application
+version: 1.0.0
+appVersion: 1.0.0
 dependencies:
   - name: datadog-operator
     version: 2.15.2
