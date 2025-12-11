@@ -12,6 +12,7 @@ import {
   useState
 } from 'react'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
@@ -59,6 +60,8 @@ export function JourneyListView({
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const breakpoints = useBreakpoints()
+  const { activeTeam } = useTeam()
+  const isSharedWithMeMode = activeTeam === null
 
   // Content type options (Journeys, Templates)
   // Use shorter labels on mobile to prevent overflow
@@ -89,6 +92,22 @@ export function JourneyListView({
     useState(contentTypeTabIndex)
   const [selectedStatus, setSelectedStatus] =
     useState<JourneyStatus>(statusFromQuery)
+
+  // Force type=journeys in Shared With Me mode
+  useEffect(() => {
+    if (isSharedWithMeMode && router?.query?.type !== 'journeys') {
+      void router.push(
+        {
+          query: {
+            ...router.query,
+            type: 'journeys'
+          }
+        },
+        undefined,
+        { shallow: true }
+      )
+    }
+  }, [isSharedWithMeMode, router])
 
   // Sync state with router query params when they change externally
   useEffect(() => {
@@ -163,6 +182,62 @@ export function JourneyListView({
     )
   }
 
+  // Render Shared With Me mode (no tabs, only journeys)
+  if (isSharedWithMeMode) {
+    return (
+      <>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'flex-end',
+            pr: 2,
+            overflow: 'visible'
+          }}
+          data-testid="journey-list-view"
+        >
+          {/* Status filter dropdown */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'flex-end',
+              ml: 'auto',
+              mr: 0
+            }}
+          >
+            <JourneyStatusFilter
+              status={selectedStatus}
+              onChange={handleStatusChange}
+            />
+          </Box>
+          {/* Sort component */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'flex-end',
+              ml: { xs: 1, sm: 0 }
+            }}
+          >
+            <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
+          </Box>
+          {/* Menu component */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'flex-end',
+              ml: { xs: 1, sm: 0 },
+              mr: { xs: 1, sm: -8 }
+            }}
+          >
+            <JourneyListMenu onClick={setActiveEvent} />
+          </Box>
+        </Box>
+        {/* Journeys content - rendered directly without TabPanel */}
+        {renderList('journeys', selectedStatus)}
+      </>
+    )
+  }
+
+  // Render Team mode (with tabs)
   return (
     <>
       <Tabs
