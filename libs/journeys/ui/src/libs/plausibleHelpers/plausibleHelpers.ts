@@ -1,6 +1,7 @@
 import {
   ButtonClickEventCreateInput,
   ChatOpenEventCreateInput,
+  MultiselectSubmissionEventCreateInput,
   RadioQuestionSubmissionEventCreateInput,
   SignUpSubmissionEventCreateInput,
   StepNextEventCreateInput,
@@ -64,6 +65,7 @@ export interface JourneyPlausibleEvents extends Events {
   videoProgress50: VideoProgressEventCreateInput & Props
   videoProgress75: VideoProgressEventCreateInput & Props
   videoComplete: VideoCompleteEventCreateInput & Props
+  multiselectSubmit: MultiselectSubmissionEventCreateInput & Props
   videoTrigger: Props
 }
 
@@ -71,7 +73,7 @@ interface KeyifyProps {
   stepId: string
   event: keyof JourneyPlausibleEvents
   blockId: string
-  target?: string | Action | null
+  target?: string | string[] | Action | null
 }
 
 export function generateActionTargetKey(action: Action): string {
@@ -97,9 +99,9 @@ export function keyify({
   blockId,
   target
 }: KeyifyProps): string {
-  let targetId = ''
+  let targetId: string | string[] = ''
 
-  if (typeof target === 'string' || target == null) {
+  if (typeof target === 'string' || target == null || Array.isArray(target)) {
     targetId = target ?? ''
   } else {
     targetId = generateActionTargetKey(target)

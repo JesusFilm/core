@@ -5,6 +5,7 @@ import { sendGTMEvent } from '@next/third-parties/google'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
+import { usePlausible } from 'next-plausible'
 import { ReactElement, useEffect, useMemo } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -31,6 +32,11 @@ import { getMultiselectBlocks } from './utils/getMultiselectBlocks'
 import { getTextResponseBlocks } from './utils/getTextResponseBlocks'
 import { getValidationSchema } from './utils/getValidationSchema/getValidationSchema'
 import { WebsiteCover } from './WebsiteCover'
+import {
+  JourneyPlausibleEvents,
+  keyify
+} from '../../libs/plausibleHelpers/plausibleHelpers'
+import { MultiselectSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
 
 export const STEP_NEXT_EVENT_CREATE = gql`
   mutation StepNextEventCreate($input: StepNextEventCreateInput!) {
@@ -86,6 +92,7 @@ export function Card({
   fullscreen,
   wrappers
 }: CardProps): ReactElement {
+  const plausible = usePlausible<JourneyPlausibleEvents>()
   const { enqueueSnackbar } = useSnackbar()
 
   const [textResponseSubmissionEventCreate] =
@@ -181,6 +188,7 @@ export function Card({
     formikHelpers: FormikHelpers<FormikValues>
   ): Promise<void> => {
     const { resetForm } = formikHelpers
+    if (journey == null) return
     if (variant !== 'default' && variant !== 'embed') return
 
     const submissionPromises: Array<Promise<string | null>> = [
@@ -239,15 +247,34 @@ export function Card({
               )
             : t('None')
         const id = uuidv4()
+        const input: MultiselectSubmissionEventCreateInput = {
+          id,
+          blockId,
+          stepId: activeBlock?.id,
+          label: heading,
+          values: valuesArray
+        }
+        plausible('multiselectSubmit', {
+          u: `${window.location.origin}/${journey.id}/${blockId}`,
+          props: {
+            ...input,
+            key: keyify({
+              stepId: input.blockId,
+              event: 'navigatePreviousStep',
+              blockId: input.blockId,
+              target: input.values
+            }),
+            simpleKey: keyify({
+              stepId: input.blockId,
+              event: 'navigatePreviousStep',
+              blockId: input.blockId
+            })
+            // TODO: templateKeyify
+          }
+        })
         return multiselectSubmissionEventCreate({
           variables: {
-            input: {
-              id,
-              blockId,
-              stepId: activeBlock?.id,
-              label: heading,
-              values: valuesArray
-            }
+            input
           }
         }).then(() => {
           sendGTMEvent({

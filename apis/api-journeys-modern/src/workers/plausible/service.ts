@@ -82,6 +82,7 @@ export const SITE_CREATE = gql(`
   }
 `)
 
+//TODO: add multiselectSubmit
 const goals: Array<keyof JourneyPlausibleEvents> = [
   'footerThumbsUpButtonClick',
   'footerThumbsDownButtonClick',
