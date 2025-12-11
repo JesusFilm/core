@@ -188,7 +188,8 @@ const journeyDuplicateMock = {
     query: JOURNEY_DUPLICATE,
     variables: {
       id: 'journeyId',
-      teamId: 'teamId'
+      teamId: 'teamId',
+      forceNonTemplate: true
     }
   },
   result: jest.fn(() => ({

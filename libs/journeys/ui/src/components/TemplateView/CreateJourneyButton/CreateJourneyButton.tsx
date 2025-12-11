@@ -120,7 +120,7 @@ export function CreateJourneyButton({
 
       try {
         const { data: duplicateData } = await journeyDuplicate({
-          variables: { id: journey.id, teamId }
+          variables: { id: journey.id, teamId, forceNonTemplate: true }
         })
 
         if (!duplicateData?.journeyDuplicate?.id) {
