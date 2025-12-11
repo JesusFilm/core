@@ -211,5 +211,3 @@ plausible-analytics:
                 operator: In
                 values:
                   - jfp-eks-node-group-2a-prod
-
-
