@@ -120,7 +120,7 @@ export function BetaBanner(): ReactElement | null {
     }
   }, [isWatchRoute])
 
-  if (!isWatchRoute || router == null) return null
+  if (!isWatchRoute || router == null || !router.isReady) return null
 
   const activateExperimentalMode = (): void => {
     const isHttps = window.location.protocol === 'https:'
@@ -158,6 +158,9 @@ export function BetaBanner(): ReactElement | null {
     >
       <canvas
         ref={canvasRef}
+        aria-hidden="true"
+        role="presentation"
+        tabIndex={-1}
         style={{
           position: 'absolute',
           top: 0,

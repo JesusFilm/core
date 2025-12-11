@@ -14,17 +14,22 @@ Object.defineProperty(document, 'cookie', {
 })
 
 // Mock HTMLCanvasElement.getContext
-HTMLCanvasElement.prototype.getContext = jest.fn(() => ({
-  clearRect: jest.fn(),
-  save: jest.fn(),
-  globalAlpha: 1,
-  fillStyle: '',
-  beginPath: jest.fn(),
-  arc: jest.fn(),
-  fill: jest.fn(),
-  restore: jest.fn(),
-  scale: jest.fn()
-}))
+HTMLCanvasElement.prototype.getContext = jest.fn((contextId: string) => {
+  if (contextId === '2d') {
+    return {
+      clearRect: jest.fn(),
+      save: jest.fn(),
+      globalAlpha: 1,
+      fillStyle: '',
+      beginPath: jest.fn(),
+      arc: jest.fn(),
+      fill: jest.fn(),
+      restore: jest.fn(),
+      scale: jest.fn()
+    } as any
+  }
+  return null
+}) as any
 
 // Mock requestAnimationFrame and cancelAnimationFrame
 global.requestAnimationFrame = jest.fn((cb) => setTimeout(cb, 16))
