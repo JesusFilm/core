@@ -1,6 +1,7 @@
 import {
   ButtonClickEventCreateInput,
   ChatOpenEventCreateInput,
+  MultiselectSubmissionEventCreateInput,
   RadioQuestionSubmissionEventCreateInput,
   SignUpSubmissionEventCreateInput,
   StepNextEventCreateInput,
@@ -52,6 +53,7 @@ export interface JourneyPlausibleEvents extends Events {
   buttonClick: ButtonClickEventCreateInput & Props
   chatButtonClick: ChatOpenEventCreateInput & Props
   footerChatButtonClick: ChatOpenEventCreateInput & Props
+  multiSelectSubmit: MultiselectSubmissionEventCreateInput & Props
   radioQuestionSubmit: RadioQuestionSubmissionEventCreateInput & Props
   signUpSubmit: SignUpSubmissionEventCreateInput & Props
   textResponseSubmit: TextResponseSubmissionEventCreateInput & Props
