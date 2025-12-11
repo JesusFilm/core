@@ -1,0 +1,2 @@
+export { VideoMetadata } from './VideoMetadata'
+
