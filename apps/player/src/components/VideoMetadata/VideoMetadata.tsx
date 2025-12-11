@@ -82,7 +82,6 @@ export function VideoMetadata({
   studyQuestions
 }: VideoMetadataProps): ReactElement {
   const descriptionText = description[0]?.value ?? ''
-  const filteredQuestions = studyQuestions.filter((q) => !q.primary)
 
   return (
     <>
@@ -96,8 +95,8 @@ export function VideoMetadata({
           </div>
         </div>
       )}
-      {filteredQuestions.length > 0 && (
-        <StudyQuestions questions={filteredQuestions} />
+      {studyQuestions.length > 0 && (
+        <StudyQuestions questions={studyQuestions} />
       )}
     </>
   )

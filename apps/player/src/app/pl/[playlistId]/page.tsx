@@ -2,9 +2,8 @@ import { cache } from 'react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import { getApolloClient } from '../../../lib/apolloClient'
-import { GET_PLAYLIST } from '../../../lib/queries/getPlaylist'
-
+import { getApolloClient } from '@/lib/apolloClient'
+import { GET_PLAYLIST } from '@/lib/queries/getPlaylist'
 import { PlaylistPage } from '@/components/PlaylistPage'
 
 interface PageProps {
@@ -69,6 +68,10 @@ export default async function PlaylistRoutePage(props: PageProps) {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <h1 className="mb-2 text-2xl font-bold">{playlist.name}</h1>
+          <p className="mb-1 text-gray-600">
+            {playlist.owner.firstName}
+            {playlist.owner.lastName ? ` ${playlist.owner.lastName}` : ''}
+          </p>
           <p className="text-text-secondary">This playlist is empty</p>
         </div>
       </div>

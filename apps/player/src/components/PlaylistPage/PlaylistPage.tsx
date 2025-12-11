@@ -43,6 +43,11 @@ interface PlaylistItem {
 interface Playlist {
   id: string
   name: string
+  owner: {
+    id: string
+    firstName: string
+    lastName: string | null
+  }
   items: PlaylistItem[]
 }
 
@@ -63,6 +68,10 @@ export function PlaylistPage({ playlist }: PlaylistPageProps): ReactElement {
         <div className="flex flex-1 items-center justify-center">
           <div className="text-center">
             <h1 className="mb-2 text-2xl font-bold">{playlist.name}</h1>
+            <p className="mb-1 text-gray-600">
+              {playlist.owner.firstName}
+              {playlist.owner.lastName ? ` ${playlist.owner.lastName}` : ''}
+            </p>
             <p className="text-text-secondary">No video available</p>
           </div>
         </div>
@@ -102,6 +111,10 @@ export function PlaylistPage({ playlist }: PlaylistPageProps): ReactElement {
               <h1 className="mb-1 text-lg font-semibold text-gray-900">
                 {playlist.name}
               </h1>
+              <p className="text-sm text-gray-600">
+                {playlist.owner.firstName}
+                {playlist.owner.lastName ? ` ${playlist.owner.lastName}` : ''}
+              </p>
             </div>
             <div className="flex-1 overflow-y-auto">
               <PlaylistList

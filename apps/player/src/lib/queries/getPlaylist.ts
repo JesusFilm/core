@@ -7,6 +7,11 @@ export const GET_PLAYLIST = graphql(`
         data {
           id
           name
+          owner {
+            id
+            firstName
+            lastName
+          }
           items {
             id
             order
@@ -51,4 +56,3 @@ export const GET_PLAYLIST = graphql(`
     }
   }
 `)
-
