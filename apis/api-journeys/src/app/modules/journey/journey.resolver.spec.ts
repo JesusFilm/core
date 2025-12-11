@@ -121,6 +121,12 @@ describe('JourneyResolver', () => {
     template: true
   }
 
+  const journeyWithGlobalTemplate = {
+    ...journey,
+    template: true,
+    teamId: 'jfp-team'
+  }
+
   const block = {
     id: 'blockId',
     typename: 'ImageBlock',
@@ -376,6 +382,14 @@ describe('JourneyResolver', () => {
       }
     }
 
+    const journeysSharedWithMeAndGlobalTemplates: Prisma.JourneyWhereInput = {
+      ...journeysSharedWithMe,
+      NOT: {
+        template: true,
+        teamId: 'jfp-team'
+      }
+    }
+
     beforeEach(() => {
       prismaService.journey.findMany.mockResolvedValueOnce([journey])
     })
@@ -387,6 +401,29 @@ describe('JourneyResolver', () => {
       expect(prismaService.journey.findMany).toHaveBeenCalledWith({
         where: {
           AND: [accessibleJourneys, journeysSharedWithMe]
+        }
+      })
+    })
+
+    it('should not fetch global templates for "Shared with me" journeys', async () => {
+      // Mock journey profile to return last active team id
+      prismaService.journeyProfile.findUnique.mockResolvedValue({
+        lastActiveTeamId: null
+      } as unknown as JourneyProfile)
+
+      expect(
+        await resolver.adminJourneys(
+          'userId',
+          accessibleJourneys,
+          undefined,
+          undefined,
+          undefined,
+          true
+        )
+      ).not.toEqual([journeyWithGlobalTemplate])
+      expect(prismaService.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [accessibleJourneys, journeysSharedWithMeAndGlobalTemplates]
         }
       })
     })
