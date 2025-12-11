@@ -4,17 +4,22 @@ import { styled, useTheme } from '@mui/material/styles'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { Form, Formik, FormikHelpers, FormikValues } from 'formik'
 import { useTranslation } from 'next-i18next'
-import { useSnackbar } from 'notistack'
 import { usePlausible } from 'next-plausible'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useMemo } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { MultiselectSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
 import { TreeBlock, useBlocks } from '../../libs/block'
 import { blurImage } from '../../libs/blurImage'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { getTextResponseLabel } from '../../libs/getTextResponseLabel'
 import { useJourney } from '../../libs/JourneyProvider'
 // eslint-disable-next-line import/no-cycle
+import {
+  JourneyPlausibleEvents,
+  keyify
+} from '../../libs/plausibleHelpers/plausibleHelpers'
 import { BlockRenderer, WrappersProps } from '../BlockRenderer'
 import { ImageFields } from '../Image/__generated__/ImageFields'
 import { MULTISELECT_SUBMISSION_EVENT_CREATE } from '../MultiselectQuestion'
@@ -32,11 +37,6 @@ import { getMultiselectBlocks } from './utils/getMultiselectBlocks'
 import { getTextResponseBlocks } from './utils/getTextResponseBlocks'
 import { getValidationSchema } from './utils/getValidationSchema/getValidationSchema'
 import { WebsiteCover } from './WebsiteCover'
-import {
-  JourneyPlausibleEvents,
-  keyify
-} from '../../libs/plausibleHelpers/plausibleHelpers'
-import { MultiselectSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
 
 export const STEP_NEXT_EVENT_CREATE = gql`
   mutation StepNextEventCreate($input: StepNextEventCreateInput!) {
