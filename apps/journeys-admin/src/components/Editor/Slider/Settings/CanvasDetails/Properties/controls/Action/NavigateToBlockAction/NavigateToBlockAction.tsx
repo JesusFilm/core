@@ -45,7 +45,7 @@ export function NavigateToBlockAction(): ReactElement {
         color="secondary.main"
         sx={{ mt: 1, mb: 3 }}
       >
-        {t('Navigate to the selected card (set in the map).')}
+        {t('Switch to the map view to connect this button.')}
       </Typography>
       {currentActionStep == null ? (
         <Button
