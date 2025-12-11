@@ -177,13 +177,10 @@ function OnboardingUtilities({
             variant="body2"
             sx={{ color: 'primary.main', cursor: 'pointer' }}
             component="a"
-            href={`mailto:support@nextstep.is?subject=${emailSubject}`}
+            href={`https://www.cru.org/us/en/about/privacy.html`}
           >
-            {t('Feedback & Support')}
+            {t('Privacy Policy')}
           </Typography>
-        </Button>
-        <Button size="small" onClick={() => setOpen(true)}>
-          <Typography variant="body2">{t('Language')}</Typography>
         </Button>
         <Button size="small">
           <Typography
@@ -194,6 +191,9 @@ function OnboardingUtilities({
           >
             {t('Feedback & Support')}
           </Typography>
+        </Button>
+        <Button size="small" onClick={() => setOpen(true)}>
+          <Typography variant="body2">{t('Language')}</Typography>
         </Button>
       </Stack>
       {open && (
