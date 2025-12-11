@@ -37,6 +37,15 @@ export function JourneyPageWrapper({
     labelFont: journey.journeyTheme?.labelFont ?? ''
   }
 
+  const journeyDomain =
+    journeyId != null ? `api-journeys-journey-${journeyId}` : ''
+  const teamDomain = teamId != null ? `,api-journeys-team-${teamId}` : ''
+  const templateDomain = journey?.template
+    ? `,api-journeys-template-${journeyId}`
+    : journey?.fromTemplateId != null
+      ? `,api-journeys-template-${journey.fromTemplateId}`
+      : ''
+
   return (
     <PlausibleProvider
       enabled
@@ -45,9 +54,7 @@ export function JourneyPageWrapper({
       trackOutboundLinks
       manualPageviews
       customDomain="/plausible"
-      domain={`api-journeys-journey-${journeyId ?? ''}${
-        teamId != null ? `,api-journeys-team-${teamId}` : ''
-      }`}
+      domain={`${journeyDomain}${teamDomain}${templateDomain}`}
     >
       <JourneyProvider value={{ journey, variant: variant ?? 'default' }}>
         <ThemeProvider

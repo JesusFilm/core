@@ -12,7 +12,7 @@ import { TreeBlock, blockHistoryVar } from '../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../libs/block/__generated__/BlockFields'
 import { JourneyProvider } from '../../libs/JourneyProvider'
 import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated__/JourneyFields'
-import { keyify } from '../../libs/plausibleHelpers'
+import { keyify, templateKeyify } from '../../libs/plausibleHelpers'
 import { VideoTriggerFields_triggerAction } from '../VideoTrigger/__generated__/VideoTriggerFields'
 
 import {
@@ -164,12 +164,18 @@ describe('VideoEvents', () => {
         key: keyify({
           stepId: activeBlock.id,
           event: 'videoStart',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoStart',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'videoStart',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -273,12 +279,18 @@ describe('VideoEvents', () => {
         key: keyify({
           stepId: activeBlock.id,
           event: 'videoPlay',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoPlay',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'videoPlay',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -381,12 +393,18 @@ describe('VideoEvents', () => {
         key: keyify({
           stepId: activeBlock.id,
           event: 'videoPause',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoPause',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'videoPause',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -489,12 +507,18 @@ describe('VideoEvents', () => {
         key: keyify({
           stepId: activeBlock.id,
           event: 'videoExpand',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoExpand',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'videoExpand',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -605,7 +629,7 @@ describe('VideoEvents', () => {
       void props.player.exitFullscreen()
     })
     await waitFor(() => expect(result).toHaveBeenCalled())
-    expect(mockPlausible).toHaveBeenCalledWith('videoCollapse', {
+    expect(mockPlausible).toHaveBeenLastCalledWith('videoCollapse', {
       u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
@@ -617,12 +641,18 @@ describe('VideoEvents', () => {
         key: keyify({
           stepId: activeBlock.id,
           event: 'videoCollapse',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoCollapse',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'videoCollapse',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -840,12 +870,18 @@ describe('VideoEvents', () => {
         key: keyify({
           stepId: activeBlock.id,
           event: 'videoStart',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoStart',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'videoStart',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -855,7 +891,7 @@ describe('VideoEvents', () => {
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultOne).toHaveBeenCalled())
-    expect(mockPlausible).toHaveBeenCalledWith('videoProgress25', {
+    expect(mockPlausible).toHaveBeenNthCalledWith(2, 'videoProgress25', {
       u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
@@ -868,12 +904,18 @@ describe('VideoEvents', () => {
         key: keyify({
           stepId: activeBlock.id,
           event: 'videoProgress25',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoProgress25',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'videoProgress25',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -883,7 +925,7 @@ describe('VideoEvents', () => {
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultTwo).toHaveBeenCalled())
-    expect(mockPlausible).toHaveBeenCalledWith('videoProgress50', {
+    expect(mockPlausible).toHaveBeenNthCalledWith(3, 'videoProgress50', {
       u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
@@ -896,12 +938,18 @@ describe('VideoEvents', () => {
         key: keyify({
           stepId: activeBlock.id,
           event: 'videoProgress50',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoProgress50',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'videoProgress50',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -911,7 +959,7 @@ describe('VideoEvents', () => {
       props.player.trigger('timeupdate')
     })
     await waitFor(() => expect(resultThree).toHaveBeenCalled())
-    expect(mockPlausible).toHaveBeenCalledWith('videoProgress75', {
+    expect(mockPlausible).toHaveBeenNthCalledWith(4, 'videoProgress75', {
       u: expect.stringContaining(`/journey.id/step.id`),
       props: {
         id: 'uuid',
@@ -924,12 +972,18 @@ describe('VideoEvents', () => {
         key: keyify({
           stepId: activeBlock.id,
           event: 'videoProgress75',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: activeBlock.id,
           event: 'videoProgress75',
-          blockId: props.blockId
+          blockId: props.blockId,
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'videoProgress75',
+          journeyId: 'journey.id'
         })
       }
     })

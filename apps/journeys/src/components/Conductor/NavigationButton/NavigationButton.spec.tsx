@@ -11,7 +11,7 @@ import {
   STEP_PREVIOUS_EVENT_CREATE
 } from '@core/journeys/ui/Card/Card'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { keyify } from '@core/journeys/ui/plausibleHelpers'
+import { keyify, templateKeyify } from '@core/journeys/ui/plausibleHelpers'
 
 import { GetJourney_journey as Journey } from '../../../../__generated__/GetJourney'
 
@@ -196,12 +196,18 @@ describe('NavigationButton', () => {
           stepId: 'step1.id',
           event: 'navigateNextStep',
           blockId: 'step1.id',
-          target: 'step3.id'
+          target: 'step3.id',
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step1.id',
           event: 'navigateNextStep',
-          blockId: 'step1.id'
+          blockId: 'step1.id',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'navigateNextStep',
+          journeyId: 'journey.id'
         })
       }
     })
@@ -244,12 +250,18 @@ describe('NavigationButton', () => {
           stepId: 'step2.id',
           event: 'navigatePreviousStep',
           blockId: 'step2.id',
-          target: 'step1.id'
+          target: 'step1.id',
+          journeyId: 'journey.id'
         }),
         simpleKey: keyify({
           stepId: 'step2.id',
           event: 'navigatePreviousStep',
-          blockId: 'step2.id'
+          blockId: 'step2.id',
+          journeyId: 'journey.id'
+        }),
+        templateKey: templateKeyify({
+          event: 'navigatePreviousStep',
+          journeyId: 'journey.id'
         })
       }
     })
