@@ -16,5 +16,3 @@ dopplerSecrets:
     managedSecret:
       name: externaldns-aws-credentials
       namespace: default
-
-
