@@ -1,27 +1,26 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: plausible-analytics-stage
+  name: snapscheduler
   namespace: default
   labels:
-    app.kubernetes.io/name: plausible-analytics
-    app.kubernetes.io/part-of: analytics
-    environment: stage
+    app.kubernetes.io/name: snapscheduler
+    app.kubernetes.io/part-of: backups
 spec:
   project: default
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: snapscheduler
 
   source:
     repoURL: https://github.com/JesusFilm/core.git
     targetRevision: main
-    path: apis/api-analytics/infrastructure/chart
+    path: infrastructure/kube/snapscheduler/chart
     helm:
-      releaseName: plausible-analytics
+      releaseName: snapscheduler
       valueFiles:
-        - values-stage.yaml
+        - values.yaml
 
   syncPolicy:
     automated:

@@ -1,0 +1,5 @@
+snapscheduler:
+  # Add SnapScheduler chart values overrides here if/when needed.
+  # Using upstream defaults for now.
+
+
