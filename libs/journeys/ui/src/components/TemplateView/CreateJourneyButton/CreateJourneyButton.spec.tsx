@@ -188,7 +188,8 @@ const journeyDuplicateMock = {
     query: JOURNEY_DUPLICATE,
     variables: {
       id: 'journeyId',
-      teamId: 'teamId'
+      teamId: 'teamId',
+      forceNonTemplate: true
     }
   },
   result: jest.fn(() => ({
@@ -230,6 +231,62 @@ describe('CreateJourneyButton', () => {
     jest.clearAllMocks()
     teamResult.mockClear()
     journeyDuplicateMock.result.mockClear()
+  })
+
+  it('should render create journey button when variant is button', () => {
+    mockUseRouter.mockReturnValue({
+      prefetch,
+      query: { createNew: false }
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <CreateJourneyButton variant="button" />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('CreateJourneyButton')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('CreateJourneyMenuItem')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should render create journey menu item when variant is menu-item', () => {
+    mockUseRouter.mockReturnValue({
+      prefetch,
+      query: { createNew: false }
+    } as unknown as NextRouter)
+
+    render(
+      <MockedProvider
+        mocks={[
+          {
+            request: {
+              query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+            },
+            result: teamResult
+          }
+        ]}
+      >
+        <SnackbarProvider>
+          <CreateJourneyButton variant="menu-item" />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    expect(screen.getByTestId('CreateJourneyMenuItem')).toBeInTheDocument()
+    expect(screen.queryByTestId('CreateJourneyButton')).not.toBeInTheDocument()
   })
 
   it('should not open team dialog if url query set to createNew and openTeamDialogOnSignIn is not set', async () => {

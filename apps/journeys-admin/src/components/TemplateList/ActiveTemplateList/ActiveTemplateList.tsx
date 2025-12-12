@@ -16,7 +16,7 @@ import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
-} from '../../JourneyList/ActiveJourneyList/ActiveJourneyList'
+} from '../../JourneyList/JourneyListContent/JourneyListContent'
 import { JourneyCard } from '../../JourneyList/JourneyCard'
 import type { JourneyListProps } from '../../JourneyList/JourneyList'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
@@ -39,7 +39,8 @@ export function ActiveTemplateList({
   const { enqueueSnackbar } = useSnackbar()
   const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.draft, JourneyStatus.published],
-    template: true
+    template: true,
+    teamId: 'jfp-team'
   })
   const [archive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {

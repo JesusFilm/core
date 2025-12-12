@@ -56,6 +56,20 @@ export interface GetAdminJourneys_journeys_primaryImageBlock {
   blurhash: string;
 }
 
+export interface GetAdminJourneys_journeys_team {
+  __typename: "Team";
+  id: string;
+}
+
+export interface GetAdminJourneys_journeys_journeyCustomizationFields {
+  __typename: "JourneyCustomizationField";
+  id: string;
+  journeyId: string;
+  key: string;
+  value: string | null;
+  defaultValue: string | null;
+}
+
 export interface GetAdminJourneys_journeys {
   __typename: "Journey";
   id: string;
@@ -81,7 +95,10 @@ export interface GetAdminJourneys_journeys {
   template: boolean | null;
   userJourneys: GetAdminJourneys_journeys_userJourneys[] | null;
   primaryImageBlock: GetAdminJourneys_journeys_primaryImageBlock | null;
+  team: GetAdminJourneys_journeys_team | null;
   fromTemplateId: string | null;
+  journeyCustomizationDescription: string | null;
+  journeyCustomizationFields: GetAdminJourneys_journeys_journeyCustomizationFields[];
 }
 
 export interface GetAdminJourneys {

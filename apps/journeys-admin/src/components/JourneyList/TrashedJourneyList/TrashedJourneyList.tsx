@@ -17,6 +17,7 @@ import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../LoadingJourneyList'
+import { RESTORE_TRASHED_JOURNEYS, DELETE_TRASHED_JOURNEYS } from '../JourneyListContent/JourneyListContent'
 
 const Dialog = dynamic(
   async () =>
@@ -27,23 +28,6 @@ const Dialog = dynamic(
   { ssr: false }
 )
 
-export const RESTORE_TRASHED_JOURNEYS = gql`
-  mutation RestoreTrashedJourneys($ids: [ID!]!) {
-    journeysRestore(ids: $ids) {
-      id
-      status
-    }
-  }
-`
-
-export const DELETE_TRASHED_JOURNEYS = gql`
-  mutation DeleteTrashedJourneys($ids: [ID!]!) {
-    journeysDelete(ids: $ids) {
-      id
-      status
-    }
-  }
-`
 export function TrashedJourneyList({
   user,
   sortOrder,

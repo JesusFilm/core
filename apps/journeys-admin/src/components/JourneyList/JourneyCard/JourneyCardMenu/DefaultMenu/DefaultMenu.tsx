@@ -5,6 +5,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useMemo } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { TemplateActionButton } from '@core/journeys/ui/TemplateView/TemplateViewHeader/TemplateActionButton'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
@@ -30,6 +31,7 @@ import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQ
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery'
 import { GET_JOURNEY_WITH_PERMISSIONS } from '../../../../AccessDialog/AccessDialog'
+import { CreateTemplateItem } from '../../../../Editor/Toolbar/Items/CreateTemplateItem/CreateTemplateItem'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
@@ -224,10 +226,20 @@ export function DefaultMenu({
               handleCloseMenu()
             }}
           />
+          <Divider />
+          <CreateTemplateItem variant="menu-item" globalPublish={false} />
+          {isPublisher === true && (
+            <CreateTemplateItem variant="menu-item" globalPublish={true} />
+          )}
+          <Divider />
         </>
       )}
-
-      <Divider />
+      {template === true && (
+        <>
+          <TemplateActionButton variant="menu-item" />
+          <Divider />
+        </>
+      )}
       <CopyToTeamMenuItem
         id={id}
         handleCloseMenu={handleCloseMenu}

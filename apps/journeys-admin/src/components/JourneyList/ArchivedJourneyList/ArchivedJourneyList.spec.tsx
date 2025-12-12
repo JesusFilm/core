@@ -16,7 +16,7 @@ import { SortOrder } from '../JourneySort'
 import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
-} from './ArchivedJourneyList'
+} from '../JourneyListContent/JourneyListContent'
 
 import { ArchivedJourneyList } from '.'
 
