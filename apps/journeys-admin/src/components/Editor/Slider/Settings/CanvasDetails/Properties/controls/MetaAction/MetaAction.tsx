@@ -1,14 +1,14 @@
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
-import Stack from '@mui/material/Stack'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
-import { ReactElement, useState } from 'react'
 import MenuItem from '@mui/material/MenuItem'
+import Select, { SelectChangeEvent } from '@mui/material/Select'
+import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
+import { ReactElement, useState } from 'react'
 
-import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
-import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 // TODO: get real types for backend
 type MetaActionType =
