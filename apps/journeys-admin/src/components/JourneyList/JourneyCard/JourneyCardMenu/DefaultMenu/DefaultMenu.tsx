@@ -226,19 +226,20 @@ export function DefaultMenu({
               handleCloseMenu()
             }}
           />
-        </>
-      )}
-      {template !== true && (
-        <>
           <Divider />
           <CreateTemplateItem variant="menu-item" globalPublish={false} />
           {isPublisher === true && (
             <CreateTemplateItem variant="menu-item" globalPublish={true} />
           )}
+          <Divider />
         </>
       )}
-      {template === true && <TemplateActionButton variant="menu-item" />}
-      <Divider />
+      {template === true && (
+        <>
+          <TemplateActionButton variant="menu-item" />
+          <Divider />
+        </>
+      )}
       <CopyToTeamMenuItem
         id={id}
         handleCloseMenu={handleCloseMenu}
