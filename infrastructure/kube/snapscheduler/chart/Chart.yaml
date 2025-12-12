@@ -1,0 +1,11 @@
+apiVersion: v2
+name: snapscheduler-app
+description: Wrapper chart for SnapScheduler managed by ArgoCD
+type: application
+version: 0.1.0
+appVersion: 'latest'
+
+dependencies:
+  - name: snapscheduler
+    version: '3.4.0'
+    repository: https://backube.github.io/helm-charts/

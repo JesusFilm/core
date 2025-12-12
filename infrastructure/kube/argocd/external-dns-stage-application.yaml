@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: external-dns-stage
-  namespace: argocd
+  namespace: default
   labels:
     app.kubernetes.io/name: external-dns
     app.kubernetes.io/part-of: dns

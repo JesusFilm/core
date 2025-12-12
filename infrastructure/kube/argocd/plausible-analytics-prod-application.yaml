@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: plausible-analytics-prod
-  namespace: argocd
+  namespace: default
   labels:
     app.kubernetes.io/name: plausible-analytics
     app.kubernetes.io/part-of: analytics
