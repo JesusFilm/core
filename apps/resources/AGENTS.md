@@ -122,7 +122,6 @@ done
 echo "✅ Page renders cleanly after $max_retries attempts"
 ```
 
-
 ## Core Nx targets (run with `pnpm dlx nx run <target>`)
 
 - `resources:serve` – Dev server on <http://localhost:4310>.

@@ -84,7 +84,7 @@ export function BetaBanner(): ReactElement | null {
     const drawParticles = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      particlesRef.current.forEach(particle => {
+      particlesRef.current.forEach((particle) => {
         ctx.save()
         ctx.globalAlpha = particle.opacity
         ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
@@ -201,11 +201,27 @@ export function BetaBanner(): ReactElement | null {
           }}
         >
           <Typography variant="h6">
-            ✨ {isMobile ? t('Better search, languages, and collections.') : t('Better search. Better language support. Better collections.')}{' '}
-            <Box component="span" sx={{ display: 'inline-block', pr: 4, pl:2 }}>
+            ✨{' '}
+            {isMobile
+              ? t('Better search, languages, and collections.')
+              : t(
+                  'Better search. Better language support. Better collections.'
+                )}{' '}
+            <Box
+              component="span"
+              sx={{ display: 'inline-block', pr: 4, pl: 2 }}
+            >
               →
             </Box>
-            <Box component="span" sx={{ fontWeight: 700, textDecoration: 'underline', textUnderlineOffset: '3px', textDecorationColor: 'rgba(255, 255, 255, 0.7)' }}>
+            <Box
+              component="span"
+              sx={{
+                fontWeight: 700,
+                textDecoration: 'underline',
+                textUnderlineOffset: '3px',
+                textDecorationColor: 'rgba(255, 255, 255, 0.7)'
+              }}
+            >
               {isMobile ? t('New Design') : t('Try the new design.')}
             </Box>
           </Typography>
