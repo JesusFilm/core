@@ -1,6 +1,3 @@
-import Box from '@mui/material/Box'
-import Tab from '@mui/material/Tab'
-import Tabs from '@mui/material/Tabs'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import {
@@ -13,13 +10,12 @@ import {
 } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
-import { TabPanel, tabA11yProps } from '@core/shared/ui/TabPanel'
 import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 import type { JourneyListEvent } from '../JourneyList'
-import { JourneyListMenu } from '../JourneyListMenu'
-import { JourneySort, SortOrder } from '../JourneySort'
-import { JourneyStatusFilter } from '../JourneyStatusFilter'
+import { SortOrder } from '../JourneySort'
+import { SharedWithMeMode } from './DisplayModes/SharedWithMeMode/SharedWithMeMode'
+import { ContentTypeOption, TeamMode } from './DisplayModes/TeamMode/TeamMode'
 
 export type ContentType = 'journeys' | 'templates'
 export type JourneyStatus = 'active' | 'archived' | 'trashed'
@@ -33,11 +29,8 @@ export interface JourneyListViewProps {
   sortOrder?: SortOrder
 }
 
-interface ContentTypeOption {
-  queryParam: ContentType
-  displayValue: string
-  tabIndex: number
-}
+// Re-export ContentTypeOption for external use
+export type { ContentTypeOption } from './DisplayModes/TeamMode/TeamMode'
 
 // Helper function to get refetch event based on status
 const getRefetchEvent = (status: JourneyStatus): JourneyListEvent => {
@@ -182,162 +175,31 @@ export function JourneyListView({
     )
   }
 
-  // Render Shared With Me mode (no tabs, only journeys)
   if (isSharedWithMeMode) {
     return (
-      <>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'flex-end',
-            pr: 2,
-            overflow: 'visible'
-          }}
-          data-testid="journey-list-view"
-        >
-          {/* Status filter dropdown */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'flex-end',
-              ml: 'auto',
-              mr: 0
-            }}
-          >
-            <JourneyStatusFilter
-              status={selectedStatus}
-              onChange={handleStatusChange}
-            />
-          </Box>
-          {/* Sort component */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'flex-end',
-              ml: { xs: 1, sm: 0 }
-            }}
-          >
-            <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
-          </Box>
-          {/* Menu component */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'flex-end',
-              ml: { xs: 1, sm: 0 },
-              mr: { xs: 1, sm: -8 }
-            }}
-          >
-            <JourneyListMenu onClick={setActiveEvent} />
-          </Box>
-        </Box>
-        {/* Journeys content - rendered directly without TabPanel */}
-        {renderList('journeys', selectedStatus)}
-      </>
+      <SharedWithMeMode
+        selectedStatus={selectedStatus}
+        handleStatusChange={handleStatusChange}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
+        setActiveEvent={setActiveEvent}
+        renderList={renderList}
+      />
     )
   }
 
-  // Render Team mode (with tabs)
   return (
-    <>
-      <Tabs
-        value={activeContentTypeTab}
-        onChange={handleContentTypeChange}
-        aria-label="journey content type tabs"
-        data-testid="journey-list-view"
-        sx={{
-          // Allow overflow to prevent hover circle on JourneyListMenu from being clipped
-          // MUI Tabs uses an internal scroller with overflow: hidden by default
-          overflow: 'visible',
-          pr: 2,
-          '& .MuiTabs-scroller': {
-            overflow: 'visible !important'
-          },
-          '& .MuiTab-root': {
-            fontFamily: "'Montserrat', sans-serif",
-            fontWeight: 600,
-            fontSize: '16px',
-            lineHeight: '21px'
-          }
-        }}
-      >
-        <Tab
-          label={contentTypeOptions[0].displayValue}
-          {...tabA11yProps(
-            'journeys-content-panel',
-            contentTypeOptions[0].tabIndex
-          )}
-        />
-        <Tab
-          label={contentTypeOptions[1].displayValue}
-          {...tabA11yProps(
-            'templates-content-panel',
-            contentTypeOptions[1].tabIndex
-          )}
-        />
-        {/* Status filter dropdown - visible for both tabs */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'flex-end',
-            ml: 'auto',
-            mr: 0
-          }}
-        >
-          <JourneyStatusFilter
-            status={selectedStatus}
-            onChange={handleStatusChange}
-          />
-        </Box>
-        {/* Sort component */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'flex-end',
-            ml: { xs: 1, sm: 0 }
-          }}
-        >
-          <JourneySort sortOrder={sortOrder} onChange={setSortOrder} />
-        </Box>
-        {/* Menu component */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'flex-end',
-            ml: { xs: 1, sm: 0 },
-            mr: {
-              xs: 1,
-              sm: router?.query?.type === 'templates' ? -12 : -8
-            }
-          }}
-        >
-          <JourneyListMenu onClick={setActiveEvent} />
-        </Box>
-      </Tabs>
-      {/* Journeys tab panel */}
-      <TabPanel
-        name="journeys-content-panel"
-        value={activeContentTypeTab}
-        index={contentTypeOptions[0].tabIndex}
-        unmountUntilVisible={
-          router?.query?.type !== undefined &&
-          router?.query?.type !== 'journeys'
-        }
-      >
-        {renderList('journeys', selectedStatus)}
-      </TabPanel>
-      {/* Templates tab panel */}
-      <TabPanel
-        name="templates-content-panel"
-        value={activeContentTypeTab}
-        index={contentTypeOptions[1].tabIndex}
-        unmountUntilVisible={
-          router?.query?.type !== undefined &&
-          router?.query?.type !== 'templates'
-        }
-      >
-        {renderList('templates', selectedStatus)}
-      </TabPanel>
-    </>
+    <TeamMode
+      activeContentTypeTab={activeContentTypeTab}
+      handleContentTypeChange={handleContentTypeChange}
+      contentTypeOptions={contentTypeOptions}
+      selectedStatus={selectedStatus}
+      handleStatusChange={handleStatusChange}
+      sortOrder={sortOrder}
+      setSortOrder={setSortOrder}
+      setActiveEvent={setActiveEvent}
+      router={router}
+      renderList={renderList}
+    />
   )
 }
