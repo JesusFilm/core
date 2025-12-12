@@ -3,7 +3,7 @@ name: snapscheduler-app
 description: Wrapper chart for SnapScheduler managed by ArgoCD
 type: application
 version: 0.1.0
-appVersion: 'latest'
+appVersion: 'v3.4.0'
 
 dependencies:
   - name: snapscheduler
