@@ -1,0 +1,11 @@
+apiVersion: v2
+name: doppler-operator-app
+description: Wrapper chart for Doppler Kubernetes Operator and secrets managed by ArgoCD
+type: application
+version: 0.1.0
+appVersion: 'v1.5.7'
+
+dependencies:
+  - name: doppler-kubernetes-operator
+    version: '1.5.7'
+    repository: https://helm.doppler.com
