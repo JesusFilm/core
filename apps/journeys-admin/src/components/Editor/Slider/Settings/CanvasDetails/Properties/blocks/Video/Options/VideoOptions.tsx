@@ -7,7 +7,10 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { VIDEO_FIELDS } from '@core/journeys/ui/Video/videoFields'
 
 import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../../../__generated__/BlockFields'
-import { VideoBlockUpdateInput } from '../../../../../../../../../../__generated__/globalTypes'
+import {
+  VideoBlockSource,
+  VideoBlockUpdateInput
+} from '../../../../../../../../../../__generated__/globalTypes'
 import {
   VideoBlockUpdate,
   VideoBlockUpdateVariables

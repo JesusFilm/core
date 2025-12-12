@@ -8,6 +8,7 @@ import { ReactElement, SyntheticEvent, useEffect, useState } from 'react'
 
 import { setBeaconPageViewed } from '@core/journeys/ui/beaconHooks'
 import { TreeBlock } from '@core/journeys/ui/block'
+import { useEditor } from '@core/journeys/ui/EditorProvider'
 import MediaStrip1Icon from '@core/shared/ui/icons/MediaStrip1'
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 import YoutubeIcon from '@core/shared/ui/icons/Youtube'
@@ -66,7 +67,11 @@ export function VideoLibrary({
     selectedBlock?.videoId != null && open
   )
 
-  const { getUploadStatus } = useMuxVideoUpload()
+  const {
+    state: { selectedBlock: editorSelectedBlock }
+  } = useEditor()
+
+  const { getUploadStatus, cancelUploadForBlock } = useMuxVideoUpload()
   const uploadStatus = getUploadStatus(selectedBlock?.id ?? '')
 
   const [activeTab, setActiveTab] = useState(
@@ -108,6 +113,10 @@ export function VideoLibrary({
     shouldCloseDrawer = true
   ): void => {
     const shouldFocus = shouldCloseDrawer
+
+    // use editor provider selected block as this accounts for background videos where the video block does not yet exist, hence the selectedBlock prop is null
+    if (editorSelectedBlock != null) cancelUploadForBlock(editorSelectedBlock)
+
     if (handleSelect != null) handleSelect(block, shouldFocus)
     setOpenVideoDetails(false)
   }

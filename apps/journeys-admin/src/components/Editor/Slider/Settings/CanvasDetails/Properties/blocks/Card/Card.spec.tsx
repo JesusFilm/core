@@ -17,6 +17,7 @@ import {
   VideoBlockSource
 } from '../../../../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
+import { MuxVideoUploadProvider } from '../../../../../../../MuxVideoUploadProvider'
 
 import { Card } from '.'
 
@@ -68,7 +69,7 @@ const renderWithProviders = (
           <EditorProvider
             initialState={{ selectedBlock: selectedBlock ?? undefined }}
           >
-            {component}
+            <MuxVideoUploadProvider>{component}</MuxVideoUploadProvider>
           </EditorProvider>
         </JourneyProvider>
       </SnackbarProvider>

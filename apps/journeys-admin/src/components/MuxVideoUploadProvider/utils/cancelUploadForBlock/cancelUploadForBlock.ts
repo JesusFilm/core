@@ -2,7 +2,6 @@ import { Dispatch, RefObject, SetStateAction } from 'react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
-import { findBlocksByTypename } from '../../../../libs/findBlocksByTypename'
 import { clearPollingInterval } from '../clearPollingInterval'
 import type { PollingTask, UploadTask } from '../types'
 
@@ -15,8 +14,8 @@ interface CancelUploadForBlockDependencies {
   hasShownStartNotification: RefObject<Set<string>>
 }
 
-function cancelUploadForVideoBlockId(
-  videoBlockId: string,
+export function cancelUploadForBlock(
+  block: TreeBlock,
   dependencies: CancelUploadForBlockDependencies
 ): void {
   const {
@@ -28,14 +27,14 @@ function cancelUploadForVideoBlockId(
     hasShownStartNotification
   } = dependencies
 
-  const task = uploadTasks.get(videoBlockId)
+  const task = uploadTasks.get(block.id)
   if (task == null) return
 
   // If currently uploading, abort the upload
-  const uploadInstance = uploadInstanceRefs.current.get(videoBlockId)
+  const uploadInstance = uploadInstanceRefs.current.get(block.id)
   if (uploadInstance != null) {
     uploadInstance.abort()
-    uploadInstanceRefs.current.delete(videoBlockId)
+    uploadInstanceRefs.current.delete(block.id)
   }
 
   // If task has a videoId, stop polling (polling may have started after upload completed)
@@ -52,21 +51,7 @@ function cancelUploadForVideoBlockId(
   // Remove task from upload tasks
   setUploadTasks((prev) => {
     const next = new Map(prev)
-    next.delete(videoBlockId)
+    next.delete(block.id)
     return next
   })
-}
-
-export function cancelUploadForBlock(
-  block: TreeBlock,
-  dependencies: CancelUploadForBlockDependencies
-): void {
-  if (block.__typename === 'VideoBlock') {
-    cancelUploadForVideoBlockId(block.id, dependencies)
-  } else if (block.__typename === 'StepBlock') {
-    const videoBlocks = findBlocksByTypename(block, 'VideoBlock')
-    for (const videoBlock of videoBlocks) {
-      cancelUploadForVideoBlockId(videoBlock.id, dependencies)
-    }
-  }
 }
