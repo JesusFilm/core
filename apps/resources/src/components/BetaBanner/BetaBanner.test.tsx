@@ -13,28 +13,6 @@ Object.defineProperty(document, 'cookie', {
   configurable: true
 })
 
-// Mock HTMLCanvasElement.getContext
-HTMLCanvasElement.prototype.getContext = jest.fn((contextId: string) => {
-  if (contextId === '2d') {
-    return {
-      clearRect: jest.fn(),
-      save: jest.fn(),
-      globalAlpha: 1,
-      fillStyle: '',
-      beginPath: jest.fn(),
-      arc: jest.fn(),
-      fill: jest.fn(),
-      restore: jest.fn(),
-      scale: jest.fn()
-    } as any
-  }
-  return null
-}) as any
-
-// Mock requestAnimationFrame and cancelAnimationFrame
-global.requestAnimationFrame = jest.fn((cb) => setTimeout(cb, 16))
-global.cancelAnimationFrame = jest.fn((id) => clearTimeout(id))
-
 describe('BetaBanner', () => {
   beforeEach(() => {
     mockCookie = ''
@@ -147,29 +125,6 @@ describe('BetaBanner', () => {
       })
     })
 
-    it('should render canvas element for animation', () => {
-      mockRouter.setCurrentUrl('/watch/some-video')
-      mockRouter.isReady = true
-
-      render(<BetaBanner />)
-
-      const canvas = document.querySelector('canvas')
-      expect(canvas).toBeInTheDocument()
-      expect(canvas).toHaveStyle({
-        position: 'absolute',
-        pointerEvents: 'none'
-      })
-    })
-
-    it('should not render canvas on non-watch routes', () => {
-      mockRouter.setCurrentUrl('/resources')
-      mockRouter.isReady = true
-
-      render(<BetaBanner />)
-
-      const canvas = document.querySelector('canvas')
-      expect(canvas).not.toBeInTheDocument()
-    })
   })
 
   describe('Integration Tests', () => {

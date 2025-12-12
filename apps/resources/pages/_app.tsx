@@ -3,6 +3,7 @@ import type { EmotionCache } from '@emotion/cache'
 import { AppCacheProvider } from '@mui/material-nextjs/v15-pagesRouter'
 import { GoogleTagManager } from '@next/third-parties/google'
 import type { AppProps as NextJsAppProps } from 'next/app'
+import dynamic from 'next/dynamic'
 import { Noto_Serif } from 'next/font/google'
 import localFont from 'next/font/local'
 import Head from 'next/head'
@@ -18,7 +19,6 @@ import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import i18nConfig from '../next-i18next.config'
-import { BetaBanner } from '../src/components/BetaBanner/index'
 import { useApolloClient } from '../src/libs/apolloClient'
 
 import 'swiper/css'
@@ -26,6 +26,10 @@ import 'swiper/css/a11y'
 import 'swiper/css/navigation'
 import '../public/watch/global.css'
 import './fonts/fonts.css'
+// eslint-disable-next-line import/no-named-as-default
+const BetaBanner = dynamic(() => import(/* webpackChunkName: "beta-banner" */ '../src/components/BetaBanner/index').then(mod => ({ default: mod.BetaBanner })), {
+  ssr: false
+})
 
 const notoSerif = Noto_Serif({
   weight: ['500', '700'],
