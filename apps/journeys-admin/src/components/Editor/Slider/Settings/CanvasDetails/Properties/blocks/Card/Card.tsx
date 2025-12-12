@@ -20,6 +20,7 @@ import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
+import { MetaAction } from '../../controls/MetaAction'
 
 const BackgroundColor = dynamic(
   async () =>
@@ -121,6 +122,14 @@ export function Card({
 
   return (
     <Box data-testid="CardProperties">
+      <Accordion
+        icon={<FlexAlignBottom1Icon />}
+        id={`${id}-meta-action`}
+        name={t('Tracking')}
+        value={t('None')}
+      >
+        <MetaAction />
+      </Accordion>
       <Accordion
         icon={<FlexAlignBottom1Icon />}
         id={`${id}-layout`}
