@@ -123,6 +123,22 @@ export const publishedJourney: Journey = {
   status: JourneyStatus.published
 }
 
+export const publishedGlobalTemplate: Journey = {
+  ...publishedJourney,
+  id: 'published-template-id',
+  title: 'Published Template Heading',
+  template: true,
+  team: { id: 'jfp-team' }
+} as Journey & { team: { id: string } }
+
+export const publishedLocalTemplate: Journey = {
+  ...publishedJourney,
+  id: 'published-template-id',
+  title: 'Published Template Heading',
+  template: true,
+  team: { id: 'local-team-id' }
+} as Journey & { team: { id: string } }
+
 export const descriptiveJourney: Journey = {
   ...defaultJourney,
   id: 'descriptive-journey-id',

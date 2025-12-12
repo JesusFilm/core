@@ -9,7 +9,10 @@ import {
 import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
-import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
+import {
+  defaultJourney,
+  publishedLocalTemplate
+} from '@core/journeys/ui/TemplateView/data'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 import { GET_TAGS } from '@core/journeys/ui/useTagsQuery'
 
@@ -758,5 +761,16 @@ describe('TemplateSettingsDialog', () => {
         'Categories'
       )
     })
+  })
+
+  it('should not render categories tab for local template', () => {
+    const { queryByRole } = render(
+      <MockedProvider>
+        <JourneyProvider value={{ journey: publishedLocalTemplate }}>
+          <TemplateSettingsDialog open onClose={onClose} />
+        </JourneyProvider>
+      </MockedProvider>
+    )
+    expect(queryByRole('tab', { name: 'Categories' })).not.toBeInTheDocument()
   })
 })

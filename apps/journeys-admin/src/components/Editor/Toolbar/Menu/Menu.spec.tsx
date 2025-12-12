@@ -162,7 +162,7 @@ describe('Toolbar Menu', () => {
       ).toBeInTheDocument()
     })
 
-    it('should render template menu items', async () => {
+    it('should render global template menu items', async () => {
       const selectedBlock: TreeBlock<StepBlock> = {
         __typename: 'StepBlock',
         id: 'stepId',
@@ -185,7 +185,10 @@ describe('Toolbar Menu', () => {
                   slug: 'my-journey',
                   template: true,
                   tags: [],
-                  language
+                  language,
+                  team: {
+                    id: 'jfp-team'
+                  }
                 } as unknown as Journey
               }}
             >
@@ -200,6 +203,55 @@ describe('Toolbar Menu', () => {
       expect(
         screen.getByRole('menuitem', { name: 'Template Settings' })
       ).toBeInTheDocument()
+      expect(
+        screen.getByRole('menuitem', { name: 'Manage Access' })
+      ).toBeInTheDocument()
+    })
+
+    it('should render local template menu items', async () => {
+      const selectedBlock: TreeBlock<StepBlock> = {
+        __typename: 'StepBlock',
+        id: 'stepId',
+        parentBlockId: 'journeyId',
+        parentOrder: 0,
+        locked: true,
+        nextBlockId: null,
+        children: [],
+        slug: null
+      }
+      render(
+        <SnackbarProvider>
+          <MockedProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journeyId',
+                  title: 'Some title',
+                  description: 'Some description',
+                  slug: 'my-journey',
+                  template: true,
+                  tags: [],
+                  language,
+                  team: {
+                    id: 'local-team-id'
+                  }
+                } as unknown as Journey
+              }}
+            >
+              <EditorProvider initialState={{ selectedBlock }}>
+                <Menu />
+              </EditorProvider>
+            </JourneyProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+      fireEvent.click(screen.getByRole('button'))
+      expect(
+        screen.getByRole('menuitem', { name: 'Template Settings' })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('menuitem', { name: 'Manage Access' })
+      ).not.toBeInTheDocument()
     })
 
     it('should handle edit journey details', async () => {
