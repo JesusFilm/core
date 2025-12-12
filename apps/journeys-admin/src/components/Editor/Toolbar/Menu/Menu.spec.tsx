@@ -7,6 +7,7 @@ import { SnackbarProvider } from 'notistack'
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 import { BlockFields_StepBlock as StepBlock } from '../../../../../__generated__/BlockFields'
 import { GetJourney_journey as Journey } from '../../../../../__generated__/GetJourney'
@@ -26,7 +27,13 @@ jest.mock('next/router', () => ({
   useRouter: jest.fn(() => ({ query: { tab: 'active' } }))
 }))
 
+jest.mock('@core/journeys/ui/TeamProvider', () => ({
+  __esModule: true,
+  useTeam: jest.fn()
+}))
+
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockedUseTeam = useTeam as jest.MockedFunction<typeof useTeam>
 
 describe('Toolbar Menu', () => {
   const push = jest.fn()
@@ -45,6 +52,22 @@ describe('Toolbar Menu', () => {
       }
     ]
   }
+
+  beforeEach(() => {
+    mockedUseTeam.mockReturnValue({
+      activeTeam: {
+        __typename: 'Team',
+        id: 'teamId',
+        title: 'Team Title',
+        publicTitle: null,
+        userTeams: [],
+        customDomains: []
+      },
+      setActiveTeam: jest.fn(),
+      refetch: jest.fn(),
+      query: {} as any
+    })
+  })
 
   describe('smUp', () => {
     beforeEach(() =>
@@ -223,6 +246,68 @@ describe('Toolbar Menu', () => {
       ).toBeInTheDocument()
       expect(
         screen.queryByRole('menuitem', { name: 'Make Global Template' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not render make template menu item for shared with me team', async () => {
+      mockedUseTeam.mockReturnValue({
+        activeTeam: null,
+        setActiveTeam: jest.fn(),
+        refetch: jest.fn(),
+        query: {} as any
+      })
+      const selectedBlock: TreeBlock<StepBlock> = {
+        __typename: 'StepBlock',
+        id: 'stepId',
+        parentBlockId: 'journeyId',
+        parentOrder: 0,
+        locked: true,
+        nextBlockId: null,
+        children: [],
+        slug: null
+      }
+      render(
+        <SnackbarProvider>
+          <MockedProvider
+            mocks={[
+              {
+                request: {
+                  query: GET_ROLE
+                },
+                result: {
+                  data: {
+                    getUserRole: {
+                      id: '1',
+                      userId: 'userId',
+                      roles: []
+                    }
+                  }
+                }
+              }
+            ]}
+          >
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journeyId',
+                  title: 'Some title',
+                  description: 'Some description',
+                  slug: 'my-journey',
+                  tags: [],
+                  language
+                } as unknown as Journey
+              }}
+            >
+              <EditorProvider initialState={{ selectedBlock }}>
+                <Menu />
+              </EditorProvider>
+            </JourneyProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+      fireEvent.click(screen.getByRole('button'))
+      expect(
+        screen.queryByRole('menuitem', { name: 'Make Template' })
       ).not.toBeInTheDocument()
     })
 

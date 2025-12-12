@@ -125,6 +125,23 @@ const baseTeamMock = {
 // Team mock with manager role (for clarity)
 const teamWithManagerMock = baseTeamMock
 
+// Team mock with shared with me team
+const teamSharedWithMeMock = {
+  request: {
+    query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
+  },
+  result: {
+    data: {
+      teams: [],
+      getJourneyProfile: {
+        __typename: 'JourneyProfile',
+        id: 'journeyProfileId',
+        lastActiveTeamId: null
+      }
+    }
+  }
+}
+
 // Team mock with member role (override the role)
 const teamWithMemberMock = {
   ...baseTeamMock,
@@ -350,6 +367,38 @@ describe('DefaultMenu', () => {
     expect(
       queryByRole('menuitem', { name: 'Make Global Template' })
     ).not.toBeInTheDocument()
+  })
+
+  it('should not render make template menu item for shared with me team', async () => {
+    const { queryByRole } = render(
+      <MockedProvider
+        mocks={[
+          teamSharedWithMeMock,
+          userRolePublisherMock,
+          currentUserMock,
+          makeJourneyMock('template-id')
+        ]}
+      >
+        <SnackbarProvider>
+          <TeamProvider>
+            <DefaultMenu
+              id="template-id"
+              slug="template-slug"
+              status={JourneyStatus.published}
+              journeyId="template-id"
+              published
+              setOpenAccessDialog={noop}
+              handleCloseMenu={noop}
+              template
+              setOpenTrashDialog={noop}
+              setOpenDetailsDialog={noop}
+              setOpenTranslateDialog={noop}
+            />
+          </TeamProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    expect(queryByRole('menuitem', { name: 'Make Template' })).not.toBeInTheDocument()
   })
 
   it('should call correct functions on Access click', () => {

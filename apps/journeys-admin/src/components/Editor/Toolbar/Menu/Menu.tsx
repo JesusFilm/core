@@ -23,6 +23,7 @@ import { ShareItem } from '../Items/ShareItem'
 import { StrategyItem } from '../Items/StrategyItem'
 import { TemplateSettingsItem } from '../Items/TemplateSettingsItem'
 import { JourneyDetails } from '../JourneyDetails'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 export const GET_ROLE = gql`
   query GetRole {
@@ -44,6 +45,8 @@ export function Menu({ user }: MenuProps): ReactElement {
   const { journey } = useJourney()
   const { data } = useQuery<GetRole>(GET_ROLE)
   const isPublisher = data?.getUserRole?.roles?.includes(Role.publisher)
+  const { activeTeam } = useTeam()
+  const sharedWithMeTeam = activeTeam?.id == null
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
 
@@ -93,7 +96,7 @@ export function Menu({ user }: MenuProps): ReactElement {
         {!mdUp && journey?.template !== true && (
           <AnalyticsItem variant="menu-item" />
         )}
-        {journey?.template !== true && (
+        {!sharedWithMeTeam && journey?.template !== true && (
           <>
             <CreateTemplateItem variant="menu-item" globalPublish={false} />
             {isPublisher === true && (
