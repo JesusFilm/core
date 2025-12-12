@@ -560,8 +560,8 @@ model Block {
   minRows                    Int?
   content                    String?
   align                      String?
-  startAt                    Int?
-  endAt                      Int?
+  startAt                    Float?
+  endAt                      Float?
   muted                      Boolean?
   autoplay                   Boolean?
   posterBlockId              String?              @unique

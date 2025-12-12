@@ -24,10 +24,10 @@ export const VideoBlock = builder.prismaObject('Block', {
       nullable: true,
       resolve: (block) => block.autoplay ?? false
     }),
-    startAt: t.exposeInt('startAt', {
+    startAt: t.exposeFloat('startAt', {
       nullable: true
     }),
-    endAt: t.exposeInt('endAt', {
+    endAt: t.exposeFloat('endAt', {
       nullable: true
     }),
     muted: t.boolean({

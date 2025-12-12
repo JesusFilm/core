@@ -2092,8 +2092,8 @@ type VideoBlock implements Block
   parentBlockId: ID
   parentOrder: Int
   autoplay: Boolean
-  startAt: Int
-  endAt: Int
+  startAt: Float
+  endAt: Float
   muted: Boolean
   videoId: ID
   videoVariantLanguageId: ID
