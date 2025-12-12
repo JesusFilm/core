@@ -11,11 +11,13 @@ const ONE_DAY = 86_400
 function run({
   service,
   queueName,
-  repeat
+  repeat,
+  jobData
 }: {
   service: (job: Job, logger?: Logger) => Promise<void>
   queueName: string
   repeat?: string
+  jobData?: Record<string, unknown>
 }): void {
   // eslint-disable-next-line no-new
   new Worker(queueName, job, {
@@ -35,19 +37,18 @@ function run({
 
   logger.info({ queue: queueName }, 'waiting for jobs')
 
-  if (repeat != null) {
-    // Set up scheduled job
+  if (repeat != null || jobData != null) {
+    // Set up scheduled or one-off job
     const queue = new Queue(queueName, { connection })
-    void queue.add(
-      `${queueName}-job`,
-      { __typename: 'updateAllShortlinks' },
-      {
-        removeOnComplete: { age: ONE_HOUR },
-        removeOnFail: { age: ONE_DAY },
-        repeat: repeat != null ? { pattern: repeat } : undefined
-      }
+    void queue.add(`${queueName}-job`, jobData ?? {}, {
+      removeOnComplete: { age: ONE_HOUR },
+      removeOnFail: { age: ONE_DAY },
+      repeat: repeat != null ? { pattern: repeat } : undefined
+    })
+    logger.info(
+      { queue: queueName, repeat },
+      repeat != null ? 'scheduled recurring job' : 'scheduled one-off job'
     )
-    logger.info({ queue: queueName, repeat }, 'scheduled recurring job')
   }
 }
 
@@ -69,6 +70,12 @@ async function main(): Promise<void> {
       await import(
         /* webpackChunkName: 'revalidate' */
         './revalidate'
+      )
+    )
+    run(
+      await import(
+        /* webpackChunkName: 'plausible' */
+        './plausible'
       )
     )
     run(

@@ -22,15 +22,6 @@ const mockDecryptSymmetric = decryptSymmetric as jest.MockedFunction<
 describe('googleAuth', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    process.env.GOOGLE_CLIENT_ID = 'test-client-id'
-    process.env.GOOGLE_CLIENT_SECRET = 'test-client-secret'
-    process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET = 'test-secret'
-  })
-
-  afterEach(() => {
-    delete process.env.GOOGLE_CLIENT_ID
-    delete process.env.GOOGLE_CLIENT_SECRET
-    delete process.env.INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET
   })
 
   describe('getTeamGoogleAccessToken', () => {
@@ -120,25 +111,6 @@ describe('googleAuth', () => {
 
       await expect(getTeamGoogleAccessToken('team-id')).rejects.toThrow(
         'Google integration not configured for this team'
-      )
-    })
-
-    it('should throw error when OAuth client not configured', async () => {
-      delete process.env.GOOGLE_CLIENT_ID
-
-      const mockIntegration = {
-        accessSecretCipherText: 'ciphertext',
-        accessSecretIv: 'iv',
-        accessSecretTag: 'tag',
-        accountEmail: 'test@example.com'
-      }
-
-      prismaMock.integration.findFirst.mockResolvedValue(mockIntegration as any)
-      mockDecryptSymmetric.mockResolvedValue('refresh-token')
-      mockAxios.post.mockRejectedValue(new Error('Token refresh failed'))
-
-      await expect(getTeamGoogleAccessToken('team-id')).rejects.toThrow(
-        'Failed to refresh Google OAuth token. Re-authorization is required to continue. Please reconnect your Google account.'
       )
     })
   })

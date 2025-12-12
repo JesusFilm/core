@@ -1,0 +1,1 @@
+export { useAlgoliaStrategies } from './useAlgoliaStrategies'

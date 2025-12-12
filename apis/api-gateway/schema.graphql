@@ -286,7 +286,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!) : IntegrationGrowthSpaces! @join__field(graph: API_JOURNEYS) 
   integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!) : IntegrationGrowthSpaces! @join__field(graph: API_JOURNEYS) 
   journeyCreate(input: JourneyCreateInput!, teamId: ID!) : Journey! @join__field(graph: API_JOURNEYS) 
-  journeyDuplicate(id: ID!, teamId: ID!) : Journey! @join__field(graph: API_JOURNEYS) 
+  journeyDuplicate(id: ID!, teamId: ID!, forceNonTemplate: Boolean) : Journey! @join__field(graph: API_JOURNEYS) 
   journeyUpdate(id: ID!, input: JourneyUpdateInput!) : Journey! @join__field(graph: API_JOURNEYS) 
   """
   Sets journey status to published
@@ -416,6 +416,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     select: JourneyVisitorExportSelect
     destination: JourneyVisitorGoogleSheetDestinationInput!
     integrationId: ID!
+    """
+    IANA timezone identifier (e.g., "Pacific/Auckland"). Defaults to UTC if not provided.
+    """
+    timezone: String
   ): JourneyVisitorGoogleSheetExportResult! @join__field(graph: API_JOURNEYS_MODERN) 
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
   audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!) : AudioPreview! @join__field(graph: API_LANGUAGES) 
@@ -595,6 +599,8 @@ type PhoneAction implements Action @join__type(graph: API_JOURNEYS)  @join__type
   phone: String!
   countryCode: String!
   contactAction: ContactActionType!
+  customizable: Boolean
+  parentStepId: String
 }
 
 type ChatAction implements Action @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS, interface: "Action")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Action")  {
@@ -2434,8 +2440,8 @@ type Translation @join__type(graph: API_JOURNEYS)  {
 
 type GoogleSheetsSync @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
-  teamId: String
-  journeyId: String!
+  teamId: ID!
+  journeyId: ID!
   integrationId: ID
   spreadsheetId: ID!
   sheetName: String
@@ -4279,6 +4285,7 @@ input JourneysFilter @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JO
   limit: Int
   orderByRecent: Boolean
   fromTemplateId: ID
+  teamId: String
 }
 
 input JourneysQueryOptions @join__type(graph: API_JOURNEYS)  @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -4801,6 +4808,8 @@ input PhoneActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
   phone: String!
   countryCode: String!
   contactAction: ContactActionType = call
+  customizable: Boolean
+  parentStepId: String
 }
 
 input VideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
