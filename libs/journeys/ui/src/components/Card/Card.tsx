@@ -255,28 +255,30 @@ export function Card({
           label: heading,
           values: valuesArray
         }
-        plausible('multiselectSubmit', {
-          u: `${window.location.origin}/${journey.id}/${blockId}`,
-          props: {
-            ...input,
-            key: keyify({
-              stepId: input.blockId,
-              event: 'multiselectSubmit',
-              blockId: input.blockId,
-              target: input.values,
-              journeyId: journey.id
-            }),
-            simpleKey: keyify({
-              stepId: input.blockId,
-              event: 'multiselectSubmit',
-              blockId: input.blockId,
-              journeyId: journey.id
-            }),
-            templateKey: templateKeyify({
-              event: 'multiselectSubmit',
-              journeyId: journey.id
-            })
-          }
+        input.values.forEach((option) => {
+          plausible('multiselectSubmit', {
+            u: `${window.location.origin}/${journey.id}/${blockId}`,
+            props: {
+              ...input,
+              key: keyify({
+                stepId: input.blockId,
+                event: 'multiselectSubmit',
+                blockId: input.blockId,
+                target: option,
+                journeyId: journey.id
+              }),
+              simpleKey: keyify({
+                stepId: input.blockId,
+                event: 'multiselectSubmit',
+                blockId: input.blockId,
+                journeyId: journey.id
+              }),
+              templateKey: templateKeyify({
+                event: 'multiselectSubmit',
+                journeyId: journey.id
+              })
+            }
+          })
         })
         return multiselectSubmissionEventCreate({
           variables: {

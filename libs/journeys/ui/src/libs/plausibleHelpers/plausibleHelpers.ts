@@ -82,7 +82,7 @@ interface KeyifyProps {
   stepId: string
   event: keyof JourneyPlausibleEvents
   blockId: string
-  target?: string | string[] | Action | null
+  target?: string | Action | null
   journeyId?: string
 }
 
@@ -110,9 +110,9 @@ export function keyify({
   target,
   journeyId
 }: KeyifyProps): string {
-  let targetId: string | string[] = ''
+  let targetId = ''
 
-  if (typeof target === 'string' || target == null || Array.isArray(target)) {
+  if (typeof target === 'string' || target == null) {
     targetId = target ?? ''
   } else {
     targetId = generateActionTargetKey(target)
