@@ -1,6 +1,7 @@
 import {
   ButtonClickEventCreateInput,
   ChatOpenEventCreateInput,
+  MultiselectSubmissionEventCreateInput,
   RadioQuestionSubmissionEventCreateInput,
   SignUpSubmissionEventCreateInput,
   StepNextEventCreateInput,
@@ -73,6 +74,7 @@ export interface JourneyPlausibleEvents extends Events {
   videoProgress50: VideoProgressEventCreateInput & Props
   videoProgress75: VideoProgressEventCreateInput & Props
   videoComplete: VideoCompleteEventCreateInput & Props
+  multiselectSubmit: MultiselectSubmissionEventCreateInput & Props
   videoTrigger: Props
 }
 
