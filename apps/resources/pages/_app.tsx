@@ -27,9 +27,15 @@ import 'swiper/css/navigation'
 import '../public/watch/global.css'
 import './fonts/fonts.css'
 // eslint-disable-next-line import/no-named-as-default
-const BetaBanner = dynamic(() => import(/* webpackChunkName: "beta-banner" */ '../src/components/BetaBanner/index').then(mod => ({ default: mod.BetaBanner })), {
-  ssr: false
-})
+const BetaBanner = dynamic(
+  () =>
+    import(
+      /* webpackChunkName: "beta-banner" */ '../src/components/BetaBanner/index'
+    ).then((mod) => ({ default: mod.BetaBanner })),
+  {
+    ssr: false
+  }
+)
 
 const notoSerif = Noto_Serif({
   weight: ['500', '700'],

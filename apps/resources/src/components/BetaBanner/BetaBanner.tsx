@@ -18,7 +18,13 @@ export function BetaBanner(): ReactElement | null {
     typeof document !== 'undefined' &&
     document.cookie.includes('EXPERIMENTAL=true')
 
-  if (!isWatchRoute || router == null || !router.isReady || hasExperimentalCookie) return null
+  if (
+    !isWatchRoute ||
+    router == null ||
+    !router.isReady ||
+    hasExperimentalCookie
+  )
+    return null
 
   const activateExperimentalMode = (): void => {
     const isHttps = window.location.protocol === 'https:'

@@ -124,7 +124,6 @@ describe('BetaBanner', () => {
         overflow: 'hidden'
       })
     })
-
   })
 
   describe('Integration Tests', () => {
