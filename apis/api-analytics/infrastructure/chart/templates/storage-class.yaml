@@ -15,5 +15,3 @@ allowedTopologies:
         values:
           - us-east-2a
 allowVolumeExpansion: true
-
-
