@@ -2,6 +2,8 @@ import { fireEvent, render } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 
+import { useTeam } from '@core/journeys/ui/TeamProvider'
+
 import { ThemeProvider } from '../../ThemeProvider'
 
 import { JourneyListView } from '.'
@@ -25,10 +27,18 @@ jest.mock('next-i18next', () => ({
   }))
 }))
 
+jest.mock('@core/journeys/ui/TeamProvider', () => ({
+  __esModule: true,
+  useTeam: jest.fn(() => ({
+    activeTeam: { id: 'teamId', title: 'Test Team' }
+  }))
+}))
+
 const mockedUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
 const mockedUseTranslation = useTranslation as jest.MockedFunction<
   typeof useTranslation
 >
+const mockedUseTeam = useTeam as jest.MockedFunction<typeof useTeam>
 
 const mockRenderList = jest.fn(() => (
   <div data-testid="rendered-list">List</div>
@@ -263,5 +273,49 @@ describe('JourneyListView', () => {
     )
 
     expect(mockRenderList).toHaveBeenCalledWith('journeys', 'archived')
+  })
+
+  it('should render TeamMode when activeTeam is not null', () => {
+    mockedUseTeam.mockReturnValue({
+      activeTeam: { id: 'teamId', title: 'Test Team' }
+    } as never)
+
+    const { getByRole, getByTestId } = render(
+      <ThemeProvider>
+        <JourneyListView
+          renderList={mockRenderList}
+          setActiveEvent={mockSetActiveEvent}
+          setSortOrder={mockSetSortOrder}
+        />
+      </ThemeProvider>
+    )
+
+    expect(getByTestId('journey-list-view')).toBeInTheDocument()
+    expect(getByRole('tab', { name: 'Team Projects' })).toBeInTheDocument()
+    expect(getByRole('tab', { name: 'Team Templates' })).toBeInTheDocument()
+  })
+
+  it('should render SharedWithMeMode when activeTeam is null', () => {
+    mockedUseTeam.mockReturnValue({
+      activeTeam: null
+    } as never)
+
+    const { queryByRole, getByTestId } = render(
+      <ThemeProvider>
+        <JourneyListView
+          renderList={mockRenderList}
+          setActiveEvent={mockSetActiveEvent}
+          setSortOrder={mockSetSortOrder}
+        />
+      </ThemeProvider>
+    )
+
+    expect(getByTestId('journey-list-view')).toBeInTheDocument()
+    expect(
+      queryByRole('tab', { name: 'Team Projects' })
+    ).not.toBeInTheDocument()
+    expect(
+      queryByRole('tab', { name: 'Team Templates' })
+    ).not.toBeInTheDocument()
   })
 })
