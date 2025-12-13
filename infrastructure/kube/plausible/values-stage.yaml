@@ -139,8 +139,8 @@ plausible-analytics:
     tag: 'v2.1.1'
 
   imagePullSecrets: []
-  # nameOverride: ''
-  # fullnameOverride: ''
+  nameOverride: ''
+  fullnameOverride: ''
 
   serviceAccount:
     # -- Specifies whether a service account should be created
