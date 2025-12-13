@@ -1,4 +1,0 @@
-kubernetes-dashboard:
-  # Force resource names to match the original Helm release prefix (kubernetes-dashboard-*)
-  nameOverride: kubernetes-dashboard
-  fullnameOverride: kubernetes-dashboard
