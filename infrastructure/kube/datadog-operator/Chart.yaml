@@ -1,0 +1,10 @@
+apiVersion: v2
+name: datadog-operator
+description: Datadog Operator
+type: application
+version: 1.0.0
+appVersion: 1.0.0
+dependencies:
+  - name: datadog-operator
+    version: 2.15.2
+    repository: https://helm.datadoghq.com

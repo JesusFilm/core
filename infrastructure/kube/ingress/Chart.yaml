@@ -1,0 +1,11 @@
+apiVersion: v2
+name: ingress-nginx-app
+description: Wrapper chart for NGINX Ingress Controller managed by ArgoCD
+type: application
+version: 0.1.0
+appVersion: 'v4.12.1'
+
+dependencies:
+  - name: ingress-nginx
+    version: '4.12.1'
+    repository: https://kubernetes.github.io/ingress-nginx

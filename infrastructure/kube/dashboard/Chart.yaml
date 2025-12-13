@@ -1,0 +1,11 @@
+apiVersion: v2
+name: kubernetes-dashboard-app
+description: Wrapper chart for Kubernetes Dashboard and admin user, managed by ArgoCD
+type: application
+version: 0.1.0
+appVersion: 'v7.11.1'
+
+dependencies:
+  - name: kubernetes-dashboard
+    version: '7.11.1'
+    repository: https://kubernetes.github.io/dashboard/
