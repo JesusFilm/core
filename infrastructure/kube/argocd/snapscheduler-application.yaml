@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: snapscheduler
+  namespace: default
+  labels:
+    app.kubernetes.io/name: snapscheduler
+    app.kubernetes.io/part-of: backups
+spec:
+  project: default
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: snapscheduler
+
+  source:
+    repoURL: https://github.com/JesusFilm/core.git
+    targetRevision: main
+    path: infrastructure/kube/snapscheduler/chart
+    helm:
+      releaseName: snapscheduler
+      valueFiles:
+        - values.yaml
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
