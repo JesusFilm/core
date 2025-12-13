@@ -35,8 +35,8 @@ plausible-analytics:
     # -- The URL Connection String to clickhouse DB see -> https://clickhouse.tech/docs/en/interfaces/http/
     #  url: "http://plausible-clickhouse:8123/plausible_events_db"
     # -- Sub-chart values, see https://artifacthub.io/packages/helm/sentry/clickhouse
-    nameOverride: 'clickhouse'
-    fullnameOverride: 'clickhouse'
+    nameOverride: 'plausible-clickhouse'
+    fullnameOverride: 'plausible-clickhouse'
     affinity:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
