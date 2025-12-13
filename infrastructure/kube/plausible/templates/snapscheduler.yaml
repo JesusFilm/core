@@ -2,7 +2,7 @@ apiVersion: snapscheduler.backube/v1
 kind: SnapshotSchedule
 metadata:
   name: daily
-  namespace: { { .Release.Namespace } }
+  namespace: {{ .Release.Namespace }}
 spec:
   retention:
     maxCount: 5
