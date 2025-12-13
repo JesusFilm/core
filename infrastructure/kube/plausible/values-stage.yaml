@@ -140,7 +140,7 @@ plausible-analytics:
 
   imagePullSecrets: []
   nameOverride: 'plausible-analytics'
-  fullnameOverride: 'plausible-analytics'
+  # fullnameOverride: 'plausible-analytics'
 
   serviceAccount:
     # -- Specifies whether a service account should be created
