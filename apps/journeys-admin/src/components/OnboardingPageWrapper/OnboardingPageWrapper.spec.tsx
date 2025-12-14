@@ -44,9 +44,7 @@ describe('OnboardingPageWrapper', () => {
       'href',
       `mailto:support@nextstep.is?subject=${emailSubject}`
     )
-
     fireEvent.click(screen.getAllByRole('button', { name: 'Language' })[0])
-
     await waitFor(() =>
       expect(
         screen.getByRole('dialog', { name: 'Change Language' })
