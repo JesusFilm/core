@@ -5,6 +5,7 @@ import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import dynamic from 'next/dynamic'
+import { useRouter } from 'next/router'
 import { User } from 'next-firebase-auth'
 import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
@@ -105,6 +106,7 @@ export function JourneyListContent({
 }: JourneyListContentProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
+  const router = useRouter()
 
   // Determine query parameters based on contentType and status
   const getQueryParams = () => {
@@ -304,6 +306,16 @@ export function JourneyListContent({
     setPrimaryDialogOpen(false)
     setSecondaryDialogOpen(false)
   }
+
+  // Handle refresh query param, ensure journeys and local template are shown on creation
+  useEffect(() => {
+    if (router.query.refresh === 'true') {
+      void refetch()
+      // Remove the refresh param to prevent refetch on subsequent renders
+      const { refresh, ...restQuery } = router.query
+      void router.replace({ query: restQuery }, undefined, { shallow: true })
+    }
+  }, [router.query.refresh, refetch, router])
 
   // Handle events
   useEffect(() => {
