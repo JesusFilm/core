@@ -11,6 +11,7 @@ import { builder } from '../builder'
 import { JourneyRef } from '../journey/journey'
 
 import { getCardBlocksContent } from './getCardBlocksContent'
+import { translateCustomizationFields } from './translateCustomizationFields'
 
 // Define the translation progress interface
 interface JourneyAiTranslateProgress {
@@ -93,6 +94,7 @@ builder.subscriptionField('journeyAiTranslateCreateSubscription', (t) =>
           include: {
             blocks: true,
             userJourneys: true,
+            journeyCustomizationFields: true,
             team: {
               include: {
                 userTeams: true
@@ -224,17 +226,49 @@ Return in this format:
 
         yield {
           progress: 70,
+          message: 'Translating customization fields...',
+          journey: null
+        }
+
+        // Translate customization fields and description
+        const customizationTranslation = await translateCustomizationFields({
+          journeyCustomizationDescription:
+            journey.journeyCustomizationDescription,
+          journeyCustomizationFields: journey.journeyCustomizationFields,
+          sourceLanguageName: input.journeyLanguageName,
+          targetLanguageName: input.textLanguageName,
+          journeyAnalysis: analysisResult.object.analysis
+        })
+
+        // Update customization field values in the database
+        if (customizationTranslation.translatedFields.length > 0) {
+          await Promise.all(
+            customizationTranslation.translatedFields.map((field) =>
+              prisma.journeyCustomizationField.update({
+                where: { id: field.id },
+                data: {
+                  value: field.translatedValue,
+                  defaultValue: field.translatedDefaultValue
+                }
+              })
+            )
+          )
+        }
+
+        yield {
+          progress: 75,
           message: 'Updating journey with translated title...',
           journey: null
         }
 
-        // Update journey with translated title, description, and SEO fields
+        // Update journey with translated title, description, SEO fields, and customization description
         const updateData: {
           title: string
           languageId: string
           description?: string
           seoTitle?: string
           seoDescription?: string
+          journeyCustomizationDescription?: string
         } = {
           title: analysisResult.object.title,
           languageId: input.textLanguageId
@@ -252,6 +286,12 @@ Return in this format:
         // Only update seoDescription if the original journey had one
         if (journey.seoDescription && analysisResult.object.seoDescription) {
           updateData.seoDescription = analysisResult.object.seoDescription
+        }
+
+        // Update customization description if it was translated
+        if (customizationTranslation.translatedDescription !== null) {
+          updateData.journeyCustomizationDescription =
+            customizationTranslation.translatedDescription
         }
 
         const updatedJourney = await prisma.journey.update({
@@ -328,7 +368,7 @@ Return in this format:
                     fieldInfo = `Label: "${block.label || ''}"`
                     break
                   case 'TextResponseBlock':
-                    fieldInfo = `Label: "${block.label || ''}", Placeholder: "${(block as any).placeholder || ''}"`
+                    fieldInfo = `Label: "${block.label || ''}", Placeholder: "${(block as any).placeholder || ''}", Hint: "${(block as any).hint || ''}"`
                     break
                 }
 
@@ -361,7 +401,21 @@ Field names to translate per block type:
 - TypographyBlock: "content" field
 - ButtonBlock: "label" field
 - RadioOptionBlock: "label" field
-- TextResponseBlock: "label" and "placeholder" fields
+- TextResponseBlock: "label", "placeholder", and "hint" fields
+- MultiselectOptionBlock: "label" field
+
+HANDLING CURLY BRACES {{ }} IN TEXT:
+When translating block content, you may encounter text with curly braces like {{ key }} or {{ key: value }}.
+- If there is a colon inside the curly braces (e.g., {{ key: value }}), the first word before the colon is a key and the text after the colon is a value.
+- If there is no colon (e.g., {{ key }}), the key is also the value.
+- DO NOT translate or modify anything inside the curly braces {{ }} - preserve them exactly as-is.
+- Only translate the text that appears OUTSIDE and BETWEEN sets of curly braces.
+- This helps you correctly translate text that appears between customizable fields.
+
+Example: "Welcome {{ user_name }}! Your event is on {{ event_date: January 15 }}."
+- Preserve {{ user_name }} exactly as-is
+- Preserve {{ event_date: January 15 }} exactly as-is
+- Translate "Welcome" and "! Your event is on" and "."
 
 Ensure translations maintain the meaning while being culturally appropriate for ${input.textLanguageName}.
 Keep translations concise and effective for UI context (e.g., button labels should remain short).
@@ -582,6 +636,7 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
         include: {
           blocks: true,
           userJourneys: true,
+          journeyCustomizationFields: true,
           team: {
             include: { userTeams: true }
           }
@@ -690,6 +745,31 @@ Return in this format:
         if (journey.seoDescription && !analysisAndTranslation.seoDescription)
           throw new Error('Failed to translate journey seo description')
 
+        // Translate customization fields and description
+        const customizationTranslation = await translateCustomizationFields({
+          journeyCustomizationDescription:
+            journey.journeyCustomizationDescription,
+          journeyCustomizationFields: journey.journeyCustomizationFields,
+          sourceLanguageName: input.journeyLanguageName,
+          targetLanguageName: input.textLanguageName,
+          journeyAnalysis: analysisAndTranslation.analysis
+        })
+
+        // Update customization field values in the database
+        if (customizationTranslation.translatedFields.length > 0) {
+          await Promise.all(
+            customizationTranslation.translatedFields.map((field) =>
+              prisma.journeyCustomizationField.update({
+                where: { id: field.id },
+                data: {
+                  value: field.translatedValue,
+                  defaultValue: field.translatedDefaultValue
+                }
+              })
+            )
+          )
+        }
+
         // Update the journey using Prisma
         await prisma.journey.update({
           where: {
@@ -708,6 +788,13 @@ Return in this format:
             // Only update seoDescription if the original journey had one
             ...(journey.seoDescription
               ? { seoDescription: analysisAndTranslation.seoDescription }
+              : {}),
+            // Update customization description if it was translated
+            ...(customizationTranslation.translatedDescription !== null
+              ? {
+                  journeyCustomizationDescription:
+                    customizationTranslation.translatedDescription
+                }
               : {}),
             languageId: input.textLanguageId
           }
@@ -778,7 +865,7 @@ Return in this format:
                       fieldInfo = `Label: "${block.label || ''}"`
                       break
                     case 'TextResponseBlock':
-                      fieldInfo = `Label: "${block.label || ''}", Placeholder: "${(block as any).placeholder || ''}"`
+                      fieldInfo = `Label: "${block.label || ''}", Placeholder: "${(block as any).placeholder || ''}", Hint: "${(block as any).hint || ''}"`
                       break
                   }
 
@@ -812,7 +899,21 @@ Field names to translate per block type:
 - TypographyBlock: "content" field
 - ButtonBlock: "label" field
 - RadioOptionBlock: "label" field
-- TextResponseBlock: "label" and "placeholder" fields
+- TextResponseBlock: "label", "placeholder", and "hint" fields
+- MultiselectOptionBlock: "label" field
+
+HANDLING CURLY BRACES {{ }} IN TEXT:
+When translating block content, you may encounter text with curly braces like {{ key }} or {{ key: value }}.
+- If there is a colon inside the curly braces (e.g., {{ key: value }}), the first word before the colon is a key and the text after the colon is a value.
+- If there is no colon (e.g., {{ key }}), the key is also the value.
+- DO NOT translate or modify anything inside the curly braces {{ }} - preserve them exactly as-is.
+- Only translate the text that appears OUTSIDE and BETWEEN sets of curly braces.
+- This helps you correctly translate text that appears between customizable fields.
+
+Example: "Welcome {{ user_name }}! Your event is on {{ event_date: January 15 }}."
+- Preserve {{ user_name }} exactly as-is
+- Preserve {{ event_date: January 15 }} exactly as-is
+- Translate "Welcome" and "! Your event is on" and "."
 
 Ensure translations maintain the meaning while being culturally appropriate for ${hardenPrompt(requestedLanguageName)}.
 Keep translations concise and effective for UI context (e.g., button labels should remain short).
