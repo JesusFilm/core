@@ -20,7 +20,7 @@ import { LoadingJourneyList } from '../../JourneyList/LoadingJourneyList'
 import {
   DELETE_TRASHED_JOURNEYS,
   RESTORE_TRASHED_JOURNEYS
-} from '../../JourneyList/TrashedJourneyList/TrashedJourneyList'
+} from '../../JourneyList/JourneyListContent/JourneyListContent'
 
 const Dialog = dynamic(
   async () =>
@@ -39,7 +39,8 @@ export function TrashedTemplateList({
   const { enqueueSnackbar } = useSnackbar()
   const { data, refetch } = useAdminJourneysQuery({
     status: [JourneyStatus.trashed],
-    template: true
+    template: true,
+    teamId: 'jfp-team'
   })
   const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
     update(_cache, { data }) {

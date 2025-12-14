@@ -15,7 +15,7 @@ import { defaultJourney, oldJourney } from '../journeyListData'
 import {
   ARCHIVE_ACTIVE_JOURNEYS,
   TRASH_ACTIVE_JOURNEYS
-} from './ActiveJourneyList'
+} from '../JourneyListContent/JourneyListContent'
 
 import { ActiveJourneyList } from '.'
 

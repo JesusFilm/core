@@ -1,4 +1,7 @@
 import Button from '@mui/material/Button'
+import ListItemIcon from '@mui/material/ListItemIcon'
+import ListItemText from '@mui/material/ListItemText'
+import MenuItem from '@mui/material/MenuItem'
 import { sendGTMEvent } from '@next/third-parties/google'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
@@ -6,12 +9,15 @@ import { useTranslation } from 'next-i18next'
 import { useSnackbar } from 'notistack'
 import { type ReactElement, useCallback, useEffect, useState } from 'react'
 
+import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
+
 import { useJourney } from '../../../libs/JourneyProvider'
 import { useJourneyAiTranslateSubscription } from '../../../libs/useJourneyAiTranslateSubscription'
 import { useJourneyDuplicateMutation } from '../../../libs/useJourneyDuplicateMutation'
 import { AccountCheckDialog } from '../AccountCheckDialog'
 
 interface CreateJourneyButtonProps {
+  variant?: 'menu-item' | 'button'
   signedIn?: boolean
   /* Automatically open the team dialog when the user signs in with createNew=true in the URL.
    * Only one CreateJourneyButton per page should have this set to true to avoid opening multiple instances of the dialog.
@@ -34,6 +40,7 @@ const DynamicCopyToTeamDialog = dynamic(
 )
 
 export function CreateJourneyButton({
+  variant = 'button',
   signedIn = false,
   openTeamDialogOnSignIn = false
 }: CreateJourneyButtonProps): ReactElement {
@@ -113,7 +120,7 @@ export function CreateJourneyButton({
 
       try {
         const { data: duplicateData } = await journeyDuplicate({
-          variables: { id: journey.id, teamId }
+          variables: { id: journey.id, teamId, forceNonTemplate: true }
         })
 
         if (!duplicateData?.journeyDuplicate?.id) {
@@ -168,7 +175,8 @@ export function CreateJourneyButton({
   )
 
   const handleCheckSignIn = (): void => {
-    if (signedIn && setOpenTeamDialog !== undefined) {
+    // For menu-item variant, assume user is signed in
+    if (variant === 'menu-item' || signedIn) {
       setOpenTeamDialog(true)
     } else {
       setOpenAccountDialog(true)
@@ -200,37 +208,48 @@ export function CreateJourneyButton({
     // Prevent closing during translation
     if (loading || translationVariables != null) return
 
-    if (setOpenTeamDialog !== undefined) {
-      setOpenTeamDialog(false)
-      const { createNew, ...queryWithoutCreateNew } = router.query
-      void router.replace(
-        {
-          pathname: router.pathname,
-          query: queryWithoutCreateNew
-        },
-        undefined,
-        { shallow: true }
-      )
-    }
+    setOpenTeamDialog(false)
+    const { createNew, ...queryWithoutCreateNew } = router.query
+    void router.replace(
+      {
+        pathname: router.pathname,
+        query: queryWithoutCreateNew
+      },
+      undefined,
+      { shallow: true }
+    )
   }
 
   useEffect(() => {
-    if (!signedIn) {
+    if (!signedIn && variant === 'button') {
       // Prefetch the dashboard page
       void router.prefetch('/users/sign-in')
     }
     if (
       router.query.createNew === 'true' &&
       signedIn &&
-      openTeamDialogOnSignIn &&
-      setOpenTeamDialog !== undefined
+      openTeamDialogOnSignIn
     ) {
       setOpenTeamDialog(true)
     }
-  }, [signedIn, router, setOpenTeamDialog, openTeamDialogOnSignIn])
+  }, [signedIn, router, openTeamDialogOnSignIn, variant])
 
-  return (
-    <>
+  const renderTrigger = (): ReactElement => {
+    if (variant === 'menu-item') {
+      return (
+        <MenuItem
+          onClick={handleCheckSignIn}
+          data-testid="CreateJourneyMenuItem"
+        >
+          <ListItemIcon sx={{ color: 'secondary.main' }}>
+            <LayoutTopIcon />
+          </ListItemIcon>
+          <ListItemText>{t('Use This Template')}</ListItemText>
+        </MenuItem>
+      )
+    }
+
+    return (
       <Button
         onClick={handleCheckSignIn}
         variant="contained"
@@ -240,11 +259,19 @@ export function CreateJourneyButton({
       >
         {t('Use This Template')}
       </Button>
-      <AccountCheckDialog
-        open={openAccountDialog}
-        handleSignIn={handleSignIn}
-        onClose={() => setOpenAccountDialog(false)}
-      />
+    )
+  }
+
+  return (
+    <>
+      {renderTrigger()}
+      {variant === 'button' && (
+        <AccountCheckDialog
+          open={openAccountDialog}
+          handleSignIn={handleSignIn}
+          onClose={() => setOpenAccountDialog(false)}
+        />
+      )}
       {openTeamDialog != null && (
         <DynamicCopyToTeamDialog
           submitLabel={t('Add')}

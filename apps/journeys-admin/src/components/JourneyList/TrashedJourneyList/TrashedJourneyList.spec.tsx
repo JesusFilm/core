@@ -16,7 +16,7 @@ import { SortOrder } from '../JourneySort'
 import {
   DELETE_TRASHED_JOURNEYS,
   RESTORE_TRASHED_JOURNEYS
-} from './TrashedJourneyList'
+} from '../JourneyListContent/JourneyListContent'
 
 import { TrashedJourneyList } from '.'
 
