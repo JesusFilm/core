@@ -178,8 +178,8 @@ function OnboardingUtilities({
             sx={{ color: 'primary.main', cursor: 'pointer' }}
             component="a"
             href="https://www.cru.org/us/en/about/privacy.html"
-            target='_blank'
-            rel='noopener noreferrer'
+            target="_blank"
+            rel="noopener noreferrer"
           >
             {t('Privacy Policy')}
           </Typography>
