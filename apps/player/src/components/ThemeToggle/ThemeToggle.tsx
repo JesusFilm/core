@@ -15,7 +15,9 @@ export function ThemeToggle(): ReactElement | null {
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      aria-label={
+        theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+      }
       aria-pressed={theme === 'dark'}
       className="flex cursor-pointer items-center rounded-lg border border-gray-200 px-4 py-2 text-base transition-colors hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-800"
     >

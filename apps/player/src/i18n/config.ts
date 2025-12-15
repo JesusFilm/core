@@ -16,4 +16,3 @@ export const locales = [
 ] as const
 
 export const defaultLocale: Locale = 'en'
-

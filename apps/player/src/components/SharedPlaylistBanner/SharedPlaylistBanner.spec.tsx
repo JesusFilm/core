@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { usePlatformDetection } from './SharedPlaylistBanner'
+
 import { SharedPlaylistBanner } from '.'
 
 jest.mock('@/env', () => ({

@@ -366,7 +366,7 @@ export function VideoControls({ player }: VideoControlsProps): ReactElement {
       >
         <div>
           <div
-            className="relative h-2 w-full cursor-pointer rounded-full bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50"
+            className="relative h-2 w-full cursor-pointer rounded-full bg-white/20 focus:ring-2 focus:ring-white/50 focus:outline-none"
             data-progress-bar
             role="slider"
             tabIndex={0}

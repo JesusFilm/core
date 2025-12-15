@@ -2,9 +2,9 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type Player from 'video.js/dist/types/player'
 
-import { mockPlayer } from '@/setupTests'
-
 import { VideoControls } from '.'
+
+import { mockPlayer } from '@/setupTests'
 
 const player = mockPlayer as unknown as Player
 

@@ -9,4 +9,3 @@ export default {
   coverageDirectory: '../../coverage/apps/player',
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.tsx']
 }
-

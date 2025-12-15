@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { mockSetTheme, mockTheme } from '@/setupTests'
-
 import { ThemeToggle } from '.'
+
+import { mockSetTheme, mockTheme } from '@/setupTests'
 
 describe('ThemeToggle', () => {
   beforeEach(() => {

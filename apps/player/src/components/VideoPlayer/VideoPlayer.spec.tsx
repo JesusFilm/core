@@ -3,9 +3,9 @@ import userEvent from '@testing-library/user-event'
 import videojs from 'video.js'
 import type Player from 'video.js/dist/types/player'
 
-import { mockPlayer } from '@/setupTests'
-
 import { VideoPlayer } from '.'
+
+import { mockPlayer } from '@/setupTests'
 
 jest.mock('@/env', () => ({
   env: {
@@ -76,7 +76,7 @@ describe('VideoPlayer', () => {
       />
     )
 
-    const endedHandler = (mockPlayer.on as jest.Mock).mock.calls.find(
+    const endedHandler = (mockPlayer.on).mock.calls.find(
       (call) => call[0] === 'ended'
     )?.[1]
 

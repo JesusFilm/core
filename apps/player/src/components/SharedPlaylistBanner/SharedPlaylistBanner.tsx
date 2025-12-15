@@ -1,14 +1,14 @@
 'use client'
 
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import type { ReactElement } from 'react'
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
+
+import AppStoreIcon from './assets/app-store-english.svg'
+import GooglePlayIcon from './assets/google-play-english.svg'
 
 import { env } from '@/env'
-
-import GooglePlayIcon from './assets/google-play-english.svg'
-import AppStoreIcon from './assets/app-store-english.svg'
 
 type Platform = 'ios' | 'android' | 'other'
 

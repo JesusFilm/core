@@ -4,10 +4,10 @@ import { useTranslations } from 'next-intl'
 import { type ReactElement, useEffect, useState } from 'react'
 
 import { PlaylistList } from '@/components/PlaylistList'
+import { SharedPlaylistBanner } from '@/components/SharedPlaylistBanner'
 import { TopNavBar } from '@/components/TopNavBar'
 import { VideoMetadata } from '@/components/VideoMetadata'
 import { VideoPlayer } from '@/components/VideoPlayer'
-import { SharedPlaylistBanner } from '@/components/SharedPlaylistBanner'
 
 interface PlaylistItem {
   id: string

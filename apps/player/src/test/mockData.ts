@@ -1,23 +1,25 @@
-export const createMockPlaylistItem = (overrides?: Partial<{
-  id: string
-  order: number | null
-  videoVariant: {
+export const createMockPlaylistItem = (
+  overrides?: Partial<{
     id: string
-    hls: string | null
-    duration: number
-    language: {
+    order: number | null
+    videoVariant: {
       id: string
-      name: { value: string }[]
+      hls: string | null
+      duration: number
+      language: {
+        id: string
+        name: { value: string }[]
+      }
+      video: {
+        id: string
+        title: { value: string }[]
+        description: { value: string; primary: boolean }[]
+        studyQuestions: { value: string; primary: boolean }[]
+        images: { mobileCinematicHigh: string | null }[]
+      } | null
     }
-    video: {
-      id: string
-      title: { value: string }[]
-      description: { value: string; primary: boolean }[]
-      studyQuestions: { value: string; primary: boolean }[]
-      images: { mobileCinematicHigh: string | null }[]
-    } | null
-  }
-}>) => ({
+  }>
+) => ({
   id: 'item-1',
   order: 1,
   videoVariant: {
@@ -39,16 +41,18 @@ export const createMockPlaylistItem = (overrides?: Partial<{
   ...overrides
 })
 
-export const createMockPlaylist = (overrides?: Partial<{
-  id: string
-  name: string
-  owner: {
+export const createMockPlaylist = (
+  overrides?: Partial<{
     id: string
-    firstName: string
-    lastName: string | null
-  }
-  items: ReturnType<typeof createMockPlaylistItem>[]
-}>) => ({
+    name: string
+    owner: {
+      id: string
+      firstName: string
+      lastName: string | null
+    }
+    items: ReturnType<typeof createMockPlaylistItem>[]
+  }>
+) => ({
   id: 'playlist-1',
   name: 'Test Playlist',
   owner: {
@@ -59,4 +63,3 @@ export const createMockPlaylist = (overrides?: Partial<{
   items: [createMockPlaylistItem()],
   ...overrides
 })
-

@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { createMockPlaylist } from '@/test/mockData'
-
 import { PlaylistPage } from '.'
+
+import { createMockPlaylist } from '@/test/mockData'
 
 jest.mock('@/env', () => ({
   env: {
@@ -145,7 +145,7 @@ describe('PlaylistPage', () => {
     expect(screen.getByTestId('video-player')).toHaveTextContent('Video 1')
 
     const video2Button = screen.getByText('Video 2').closest('button')
-    await user.click(video2Button!)
+    await user.click(video2Button)
 
     await waitFor(() => {
       expect(screen.getByTestId('video-player')).toHaveTextContent('Video 2')
