@@ -313,7 +313,14 @@ export function JourneyListContent({
       void refetch()
       // Remove the refresh param to prevent refetch on subsequent renders
       const { refresh, ...restQuery } = router.query
-      void router.replace({ query: restQuery }, undefined, { shallow: true })
+      void router.replace(
+        {
+          pathname: router.pathname,
+          query: restQuery
+        },
+        undefined,
+        { shallow: true }
+      )
     }
   }, [router.query.refresh, refetch, router])
 

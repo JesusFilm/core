@@ -23,6 +23,7 @@ interface CreateJourneyButtonProps {
    * Only one CreateJourneyButton per page should have this set to true to avoid opening multiple instances of the dialog.
    */
   openTeamDialogOnSignIn?: boolean
+  handleCloseMenu?: () => void
 }
 
 interface JourneyLanguage {
@@ -42,7 +43,8 @@ const DynamicCopyToTeamDialog = dynamic(
 export function CreateJourneyButton({
   variant = 'button',
   signedIn = false,
-  openTeamDialogOnSignIn = false
+  openTeamDialogOnSignIn = false,
+  handleCloseMenu
 }: CreateJourneyButtonProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const { enqueueSnackbar } = useSnackbar()
@@ -80,6 +82,7 @@ export function CreateJourneyButton({
       setLoading(false)
       setTranslationVariables(undefined)
       setOpenTeamDialog(false)
+      handleCloseMenu?.()
 
       // Navigate to the translated journey
       if (pendingNavigationId) {
@@ -105,6 +108,7 @@ export function CreateJourneyButton({
       setTranslationVariables(undefined)
       setOpenTeamDialog(false)
       setPendingNavigationId(null)
+      handleCloseMenu?.()
     }
   })
 
@@ -137,15 +141,22 @@ export function CreateJourneyButton({
             preventDuplicate: true
           })
           setOpenTeamDialog(false)
+          handleCloseMenu?.()
 
           sendGTMEvent({
             event: 'template_use',
             journeyId: journey.id,
             journeyTitle: journey.title
           })
-          void router.push(`/journeys/${newJourneyId}`, undefined, {
-            shallow: true
-          })
+          const globalPublish = router.pathname === '/publisher'
+          if (globalPublish) {
+            void router.push(`/journeys/${newJourneyId}`, undefined, {
+              shallow: true
+            })
+          } else {
+            // Navigate to root path with journeys tab active and refresh
+            void router.push('/?type=journeys&refresh=true')
+          }
           return
         }
 
@@ -169,9 +180,10 @@ export function CreateJourneyButton({
           preventDuplicate: true
         })
         setOpenTeamDialog(false)
+        handleCloseMenu?.()
       }
     },
-    [journey, journeyDuplicate, router, t, enqueueSnackbar]
+    [journey, journeyDuplicate, router, t, enqueueSnackbar, handleCloseMenu]
   )
 
   const handleCheckSignIn = (): void => {

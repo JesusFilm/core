@@ -244,7 +244,10 @@ export function DefaultMenu({
       )}
       {template === true && (
         <>
-          <TemplateActionButton variant="menu-item" />
+          <TemplateActionButton
+            variant="menu-item"
+            handleCloseMenu={handleCloseMenu}
+          />
           <Divider />
         </>
       )}
