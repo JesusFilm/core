@@ -1,8 +1,8 @@
 aws-load-balancer-controller:
-  # This chart expects an existing IRSA ServiceAccount in `kube-system`
-  # (created out-of-band, e.g. via Terraform/eksctl).
+  clusterName: jfp-eks-prod
+  region: us-east-2
+  vpcId: vpc-0b722b0a1f7789afd
+
   serviceAccount:
     create: false
     name: aws-load-balancer-controller
-
-
