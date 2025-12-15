@@ -1,12 +1,12 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: aws-ebs-csi-driver-prod
+  name: metrics-server
   namespace: default
   labels:
-    app.kubernetes.io/name: aws-ebs-csi-driver
-    app.kubernetes.io/part-of: storage
-    environment: prod
+    app.kubernetes.io/name: metrics-server
+    app.kubernetes.io/part-of: monitoring
+    environment: stage
 spec:
   project: default
 
@@ -17,9 +17,9 @@ spec:
   source:
     repoURL: https://github.com/JesusFilm/core.git
     targetRevision: main
-    path: infrastructure/kube/aws-ebs-csi-driver
+    path: infrastructure/kube/metrics-server/chart
     helm:
-      releaseName: aws-ebs-csi-driver
+      releaseName: metrics-server
       valueFiles:
         - values.yaml
 

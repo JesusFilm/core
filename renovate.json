@@ -5,5 +5,37 @@
   "reviewers": ["mikeallisonJS", "tataihono"],
   "assignees": ["mikeallisonJS"],
   "prConcurrentLimit": 4,
-  "rangeStrategy": "auto"
+  "rangeStrategy": "auto",
+  "argocd": {
+    "managerFilePatterns": ["infrastructure/kube/argocd/applications/.+\\.ya?ml$"]
+  },
+  "regexManagers": [
+    {
+      "fileMatch": ["^infrastructure/kube/argocd/deploy\\.sh$"],
+      "matchStrings": [
+        "ARGOCD_VERSION=\\\"\\$\\{ARGOCD_VERSION:-?(?<currentValue>v\\d+\\.\\d+\\.\\d+)\\}\\\""
+      ],
+      "depNameTemplate": "argoproj/argo-cd",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchManagers": ["helmv3", "helm-values"],
+      "matchFileNames": ["infrastructure/kube/**"],
+      "groupName": "kubernetes helm updates",
+      "labels": ["dependencies", "kubernetes", "helm"]
+    },
+    {
+      "matchManagers": ["argocd"],
+      "matchFileNames": ["infrastructure/kube/argocd/applications/**"],
+      "labels": ["dependencies", "kubernetes", "argocd"]
+    },
+    {
+      "matchManagers": ["argocd"],
+      "matchDepNames": ["https://github.com/JesusFilm/core.git"],
+      "enabled": false
+    }
+  ]
 }

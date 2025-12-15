@@ -1,11 +1,11 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: aws-load-balancer-controller-prod
+  name: aws-ebs-csi-driver-prod
   namespace: default
   labels:
-    app.kubernetes.io/name: aws-load-balancer-controller
-    app.kubernetes.io/part-of: networking
+    app.kubernetes.io/name: aws-ebs-csi-driver
+    app.kubernetes.io/part-of: storage
     environment: prod
 spec:
   project: default
@@ -17,9 +17,9 @@ spec:
   source:
     repoURL: https://github.com/JesusFilm/core.git
     targetRevision: main
-    path: infrastructure/kube/alb
+    path: infrastructure/kube/aws-ebs-csi-driver
     helm:
-      releaseName: aws-load-balancer-controller
+      releaseName: aws-ebs-csi-driver
       valueFiles:
         - values.yaml
 

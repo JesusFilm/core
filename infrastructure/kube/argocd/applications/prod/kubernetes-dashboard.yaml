@@ -1,25 +1,24 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: plausible-analytics-prod
+  name: kubernetes-dashboard
   namespace: default
   labels:
-    app.kubernetes.io/name: plausible-analytics
-    app.kubernetes.io/part-of: analytics
-    environment: prod
+    app.kubernetes.io/name: kubernetes-dashboard
+    app.kubernetes.io/part-of: ops
 spec:
   project: default
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: kubernetes-dashboard
 
   source:
     repoURL: https://github.com/JesusFilm/core.git
     targetRevision: main
-    path: apis/api-analytics/infrastructure/chart
+    path: infrastructure/kube/dashboard
     helm:
-      releaseName: plausible-analytics
+      releaseName: kubernetes-dashboard
       valueFiles:
         - values.yaml
 
@@ -29,3 +28,5 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
+

@@ -15,7 +15,7 @@ spec:
 
   source:
     repoURL: https://github.com/JesusFilm/core.git
-    targetRevision: main
+    targetRevision: stage
     path: infrastructure/kube/snapscheduler/chart
     helm:
       releaseName: snapscheduler
@@ -28,3 +28,5 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
+

@@ -1,25 +1,25 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: aws-ebs-csi-driver-stage
+  name: plausible-analytics-stage
   namespace: default
   labels:
-    app.kubernetes.io/name: aws-ebs-csi-driver
-    app.kubernetes.io/part-of: storage
+    app.kubernetes.io/name: plausible-analytics
+    app.kubernetes.io/part-of: analytics
     environment: stage
 spec:
   project: default
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: kube-system
+    namespace: default
 
   source:
     repoURL: https://github.com/JesusFilm/core.git
     targetRevision: main
-    path: infrastructure/kube/aws-ebs-csi-driver
+    path: apis/api-analytics/infrastructure/chart
     helm:
-      releaseName: aws-ebs-csi-driver
+      releaseName: plausible-analytics
       valueFiles:
         - values-stage.yaml
 

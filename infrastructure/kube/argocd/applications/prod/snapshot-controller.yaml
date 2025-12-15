@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: snapshot-controller-prod
+  namespace: default
+  labels:
+    app.kubernetes.io/name: snapshot-controller
+    app.kubernetes.io/part-of: storage
+    environment: prod
+spec:
+  project: default
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+
+  source:
+    repoURL: https://github.com/JesusFilm/core.git
+    targetRevision: main
+    path: infrastructure/kube/snapshot-controller
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+

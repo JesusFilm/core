@@ -1,26 +1,27 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: snapscheduler
+  name: aws-ebs-csi-driver-stage
   namespace: default
   labels:
-    app.kubernetes.io/name: snapscheduler
-    app.kubernetes.io/part-of: backups
+    app.kubernetes.io/name: aws-ebs-csi-driver
+    app.kubernetes.io/part-of: storage
+    environment: stage
 spec:
   project: default
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: snapscheduler
+    namespace: kube-system
 
   source:
     repoURL: https://github.com/JesusFilm/core.git
-    targetRevision: stage
-    path: infrastructure/kube/snapscheduler/chart
+    targetRevision: main
+    path: infrastructure/kube/aws-ebs-csi-driver
     helm:
-      releaseName: snapscheduler
+      releaseName: aws-ebs-csi-driver
       valueFiles:
-        - values.yaml
+        - values-stage.yaml
 
   syncPolicy:
     automated:
