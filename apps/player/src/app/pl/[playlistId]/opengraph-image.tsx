@@ -64,7 +64,7 @@ export default async function Image({
   }
 
   const MAX_CELLS = 4
-  const hiddenCount = Math.max(images.length - MAX_CELLS + 1, 0)
+  const hiddenCount = Math.max(images.length - MAX_CELLS, 0)
   const showHiddenCount = hiddenCount > 0
   const visibleImages = showHiddenCount
     ? images.slice(0, MAX_CELLS - 1)
