@@ -22,7 +22,7 @@ jest.mock('next/image', () => ({
 }))
 
 jest.mock('next-intl', () => ({
-  useTranslations: (namespace?: string) => {
+  useTranslations: () => {
     const t = (key: string, values?: Record<string, unknown>) => {
       if (key.includes('.')) {
         return key
@@ -43,15 +43,15 @@ jest.mock('next-intl', () => ({
         }
       })
 
-      if (values.strong && typeof values.strong === 'function') {
-        return values.strong(text)
+      if (values['strong'] && typeof values['strong'] === 'function') {
+        return values['strong'](text)
       }
 
       return text
     }
     return t
   },
-  getTranslations: async (namespace?: string) => {
+  getTranslations: async () => {
     return (key: string, values?: Record<string, unknown>) => {
       if (key.includes('.')) {
         return key
@@ -62,7 +62,7 @@ jest.mock('next-intl', () => ({
 }))
 
 jest.mock('next-intl/server', () => ({
-  getTranslations: async (namespace?: string) => {
+  getTranslations: async () => {
     return (key: string, values?: Record<string, unknown>) => {
       if (key.includes('.')) {
         return key
@@ -73,8 +73,8 @@ jest.mock('next-intl/server', () => ({
   getLocale: async () => 'en'
 }))
 
-export const mockSetTheme = jest.fn()
-export const mockTheme = { theme: 'light', setTheme: mockSetTheme }
+const mockSetTheme = jest.fn()
+const mockTheme = { theme: 'light', setTheme: mockSetTheme }
 
 jest.mock('next-themes', () => ({
   useTheme: () => mockTheme,
@@ -103,11 +103,13 @@ const mockPlayer = {
   off: jest.fn(),
   src: jest.fn(),
   poster: jest.fn()
-} as unknown as Player
+}
 
 jest.mock('video.js', () => {
-  const mockVideojs = jest.fn(() => mockPlayer)
-  mockVideojs.getPlayer = jest.fn(() => mockPlayer)
+  const mockVideojs = jest.fn(() => mockPlayer as unknown as Player)
+  ;(mockVideojs as unknown as { getPlayer: jest.Mock }).getPlayer = jest.fn(
+    () => mockPlayer as unknown as Player
+  )
   return {
     __esModule: true,
     default: mockVideojs
@@ -148,7 +150,7 @@ Object.defineProperty(window.navigator, 'vendor', {
 
 jest.mock('next/router', () => require('next-router-mock'))
 
-if (process.env.CI === 'true')
+if (process.env['CI'] === 'true')
   jest.retryTimes(3, { logErrorsBeforeRetry: true })
 
 export { mockPlayer, mockSetTheme, mockTheme }

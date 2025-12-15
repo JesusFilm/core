@@ -3,6 +3,25 @@ import userEvent from '@testing-library/user-event'
 
 import { PlaylistList } from '.'
 
+type PlaylistItem = {
+  id: string
+  order: number | null
+  videoVariant: {
+    id: string
+    hls: string | null
+    duration: number
+    language: {
+      id: string
+      name: { value: string }[]
+    }
+    video: {
+      id: string
+      title: { value: string }[]
+      images: { mobileCinematicHigh: string | null }[]
+    } | null
+  }
+}
+
 const mockItems = [
   {
     id: 'item-1',
@@ -102,7 +121,7 @@ describe('PlaylistList', () => {
 
   it('calls onVideoSelect when item is clicked', async () => {
     const user = userEvent.setup()
-    const itemsWithHls: typeof mockItems = [
+    const itemsWithHls: PlaylistItem[] = [
       mockItems[0]!,
       {
         id: 'item-3',

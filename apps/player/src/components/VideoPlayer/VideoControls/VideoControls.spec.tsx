@@ -1,9 +1,12 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type Player from 'video.js/dist/types/player'
 
 import { mockPlayer } from '@/setupTests'
 
 import { VideoControls } from '.'
+
+const player = mockPlayer as unknown as Player
 
 describe('VideoControls', () => {
   beforeEach(() => {
@@ -29,7 +32,7 @@ describe('VideoControls', () => {
 
   it('renders play button when paused', () => {
     mockPlayer.paused.mockReturnValue(true)
-    render(<VideoControls player={mockPlayer} />)
+    render(<VideoControls player={player} />)
 
     const playButton = screen.getByLabelText('Play')
     expect(playButton).toBeInTheDocument()
@@ -37,7 +40,7 @@ describe('VideoControls', () => {
 
   it('renders pause button when playing', () => {
     mockPlayer.paused.mockReturnValue(false)
-    render(<VideoControls player={mockPlayer} />)
+    render(<VideoControls player={player} />)
 
     const pauseButton = screen.getByLabelText('Pause')
     expect(pauseButton).toBeInTheDocument()
@@ -47,7 +50,7 @@ describe('VideoControls', () => {
     const user = userEvent.setup({ delay: null })
     mockPlayer.paused.mockReturnValue(true)
 
-    render(<VideoControls player={mockPlayer} />)
+    render(<VideoControls player={player} />)
 
     const playButton = screen.getByLabelText('Play')
     await user.click(playButton)
@@ -59,7 +62,7 @@ describe('VideoControls', () => {
     const user = userEvent.setup({ delay: null })
     mockPlayer.paused.mockReturnValue(false)
 
-    render(<VideoControls player={mockPlayer} />)
+    render(<VideoControls player={player} />)
 
     const pauseButton = screen.getByLabelText('Pause')
     await user.click(pauseButton)
@@ -71,7 +74,7 @@ describe('VideoControls', () => {
     mockPlayer.currentTime.mockReturnValue(45)
     mockPlayer.duration.mockReturnValue(120)
 
-    render(<VideoControls player={mockPlayer} />)
+    render(<VideoControls player={player} />)
 
     expect(screen.getByText('0:45')).toBeInTheDocument()
     expect(screen.getByText('2:00')).toBeInTheDocument()
@@ -81,7 +84,7 @@ describe('VideoControls', () => {
     mockPlayer.currentTime.mockReturnValue(3661)
     mockPlayer.duration.mockReturnValue(7200)
 
-    render(<VideoControls player={mockPlayer} />)
+    render(<VideoControls player={player} />)
 
     expect(screen.getByText('1:01:01')).toBeInTheDocument()
     expect(screen.getByText('2:00:00')).toBeInTheDocument()
@@ -91,17 +94,16 @@ describe('VideoControls', () => {
     mockPlayer.currentTime.mockReturnValue(60)
     mockPlayer.duration.mockReturnValue(120)
 
-    const { container } = render(<VideoControls player={mockPlayer} />)
+    const { container } = render(<VideoControls player={player} />)
 
     const progressBar = container.querySelector('[style*="width: 50%"]')
     expect(progressBar).toBeInTheDocument()
   })
 
   it('handles seek on progress bar click', async () => {
-    const user = userEvent.setup({ delay: null })
     mockPlayer.duration.mockReturnValue(120)
 
-    const { container } = render(<VideoControls player={mockPlayer} />)
+    const { container } = render(<VideoControls player={player} />)
 
     const progressBar = container.querySelector('[data-progress-bar]')
     if (progressBar) {
@@ -138,10 +140,9 @@ describe('VideoControls', () => {
   })
 
   it('shows hover preview on mouse move', async () => {
-    const user = userEvent.setup({ delay: null })
     mockPlayer.duration.mockReturnValue(120)
 
-    const { container } = render(<VideoControls player={mockPlayer} />)
+    const { container } = render(<VideoControls player={player} />)
 
     const progressBar = container.querySelector('[data-progress-bar]')
     if (progressBar) {
@@ -184,7 +185,7 @@ describe('VideoControls', () => {
     const user = userEvent.setup({ delay: null })
     mockPlayer.duration.mockReturnValue(120)
 
-    const { container } = render(<VideoControls player={mockPlayer} />)
+    const { container } = render(<VideoControls player={player} />)
 
     const progressBar = container.querySelector('[data-progress-bar]')
     if (progressBar) {
@@ -203,7 +204,7 @@ describe('VideoControls', () => {
     })
     mockPlayer.duration.mockReturnValue(120)
 
-    const { container } = render(<VideoControls player={mockPlayer} />)
+    const { container } = render(<VideoControls player={player} />)
 
     const bufferedBar = container.querySelector('[style*="width: 50%"]')
     expect(bufferedBar).toBeInTheDocument()
@@ -213,7 +214,7 @@ describe('VideoControls', () => {
     const user = userEvent.setup({ delay: null })
     mockPlayer.muted.mockReturnValue(false)
 
-    render(<VideoControls player={mockPlayer} />)
+    render(<VideoControls player={player} />)
 
     const muteButton = screen.getByLabelText('Mute')
     await user.click(muteButton)
@@ -224,7 +225,7 @@ describe('VideoControls', () => {
   it('shows muted icon when muted', () => {
     mockPlayer.muted.mockReturnValue(true)
 
-    render(<VideoControls player={mockPlayer} />)
+    render(<VideoControls player={player} />)
 
     const unmuteButton = screen.getByLabelText('Unmute')
     expect(unmuteButton).toBeInTheDocument()
@@ -234,7 +235,7 @@ describe('VideoControls', () => {
     mockPlayer.muted.mockReturnValue(false)
     mockPlayer.volume.mockReturnValue(0.5)
 
-    render(<VideoControls player={mockPlayer} />)
+    render(<VideoControls player={player} />)
 
     const muteButton = screen.getByLabelText('Mute')
     expect(muteButton).toBeInTheDocument()
@@ -244,7 +245,7 @@ describe('VideoControls', () => {
     const user = userEvent.setup({ delay: null })
     mockPlayer.isFullscreen.mockReturnValue(false)
 
-    render(<VideoControls player={mockPlayer} />)
+    render(<VideoControls player={player} />)
 
     const fullscreenButton = screen.getByLabelText('Enter fullscreen')
     await user.click(fullscreenButton)
@@ -256,7 +257,7 @@ describe('VideoControls', () => {
     const user = userEvent.setup({ delay: null })
     mockPlayer.isFullscreen.mockReturnValue(true)
 
-    render(<VideoControls player={mockPlayer} />)
+    render(<VideoControls player={player} />)
 
     const exitFullscreenButton = screen.getByLabelText('Exit fullscreen')
     await user.click(exitFullscreenButton)
@@ -267,7 +268,7 @@ describe('VideoControls', () => {
   it('hides controls after timeout when playing', async () => {
     mockPlayer.paused.mockReturnValue(false)
 
-    const { container } = render(<VideoControls player={mockPlayer} />)
+    const { container } = render(<VideoControls player={player} />)
 
     const controlsWrapper = container.querySelector('.mt-auto.px-4')
     expect(controlsWrapper).toHaveClass('opacity-100')
@@ -287,7 +288,7 @@ describe('VideoControls', () => {
   it('shows controls when paused', async () => {
     mockPlayer.paused.mockReturnValue(true)
 
-    const { container } = render(<VideoControls player={mockPlayer} />)
+    const { container } = render(<VideoControls player={player} />)
 
     const controlsWrapper = container.querySelector('.mt-auto.px-4')
     expect(controlsWrapper).toHaveClass('opacity-100')
@@ -305,10 +306,9 @@ describe('VideoControls', () => {
   })
 
   it('shows controls on mouse move', async () => {
-    const user = userEvent.setup({ delay: null })
     mockPlayer.paused.mockReturnValue(false)
 
-    const { container } = render(<VideoControls player={mockPlayer} />)
+    const { container } = render(<VideoControls player={player} />)
 
     jest.advanceTimersByTime(2500)
     await Promise.resolve()
@@ -335,7 +335,7 @@ describe('VideoControls', () => {
   it('shows play/pause icon on video click', async () => {
     mockPlayer.paused.mockReturnValue(true)
 
-    const { container } = render(<VideoControls player={mockPlayer} />)
+    const { container } = render(<VideoControls player={player} />)
 
     const videoContainer = container.querySelector('[data-video-controls]')
     if (videoContainer) {
@@ -371,7 +371,7 @@ describe('VideoControls', () => {
   })
 
   it('listens to player events', () => {
-    render(<VideoControls player={mockPlayer} />)
+    render(<VideoControls player={player} />)
 
     expect(mockPlayer.on).toHaveBeenCalledWith(
       'timeupdate',
@@ -394,7 +394,7 @@ describe('VideoControls', () => {
   })
 
   it('cleans up event listeners on unmount', () => {
-    const { unmount } = render(<VideoControls player={mockPlayer} />)
+    const { unmount } = render(<VideoControls player={player} />)
 
     unmount()
 

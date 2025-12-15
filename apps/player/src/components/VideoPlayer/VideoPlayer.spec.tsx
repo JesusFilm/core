@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import videojs from 'video.js'
+import type Player from 'video.js/dist/types/player'
 
 import { mockPlayer } from '@/setupTests'
 
@@ -17,7 +18,9 @@ describe('VideoPlayer', () => {
     jest.clearAllMocks()
     mockPlayer.paused.mockReturnValue(true)
     mockPlayer.isDisposed.mockReturnValue(false)
-    ;(videojs.getPlayer as jest.Mock).mockReturnValue(mockPlayer)
+    ;(videojs.getPlayer as jest.Mock).mockReturnValue(
+      mockPlayer as unknown as Player
+    )
   })
 
   it('initializes video.js player', () => {

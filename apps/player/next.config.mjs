@@ -64,7 +64,8 @@ const nextConfig = {
       'node_modules/esbuild-linux-64/bin'
     ]
   },
-  redirects() {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async redirects() {
     return [
       {
         source: '/',
