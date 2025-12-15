@@ -9,6 +9,7 @@ import { useTranslation } from 'next-i18next'
 import { MouseEvent, ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
+import { useTeam } from '@core/journeys/ui/TeamProvider'
 import MoreIcon from '@core/shared/ui/icons/More'
 
 import { GetRole } from '../../../../../__generated__/GetRole'
@@ -23,7 +24,6 @@ import { ShareItem } from '../Items/ShareItem'
 import { StrategyItem } from '../Items/StrategyItem'
 import { TemplateSettingsItem } from '../Items/TemplateSettingsItem'
 import { JourneyDetails } from '../JourneyDetails'
-import { useTeam } from '@core/journeys/ui/TeamProvider'
 
 export const GET_ROLE = gql`
   query GetRole {

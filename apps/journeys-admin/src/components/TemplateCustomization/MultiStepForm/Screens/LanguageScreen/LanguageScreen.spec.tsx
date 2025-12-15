@@ -105,7 +105,11 @@ const mockJourneyDuplicate: MockedResponse<
   },
   result: {
     data: {
-      journeyDuplicate: { id: 'new-journey-id', __typename: 'Journey', template: false }
+      journeyDuplicate: {
+        id: 'new-journey-id',
+        __typename: 'Journey',
+        template: false
+      }
     }
   }
 }

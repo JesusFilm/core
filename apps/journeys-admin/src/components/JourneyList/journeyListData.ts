@@ -63,6 +63,13 @@ export const defaultJourney: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   slug: 'default',
+  team: {
+    __typename: 'Team',
+    id: 'team1.id'
+  },
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  website: false,
   language: {
     __typename: 'Language',
     id: '529',

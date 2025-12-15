@@ -51,6 +51,7 @@ describe('JourneyListContent', () => {
       replace: jest.fn()
     } as any)
   })
+
   describe('Active Journeys', () => {
     it('should render journeys list', async () => {
       const { getByText } = renderJourneyListContent({

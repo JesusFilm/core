@@ -11,11 +11,14 @@ import { ReactElement, useEffect, useState } from 'react'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import type { JourneyListProps } from '../JourneyList'
+import {
+  ARCHIVE_ACTIVE_JOURNEYS,
+  TRASH_ACTIVE_JOURNEYS
+} from '../JourneyListContent/JourneyListContent'
 import { LoadingJourneyList } from '../LoadingJourneyList'
 
 import { ActivePriorityList } from './ActivePriorityList'
 import { AddJourneyButton } from './AddJourneyButton'
-import { ARCHIVE_ACTIVE_JOURNEYS, TRASH_ACTIVE_JOURNEYS } from '../JourneyListContent/JourneyListContent'
 
 const Dialog = dynamic(
   async () =>
