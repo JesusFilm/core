@@ -11,6 +11,7 @@ import LayoutTopIcon from '@core/shared/ui/icons/LayoutTop'
 import { CreateTemplate } from '../../../../../../__generated__/CreateTemplate'
 import { RemoveUserJourney } from '../../../../../../__generated__/RemoveUserJourney'
 import { Item } from '../Item/Item'
+import { enqueueSnackbar } from 'notistack'
 
 export const REMOVE_USER_JOURNEY = gql`
   mutation RemoveUserJourney($id: ID!) {
@@ -104,6 +105,12 @@ export function CreateTemplateItem({
               }
             })
           }
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t('Template Created'), {
+            variant: 'success',
+            preventDuplicate: true
+          })
         }
       })
 

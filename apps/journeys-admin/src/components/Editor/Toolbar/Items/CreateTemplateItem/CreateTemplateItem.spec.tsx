@@ -12,6 +12,7 @@ import {
   CreateTemplateItem,
   REMOVE_USER_JOURNEY
 } from './CreateTemplateItem'
+import { SnackbarProvider } from 'notistack'
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -97,17 +98,19 @@ describe('CreateTemplateItem', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              team: { id: 'local-team-id' }
-            } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <CreateTemplateItem variant="menu-item" globalPublish={true} />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                team: { id: 'local-team-id' }
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <CreateTemplateItem variant="menu-item" globalPublish={true} />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
     fireEvent.click(getByRole('menuitem', { name: 'Make Global Template' }))
@@ -198,21 +201,23 @@ describe('CreateTemplateItem', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              team: { id: 'local-team-id' }
-            } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <CreateTemplateItem
-            variant="menu-item"
-            globalPublish={false}
-            handleCloseMenu={handleCloseMenu}
-          />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                team: { id: 'local-team-id' }
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <CreateTemplateItem
+              variant="menu-item"
+              globalPublish={false}
+              handleCloseMenu={handleCloseMenu}
+            />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
@@ -324,21 +329,23 @@ describe('CreateTemplateItem', () => {
           }
         ]}
       >
-        <JourneyProvider
-          value={{
-            journey: {
-              id: 'journeyId',
-              team: { id: 'local-team-id' }
-            } as unknown as Journey,
-            variant: 'admin'
-          }}
-        >
-          <CreateTemplateItem
-            variant="menu-item"
-            globalPublish={false}
-            handleCloseMenu={handleCloseMenu}
-          />
-        </JourneyProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: {
+                id: 'journeyId',
+                team: { id: 'local-team-id' }
+              } as unknown as Journey,
+              variant: 'admin'
+            }}
+          >
+            <CreateTemplateItem
+              variant="menu-item"
+              globalPublish={false}
+              handleCloseMenu={handleCloseMenu}
+            />
+          </JourneyProvider>
+        </SnackbarProvider>
       </MockedProvider>
     )
 
