@@ -99,6 +99,7 @@ export interface GetAdminJourneys_journeys {
   fromTemplateId: string | null;
   journeyCustomizationDescription: string | null;
   journeyCustomizationFields: GetAdminJourneys_journeys_journeyCustomizationFields[];
+  website: boolean | null;
 }
 
 export interface GetAdminJourneys {
