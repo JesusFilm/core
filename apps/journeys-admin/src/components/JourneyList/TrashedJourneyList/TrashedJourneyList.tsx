@@ -15,9 +15,12 @@ import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import { JourneyCard } from '../JourneyCard'
 import type { JourneyListProps } from '../JourneyList'
+import {
+  DELETE_TRASHED_JOURNEYS,
+  RESTORE_TRASHED_JOURNEYS
+} from '../JourneyListContent/JourneyListContent'
 import { sortJourneys } from '../JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../LoadingJourneyList'
-import { RESTORE_TRASHED_JOURNEYS, DELETE_TRASHED_JOURNEYS } from '../JourneyListContent/JourneyListContent'
 
 const Dialog = dynamic(
   async () =>

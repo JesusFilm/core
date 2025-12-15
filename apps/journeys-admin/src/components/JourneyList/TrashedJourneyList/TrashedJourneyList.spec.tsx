@@ -10,13 +10,12 @@ import {
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { GET_ADMIN_JOURNEYS } from '../../../libs/useAdminJourneysQuery/useAdminJourneysQuery'
 import { ThemeProvider } from '../../ThemeProvider'
-import { defaultJourney, fakeDate, oldJourney } from '../journeyListData'
-import { SortOrder } from '../JourneySort'
-
 import {
   DELETE_TRASHED_JOURNEYS,
   RESTORE_TRASHED_JOURNEYS
 } from '../JourneyListContent/JourneyListContent'
+import { defaultJourney, fakeDate, oldJourney } from '../journeyListData'
+import { SortOrder } from '../JourneySort'
 
 import { TrashedJourneyList } from '.'
 
