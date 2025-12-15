@@ -69,7 +69,8 @@ describe('useAdminJourneysQuery', () => {
                 value: 'value',
                 defaultValue: 'defaultValue'
               }
-            ]
+            ],
+            website: false
           }
         ]
       }

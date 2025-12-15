@@ -10,12 +10,14 @@ interface TemplateActionButtonProps {
   variant?: 'menu-item' | 'button'
   signedIn?: boolean
   openTeamDialogOnSignIn?: boolean
+  handleCloseMenu?: () => void
 }
 
 export function TemplateActionButton({
   variant = 'button',
   signedIn,
-  openTeamDialogOnSignIn = false
+  openTeamDialogOnSignIn = false,
+  handleCloseMenu
 }: TemplateActionButtonProps): ReactElement {
   const { journey } = useJourney()
 
@@ -37,6 +39,7 @@ export function TemplateActionButton({
       variant={variant}
       signedIn={signedIn}
       openTeamDialogOnSignIn={openTeamDialogOnSignIn}
+      handleCloseMenu={handleCloseMenu}
     />
   )
 }

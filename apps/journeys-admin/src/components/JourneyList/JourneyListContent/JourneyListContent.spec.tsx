@@ -1,4 +1,5 @@
-import { fireEvent, waitFor } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { useRouter } from 'next/router'
 
 import '../../../../test/i18n'
 
@@ -35,7 +36,21 @@ jest.mock('@core/journeys/ui/useNavigationState', () => ({
   useNavigationState: jest.fn(() => false)
 }))
 
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn()
+}))
+
+const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+
 describe('JourneyListContent', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockUseRouter.mockReturnValue({
+      query: {},
+      replace: jest.fn()
+    } as any)
+  })
   describe('Active Journeys', () => {
     it('should render journeys list', async () => {
       const { getByText } = renderJourneyListContent({
@@ -759,6 +774,90 @@ describe('JourneyListContent', () => {
       await waitFor(() =>
         expect(getByText('Templates Deleted')).toBeInTheDocument()
       )
+    })
+  })
+
+  describe('Refresh Query Param', () => {
+    it('should refetch and remove refresh param when refresh query param is present', async () => {
+      const replace = jest.fn()
+      const pathname = '/'
+      mockUseRouter.mockReturnValue({
+        query: { refresh: 'true' },
+        pathname,
+        replace
+      } as any)
+
+      renderJourneyListContent({
+        mocks: [activeJourneysMock],
+        contentType: 'journeys',
+        status: 'active',
+        user
+      })
+
+      // Wait for useEffect to process refresh param
+      await waitFor(() => {
+        expect(replace).toHaveBeenCalledWith(
+          {
+            pathname,
+            query: {}
+          },
+          undefined,
+          { shallow: true }
+        )
+      })
+    })
+
+    it('should preserve other query params when removing refresh param', async () => {
+      const replace = jest.fn()
+      const pathname = '/'
+      mockUseRouter.mockReturnValue({
+        query: { refresh: 'true', type: 'journeys', status: 'active' },
+        pathname,
+        replace
+      } as any)
+
+      renderJourneyListContent({
+        mocks: [activeJourneysMock],
+        contentType: 'journeys',
+        status: 'active',
+        user
+      })
+
+      // Wait for useEffect to process refresh param
+      await waitFor(() => {
+        expect(replace).toHaveBeenCalledWith(
+          {
+            pathname,
+            query: { type: 'journeys', status: 'active' }
+          },
+          undefined,
+          { shallow: true }
+        )
+      })
+    })
+
+    it('should not call replace when refresh param is not present', async () => {
+      const replace = jest.fn()
+      mockUseRouter.mockReturnValue({
+        query: { type: 'journeys' },
+        pathname: '/',
+        replace
+      } as any)
+
+      renderJourneyListContent({
+        mocks: [activeJourneysMock],
+        contentType: 'journeys',
+        status: 'active',
+        user
+      })
+
+      // Wait a bit to ensure useEffect has run
+      await waitFor(() => {
+        expect(screen.getByText('Default Journey Heading')).toBeInTheDocument()
+      })
+
+      // Replace should not be called since refresh param is not present
+      expect(replace).not.toHaveBeenCalled()
     })
   })
 })
