@@ -119,8 +119,10 @@ import Key1 from './Key1'
 import Key2 from './Key2'
 import Laptop1 from './Laptop1'
 import Layers4 from './Layers4'
+import Layout1 from './Layout1'
 import Layout2 from './Layout2'
 import LayoutScale from './LayoutScale'
+import LayoutTop from './LayoutTop'
 import Lightning2 from './Lightning2'
 import LightningCircleContained from './LightningCircleContained'
 import Line from './Line'
@@ -344,8 +346,10 @@ export type IconName =
   | 'Key2'
   | 'Laptop1'
   | 'Layers4'
+  | 'Layout1'
   | 'Layout2'
   | 'LayoutScale'
+  | 'LayoutTop'
   | 'Lightning2'
   | 'LightningCircleContained'
   | 'Line'
@@ -573,8 +577,10 @@ const iconComponents: IconComponents = {
   Key2,
   Laptop1,
   Layers4,
+  Layout1,
   Layout2,
   LayoutScale,
+  LayoutTop,
   Lightning2,
   LightningCircleContained,
   Line,

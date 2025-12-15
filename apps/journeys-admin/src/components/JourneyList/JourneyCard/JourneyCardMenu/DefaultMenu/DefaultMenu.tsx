@@ -5,6 +5,7 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useMemo } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
+import { TemplateActionButton } from '@core/journeys/ui/TemplateView/TemplateViewHeader/TemplateActionButton'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
@@ -30,6 +31,7 @@ import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQ
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery'
 import { GET_JOURNEY_WITH_PERMISSIONS } from '../../../../AccessDialog/AccessDialog'
+import { CreateTemplateItem } from '../../../../Editor/Toolbar/Items/CreateTemplateItem/CreateTemplateItem'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
 import { MenuItem } from '../../../../MenuItem'
 import { CopyToTeamMenuItem } from '../../../../Team/CopyToTeamMenuItem/CopyToTeamMenuItem'
@@ -171,6 +173,9 @@ export function DefaultMenu({
 
   const cantManageJourney = !canManageJourney
 
+  const isLocalTemplate =
+    journey?.template === true && journey?.team?.id !== 'jfp-team'
+
   return (
     <>
       <MenuItem
@@ -224,16 +229,39 @@ export function DefaultMenu({
               handleCloseMenu()
             }}
           />
+          <Divider />
+          <CreateTemplateItem
+            variant="menu-item"
+            globalPublish={false}
+            handleCloseMenu={handleCloseMenu}
+          />
+          {isPublisher === true && (
+            <CreateTemplateItem
+              variant="menu-item"
+              globalPublish={true}
+              handleCloseMenu={handleCloseMenu}
+            />
+          )}
+          <Divider />
         </>
       )}
-
-      <Divider />
-      <CopyToTeamMenuItem
-        id={id}
-        handleCloseMenu={handleCloseMenu}
-        handleKeepMounted={handleKeepMounted}
-        journey={journey}
-      />
+      {template === true && (
+        <>
+          <TemplateActionButton
+            variant="menu-item"
+            handleCloseMenu={handleCloseMenu}
+          />
+          <Divider />
+        </>
+      )}
+      {!isLocalTemplate && (
+        <CopyToTeamMenuItem
+          id={id}
+          handleCloseMenu={handleCloseMenu}
+          handleKeepMounted={handleKeepMounted}
+          journey={journey}
+        />
+      )}
       {activeTeam != null && (
         <>
           <ArchiveJourney
