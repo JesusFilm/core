@@ -69,7 +69,7 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: 'https://jesusfilm.org/watch',
+        destination: 'https://www.jesusfilm.org/watch',
         permanent: false
       }
     ]

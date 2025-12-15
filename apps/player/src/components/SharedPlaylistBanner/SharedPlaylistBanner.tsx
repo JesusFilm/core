@@ -64,7 +64,7 @@ export function SharedPlaylistBanner({
   }
 
   return (
-    <div className="border-b-1 border-gray-200 p-4 dark:border-gray-800">
+    <div className="border-b border-gray-200 p-4 dark:border-gray-800">
       <div className="flex items-start justify-between gap-4 md:items-center">
         <div className="flex flex-1 flex-col gap-4 md:flex-row md:items-center">
           <div className="flex-1 text-sm text-gray-900 dark:text-gray-100">
