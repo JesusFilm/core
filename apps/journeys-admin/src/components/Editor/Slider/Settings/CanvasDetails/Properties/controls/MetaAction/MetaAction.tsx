@@ -1,4 +1,5 @@
 import FormControl from '@mui/material/FormControl'
+import FormHelperText from '@mui/material/FormHelperText'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
@@ -6,6 +7,7 @@ import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
+import ActivityIcon from '@core/shared/ui/icons/Activity'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
@@ -54,15 +56,21 @@ const metaActions: MetaAction[] = [
 
 interface MetaActionProps {
   videoActionType?: 'start' | 'complete'
+  label?: string
+  showHelperText?: boolean
 }
 
-export function MetaAction({ videoActionType }: MetaActionProps): ReactElement {
+export function MetaAction({
+  videoActionType,
+  label,
+  showHelperText = true
+}: MetaActionProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     state: { selectedBlock }
   } = useEditor()
   const [metaAction, setMetaAction] = useState<MetaAction>(
-    getCurrentAction(selectedBlock)
+    getCurrentAction(selectedBlock, videoActionType)
   )
 
   function handleChange(event: SelectChangeEvent): void {
@@ -74,18 +82,19 @@ export function MetaAction({ videoActionType }: MetaActionProps): ReactElement {
     videoActionType
   )
 
+  const displayLabel = label ?? t('Event to track:')
+
   return (
     <>
-      <Stack sx={{ p: 4, pt: 0 }} data-testid="Action">
+      <Stack sx={{ px: 4, pt: 0, pb: 3 }} data-testid="Action">
         <FormControl variant="filled">
           <InputLabel sx={{ '&.MuiFormLabel-root': { lineHeight: 1.5 } }}>
-            {t('Event to track:')}
+            {displayLabel}
           </InputLabel>
 
           <Select
             onChange={handleChange}
-            value={metaAction.label}
-            // TODO: add icon for the select
+            value={metaAction.type}
             IconComponent={ChevronDownIcon}
           >
             {filteredActions.map(({ type, label }) => {
@@ -96,6 +105,13 @@ export function MetaAction({ videoActionType }: MetaActionProps): ReactElement {
               )
             })}
           </Select>
+          {showHelperText && (
+            <FormHelperText sx={{ mb: 2, mt: 3 }}>
+              {t(
+                'Pick the event label you want to appear in analytics. Tracking covers user actions in every project created from your template.'
+              )}
+            </FormHelperText>
+          )}
         </FormControl>
       </Stack>
     </>
@@ -206,7 +222,10 @@ function getFilteredActions(
   )
 }
 
-function getCurrentAction(selectedBlock?: TreeBlock): MetaAction {
+function getCurrentAction(
+  selectedBlock?: TreeBlock,
+  videoActionType?: 'start' | 'complete'
+): MetaAction {
   // return (selectedBlock?.metaAction?.__typename as MetaActionType) ?? 'none'
   // TODO: fix logic for finding action of the block
   // once block types are added

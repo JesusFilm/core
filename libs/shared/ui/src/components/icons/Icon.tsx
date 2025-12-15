@@ -1,6 +1,7 @@
 import { SvgIconProps } from '@mui/material/SvgIcon'
 import { ReactElement } from 'react'
 
+import Activity from './Activity'
 import AddSquare2 from './AddSquare2'
 import AddSquare4 from './AddSquare4'
 import AlertCircle from './AlertCircle'
@@ -225,6 +226,7 @@ import XSquareContained from './XSquareContained'
 import Youtube from './Youtube'
 
 export type IconName =
+  | 'Activity'
   | 'AddSquare2'
   | 'AddSquare4'
   | 'AlertCircle'
@@ -453,6 +455,7 @@ type IconComponents = {
 }
 
 const iconComponents: IconComponents = {
+  Activity,
   AddSquare2,
   AddSquare4,
   AlertCircle,

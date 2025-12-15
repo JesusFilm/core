@@ -11,6 +11,8 @@ import { BlockFields_VideoBlock as VideoBlock } from '../../../../../../../../..
 import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
+import { MetaAction } from '../../controls/MetaAction'
+import ActivityIcon from '@core/shared/ui/icons/Activity'
 
 import { VideoOptions } from './Options/VideoOptions'
 
@@ -31,6 +33,23 @@ export function Video(block: TreeBlock<VideoBlock>): ReactElement {
 
   return (
     <Box data-testid="VideoProperties">
+      <Accordion
+        icon={<ActivityIcon />}
+        id={`${id}-meta-action`}
+        name={t('Tracking')}
+        value={t('None')}
+      >
+        <MetaAction
+          videoActionType="start"
+          label={t('On Video Start')}
+          showHelperText={false}
+        />
+        <MetaAction
+          videoActionType="complete"
+          label={t('On Video End')}
+          showHelperText={true}
+        />
+      </Accordion>
       <Accordion
         id={`${id}-video-action`}
         icon={<LinkIcon />}

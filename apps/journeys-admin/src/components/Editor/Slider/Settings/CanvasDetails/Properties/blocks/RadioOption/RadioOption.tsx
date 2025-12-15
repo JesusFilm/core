@@ -15,6 +15,8 @@ import {
 import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
+import { MetaAction } from '../../controls/MetaAction'
+import ActivityIcon from '@core/shared/ui/icons/Activity'
 
 import { RadioOptionImage } from './RadioOptionImage/RadioOptionImage'
 
@@ -53,6 +55,14 @@ export function RadioOption(props: TreeBlock<RadioOptionBlock>): ReactElement {
 
   return (
     <Box data-testid="RadioOptionProperties">
+      <Accordion
+        icon={<ActivityIcon />}
+        id={`${props.id}-meta-action`}
+        name={t('Tracking')}
+        value={t('None')}
+      >
+        <MetaAction />
+      </Accordion>
       <Accordion
         id={`${props.id}-radio-option-action`}
         icon={<LinkIcon />}

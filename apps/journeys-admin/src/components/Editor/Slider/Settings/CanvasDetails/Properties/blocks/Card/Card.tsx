@@ -12,6 +12,7 @@ import { useEditor } from '@core/journeys/ui/EditorProvider'
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
+import ActivityIcon from '@core/shared/ui/icons/Activity'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 import SunIcon2 from '@core/shared/ui/icons/Sun2'
@@ -20,6 +21,7 @@ import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
+// TODO: dynamic import
 import { MetaAction } from '../../controls/MetaAction'
 
 const BackgroundColor = dynamic(
@@ -123,7 +125,7 @@ export function Card({
   return (
     <Box data-testid="CardProperties">
       <Accordion
-        icon={<FlexAlignBottom1Icon />}
+        icon={<ActivityIcon />}
         id={`${id}-meta-action`}
         name={t('Tracking')}
         value={t('None')}

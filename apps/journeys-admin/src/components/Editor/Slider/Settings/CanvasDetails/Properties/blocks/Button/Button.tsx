@@ -24,6 +24,8 @@ import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
 import { ColorDisplayIcon } from '../../controls/ColorDisplayIcon'
 import { Icon, icons } from '../../controls/Icon'
+import { MetaAction } from '../../controls/MetaAction'
+import ActivityIcon from '@core/shared/ui/icons/Activity'
 
 import { Alignment } from './Alignment'
 import { Color } from './Color'
@@ -63,6 +65,14 @@ export function Button({
 
   return (
     <Box data-testid="ButtonProperties">
+      <Accordion
+        icon={<ActivityIcon />}
+        id={`${id}-meta-action`}
+        name={t('Tracking')}
+        value={t('None')}
+      >
+        <MetaAction />
+      </Accordion>
       <Accordion
         id={`${id}-button-action`}
         icon={<LinkIcon />}
