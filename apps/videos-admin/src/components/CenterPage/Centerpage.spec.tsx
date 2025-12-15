@@ -1,9 +1,6 @@
+import { MockedProvider } from '@apollo/client/testing'
 import { Breakpoint, ThemeProvider, createTheme } from '@mui/material/styles'
 import { render, screen } from '@testing-library/react'
-import { MockedProvider } from '@apollo/client/testing'
-
-
-
 
 import '@testing-library/jest-dom' // For extended matchers like toBeInTheDocument
 import { CenterPage } from './CenterPage'
@@ -58,10 +55,10 @@ describe('CenterPage Component', () => {
       </MockedProvider>
     )
 
-    expect(
-      screen.getByRole('button', {name: 'Privacy Policy'})
-    )
+    expect(screen.getByRole('button', { name: 'Privacy Policy' }))
 
-    expect(screen.getAllByRole('link', { name: 'Privacy Policy'})[0]).toHaveAttribute('href', 'https://www.cru.org/us/en/about/privacy.html')
+    expect(
+      screen.getAllByRole('link', { name: 'Privacy Policy' })[0]
+    ).toHaveAttribute('href', 'https://www.cru.org/us/en/about/privacy.html')
   })
 })
