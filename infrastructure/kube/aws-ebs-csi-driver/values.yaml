@@ -1,0 +1,15 @@
+aws-ebs-csi-driver:
+  # Prod-only values (do not share with stage).
+  controller:
+    region: us-east-2
+    serviceAccount:
+      create: true
+      name: ebs-csi-controller-sa
+      annotations:
+        eks.amazonaws.com/role-arn: arn:aws:iam::410965620680:role/AmazonEKS_EBS_CSI_DriverRole_prod
+
+  # Keep StorageClass/VolumeSnapshotClass creation disabled by default.
+  storageClasses: []
+  defaultStorageClass:
+    enabled: false
+  volumeSnapshotClasses: []
