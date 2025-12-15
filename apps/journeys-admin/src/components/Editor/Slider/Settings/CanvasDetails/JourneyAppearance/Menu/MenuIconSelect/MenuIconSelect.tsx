@@ -146,6 +146,7 @@ export function MenuIconSelect(): ReactElement {
           open={open}
           onClose={() => setOpen(false)}
           onClick={handleClick}
+          autoWidth
           value={journey?.menuButtonIcon ?? ''}
           onChange={handleChange}
           displayEmpty
