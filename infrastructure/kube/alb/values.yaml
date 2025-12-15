@@ -1,0 +1,8 @@
+aws-load-balancer-controller:
+  # This chart expects an existing IRSA ServiceAccount in `kube-system`
+  # (created out-of-band, e.g. via Terraform/eksctl).
+  serviceAccount:
+    create: false
+    name: aws-load-balancer-controller
+
+
