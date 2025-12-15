@@ -5,6 +5,7 @@ import { ReactElement, useCallback, useEffect, useMemo } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import ActivityIcon from '@core/shared/ui/icons/Activity'
 import Image3Icon from '@core/shared/ui/icons/Image3'
 import LinkIcon from '@core/shared/ui/icons/Link'
 
@@ -16,7 +17,6 @@ import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
 import { MetaAction } from '../../controls/MetaAction'
-import ActivityIcon from '@core/shared/ui/icons/Activity'
 
 import { RadioOptionImage } from './RadioOptionImage/RadioOptionImage'
 

@@ -4,6 +4,7 @@ import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import ActivityIcon from '@core/shared/ui/icons/Activity'
 import LinkIcon from '@core/shared/ui/icons/Link'
 import Play1Icon from '@core/shared/ui/icons/Play1'
 
@@ -12,7 +13,6 @@ import { Accordion } from '../../Accordion'
 import { Action } from '../../controls/Action'
 import { getAction } from '../../controls/Action/utils/actions'
 import { MetaAction } from '../../controls/MetaAction'
-import ActivityIcon from '@core/shared/ui/icons/Activity'
 
 import { VideoOptions } from './Options/VideoOptions'
 

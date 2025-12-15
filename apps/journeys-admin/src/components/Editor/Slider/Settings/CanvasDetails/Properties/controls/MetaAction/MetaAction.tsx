@@ -7,9 +7,9 @@ import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
-import ActivityIcon from '@core/shared/ui/icons/Activity'
 import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import ActivityIcon from '@core/shared/ui/icons/Activity'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 // TODO: get real types for backend
