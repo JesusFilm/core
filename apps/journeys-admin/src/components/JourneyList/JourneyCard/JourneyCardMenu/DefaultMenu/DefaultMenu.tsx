@@ -230,16 +230,27 @@ export function DefaultMenu({
             }}
           />
           <Divider />
-          <CreateTemplateItem variant="menu-item" globalPublish={false} />
+          <CreateTemplateItem
+            variant="menu-item"
+            globalPublish={false}
+            handleCloseMenu={handleCloseMenu}
+          />
           {isPublisher === true && (
-            <CreateTemplateItem variant="menu-item" globalPublish={true} />
+            <CreateTemplateItem
+              variant="menu-item"
+              globalPublish={true}
+              handleCloseMenu={handleCloseMenu}
+            />
           )}
           <Divider />
         </>
       )}
       {template === true && (
         <>
-          <TemplateActionButton variant="menu-item" />
+          <TemplateActionButton
+            variant="menu-item"
+            handleCloseMenu={handleCloseMenu}
+          />
           <Divider />
         </>
       )}

@@ -32,11 +32,13 @@ export const CREATE_TEMPLATE = gql`
 interface CreateTemplateItemProps {
   variant: ComponentProps<typeof Item>['variant']
   globalPublish?: boolean
+  handleCloseMenu?: () => void
 }
 
 export function CreateTemplateItem({
   variant,
-  globalPublish = false
+  globalPublish = false,
+  handleCloseMenu
 }: CreateTemplateItemProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { journey } = useJourney()
@@ -49,6 +51,9 @@ export function CreateTemplateItem({
 
   const handleCreateTemplate = async (): Promise<void> => {
     if (journey == null) return
+
+    // Detect if we're in Editor context (editing a journey) vs JourneyList context
+    const isEditorContext = router.pathname === '/journeys/[journeyId]'
 
     // Duplicate journey but don't add to journeys cache since we're converting to template immediately
     const { data } = await journeyDuplicate({
@@ -109,11 +114,34 @@ export function CreateTemplateItem({
           }
         })
 
-        void router.push(
-          `/publisher/${templateData.journeyTemplate.id}`,
-          undefined,
-          { shallow: true }
-        )
+        if (globalPublish) {
+          // Global templates: navigate to editor with publisher path (works for both contexts)
+          void router.push(
+            `/publisher/${templateData.journeyTemplate.id}`,
+            undefined,
+            { shallow: true }
+          )
+        } else {
+          // Local templates: context-aware navigation
+          if (isEditorContext) {
+            // In Editor: navigate to journeys list with template tab
+            void router.push('/?type=templates&refresh=true')
+          } else {
+            // In JourneyList: update query params to switch to template tab (shallow routing)
+            void router.push(
+              {
+                query: {
+                  ...router.query,
+                  type: 'templates',
+                  refresh: 'true'
+                }
+              },
+              undefined,
+              { shallow: true }
+            )
+          }
+          handleCloseMenu?.()
+        }
       }
     }
   }
