@@ -22,7 +22,7 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
   const defaultMetadata: Metadata = {
     other: {
-      'apple-itunes-app': `app-id=${env.NEXT_PUBLIC_IOS_APP_ID}; app-argument=https://player.jesusfilmproject.org/p/${playlistId}`
+      'apple-itunes-app': `app-id=${env.NEXT_PUBLIC_IOS_APP_ID}; app-argument=https://player.jesusfilm.org/pl/${playlistId}`
     }
   }
 

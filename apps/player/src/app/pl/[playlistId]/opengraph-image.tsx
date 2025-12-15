@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og'
 import { getPlaylist } from './getPlaylist'
 import { env } from '@/env'
 
-export const size = { width: 960, height: 540 }
+export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
 export default async function Image({
@@ -55,6 +55,7 @@ export default async function Image({
       { width: size.width, height: size.height }
     )
   }
+
   const MAX_CELLS = 4
   const hiddenCount = Math.max(images.length - MAX_CELLS + 1, 0)
   const showHiddenCount = hiddenCount > 0
@@ -62,16 +63,27 @@ export default async function Image({
     ? images.slice(0, MAX_CELLS - 1)
     : images.slice(0, MAX_CELLS)
   const cells = Array.from(
-    { length: MAX_CELLS },
+    { length: images.length <= 2 ? images.length : MAX_CELLS },
     (_, index) => visibleImages[index] ?? null
   )
 
   return new ImageResponse(
-    (
+    cells.length === 1 ? (
+      <img
+        src={cells[0]!}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover'
+        }}
+      />
+    ) : (
       <div
         style={{
           display: 'flex',
-          flexWrap: 'wrap',
+          flexWrap: cells.length > 2 ? 'wrap' : 'nowrap',
+          alignItems: 'center',
+          justifyContent: 'center',
           width: '100%',
           height: '100%',
           backgroundColor: '#F7F5F1'
