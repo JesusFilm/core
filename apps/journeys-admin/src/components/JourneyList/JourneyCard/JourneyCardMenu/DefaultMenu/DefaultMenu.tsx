@@ -173,6 +173,9 @@ export function DefaultMenu({
 
   const cantManageJourney = !canManageJourney
 
+  const isLocalTemplate =
+    journey?.template === true && journey?.team?.id !== 'jfp-team'
+
   return (
     <>
       <MenuItem
@@ -240,12 +243,14 @@ export function DefaultMenu({
           <Divider />
         </>
       )}
-      <CopyToTeamMenuItem
-        id={id}
-        handleCloseMenu={handleCloseMenu}
-        handleKeepMounted={handleKeepMounted}
-        journey={journey}
-      />
+      {!isLocalTemplate && (
+        <CopyToTeamMenuItem
+          id={id}
+          handleCloseMenu={handleCloseMenu}
+          handleKeepMounted={handleKeepMounted}
+          journey={journey}
+        />
+      )}
       {activeTeam != null && (
         <>
           <ArchiveJourney
