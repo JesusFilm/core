@@ -104,7 +104,7 @@ describe('ChatNode', () => {
     )
 
     expect(screen.getByTestId('MessageChat1Icon')).toBeInTheDocument()
-    expect(screen.getByText('Start a Conversation')).toBeInTheDocument()
+    expect(screen.getByText('Start a Chat')).toBeInTheDocument()
     expect(screen.getByText('https://m.me/example')).toBeInTheDocument()
   })
 
@@ -122,7 +122,7 @@ describe('ChatNode', () => {
     )
 
     expect(screen.getByTestId('MessageChat1Icon')).toBeInTheDocument()
-    expect(screen.getByText('Start a Conversation')).toBeInTheDocument()
+    expect(screen.getByText('Start a Chat')).toBeInTheDocument()
     expect(screen.getByText('https://wa.me/1234567890')).toBeInTheDocument()
   })
 
@@ -155,10 +155,10 @@ describe('ChatNode', () => {
     )
 
     expect(screen.getByTestId('MessageChat1Icon')).toBeInTheDocument()
-    expect(screen.getByText('Start a Conversation')).toBeInTheDocument()
+    expect(screen.getByText('Start a Chat')).toBeInTheDocument()
     // The actionDetail should be empty when no matching action block is found
     const actionDetailElement = screen
-      .getByText('Start a Conversation')
+      .getByText('Start a Chat')
       .parentElement?.querySelector('p:last-child')
     expect(actionDetailElement).toHaveTextContent('')
   })
@@ -177,10 +177,10 @@ describe('ChatNode', () => {
     )
 
     expect(screen.getByTestId('MessageChat1Icon')).toBeInTheDocument()
-    expect(screen.getByText('Start a Conversation')).toBeInTheDocument()
+    expect(screen.getByText('Start a Chat')).toBeInTheDocument()
     // The actionDetail should be empty when no steps are provided
     const actionDetailElement = screen
-      .getByText('Start a Conversation')
+      .getByText('Start a Chat')
       .parentElement?.querySelector('p:last-child')
     expect(actionDetailElement).toHaveTextContent('')
   })
