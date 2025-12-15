@@ -1,4 +1,4 @@
-import { Meta, StoryObj } from '@storybook/react'
+import { Meta, StoryObj } from '@storybook/nextjs'
 
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import { simpleComponentConfig } from '@core/shared/ui/storybook'

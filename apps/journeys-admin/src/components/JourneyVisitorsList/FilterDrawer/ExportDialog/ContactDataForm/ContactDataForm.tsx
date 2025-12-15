@@ -1,19 +1,30 @@
+import Box from '@mui/material/Box'
+import Collapse from '@mui/material/Collapse'
 import Divider from '@mui/material/Divider'
 import FormGroup from '@mui/material/FormGroup'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useEffect, useState } from 'react'
+import {
+  Dispatch,
+  ReactElement,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
+
+import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 
 import { CheckboxOption } from '../CheckBoxOption'
 
-interface ContactDataState {
-  name: boolean
-  email: boolean
-  phone: boolean
-}
-
 interface ContactDataFormProps {
-  setContactData: (contactData: string[]) => void
+  setSelectedFields: Dispatch<SetStateAction<string[]>>
+  selectedFields: string[]
+  includeOldData?: boolean
+  setIncludeOldData?: Dispatch<SetStateAction<boolean>>
+  availableBlockTypes?: string[]
 }
 
 /**
@@ -24,67 +35,161 @@ interface ContactDataFormProps {
  * @returns A form with switches for selecting contact data fields
  */
 export function ContactDataForm({
-  setContactData
+  setSelectedFields,
+  selectedFields,
+  includeOldData = false,
+  setIncludeOldData,
+  availableBlockTypes = []
 }: ContactDataFormProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const [contactDataState, setContactDataState] = useState<ContactDataState>({
-    name: true,
-    email: true,
-    phone: true
-  })
-  const [selectAll, setSelectAll] = useState(true)
+  const [isOptionalSettingsOpen, setIsOptionalSettingsOpen] = useState(false)
 
-  const handleSelectAll = (checked: boolean): void => {
-    setContactDataState({
-      name: checked,
-      email: checked,
-      phone: checked
-    })
+  const CONTACT_BLOCK_TO_EVENT: Record<string, string> = {
+    RadioQuestionBlock: 'RadioQuestionSubmissionEvent',
+    MultiselectBlock: 'MultiselectSubmissionEvent',
+    SignUpBlock: 'SignUpSubmissionEvent',
+    TextResponseBlock: 'TextResponseSubmissionEvent'
   }
 
+  const availableContactEvents = useMemo(() => {
+    const mapped = availableBlockTypes
+      .map((bt) => CONTACT_BLOCK_TO_EVENT[bt])
+      .filter((v): v is string => v != null)
+    return Array.from(new Set(mapped))
+  }, [availableBlockTypes])
+
+  const handleSelectAll = (checked: boolean): void => {
+    setSelectedFields(checked ? availableContactEvents : [])
+  }
+
+  const handleToggleField = (field: string) => {
+    return (checked: boolean) =>
+      setSelectedFields((prev) =>
+        !checked
+          ? prev.filter((f) => f !== field)
+          : Array.from(new Set([...prev, field]))
+      )
+  }
+
+  const handleIncludeOldDataChange = (checked: boolean): void => {
+    if (setIncludeOldData != null) {
+      setIncludeOldData(checked)
+    }
+  }
+
+  const handleToggleOptionalSettings = (): void => {
+    setIsOptionalSettingsOpen(!isOptionalSettingsOpen)
+  }
+
+  // Initialize selection to "all" exactly once when available events are first known.
+  // On subsequent available set changes, preserve user selections but drop any no-longer-available ones.
+  const [initialized, setInitialized] = useState(false)
+  const availableKey = useMemo(
+    () => availableContactEvents.join('|'),
+    [availableContactEvents]
+  )
   useEffect(() => {
-    const allSelected =
-      contactDataState.name && contactDataState.email && contactDataState.phone
-    setSelectAll(allSelected)
-
-    const selectedFields: string[] = []
-    if (contactDataState.name) selectedFields.push('name')
-    if (contactDataState.email) selectedFields.push('email')
-    if (contactDataState.phone) selectedFields.push('phone')
-
-    setContactData(selectedFields)
-  }, [contactDataState, setContactData])
+    setSelectedFields((prev) => {
+      if (!initialized) {
+        setInitialized(true)
+        return [...availableContactEvents]
+      }
+      const filtered = prev.filter((f) => availableContactEvents.includes(f))
+      return filtered
+    })
+    // Only react to content changes, not reference changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [availableKey, setSelectedFields])
 
   return (
     <Stack>
       <FormGroup>
         <CheckboxOption
-          checked={selectAll}
+          checked={
+            availableContactEvents.length > 0 &&
+            availableContactEvents.every((f) => selectedFields.includes(f))
+          }
           onChange={handleSelectAll}
           label={t('All')}
         />
-        <Divider sx={{ my: 1 }} />
-        <CheckboxOption
-          checked={contactDataState.name}
-          onChange={(checked) =>
-            setContactDataState((prev) => ({ ...prev, name: checked }))
-          }
-          label={t('Name')}
-        />
-        <CheckboxOption
-          checked={contactDataState.email}
-          onChange={(checked) =>
-            setContactDataState((prev) => ({ ...prev, email: checked }))
-          }
-          label={t('Email')}
-        />
-        <CheckboxOption
-          checked={contactDataState.phone}
-          onChange={(checked) =>
-            setContactDataState((prev) => ({ ...prev, phone: checked }))
-          }
-          label={t('Phone')}
-        />
+        <Box sx={{ pl: 6, display: 'flex', flexDirection: 'column' }}>
+          {availableContactEvents.includes('TextResponseSubmissionEvent') && (
+            <CheckboxOption
+              checked={selectedFields.includes('TextResponseSubmissionEvent')}
+              onChange={handleToggleField('TextResponseSubmissionEvent')}
+              label={t('Text Submission')}
+            />
+          )}
+          {availableContactEvents.includes('RadioQuestionSubmissionEvent') && (
+            <CheckboxOption
+              checked={selectedFields.includes('RadioQuestionSubmissionEvent')}
+              onChange={handleToggleField('RadioQuestionSubmissionEvent')}
+              label={t('Poll Selection')}
+            />
+          )}
+          {availableContactEvents.includes('MultiselectSubmissionEvent') && (
+            <CheckboxOption
+              checked={selectedFields.includes('MultiselectSubmissionEvent')}
+              onChange={handleToggleField('MultiselectSubmissionEvent')}
+              label={t('Multiselect Responses')}
+            />
+          )}
+          {availableContactEvents.includes('SignUpSubmissionEvent') && (
+            <CheckboxOption
+              checked={selectedFields.includes('SignUpSubmissionEvent')}
+              onChange={handleToggleField('SignUpSubmissionEvent')}
+              label={t('Subscription')}
+            />
+          )}
+        </Box>
+      </FormGroup>
+      <Divider sx={{ my: 2 }} />
+      <FormGroup>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            cursor: 'pointer',
+            '&:hover': {
+              backgroundColor: 'action.hover'
+            }
+          }}
+          onClick={handleToggleOptionalSettings}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              handleToggleOptionalSettings()
+            }
+          }}
+          tabIndex={0}
+          role="button"
+          aria-expanded={isOptionalSettingsOpen}
+          aria-label={t('Toggle optional settings')}
+        >
+          <Typography variant="subtitle2" sx={{ flexGrow: 1 }}>
+            {t('Optional settings')}
+          </Typography>
+          <IconButton
+            size="small"
+            sx={{
+              transform: isOptionalSettingsOpen
+                ? 'rotate(180deg)'
+                : 'rotate(0deg)',
+              transition: 'transform 0.2s ease-in-out'
+            }}
+          >
+            <ChevronDown />
+          </IconButton>
+        </Box>
+        <Collapse in={isOptionalSettingsOpen}>
+          <Box sx={{ mt: 1 }}>
+            <CheckboxOption
+              checked={includeOldData}
+              onChange={handleIncludeOldDataChange}
+              label={t('Include old data from removed or unconnected cards')}
+            />
+          </Box>
+        </Collapse>
       </FormGroup>
     </Stack>
   )

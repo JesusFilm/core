@@ -304,7 +304,8 @@ export function CardForm(): ReactElement {
       routeId: null,
       integrationId: null,
       required: null,
-      __typename: 'TextResponseBlock'
+      __typename: 'TextResponseBlock',
+      hideLabel: false
     } satisfies TextResponseBlock
 
     const buttonBlock = {
@@ -402,7 +403,8 @@ export function CardForm(): ReactElement {
                 'type',
                 'routeId',
                 'integrationId',
-                'required'
+                'required',
+                'hideLabel'
               ]),
               journeyId: journey.id
             },

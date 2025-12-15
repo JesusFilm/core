@@ -5,11 +5,11 @@ import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { useJourney } from '../../libs/JourneyProvider'
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 import { RadioOptionFields } from './__generated__/RadioOptionFields'
 import { GridVariant } from './GridVariant/GridVariant'
 import { ListVariant } from './ListVariant/ListVariant'
-import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 export interface RadioOptionProps extends TreeBlock<RadioOptionFields> {
   selected?: boolean

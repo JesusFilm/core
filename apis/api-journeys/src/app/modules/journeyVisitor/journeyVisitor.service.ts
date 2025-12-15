@@ -31,6 +31,8 @@ export class JourneyVisitorService {
           filter?.hasChatStarted === true ? { not: null } : undefined,
         lastRadioQuestion:
           filter?.hasPollAnswers === true ? { not: null } : undefined,
+        lastMultiselectSubmission:
+          filter?.hasMultiselectSubmission === true ? { not: null } : undefined,
         lastTextResponse:
           filter?.hasTextResponse === true ? { not: null } : undefined,
         activityCount: filter?.hideInactive === true ? { gt: 0 } : undefined,

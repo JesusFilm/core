@@ -25,6 +25,12 @@ export function CustomizationToggle(): ReactElement {
   if (actionBlock?.action?.__typename === 'EmailAction') {
     customizable = actionBlock?.action?.customizable ?? false
   }
+  if (actionBlock?.action?.__typename === 'PhoneAction') {
+    customizable = actionBlock?.action?.customizable ?? false
+  }
+  if (actionBlock?.action?.__typename === 'ChatAction') {
+    customizable = actionBlock?.action?.customizable ?? false
+  }
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>): void {
     if (actionBlock == null || selectedStep == null) return
@@ -62,6 +68,50 @@ export function CustomizationToggle(): ReactElement {
           parentBlockId: id,
           gtmEventName: '',
           email: action.email,
+          customizable: newCustomizable,
+          parentStepId: selectedStep.id
+        },
+        undoAction: action,
+        editorFocus: {
+          selectedStep,
+          selectedBlock: actionBlock
+        }
+      })
+      return
+    }
+
+    if (action?.__typename === 'PhoneAction') {
+      addAction({
+        blockId: id,
+        blockTypename,
+        action: {
+          __typename: 'PhoneAction',
+          parentBlockId: id,
+          gtmEventName: '',
+          phone: action.phone,
+          countryCode: action.countryCode,
+          contactAction: action.contactAction,
+          customizable: newCustomizable,
+          parentStepId: selectedStep.id
+        },
+        undoAction: action,
+        editorFocus: {
+          selectedStep,
+          selectedBlock: actionBlock
+        }
+      })
+      return
+    }
+
+    if (action?.__typename === 'ChatAction') {
+      addAction({
+        blockId: id,
+        blockTypename,
+        action: {
+          __typename: 'ChatAction',
+          parentBlockId: id,
+          gtmEventName: '',
+          chatUrl: action.chatUrl,
           customizable: newCustomizable,
           parentStepId: selectedStep.id
         },

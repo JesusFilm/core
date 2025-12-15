@@ -28,8 +28,8 @@ COPY ./libs/prisma/languages/db ./prisma-languages
 RUN mkdir -p $PNPM_HOME && corepack enable && corepack prepare pnpm --activate
 RUN pnpm add -g next
 RUN pnpm install --prod --silent
-RUN pnpm add sharp pino dd-trace next-logger @prisma/client@6.5.0 --silent
-RUN pnpm add -D prisma@6.5.0
+RUN pnpm add sharp pino dd-trace next-logger @prisma/client@6.18.0 --silent
+RUN pnpm add -D prisma@6.18.0
 RUN pnpm exec prisma generate --generator client --schema ./prisma-media/schema.prisma
 RUN pnpm exec prisma generate --generator client --schema ./prisma-languages/schema.prisma
 

@@ -101,6 +101,20 @@ type PhoneAction implements Action
   phone: String!
   countryCode: String!
   contactAction: ContactActionType!
+  customizable: Boolean
+  parentStepId: String
+}
+
+type ChatAction implements Action
+  @shareable
+{
+  parentBlockId: ID!
+  parentBlock: Block!
+  gtmEventName: String
+  chatUrl: String!
+  target: String
+  customizable: Boolean
+  parentStepId: String
 }
 
 interface Block {
@@ -434,7 +448,6 @@ type Mutation {
   customDomainUpdate(id: ID!, input: CustomDomainUpdateInput!): CustomDomain!
   customDomainDelete(id: ID!): CustomDomain!
   customDomainCheck(id: ID!): CustomDomainCheck!
-  chatOpenEventCreate(input: ChatOpenEventCreateInput!): ChatOpenEvent!
 
   """
   Creates a JourneyViewEvent, returns null if attempting to create another
@@ -460,9 +473,8 @@ type Mutation {
   hostDelete(id: ID!, teamId: ID!): Host!
   integrationGrowthSpacesCreate(input: IntegrationGrowthSpacesCreateInput!): IntegrationGrowthSpaces!
   integrationGrowthSpacesUpdate(id: ID!, input: IntegrationGrowthSpacesUpdateInput!): IntegrationGrowthSpaces!
-  integrationDelete(id: ID!): Integration!
   journeyCreate(input: JourneyCreateInput!, teamId: ID!): Journey!
-  journeyDuplicate(id: ID!, teamId: ID!): Journey!
+  journeyDuplicate(id: ID!, teamId: ID!, forceNonTemplate: Boolean): Journey!
   journeyUpdate(id: ID!, input: JourneyUpdateInput!): Journey!
 
   """Sets journey status to published"""
@@ -1301,6 +1313,8 @@ type VideoBlock implements Block
 
   """how the video should display within the VideoBlock"""
   objectFit: VideoBlockObjectFit @shareable
+  subtitleLanguage: Language @shareable
+  showGeneratedSubtitles: Boolean @shareable
 }
 
 """
@@ -1408,6 +1422,7 @@ enum ButtonAction {
   LinkAction
   EmailAction
   PhoneAction
+  ChatAction
 }
 
 type ButtonClickEvent implements Event
@@ -1475,20 +1490,6 @@ enum MessagePlatform {
   settings
 }
 
-input ChatOpenEventCreateInput {
-  """
-  ID should be unique Event UUID (Provided for optimistic mutation result matching)
-  """
-  id: ID
-  blockId: ID!
-
-  """id of the parent stepBlock"""
-  stepId: ID
-
-  """messagePlatform of the link used for chat"""
-  value: MessagePlatform
-}
-
 type ChatOpenEvent implements Event
   @shareable
 {
@@ -1510,6 +1511,24 @@ type ChatOpenEvent implements Event
   messagePlatform of the link used for chat (based on the messagePlatform in the value field)
   """
   messagePlatform: MessagePlatform
+}
+
+type MultiselectSubmissionEvent implements Event
+  @shareable
+{
+  id: ID!
+
+  """ID of the journey that the multiselect block belongs to"""
+  journeyId: ID!
+
+  """time event was created"""
+  createdAt: DateTime!
+
+  """stepName of the parent stepBlock"""
+  label: String
+
+  """comma separated selected option labels"""
+  value: String
 }
 
 interface Event {
@@ -2126,14 +2145,24 @@ input HostCreateInput {
   src2: String
 }
 
+type IntegrationGoogle implements Integration
+  @shareable
+{
+  id: ID!
+  team: Team!
+  type: IntegrationType!
+  user: User
+  accountEmail: String
+}
+
 type IntegrationGrowthSpaces implements Integration
   @shareable
 {
   id: ID!
   team: Team!
   type: IntegrationType!
-  accessId: String!
-  accessSecretPart: String!
+  accessId: String
+  accessSecretPart: String
   routes: [IntegrationGrowthSpacesRoute!]!
 }
 
@@ -2156,6 +2185,7 @@ type IntegrationGrowthSpacesRoute
 }
 
 enum IntegrationType {
+  google
   growthSpaces
 }
 
@@ -2204,6 +2234,7 @@ input JourneysFilter {
   limit: Int
   orderByRecent: Boolean
   fromTemplateId: ID
+  teamId: String
 }
 
 input JourneysQueryOptions {
@@ -2417,6 +2448,7 @@ input JourneyEventsFilter {
   typenames: [String!]
   periodRangeStart: DateTime
   periodRangeEnd: DateTime
+  includeUnconnectedCards: Boolean
 }
 
 type JourneyNotification
@@ -2573,6 +2605,7 @@ type JourneyVisitor
   populated by RadioQuestionSubmission mutation
   """
   lastRadioOptionSubmission: String
+  lastMultiselectSubmission: String
   events: [Event!]!
   visitor: Visitor!
 }
@@ -2601,6 +2634,7 @@ input JourneyVisitorFilter {
   journeyId: String!
   hasChatStarted: Boolean
   hasPollAnswers: Boolean
+  hasMultiselectSubmission: Boolean
   hasTextResponse: Boolean
   hasIcon: Boolean
   hideInactive: Boolean

@@ -4,9 +4,14 @@ import { z } from 'zod'
 
 import { graphql } from '@core/shared/gql'
 
+import { env } from '../../../env'
+
 export const videoBlockYouTubeSchema = z.object({
   videoId: z
-    .string({ required_error: 'videoId is required' })
+    .string({
+      error: (issue) =>
+        issue.input === undefined ? 'videoId is required' : undefined
+    })
     .regex(/^[-\w]{11}$/, 'videoId must be a valid YouTube videoId')
 })
 
@@ -17,7 +22,12 @@ export const videoBlockInternalSchema = z.object({
 
 export const videoBlockMuxSchema = z.object({
   videoId: z
-    .string({ required_error: 'videoId is required for mux source' })
+    .string({
+      error: (issue) =>
+        issue.input === undefined
+          ? 'videoId is required for mux source'
+          : undefined
+    })
     .min(1)
 })
 
@@ -58,10 +68,10 @@ export async function fetchFieldsFromMux(videoId: string): Promise<
     }
 > {
   const httpLink = createHttpLink({
-    uri: process.env.GATEWAY_URL,
+    uri: env.GATEWAY_URL,
     headers: {
       'x-graphql-client-name': 'api-journeys',
-      'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
+      'x-graphql-client-version': env.SERVICE_VERSION
     }
   })
   const apollo = new ApolloClient({
@@ -101,7 +111,7 @@ export async function fetchFieldsFromYouTube(videoId: string): Promise<{
 }> {
   const query = new URLSearchParams({
     part: 'snippet,contentDetails',
-    key: process.env.FIREBASE_API_KEY ?? '',
+    key: env.FIREBASE_API_KEY,
     id: videoId
   }).toString()
   const videosData: YoutubeVideosData = await (

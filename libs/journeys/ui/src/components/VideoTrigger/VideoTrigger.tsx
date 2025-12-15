@@ -1,7 +1,7 @@
 import fscreen from 'fscreen'
 import { useRouter } from 'next/router'
 import { usePlausible } from 'next-plausible'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useRef, useState } from 'react'
 import Player from 'video.js/dist/types/player'
 
 import { isIPhone } from '@core/shared/ui/deviceUtils'
@@ -31,19 +31,33 @@ export function VideoTrigger({
   const router = useRouter()
   const { journey, variant } = useJourney()
   const [triggered, setTriggered] = useState(false)
+  const triggeredRef = useRef(false)
   const { blockHistory } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1] as
     | TreeBlock
     | undefined
   const plausible = usePlausible<JourneyPlausibleEvents>()
 
+  // Reset triggered state when player changes
   useEffect(() => {
-    if (player != null && !triggered && activeBlock?.id != null) {
+    triggeredRef.current = false
+    setTriggered(false)
+  }, [player])
+
+  useEffect(() => {
+    if (
+      player != null &&
+      !triggered &&
+      !triggeredRef.current &&
+      activeBlock?.id != null
+    ) {
       const handleTimeUpdate = (): void => {
         if (
           (player.currentTime() ?? 0) >= triggerStart - 0.25 &&
-          !(player.scrubbing() ?? false)
+          !(player.scrubbing() ?? false) &&
+          !triggeredRef.current
         ) {
+          triggeredRef.current = true
           setTriggered(true)
           player.pause()
 

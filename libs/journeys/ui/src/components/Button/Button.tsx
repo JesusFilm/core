@@ -20,13 +20,14 @@ import {
 import { handleAction } from '../../libs/action'
 import type { TreeBlock } from '../../libs/block'
 import { useBlocks } from '../../libs/block'
+import { BlockFields_IconBlock } from '../../libs/block/__generated__/BlockFields'
 import { getNextStepSlug } from '../../libs/getNextStepSlug'
 import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import { JourneyPlausibleEvents } from '../../libs/plausibleHelpers'
 import { keyify } from '../../libs/plausibleHelpers/plausibleHelpers'
+import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 import { Icon } from '../Icon'
-import { IconFields } from '../Icon/__generated__/IconFields'
 
 import {
   ButtonClickEventCreate,
@@ -40,7 +41,6 @@ import {
 import { findMessagePlatform } from './utils/findMessagePlatform'
 import { getActionLabel } from './utils/getActionLabel'
 import { getLinkActionGoal } from './utils/getLinkActionGoal'
-import { useGetValueFromJourneyCustomizationString } from '../../libs/useGetValueFromJourneyCustomizationString'
 
 export const BUTTON_CLICK_EVENT_CREATE = gql`
   mutation ButtonClickEventCreate($input: ButtonClickEventCreateInput!) {
@@ -128,13 +128,13 @@ export function Button({
       ? getStepHeading(activeBlock.id, activeBlock.children, treeBlocks, t)
       : 'None'
 
-  const startIcon = children.find((block) => block.id === startIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const startIcon = children.find(
+    (block) => block.id === startIconId && block.__typename === 'IconBlock'
+  ) as TreeBlock<BlockFields_IconBlock> | undefined
 
-  const endIcon = children.find((block) => block.id === endIconId) as
-    | TreeBlock<IconFields>
-    | undefined
+  const endIcon = children.find(
+    (block) => block.id === endIconId && block.__typename === 'IconBlock'
+  ) as TreeBlock<BlockFields_IconBlock> | undefined
 
   const messagePlatform = useMemo(() => findMessagePlatform(action), [action])
   const actionValue = useMemo(
@@ -168,7 +168,10 @@ export function Button({
         stepId: activeBlock?.id,
         label: heading,
         value: resolvedLabel,
-        action: action?.__typename as ButtonAction | undefined,
+        action:
+          action?.__typename != null
+            ? (action.__typename as ButtonAction)
+            : undefined,
         actionValue
       }
       void buttonClickEventCreate({
@@ -258,27 +261,31 @@ export function Button({
     }
   }
 
-  function isEmptyForm(): boolean {
-    return Object.values(formik.values as string).every((value) => value === '')
-  }
-
   const handleClick = async (e: MouseEvent): Promise<void> => {
     e.stopPropagation()
 
     if (submitEnabled && formik != null) {
+      // Control submission flow to ensure events are recorded before navigation
+      e.preventDefault()
       const errors = await formik.validateForm(formik.values)
 
-      if (isEmptyForm()) {
-        e.preventDefault()
-      }
-
-      if (!isEmptyForm() && Object.keys(errors).length > 0) return
+      // Always call submitForm() to touch all fields, ensuring validation errors are displayed.
+      // Per Formik docs, submitForm() will abort submission if validation errors exist.
+      await formik.submitForm()
+      if (Object.keys(errors).length > 0) return
     }
 
-    if (messagePlatform == null) {
-      void createClickEvent()
-    } else {
+    const hasMessagePlatform = messagePlatform != null
+    const isChatAction = action?.__typename === 'ChatAction'
+    const isPhoneAction = action?.__typename === 'PhoneAction'
+    const isLinkChatAction =
+      action?.__typename === 'LinkAction' && hasMessagePlatform
+    const isChatEvent = isLinkChatAction || isChatAction || isPhoneAction
+
+    if (isChatEvent) {
       void createChatEvent()
+    } else {
+      void createClickEvent()
     }
 
     const nextStepSlug = getNextStepSlug(journey, action)

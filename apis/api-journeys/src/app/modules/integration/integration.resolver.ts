@@ -1,13 +1,10 @@
-import { subject } from '@casl/ability'
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql'
-import { GraphQLError } from 'graphql'
+import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
 
-import { CaslAbility, CaslAccessible } from '@core/nest/common/CaslAuthModule'
-import { Integration, Prisma } from '@core/prisma/journeys/client'
+import { CaslAccessible } from '@core/nest/common/CaslAuthModule'
+import { Integration, Prisma, Team } from '@core/prisma/journeys/client'
 
 import { IntegrationType } from '../../__generated__/graphql'
-import { Action, AppAbility } from '../../lib/casl/caslFactory'
 import { AppCaslGuard } from '../../lib/casl/caslGuard'
 import { PrismaService } from '../../lib/prisma.service'
 
@@ -18,6 +15,8 @@ export class IntegrationResolver {
   @ResolveField()
   __resolveType(obj: { type: IntegrationType }): string {
     switch (obj.type) {
+      case 'google':
+        return 'IntegrationGoogle'
       case 'growthSpaces':
         return 'IntegrationGrowthSpaces'
       default:
@@ -35,32 +34,17 @@ export class IntegrationResolver {
     return await this.prismaService.integration.findMany({
       where: {
         AND: [accessibleIntegrations, { teamId }]
-      }
+      },
+      include: { team: true }
     })
   }
 
-  @Mutation()
-  @UseGuards(AppCaslGuard)
-  async integrationDelete(
-    @Args('id') id: string,
-    @CaslAbility() ability: AppAbility
-  ): Promise<Integration> {
-    const integration = await this.prismaService.integration.findUnique({
-      where: { id },
-      include: { team: { include: { userTeams: true } } }
+  @ResolveField()
+  async team(@Parent() integration: Integration): Promise<Team> {
+    const result = await this.prismaService.team.findUnique({
+      where: { id: integration.teamId }
     })
-    if (integration == null)
-      throw new GraphQLError('integration not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-
-    if (!ability.can(Action.Manage, subject('Integration', integration)))
-      throw new GraphQLError('user is not allowed to delete integration', {
-        extensions: { code: 'FORBIDDEN' }
-      })
-
-    return await this.prismaService.integration.delete({
-      where: { id }
-    })
+    // team is required by schema and foreign key constraint ensures presence
+    return result!
   }
 }

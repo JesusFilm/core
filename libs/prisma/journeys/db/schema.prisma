@@ -88,6 +88,7 @@ enum ButtonAction {
   LinkAction
   EmailAction
   PhoneAction
+  ChatAction
 }
 
 enum VideoBlockSource {
@@ -98,6 +99,7 @@ enum VideoBlockSource {
 }
 
 enum IntegrationType {
+  google
   growthSpaces
 }
 
@@ -145,7 +147,7 @@ model Event {
   journeyVisitorVisitorId String?
   updatedAt               DateTime          @default(now()) @updatedAt
   visitor                 Visitor           @relation(fields: [visitorId], references: [id], onDelete: Cascade)
-  journeyVisitor          JourneyVisitor?   @relation(fields: [journeyVisitorJourneyId, journeyVisitorVisitorId], references: [journeyId, visitorId])
+  journeyVisitor          JourneyVisitor?   @relation(fields: [journeyId, visitorId], references: [journeyId, visitorId])
   journey                 Journey?          @relation(fields: [journeyId], references: [id])
 
   @@index(journeyId)
@@ -219,6 +221,7 @@ model JourneyVisitor {
   lastTextResponse          String?
   lastRadioQuestion         String?
   lastRadioOptionSubmission String?
+  lastMultiselectSubmission String?
   activityCount             Int              @default(0)
   updatedAt                 DateTime         @default(now()) @updatedAt
   journey                   Journey          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
@@ -232,6 +235,7 @@ model JourneyVisitor {
   @@index(lastChatStartedAt)
   @@index(lastRadioQuestion)
   @@index(lastTextResponse)
+  @@index(lastMultiselectSubmission)
   @@index(activityCount(sort: Desc))
   @@index(duration(sort: Desc))
 }
@@ -252,22 +256,50 @@ model Team {
   customDomains      CustomDomain[]
   integrations       Integration[]
   qrCodes            QrCode[]
+  googleSheetsSync   GoogleSheetsSync[]
 
   @@index(title)
 }
 
 model Integration {
-  id                     String          @id @default(uuid())
+  id                     String             @id @default(uuid())
   teamId                 String
+  userId                 String?
   type                   IntegrationType
   accessId               String?
   accessSecretPart       String?
   accessSecretCipherText String?
   accessSecretIv         String?
   accessSecretTag        String?
-  team                   Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  accountEmail           String?
+  googleSheetsSyncs      GoogleSheetsSync[]
+  team                   Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@index([teamId])
+  @@index(userId)
+}
+
+model GoogleSheetsSync {
+  id            String    @id @default(uuid())
+  teamId        String
+  journeyId     String
+  integrationId String?
+  spreadsheetId String
+  sheetName     String
+  folderId      String?
+  email         String?
+  deletedAt     DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  integration Integration? @relation(fields: [integrationId], references: [id], onDelete: SetNull)
+  journey     Journey      @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  team        Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index(teamId)
+  @@index(journeyId)
+  @@index(integrationId)
+  @@index(deletedAt)
 }
 
 model UserTeam {
@@ -434,6 +466,7 @@ model Journey {
   journeyTheme                    JourneyTheme?
   journeyCustomizationDescription String?
   journeyCustomizationFields      JourneyCustomizationField[]
+  googleSheetsSync                GoogleSheetsSync[]
 
   @@index(title)
 }
@@ -542,6 +575,8 @@ model Block {
   image                      String?
   duration                   Int?
   objectFit                  VideoBlockObjectFit?
+  subtitleLanguageId         String?
+  showGeneratedSubtitles     Boolean?
   triggerStart               Int?
   x                          Int?
   y                          Int?
@@ -598,6 +633,7 @@ model Action {
   parentBlock   Block    @relation(fields: [parentBlockId], references: [id], onDelete: Cascade)
   journey       Journey? @relation(fields: [journeyId], references: [id])
   block         Block?   @relation("Block", fields: [blockId], references: [id])
+  chatUrl       String?
 
   @@index(parentBlockId)
 }
