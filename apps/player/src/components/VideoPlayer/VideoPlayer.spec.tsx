@@ -266,7 +266,7 @@ describe('VideoPlayer', () => {
       />
     )
 
-    expect(mockPlayer.off).toHaveBeenCalledWith('ended')
+    expect(mockPlayer.off).toHaveBeenCalledWith('ended', expect.any(Function))
     expect(mockPlayer.on).toHaveBeenCalledWith('ended', expect.any(Function))
   })
 })

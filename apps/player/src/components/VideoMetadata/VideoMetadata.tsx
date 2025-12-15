@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactElement } from 'react'
+import type { ReactElement } from 'react'
 
 import { StudyQuestions } from '@/components/StudyQuestions'
 

@@ -140,7 +140,7 @@ describe('PlaylistPage', () => {
       ]
     })
 
-    const { rerender } = render(<PlaylistPage playlist={playlist} />)
+    render(<PlaylistPage playlist={playlist} />)
 
     expect(screen.getByTestId('video-player')).toHaveTextContent('Video 1')
 

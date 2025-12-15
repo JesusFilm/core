@@ -176,11 +176,20 @@ export function VideoPlayer({
     }
 
     const player = videojs.getPlayer(playerRef.current)
-    if (player && !player.isDisposed() && onVideoEnd) {
-      player.off('ended')
-      player.on('ended', () => {
-        onVideoEnd()
-      })
+    if (!player || player.isDisposed() || !onVideoEnd) {
+      return
+    }
+
+    const endedHandler = () => {
+      onVideoEnd()
+    }
+
+    player.on('ended', endedHandler)
+
+    return () => {
+      if (!player.isDisposed()) {
+        player.off('ended', endedHandler)
+      }
     }
   }, [onVideoEnd])
 

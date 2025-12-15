@@ -36,6 +36,7 @@ export function VideoControls({ player }: VideoControlsProps): ReactElement {
   const [controlsVisible, setControlsVisible] = useState(true)
   const iconRef = useRef<HTMLDivElement>(null)
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const iconTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     if (!player) return
@@ -145,6 +146,14 @@ export function VideoControls({ player }: VideoControlsProps): ReactElement {
     }
   }, [playing])
 
+  useEffect(() => {
+    return () => {
+      if (iconTimeoutRef.current) {
+        clearTimeout(iconTimeoutRef.current)
+      }
+    }
+  }, [])
+
   const showControls = () => {
     setControlsVisible(true)
     if (hideTimeoutRef.current) {
@@ -166,8 +175,11 @@ export function VideoControls({ player }: VideoControlsProps): ReactElement {
       player.pause()
     }
     if (showIcon) {
+      if (iconTimeoutRef.current) {
+        clearTimeout(iconTimeoutRef.current)
+      }
       setShowPlayPauseIcon(true)
-      setTimeout(() => {
+      iconTimeoutRef.current = setTimeout(() => {
         setShowPlayPauseIcon(false)
       }, 1000)
     }
@@ -191,7 +203,10 @@ export function VideoControls({ player }: VideoControlsProps): ReactElement {
       handlePlayPause()
 
       // Hide after animation completes (200ms fade in + 1000ms hold + 200ms fade out = 1400ms)
-      setTimeout(() => {
+      if (iconTimeoutRef.current) {
+        clearTimeout(iconTimeoutRef.current)
+      }
+      iconTimeoutRef.current = setTimeout(() => {
         setShowPlayPauseIcon(false)
       }, 1400)
     }
@@ -219,6 +234,50 @@ export function VideoControls({ player }: VideoControlsProps): ReactElement {
 
   const handleMouseLeave = () => {
     setHoverPosition(null)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!player || !duration) return
+
+    let newTime = currentTime
+    const seekStep = 5
+
+    switch (e.key) {
+      case 'ArrowLeft':
+        e.preventDefault()
+        newTime = Math.max(0, currentTime - seekStep)
+        break
+      case 'ArrowRight':
+        e.preventDefault()
+        newTime = Math.min(duration, currentTime + seekStep)
+        break
+      case 'Home':
+        e.preventDefault()
+        newTime = 0
+        break
+      case 'End':
+        e.preventDefault()
+        newTime = duration
+        break
+      case 'PageUp':
+        e.preventDefault()
+        newTime = Math.min(duration, currentTime + 10)
+        break
+      case 'PageDown':
+        e.preventDefault()
+        newTime = Math.max(0, currentTime - 10)
+        break
+      case 'Enter':
+      case ' ':
+        e.preventDefault()
+        newTime = currentTime
+        break
+      default:
+        return
+    }
+
+    setCurrentTime(newTime)
+    player.currentTime(newTime)
   }
 
   const handleMute = () => {
@@ -307,11 +366,19 @@ export function VideoControls({ player }: VideoControlsProps): ReactElement {
       >
         <div>
           <div
-            className="relative h-2 w-full cursor-pointer rounded-full bg-white/20"
+            className="relative h-2 w-full cursor-pointer rounded-full bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50"
             data-progress-bar
+            role="slider"
+            tabIndex={0}
+            aria-label="Seek"
+            aria-valuemin={0}
+            aria-valuemax={duration}
+            aria-valuenow={currentTime}
+            aria-valuetext={formatTime(currentTime)}
             onClick={handleSeek}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
+            onKeyDown={handleKeyDown}
           >
             <div
               className="absolute top-0 left-0 h-full rounded-full bg-white/40"

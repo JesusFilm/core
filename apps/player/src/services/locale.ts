@@ -7,6 +7,10 @@ import { defaultLocale, locales } from '@/i18n/config'
 
 const COOKIE_NAME = 'NEXT_LOCALE'
 
+function isLocale(v: unknown): v is Locale {
+  return typeof v === 'string' && locales.includes(v as Locale)
+}
+
 function parseAcceptLanguage(acceptLanguage: string): Locale {
   const languages = acceptLanguage
     .split(',')
@@ -49,8 +53,8 @@ export async function getUserLocale(): Promise<Locale> {
   const cookieStore = await cookies()
   const cookieValue = cookieStore.get(COOKIE_NAME)?.value
 
-  if (cookieValue != null && locales.includes(cookieValue as Locale)) {
-    return cookieValue as Locale
+  if (isLocale(cookieValue)) {
+    return cookieValue
   }
 
   const headersList = await headers()

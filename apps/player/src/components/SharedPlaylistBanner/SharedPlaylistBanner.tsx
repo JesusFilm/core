@@ -76,7 +76,7 @@ export function SharedPlaylistBanner({
             })}
           </div>
           <div className="flex flex-row gap-4">
-            {(platform === 'ios' || platform === 'other') && (
+            {platform === 'other' && (
               <a
                 href={`https://apps.apple.com/app/id${env.NEXT_PUBLIC_IOS_APP_ID}`}
                 target="_blank"
@@ -89,7 +89,7 @@ export function SharedPlaylistBanner({
                 />
               </a>
             )}
-            {(platform === 'android' || platform === 'other') && (
+            {
               <a
                 href={`https://play.google.com/store/apps/details?id=${env.NEXT_PUBLIC_ANDROID_APP_ID}`}
                 target="_blank"
@@ -101,7 +101,7 @@ export function SharedPlaylistBanner({
                   height={40}
                 />
               </a>
-            )}
+            }
           </div>
         </div>
         <button

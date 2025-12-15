@@ -15,7 +15,7 @@ export default async function RootIndexPage() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">{t('title')}</h1>
+        <h1 className="mb-4 text-4xl font-bold">{t('pageTitle')}</h1>
         <p className="text-text-secondary">{t('description')}</p>
       </div>
     </div>

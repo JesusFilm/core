@@ -1,6 +1,6 @@
 {
   "RootIndexPage": {
-    "title": "Player",
+    "pageTitle": "Player",
     "description": "Navigate to /pl/[playlistId] to view a playlist"
   },
   "Metadata": {

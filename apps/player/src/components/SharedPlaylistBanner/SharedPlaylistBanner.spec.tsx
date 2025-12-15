@@ -107,7 +107,7 @@ describe('SharedPlaylistBanner', () => {
 
   it('renders banner when not dismissed and not iOS', () => {
     render(<SharedPlaylistBanner name="John" />)
-    const banner = screen.getAllByText((content, element) => {
+    const banner = screen.getAllByText((_content, element) => {
       return element?.textContent?.includes('sharedWithYou') || false
     })[0]
     expect(banner).toBeInTheDocument()

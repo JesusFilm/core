@@ -76,7 +76,7 @@ describe('PlaylistList', () => {
   })
 
   it('highlights active item', () => {
-    const { container } = render(
+    render(
       <PlaylistList
         items={mockItems}
         activeIndex={0}
@@ -102,8 +102,8 @@ describe('PlaylistList', () => {
 
   it('calls onVideoSelect when item is clicked', async () => {
     const user = userEvent.setup()
-    const itemsWithHls = [
-      mockItems[0],
+    const itemsWithHls: typeof mockItems = [
+      mockItems[0]!,
       {
         id: 'item-3',
         order: 3,

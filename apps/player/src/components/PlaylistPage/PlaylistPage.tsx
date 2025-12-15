@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { type ReactElement, useState } from 'react'
+import { type ReactElement, useEffect, useState } from 'react'
 
 import { PlaylistList } from '@/components/PlaylistList'
 import { TopNavBar } from '@/components/TopNavBar'
@@ -60,6 +60,14 @@ interface PlaylistPageProps {
 export function PlaylistPage({ playlist }: PlaylistPageProps): ReactElement {
   const t = useTranslations('PlaylistPage')
   const [activeVideoIndex, setActiveVideoIndex] = useState(0)
+
+  useEffect(() => {
+    if (activeVideoIndex >= playlist.items.length) {
+      setActiveVideoIndex(
+        playlist.items.length > 0 ? playlist.items.length - 1 : 0
+      )
+    }
+  }, [playlist.items.length, activeVideoIndex])
 
   const activeItem = playlist.items[activeVideoIndex]
   const activeVideoVariant = activeItem?.videoVariant

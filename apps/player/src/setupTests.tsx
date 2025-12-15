@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 import 'isomorphic-fetch'
 import { configure } from '@testing-library/react'
+import type Player from 'video.js/dist/types/player'
 
 configure({ asyncUtilTimeout: 2500 })
 
@@ -102,7 +103,7 @@ const mockPlayer = {
   off: jest.fn(),
   src: jest.fn(),
   poster: jest.fn()
-}
+} as unknown as Player
 
 jest.mock('video.js', () => {
   const mockVideojs = jest.fn(() => mockPlayer)
