@@ -7,52 +7,14 @@ import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useState } from 'react'
 
-import { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
 import ActivityIcon from '@core/shared/ui/icons/Activity'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
-// TODO: get real types for backend
-type MetaActionType =
-  | 'none'
-  | 'prayerRequestCapture'
-  | 'christDecisionCapture'
-  | 'gospelStartCapture'
-  | 'gospelCompleteCapture'
-  | 'rsvpCapture'
-  | 'specialVideoStartCapture'
-  | 'specialVideoCompleteCapture'
-  | 'custom1Capture'
-  | 'custom2Capture'
-  | 'custom3Capture'
-
-interface MetaAction {
-  type: MetaActionType
-  label: string
-}
-
-const metaActions: MetaAction[] = [
-  { type: 'none', label: 'None' },
-  { type: 'prayerRequestCapture', label: 'Prayer Request' },
-  { type: 'christDecisionCapture', label: 'Decision for Christ' },
-  {
-    type: 'gospelStartCapture',
-    label: 'Gospel Presentation Started'
-  },
-  {
-    type: 'gospelCompleteCapture',
-    label: 'Gospel Presentation Completed'
-  },
-  { type: 'rsvpCapture', label: 'RSVP' },
-  { type: 'specialVideoStartCapture', label: 'Video Started' },
-  {
-    type: 'specialVideoCompleteCapture',
-    label: 'Video Completed'
-  },
-  { type: 'custom1Capture', label: 'Custom Event 1' },
-  { type: 'custom2Capture', label: 'Custom Event 2' },
-  { type: 'custom3Capture', label: 'Custom Event 3' }
-]
+import { getCurrentAction } from './utils/getCurrentAction'
+import { getFilteredActions } from './utils/getFilteredActions'
+import { getNewAction } from './utils/getNewAction'
+import type { MetaAction } from './utils/metaActions'
 
 interface MetaActionProps {
   videoActionType?: 'start' | 'complete'
@@ -116,122 +78,4 @@ export function MetaAction({
       </Stack>
     </>
   )
-}
-
-function getFilteredActions(
-  selectedBlock?: TreeBlock,
-  videoActionType?: 'start' | 'complete'
-): MetaAction[] {
-  if (selectedBlock == null) {
-    return metaActions
-  }
-
-  const allowedActionTypes: MetaActionType[] = []
-
-  switch (selectedBlock.__typename) {
-    case 'CardBlock':
-      allowedActionTypes.push(
-        'none',
-        'christDecisionCapture',
-        'gospelStartCapture',
-        'gospelCompleteCapture',
-        'custom1Capture',
-        'custom2Capture',
-        'custom3Capture'
-      )
-      break
-
-    case 'ButtonBlock': {
-      const isSubmitButton =
-        'submitEnabled' in selectedBlock && selectedBlock.submitEnabled === true
-
-      if (isSubmitButton) {
-        allowedActionTypes.push(
-          'none',
-          'rsvpCapture',
-          'prayerRequestCapture',
-          'christDecisionCapture',
-          'custom1Capture',
-          'custom2Capture',
-          'custom3Capture'
-        )
-      } else {
-        allowedActionTypes.push(
-          'none',
-          'christDecisionCapture',
-          'prayerRequestCapture',
-          'gospelStartCapture',
-          'gospelCompleteCapture',
-          'custom1Capture',
-          'custom2Capture',
-          'custom3Capture'
-        )
-      }
-      break
-    }
-
-    case 'RadioOptionBlock':
-      allowedActionTypes.push(
-        'none',
-        'christDecisionCapture',
-        'prayerRequestCapture',
-        'gospelStartCapture',
-        'gospelCompleteCapture',
-        'custom1Capture',
-        'custom2Capture',
-        'custom3Capture'
-      )
-      break
-
-    case 'VideoBlock': {
-      if (videoActionType == null) {
-        return metaActions
-      }
-      if (videoActionType === 'start') {
-        allowedActionTypes.push(
-          'none',
-          'specialVideoStartCapture',
-          'gospelStartCapture',
-          'christDecisionCapture',
-          'prayerRequestCapture',
-          'custom1Capture',
-          'custom2Capture',
-          'custom3Capture'
-        )
-      } else if (videoActionType === 'complete') {
-        allowedActionTypes.push(
-          'none',
-          'specialVideoCompleteCapture',
-          'gospelCompleteCapture',
-          'christDecisionCapture',
-          'prayerRequestCapture',
-          'custom1Capture',
-          'custom2Capture',
-          'custom3Capture'
-        )
-      }
-      break
-    }
-
-    default:
-      return metaActions
-  }
-
-  return metaActions.filter((action) =>
-    allowedActionTypes.includes(action.type)
-  )
-}
-
-function getCurrentAction(
-  selectedBlock?: TreeBlock,
-  videoActionType?: 'start' | 'complete'
-): MetaAction {
-  // return (selectedBlock?.metaAction?.__typename as MetaActionType) ?? 'none'
-  // TODO: fix logic for finding action of the block
-  // once block types are added
-  return metaActions[0]
-}
-
-function getNewAction(value: string): MetaAction {
-  return metaActions.find((action) => action.type === value) ?? metaActions[0]
 }
