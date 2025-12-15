@@ -1,5 +1,9 @@
 import { Breakpoint, ThemeProvider, createTheme } from '@mui/material/styles'
 import { render, screen } from '@testing-library/react'
+import { MockedProvider } from '@apollo/client/testing'
+
+
+
 
 import '@testing-library/jest-dom' // For extended matchers like toBeInTheDocument
 import { CenterPage } from './CenterPage'
@@ -43,5 +47,21 @@ describe('CenterPage Component', () => {
 
     const card = screen.getByTestId('CenterPageCard')
     expect(card).toHaveStyle('padding: 16px')
+  })
+
+  it('should display the privacy policy button', () => {
+    render(
+      <MockedProvider>
+        <CenterPage>
+          <div data-testid="child-content">Test Child</div>
+        </CenterPage>
+      </MockedProvider>
+    )
+
+    expect(
+      screen.getByRole('button', {name: 'Privacy Policy'})
+    )
+
+    expect(screen.getAllByRole('link', { name: 'Privacy Policy'})[0]).toHaveAttribute('href', 'https://www.cru.org/us/en/about/privacy.html')
   })
 })
