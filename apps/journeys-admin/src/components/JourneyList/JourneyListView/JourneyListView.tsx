@@ -14,6 +14,7 @@ import { useBreakpoints } from '@core/shared/ui/useBreakpoints'
 
 import type { JourneyListEvent } from '../JourneyList'
 import { SortOrder } from '../JourneySort'
+
 import { SharedWithMeMode } from './DisplayModes/SharedWithMeMode/SharedWithMeMode'
 import { ContentTypeOption, TeamMode } from './DisplayModes/TeamMode/TeamMode'
 

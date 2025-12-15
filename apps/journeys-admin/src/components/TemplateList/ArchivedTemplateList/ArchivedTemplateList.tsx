@@ -13,12 +13,12 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { JourneyFields } from '../../../../__generated__/JourneyFields'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
+import { JourneyCard } from '../../JourneyList/JourneyCard'
+import type { JourneyListProps } from '../../JourneyList/JourneyList'
 import {
   RESTORE_ARCHIVED_JOURNEYS,
   TRASH_ARCHIVED_JOURNEYS
 } from '../../JourneyList/JourneyListContent/JourneyListContent'
-import { JourneyCard } from '../../JourneyList/JourneyCard'
-import type { JourneyListProps } from '../../JourneyList/JourneyList'
 import { sortJourneys } from '../../JourneyList/JourneySort/utils/sortJourneys'
 import { LoadingJourneyList } from '../../JourneyList/LoadingJourneyList'
 
