@@ -86,7 +86,7 @@ export function MetaAction({
 
   return (
     <>
-      <Stack sx={{ px: 4, pt: 0, pb: 3 }} data-testid="Action">
+      <Stack sx={{ px: 4, pt: 0, pb: 3 }} data-testid="MetaActionSelect">
         <FormControl variant="filled">
           <InputLabel sx={{ '&.MuiFormLabel-root': { lineHeight: 1.5 } }}>
             {displayLabel}

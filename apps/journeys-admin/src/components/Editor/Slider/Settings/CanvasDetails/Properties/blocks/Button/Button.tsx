@@ -5,6 +5,7 @@ import { ReactElement, useEffect } from 'react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { useEditor } from '@core/journeys/ui/EditorProvider'
+import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import ActivityIcon from '@core/shared/ui/icons/Activity'
 import AlertCircleIcon from '@core/shared/ui/icons/AlertCircle'
 import AlignLeft from '@core/shared/ui/icons/AlignLeft'
@@ -44,6 +45,7 @@ export function Button({
   settings
 }: TreeBlock<ButtonBlock>): ReactElement {
   const { dispatch } = useEditor()
+  const { journey } = useJourney()
   const { t } = useTranslation('apps-journeys-admin')
 
   const startIcon = children.find(
@@ -65,14 +67,16 @@ export function Button({
 
   return (
     <Box data-testid="ButtonProperties">
-      <Accordion
-        icon={<ActivityIcon />}
-        id={`${id}-meta-action`}
-        name={t('Tracking')}
-        value={t('None')}
-      >
-        <MetaAction />
-      </Accordion>
+      {journey?.template && (
+        <Accordion
+          icon={<ActivityIcon />}
+          id={`${id}-meta-action`}
+          name={t('Tracking')}
+          value={t('None')}
+        >
+          <MetaAction />
+        </Accordion>
+      )}
       <Accordion
         id={`${id}-button-action`}
         icon={<LinkIcon />}

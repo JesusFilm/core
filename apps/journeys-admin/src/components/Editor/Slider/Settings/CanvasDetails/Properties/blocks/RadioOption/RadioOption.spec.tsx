@@ -4,6 +4,7 @@ import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import {
   BlockFields_RadioOptionBlock as RadioOptionBlock,
@@ -13,6 +14,7 @@ import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 
 import { RadioOption } from '.'
+import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
 
 describe('RadioOption Attribute', () => {
   const block: TreeBlock<RadioOptionBlock> = {
@@ -36,6 +38,28 @@ describe('RadioOption Attribute', () => {
     )
     await waitFor(() =>
       expect(getByRole('button', { name: 'Action None' })).toBeInTheDocument()
+    )
+  })
+
+  it('shows meta action when template', async () => {
+    const { getByTestId } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: { template: true } as unknown as JourneyFields,
+              variant: 'admin'
+            }}
+          >
+            <EditorProvider initialState={{ selectedBlock: block }}>
+              <RadioOption {...block} />
+            </EditorProvider>
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    await waitFor(() =>
+      expect(getByTestId('MetaActionSelect')).toBeInTheDocument()
     )
   })
 

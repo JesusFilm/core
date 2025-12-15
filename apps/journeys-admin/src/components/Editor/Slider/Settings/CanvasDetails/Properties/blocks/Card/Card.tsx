@@ -21,8 +21,6 @@ import { ThemeMode, ThemeName, getTheme } from '@core/shared/ui/themes'
 
 import { BlockFields_CardBlock as CardBlock } from '../../../../../../../../../__generated__/BlockFields'
 import { Accordion } from '../../Accordion'
-// TODO: dynamic import
-import { MetaAction } from '../../controls/MetaAction'
 
 const BackgroundColor = dynamic(
   async () =>
@@ -53,6 +51,14 @@ const CardStyling = dynamic(
     await import(
       /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/CardStyling/CardStyling" */ './CardStyling'
     ).then((mod) => mod.CardStyling),
+  { ssr: false }
+)
+
+const MetaAction = dynamic(
+  async () =>
+    await import(
+      /* webpackChunkName: "Editor/ControlPanel/Attributes/blocks/Card/MetaAction/MetaAction" */ '../../controls/MetaAction'
+    ).then((mod) => mod.MetaAction),
   { ssr: false }
 )
 
@@ -124,14 +130,16 @@ export function Card({
 
   return (
     <Box data-testid="CardProperties">
-      <Accordion
-        icon={<ActivityIcon />}
-        id={`${id}-meta-action`}
-        name={t('Tracking')}
-        value={t('None')}
-      >
-        <MetaAction />
-      </Accordion>
+      {journey?.template && (
+        <Accordion
+          icon={<ActivityIcon />}
+          id={`${id}-meta-action`}
+          name={t('Tracking')}
+          value={t('None')}
+        >
+          <MetaAction />
+        </Accordion>
+      )}
       <Accordion
         icon={<FlexAlignBottom1Icon />}
         id={`${id}-layout`}
