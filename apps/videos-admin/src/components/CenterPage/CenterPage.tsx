@@ -3,7 +3,7 @@
 import Button from '@mui/material/Button'
 import MuiCard from '@mui/material/Card'
 import Stack from '@mui/material/Stack'
-import { SxProps , styled, useTheme } from '@mui/material/styles'
+import { SxProps, styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, ReactNode } from 'react'
