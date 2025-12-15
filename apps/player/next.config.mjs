@@ -63,6 +63,15 @@ const nextConfig = {
       'node_modules/@swc/core-linux-x64-musl',
       'node_modules/esbuild-linux-64/bin'
     ]
+  },
+  redirects() {
+    return [
+      {
+        source: '/',
+        destination: 'https://jesusfilm.org/watch',
+        permanent: false
+      }
+    ]
   }
 }
 

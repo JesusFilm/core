@@ -17,6 +17,7 @@
           "commands": [
             "rm -rf apps/player/src/i18n/locales",
             "cp -r libs/locales apps/player/src/i18n",
+            "rm apps/player/src/i18n/locales/project.json",
             "CI=true nx _build player --prod"
           ]
         }
