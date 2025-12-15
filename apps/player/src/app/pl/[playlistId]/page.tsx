@@ -2,9 +2,10 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 
+import { getPlaylist } from './getPlaylist'
+
 import { PlaylistPage } from '@/components/PlaylistPage'
 import { env } from '@/env'
-import { getPlaylist } from './getPlaylist'
 
 interface PageProps {
   params: Promise<{

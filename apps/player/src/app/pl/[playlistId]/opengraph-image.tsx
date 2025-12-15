@@ -1,9 +1,31 @@
 import { ImageResponse } from 'next/og'
+
 import { getPlaylist } from './getPlaylist'
+
 import { env } from '@/env'
 
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
+
+const Logo = () => {
+  return (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#F7F5F1'
+      }}
+    >
+      <img
+        src={`${env.VERCEL_URL ? `https://${env.VERCEL_URL}` : 'http://localhost:4700'}/images/logo-sign.svg`}
+        style={{ width: '294px', height: '216px' }}
+      />
+    </div>
+  )
+}
 
 export default async function Image({
   params
@@ -18,7 +40,7 @@ export default async function Image({
     'message' in data.playlist ||
     data.playlist.__typename !== 'QueryPlaylistSuccess'
   ) {
-    return new ImageResponse(<div>Error: Playlist not found</div>, {
+    return new ImageResponse(<Logo />, {
       width: size.width,
       height: size.height
     })
@@ -35,25 +57,10 @@ export default async function Image({
   })
 
   if (images.length === 0) {
-    return new ImageResponse(
-      (
-        <div
-          style={{
-            fontSize: 48,
-            color: 'white',
-            background: 'black',
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          <span>No images available</span>
-        </div>
-      ),
-      { width: size.width, height: size.height }
-    )
+    return new ImageResponse(<Logo />, {
+      width: size.width,
+      height: size.height
+    })
   }
 
   const MAX_CELLS = 4
@@ -127,25 +134,7 @@ export default async function Image({
                   }}
                 />
               )}
-              {!isHiddenCell && image == null && (
-                <div
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                >
-                  <img
-                    src={`${env.VERCEL_URL ? `https://${env.VERCEL_URL}` : 'http://localhost:4700'}/images/logo-sign.svg`}
-                    style={{
-                      width: '147px',
-                      height: '108px'
-                    }}
-                  />
-                </div>
-              )}
+              {!isHiddenCell && image == null && <Logo />}
             </div>
           )
         })}
