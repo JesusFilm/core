@@ -86,6 +86,7 @@ export function JourneyAppearance(): ReactElement {
       border={1}
       borderColor="divider"
       data-testid="SettingsDrawer"
+      className="swiper-no-swiping"
     >
       <DrawerTitle title={t('Journey Appearance')} onClose={onClose} />
       {websiteMode && <WebsiteToggle />}
