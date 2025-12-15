@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { env } from '@/env'
 
-export const revalidate = 60 * 60 * 24 * 30 // 30 days
+export const revalidate = 2592000 // 30 days
 
 export function GET() {
   return NextResponse.json(
