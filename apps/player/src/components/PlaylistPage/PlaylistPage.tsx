@@ -1,11 +1,13 @@
 'use client'
 
-import { ReactElement, useState } from 'react'
+import { useTranslations } from 'next-intl'
+import { type ReactElement, useState } from 'react'
 
+import { PlaylistList } from '@/components/PlaylistList'
 import { TopNavBar } from '@/components/TopNavBar'
 import { VideoMetadata } from '@/components/VideoMetadata'
 import { VideoPlayer } from '@/components/VideoPlayer'
-import { PlaylistList } from '@/components/PlaylistList'
+import { SharedPlaylistBanner } from '@/components/SharedPlaylistBanner'
 
 interface PlaylistItem {
   id: string
@@ -56,6 +58,7 @@ interface PlaylistPageProps {
 }
 
 export function PlaylistPage({ playlist }: PlaylistPageProps): ReactElement {
+  const t = useTranslations('PlaylistPage')
   const [activeVideoIndex, setActiveVideoIndex] = useState(0)
 
   const activeItem = playlist.items[activeVideoIndex]
@@ -72,7 +75,7 @@ export function PlaylistPage({ playlist }: PlaylistPageProps): ReactElement {
               {playlist.owner.firstName}
               {playlist.owner.lastName ? ` ${playlist.owner.lastName}` : ''}
             </p>
-            <p className="text-text-secondary">No video available</p>
+            <p className="text-text-secondary">{t('noVideoAvailable')}</p>
           </div>
         </div>
       </div>
@@ -93,6 +96,7 @@ export function PlaylistPage({ playlist }: PlaylistPageProps): ReactElement {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <SharedPlaylistBanner name={playlist.owner.firstName} />
       <TopNavBar />
       <div className="grid grid-cols-1 gap-1 px-4 lg:grid-cols-[1fr_400px] lg:px-8">
         <div className="lg:pr-2">

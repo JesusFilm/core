@@ -1,16 +1,18 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { type ReactElement, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
+import type Player from 'video.js/dist/types/player'
 
 import type { MuxMetadata } from '@core/shared/ui/muxMetadataType'
-import type Player from 'video.js/dist/types/player'
-import 'video.js/dist/video-js.css'
+
+import { VideoControls } from './VideoControls'
 
 import { env } from '@/env'
 
 import 'videojs-mux'
-import { VideoControls } from './VideoControls'
+import 'video.js/dist/video-js.css'
 
 interface VideoPlayerProps {
   hlsUrl: string
@@ -25,6 +27,7 @@ export function VideoPlayer({
   thumbnail,
   onVideoEnd
 }: VideoPlayerProps): ReactElement {
+  const t = useTranslations('VideoPlayer')
   const playerRef = useRef<HTMLVideoElement>(null)
   const [player, setPlayer] = useState<Player | null>(null)
 
@@ -145,7 +148,7 @@ export function VideoPlayer({
         player.src({ src: hlsUrl, type: 'application/x-mpegURL' })
 
         const handleCanPlay = () => {
-          player.play().catch(() => {
+          player.play()?.catch(() => {
             // Ignore play() errors (e.g., autoplay restrictions)
           })
           player.off('canplay', handleCanPlay)
@@ -192,7 +195,7 @@ export function VideoPlayer({
 
     if (!isControlClick) {
       if (player.paused()) {
-        player.play()
+        void player.play()
       } else {
         player.pause()
       }
@@ -215,15 +218,17 @@ export function VideoPlayer({
       >
         <source src={hlsUrl} type="application/x-mpegURL" />
         <p className="vjs-no-js">
-          To view this video please enable JavaScript, and consider upgrading to
-          a web browser that{' '}
-          <a
-            href="https://videojs.com/html5-video-support/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            supports HTML5 video
-          </a>
+          {t.rich('lackOfBrowserSupport', {
+            link: (chunks) => (
+              <a
+                href="https://videojs.com/html5-video-support/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {chunks}
+              </a>
+            )
+          })}
         </p>
       </video>
       {player && <VideoControls player={player} />}

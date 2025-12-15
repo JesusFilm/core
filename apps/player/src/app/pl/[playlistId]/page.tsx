@@ -1,10 +1,12 @@
-import { cache } from 'react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
+import { cache } from 'react'
 
+import { PlaylistPage } from '@/components/PlaylistPage'
+import { env } from '@/env'
 import { getApolloClient } from '@/lib/apolloClient'
 import { GET_PLAYLIST } from '@/lib/queries/getPlaylist'
-import { PlaylistPage } from '@/components/PlaylistPage'
 
 interface PageProps {
   params: Promise<{
@@ -25,6 +27,8 @@ const getPlaylist = cache(async (playlistId: string) => {
 })
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const t = await getTranslations('Metadata')
+  const p = await getTranslations('PlaylistRoutePage')
   const params = await props.params
   const playlistId = params.playlistId
 
@@ -36,18 +40,22 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
     data.playlist.__typename !== 'QueryPlaylistSuccess'
   ) {
     return {
-      title: 'Playlist | Jesus Film Project'
+      title: t('pageTitle', { title: p('title') }),
+      other: {
+        'apple-itunes-app': `app-id=${env.NEXT_PUBLIC_IOS_APP_ID}; app-argument=https://player.jesusfilmproject.org/p/${playlistId}`
+      }
     }
   }
 
   const playlist = data.playlist.data
 
   return {
-    title: `${playlist.name} | Jesus Film Project`
+    title: t('pageTitle', { title: playlist.name })
   }
 }
 
 export default async function PlaylistRoutePage(props: PageProps) {
+  const t = await getTranslations('PlaylistRoutePage')
   const params = await props.params
   const playlistId = params.playlistId
 
@@ -72,7 +80,7 @@ export default async function PlaylistRoutePage(props: PageProps) {
             {playlist.owner.firstName}
             {playlist.owner.lastName ? ` ${playlist.owner.lastName}` : ''}
           </p>
-          <p className="text-text-secondary">This playlist is empty</p>
+          <p className="text-text-secondary">{t('thisPlaylistIsEmpty')}</p>
         </div>
       </div>
     )

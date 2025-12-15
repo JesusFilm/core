@@ -1,21 +1,21 @@
-import baseConfig from '../../eslint.config.mjs'
+import nextConfig from '../../libs/shared/eslint/next.mjs'
 
 export default [
-  ...baseConfig,
+  ...nextConfig,
+  {
+    ignores: ['apps/player/jest.config.ts', 'apps/player/next.config.js']
+  },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-    rules: {}
+    rules: {
+      '@next/next/no-html-link-for-pages': ['error', 'apps/player/src/pages/']
+    }
   },
   {
     files: ['**/*.ts', '**/*.tsx'],
-    rules: {}
-  },
-  {
-    files: ['**/*.js', '**/*.jsx'],
-    rules: {}
-  },
-  {
-    ignores: ['.next/**']
+    rules: {
+      'no-void': ['error', { allowAsStatement: true }],
+      '@typescript-eslint/no-misused-promises': 'off'
+    }
   }
 ]
-

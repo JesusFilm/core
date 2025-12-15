@@ -1,6 +1,8 @@
 'use client'
 
-import { ReactElement } from 'react'
+import Image from 'next/image'
+import { useTranslations } from 'next-intl'
+import type { ReactElement } from 'react'
 
 interface PlaylistItem {
   id: string
@@ -49,6 +51,7 @@ export function PlaylistList({
   activeIndex,
   onVideoSelect
 }: PlaylistListProps): ReactElement {
+  const t = useTranslations('PlaylistList')
   return (
     <div className="space-y-0">
       {items.map((item, index) => {
@@ -87,10 +90,12 @@ export function PlaylistList({
               </div>
               {thumbnail ? (
                 <div className="relative h-14 w-24 flex-shrink-0 overflow-hidden rounded bg-gray-200 dark:bg-gray-800">
-                  <img
+                  <Image
                     src={thumbnail}
                     alt={title}
                     className="h-full w-full object-cover"
+                    width={96}
+                    height={56}
                   />
                   <div className="absolute right-1 bottom-1 rounded bg-black/80 px-1.5 py-0.5 text-xs text-white">
                     {formatDuration(duration)}
@@ -98,7 +103,9 @@ export function PlaylistList({
                 </div>
               ) : (
                 <div className="relative flex h-14 w-24 flex-shrink-0 items-center justify-center rounded bg-gray-200 dark:bg-gray-800">
-                  <div className="text-xs text-gray-400">No thumbnail</div>
+                  <div className="text-xs text-gray-400">
+                    {t('noThumbnail')}
+                  </div>
                   <div className="absolute right-1 bottom-1 rounded bg-black/80 px-1.5 py-0.5 text-xs text-white">
                     {formatDuration(duration)}
                   </div>

@@ -3,12 +3,9 @@
 import { type ReactElement, useEffect, useRef, useState } from 'react'
 import { CSSTransition } from 'react-transition-group'
 import type Player from 'video.js/dist/types/player'
-import videojs from 'video.js'
 
 interface VideoControlsProps {
   player: Player | null
-  onPrevious?: () => void
-  onNext?: () => void
 }
 
 function formatTime(seconds: number): string {
@@ -22,11 +19,7 @@ function formatTime(seconds: number): string {
   return `${minutes}:${secs.toString().padStart(2, '0')}`
 }
 
-export function VideoControls({
-  player,
-  onPrevious,
-  onNext
-}: VideoControlsProps): ReactElement {
+export function VideoControls({ player }: VideoControlsProps): ReactElement {
   const [playing, setPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
@@ -71,15 +64,15 @@ export function VideoControls({
     }
 
     const updateMuted = () => {
-      setMuted(player.muted())
+      setMuted(player.muted() ?? false)
     }
 
     const updateVolume = () => {
-      setVolume(player.volume())
+      setVolume(player.volume() ?? 0)
     }
 
     const handleFullscreenChange = () => {
-      setIsFullscreen(player.isFullscreen())
+      setIsFullscreen(player.isFullscreen() ?? false)
     }
 
     const handleTimeUpdate = () => {
@@ -168,7 +161,7 @@ export function VideoControls({
     if (!player) return
     const wasPaused = player.paused()
     if (wasPaused) {
-      player.play()
+      void player.play()
     } else {
       player.pause()
     }
@@ -236,18 +229,10 @@ export function VideoControls({
   const handleFullscreen = () => {
     if (!player) return
     if (player.isFullscreen()) {
-      player.exitFullscreen()
+      void player.exitFullscreen()
     } else {
-      player.requestFullscreen()
+      void player.requestFullscreen()
     }
-  }
-
-  const handlePrevious = () => {
-    onPrevious?.()
-  }
-
-  const handleNext = () => {
-    onNext?.()
   }
 
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0
@@ -362,7 +347,7 @@ export function VideoControls({
           onMouseEnter={showControls}
         >
           <button
-            onClick={handlePlayPause}
+            onClick={() => handlePlayPause()}
             className="!flex h-[45px] w-[45px] cursor-pointer items-center justify-center rounded-full !bg-black/25 text-white hover:opacity-80"
             aria-label={playing ? 'Pause' : 'Play'}
           >

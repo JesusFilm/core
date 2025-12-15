@@ -1,6 +1,7 @@
 'use client'
 
-import { ReactElement } from 'react'
+import { useTranslations } from 'next-intl'
+import type { ReactElement } from 'react'
 
 interface StudyQuestion {
   value: string
@@ -14,6 +15,7 @@ interface StudyQuestionsProps {
 export function StudyQuestions({
   questions
 }: StudyQuestionsProps): ReactElement {
+  const t = useTranslations('StudyQuestions')
   if (questions.length === 0) {
     return <></>
   }
@@ -21,7 +23,7 @@ export function StudyQuestions({
   return (
     <div className="mt-4">
       <h3 className="mb-3 text-base font-semibold text-gray-900 dark:text-white">
-        Study Questions
+        {t('title')}
       </h3>
       <ul className="space-y-3">
         {questions.map((question, index) => (

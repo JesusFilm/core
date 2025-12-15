@@ -1,0 +1,30 @@
+{
+  "RootIndexPage": {
+    "title": "Player",
+    "description": "Navigate to /pl/[playlistId] to view a playlist"
+  },
+  "Metadata": {
+    "pageTitle": "{title} | Jesus Film Project"
+  },
+  "PlaylistRoutePage": {
+    "title": "Playlist",
+    "thisPlaylistIsEmpty": "This playlist is empty"
+  },
+  "PlaylistPage": {
+    "noVideoAvailable": "No video available"
+  },
+  "PlaylistList": {
+    "noThumbnail": "No thumbnail"
+  },
+  "StudyQuestions": {
+    "title": "Study Questions"
+  },
+  "VideoPlayer": {
+    "lackOfBrowserSupport": "To view this video please enable JavaScript, and consider upgrading to a web browser that <link>supports HTML5 video</link>"
+  },
+  "SharedPlaylistBanner": {
+    "sharedWithYou": "<strong>{name}</strong> has shared a playlist with you! The best way to view this is in our app.",
+    "downloadOnAppStore": "Download on App Store",
+    "getItOnGooglePlay": "Get it on Google Play"
+  }
+}

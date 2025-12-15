@@ -4,20 +4,19 @@
   "sourceRoot": "apps/player",
   "projectType": "application",
   "tags": ["doppler_config:stg_dev"],
+  "implicitDependencies": ["locales"],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          "cp -r libs/locales apps/player/public",
-          "nx _build player"
-        ],
+        "commands": ["nx _build player"],
         "parallel": false
       },
       "configurations": {
         "production": {
           "commands": [
-            "cp -r libs/locales apps/player/public",
+            "rm -rf apps/player/src/i18n/locales",
+            "cp -r libs/locales apps/player/src/i18n",
             "CI=true nx _build player --prod"
           ]
         }
@@ -31,6 +30,49 @@
       },
       "configurations": {
         "production": {}
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "VERCEL_PROJECT_ID=$PLAYER_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=preview --token=$VERCEL_TOKEN",
+          "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.preview.local",
+          "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.preview.local",
+          "pnpm exec vercel build",
+          "VERCEL_PROJECT_ID=$PLAYER_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --token=$VERCEL_TOKEN --archive=tgz > apps/player/.vercel-url"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "production": {
+          "commands": [
+            "VERCEL_PROJECT_ID=$PLAYER_VERCEL_PROJECT_ID pnpm exec vercel pull --environment=production --token=$VERCEL_TOKEN",
+            "echo \"VERCEL_ENV=\\\"$NEXT_PUBLIC_VERCEL_ENV\\\"\" >> .vercel/.env.production.local",
+            "echo \"VERCEL_GIT_COMMIT_SHA=\\\"$NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA\\\"\" >> .vercel/.env.production.local",
+            "pnpm exec vercel build --prod",
+            "VERCEL_PROJECT_ID=$PLAYER_VERCEL_PROJECT_ID pnpm exec vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --archive=tgz > apps/player/.vercel-url"
+          ]
+        }
+      }
+    },
+    "upload-sourcemaps": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm dlx @datadog/datadog-ci@3.20.0 sourcemaps upload dist/apps/player/.next/static --service=player --release-version=$GIT_COMMIT_SHA --minified-path-prefix=/_next/static/"
+        ],
+        "parallel": false
+      }
+    },
+    "vercel-alias": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "pnpm exec vercel alias set $(cat apps/player/.vercel-url) player-$PR_NUMBER-jesusfilm.vercel.app --token=$VERCEL_TOKEN --scope=jesusfilm",
+          "echo \"https://player-$PR_NUMBER-jesusfilm.vercel.app\" > apps/player/.vercel-url"
+        ],
+        "parallel": false
       }
     },
     "serve": {
@@ -52,9 +94,29 @@
         }
       }
     },
+    "serve-all": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "nf start"
+          },
+          {
+            "command": "nx serve watch-modern"
+          }
+        ],
+        "parallel": true
+      }
+    },
+    "export": {
+      "executor": "@nx/next:export",
+      "options": {
+        "buildTarget": "player:build:production"
+      }
+    },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": ["{workspaceRoot}/coverage/apps/player"],
       "options": {
         "jestConfig": "apps/player/jest.config.ts"
       }
@@ -72,6 +134,16 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "pnpm exec tsc -b apps/player/tsconfig.json"
+      }
+    },
+    "fetch-secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "DOPPLER_TOKEN=$DOPPLER_PLAYER_TOKEN doppler secrets download --no-file --format=env-no-quotes --project player > apps/player/.env"
+          }
+        ]
       }
     }
   }

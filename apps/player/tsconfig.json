@@ -65,7 +65,9 @@
     "**/*.mjs",
     "next-env.d.ts",
     ".next/types/**/*.ts",
-    "../../dist/apps/player/.next/types/**/*.ts"
+    "../../dist/apps/player/.next/types/**/*.ts",
+    "src/app/.well-known/**/*.ts",
+    "src/app/.well-known/**/*.tsx"
   ],
   "exclude": ["node_modules", "jest.config.ts"]
 }

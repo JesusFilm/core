@@ -3,8 +3,9 @@
 import Image from 'next/image'
 import { ReactElement } from 'react'
 
-import { ThemeToggle } from '@/components/ThemeToggle'
 import logo from './assets/logo-sign.svg'
+
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 export function TopNavBar(): ReactElement {
   return (
