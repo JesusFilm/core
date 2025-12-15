@@ -76,7 +76,7 @@ describe('VideoPlayer', () => {
       />
     )
 
-    const endedHandler = (mockPlayer.on).mock.calls.find(
+    const endedHandler = mockPlayer.on.mock.calls.find(
       (call) => call[0] === 'ended'
     )?.[1]
 
