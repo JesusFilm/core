@@ -58,25 +58,22 @@ export function CenterPage({ children }: CenterPageProps): ReactElement {
       <Stack
         alignItems="center"
         gap={5}
-        sx={{
-          display: { xs: 'none', sm: 'flex' }, 
-        }}
       >
         <Card variant="outlined" data-testid="CenterPageCard">
-        {children}
-      </Card>
+          {children}
+        </Card>
         <Button size="small">
-    <Typography
-      variant="body2"
-      sx={{ color: '#C52D3A', cursor: 'pointer' }}
-      component="a"
-      href="https://www.cru.org/us/en/about/privacy.html"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      {t('Privacy Policy')}
-    </Typography>
-  </Button>
+          <Typography
+            variant="body2"
+            sx={{ color: '#C52D3A', cursor: 'pointer' }}
+            component="a"
+            href="https://www.cru.org/us/en/about/privacy.html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t('Privacy Policy')}
+          </Typography>
+        </Button>
       </Stack>
     </Container>
   )

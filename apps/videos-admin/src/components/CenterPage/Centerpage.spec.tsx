@@ -62,6 +62,10 @@ describe('CenterPage Component', () => {
       screen.getByRole('button', {name: 'Privacy Policy'})
     )
 
-    expect(screen.getAllByRole('link', { name: 'Privacy Policy'})[0]).toHaveAttribute('href', 'https://www.cru.org/us/en/about/privacy.html')
+    expect(screen.getByRole('link', { name: 'Privacy Policy'})
+          ).toHaveAttribute(
+            'href', 
+            'https://www.cru.org/us/en/about/privacy.html'
+          )
   })
 })
