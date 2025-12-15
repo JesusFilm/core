@@ -51,10 +51,7 @@ export function CenterPage({ children }: CenterPageProps): ReactElement {
       justifyContent="space-evenly"
       data-testid="CenterPageContainer"
     >
-      <Stack
-        alignItems="center"
-        gap={5}
-      >
+      <Stack alignItems="center" gap={5}>
         <Card variant="outlined" data-testid="CenterPageCard">
           {children}
         </Card>
