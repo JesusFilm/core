@@ -455,6 +455,9 @@ importers:
       next-seo:
         specifier: ^6.4.0
         version: 6.6.0(next@15.5.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.85.1))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      next-themes:
+        specifier: ^0.4.6
+        version: 0.4.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       node-fetch:
         specifier: ^2.7.0
         version: 2.7.0(encoding@0.1.13)
@@ -870,6 +873,9 @@ importers:
       babel-plugin-react-compiler:
         specifier: ^19.1.0-rc.2
         version: 19.1.0-rc.3
+      baseline-browser-mapping:
+        specifier: ^2.9.7
+        version: 2.9.7
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
@@ -11594,12 +11600,8 @@ packages:
     resolution: {integrity: sha512-lGe34o6EHj9y3Kts9R4ZYs/Gr+6N7MCaMlIFA3F1R2O5/m7K06AxfSeO5530PEERE6/WyEg3lsuyw4GHlPZHog==}
     engines: {node: ^4.5.0 || >= 5.9}
 
-  baseline-browser-mapping@2.8.23:
-    resolution: {integrity: sha512-616V5YX4bepJFzNyOfce5Fa8fDJMfoxzOIzDCZwaGL8MKVpFrXqfNUoIpRn9YMI5pXf/VKgzjB4htFMsFKKdiQ==}
-    hasBin: true
-
-  baseline-browser-mapping@2.8.6:
-    resolution: {integrity: sha512-wrH5NNqren/QMtKUEEJf7z86YjfqW/2uw3IL3/xpqZUC95SSVIFXYQeeGjL6FT/X68IROu6RMehZQS5foy2BXw==}
+  baseline-browser-mapping@2.9.7:
+    resolution: {integrity: sha512-k9xFKplee6KIio3IDbwj+uaCLpqzOwakOgmqzPezM0sFJlFKcg30vk2wOiAJtkTSfx0SSQDSe8q+mWA/fSH5Zg==}
     hasBin: true
 
   basic-auth@2.0.1:
@@ -17697,6 +17699,12 @@ packages:
       react: '>=16.0.0'
       react-dom: '>=16.0.0'
 
+  next-themes@0.4.6:
+    resolution: {integrity: sha512-pZvgD5L0IEvX5/9GWyHMf3m8BKiVQwsCMHfoFosXtXBMnaS0ZnIJ9ST4b4NqLVKDEm8QBxoNNGNaBv2JNF6XNA==}
+    peerDependencies:
+      react: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
+
   next@14.2.33:
     resolution: {integrity: sha512-GiKHLsD00t4ACm1p00VgrI0rUFAC9cRDGReKyERlM57aeEZkOQGcZTpIbsGn0b562FTPJWmYfKwplfO9EaT6ng==}
     engines: {node: '>=18.17.0'}
@@ -19552,7 +19560,7 @@ packages:
   puppeteer@23.7.0:
     resolution: {integrity: sha512-YTgo0KFe8NtBcI9hCu/xsjPFumEhu8kA7QqLr6Uh79JcEsUcUt+go966NgKYXJ+P3Fuefrzn2SXwV3cyOe/UcQ==}
     engines: {node: '>=18'}
-    deprecated: < 24.15.0 is no longer supported
+    deprecated: < 24.10.2 is no longer supported
     hasBin: true
 
   pure-rand@6.1.0:
@@ -37545,9 +37553,7 @@ snapshots:
 
   base64id@2.0.0: {}
 
-  baseline-browser-mapping@2.8.23: {}
-
-  baseline-browser-mapping@2.8.6: {}
+  baseline-browser-mapping@2.9.7: {}
 
   basic-auth@2.0.1:
     dependencies:
@@ -37758,7 +37764,7 @@ snapshots:
 
   browserslist@4.26.2:
     dependencies:
-      baseline-browser-mapping: 2.8.6
+      baseline-browser-mapping: 2.9.7
       caniuse-lite: 1.0.30001753
       electron-to-chromium: 1.5.222
       node-releases: 2.0.21
@@ -37766,7 +37772,7 @@ snapshots:
 
   browserslist@4.27.0:
     dependencies:
-      baseline-browser-mapping: 2.8.23
+      baseline-browser-mapping: 2.9.7
       caniuse-lite: 1.0.30001753
       electron-to-chromium: 1.5.244
       node-releases: 2.0.27
@@ -45457,6 +45463,11 @@ snapshots:
   next-seo@6.6.0(next@15.5.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.85.1))(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
     dependencies:
       next: 15.5.7(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.85.1)
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
+
+  next-themes@0.4.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
+    dependencies:
       react: 19.2.0
       react-dom: 19.2.0(react@19.2.0)
 
