@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubernetes-dashboard
+spec:
+  destination:
+    namespace: kubernetes-dashboard
+    server: https://kubernetes.default.svc
+  source:
+    path: infrastructure/kube/dashboard
+    repoURL: https://github.com/JesusFilm/core
+    targetRevision: stage
+    helm:
+      releaseName: kubernetes-dashboard
+      valueFiles:
+        - values-stage.yaml
+  sources: []
+  project: default

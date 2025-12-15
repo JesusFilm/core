@@ -16,7 +16,7 @@ spec:
   source:
     repoURL: https://github.com/JesusFilm/core.git
     targetRevision: main
-    path: infrastructure/kube/dashboard/chart
+    path: infrastructure/kube/dashboard
     helm:
       releaseName: kubernetes-dashboard
       valueFiles:
@@ -28,5 +28,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-
-
