@@ -10,11 +10,11 @@ import {
   BlockFields_RadioOptionBlock as RadioOptionBlock,
   BlockFields_RadioQuestionBlock as RadioQuestionBlock
 } from '../../../../../../../../../__generated__/BlockFields'
+import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 import { ThemeProvider } from '../../../../../../../ThemeProvider'
 
 import { RadioOption } from '.'
-import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
 
 describe('RadioOption Attribute', () => {
   const block: TreeBlock<RadioOptionBlock> = {

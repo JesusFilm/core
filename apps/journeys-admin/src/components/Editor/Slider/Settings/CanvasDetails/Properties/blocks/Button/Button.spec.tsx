@@ -15,10 +15,10 @@ import {
   IconName,
   IconSize
 } from '../../../../../../../../../__generated__/globalTypes'
+import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../../../../libs/TestEditorState'
 
 import { Button } from '.'
-import { JourneyFields } from '../../../../../../../../../__generated__/JourneyFields'
 
 describe('Button attributes', () => {
   const block: TreeBlock<ButtonBlock> = {
