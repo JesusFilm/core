@@ -46,7 +46,7 @@ interface CenterPageProps {
   children: ReactNode
 }
 export function CenterPage({ children }: CenterPageProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
+  const { t } = useTranslation('apps-videos-admin')
 
   return (
     <Container
