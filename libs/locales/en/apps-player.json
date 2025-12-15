@@ -7,8 +7,11 @@
     "pageTitle": "{title} | Jesus Film Project"
   },
   "PlaylistRoutePage": {
-    "title": "Playlist",
-    "thisPlaylistIsEmpty": "This playlist is empty"
+    "defaultPageTitle": "Playlist",
+    "pageTitle": "{title} by {name}",
+    "thisPlaylistIsEmpty": "This playlist is empty",
+    "defaultDescription": "Your friend shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus.",
+    "description": "Your friend {name} shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus."
   },
   "PlaylistPage": {
     "noVideoAvailable": "No video available"
@@ -23,7 +26,7 @@
     "lackOfBrowserSupport": "To view this video please enable JavaScript, and consider upgrading to a web browser that <link>supports HTML5 video</link>"
   },
   "SharedPlaylistBanner": {
-    "sharedWithYou": "<strong>{name}</strong> has shared a playlist with you! The best way to view this is in our app.",
+    "sharedWithYou": "Your friend <strong>{name}</strong> shared these videos with you as an encouragement to you. The best way to view these videos is by downloading our app.",
     "downloadOnAppStore": "Download on App Store",
     "getItOnGooglePlay": "Get it on Google Play"
   }

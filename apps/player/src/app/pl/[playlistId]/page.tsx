@@ -1,30 +1,16 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
-import { cache } from 'react'
 
 import { PlaylistPage } from '@/components/PlaylistPage'
 import { env } from '@/env'
-import { getApolloClient } from '@/lib/apolloClient'
-import { GET_PLAYLIST } from '@/lib/queries/getPlaylist'
+import { getPlaylist } from './getPlaylist'
 
 interface PageProps {
   params: Promise<{
     playlistId: string
   }>
 }
-
-const getPlaylist = cache(async (playlistId: string) => {
-  const { data } = await getApolloClient().query({
-    query: GET_PLAYLIST,
-    variables: {
-      id: playlistId,
-      idType: 'slug'
-    }
-  })
-
-  return data
-})
 
 export async function generateMetadata(props: PageProps): Promise<Metadata> {
   const t = await getTranslations('Metadata')
@@ -34,23 +20,38 @@ export async function generateMetadata(props: PageProps): Promise<Metadata> {
 
   const data = await getPlaylist(playlistId)
 
+  const defaultMetadata: Metadata = {
+    other: {
+      'apple-itunes-app': `app-id=${env.NEXT_PUBLIC_IOS_APP_ID}; app-argument=https://player.jesusfilmproject.org/p/${playlistId}`
+    }
+  }
+
   if (
     !data?.playlist ||
     'message' in data.playlist ||
     data.playlist.__typename !== 'QueryPlaylistSuccess'
   ) {
     return {
-      title: t('pageTitle', { title: p('title') }),
-      other: {
-        'apple-itunes-app': `app-id=${env.NEXT_PUBLIC_IOS_APP_ID}; app-argument=https://player.jesusfilmproject.org/p/${playlistId}`
-      }
+      title: t('pageTitle', { title: p('defaultPageTitle') }),
+      description: p('defaultDescription'),
+      ...defaultMetadata
     }
   }
 
   const playlist = data.playlist.data
 
   return {
-    title: t('pageTitle', { title: playlist.name })
+    title: t('pageTitle', {
+      title: p('pageTitle', {
+        title: playlist.name,
+        name: playlist.owner.firstName
+      })
+    }),
+    description: p('description', {
+      name: playlist.owner.firstName,
+      count: playlist.items.length
+    }),
+    ...defaultMetadata
   }
 }
 

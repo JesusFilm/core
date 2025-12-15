@@ -45,9 +45,19 @@ export function SharedPlaylistBanner({
 
   useEffect(() => {
     const dismissedKey = 'shared-playlist-banner-dismissed'
-    const dismissed = localStorage.getItem(dismissedKey)
-    if (dismissed) {
-      setIsDismissed(true)
+    if (typeof window === 'undefined' || !window.localStorage) {
+      setIsDismissed(false)
+      return
+    }
+
+    try {
+      const dismissed = window.localStorage.getItem(dismissedKey)
+      if (dismissed) {
+        setIsDismissed(true)
+        return
+      }
+    } catch {
+      setIsDismissed(false)
       return
     }
 
@@ -55,8 +65,14 @@ export function SharedPlaylistBanner({
   }, [])
 
   const handleDismiss = () => {
-    localStorage.setItem('shared-playlist-banner-dismissed', 'true')
     setIsDismissed(true)
+    if (typeof window === 'undefined' || !window.localStorage) return
+
+    try {
+      window.localStorage.setItem('shared-playlist-banner-dismissed', 'true')
+    } catch {
+      // ignore storage failures
+    }
   }
 
   if (isDismissed || platform === 'ios') {
