@@ -4,9 +4,11 @@ import { FooterLink } from './FooterLink'
 
 describe('FooterLink', () => {
   it('should have text link', () => {
-    const { getByRole } = render(<FooterLink url="/about/" label="About Us" />)
+    const { getByRole } = render(
+      <FooterLink href="/about" label="About Us" />
+    )
     const el = getByRole('link', { name: 'About Us' })
-    expect(el).toHaveAttribute('href', '/about/')
+    expect(el).toHaveAttribute('href', '/about')
     expect(el).not.toHaveAttribute('target')
     expect(el).toHaveAttribute('rel', 'noopener')
   })
@@ -14,11 +16,11 @@ describe('FooterLink', () => {
   it('should have image link', () => {
     const { getByRole } = render(
       <FooterLink
-        url="https://www.facebook.com/jesusfilm"
+        href="https://www.facebook.com/jesusfilm"
         label="Facebook"
-        src="/footer/facebook.svg"
-        width={24}
-        height={24}
+        iconSrc="/footer/facebook.svg"
+        iconWidth={24}
+        iconHeight={24}
         target="_blank"
         noFollow
       />
@@ -30,16 +32,17 @@ describe('FooterLink', () => {
     expect(el).toHaveAttribute('rel', 'nofollow noopener')
   })
 
-  it('should apply custom styles when sx prop is provided', () => {
+  it('should apply custom classes to link and text', () => {
     const { getByTestId } = render(
       <FooterLink
-        url="/"
-        label="Jesus Film logo"
-        src="/footer/jesus-film-logo.svg"
-        sx={{ lineHeight: 0 }}
+        className="text-blue-600"
+        href="/"
+        label="Jesus Film"
+        textClassName="text-lg"
       />
     )
     const link = getByTestId('FooterLink')
-    expect(link).toHaveStyle('line-height: 0')
+    expect(link).toHaveClass('text-blue-600')
+    expect(link.querySelector('span')).toHaveClass('text-lg')
   })
 })

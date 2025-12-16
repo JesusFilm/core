@@ -1,62 +1,74 @@
-import MuiLink, { LinkProps } from '@mui/material/Link'
-import { SxProps, Theme } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
+import { cn } from '@core/shared/uimodern/utils'
 import Image from 'next/image'
+import Link from 'next/link'
 import { HTMLAttributeAnchorTarget, ReactElement } from 'react'
 
-type ValueOf<T> = T[keyof T]
-
 interface FooterLinkProps {
-  url: string
+  href: string
   label: string
-  variant?: ValueOf<Pick<LinkProps, 'variant'>>
-  underline?: ValueOf<Pick<LinkProps, 'underline'>>
-  src?: string
-  width?: number
-  height?: number
+  iconSrc?: string
+  iconWidth?: number
+  iconHeight?: number
   target?: HTMLAttributeAnchorTarget
   noFollow?: boolean
-  sx?: SxProps<Theme>
+  className?: string
+  textClassName?: string
+  iconClassName?: string
 }
 
 export function FooterLink({
-  url,
+  href,
   label,
-  variant = 'h6',
-  underline = 'none',
-  src,
-  width,
-  height,
+  iconSrc,
+  iconWidth = 32,
+  iconHeight = 32,
   target,
   noFollow = false,
-  sx
+  className,
+  textClassName,
+  iconClassName
 }: FooterLinkProps): ReactElement {
+  const rel = noFollow ? 'nofollow noopener' : 'noopener'
+
+  const linkClasses = cn(
+    'inline-flex cursor-pointer items-center gap-2 transition-colors duration-200 hover:text-neutral-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900',
+    className
+  )
+
+  const content =
+    iconSrc != null ? (
+      <Image
+        alt={label}
+        className={cn('h-auto w-auto', iconClassName)}
+        height={iconHeight}
+        src={iconSrc}
+        width={iconWidth}
+      />
+    ) : (
+      <span className={cn('text-sm font-semibold leading-6 text-neutral-900', textClassName)}>
+        {label}
+      </span>
+    )
+
+  const commonProps = {
+    className: linkClasses,
+    rel,
+    target,
+    'aria-label': iconSrc != null ? label : undefined,
+    'data-testid': 'FooterLink'
+  }
+
+  if (href.startsWith('http')) {
+    return (
+      <a {...commonProps} href={href}>
+        {content}
+      </a>
+    )
+  }
+
   return (
-    <MuiLink
-      href={url}
-      underline={underline}
-      target={target}
-      rel={noFollow ? 'nofollow noopener' : 'noopener'}
-      color="text.primary"
-      data-testid="FooterLink"
-      sx={src != null ? sx : undefined}
-    >
-      {src == null ? (
-        <Typography variant={variant} sx={sx}>
-          {label}
-        </Typography>
-      ) : (
-        <Image
-          src={src}
-          width={width ?? 32}
-          height={height ?? 32}
-          alt={label}
-          style={{
-            maxWidth: '100%',
-            height: 'auto'
-          }}
-        />
-      )}
-    </MuiLink>
+    <Link {...commonProps} href={href}>
+      {content}
+    </Link>
   )
 }
