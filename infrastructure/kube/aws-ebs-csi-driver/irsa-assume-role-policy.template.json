@@ -1,0 +1,19 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "__OIDC_PROVIDER_ARN__"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "__OIDC_PROVIDER_HOSTPATH__:aud": "sts.amazonaws.com",
+          "__OIDC_PROVIDER_HOSTPATH__:sub": "system:serviceaccount:__K8S_NAMESPACE__:__SERVICE_ACCOUNT_NAME__"
+        }
+      }
+    }
+  ]
+}
+

@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec /usr/bin/env bash "$0" "$@"
+fi
 set -euo pipefail
 
 # This script is for provisioning the IAM role used by EBS CSI via IRSA.
@@ -11,10 +14,10 @@ set -euo pipefail
 # To install the EKS managed addon, set INSTALL_EKS_ADDON=true.
 INSTALL_EKS_ADDON="${INSTALL_EKS_ADDON:-false}"
 
-CLUSTER_NAME="${CLUSTER_NAME:-jfp-eks-stage}"
+CLUSTER_NAME="${CLUSTER_NAME:-jfp-eks-prod}"
 AWS_REGION="${AWS_REGION:-us-east-2}"
 ADDON_NAME="${ADDON_NAME:-aws-ebs-csi-driver}"
-ROLE_NAME="${ROLE_NAME:-AmazonEKS_EBS_CSI_DriverRole_stage}"
+ROLE_NAME="${ROLE_NAME:-AmazonEKS_EBS_CSI_DriverRole_prod}"
 K8S_NAMESPACE="${K8S_NAMESPACE:-kube-system}"
 SERVICE_ACCOUNT_NAME="${SERVICE_ACCOUNT_NAME:-ebs-csi-controller-sa}"
 
@@ -91,9 +94,6 @@ if [[ "${INSTALL_EKS_ADDON}" == "true" ]]; then
   eksctl create addon \
     --name aws-ebs-csi-driver \
     --cluster "${CLUSTER_NAME}" \
-    --service-account-role-arn arn:aws:iam::410965620680:role/AmazonEKS_EBS_CSI_DriverRole_stage \
+    --service-account-role-arn arn:aws:iam::410965620680:role/AmazonEKS_EBS_CSI_DriverRole_prod \
     --force
 fi
-
-# Snapshots (CRDs + snapshot-controller) are now deployed via the Argo CD Helm chart:
-# `infrastructure/kube/aws-ebs-csi-driver` (see values `snapshotController.*`).
