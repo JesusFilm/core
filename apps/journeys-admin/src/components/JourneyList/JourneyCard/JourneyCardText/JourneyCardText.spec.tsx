@@ -34,7 +34,9 @@ describe('JourneyCardText', () => {
   })
 
   it('should show translate icon', () => {
-    const { getByTestId } = render(<JourneyCardText journey={publishedJourney} />)
+    const { getByTestId } = render(
+      <JourneyCardText journey={publishedJourney} />
+    )
     expect(getByTestId('TranslateIcon')).toBeInTheDocument()
   })
 })

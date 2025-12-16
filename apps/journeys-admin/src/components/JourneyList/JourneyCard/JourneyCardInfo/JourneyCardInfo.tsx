@@ -44,11 +44,13 @@ export function JourneyCardInfo({
         <ResponsesItem variant="icon-button" fromJourneyList={true} />
         <AnalyticsItem variant="icon-button" fromJourneyList={true} />
       </Stack>
-      {!isTemplate && (<AccessAvatars
-        journeyId={journey.id}
-        userJourneys={inviteRequested ?? journey.userJourneys ?? undefined}
-        size="xsmall"
-      />)}
+      {!isTemplate && (
+        <AccessAvatars
+          journeyId={journey.id}
+          userJourneys={inviteRequested ?? journey.userJourneys ?? undefined}
+          size="xsmall"
+        />
+      )}
     </Stack>
   )
 }

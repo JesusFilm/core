@@ -115,7 +115,10 @@ describe('JourneyCardInfo', () => {
     const { queryByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyCardInfo journey={templateJourney} variant={JourneyCardVariant.default} />
+          <JourneyCardInfo
+            journey={templateJourney}
+            variant={JourneyCardVariant.default}
+          />
         </ThemeProvider>
       </MockedProvider>
     )
