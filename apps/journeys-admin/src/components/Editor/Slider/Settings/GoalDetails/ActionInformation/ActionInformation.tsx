@@ -45,7 +45,7 @@ export function ActionInformation(): ReactElement {
         )}
       </Typography>
       <GoalDescription
-        label={t('Start a Conversation')}
+        label={t('Start a Chat')}
         description={t('If the goal is to go any chat platform')}
         icon={<MessageChat1Icon />}
       />
