@@ -478,7 +478,7 @@ export function VideoBlockPlayer({
     <>
       <div
         className={clsx(
-          "vjs-hide-loading-spinners fixed top-0 right-0 left-0 z-0 mx-auto [body[style*='padding-right']_&]:right-[15px]",
+          "vjs-hide-loading-spinners fixed top-[48px] right-0 left-0 z-0 mx-auto [body[style*='padding-right']_&]:right-[15px]",
           {
             'aspect-[var(--ratio-sm)] md:aspect-[var(--ratio-md)]':
               placement == 'carouselItem' && collapsed,
