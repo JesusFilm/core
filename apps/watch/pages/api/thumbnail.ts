@@ -146,20 +146,13 @@ export default async function handler(
       'public, max-age=300, stale-while-revalidate=300'
     ) // 5 minutes
 
-    // Add cache busting to fallback URLs to ensure fresh fetches
-    const separator = fallbackUrl.includes('?') ? '&' : '?'
-    const cacheBustedFallback = `${fallbackUrl}${separator}cb=${Date.now()}`
-
-    res.status(200).json({ url: cacheBustedFallback })
+    res.status(200).json({ url: fallbackUrl })
   } catch (error) {
     console.error('Thumbnail API error:', error)
 
     // Generic error fallback
     if (typeof originalUrl === 'string') {
-      // Add cache busting to error fallback URLs too
-      const separator = originalUrl.includes('?') ? '&' : '?'
-      const cacheBustedFallback = `${originalUrl}${separator}err=${Date.now()}`
-      res.status(200).json({ url: cacheBustedFallback })
+      res.status(200).json({ url: originalUrl })
     } else {
       res.status(500).json({ error: 'Failed to process thumbnail request' })
     }

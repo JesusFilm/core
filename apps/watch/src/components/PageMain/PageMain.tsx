@@ -14,7 +14,6 @@ import { AboutProjectSection } from './AboutProjectSection'
 import { CollectionsRail } from './CollectionsRail'
 import { ContainerWithMedia } from './ContainerWithMedia'
 import { SectionLanguageMap } from './SectionLanguageMap'
-import { SectionNewsletterSignup } from './SectionNewsletterSignup'
 import { SectionPromo } from './SectionPromo'
 import { SeeAllVideos } from './SeeAllVideos'
 import { useWatchHeroCarousel } from './useWatchHeroCarousel'
@@ -65,7 +64,6 @@ function PageMainBody({ languageId }: PageMainProps): ReactElement {
         onSkipActiveVideo={handleSkipActiveVideo}
       >
         <CollectionsRail languageId={languageId} />
-        <SectionNewsletterSignup />
         {/* <SectionLanguageMap /> */}
         <SectionPromo />
       </ContainerWithMedia>

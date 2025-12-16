@@ -160,6 +160,7 @@ export function VideoCard({
                 fill
                 sizes="100vw"
                 className="poster-hover-zoom"
+                data-content-id={video?.id}
                 {...(blurDataURL != null
                   ? { placeholder: 'blur' as const, blurDataURL }
                   : {})}

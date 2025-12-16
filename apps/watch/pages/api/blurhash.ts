@@ -3,7 +3,6 @@ import { join } from 'path'
 
 import { encode } from 'blurhash'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { unstable_cache } from 'next/cache'
 import sharp from 'sharp'
 
 import {
@@ -54,7 +53,9 @@ async function fetchImageWithTimeout(
   try {
     // Handle local thumbnail files by reading from disk
     if (url.startsWith('/assets/thumbnails/')) {
-      const filePath = join(process.cwd(), 'public', url)
+      // Strip query parameters from URL before constructing file path
+      const cleanUrl = url.split('?')[0]
+      const filePath = join(process.cwd(), 'public', cleanUrl.replace(/^\//, ''))
       const buffer = readFileSync(filePath)
       clearTimeout(timeoutId)
       return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength)
@@ -161,6 +162,70 @@ async function extractDominantColor(imageBuffer: Buffer): Promise<string> {
   return hex
 }
 
+async function extractDominantColorFromProcessed(data: Buffer, width: number, height: number): Promise<string> {
+  // Extract dominant color from already processed 32x32 RGBA buffer
+  const channels = 4 // RGBA
+  const pixelCount = width * height
+  const colorCounts: Map<
+    string,
+    { count: number; rgb: [number, number, number] }
+  > = new Map()
+
+  // Sample pixels and count frequencies
+  for (let i = 0; i < pixelCount; i++) {
+    const offset = i * channels
+    const r = data[offset]
+    const g = data[offset + 1]
+    const b = data[offset + 2]
+    const a = data[offset + 3]
+
+    // Skip transparent pixels
+    if (a < 128) {
+      continue
+    }
+
+    // Skip very dark/light colors (optional filtering)
+    const luminance = 0.299 * r + 0.587 * g + 0.114 * b
+    if (luminance < 20 || luminance > 240) {
+      continue
+    }
+
+    // Simple quantization to reduce color space (group similar colors)
+    const quantizedR = Math.floor(r / 8) * 8
+    const quantizedG = Math.floor(g / 8) * 8
+    const quantizedB = Math.floor(b / 8) * 8
+    const key = `${quantizedR},${quantizedG},${quantizedB}`
+
+    const existing = colorCounts.get(key)
+    if (existing) {
+      existing.count++
+    } else {
+      colorCounts.set(key, {
+        count: 1,
+        rgb: [quantizedR, quantizedG, quantizedB]
+      })
+    }
+  }
+
+  // Find the most frequent color
+  let dominantColor = {
+    count: 0,
+    rgb: [128, 128, 128] as [number, number, number]
+  }
+
+  for (const [, colorData] of colorCounts) {
+    if (colorData.count > dominantColor.count) {
+      dominantColor = colorData
+    }
+  }
+
+  // Convert RGB to hex
+  const [r, g, b] = dominantColor.rgb
+  const hex = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
+
+  return hex
+}
+
 // Simple in-memory cache to limit concurrent blurhash generations
 const processingCache = new Map<string, Promise<BlurhashResult>>()
 
@@ -184,8 +249,8 @@ async function generateBlurhash(imageBuffer: Buffer): Promise<BlurhashResult> {
     4
   )
 
-  // Extract dominant color
-  const dominantColor = await extractDominantColor(imageBuffer)
+  // Extract dominant color from the same 32x32 processed buffer used for blurhash
+  const dominantColor = await extractDominantColorFromProcessed(Buffer.from(data), width, height)
 
   return {
     blurhash: blurhashString,
@@ -194,8 +259,7 @@ async function generateBlurhash(imageBuffer: Buffer): Promise<BlurhashResult> {
 }
 
 // Cached version with deduplication for concurrent requests
-const generateBlurhashCached = unstable_cache(
-  async (imageUrl: string): Promise<BlurhashResult> => {
+const generateBlurhashCached = async (imageUrl: string): Promise<BlurhashResult> => {
   // Check if we're already processing this image
   const cacheKey = `blurhash:${imageUrl}`
   const existingPromise = processingCache.get(cacheKey)
@@ -224,13 +288,7 @@ const generateBlurhashCached = unstable_cache(
 
   processingCache.set(cacheKey, processingPromise)
   return processingPromise
-  },
-  ['blurhash-generation'],
-  {
-    revalidate: 86400, // Revalidate every 24 hours
-    tags: ['blurhash']
-  }
-)
+}
 
 export default async function handler(
   req: NextApiRequest,

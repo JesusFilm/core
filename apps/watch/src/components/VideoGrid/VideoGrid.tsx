@@ -102,32 +102,16 @@ export function VideoGrid({
       {loading && videos?.length === 0 && (
         <>
           <div className="w-full">
-            <VideoCard
-              orientation={orientation}
-              analyticsTag={analyticsTag}
-              onHoverImageChange={onCardHoverChange}
-            />
+            <div className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`} />
           </div>
           <div className="w-full">
-            <VideoCard
-              orientation={orientation}
-              analyticsTag={analyticsTag}
-              onHoverImageChange={onCardHoverChange}
-            />
+            <div className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`} />
           </div>
           <div className="hidden w-full md:block">
-            <VideoCard
-              orientation={orientation}
-              analyticsTag={analyticsTag}
-              onHoverImageChange={onCardHoverChange}
-            />
+            <div className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`} />
           </div>
           <div className="hidden w-full xl:block">
-            <VideoCard
-              orientation={orientation}
-              analyticsTag={analyticsTag}
-              onHoverImageChange={onCardHoverChange}
-            />
+            <div className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`} />
           </div>
         </>
       )}
@@ -178,15 +162,19 @@ export function VideoGrid({
                       (video && containerSlugMap?.get(video.id)) ?? containerSlug
                     return (
                       <div key={index} className="w-full">
-                        <VideoCard
-                          video={fallbackLoading ? undefined : video}
-                          orientation={orientation}
-                          containerSlug={videoContainerSlug}
-                          index={index}
-                          onClick={onCardClick}
-                          analyticsTag={analyticsTag}
-                          showSequenceNumber={showSequenceNumbers}
-                        />
+                        {fallbackLoading ? (
+                          <div className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`} />
+                        ) : (
+                          <VideoCard
+                            video={video}
+                            orientation={orientation}
+                            containerSlug={videoContainerSlug}
+                            index={index}
+                            onClick={onCardClick}
+                            analyticsTag={analyticsTag}
+                            showSequenceNumber={showSequenceNumbers}
+                          />
+                        )}
                       </div>
                     )
                   })}

@@ -2,11 +2,11 @@ import { useTranslation } from 'next-i18next'
 import { ReactElement, SVGProps } from 'react'
 
 import Bible from '@core/shared/ui/icons/Bible'
-import Book from '@core/shared/ui/icons/Book'
-import Calendar1 from '@core/shared/ui/icons/Calendar1'
-import Play1 from '@core/shared/ui/icons/Play1'
+import Bulb from '@core/shared/ui/icons/Bulb'
+import MediaStrip1 from '@core/shared/ui/icons/MediaStrip1'
+import MessageText1 from '@core/shared/ui/icons/MessageText1'
 import Star2 from '@core/shared/ui/icons/Star2'
-import VideoOn from '@core/shared/ui/icons/VideoOn'
+import UsersProfiles2 from '@core/shared/ui/icons/UsersProfiles2'
 
 interface CategoryItem {
   title: string
@@ -32,34 +32,34 @@ export function CategoryGrid({
       searchTerm: 'bible stories'
     },
     {
-      title: t('Worship'),
-      icon: Star2,
+      title: t('Parables'),
+      icon: MessageText1,
       gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-      searchTerm: 'worship'
+      searchTerm: 'parables'
     },
     {
-      title: t('Teaching'),
-      icon: Book,
+      title: t('Animated'),
+      icon: MediaStrip1,
       gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-      searchTerm: 'teaching'
+      searchTerm: 'animated'
     },
     {
-      title: t('Youth'),
-      icon: Play1,
+      title: t('Study'),
+      icon: Bulb,
       gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-      searchTerm: 'youth'
+      searchTerm: 'study'
     },
     {
       title: t('Family'),
-      icon: VideoOn,
+      icon: UsersProfiles2,
       gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
       searchTerm: 'family'
     },
     {
-      title: t('Holiday'),
-      icon: Calendar1,
-      gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-      searchTerm: 'holiday'
+      title: t('Christmas'),
+      icon: Star2,
+      gradient: 'linear-gradient(135deg, #dc2626 0%, #991b1b 100%)',
+      searchTerm: 'christmas'
     }
   ]
 

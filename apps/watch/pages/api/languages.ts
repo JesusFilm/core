@@ -33,10 +33,26 @@ type ApiResponse =
 
 let _redis: Redis | undefined
 let _redisAvailable = true
+let _redisInitPromise: Promise<void> | null = null
 
 async function redisClient(): Promise<Redis | null> {
-  if (_redis == null) {
+  // If Redis is already initialized and available, return it immediately
+  if (_redis != null && _redisAvailable) {
+    return _redis
+  }
+
+  // If initialization is already in progress, wait for it to complete
+  if (_redisInitPromise != null) {
+    await _redisInitPromise
+    return _redisAvailable ? _redis : null
+  }
+
+  // Start initialization and prevent concurrent initialization attempts
+  _redisInitPromise = (async () => {
     try {
+      // Reset availability flag at the start of each connection attempt
+      _redisAvailable = true
+
       _redis = new Redis({
         url:
           process.env.REDIRECT_STORAGE_KV_REST_API_URL ??
@@ -52,10 +68,14 @@ async function redisClient(): Promise<Redis | null> {
       console.warn('Redis connection failed, disabling caching for this request:', error)
       _redis = undefined
       _redisAvailable = false
-      return null
+    } finally {
+      // Clear the initialization promise regardless of success/failure
+      _redisInitPromise = null
     }
-  }
+  })()
 
+  // Wait for initialization to complete
+  await _redisInitPromise
   return _redisAvailable ? _redis : null
 }
 

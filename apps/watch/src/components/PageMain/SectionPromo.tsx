@@ -16,27 +16,27 @@ export function SectionPromo(): ReactElement {
       }),
       description: t('PromoPointMostTranslatedDescription', {
         defaultValue:
-          'Our catalog carries thousands of language tracks created alongside ministry partners so every person can encounter the story of Jesus in their heart language.'
+          'Decades of translation work, carried by trusted ministry partners, have built a library with thousands of language tracks so people can encounter the story of Jesus in the language that reaches them deepest.'
       })
     },
     {
       icon: VideoOnIcon,
       title: t('PromoPointAIVideoTitle', {
-        defaultValue: 'Pairing trusted voices with new visual stories'
+        defaultValue: 'Carrying trusted voices into new formats'
       }),
       description: t('PromoPointAIVideoDescription', {
         defaultValue:
-          'We are imagining fresh ways to combine our unique audio translations with newly generated AI visuals, crafting local expressions of the gospel without losing the authenticity of the narration people already trust.'
+          'We are rebuilding how gospel stories are told visually, pairing trusted translations with modern formats so the message can move freely across platforms, cultures, and screen.'
       })
     },
     {
       icon: UsersProfiles2Icon,
       title: t('PromoPointCreativeTeamTitle', {
-        defaultValue: 'More than movies—a team on mission'
+        defaultValue: 'More than a library. A mission-driven team.'
       }),
       description: t('PromoPointCreativeTeamDescription', {
         defaultValue:
-          'Jesus Film Project is a family of translators, media specialists, editors, and creators who have served missionaries for decades. We are turning that expertise into tools that empower mission and missionaries alike.'
+          'Jesus Film Project is a global team of translators, media specialists, editors, and creators who have served missionaries for decades. We\'re turning that experience into tools that equip disciple-makers everywhere.'
       })
     }
   ]
@@ -87,23 +87,23 @@ export function SectionPromo(): ReactElement {
             <div className="max-w-3xl space-y-4">
               <p className="text-xs font-semibold tracking-[0.3em] text-red-100/70 uppercase">
                 {t('PromoEyebrow', {
-                  defaultValue: 'Future-ready for global missions'
+                  defaultValue: 'Built for global missions'
                 })}
               </p>
               <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
                 {t('PromoHeading', {
                   defaultValue:
-                    'The media landscape is changing—so is Jesus Film Project.'
+                    'The message doesn\'t change. The way people watch does.'
                 })}
               </h2>
               <p className="text-lg text-white/80 lg:text-xl">
                 {t('PromoIntro', {
                   defaultValue:
-                    'We are designing the next chapter of Jesus Film Project, pairing decades of translation work with emerging formats so every disciple-maker can meet audiences where they already watch.'
+                    'We are rebuilding our video library and tools from the ground up, committing decades of translation work to the platforms where people already gather, watch, and share.'
                 })}
               </p>
             </div>
-            <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-8 md:grid-cols-3">
               {points.map((point, index) => (
                 <div
                   key={`${point.title}-${index}`}
@@ -131,19 +131,13 @@ export function SectionPromo(): ReactElement {
             </div>
             <div className="space-y-6">
               <div>
-                <p className="text-xs font-semibold tracking-[0.3em] text-white/60 uppercase">
+                <p className="text-lg text-white/80 lg:text-xl">
                   {t('PromoHighlightsLabel', {
                     defaultValue: 'What we are building next'
                   })}
                 </p>
-                <p className="mt-3 max-w-2xl text-sm text-white/70">
-                  {t('PromoHighlightsIntro', {
-                    defaultValue:
-                      'The same team that serves missionaries with translation, media, and production is now shaping tools that activate ministry momentum around the world.'
-                  })}
-                </p>
               </div>
-              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid gap-6 md:grid-cols-3">
                 {highlights.map((highlight, index) => (
                   <div
                     key={`${highlight.title}-${index}`}
@@ -158,6 +152,29 @@ export function SectionPromo(): ReactElement {
                   </div>
                 ))}
               </div>
+            </div>
+            <div className="mt-12 text-center mb-16">
+              <p className="text-xs font-semibold tracking-[0.3em] text-red-100/70 uppercase mb-4">
+                YOU'RE INVITED
+              </p>
+              <h3 className="text-3xl font-semibold text-white mb-4">
+                Help build{' '}
+                <span className="bg-gradient-to-r from-purple-400 via-blue-500 to-pink-500 bg-clip-text text-transparent">
+                  the next generation
+                </span>{' '}
+                of mission tools
+              </h3>
+              <p className="text-lg text-white/80 lg:text-xl max-w-2xl mx-auto mb-8">
+                We're inviting practitioners, creators, and partners into early access. Test new tools first, give feedback, and help shape products designed for real mission work.
+              </p>
+              <a
+                href="https://mailchi.mp/jesusfilm/beta"
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                className="inline-flex items-center justify-center rounded-md text-base font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-white text-black hover:bg-gray-100 h-12 px-10 py-3"
+              >
+                Become a beta tester
+              </a>
             </div>
           </div>
         </div>

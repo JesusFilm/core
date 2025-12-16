@@ -4,7 +4,8 @@ import { type ReactElement } from 'react'
 import {
   christmasAdventShowcaseSources,
   collectionLumo,
-  collectionShowcaseSources
+  collectionShowcaseSources,
+  newBelieverCourse
 } from '../PageCollections/collectionShowcaseConfig'
 
 const SectionVideoCarousel = dynamic(
@@ -56,16 +57,6 @@ export function CollectionsRail({
         showSequenceNumbers={true}
       />
       <SectionVideoGrid
-        id="home-collection-showcase-grid-vertical"
-        sources={collectionLumo}
-        // primaryCollectionId="LUMOCollection"
-        subtitleOverride="Every Gospel, Told on Video"
-        titleOverride="Scripture, Spoken Exactly as Written"
-        descriptionOverride="Explore our collection of videos and resources that bring the Bible to life through engaging stories and teachings."
-        orientation="vertical"
-        languageId={languageId}
-      />
-      <SectionVideoGrid
         id="home-collection-showcase-grid-christmas-advent"
         sources={christmasAdventShowcaseSources}
         // primaryCollectionId="ChristmasAdventCollection"
@@ -94,6 +85,24 @@ export function CollectionsRail({
         primaryCollectionId="7_Origins2Worth"
         subtitleOverride="Worth Series"
         titleOverride="NUA Worth"
+        languageId={languageId}
+      />
+      <SectionVideoGrid
+        id="home-collection-new-believer-course"
+        sources={newBelieverCourse}
+        subtitleOverride="Video Course"
+        // titleOverride="Journey with Jesus"
+        // descriptionOverride="Start your faith journey with this comprehensive course designed for new believers."
+        languageId={languageId}
+      />
+      <SectionVideoGrid
+        id="home-collection-showcase-grid-vertical"
+        sources={collectionLumo}
+        // primaryCollectionId="LUMOCollection"
+        subtitleOverride="Every Gospel, Told on Video"
+        titleOverride="Scripture, Spoken Exactly as Written"
+        descriptionOverride="Explore our collection of videos and resources that bring the Bible to life through engaging stories and teachings."
+        orientation="vertical"
         languageId={languageId}
       />
     </>

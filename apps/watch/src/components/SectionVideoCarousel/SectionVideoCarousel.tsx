@@ -190,9 +190,9 @@ export function SectionVideoCarousel({
               ? Array.from({ length: 4 }).map((_, index) => (
                   <SwiperSlide
                     key={`skeleton-${index}`}
-                    className={`max-w-[200px] ${index === 0 ? 'padded-l' : ''}`}
+                    className={`max-w-[200px] py-1 ${index === 0 ? 'padded-l' : ''}`}
                   >
-                    <div className="h-[330px] w-[220px] animate-pulse rounded-lg bg-white/10" />
+                    <div className="h-[300px] w-full max-w-[200px] animate-pulse rounded-lg bg-white/10" />
                   </SwiperSlide>
                 ))
               : slides.map((slide, index) => (
