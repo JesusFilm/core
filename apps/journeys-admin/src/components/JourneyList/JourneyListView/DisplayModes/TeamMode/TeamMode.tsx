@@ -49,6 +49,8 @@ export const TeamMode = ({
         // MUI Tabs uses an internal scroller with overflow: hidden by default
         overflow: 'visible',
         pr: 2,
+        display: 'flex',
+        alignItems: 'center',
         '& .MuiTabs-scroller': {
           overflow: 'visible !important'
         },

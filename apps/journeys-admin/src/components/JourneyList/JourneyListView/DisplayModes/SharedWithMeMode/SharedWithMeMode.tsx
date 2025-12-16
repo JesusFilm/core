@@ -18,7 +18,8 @@ export const SharedWithMeMode = ({
     <Box
       sx={{
         display: 'flex',
-        alignItems: 'flex-end',
+        alignItems: 'center',
+        pt: 1.32,
         pr: 2,
         overflow: 'visible'
       }}

@@ -18,7 +18,7 @@ export const StatusFilterControl = ({
   <Box
     sx={{
       display: 'flex',
-      alignItems: 'flex-end',
+      alignItems: 'center',
       ml: 'auto',
       mr: 0
     }}
@@ -38,7 +38,7 @@ export const SortControl = ({
   <Box
     sx={{
       display: 'flex',
-      alignItems: 'flex-end',
+      alignItems: 'center',
       ml: { xs: 1, sm: 0 }
     }}
   >
@@ -56,7 +56,7 @@ export const MenuControl = ({
   <Box
     sx={{
       display: 'flex',
-      alignItems: 'flex-end',
+      alignItems: 'center',
       ml: { xs: 1, sm: 0 },
       mr: menuMarginRight ?? { xs: 1, sm: -8 }
     }}
