@@ -463,7 +463,7 @@ export function JourneyListContent({
     if (contentType === 'templates') {
       switch (status) {
         case 'active':
-          return t('Make your first template.')
+          return t('This feature is coming soon')
         case 'archived':
           return t('No archived templates.')
         case 'trashed':
@@ -496,7 +496,7 @@ export function JourneyListContent({
         case 'active':
         default:
           return t(
-            'Templates you make from your projects will appear here.\nMonitor the performance of all journeys created from these templates.'
+            'Full template functionality will be available in a future update.'
           )
       }
     } else {
@@ -598,23 +598,26 @@ export function JourneyListContent({
                   </Grid>
                 ))}
               </Grid>
-              {sortedJourneys.length === 0 && (
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    pt: status === 'active' ? 30 : 30
-                  }}
-                >
-                  <Typography variant="subtitle1" align="center" gutterBottom>
-                    {getEmptyStateMessage()}
-                  </Typography>
-                </Box>
-              )}
             </>
           )}
         </Box>
       )}
+      {sortedJourneys != null &&
+        sortedJourneys.length === 0 &&
+        !usePriorityList && (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              pt: status === 'active' ? 30 : 30
+            }}
+          >
+            <Typography variant="subtitle1" align="center" gutterBottom>
+              {getEmptyStateMessage()}
+            </Typography>
+          </Box>
+        )}
       <Stack alignItems="center">
         <Typography
           variant="caption"

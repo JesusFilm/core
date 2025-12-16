@@ -130,7 +130,7 @@ describe('JourneyListContent', () => {
       })
 
       await waitFor(() =>
-        expect(getByText('Make your first template.')).toBeInTheDocument()
+        expect(getByText('This feature is coming soon')).toBeInTheDocument()
       )
     })
 
@@ -463,7 +463,7 @@ describe('JourneyListContent', () => {
       await waitFor(() => {
         expect(
           getByText(
-            /Templates you make from your projects will appear here\.\s*Monitor the performance of all journeys created from these templates\./
+            "Full template functionality will be available in a future update."
           )
         ).toBeInTheDocument()
       })
