@@ -201,7 +201,7 @@ describe('Goals', () => {
     expect(screen.getByText('The Journey Goals')).toBeInTheDocument()
 
     expect(screen.getByText('https://m.me/some_user')).toBeInTheDocument()
-    expect(screen.getByText('Start a Conversation')).toBeInTheDocument()
+    expect(screen.getByText('Start a Chat')).toBeInTheDocument()
 
     expect(screen.getByText('https://www.bible.com/')).toBeInTheDocument()
     expect(screen.getByText('Link to Bible')).toBeInTheDocument()
