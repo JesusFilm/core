@@ -1,6 +1,7 @@
 import { gql, useMutation } from '@apollo/client'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
+import { enqueueSnackbar } from 'notistack'
 import { ComponentProps, ReactElement } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
@@ -104,6 +105,12 @@ export function CreateTemplateItem({
               }
             })
           }
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t('Template Created'), {
+            variant: 'success',
+            preventDuplicate: true
+          })
         }
       })
 
