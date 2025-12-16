@@ -7,3 +7,5 @@ resources:
   - crds/volumesnapshots.snapshot.storage.k8s.io.yaml
   - rbac-snapshot-controller.yaml
   - deployment-snapshot-controller.yaml
+
+
