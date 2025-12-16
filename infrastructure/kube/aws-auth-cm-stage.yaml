@@ -11,9 +11,9 @@ data:
         - system:bootstrappers
         - system:nodes
   mapUsers: |
-    - userarn: arn:aws:iam::410965620680:user/JfmGithubUser
-      username: JfmGithubUser
-      groups:
+    - userarn: arn:aws:iam::410965620680:user/JfmGithubUser 
+      username: JfmGithubUser 
+      groups: 
         - system:masters
     - userarn: arn:aws:iam::410965620680:user/mike.allison
       username: mike.allison
