@@ -3,10 +3,11 @@ import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { ReactElement } from 'react'
 
+import TranslateIcon from '@core/shared/ui/icons/Translate'
+
 import { GetAdminJourneys_journeys as Journey } from '../../../../../__generated__/GetAdminJourneys'
 
 import { LastModifiedDate } from './LastModifiedDate'
-import TranslateIcon from '@core/shared/ui/icons/Translate'
 
 interface JourneyCardTextProps {
   journey: Journey

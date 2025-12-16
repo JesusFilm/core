@@ -5,6 +5,7 @@ import CardActionArea from '@mui/material/CardActionArea'
 import CardContent from '@mui/material/CardContent'
 import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
+import Stack from '@mui/material/Stack'
 import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
@@ -12,6 +13,8 @@ import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
+import { isJourneyCustomizable } from '@core/journeys/ui/isJourneyCustomizable'
+import { JourneyFields } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
 import Globe from '@core/shared/ui/icons/Globe'
 import Lightning2 from '@core/shared/ui/icons/Lightning2'
@@ -26,8 +29,6 @@ import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardVariant } from './journeyCardVariant'
-import Stack from '@mui/material/Stack'
-import { isJourneyCustomizable } from '@core/journeys/ui/isJourneyCustomizable'
 
 interface JourneyCardProps {
   journey: Journey
@@ -62,7 +63,8 @@ export function JourneyCard({
   const [isImageLoading, setIsImageLoading] = useState(true)
 
   // MARK: Remove this once Siyang Cao + Mike Alison implement updated journey analytics feature
-  const TEMP_HIDE_ANALYTICS_FOR_LOCAL_TEMPLATES = journey.template === true && journey.team?.id !== 'jfp-team'
+  const TEMP_HIDE_ANALYTICS_FOR_LOCAL_TEMPLATES =
+    journey.template === true && journey.team?.id !== 'jfp-team'
 
   useEffect(() => {
     if (duplicatedJourneyId != null && duplicatedJourneyRef.current != null) {
@@ -188,51 +190,52 @@ export function JourneyCard({
                 zIndex: 2
               }}
             >
-              {journey.template && isJourneyCustomizable(journey) && (
-                <Box
-                  data-testid="JourneyCardQuickStartBadge"
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    backgroundColor: 'black',
-                    borderRadius: 11,
-                    padding: 1,
-                    paddingRight: isCardHovered ? 3 : 1,
-                    transition: 'padding 0.3s ease',
-                    boxShadow: `0 3px 4px 0 #0000004D`
-                  }}
-                >
+              {journey.template &&
+                isJourneyCustomizable(journey as unknown as JourneyFields) && (
                   <Box
+                    data-testid="JourneyCardQuickStartBadge"
                     sx={{
-                      width: 22,
-                      height: 22,
-                      borderRadius: '50%',
-                      background: 'primary.main',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0
+                      backgroundColor: 'black',
+                      borderRadius: 11,
+                      padding: 1,
+                      paddingRight: isCardHovered ? 3 : 1,
+                      transition: 'padding 0.3s ease',
+                      boxShadow: `0 3px 4px 0 #0000004D`
                     }}
                   >
-                    <Lightning2 sx={{ fontSize: 18, color: '#FFD700' }} />
+                    <Box
+                      sx={{
+                        width: 22,
+                        height: 22,
+                        borderRadius: '50%',
+                        background: 'primary.main',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0
+                      }}
+                    >
+                      <Lightning2 sx={{ fontSize: 18, color: '#FFD700' }} />
+                    </Box>
+                    <Typography
+                      sx={{
+                        ml: isCardHovered ? 1 : 0,
+                        maxWidth: isCardHovered ? 100 : 0,
+                        opacity: isCardHovered ? 1 : 0,
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        transition: 'all 0.3s ease',
+                        color: '#FFD700',
+                        typography: 'overline2',
+                        textTransform: 'Capitalize'
+                      }}
+                    >
+                      {t('Quick Start')}
+                    </Typography>
                   </Box>
-                  <Typography
-                    sx={{
-                      ml: isCardHovered ? 1 : 0,
-                      maxWidth: isCardHovered ? 100 : 0,
-                      opacity: isCardHovered ? 1 : 0,
-                      overflow: 'hidden',
-                      whiteSpace: 'nowrap',
-                      transition: 'all 0.3s ease',
-                      color: '#FFD700',
-                      typography: 'overline2',
-                      textTransform: 'Capitalize'
-                    }}
-                  >
-                    {t('Quick Start')}
-                  </Typography>
-                </Box>
-              )}
+                )}
               {journey.website && (
                 <Box
                   data-testid="JourneyCardWebsiteBadge"
@@ -355,17 +358,18 @@ export function JourneyCard({
             <JourneyCardText journey={journey} />
           </CardContent>
         </CardActionArea>
-        {!TEMP_HIDE_ANALYTICS_FOR_LOCAL_TEMPLATES && (<Box
-          sx={{
-            position: 'absolute',
-            bottom: { xs: 8, sm: 3 },
-            left: { xs: 7, sm: 6 },
-            right: { xs: 10, sm: 7 },
-            zIndex: 3
-          }}
-        >
-          <JourneyCardInfo journey={journey} variant={variant} />
-        </Box>
+        {!TEMP_HIDE_ANALYTICS_FOR_LOCAL_TEMPLATES && (
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: { xs: 8, sm: 3 },
+              left: { xs: 7, sm: 6 },
+              right: { xs: 10, sm: 7 },
+              zIndex: 3
+            }}
+          >
+            <JourneyCardInfo journey={journey} variant={variant} />
+          </Box>
         )}
       </>
     </Card>

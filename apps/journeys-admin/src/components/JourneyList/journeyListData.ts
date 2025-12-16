@@ -145,6 +145,7 @@ export const customizableTemplateJourney: Journey = {
     {
       __typename: 'JourneyCustomizationField',
       id: 'journey-customization-field-id',
+      journeyId: 'template-journey-id',
       key: 'journey-customization-field-key',
       value: 'journey-customization-field-value',
       defaultValue: 'journey-customization-field-default-value'
@@ -172,6 +173,7 @@ export const customizableWebsiteTemplateJourney: Journey = {
     {
       __typename: 'JourneyCustomizationField',
       id: 'journey-customization-field-id',
+      journeyId: 'customizable-website-template-journey-id',
       key: 'journey-customization-field-key',
       value: 'journey-customization-field-value',
       defaultValue: 'journey-customization-field-default-value'
