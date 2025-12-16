@@ -23,7 +23,7 @@ import { useApolloClient } from '../src/libs/apolloClient'
 import 'swiper/css'
 import 'swiper/css/a11y'
 import 'swiper/css/navigation'
-import '../public/watch/global.css'
+import '../public/global.css'
 import './fonts/fonts.css'
 
 const notoSerif = Noto_Serif({

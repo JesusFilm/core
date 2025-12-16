@@ -97,8 +97,7 @@ export function CollectionsPage(): ReactElement {
           }}
           secondParagraph="The Gospels are shockingly honest about the emotions Jesus experienced — His deep anguish over one of His closest friends denying he even knew Him, and the other disciples' disbelief in His resurrection — raw emotions that mirror our own struggles."
           easterDatesTitle="When is Easter celebrated in {year}?"
-          thirdParagraph="Explore our collection of videos and interactive resources that invite you into the authentic story — one that changed history and continues to transform lives today.
-Because the greatest celebration in human history is about far more than traditions — it's about resurrection power"
+          thirdParagraph="Explore our collection of videos and interactive resources that invite you into the authentic story — one that changed history and continues to transform lives today. Because the greatest celebration in human history is about far more than traditions — it's about resurrection power"
           westernEasterLabel="Western Easter (Catholic/Protestant)"
           orthodoxEasterLabel="Orthodox"
           passoverLabel="Jewish Passover"

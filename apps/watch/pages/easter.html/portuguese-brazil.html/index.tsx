@@ -4,9 +4,9 @@ import { NextSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 
-import i18nConfig from '../../../../next-i18next.config'
-import { CollectionsPage } from '../../../../src/components/CollectionsPage/languages/pt'
-import { getFlags } from '../../../../src/libs/getFlags'
+import i18nConfig from '../../../next-i18next.config'
+import { CollectionsPage } from '../../../src/components/CollectionsPage/languages/pt'
+import { getFlags } from '../../../src/libs/getFlags'
 
 export default function EasterPage(): ReactElement {
   return (
@@ -20,7 +20,7 @@ export default function EasterPage(): ReactElement {
             'E se tudo o que você pensava sobre a Páscoa fosse apenas metade da história?',
           description:
             'Explore o outro lado da Páscoa — repleto de traição, esperança e uma afirmação que mudou o mundo.',
-          url: 'https://watch.jesusfilm.org/watch/easter/portuguese-brazil',
+          url: 'https://www.jesusfilm.org/watch/easter/portuguese-brazil',
           type: 'website',
           locale: 'pt_BR',
           images: [

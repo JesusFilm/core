@@ -4,9 +4,9 @@ import { NextSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 
-import i18nConfig from '../../../../next-i18next.config'
-import { CollectionsPage } from '../../../../src/components/CollectionsPage/languages/ru'
-import { getFlags } from '../../../../src/libs/getFlags'
+import i18nConfig from '../../../next-i18next.config'
+import { CollectionsPage } from '../../../src/components/CollectionsPage/languages/ru'
+import { getFlags } from '../../../src/libs/getFlags'
 
 export default function EasterPage(): ReactElement {
   return (
@@ -20,7 +20,7 @@ export default function EasterPage(): ReactElement {
             'Что если всё, что вы думали о Пасхе — это только половина истории?',
           description:
             'Откройте для себя другую сторону Пасхи — историю, наполненную предательством, надеждой и утверждением, изменившим мир.',
-          url: 'https://watch.jesusfilm.org/watch/easter/russian',
+          url: 'https://www.jesusfilm.org/watch/easter/russian',
           type: 'website',
           locale: 'ru_RU',
           images: [

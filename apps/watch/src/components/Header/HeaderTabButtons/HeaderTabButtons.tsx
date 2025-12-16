@@ -75,7 +75,7 @@ export function HeaderTabButtons(): ReactElement {
           <Button
             data-testid={`${label}Button`}
             color="inherit"
-            component={NextLink}
+            component="a"
             href={href}
             key={label}
             sx={{
@@ -84,7 +84,7 @@ export function HeaderTabButtons(): ReactElement {
               borderRadius: '40px !important',
               border: '2px solid',
               borderColor:
-                (router?.pathname?.startsWith(href) ?? false)
+                href === '/watch'
                   ? (theme) => theme.palette.primary.main
                   : 'transparent',
               py: { sm: 1 },
@@ -92,7 +92,6 @@ export function HeaderTabButtons(): ReactElement {
               fontSize: { sm: '0.875rem', md: '1rem' }
             }}
             startIcon={icon}
-            locale={false}
           >
             {label}
           </Button>
@@ -145,20 +144,21 @@ export function HeaderTabButtons(): ReactElement {
         {headerItems.map(({ label, icon, href }) => (
           <MenuItem
             key={label}
-            component={NextLink}
+            component="a"
             href={href}
-            locale={false}
             onClick={handleCloseMenu}
-            selected={router?.pathname?.startsWith(href)}
+            selected={href === '/watch'}
           >
             <Stack direction="row" alignItems="center" width="100%" px={2.5}>
               <ListItemIcon>{icon}</ListItemIcon>
               <ListItemText
                 primary={label}
-                primaryTypographyProps={{
-                  variant: 'h6',
-                  sx: {
-                    textAlign: 'center'
+                slotProps={{
+                  primary: {
+                    variant: 'h6',
+                    sx: {
+                      textAlign: 'center'
+                    }
                   }
                 }}
               />

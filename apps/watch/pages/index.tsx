@@ -13,17 +13,14 @@ import {
 
 import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
-import i18nConfig from '../../next-i18next.config'
-import { WatchHomePage as VideoHomePage } from '../../src/components/WatchHomePage'
-import { createInstantSearchRouter } from '../../src/libs/algolia/instantSearchRouter/instantSearchRouter'
-import {
-  createApolloClient,
-  useApolloClient
-} from '../../src/libs/apolloClient'
-import { getCookie } from '../../src/libs/cookieHandler'
-import { getFlags } from '../../src/libs/getFlags'
-import { getLanguageIdFromLocale } from '../../src/libs/getLanguageIdFromLocale'
-import { WatchProvider, WatchState } from '../../src/libs/watchContext'
+import i18nConfig from '../next-i18next.config'
+import { WatchHomePage as VideoHomePage } from '../src/components/WatchHomePage'
+import { createInstantSearchRouter } from '../src/libs/algolia/instantSearchRouter/instantSearchRouter'
+import { createApolloClient, useApolloClient } from '../src/libs/apolloClient'
+import { getCookie } from '../src/libs/cookieHandler'
+import { getFlags } from '../src/libs/getFlags'
+import { getLanguageIdFromLocale } from '../src/libs/getLanguageIdFromLocale'
+import { WatchProvider, WatchState } from '../src/libs/watchContext'
 
 interface HomePageProps {
   initialApolloState?: NormalizedCacheObject

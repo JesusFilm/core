@@ -4,31 +4,31 @@ import { NextSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 
-import i18nConfig from '../../../../next-i18next.config'
-import { CollectionsPage } from '../../../../src/components/CollectionsPage/languages/fr'
-import { getFlags } from '../../../../src/libs/getFlags'
+import i18nConfig from '../../../next-i18next.config'
+import { CollectionsPage } from '../../../src/components/CollectionsPage/languages/es'
+import { getFlags } from '../../../src/libs/getFlags'
 
 export default function EasterPage(): ReactElement {
   return (
     <>
       <NextSeo
         titleTemplate="%s | Jesus Film Project"
-        defaultTitle="Pâques 2025 - vidéos et ressources sur le Carême, la Semaine Sainte, la Résurrection | Jesus Film Project"
-        description="Explorez l'autre côté de Pâques — une histoire de trahison, d'espérance et d'une affirmation qui a changé le monde."
+        defaultTitle="Pascua 2025 videos y recursos sobre Cuaresma, Semana Santa, Resurrección | Jesus Film Project"
+        description="Explora el otro lado de la Pascua — lleno de traición, esperanza y una afirmación que cambió el mundo."
         openGraph={{
           title:
-            "Et si tout ce que vous pensiez savoir sur Pâques n'était que la moitié de l'histoire ?",
+            '¿Y si todo lo que pensabas sobre la Pascua es solo la mitad de la historia?',
           description:
-            "Explorez l'autre côté de Pâques — une histoire de trahison, d'espérance et d'une affirmation qui a changé le monde.",
-          url: 'https://watch.jesusfilm.org/watch/easter/french',
+            'Explora el otro lado de la Pascua — lleno de traición, esperanza y una afirmación que cambió el mundo.',
+          url: 'https://www.jesusfilm.org/watch/easter/spanish-latin-american',
           type: 'website',
-          locale: 'fr_FR',
+          locale: 'es_LA',
           images: [
             {
               url: 'https://images.unsplash.com/photo-1482424917728-d82d29662023?w=1400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fGNocmlzdHxlbnwwfHwwfHx8MA%3D%3D',
               width: 1400,
               height: 933,
-              alt: 'Pâques - Jesus Film Project',
+              alt: 'Pascua - Jesus Film Project',
               type: 'image/jpeg'
             }
           ],
@@ -59,7 +59,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     props: {
       flags: await getFlags(),
       ...(await serverSideTranslations(
-        context.locale ?? 'fr',
+        context.locale ?? 'es',
         ['apps-watch'],
         i18nConfig
       ))

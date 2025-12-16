@@ -24,7 +24,11 @@ export function ContentHeader({
       } ${visible ? 'delay-0' : 'delay-[2000ms]'}`}
     >
       <NextLink
-        href={`/watch${languageSlug != null && languageSlug !== 'english' ? `/${languageSlug}.html` : ''}`}
+        href={
+          languageSlug != null && languageSlug !== 'english'
+            ? `/${languageSlug}.html`
+            : '/'
+        }
         locale={false}
       >
         <Image
