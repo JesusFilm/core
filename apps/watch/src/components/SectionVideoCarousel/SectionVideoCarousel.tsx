@@ -1,5 +1,5 @@
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
@@ -28,6 +28,7 @@ export interface SectionVideoCarouselProps {
   analyticsTag?: string
   backgroundClassName?: string
   languageId?: string
+  defaultBackgroundImage?: string
 }
 
 export function SectionVideoCarousel({
@@ -42,11 +43,12 @@ export function SectionVideoCarousel({
   watchButtonIcon = 'Play3',
   analyticsTag,
   backgroundClassName,
-  languageId
+  languageId,
+  defaultBackgroundImage
 }: SectionVideoCarouselProps): ReactElement | null {
   const { t } = useTranslation('apps-watch')
 
-  const { loading, slides, subtitle, title, description, ctaHref, ctaLabel } =
+  const { loading, slides, subtitle, title, description, ctaHref, ctaLabel, primaryCollection } =
     useSectionVideoCollectionCarouselContent({
       sources: sources ?? [],
       primaryCollectionId,
@@ -59,10 +61,41 @@ export function SectionVideoCarousel({
       languageId
     })
 
+  const defaultBackgroundImageUrl = useMemo(() => {
+    // 1. Custom config image
+    if (defaultBackgroundImage != null && defaultBackgroundImage !== '') {
+      return defaultBackgroundImage
+    }
+
+    // 2. Collection banner image
+    const bannerImage = primaryCollection?.bannerImages?.find(
+      (image) => image?.mobileCinematicHigh != null
+    )?.mobileCinematicHigh
+    if (bannerImage != null) {
+      return bannerImage
+    }
+
+    // 3. First slide's video thumbnail
+    const firstSlideImage = slides[0]?.video.images[0]?.mobileCinematicHigh
+    if (firstSlideImage != null) {
+      return firstSlideImage
+    }
+
+    return null
+  }, [defaultBackgroundImage, primaryCollection, slides])
+
   const [hoverBackground, setHoverBackground] = useState<string | null>(null)
   const [isBackgroundVisible, setIsBackgroundVisible] = useState(false)
   const showTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Initialize with default background if available
+  useEffect(() => {
+    if (defaultBackgroundImageUrl != null) {
+      setHoverBackground(defaultBackgroundImageUrl)
+      setIsBackgroundVisible(true)
+    }
+  }, [defaultBackgroundImageUrl])
 
   const clearTimers = useCallback(() => {
     if (showTimeoutRef.current != null) {
@@ -80,13 +113,20 @@ export function SectionVideoCarousel({
       clearTimers()
 
       if (data == null || data.imageUrl == null || data.imageUrl === '') {
+        // Exiting hover - return to default background if available
         setIsBackgroundVisible(false)
         hideTimeoutRef.current = setTimeout(() => {
-          setHoverBackground(null)
+          if (defaultBackgroundImageUrl != null) {
+            setHoverBackground(defaultBackgroundImageUrl)
+            setIsBackgroundVisible(true)
+          } else {
+            setHoverBackground(null)
+          }
         }, 200)
         return
       }
 
+      // Entering hover - show hover image
       setIsBackgroundVisible(false)
 
       showTimeoutRef.current = setTimeout(() => {
@@ -94,7 +134,7 @@ export function SectionVideoCarousel({
         setIsBackgroundVisible(true)
       }, 40)
     },
-    [clearTimers]
+    [clearTimers, defaultBackgroundImageUrl]
   )
 
   useEffect(() => () => clearTimers(), [clearTimers])
