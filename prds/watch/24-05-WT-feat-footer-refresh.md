@@ -36,9 +36,23 @@
 
 ## Current Session
 
-- [x] Replace the legacy collection experience with a new `PageCollection` template that mirrors the modern single-video layout while using collection metadata and artwork.
-- [x] Swap the video player hero for a collection thumbnail hero and remove the Bible quotes + discussion widgets from collection views.
-- [x] Surface collection children directly beneath the description via `SectionVideoGrid` and expose the search modal language filter UI for switching languages.
-- [x] Redesign the download dialog with shadcn primitives to match the Watch typography and card styling.
-- [x] Modernize the Terms of Use dialog and align the related stories and specs with the new UI flow.
-- [x] Fix Jest locale imports and update download dialog tests to account for multiple empty-state renderings.
+### Goals
+
+- Recreate the Watch footer to match the provided design while removing social icons and the newsletter CTA, keeping the Jesus Film logo from `/assets/footer`, and ensuring the layout stacks cleanly on mobile.
+
+### Completed Work
+
+- [x] Rebuilt the footer layout with Tailwind utility classes, placing the logo, address/contact details, privacy/legal links, navigation links, and the Give Now button without social icons or a newsletter section.
+- [x] Replaced the MUI-based `FooterLink` with a Tailwind/semantic anchor that preserves focus styling and supports logo imagery.
+
+### Obstacles & Resolutions
+
+- **Jest locale resolution**: `pnpm dlx nx test watch --testPathPattern=Footer` fails before running specs because `core/libs/locales/en/apps-watch.json` cannot be resolved from `test/i18n.ts`. This is a pre-existing test environment issue; no changes were made to the i18n setup in this task.
+
+### Test Coverage
+
+- `pnpm dlx nx test watch --testPathPattern=Footer` (fails prior to running tests due to missing `core/libs/locales/en/apps-watch.json` in the shared Jest i18n helper).
+
+### User Flow
+
+- Scroll to the bottom of Watch pages → footer shows Jesus Film logo, mailing and contact details, privacy/legal links, navigation menu, and Give Now button → on small screens the sections stack with centered spacing for readability.

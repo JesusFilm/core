@@ -28,18 +28,19 @@ describe('FooterLink', () => {
     expect(el).toHaveAttribute('href', 'https://www.facebook.com/jesusfilm')
     expect(el).toHaveAttribute('target', '_blank')
     expect(el).toHaveAttribute('rel', 'nofollow noopener')
+    expect(el).toHaveClass('cursor-pointer')
   })
 
-  it('should apply custom styles when sx prop is provided', () => {
+  it('should merge custom classes', () => {
     const { getByTestId } = render(
       <FooterLink
         url="/"
         label="Jesus Film logo"
         src="/footer/jesus-film-logo.svg"
-        sx={{ lineHeight: 0 }}
+        className="opacity-80"
       />
     )
     const link = getByTestId('FooterLink')
-    expect(link).toHaveStyle('line-height: 0')
+    expect(link).toHaveClass('opacity-80')
   })
 })
