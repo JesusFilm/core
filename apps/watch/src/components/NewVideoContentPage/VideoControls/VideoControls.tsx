@@ -32,10 +32,10 @@ import { usePlayer } from '../../../libs/playerContext'
 import { useVideo } from '../../../libs/videoContext'
 import { useLanguageActions } from '../../../libs/watchContext'
 import { HeroOverlay } from '../../HeroOverlay'
-import { VideoTitle } from './VideoTitle'
+import { AudioLanguageButton } from '../AudioLanguageButton'
 
 import { handleVideoTitleClick } from './utils/handleVideoTitleClick'
-import { AudioLanguageButton } from '../AudioLanguageButton'
+import { VideoTitle } from './VideoTitle'
 
 const DynamicLanguageSwitchDialog = dynamic<{
   open: boolean
