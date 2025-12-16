@@ -444,22 +444,10 @@ describe('UploadVideoVariantContext', () => {
     it('resets state when called', async () => {
       const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
       const { result } = renderHook(() => useUploadVideoVariant(), {
-        wrapper: createWrapper([
-          prepareR2MultipartMock,
-          completeR2MultipartMock,
-          createMuxVideoUploadByUrlMock,
-          getMyMuxVideoMock,
-          {
-            ...getMyMuxVideoMock,
-            request: {
-              ...getMyMuxVideoMock.request
-            }
-          },
-          createVideoVariantMock
-        ])
+        wrapper: createWrapper([prepareR2MultipartErrorMock])
       })
 
-      // Manually set some state first
+      // Start upload with error mock to set error state
       await act(async () => {
         await result.current.startUpload(
           file,
@@ -473,21 +461,11 @@ describe('UploadVideoVariantContext', () => {
         )
       })
 
+      // Wait for error state to be set
       await waitFor(() => {
-        expect(result.current.uploadState).toEqual({
-          edition: null,
-          error: expect.any(String),
-          isProcessing: false,
-          isUploading: false,
-          languageId: null,
-          languageSlug: null,
-          muxVideoId: null,
-          onComplete: undefined,
-          published: null,
-          uploadProgress: 0,
-          videoId: null,
-          videoSlug: null
-        })
+        expect(result.current.uploadState.error).toBe(
+          'Failed to prepare R2 multipart upload'
+        )
       })
 
       // Clear the state
