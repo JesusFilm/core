@@ -2,7 +2,7 @@ project: default
 source:
   repoURL: https://github.com/JesusFilm/core
   path: infrastructure/kube/cert-manager
-  targetRevision: stage
+  targetRevision: main
   helm:
     valueFiles:
       - values.yaml
