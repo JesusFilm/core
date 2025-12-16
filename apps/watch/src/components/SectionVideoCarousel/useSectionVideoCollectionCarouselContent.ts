@@ -352,7 +352,12 @@ export function useSectionVideoCollectionCarouselContent({
   defaultCtaLabel,
   languageId: providedLanguageId
 }: UseSectionVideoCollectionCarouselContentOptions): SectionVideoCollectionCarouselContentResult {
-  const { locale } = useRouter()
+  const locale = useMemo(() => {
+    if (providedLanguageId != null) return null
+    if (typeof window === 'undefined') return 'en' // SSR fallback
+    return useRouter().locale
+  }, [providedLanguageId])
+
   const languageId = providedLanguageId ?? getLanguageIdFromLocale(locale)
 
   useEffect(() => {

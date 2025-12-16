@@ -70,14 +70,14 @@ export function VideoGrid({
 
   const fallbackGridColumns =
     orientation === 'vertical'
-      ? 'grid-cols-2 md:grid-cols-4 xl:grid-cols-5'
-      : 'grid-cols-1 md:grid-cols-3 xl:grid-cols-4'
+      ? 'grid-cols-2 md:grid-cols-4 xl:grid-cols-4'
+      : 'grid-cols-1 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6'
 
-  const fallbackSkeletonCount = orientation === 'vertical' ? 5 : 4
+  const fallbackSkeletonCount = orientation === 'vertical' ? 4 : 6
 
   return (
     <div
-      className={`grid gap-4 ${orientation === 'vertical' ? 'grid-cols-2 md:grid-cols-4 xl:grid-cols-5' : 'grid-cols-1 md:grid-cols-3 xl:grid-cols-4'}`}
+      className={`grid gap-4 ${orientation === 'vertical' ? 'grid-cols-2 md:grid-cols-4 xl:grid-cols-4' : 'grid-cols-1 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6'}`}
       data-testid="VideoGrid"
     >
       {(videos?.length ?? 0) > 0 &&
@@ -110,9 +110,19 @@ export function VideoGrid({
           <div className="hidden w-full md:block">
             <div className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`} />
           </div>
-          <div className="hidden w-full xl:block">
+          <div className={`hidden w-full ${orientation === 'vertical' ? 'md:block' : 'xl:block'}`}>
             <div className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`} />
           </div>
+          {orientation === 'vertical' ? null : (
+            <div className="hidden w-full 2xl:block">
+              <div className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`} />
+            </div>
+          )}
+          {orientation === 'vertical' ? null : (
+            <div className="hidden w-full 3xl:block">
+              <div className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`} />
+            </div>
+          )}
         </>
       )}
       {!loading && hasNoResults && (
@@ -184,20 +194,16 @@ export function VideoGrid({
           </div>
         </div>
       )}
-      {showLoadMore && !hasNoResults && (
+      {showLoadMore && !hasNoResults && hasNextPage && (
         <div className="col-span-full w-full">
           <div className="flex justify-center py-6">
             <button
-              className={`btn-outlined flex items-center gap-2 ${!hasNextPage ? 'cursor-not-allowed opacity-50' : ''}`}
+              className="btn-outlined flex items-center gap-2"
               onClick={showMore}
-              disabled={!hasNextPage}
+              disabled={loading}
             >
               <Plus className="h-4 w-4" />
-              {loading
-                ? 'Loading...'
-                : hasNextPage
-                  ? 'Load More'
-                  : 'No More Videos'}
+              {loading ? 'Loading...' : 'Load More'}
             </button>
           </div>
         </div>

@@ -1,6 +1,7 @@
-import dynamic from 'next/dynamic'
 import { type ReactElement } from 'react'
 
+import { SectionVideoCarousel } from '../SectionVideoCarousel'
+import { SectionVideoGrid } from '../SectionVideoGrid'
 import {
   christmasAdventShowcaseSources,
   collectionLumo,
@@ -8,27 +9,6 @@ import {
   newBelieverCourse
 } from '../PageCollections/collectionShowcaseConfig'
 
-const SectionVideoCarousel = dynamic(
-  () =>
-    import(
-      /* webpackChunkName: "SectionVideoCarousel" */
-      '../SectionVideoCarousel'
-    ).then((mod) => ({
-      default: mod.SectionVideoCarousel
-    })),
-  { ssr: false }
-)
-
-const SectionVideoGrid = dynamic(
-  () =>
-    import(
-      /* webpackChunkName: "SectionVideoGrid" */
-      '../SectionVideoGrid'
-    ).then((mod) => ({
-      default: mod.SectionVideoGrid
-    })),
-  { ssr: false }
-)
 
 interface CollectionsRailProps {
   languageId?: string

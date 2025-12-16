@@ -187,7 +187,7 @@ export function SectionVideoCarousel({
             data-testid="SectionVideoCarouselSwiper"
           >
             {loading
-              ? Array.from({ length: 4 }).map((_, index) => (
+              ? Array.from({ length: 5 }).map((_, index) => (
                   <SwiperSlide
                     key={`skeleton-${index}`}
                     className={`max-w-[200px] py-1 ${index === 0 ? 'padded-l' : ''}`}

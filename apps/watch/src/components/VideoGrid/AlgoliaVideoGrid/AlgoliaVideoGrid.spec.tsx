@@ -107,7 +107,7 @@ describe('AlgoliaVideoGrid', () => {
     expect(showMore).toHaveBeenCalled()
   })
 
-  it('should show no more videos button', async () => {
+  it('should not show button when there are no more videos', async () => {
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: false,
       noResults: false,
@@ -120,11 +120,31 @@ describe('AlgoliaVideoGrid', () => {
     render(<AlgoliaVideoGrid showLoadMore />)
 
     expect(
-      screen.getByRole('button', { name: 'No More Videos' })
+      screen.queryByRole('button', { name: 'No More Videos' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Load More' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should show loading button if loading and there are more videos', () => {
+    mockedUseAlgoliaVideos.mockReturnValue({
+      loading: true,
+      noResults: false,
+      items: transformedVideos,
+      showMore: jest.fn(),
+      isLastPage: false,
+      sendEvent: jest.fn()
+    })
+
+    render(<AlgoliaVideoGrid showLoadMore />)
+
+    expect(
+      screen.getByRole('button', { name: 'Loading...' })
     ).toBeInTheDocument()
   })
 
-  it('should show loading button if loading or stalled', () => {
+  it('should not show button when loading but no more videos', () => {
     mockedUseAlgoliaVideos.mockReturnValue({
       loading: true,
       noResults: false,
@@ -137,8 +157,8 @@ describe('AlgoliaVideoGrid', () => {
     render(<AlgoliaVideoGrid showLoadMore />)
 
     expect(
-      screen.getByRole('button', { name: 'Loading...' })
-    ).toBeInTheDocument()
+      screen.queryByRole('button', { name: 'Loading...' })
+    ).not.toBeInTheDocument()
   })
 
   it('should show no results if no items returned', () => {
