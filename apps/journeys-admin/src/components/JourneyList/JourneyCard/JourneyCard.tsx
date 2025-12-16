@@ -6,12 +6,15 @@ import CardContent from '@mui/material/CardContent'
 import Chip from '@mui/material/Chip'
 import Skeleton from '@mui/material/Skeleton'
 import { useTheme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useEffect, useRef, useState } from 'react'
 
 import { useNavigationState } from '@core/journeys/ui/useNavigationState'
+import Globe from '@core/shared/ui/icons/Globe'
+import Lightning2 from '@core/shared/ui/icons/Lightning2'
 
 import {
   GetAdminJourneys,
@@ -23,6 +26,8 @@ import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardVariant } from './journeyCardVariant'
+import Stack from '@mui/material/Stack'
+import { isJourneyCustomizable } from '@core/journeys/ui/isJourneyCustomizable'
 
 interface JourneyCardProps {
   journey: Journey
@@ -169,6 +174,108 @@ export function JourneyCard({
               overflow: 'hidden'
             }}
           >
+            <Stack
+              direction="column"
+              spacing={1.5}
+              alignItems="flex-start"
+              sx={{
+                position: 'absolute',
+                top: 8,
+                left: 8,
+                zIndex: 2
+              }}
+            >
+              {journey.template && isJourneyCustomizable(journey) && (
+                <Box
+                  data-testid="JourneyCardQuickStartBadge"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: 'black',
+                    borderRadius: 11,
+                    padding: 1,
+                    paddingRight: isCardHovered ? 3 : 1,
+                    transition: 'padding 0.3s ease',
+                    boxShadow: `0 3px 4px 0 #0000004D`
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 22,
+                      height: 22,
+                      borderRadius: '50%',
+                      background: 'primary.main',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}
+                  >
+                    <Lightning2 sx={{ fontSize: 18, color: '#FFD700' }} />
+                  </Box>
+                  <Typography
+                    sx={{
+                      ml: isCardHovered ? 1 : 0,
+                      maxWidth: isCardHovered ? 100 : 0,
+                      opacity: isCardHovered ? 1 : 0,
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.3s ease',
+                      color: '#FFD700',
+                      typography: 'overline2',
+                      textTransform: 'Capitalize'
+                    }}
+                  >
+                    {t('Quick Start')}
+                  </Typography>
+                </Box>
+              )}
+              {journey.website && (
+                <Box
+                  data-testid="JourneyCardWebsiteBadge"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: 'black',
+                    borderRadius: 11,
+                    padding: 1,
+                    paddingRight: isCardHovered ? 3 : 1,
+                    transition: 'padding 0.3s ease',
+                    boxShadow: `0 3px 4px 0 #0000004D`
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 22,
+                      height: 22,
+                      borderRadius: '50%',
+                      background: 'primary.main',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0
+                    }}
+                  >
+                    <Globe sx={{ fontSize: 18, color: '#4DA3FF' }} />
+                  </Box>
+                  <Typography
+                    sx={{
+                      ml: isCardHovered ? 1 : 0,
+                      maxWidth: isCardHovered ? 100 : 0,
+                      opacity: isCardHovered ? 1 : 0,
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.3s ease',
+                      color: '#4DA3FF',
+                      typography: 'overline2',
+                      textTransform: 'Capitalize'
+                    }}
+                  >
+                    {t('Website')}
+                  </Typography>
+                </Box>
+              )}
+            </Stack>
             {journey.primaryImageBlock?.src != null ? (
               <>
                 {isImageLoading && (

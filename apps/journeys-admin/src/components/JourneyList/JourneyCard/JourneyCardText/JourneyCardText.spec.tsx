@@ -32,4 +32,9 @@ describe('JourneyCardText', () => {
     const { getByText } = render(<JourneyCardText journey={defaultJourney} />)
     expect(getByText('11 months ago')).toBeInTheDocument()
   })
+
+  it('should show translate icon', () => {
+    const { getByTestId } = render(<JourneyCardText journey={publishedJourney} />)
+    expect(getByTestId('TranslateIcon')).toBeInTheDocument()
+  })
 })
