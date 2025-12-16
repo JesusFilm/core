@@ -1,0 +1,92 @@
+import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import { getTranslations } from 'next-intl/server'
+
+import { getPlaylist } from './getPlaylist'
+
+import { PlaylistPage } from '@/components/PlaylistPage'
+import { env } from '@/env'
+
+interface PageProps {
+  params: Promise<{
+    playlistId: string
+  }>
+}
+
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const t = await getTranslations('Metadata')
+  const p = await getTranslations('PlaylistRoutePage')
+  const params = await props.params
+  const playlistId = params.playlistId
+
+  const data = await getPlaylist(playlistId)
+
+  const defaultMetadata: Metadata = {
+    other: {
+      'apple-itunes-app': `app-id=${env.NEXT_PUBLIC_IOS_APP_ID}; app-argument=https://player.jesusfilm.org/pl/${playlistId}`
+    }
+  }
+
+  if (
+    !data?.playlist ||
+    'message' in data.playlist ||
+    data.playlist.__typename !== 'QueryPlaylistSuccess'
+  ) {
+    return {
+      title: t('pageTitle', { title: p('defaultPageTitle') }),
+      description: p('defaultDescription'),
+      ...defaultMetadata
+    }
+  }
+
+  const playlist = data.playlist.data
+
+  return {
+    title: t('pageTitle', {
+      title: p('pageTitle', {
+        title: playlist.name,
+        name: playlist.owner.firstName
+      })
+    }),
+    description: p('description', {
+      name: playlist.owner.firstName,
+      count: playlist.items.length
+    }),
+    ...defaultMetadata
+  }
+}
+
+export default async function PlaylistRoutePage(props: PageProps) {
+  const t = await getTranslations('PlaylistRoutePage')
+  const params = await props.params
+  const playlistId = params.playlistId
+
+  const data = await getPlaylist(playlistId)
+
+  if (!data?.playlist || 'message' in data.playlist) {
+    notFound()
+  }
+
+  if (data.playlist.__typename !== 'QueryPlaylistSuccess') {
+    notFound()
+  }
+
+  const playlist = data.playlist.data
+
+  if (!playlist.items || playlist.items.length === 0) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <h1 className="mb-2 text-2xl font-bold">{playlist.name}</h1>
+          <p className="mb-1 text-gray-600">
+            {playlist.owner.firstName}
+            {playlist.owner.lastName ? ` ${playlist.owner.lastName}` : ''}
+          </p>
+          <p className="text-text-secondary">{t('thisPlaylistIsEmpty')}</p>
+        </div>
+      </div>
+    )
+  }
+
+  return <PlaylistPage playlist={playlist} />
+}
