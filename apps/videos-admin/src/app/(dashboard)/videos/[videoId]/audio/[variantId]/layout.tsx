@@ -38,10 +38,10 @@ import { bytesToSize } from './download/_bytesToSize/bytesToSize'
 
 interface VariantDialogProps {
   children: ReactNode
-  params: Promise<{
+  params: {
     variantId: string
     videoId: string
-  }>
+  }
 }
 
 const GET_ADMIN_VIDEO_VARIANT = graphql(`
@@ -320,11 +320,11 @@ function VariantDialogContent({
   )
 }
 
-export default async function VariantDialog({
+export default function VariantDialog({
   children,
   params
-}: VariantDialogProps): Promise<ReactElement | null> {
-  const { variantId, videoId } = await params
+}: VariantDialogProps): ReactElement | null {
+  const { variantId, videoId } = params
   return (
     <VariantDialogContent variantId={variantId} videoId={videoId}>
       {children}
