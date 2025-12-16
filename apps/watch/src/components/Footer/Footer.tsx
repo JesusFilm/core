@@ -26,7 +26,7 @@ export function Footer(): ReactElement {
   ]
 
   return (
-    <footer className="bg-white text-neutral-900" data-testid="Footer">
+    <footer className="bg-white text-neutral-900 z-100 relative" data-testid="Footer">
       <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-10 px-4 py-10 sm:px-6 lg:px-10">
         <div className="flex flex-col gap-6 border-b border-stone-200 pb-8 md:flex-row md:items-center md:justify-between">
           <div className="flex justify-center md:justify-start">
@@ -62,15 +62,12 @@ export function Footer(): ReactElement {
         </div>
 
         <div className="flex flex-col gap-6 text-sm leading-6 text-neutral-700 sm:flex-row sm:flex-wrap sm:items-start sm:gap-10">
-          <div className="flex flex-col gap-1 text-center sm:text-left">
+          <div className="flex flex-col gap-1 border-stone-200 pt-4 text-center sm:text-left">
             <span className="font-semibold text-neutral-900">
               {t('100 Lake Hart Drive', { lng: 'en' })}
             </span>
             <span className="font-semibold text-neutral-900">
               {t('Orlando, FL, 32832', { lng: 'en' })}
-            </span>
-            <span className="text-neutral-500">
-              {t('Resources', { lng: 'en' })} (ff1fd50)
             </span>
           </div>
 

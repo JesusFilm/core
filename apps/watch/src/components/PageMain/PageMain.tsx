@@ -18,6 +18,8 @@ import { SectionPromo } from './SectionPromo'
 import { SeeAllVideos } from './SeeAllVideos'
 import { useWatchHeroCarousel } from './useWatchHeroCarousel'
 
+import { Footer } from '../Footer/Footer'
+
 interface PageMainProps {
   languageId?: string | undefined
 }
@@ -67,6 +69,7 @@ function PageMainBody({ languageId }: PageMainProps): ReactElement {
         {/* <SectionLanguageMap /> */}
         <SectionPromo />
       </ContainerWithMedia>
+      <Footer />
     </div>
   )
 }
