@@ -165,10 +165,8 @@ function calculateMultipartPartSize(fileSize: number): number {
   if (partsWithDefault <= MAX_MULTIPART_PARTS)
     return DEFAULT_MULTIPART_PART_SIZE
 
-  return Math.max(
-    MIN_MULTIPART_PART_SIZE,
-    Math.ceil(fileSize / MAX_MULTIPART_PARTS)
-  )
+  const sizedForMaxParts = Math.ceil(fileSize / MAX_MULTIPART_PARTS)
+  return Math.max(MIN_MULTIPART_PART_SIZE, sizedForMaxParts)
 }
 
 type UploadAction =
@@ -517,7 +515,8 @@ export function UploadVideoVariantProvider({
           uploadedBytes += chunk.size
           dispatch({
             type: 'SET_PROGRESS',
-            progress: Math.round((uploadedBytes * 100) / totalSize)
+            progress: Math.round((uploadedBytes * 100) / totalSize),
+            uploadedBytes
           })
 
           uploadedParts.push({
