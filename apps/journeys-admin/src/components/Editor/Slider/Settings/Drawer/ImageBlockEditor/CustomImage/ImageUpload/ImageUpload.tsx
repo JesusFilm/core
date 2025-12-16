@@ -6,7 +6,7 @@ import type FormDataType from 'form-data'
 import { useTranslation } from 'next-i18next'
 import fetch from 'node-fetch'
 import { ReactElement, useState } from 'react'
-import { useDropzone } from 'react-dropzone'
+import { FileRejection, useDropzone } from 'react-dropzone'
 
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import CheckBrokenIcon from '@core/shared/ui/icons/CheckBroken'
@@ -34,7 +34,8 @@ export function ImageUpload({
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
   const [success, setSuccess] = useState<boolean>()
 
-  const onDrop = async (acceptedFiles: File[]): Promise<void> => {
+  const onDrop = async (acceptedFiles: File[], rejectedFiles: FileRejection[]): Promise<void> => {
+    console.log(rejectedFiles)
     const { data } = await createCloudflareUploadByFile({})
     setUploading?.(true)
 
@@ -51,9 +52,13 @@ export function ImageUpload({
           })
         ).json()
 
+        console.log('response', response)
+
         response.success === true ? setSuccess(true) : setSuccess(false)
         if (response.errors.length !== 0) {
           setSuccess(false)
+          setUploading?.(false)
+          
         }
 
         const src = `https://imagedelivery.net/${
@@ -73,13 +78,17 @@ export function ImageUpload({
     noClick: true,
     maxSize: 10485760,
     accept: {
-      'image/*': []
-    }
+      'image/png': [],
+      'image/jpg': [],
+      'image/jpeg': [],
+      'image/gif': [],
+      'image/svg': []
+    },
   })
 
   const uploadSuccess =
     success === true && selectedBlock?.src != null && loading === false
-  const uploadError = error === true || success === false
+  const uploadError = success === false
   const noBorder = uploadSuccess || uploadError || loading === true
 
   const { t } = useTranslation('apps-journeys-admin')
@@ -162,7 +171,7 @@ export function ImageUpload({
         <Typography variant="caption">
           {uploadError
             ? t('Something went wrong, try again')
-            : t('Max file size: 10 MB')}
+            : t('You can upload PNG, JPG, GIF, or SVG files. Max file size: 10 MB')}
         </Typography>
       </Stack>
       <Button
