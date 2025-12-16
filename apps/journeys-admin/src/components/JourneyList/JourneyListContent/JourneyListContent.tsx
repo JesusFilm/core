@@ -610,7 +610,7 @@ export function JourneyListContent({
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              pt: status === 'active' ? 30 : 30
+              pt: 30
             }}
           >
             <Typography variant="subtitle1" align="center" gutterBottom>
