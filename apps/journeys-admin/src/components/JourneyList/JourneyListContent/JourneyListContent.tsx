@@ -526,7 +526,7 @@ export function JourneyListContent({
       ) : (
         <Box
           sx={{
-            mt: { xs: 3, sm: 2 },
+            mt: { xs: 3, sm: 4 },
             px: { xs: 5, sm: 0 },
             // Negative margin-right for templates to offset extra spacing from Grid container
             // This ensures symmetric padding (32px on both sides) when side panel is hidden
