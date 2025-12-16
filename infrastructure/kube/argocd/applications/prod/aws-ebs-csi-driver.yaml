@@ -1,31 +1,11 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: aws-ebs-csi-driver-prod
-  namespace: default
-  labels:
-    app.kubernetes.io/name: aws-ebs-csi-driver
-    app.kubernetes.io/part-of: storage
-    environment: prod
-spec:
-  project: default
-
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: kube-system
-
-  source:
-    repoURL: https://github.com/JesusFilm/core.git
-    targetRevision: main
-    path: infrastructure/kube/aws-ebs-csi-driver
-    helm:
-      releaseName: aws-ebs-csi-driver
-      valueFiles:
-        - values.yaml
-
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
+project: default
+source:
+  repoURL: https://github.com/JesusFilm/core
+  path: infrastructure/kube/aws-ebs-csi-driver
+  targetRevision: main
+  helm:
+    valueFiles:
+      - values.yaml
+destination:
+  server: https://kubernetes.default.svc
+  namespace: kube-system

@@ -1,33 +1,11 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: plausible-analytics-prod
+project: default
+source:
+  repoURL: https://github.com/JesusFilm/core
+  path: infrastructure/kube/plausible
+  targetRevision: main
+  helm:
+    valueFiles:
+      - values.yaml
+destination:
+  server: https://kubernetes.default.svc
   namespace: default
-  labels:
-    app.kubernetes.io/name: plausible-analytics
-    app.kubernetes.io/part-of: analytics
-    environment: prod
-spec:
-  project: default
-
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: default
-
-  source:
-    repoURL: https://github.com/JesusFilm/core.git
-    targetRevision: main
-    path: apis/api-analytics/infrastructure/chart
-    helm:
-      releaseName: plausible-analytics
-      valueFiles:
-        - values.yaml
-
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-
-

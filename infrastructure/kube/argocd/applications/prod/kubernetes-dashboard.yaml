@@ -1,32 +1,8 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: kubernetes-dashboard
-  namespace: default
-  labels:
-    app.kubernetes.io/name: kubernetes-dashboard
-    app.kubernetes.io/part-of: ops
-spec:
-  project: default
-
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: kubernetes-dashboard
-
-  source:
-    repoURL: https://github.com/JesusFilm/core.git
-    targetRevision: main
-    path: infrastructure/kube/dashboard
-    helm:
-      releaseName: kubernetes-dashboard
-      valueFiles:
-        - values.yaml
-
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-
-
+project: default
+source:
+  repoURL: https://github.com/JesusFilm/core
+  path: infrastructure/kube/dashboard
+  targetRevision: main
+destination:
+  server: https://kubernetes.default.svc
+  namespace: kubernetes-dashboard

@@ -1,32 +1,11 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: external-dns-prod
+project: default
+source:
+  repoURL: https://github.com/JesusFilm/core
+  path: infrastructure/kube/external-dns
+  targetRevision: main
+  helm:
+    valueFiles:
+      - values.yaml
+destination:
+  server: https://kubernetes.default.svc
   namespace: default
-  labels:
-    app.kubernetes.io/name: external-dns
-    app.kubernetes.io/part-of: dns
-    environment: prod
-spec:
-  project: default
-
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: external-dns
-
-  source:
-    repoURL: https://github.com/JesusFilm/core.git
-    targetRevision: main
-    path: infrastructure/kube/external-dns/chart
-    helm:
-      releaseName: external-dns
-      valueFiles:
-        - values.yaml
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-
-

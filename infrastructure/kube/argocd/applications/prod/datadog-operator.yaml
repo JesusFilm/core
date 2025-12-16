@@ -1,11 +1,11 @@
 project: default
 source:
   repoURL: https://github.com/JesusFilm/core
-  path: infrastructure/kube/doppler
+  path: infrastructure/kube/datadog-operator
   targetRevision: main
   helm:
     valueFiles:
       - values.yaml
 destination:
   server: https://kubernetes.default.svc
-  namespace: doppler-operator-system
+  namespace: default
