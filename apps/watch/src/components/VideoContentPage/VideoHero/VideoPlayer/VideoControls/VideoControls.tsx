@@ -371,6 +371,11 @@ export function VideoControls({
   }, [player, id, variant, title, durationSeconds, dispatchPlayer])
 
   const handlePlayerEventPause = useCallback(() => {
+    if (!(player?.paused() ?? false)) {
+      // Firefox occasionally emits pause events even though playback continues;
+      // ignore them so we don't thrash global player state.
+      return
+    }
     // Sync global state with actual player state
     dispatchPlayer({
       type: 'SetPlay',
