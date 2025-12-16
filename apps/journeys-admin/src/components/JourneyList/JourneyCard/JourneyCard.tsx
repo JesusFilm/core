@@ -61,6 +61,9 @@ export function JourneyCard({
   const [isCardHovered, setIsCardHovered] = useState(false)
   const [isImageLoading, setIsImageLoading] = useState(true)
 
+  // MARK: Remove this once Siyang Cao + Mike Alison implement updated journey analytics feature
+  const TEMP_HIDE_ANALYTICS_FOR_LOCAL_TEMPLATES = journey.template === true && journey.team?.id !== 'jfp-team'
+
   useEffect(() => {
     if (duplicatedJourneyId != null && duplicatedJourneyRef.current != null) {
       duplicatedJourneyRef.current.scrollIntoView({
@@ -91,7 +94,7 @@ export function JourneyCard({
           borderBottom: '1px solid',
           borderColor: 'divider'
         },
-        height: '100%',
+        height: TEMP_HIDE_ANALYTICS_FOR_LOCAL_TEMPLATES ? '90%' : '100%',
         boxShadow: isCardHovered ? 2 : 0
       }}
       data-testid={`JourneyCard-${journey.id}`}
@@ -352,7 +355,7 @@ export function JourneyCard({
             <JourneyCardText journey={journey} />
           </CardContent>
         </CardActionArea>
-        <Box
+        {!TEMP_HIDE_ANALYTICS_FOR_LOCAL_TEMPLATES && (<Box
           sx={{
             position: 'absolute',
             bottom: { xs: 8, sm: 3 },
@@ -363,6 +366,7 @@ export function JourneyCard({
         >
           <JourneyCardInfo journey={journey} variant={variant} />
         </Box>
+        )}
       </>
     </Card>
   )
