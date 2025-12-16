@@ -216,8 +216,8 @@ export function DefaultMenu({
         journey={journeyFromLazyQuery?.journey}
         handleCloseMenu={handleCloseMenu}
         handleKeepMounted={handleKeepMounted}
-      />
-      <Divider />
+      />      
+      <Divider sx={{ my: 1 }} />
       {template !== true && activeTeam != null && (
         <>
           <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
