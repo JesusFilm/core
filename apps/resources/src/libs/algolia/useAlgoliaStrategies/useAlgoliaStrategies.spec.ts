@@ -87,4 +87,73 @@ describe('useAlgoliaStrategies', () => {
     const { result } = renderHook(() => useAlgoliaStrategies())
     expect(result.current.label).toBe('Mission Trips')
   })
+
+  describe('transformAlgoliaStrategies child filtering', () => {
+    it('should filter out child hit', () => {
+      const parentHit = {
+        ...algoliaStrategyItem,
+        parent_id: 0
+      } as unknown as Hit<BaseHit>
+      const childHit = {
+        ...algoliaStrategyItem,
+        parent_id: 123
+      } as unknown as Hit<BaseHit>
+      const transformedHits = transformAlgoliaStrategies([parentHit, childHit])
+      expect(transformedHits).toEqual([strategyItem])
+    })
+
+    it('should filter out multiple child hits', () => {
+      const parentHit = {
+        ...algoliaStrategyItem,
+        parent_id: 0
+      } as unknown as Hit<BaseHit>
+      const childHit = {
+        ...algoliaStrategyItem,
+        parent_id: 123
+      } as unknown as Hit<BaseHit>
+      const childHit2 = {
+        ...algoliaStrategyItem,
+        parent_id: 456
+      } as unknown as Hit<BaseHit>
+      const transformedHits = transformAlgoliaStrategies([
+        parentHit,
+        childHit,
+        childHit2
+      ])
+      expect(transformedHits).toEqual([strategyItem])
+    })
+
+    it('should include hit if parent_id is undefined', () => {
+      const hit = {
+        ...algoliaStrategyItem,
+        parent_id: undefined
+      } as unknown as Hit<BaseHit>
+      const transformedHits = transformAlgoliaStrategies([hit])
+      expect(transformedHits).toEqual([strategyItem])
+    })
+
+    it('should include hit if parent_id is null', () => {
+      const hit = {
+        ...algoliaStrategyItem,
+        parent_id: null
+      } as unknown as Hit<BaseHit>
+      const transformedHits = transformAlgoliaStrategies([hit])
+      expect(transformedHits).toEqual([strategyItem])
+    })
+
+    it('should return empty array when all hits are children', () => {
+      const child1 = {
+        ...algoliaStrategyItem,
+        parent_id: 123
+      } as unknown as Hit<BaseHit>
+      const child2 = {
+        ...algoliaStrategyItem,
+        objectID: '2',
+        parent_id: 456
+      } as unknown as Hit<BaseHit>
+
+      const transformedHits = transformAlgoliaStrategies([child1, child2])
+      expect(transformedHits).toEqual([])
+    })
+  })
 })
