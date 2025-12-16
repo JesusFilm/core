@@ -42,3 +42,26 @@
 - [x] Redesign the download dialog with shadcn primitives to match the Watch typography and card styling.
 - [x] Modernize the Terms of Use dialog and align the related stories and specs with the new UI flow.
 - [x] Fix Jest locale imports and update download dialog tests to account for multiple empty-state renderings.
+
+## Current Session - Footer refresh
+
+- [x] Recreate the Watch footer layout with Tailwind while keeping navigation and the Give Now call-to-action.
+- [x] Remove social media icons and newsletter CTA to match the provided reference.
+- [x] Update `FooterLink` to use semantic links with shared focus states and cursor styling.
+- [x] Fix the jest i18n helper path and validate the refreshed footer with the component spec.
+
+### Obstacles & Resolutions
+
+- **Jest locale alias**: The `core/libs/locales` alias was not resolved by Jest when running the isolated Footer spec; updated the helper import to a relative path so the locale bundle loads correctly.
+
+### Test Coverage
+
+- `pnpm dlx nx run watch:test --testFile apps/watch/src/components/Footer/Footer.spec.tsx`
+
+### User Flow
+
+- Scroll to the bottom of any Watch page → the footer displays the logo, navigation links, and Give Now button on one row with contact/legal details beneath → mobile view stacks the sections with clear dividers and centered alignment.
+
+### Follow-up Ideas
+
+- Consider extracting shared footer spacing tokens into a tailwind preset or CSS variables to align other apps with the refreshed layout.

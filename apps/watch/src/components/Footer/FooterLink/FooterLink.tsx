@@ -1,62 +1,82 @@
-import MuiLink, { LinkProps } from '@mui/material/Link'
-import { SxProps, Theme } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import Image from 'next/image'
+import Link from 'next/link'
 import { HTMLAttributeAnchorTarget, ReactElement } from 'react'
 
-type ValueOf<T> = T[keyof T]
+import { cn } from '../../../libs/cn/cn'
 
 interface FooterLinkProps {
   url: string
   label: string
-  variant?: ValueOf<Pick<LinkProps, 'variant'>>
-  underline?: ValueOf<Pick<LinkProps, 'underline'>>
+  className?: string
+  labelClassName?: string
   src?: string
   width?: number
   height?: number
   target?: HTMLAttributeAnchorTarget
   noFollow?: boolean
-  sx?: SxProps<Theme>
 }
 
 export function FooterLink({
   url,
   label,
-  variant = 'h6',
-  underline = 'none',
+  className,
+  labelClassName,
   src,
   width,
   height,
   target,
-  noFollow = false,
-  sx
+  noFollow = false
 }: FooterLinkProps): ReactElement {
+  const rel = noFollow ? 'nofollow noopener' : 'noopener'
+  const isExternal = /^https?:\/\//.test(url)
+  const content =
+    src == null ? (
+      <span
+        className={cn(
+          'text-sm leading-6 font-semibold text-neutral-900',
+          labelClassName
+        )}
+      >
+        {label}
+      </span>
+    ) : (
+      <Image
+        src={src}
+        width={width ?? 32}
+        height={height ?? 32}
+        alt={label}
+        className="h-auto w-auto"
+      />
+    )
+
+  if (isExternal) {
+    return (
+      <a
+        href={url}
+        target={target}
+        rel={rel}
+        data-testid="FooterLink"
+        className={cn(
+          'inline-flex cursor-pointer items-center gap-2 text-neutral-900 transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900',
+          className
+        )}
+      >
+        {content}
+      </a>
+    )
+  }
+
   return (
-    <MuiLink
+    <Link
       href={url}
-      underline={underline}
-      target={target}
-      rel={noFollow ? 'nofollow noopener' : 'noopener'}
-      color="text.primary"
+      rel={rel}
       data-testid="FooterLink"
-      sx={src != null ? sx : undefined}
-    >
-      {src == null ? (
-        <Typography variant={variant} sx={sx}>
-          {label}
-        </Typography>
-      ) : (
-        <Image
-          src={src}
-          width={width ?? 32}
-          height={height ?? 32}
-          alt={label}
-          style={{
-            maxWidth: '100%',
-            height: 'auto'
-          }}
-        />
+      className={cn(
+        'inline-flex cursor-pointer items-center gap-2 text-neutral-900 transition hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900',
+        className
       )}
-    </MuiLink>
+    >
+      {content}
+    </Link>
   )
 }

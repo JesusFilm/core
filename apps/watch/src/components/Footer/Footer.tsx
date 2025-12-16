@@ -1,8 +1,3 @@
-import Button from '@mui/material/Button'
-import Container from '@mui/material/Container'
-import Divider from '@mui/material/Divider'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
@@ -12,218 +7,91 @@ export function Footer(): ReactElement {
   const { t } = useTranslation('apps-watch')
 
   const navigationLinks = [
-    { name: t('Share', { lng: 'en' }), href: '/partners/share/' },
-    { name: t('Watch', { lng: 'en' }), href: '/watch/' },
-    { name: t('Giving', { lng: 'en' }), href: '/give/' },
-    { name: t('About', { lng: 'en' }), href: '/about/' },
-    { name: t('Products', { lng: 'en' }), href: '/products/' },
+    { name: t('Share', { lng: 'en' }), href: '/partners/share' },
+    { name: t('Watch', { lng: 'en' }), href: '/watch' },
+    { name: t('Giving', { lng: 'en' }), href: '/give' },
+    { name: t('About', { lng: 'en' }), href: '/about' },
+    { name: t('Products', { lng: 'en' }), href: '/products' },
     {
       name: t('Resources', { lng: 'en' }),
-      href: '/partners/resources/'
+      href: '/partners/resources'
     },
-    { name: t('Partners', { lng: 'en' }), href: '/partners/' },
-    { name: t('Contact', { lng: 'en' }), href: '/contact/' }
+    { name: t('Partners', { lng: 'en' }), href: '/partners' },
+    { name: t('Contact', { lng: 'en' }), href: '/contact' }
   ]
 
-  const socialLinks = [
-    {
-      name: 'X (Twitter)',
-      href: 'https://twitter.com/jesusfilm',
-      icon: '/assets/footer/x-twitter.svg'
-    },
-    {
-      name: 'Facebook',
-      href: 'https://www.facebook.com/jesusfilm',
-      icon: '/assets/footer/facebook.svg'
-    },
-    {
-      name: 'Instagram',
-      href: 'https://www.instagram.com/jesusfilm',
-      icon: '/assets/footer/instagram.svg'
-    },
-    {
-      name: 'YouTube',
-      href: 'https://www.youtube.com/user/jesusfilm',
-      icon: '/assets/footer/youtube.svg'
-    }
+  const legalLinks = [
+    { name: t('Privacy Policy', { lng: 'en' }), href: '/privacy' },
+    { name: t('Legal Statement', { lng: 'en' }), href: '/legal' }
   ]
 
   return (
-    <Container
-      component="footer"
-      maxWidth="xxl"
-      sx={{ backgroundColor: 'background.default', pt: 10, pb: 10 }}
-      data-testid="Footer"
-    >
-      <Stack spacing={7.5}>
-        {/* Upper section */}
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          gap={5}
-          flexWrap="wrap"
-          rowGap={{ xs: 8, sm: 5 }}
-          sx={{
-            '& > *:nth-child(1)': { order: 1 },
-            '& > *:nth-child(2)': { order: 2 },
-            '& > *:nth-child(3)': { order: 3 },
-            '& > *:nth-child(4)': { order: { xs: 0, sm: 4 } }
-          }}
-        >
-          {/* Logo */}
-          <FooterLink
-            url="/"
-            label="Jesus Film logo"
-            src="/assets/footer/jesus-film-logo.png"
-            width={60}
-            height={60}
-            sx={{ lineHeight: 0 }}
-          />
+    <footer className="bg-white text-neutral-900 z-100 relative" data-testid="Footer">
+      <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-10 px-4 py-10 sm:px-6 lg:px-10">
+        <div className="flex flex-col gap-6 border-b border-stone-200 pb-8 md:flex-row md:items-center md:justify-between">
+          <div className="flex justify-center md:justify-start">
+            <FooterLink
+              url="/"
+              label="Jesus Film logo"
+              src="/assets/footer/jesus-film-logo.png"
+              width={60}
+              height={60}
+              className="rounded-md bg-white p-1 shadow-[0_4px_18px_rgba(0,0,0,0.08)]"
+            />
+          </div>
 
-          {/* Social Media Icons */}
-          <Stack
-            direction="row"
-            gap={{ xs: 10, sm: 5 }}
-            sx={{
-              ml: { sm: 'auto' },
-              mr: { sm: 5 },
-              flexGrow: { xs: 1, sm: 0 },
-              justifyContent: { xs: 'center', sm: 'flex-start' },
-              flexBasis: { xs: '100%', sm: 'auto' }
-            }}
-          >
-            {socialLinks.map((link) => (
-              <FooterLink
-                key={link.name}
-                url={link.href}
-                label={link.name}
-                src={link.icon}
-                width={32}
-                height={32}
-                target="_blank"
-                noFollow
-                sx={{
-                  lineHeight: 0,
-                  opacity: '0.77',
-                  transition: (theme) => theme.transitions.create('transform'),
-                  '&:hover': {
-                    transform: 'scale(1.1)'
-                  }
-                }}
-              />
-            ))}
-          </Stack>
-
-          {/* Navigation Links */}
-          <Stack
-            direction="row"
-            flexWrap="wrap"
-            justifyContent="center"
-            columnGap={{ xs: 10, sm: 5 }}
-            rowGap={5}
-          >
+          <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm font-semibold md:justify-start">
             {navigationLinks.map((link) => (
               <FooterLink
                 key={link.name}
                 url={link.href}
                 label={link.name}
-                sx={{
-                  fontSize: 13,
-                  lineHeight: { xs: 1.7, sm: 1.2 },
-                  fontWeight: 'bold'
-                }}
+                labelClassName="text-sm font-semibold leading-6 text-neutral-900"
               />
             ))}
-          </Stack>
+          </nav>
 
-          {/* Give Now Button */}
-          <Button
-            component="a"
-            href="/how-to-help/ways-to-donate/give-now/?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=/dev/special/thank-you-refer/social-share/"
-            variant="contained"
-            color="primary"
-            size="small"
-            sx={{
-              p: '8px 13px 7px',
-              borderRadius: 20,
-              lineHeight: '1.1334',
-              height: '34px'
-            }}
-          >
-            {t('Give Now', { lng: 'en' })}
-          </Button>
-        </Stack>
+          <div className="flex justify-center md:justify-end">
+            <FooterLink
+              url="/how-to-help/ways-to-donate/give-now?amount=&frequency=single&campaign-code=NXWJPO&designation-number=2592320&thankYouRedirect=/dev/special/thank-you-refer/social-share/"
+              label={t('Give Now', { lng: 'en' })}
+              className="rounded-full bg-[#c72e2c] px-5 py-2 text-sm font-semibold text-white shadow-[0_10px_25px_rgba(199,46,44,0.35)] transition hover:bg-[#ad2625] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c72e2c]"
+              labelClassName="text-sm font-semibold leading-6 text-white"
+            />
+          </div>
+        </div>
 
-        {/* Lower section */}
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          flexWrap="wrap"
-          gap={5}
-          rowGap={8}
-        >
-          <Stack
-            direction="row"
-            justifyContent={{ xs: 'center', sm: 'flex-start' }}
-            flexGrow={1}
-            alignItems="center"
-            divider={<Divider orientation="vertical" flexItem />}
-            gap={5}
-          >
-            {/* Address and Contact */}
-            <Stack>
-              <Typography variant="h6" fontSize={12} lineHeight={1.2}>
-                {t('100 Lake Hart Drive', { lng: 'en' })}
-              </Typography>
-              <Typography variant="h6" fontSize={12} lineHeight={1.2}>
-                {t('Orlando, FL, 32832', { lng: 'en' })}
-              </Typography>
-            </Stack>
+        <div className="flex flex-col gap-6 text-sm leading-6 text-neutral-700 sm:flex-row sm:flex-wrap sm:items-start sm:gap-10">
+          <div className="flex flex-col gap-1 border-stone-200 pt-4 text-center sm:text-left">
+            <span className="font-semibold text-neutral-900">
+              {t('100 Lake Hart Drive', { lng: 'en' })}
+            </span>
+            <span className="font-semibold text-neutral-900">
+              {t('Orlando, FL, 32832', { lng: 'en' })}
+            </span>
+          </div>
 
-            <Stack>
-              <Typography variant="h6" fontSize={12} lineHeight={1.2}>
-                {t('Office: (407) 826-2300', { lng: 'en' })}
-              </Typography>
-              <Typography variant="h6" fontSize={12} lineHeight={1.2}>
-                {t('Fax: (407) 826-2375', { lng: 'en' })}
-              </Typography>
-            </Stack>
-            {/* Legal Links */}
-            <Stack>
+          <div className="flex flex-col gap-1 border-t border-stone-200 pt-4 text-center sm:border-t-0 sm:border-l sm:pl-6 sm:text-left">
+            <span className="font-semibold text-neutral-900">
+              {t('Office: (407) 826-2300', { lng: 'en' })}
+            </span>
+            <span className="font-semibold text-neutral-900">
+              {t('Fax: (407) 826-2375', { lng: 'en' })}
+            </span>
+          </div>
+
+          <div className="flex flex-col gap-1 border-t border-stone-200 pt-4 text-center sm:border-t-0 sm:border-l sm:pl-6 sm:text-left">
+            {legalLinks.map((link) => (
               <FooterLink
-                url="/privacy/"
-                label={t('Privacy Policy', { lng: 'en' })}
-                sx={{ fontSize: 12, lineHeight: 1.2 }}
+                key={link.name}
+                url={link.href}
+                label={link.name}
+                labelClassName="text-sm font-semibold leading-6 text-neutral-900"
               />
-              <FooterLink
-                url="/legal/"
-                label={t('Legal Statement', { lng: 'en' })}
-                sx={{ fontSize: 12, lineHeight: 1.2 }}
-              />
-            </Stack>
-          </Stack>
-          {/* Newsletter Section */}
-          <Stack flexGrow={1} alignItems={{ xs: 'center', sm: 'flex-end' }}>
-            <Button
-              component="a"
-              href="/email/"
-              variant="contained"
-              size="small"
-              sx={{
-                backgroundColor: '#333',
-                color: 'white',
-                p: '8px 13px 7px',
-                borderRadius: 20,
-                lineHeight: '1.1334',
-                height: '34px'
-              }}
-            >
-              {t('Sign Up For Our Newsletter', { lng: 'en' })}
-            </Button>
-          </Stack>
-        </Stack>
-      </Stack>
-    </Container>
+            ))}
+          </div>
+        </div>
+      </div>
+    </footer>
   )
 }
