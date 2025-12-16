@@ -1,16 +1,22 @@
-project: default
-source:
-  repoURL: https://github.com/JesusFilm/core
-  path: infrastructure/kube/doppler
-  targetRevision: stage
-  helm:
-    valueFiles:
-      - values-stage.yaml
-destination:
-  server: https://kubernetes.default.svc
-  namespace: doppler-operator-system
-syncPolicy:
-  automated:
-    prune: true
-    selfHeal: true
-    enabled: true
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: doppler
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/JesusFilm/core
+    path: infrastructure/kube/doppler
+    targetRevision: stage
+    helm:
+      valueFiles:
+        - values-stage.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: doppler-operator-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      enabled: true

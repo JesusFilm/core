@@ -1,11 +1,17 @@
-project: default
-source:
-  repoURL: https://github.com/JesusFilm/core
-  path: infrastructure/kube/plausible
-  targetRevision: main
-  helm:
-    valueFiles:
-      - values.yaml
-destination:
-  server: https://kubernetes.default.svc
-  namespace: default
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: plausible-analytics
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/JesusFilm/core
+    path: infrastructure/kube/plausible
+    targetRevision: main
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
