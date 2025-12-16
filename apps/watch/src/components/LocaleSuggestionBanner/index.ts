@@ -1,0 +1,1 @@
+export { LocaleSuggestionBanner } from './LocaleSuggestionBanner'
