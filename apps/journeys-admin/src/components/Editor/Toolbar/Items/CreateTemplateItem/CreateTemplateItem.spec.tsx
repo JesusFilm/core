@@ -1,6 +1,7 @@
 import { MockedProvider } from '@apollo/client/testing'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
+import { SnackbarProvider } from 'notistack'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { useJourneyDuplicateMutation } from '@core/journeys/ui/useJourneyDuplicateMutation'
@@ -12,7 +13,6 @@ import {
   CreateTemplateItem,
   REMOVE_USER_JOURNEY
 } from './CreateTemplateItem'
-import { SnackbarProvider } from 'notistack'
 
 jest.mock('next/router', () => ({
   __esModule: true,
