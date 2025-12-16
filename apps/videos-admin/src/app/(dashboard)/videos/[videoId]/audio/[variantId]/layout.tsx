@@ -38,10 +38,10 @@ import { bytesToSize } from './download/_bytesToSize/bytesToSize'
 
 interface VariantDialogProps {
   children: ReactNode
-  params: {
+  params: Promise<{
     variantId: string
     videoId: string
-  }
+  }>
 }
 
 const GET_ADMIN_VIDEO_VARIANT = graphql(`
@@ -84,10 +84,19 @@ const validationSchema = object({
   published: string().required()
 })
 
-export default function VariantDialog({
-  children,
-  params: { variantId, videoId }
-}: VariantDialogProps): ReactElement | null {
+function VariantDialogContent({
+  variantId,
+  videoId,
+  children
+}: {
+  variantId: string
+  videoId: string
+  children: ReactNode
+}): ReactElement | null {
+  // Filter out source map requests and other invalid variant IDs
+  if (variantId.endsWith('.map') || variantId.includes('.js')) {
+    return null
+  }
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
   const pathname = usePathname()
@@ -308,5 +317,17 @@ export default function VariantDialog({
       </Dialog>
       {children}
     </>
+  )
+}
+
+export default async function VariantDialog({
+  children,
+  params
+}: VariantDialogProps): Promise<ReactElement | null> {
+  const { variantId, videoId } = await params
+  return (
+    <VariantDialogContent variantId={variantId} videoId={videoId}>
+      {children}
+    </VariantDialogContent>
   )
 }

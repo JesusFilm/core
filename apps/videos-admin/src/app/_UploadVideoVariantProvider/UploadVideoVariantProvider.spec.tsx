@@ -4,9 +4,9 @@ import axios from 'axios'
 import { SnackbarProvider, useSnackbar } from 'notistack'
 import { ReactNode } from 'react'
 
-import { getCreateR2AssetMock } from '../../libs/useCreateR2Asset/useCreateR2Asset.mock'
-
 import {
+  COMPLETE_R2_MULTIPART,
+  PREPARE_R2_MULTIPART,
   CREATE_MUX_VIDEO_UPLOAD_BY_URL,
   CREATE_VIDEO_VARIANT,
   GET_MY_MUX_VIDEO,
@@ -16,7 +16,11 @@ import {
 
 // Mock axios
 jest.mock('axios', () => ({
-  put: jest.fn().mockResolvedValue({})
+  put: jest.fn().mockResolvedValue({
+    headers: {
+      etag: '"etag-1"'
+    }
+  })
 }))
 
 // Mock useSnackbar
@@ -38,13 +42,62 @@ jest.mock(
 )
 
 // Define GraphQL operation mocks
-const createR2AssetMock = getCreateR2AssetMock({
-  fileName: `video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4`,
-  contentType: 'video/mp4',
-  contentLength: 4, // File(['test']) has length 4
-  originalFilename: 'test.mp4',
-  videoId: 'video-id'
-})
+const mockFileName = `video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4`
+
+const prepareR2MultipartMock = {
+  request: {
+    query: PREPARE_R2_MULTIPART,
+    variables: {
+      input: {
+        fileName: mockFileName,
+        contentType: 'video/mp4',
+        contentLength: 4, // File(['test']) has length 4
+        originalFilename: 'test.mp4',
+        videoId: 'video-id'
+      }
+    }
+  },
+  result: jest.fn(() => ({
+    data: {
+      cloudflareR2MultipartPrepare: {
+        id: 'r2-asset.id',
+        uploadId: 'upload-id',
+        fileName: mockFileName,
+        publicUrl: `https://mock.cloudflare-domain.com/${mockFileName}`,
+        partSize: 5 * 1024 * 1024,
+        parts: [
+          {
+            partNumber: 1,
+            uploadUrl: 'https://mock-upload-part-url'
+          }
+        ]
+      }
+    }
+  }))
+}
+
+const completeR2MultipartMock = {
+  request: {
+    query: COMPLETE_R2_MULTIPART,
+    variables: {
+      input: {
+        id: 'r2-asset.id',
+        fileName: mockFileName,
+        uploadId: 'upload-id',
+        parts: [{ partNumber: 1, eTag: 'etag-1' }]
+      }
+    }
+  },
+  result: {
+    data: {
+      cloudflareR2CompleteMultipart: {
+        id: 'r2-asset.id',
+        fileName: mockFileName,
+        publicUrl: `https://mock.cloudflare-domain.com/${mockFileName}`
+      }
+    }
+  }
+}
 
 const createMuxVideoUploadByUrlMock = {
   request: {
@@ -131,32 +184,14 @@ const createVideoVariantMock = {
 }
 
 // Error mocks
-const createR2AssetErrorMock = {
-  request: {
-    query: getCreateR2AssetMock({
-      fileName: `video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4`,
-      contentType: 'video/mp4',
-      contentLength: 4,
-      originalFilename: 'test.mp4',
-      videoId: 'video-id'
-    }).request.query,
-    variables: {
-      input: {
-        fileName: `video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4`,
-        contentType: 'video/mp4',
-        contentLength: 4,
-        originalFilename: 'test.mp4',
-        videoId: 'video-id'
-      }
-    }
-  },
+const prepareR2MultipartErrorMock = {
+  request: prepareR2MultipartMock.request,
   result: {
     data: {
-      cloudflareR2Create: {
+      cloudflareR2MultipartPrepare: {
         id: 'r2-id',
-        fileName: 'test.mp4',
-        originalFilename: 'test.mp4',
-        uploadUrl: null,
+        uploadId: null,
+        fileName: mockFileName,
         publicUrl: null
       }
     }
@@ -202,6 +237,10 @@ const createVideoVariantErrorMock = {
 const initialStateForTests = {
   isUploading: false,
   uploadProgress: 0,
+  uploadedBytes: 0,
+  totalBytes: 0,
+  uploadSpeedBps: null,
+  etaSeconds: null,
   isProcessing: false,
   error: null,
   muxVideoId: null,
@@ -252,7 +291,8 @@ describe('UploadVideoVariantContext', () => {
 
       // Provide multiple mocks for the polling query since it polls multiple times
       const mocks = [
-        createR2AssetMock,
+        prepareR2MultipartMock,
+        completeR2MultipartMock,
         createMuxVideoUploadByUrlMock,
         getMyMuxVideoMock,
         // Provide another mock for the polling query in case it's called again
@@ -293,8 +333,8 @@ describe('UploadVideoVariantContext', () => {
       // Should call axios.put for file upload
       await waitFor(() => {
         expect(axios.put).toHaveBeenCalledWith(
-          'https://mock.cloudflare-domain.com/video-id/variants/language-id/videos/uuidv4/language-id_video-id.mp4',
-          file,
+          'https://mock-upload-part-url',
+          expect.any(Blob),
           expect.objectContaining({
             headers: { 'Content-Type': 'video/mp4' },
             onUploadProgress: expect.any(Function),
@@ -317,11 +357,11 @@ describe('UploadVideoVariantContext', () => {
       })
     }, 15000)
 
-    it('should handle R2 asset creation error', async () => {
+    it('should handle R2 multipart creation error', async () => {
       const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
 
       const { result } = renderHook(() => useUploadVideoVariant(), {
-        wrapper: createWrapper([createR2AssetErrorMock])
+        wrapper: createWrapper([prepareR2MultipartErrorMock])
       })
 
       await act(async () => {
@@ -340,7 +380,7 @@ describe('UploadVideoVariantContext', () => {
       // Should set error state
       await waitFor(() => {
         expect(result.current.uploadState.error).toBe(
-          'Failed to create R2 asset'
+          'Failed to prepare R2 multipart upload'
         )
         expect(result.current.uploadState.isUploading).toBe(false)
         expect(result.current.uploadState.isProcessing).toBe(false)
@@ -348,7 +388,7 @@ describe('UploadVideoVariantContext', () => {
 
       // Should show error snackbar
       expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-        'Failed to create R2 asset',
+        'Failed to prepare R2 multipart upload',
         {
           variant: 'error'
         }
@@ -358,7 +398,11 @@ describe('UploadVideoVariantContext', () => {
     it('should handle Mux video creation error', async () => {
       const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
 
-      const mocks = [createR2AssetMock, createMuxVideoUploadByUrlErrorMock]
+      const mocks = [
+        prepareR2MultipartMock,
+        completeR2MultipartMock,
+        createMuxVideoUploadByUrlErrorMock
+      ]
 
       const { result } = renderHook(() => useUploadVideoVariant(), {
         wrapper: createWrapper(mocks)
@@ -379,7 +423,7 @@ describe('UploadVideoVariantContext', () => {
 
       // Should call R2 creation
       await waitFor(() => {
-        expect(createR2AssetMock.result).toHaveBeenCalled()
+        expect(prepareR2MultipartMock.result).toHaveBeenCalled()
       })
 
       // Should set error state
@@ -400,7 +444,19 @@ describe('UploadVideoVariantContext', () => {
     it('resets state when called', async () => {
       const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
       const { result } = renderHook(() => useUploadVideoVariant(), {
-        wrapper: createWrapper([])
+        wrapper: createWrapper([
+          prepareR2MultipartMock,
+          completeR2MultipartMock,
+          createMuxVideoUploadByUrlMock,
+          getMyMuxVideoMock,
+          {
+            ...getMyMuxVideoMock,
+            request: {
+              ...getMyMuxVideoMock.request
+            }
+          },
+          createVideoVariantMock
+        ])
       })
 
       // Manually set some state first
@@ -451,9 +507,16 @@ describe('UploadVideoVariantContext', () => {
       const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
 
       const mocks = [
-        createR2AssetMock,
+        prepareR2MultipartMock,
+        completeR2MultipartMock,
         createMuxVideoUploadByUrlMock,
         getMyMuxVideoMock,
+        {
+          ...getMyMuxVideoMock,
+          request: {
+            ...getMyMuxVideoMock.request
+          }
+        },
         createVideoVariantMock
       ]
 
@@ -476,7 +539,7 @@ describe('UploadVideoVariantContext', () => {
 
       // Should call all the mutations in sequence
       await waitFor(() => {
-        expect(createR2AssetMock.result).toHaveBeenCalled()
+        expect(prepareR2MultipartMock.result).toHaveBeenCalled()
       })
 
       // Should reset state and show success snackbar
@@ -539,9 +602,16 @@ describe('UploadVideoVariantContext', () => {
       }
 
       const mocks = [
-        createR2AssetMock,
+        prepareR2MultipartMock,
+        completeR2MultipartMock,
         createMuxVideoUploadByUrlMock,
         getMyMuxVideoMock,
+        {
+          ...getMyMuxVideoMock,
+          request: {
+            ...getMyMuxVideoMock.request
+          }
+        },
         createPublishedVariantMock
       ]
 
@@ -580,9 +650,16 @@ describe('UploadVideoVariantContext', () => {
       const file = new File(['test'], 'test.mp4', { type: 'video/mp4' })
 
       const mocks = [
-        createR2AssetMock,
+        prepareR2MultipartMock,
+        completeR2MultipartMock,
         createMuxVideoUploadByUrlMock,
         getMyMuxVideoMock,
+        {
+          ...getMyMuxVideoMock,
+          request: {
+            ...getMyMuxVideoMock.request
+          }
+        },
         createVideoVariantErrorMock
       ]
 
@@ -604,7 +681,7 @@ describe('UploadVideoVariantContext', () => {
 
       // Should call all the mutations in sequence
       await waitFor(() => {
-        expect(createR2AssetMock.result).toHaveBeenCalled()
+        expect(prepareR2MultipartMock.result).toHaveBeenCalled()
       })
 
       // Should set error state
