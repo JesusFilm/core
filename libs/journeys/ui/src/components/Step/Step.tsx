@@ -94,12 +94,22 @@ export function Step({
           }
         })
         // TODO: update once types are set
-        if (activeJourneyStep.metaAction != null) {
-          plausible(activeJourneyStep.metaAction, {
+        const metaAction = activeJourneyStep?.metaAction
+        if (metaAction != null) {
+          const metaActionKey = keyify({
+            stepId: input.blockId,
+            event: metaAction,
+            blockId: input.blockId,
+            journeyId: journey?.id
+          })
+          plausible(metaAction, {
             u: `${window.location.origin}/${journey.id}/${input.blockId}`,
             props: {
+              ...input,
+              key: metaActionKey,
+              simpleKey: metaActionKey,
               templateKey: templateKeyify({
-                event: activeJourneyStep.metaAction,
+                event: metaAction,
                 journeyId: journey?.id
               })
             }

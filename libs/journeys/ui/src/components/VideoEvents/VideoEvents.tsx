@@ -462,12 +462,22 @@ export function VideoEvents({
             }
           })
           // TODO: update once types are set
-          if (action?.start.metaAction != null) {
-            plausible(action.start.metaAction, {
+          const metaAction = action?.start.metaAction
+          if (metaAction != null) {
+            const metaActionKey = keyify({
+              stepId: input.stepId ?? '',
+              event: metaAction,
+              blockId: input.blockId,
+              journeyId: journey?.id
+            })
+            plausible(metaAction, {
               u: `${window.location.origin}/${journey.id}/${input.blockId}`,
               props: {
+                ...input,
+                key: metaActionKey,
+                simpleKey: metaActionKey,
                 templateKey: templateKeyify({
-                  event: action.start.metaAction,
+                  event: metaAction,
                   journeyId: journey?.id
                 })
               }
@@ -746,12 +756,22 @@ export function VideoEvents({
             }
           })
           // TODO: update once types are set
-          if (action?.end.metaAction != null) {
-            plausible(action.end.metaAction, {
+          const metaAction = action?.end.metaAction
+          if (metaAction != null) {
+            const metaActionKey = keyify({
+              stepId: input.stepId ?? '',
+              event: metaAction,
+              blockId: input.blockId,
+              journeyId: journey?.id
+            })
+            plausible(metaAction, {
               u: `${window.location.origin}/${journey.id}/${input.blockId}`,
               props: {
+                ...input,
+                key: metaActionKey,
+                simpleKey: metaActionKey,
                 templateKey: templateKeyify({
-                  event: action.end.metaAction,
+                  event: metaAction,
                   journeyId: journey?.id
                 })
               }
