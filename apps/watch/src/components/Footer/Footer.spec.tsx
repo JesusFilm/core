@@ -10,43 +10,6 @@ describe('Footer', () => {
     expect(logos[0].closest('a')).toHaveAttribute('href', '/')
   })
 
-  it('renders social media links', () => {
-    render(<Footer />)
-
-    // Check for images instead of labels
-    const twitterIcons = screen.getAllByAltText('X (Twitter)')
-    expect(twitterIcons.length).toBeGreaterThan(0)
-    expect(twitterIcons[0].closest('a')).toHaveAttribute(
-      'href',
-      'https://twitter.com/jesusfilm'
-    )
-    expect(twitterIcons[0].closest('a')).toHaveAttribute('target', '_blank')
-
-    const facebookIcons = screen.getAllByAltText('Facebook')
-    expect(facebookIcons.length).toBeGreaterThan(0)
-    expect(facebookIcons[0].closest('a')).toHaveAttribute(
-      'href',
-      'https://www.facebook.com/jesusfilm'
-    )
-    expect(facebookIcons[0].closest('a')).toHaveAttribute('target', '_blank')
-
-    const instagramIcons = screen.getAllByAltText('Instagram')
-    expect(instagramIcons.length).toBeGreaterThan(0)
-    expect(instagramIcons[0].closest('a')).toHaveAttribute(
-      'href',
-      'https://www.instagram.com/jesusfilm'
-    )
-    expect(instagramIcons[0].closest('a')).toHaveAttribute('target', '_blank')
-
-    const youtubeIcons = screen.getAllByAltText('YouTube')
-    expect(youtubeIcons.length).toBeGreaterThan(0)
-    expect(youtubeIcons[0].closest('a')).toHaveAttribute(
-      'href',
-      'https://www.youtube.com/user/jesusfilm'
-    )
-    expect(youtubeIcons[0].closest('a')).toHaveAttribute('target', '_blank')
-  })
-
   it('renders navigation links', () => {
     render(<Footer />)
 
@@ -114,11 +77,10 @@ describe('Footer', () => {
     )
   })
 
-  it('renders newsletter section', () => {
+  it('omits social media and newsletter sections', () => {
     render(<Footer />)
 
-    const newsletterButtons = screen.getAllByText('Sign Up For Our Newsletter')
-    expect(newsletterButtons.length).toBeGreaterThan(0)
-    expect(newsletterButtons[0].closest('a')).toHaveAttribute('href', '/email/')
+    expect(screen.queryByAltText('Facebook')).toBeNull()
+    expect(screen.queryByText('Sign Up For Our Newsletter')).toBeNull()
   })
 })

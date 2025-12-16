@@ -1,62 +1,66 @@
-import MuiLink, { LinkProps } from '@mui/material/Link'
-import { SxProps, Theme } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { HTMLAttributeAnchorTarget, ReactElement } from 'react'
 
-type ValueOf<T> = T[keyof T]
+import { cn } from '../../../libs/cn'
 
 interface FooterLinkProps {
   url: string
   label: string
-  variant?: ValueOf<Pick<LinkProps, 'variant'>>
-  underline?: ValueOf<Pick<LinkProps, 'underline'>>
+  className?: string
   src?: string
   width?: number
   height?: number
   target?: HTMLAttributeAnchorTarget
   noFollow?: boolean
-  sx?: SxProps<Theme>
 }
 
 export function FooterLink({
   url,
   label,
-  variant = 'h6',
-  underline = 'none',
+  className,
   src,
   width,
   height,
   target,
-  noFollow = false,
-  sx
+  noFollow = false
 }: FooterLinkProps): ReactElement {
-  return (
-    <MuiLink
-      href={url}
-      underline={underline}
-      target={target}
-      rel={noFollow ? 'nofollow noopener' : 'noopener'}
-      color="text.primary"
-      data-testid="FooterLink"
-      sx={src != null ? sx : undefined}
-    >
-      {src == null ? (
-        <Typography variant={variant} sx={sx}>
-          {label}
-        </Typography>
-      ) : (
+  const relValue = noFollow ? 'nofollow noopener' : 'noopener'
+
+  if (src != null) {
+    return (
+      <a
+        href={url}
+        target={target}
+        rel={relValue}
+        className={cn(
+          'inline-flex cursor-pointer items-center outline-none transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300',
+          className
+        )}
+        data-testid="FooterLink"
+      >
         <Image
           src={src}
           width={width ?? 32}
           height={height ?? 32}
           alt={label}
-          style={{
-            maxWidth: '100%',
-            height: 'auto'
-          }}
+          className="h-auto w-auto max-w-full"
         />
+      </a>
+    )
+  }
+
+  return (
+    <a
+      href={url}
+      target={target}
+      rel={relValue}
+      data-testid="FooterLink"
+      className={cn(
+        'cursor-pointer text-sm font-semibold text-gray-900 transition-colors hover:text-gray-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-300',
+        className
       )}
-    </MuiLink>
+    >
+      {label}
+    </a>
   )
 }
