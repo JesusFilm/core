@@ -463,7 +463,7 @@ describe('JourneyListContent', () => {
       await waitFor(() => {
         expect(
           getByText(
-            "Full template functionality will be available in a future update."
+            'Full template functionality will be available in a future update.'
           )
         ).toBeInTheDocument()
       })
