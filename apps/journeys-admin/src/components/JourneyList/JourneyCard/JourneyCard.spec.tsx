@@ -11,6 +11,7 @@ import {
   defaultJourney,
   fakeDate,
   journeyWithImage,
+  publishedLocalTemplate,
   websiteJourney
 } from '../journeyListData'
 
@@ -195,5 +196,34 @@ describe('JourneyCard', () => {
       screen.queryByTestId('JourneyCardWebsiteBadge')
     ).not.toBeInTheDocument()
     expect(screen.queryByText('Website')).not.toBeInTheDocument()
+  })
+
+  it('should show journey analytics for default journey card', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={defaultJourney} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.getByTestId('JourneyCardInfo')).toBeInTheDocument()
+  })
+
+  // MARK: Remove this once Siyang Cao + Mike Alison implement updated journey analytics feature
+  it('TEMP - should not show journey analytics for local template card', () => {
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <ThemeProvider>
+            <JourneyCard journey={publishedLocalTemplate} />
+          </ThemeProvider>
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    expect(screen.queryByTestId('JourneyCardInfo')).not.toBeInTheDocument()
   })
 })
