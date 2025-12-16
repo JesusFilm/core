@@ -63,6 +63,13 @@ export const defaultJourney: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   slug: 'default',
+  team: {
+    __typename: 'Team',
+    id: 'team1.id'
+  },
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  website: false,
   language: {
     __typename: 'Language',
     id: '529',
@@ -171,6 +178,22 @@ export const customizableWebsiteTemplateJourney: Journey = {
     }
   ]
 }
+
+export const publishedGlobalTemplate: Journey = {
+  ...publishedJourney,
+  id: 'published-template-id',
+  title: 'Published Template Heading',
+  template: true,
+  team: { id: 'jfp-team' }
+} as Journey & { team: { id: string } }
+
+export const publishedLocalTemplate: Journey = {
+  ...publishedJourney,
+  id: 'published-template-id',
+  title: 'Published Template Heading',
+  template: true,
+  team: { id: 'local-team-id' }
+} as Journey & { team: { id: string } }
 
 export const descriptiveJourney: Journey = {
   ...defaultJourney,

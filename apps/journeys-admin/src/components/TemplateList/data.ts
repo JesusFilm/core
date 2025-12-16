@@ -33,6 +33,13 @@ export const defaultTemplate: Journey = {
   themeName: ThemeName.base,
   themeMode: ThemeMode.light,
   slug: 'default',
+  team: {
+    __typename: 'Team',
+    id: 'team1.id'
+  },
+  journeyCustomizationDescription: null,
+  journeyCustomizationFields: [],
+  website: false,
   updatedAt: formatISO(startOfYear(new Date(fakeDate))),
   createdAt: formatISO(startOfYear(new Date(fakeDate))),
   publishedAt: null,

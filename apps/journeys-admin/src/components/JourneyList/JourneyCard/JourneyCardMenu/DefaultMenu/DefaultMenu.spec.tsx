@@ -398,7 +398,9 @@ describe('DefaultMenu', () => {
         </SnackbarProvider>
       </MockedProvider>
     )
-    expect(queryByRole('menuitem', { name: 'Make Template' })).not.toBeInTheDocument()
+    expect(
+      queryByRole('menuitem', { name: 'Make Template' })
+    ).not.toBeInTheDocument()
   })
 
   it('should call correct functions on Access click', () => {

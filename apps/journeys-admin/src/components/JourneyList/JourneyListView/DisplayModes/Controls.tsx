@@ -4,6 +4,7 @@ import { ReactElement } from 'react'
 import { JourneyListMenu } from '../../JourneyListMenu'
 import { JourneySort } from '../../JourneySort'
 import { JourneyStatusFilter } from '../../JourneyStatusFilter'
+
 import type { SharedControlProps } from './shared'
 
 // Status filter component
