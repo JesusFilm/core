@@ -108,7 +108,7 @@ export function SidePanel({
       boxSizing: 'border-box',
       width: sidePanel.width,
       height: 'calc(100% - 68px)',
-      mt: 16,
+      mt: 15.5,
       mr: 5,
       borderTopLeftRadius: { xs: 0, sm: 12 },
       borderTopRightRadius: { xs: 0, sm: 12 },
