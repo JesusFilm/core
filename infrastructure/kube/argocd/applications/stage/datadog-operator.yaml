@@ -1,7 +1,7 @@
 project: default
 source:
   repoURL: https://github.com/JesusFilm/core
-  path: infrastructure/kube/external-dns
+  path: infrastructure/kube/datadog-operator
   targetRevision: stage
   helm:
     valueFiles:

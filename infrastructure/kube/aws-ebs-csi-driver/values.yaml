@@ -13,5 +13,3 @@ aws-ebs-csi-driver:
   defaultStorageClass:
     enabled: false
   volumeSnapshotClasses: []
-
-

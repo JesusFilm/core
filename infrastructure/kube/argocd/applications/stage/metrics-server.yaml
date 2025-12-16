@@ -1,33 +1,13 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: metrics-server
-  namespace: default
-  labels:
-    app.kubernetes.io/name: metrics-server
-    app.kubernetes.io/part-of: monitoring
-    environment: stage
-spec:
-  project: default
-
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: kube-system
-
-  source:
-    repoURL: https://github.com/JesusFilm/core.git
-    targetRevision: main
-    path: infrastructure/kube/metrics-server/chart
-    helm:
-      releaseName: metrics-server
-      valueFiles:
-        - values.yaml
-
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-
-
+project: default
+source:
+  repoURL: https://github.com/JesusFilm/core
+  path: infrastructure/kube/metrics-server
+  targetRevision: stage
+destination:
+  server: https://kubernetes.default.svc
+  namespace: kube-system
+syncPolicy:
+  automated:
+    prune: true
+    selfHeal: true
+    enabled: true

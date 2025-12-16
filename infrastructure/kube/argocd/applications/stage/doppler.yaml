@@ -1,33 +1,16 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: doppler-stage
-  namespace: default
-  labels:
-    app.kubernetes.io/name: doppler-kubernetes-operator
-    app.kubernetes.io/part-of: secrets
-    environment: stage
-spec:
-  project: default
-
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: doppler-operator-system
-
-  source:
-    repoURL: https://github.com/JesusFilm/core.git
-    targetRevision: stage
-    path: infrastructure/kube/doppler/chart
-    helm:
-      releaseName: doppler-kubernetes-operator
-      valueFiles:
-        - values-stage.yaml
-
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-
-
+project: default
+source:
+  repoURL: https://github.com/JesusFilm/core
+  path: infrastructure/kube/doppler
+  targetRevision: stage
+  helm:
+    valueFiles:
+      - values-stage.yaml
+destination:
+  server: https://kubernetes.default.svc
+  namespace: doppler-operator-system
+syncPolicy:
+  automated:
+    prune: true
+    selfHeal: true
+    enabled: true

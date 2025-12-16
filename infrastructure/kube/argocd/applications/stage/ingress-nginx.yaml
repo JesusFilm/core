@@ -1,33 +1,16 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: ingress-nginx
-  namespace: default
-  labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/part-of: networking
-    environment: stage
-spec:
-  project: default
-
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: ingress-nginx
-
-  source:
-    repoURL: https://github.com/JesusFilm/core.git
-    targetRevision: main
-    path: infrastructure/kube/ingress
-    helm:
-      releaseName: ingress-nginx
-      valueFiles:
-        - values.yaml
-
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-
-
+project: default
+source:
+  repoURL: https://github.com/JesusFilm/core
+  path: infrastructure/kube/ingress-nginx
+  targetRevision: stage
+  helm:
+    valueFiles:
+      - values.yaml
+destination:
+  server: https://kubernetes.default.svc
+  namespace: ingress-nginx
+syncPolicy:
+  automated:
+    prune: true
+    selfHeal: true
+    enabled: true

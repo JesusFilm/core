@@ -1,33 +1,16 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: cert-manager
-  namespace: default
-  labels:
-    app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/part-of: ssl
-    environment: stage
-spec:
-  project: default
-
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: cert-manager
-
-  source:
-    repoURL: https://github.com/JesusFilm/core.git
-    targetRevision: main
-    path: infrastructure/kube/ssl/chart
-    helm:
-      releaseName: cert-manager
-      valueFiles:
-        - values.yaml
-
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-
-
+project: default
+source:
+  repoURL: https://github.com/JesusFilm/core
+  path: infrastructure/kube/cert-manager
+  targetRevision: stage
+  helm:
+    valueFiles:
+      - values.yaml
+destination:
+  server: https://kubernetes.default.svc
+  namespace: cert-manager
+syncPolicy:
+  automated:
+    prune: true
+    selfHeal: true
+    enabled: true

@@ -7,7 +7,9 @@
   "prConcurrentLimit": 4,
   "rangeStrategy": "auto",
   "argocd": {
-    "managerFilePatterns": ["infrastructure/kube/argocd/applications/.+\\.ya?ml$"]
+    "managerFilePatterns": [
+      "infrastructure/kube/argocd/applications/.+\\.ya?ml$"
+    ]
   },
   "regexManagers": [
     {

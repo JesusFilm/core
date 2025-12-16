@@ -4,7 +4,7 @@ metadata:
   name: snapshot-controller
   namespace: kube-system
   annotations:
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: '1'
 spec:
   replicas: 2
   selector:
@@ -26,8 +26,6 @@ spec:
         - name: snapshot-controller
           image: registry.k8s.io/sig-storage/snapshot-controller:v6.2.1
           args:
-            - "--v=5"
-            - "--leader-election=true"
+            - '--v=5'
+            - '--leader-election=true'
           imagePullPolicy: IfNotPresent
-
-
