@@ -123,6 +123,18 @@ export function RadioQuestion({
             })
           }
         })
+        // TODO: update once types are set
+        if (radioOptionBlock.action?.metAction != null) {
+          plausible(radioOptionBlock.action.metAction, {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+            props: {
+              templateKey: templateKeyify({
+                event: radioOptionBlock.action.metAction,
+                journeyId: journey?.id
+              })
+            }
+          })
+        }
       }
       sendGTMEvent({
         event: 'radio_question_submission',

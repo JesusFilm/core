@@ -208,6 +208,18 @@ export function Button({
             })
           }
         })
+        // TODO: update once types are set
+        if (activeBlock.action?.metAction != null) {
+          plausible(activeBlock.action.metAction, {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+            props: {
+              templateKey: templateKeyify({
+                event: activeBlock.action.metAction,
+                journeyId: journey?.id
+              })
+            }
+          })
+        }
       }
       addEventToDataLayer(id)
     }
@@ -227,7 +239,7 @@ export function Button({
           input
         }
       })
-      if (journey != null)
+      if (journey != null) {
         plausible('chatButtonClick', {
           u: `${window.location.origin}/${journey.id}/${input.stepId}`,
           props: {
@@ -252,6 +264,19 @@ export function Button({
             })
           }
         })
+        // TODO: update once types are set
+        if (activeBlock.action?.metAction != null) {
+          plausible(activeBlock.action.metAction, {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+            props: {
+              templateKey: templateKeyify({
+                event: activeBlock.action.metAction,
+                journeyId: journey?.id
+              })
+            }
+          })
+        }
+      }
       addEventToDataLayer(id)
     }
   }

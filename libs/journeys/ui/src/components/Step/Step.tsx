@@ -93,6 +93,18 @@ export function Step({
             })
           }
         })
+        // TODO: update once types are set
+        if (activeJourneyStep.metaAction != null) {
+          plausible(activeJourneyStep.metaAction, {
+            u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+            props: {
+              templateKey: templateKeyify({
+                event: activeJourneyStep.metaAction,
+                journeyId: journey?.id
+              })
+            }
+          })
+        }
       }
       sendGTMEvent({
         event: 'step_view',

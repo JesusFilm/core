@@ -461,6 +461,18 @@ export function VideoEvents({
               })
             }
           })
+          // TODO: update once types are set
+          if (action?.start.metaAction != null) {
+            plausible(action.start.metaAction, {
+              u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+              props: {
+                templateKey: templateKeyify({
+                  event: action.start.metaAction,
+                  journeyId: journey?.id
+                })
+              }
+            })
+          }
         }
         sendGTMEvent({
           event: 'video_start',
@@ -710,7 +722,7 @@ export function VideoEvents({
             input
           }
         })
-        if (journey != null)
+        if (journey != null) {
           plausible('videoComplete', {
             u: `${window.location.origin}/${journey.id}/${input.stepId}`,
             props: {
@@ -733,6 +745,19 @@ export function VideoEvents({
               })
             }
           })
+          // TODO: update once types are set
+          if (action?.end.metaAction != null) {
+            plausible(action.end.metaAction, {
+              u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+              props: {
+                templateKey: templateKeyify({
+                  event: action.end.metaAction,
+                  journeyId: journey?.id
+                })
+              }
+            })
+          }
+        }
         sendGTMEvent({
           event: 'video_complete',
           eventId: id,

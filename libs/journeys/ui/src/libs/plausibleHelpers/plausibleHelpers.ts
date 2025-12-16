@@ -23,9 +23,13 @@ import {
   BlockFields_VideoBlock_action
 } from '../block/__generated__/BlockFields'
 
-interface Props {
+interface BaseProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [K: string]: any
+}
+
+/** Full analytics props payload used for step/journey events. */
+interface JourneyProps extends BaseProps {
   blockId: string
   /**
    * compound of stepId, event name, blockId, targetBlockId.
@@ -46,6 +50,13 @@ interface Props {
    * used for journey breakdown stats by template*/
   templateKey?: string
 }
+
+/** Minimal props payload used when we only need a template key. */
+interface TemplateProps extends BaseProps {
+  templateKey: string
+}
+
+type Props = JourneyProps | TemplateProps
 
 interface Events {
   [K: string]: Props
@@ -194,3 +205,17 @@ export function actionToTarget(action: Action | null): 'link' | 'chat' | null {
       return 'chat'
   }
 }
+
+/*
+
+plausible(activeBlock.action.metAction, {
+  u: `${window.location.origin}/${journey.id}/${input.blockId}`,
+  props: {
+    templateKey: templateKeyify({
+      event: activeBlock.action.metAction,
+      journeyId: journey?.id
+    })
+  }
+})
+  
+*/
