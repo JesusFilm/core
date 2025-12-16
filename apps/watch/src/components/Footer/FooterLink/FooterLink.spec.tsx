@@ -9,6 +9,7 @@ describe('FooterLink', () => {
     expect(el).toHaveAttribute('href', '/about/')
     expect(el).not.toHaveAttribute('target')
     expect(el).toHaveAttribute('rel', 'noopener')
+    expect(el).toHaveClass('cursor-pointer')
   })
 
   it('should have image link', () => {
@@ -28,18 +29,19 @@ describe('FooterLink', () => {
     expect(el).toHaveAttribute('href', 'https://www.facebook.com/jesusfilm')
     expect(el).toHaveAttribute('target', '_blank')
     expect(el).toHaveAttribute('rel', 'nofollow noopener')
+    expect(el).toHaveClass('cursor-pointer')
   })
 
-  it('should apply custom styles when sx prop is provided', () => {
-    const { getByTestId } = render(
+  it('should apply custom styles when className props are provided', () => {
+    const { getByTestId, getByText } = render(
       <FooterLink
         url="/"
         label="Jesus Film logo"
-        src="/footer/jesus-film-logo.svg"
-        sx={{ lineHeight: 0 }}
+        className="rounded-full"
+        labelClassName="text-blue-500"
       />
     )
-    const link = getByTestId('FooterLink')
-    expect(link).toHaveStyle('line-height: 0')
+    expect(getByTestId('FooterLink')).toHaveClass('rounded-full')
+    expect(getByText('Jesus Film logo')).toHaveClass('text-blue-500')
   })
 })
