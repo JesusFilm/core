@@ -33,7 +33,7 @@ jest.mock('fscreen', () => ({
   }
 }))
 
-jest.mock('../../../../..//libs/useLanguages', () => ({
+jest.mock('../../../libs/useLanguages', () => ({
   useLanguages: jest.fn()
 }))
 const useLanguagesMock = useLanguages as jest.MockedFunction<
