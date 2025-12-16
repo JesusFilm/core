@@ -74,7 +74,7 @@ export function SectionPromo(): ReactElement {
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-red-950/60 via-purple-950/20 to-orange-600/10 py-18">
       <div className="">
-        <div className="responsive-container isolate shadow-[0_45px_80px_-40px_rgba(15,23,42,0.8)]">
+        <div className="responsive-container isolate ">
           <div
             aria-hidden
             className="pointer-events-none absolute top-[-10%] -left-24 h-56 w-56 rounded-full bg-red-600/30 blur-3xl"

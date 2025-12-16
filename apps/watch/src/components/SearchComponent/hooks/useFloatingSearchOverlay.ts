@@ -20,6 +20,7 @@ export interface UseFloatingSearchOverlayResult {
   searchQuery: string
   searchValue: string
   loading: boolean
+  isScrolled: boolean
   handleSearch: (query: string) => void
   handleSearchFocus: () => void
   handleSearchBlur: (
@@ -45,6 +46,7 @@ export function useFloatingSearchOverlay(): UseFloatingSearchOverlayResult {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchValue, setSearchValue] = useState('')
   const [isSearching, setIsSearching] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const overlayRef = useRef<HTMLDivElement | null>(null)
   const searchInputRef = useRef<HTMLInputElement | null>(null)
   const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -87,10 +89,8 @@ export function useFloatingSearchOverlay(): UseFloatingSearchOverlayResult {
     if (!isSearchActive) return
 
     if (trendingSearches.length === 0 && !isTrendingLoading && !trendingError) {
-      // Wrap the async call to ensure any errors are handled gracefully
-      fetchTrendingSearches().catch((error) => {
-        console.warn('Failed to fetch trending searches in useEffect:', error)
-      })
+      // fetchTrendingSearches handles errors internally
+      fetchTrendingSearches()
     }
   }, [
     isSearchActive,
@@ -104,6 +104,21 @@ export function useFloatingSearchOverlay(): UseFloatingSearchOverlayResult {
     return () => {
       if (loadingTimeoutRef.current != null)
         clearTimeout(loadingTimeoutRef.current)
+    }
+  }, [])
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 30)
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    // Set initial state
+    handleScroll()
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
     }
   }, [])
 
@@ -173,10 +188,10 @@ export function useFloatingSearchOverlay(): UseFloatingSearchOverlayResult {
 
       if (
         nextTarget &&
-        (nextTarget.closest('[data-radix-popover-content]') ||
-          nextTarget.closest('[role="combobox"]') ||
-          nextTarget.closest('[cmdk-root]') ||
-          nextTarget.closest('[data-slot="popover-content"]'))
+        ((nextTarget as Element).closest('[data-radix-popover-content]') ||
+          (nextTarget as Element).closest('[role="combobox"]') ||
+          (nextTarget as Element).closest('[cmdk-root]') ||
+          (nextTarget as Element).closest('[data-slot="popover-content"]'))
       ) {
         return
       }
@@ -198,10 +213,10 @@ export function useFloatingSearchOverlay(): UseFloatingSearchOverlayResult {
 
       if (
         nextTarget &&
-        (nextTarget.closest('[data-radix-popover-content]') ||
-          nextTarget.closest('[role="combobox"]') ||
-          nextTarget.closest('[cmdk-root]') ||
-          nextTarget.closest('[data-slot="popover-content"]'))
+        ((nextTarget as Element).closest('[data-radix-popover-content]') ||
+          (nextTarget as Element).closest('[role="combobox"]') ||
+          (nextTarget as Element).closest('[cmdk-root]') ||
+          (nextTarget as Element).closest('[data-slot="popover-content"]'))
       ) {
         return
       }
@@ -244,6 +259,7 @@ export function useFloatingSearchOverlay(): UseFloatingSearchOverlayResult {
     searchQuery,
     searchValue,
     loading: isSearching,
+    isScrolled,
     handleSearch,
     handleSearchFocus,
     handleSearchBlur,

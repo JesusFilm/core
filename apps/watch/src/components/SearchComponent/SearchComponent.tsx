@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 
 import { SearchBarProvider } from '@core/journeys/ui/algolia/SearchBarProvider'
+import { cn } from '../../libs/cn/cn'
 
 import { useFloatingSearchOverlay } from './hooks/useFloatingSearchOverlay'
 import { SearchOverlay } from './SearchOverlay'
@@ -21,6 +22,7 @@ export function SearchComponent({
     searchQuery,
     searchValue,
     loading,
+    isScrolled,
     handleSearch,
     handleSearchFocus,
     handleSearchBlur,
@@ -35,7 +37,12 @@ export function SearchComponent({
 
   return (
     <SearchBarProvider>
-      <div className="fixed top-[78px] left-1/2 z-[100] w-[calc(100%-60px)] max-w-[800px] min-w-[300px] -translate-x-1/2 px-2 md:px-0 lg:top-[128px]">
+      <div
+        className={cn(
+          "fixed left-1/2 z-[100] w-[calc(100%-60px)] max-w-[800px] min-w-[300px] -translate-x-1/2 px-2 md:px-0",
+          isScrolled ? "top-[30px]" : "top-[78px] lg:top-[128px]"
+        )}
+      >
         <div className="mx-auto w-full max-w-[70%] min-w-[60%]">
           <SimpleSearchBar
             loading={loading && hasQuery}
