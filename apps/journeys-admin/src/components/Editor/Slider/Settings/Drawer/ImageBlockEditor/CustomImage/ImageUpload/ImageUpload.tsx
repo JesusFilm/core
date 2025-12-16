@@ -6,7 +6,7 @@ import type FormDataType from 'form-data'
 import { useTranslation } from 'next-i18next'
 import fetch from 'node-fetch'
 import { ReactElement, useState } from 'react'
-import { FileRejection, useDropzone } from 'react-dropzone'
+import { FileRejection, useDropzone, ErrorCode } from 'react-dropzone'
 
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import CheckBrokenIcon from '@core/shared/ui/icons/CheckBroken'
@@ -31,13 +31,15 @@ export function ImageUpload({
   loading,
   error
 }: ImageUploadProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
   const [success, setSuccess] = useState<boolean>()
+  const [errorCode, setErrorCode] = useState<ErrorCode>()
 
   const onDrop = async (acceptedFiles: File[], rejectedFiles: FileRejection[]): Promise<void> => {
-    console.log(rejectedFiles)
     const { data } = await createCloudflareUploadByFile({})
     setUploading?.(true)
+    setSuccess(undefined)
 
     if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
       const file = acceptedFiles[0]
@@ -52,13 +54,13 @@ export function ImageUpload({
           })
         ).json()
 
-        console.log('response', response)
 
         response.success === true ? setSuccess(true) : setSuccess(false)
         if (response.errors.length !== 0) {
           setSuccess(false)
           setUploading?.(false)
-          
+          setErrorCode(rejectedFiles[0].errors[0].code as ErrorCode)
+          console.log('error caught, error: ', rejectedFiles)
         }
 
         const src = `https://imagedelivery.net/${
@@ -91,7 +93,19 @@ export function ImageUpload({
   const uploadError = success === false
   const noBorder = uploadSuccess || uploadError || loading === true
 
-  const { t } = useTranslation('apps-journeys-admin')
+
+  function getErrorMessage(errorCode: ErrorCode | undefined) {
+    console.log('errorCode: ', errorCode)
+    switch(errorCode) {
+      case ErrorCode.FileTooLarge: {
+        return 'File size exceeds the maximum allowed size (10MB). Please choose a smaller file'
+      }
+      default: {
+        return 'Something went wrong, try again'
+      }
+    }
+  }
+
 
   return (
     <Stack
@@ -170,7 +184,7 @@ export function ImageUpload({
         />
         <Typography variant="caption">
           {uploadError
-            ? t('Something went wrong, try again')
+            ? t(getErrorMessage(errorCode))
             : t('You can upload PNG, JPG, GIF, or SVG files. Max file size: 10 MB')}
         </Typography>
       </Stack>
