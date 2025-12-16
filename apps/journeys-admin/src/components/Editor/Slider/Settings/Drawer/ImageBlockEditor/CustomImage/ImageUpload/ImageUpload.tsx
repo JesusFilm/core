@@ -6,7 +6,7 @@ import type FormDataType from 'form-data'
 import { useTranslation } from 'next-i18next'
 import fetch from 'node-fetch'
 import { ReactElement, useState } from 'react'
-import { FileRejection, useDropzone, ErrorCode } from 'react-dropzone'
+import { ErrorCode, FileRejection, useDropzone } from 'react-dropzone'
 
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import CheckBrokenIcon from '@core/shared/ui/icons/CheckBroken'
@@ -36,7 +36,10 @@ export function ImageUpload({
   const [success, setSuccess] = useState<boolean>()
   const [errorCode, setErrorCode] = useState<ErrorCode>()
 
-  const onDrop = async (acceptedFiles: File[], rejectedFiles: FileRejection[]): Promise<void> => {
+  const onDrop = async (
+    acceptedFiles: File[],
+    rejectedFiles: FileRejection[]
+  ): Promise<void> => {
     const { data } = await createCloudflareUploadByFile({})
     setUploading?.(true)
     setSuccess(undefined)
@@ -53,7 +56,6 @@ export function ImageUpload({
             body: formData as unknown as FormDataType
           })
         ).json()
-
 
         response.success === true ? setSuccess(true) : setSuccess(false)
         if (response.errors.length !== 0) {
@@ -85,7 +87,7 @@ export function ImageUpload({
       'image/jpeg': [],
       'image/gif': [],
       'image/svg': []
-    },
+    }
   })
 
   const uploadSuccess =
@@ -93,10 +95,9 @@ export function ImageUpload({
   const uploadError = success === false
   const noBorder = uploadSuccess || uploadError || loading === true
 
-
   function getErrorMessage(errorCode: ErrorCode | undefined) {
     console.log('errorCode: ', errorCode)
-    switch(errorCode) {
+    switch (errorCode) {
       case ErrorCode.FileTooLarge: {
         return 'File size exceeds the maximum allowed size (10MB). Please choose a smaller file'
       }
@@ -105,7 +106,6 @@ export function ImageUpload({
       }
     }
   }
-
 
   return (
     <Stack
@@ -185,7 +185,9 @@ export function ImageUpload({
         <Typography variant="caption">
           {uploadError
             ? t(getErrorMessage(errorCode))
-            : t('You can upload PNG, JPG, GIF, or SVG files. Max file size: 10 MB')}
+            : t(
+                'You can upload PNG, JPG, GIF, or SVG files. Max file size: 10 MB'
+              )}
         </Typography>
       </Stack>
       <Button
