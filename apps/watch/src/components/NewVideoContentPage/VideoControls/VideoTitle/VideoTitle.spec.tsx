@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import {
   PlayerProvider,
   playerInitialState
-} from '../../../../../libs/playerContext'
+} from '../../../../libs/playerContext'
 
 import { VideoTitle } from './VideoTitle'
 

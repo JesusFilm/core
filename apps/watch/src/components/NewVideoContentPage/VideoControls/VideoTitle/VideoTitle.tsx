@@ -3,7 +3,7 @@ import VolumeOff from '@mui/icons-material/VolumeOff'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { usePlayer } from '../../../../../libs/playerContext'
+import { usePlayer } from '../../../../libs/playerContext'
 
 interface VideoTitleProps {
   videoTitle: string

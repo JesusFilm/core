@@ -13,14 +13,14 @@ import videojs from 'video.js'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 
-import { VideoContentFields } from '../../../../../../__generated__/VideoContentFields'
-import { PlayerProvider } from '../../../../../libs/playerContext/PlayerContext'
-import { TestPlayerState } from '../../../../../libs/playerContext/TestPlayerState'
-import { useLanguages } from '../../../../../libs/useLanguages'
-import { VideoProvider } from '../../../../../libs/videoContext'
-import { WatchProvider } from '../../../../../libs/watchContext'
-import { TestWatchState } from '../../../../../libs/watchContext/TestWatchState'
-import { videos } from '../../../../Videos/__generated__/testData'
+import { VideoContentFields } from '../../../../__generated__/VideoContentFields'
+import { PlayerProvider } from '../../../libs/playerContext/PlayerContext'
+import { TestPlayerState } from '../../../libs/playerContext/TestPlayerState'
+import { useLanguages } from '../../../libs/useLanguages'
+import { VideoProvider } from '../../../libs/videoContext'
+import { WatchProvider } from '../../../libs/watchContext'
+import { TestWatchState } from '../../../libs/watchContext/TestWatchState'
+import { videos } from '../../Videos/__generated__/testData'
 
 import { VideoControls } from './VideoControls'
 

@@ -28,14 +28,14 @@ import Player from 'video.js/dist/types/player'
 import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
-import { usePlayer } from '../../../../../libs/playerContext'
-import { useVideo } from '../../../../../libs/videoContext'
-import { useLanguageActions } from '../../../../../libs/watchContext'
-import { HeroOverlay } from '../../../../HeroOverlay/HeroOverlay'
-import { AudioLanguageButton } from '../../../AudioLanguageButton'
-import { VideoTitle } from '../VideoTitle'
+import { usePlayer } from '../../../libs/playerContext'
+import { useVideo } from '../../../libs/videoContext'
+import { useLanguageActions } from '../../../libs/watchContext'
+import { HeroOverlay } from '../../HeroOverlay'
+import { VideoTitle } from './VideoTitle'
 
 import { handleVideoTitleClick } from './utils/handleVideoTitleClick'
+import { AudioLanguageButton } from '../AudioLanguageButton'
 
 const DynamicLanguageSwitchDialog = dynamic<{
   open: boolean
@@ -44,7 +44,7 @@ const DynamicLanguageSwitchDialog = dynamic<{
   async () =>
     await import(
       /* webpackChunkName: "LanguageSwitchDialog" */
-      '../../../../LanguageSwitchDialog'
+      '../../LanguageSwitchDialog'
     ).then((mod) => mod.LanguageSwitchDialog),
   {
     ssr: false,

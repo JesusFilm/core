@@ -3,7 +3,7 @@ import type { EmotionCache } from '@emotion/cache'
 import { AppCacheProvider } from '@mui/material-nextjs/v15-pagesRouter'
 import { GoogleTagManager } from '@next/third-parties/google'
 import type { AppProps as NextJsAppProps } from 'next/app'
-import { Noto_Serif } from 'next/font/google'
+import { Noto_Serif, Montserrat } from 'next/font/google'
 import localFont from 'next/font/local'
 import Head from 'next/head'
 import Script from 'next/script'
@@ -24,7 +24,6 @@ import 'swiper/css'
 import 'swiper/css/a11y'
 import 'swiper/css/navigation'
 import '../public/global.css'
-import './fonts/fonts.css'
 
 const notoSerif = Noto_Serif({
   weight: ['500', '700'],
