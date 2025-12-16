@@ -113,16 +113,6 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
     context.params?.part2 as string
   ).split('.')
 
-  if (contentIdExtension !== 'html' || languageIdExtension !== 'html')
-    return {
-      redirect: {
-        permanent: false,
-        destination: `/watch/${encodeURIComponent(
-          contentId
-        )}.html/${languageId}.html`
-      }
-    }
-
   if (slugMap[languageId] != null)
     return {
       redirect: {
@@ -130,6 +120,16 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
         destination: `/watch/${encodeURIComponent(contentId)}.html/${
           slugMap[languageId]
         }.html`
+      }
+    }
+
+  if (contentIdExtension !== 'html' || languageIdExtension !== 'html')
+    return {
+      redirect: {
+        permanent: false,
+        destination: `/watch/${encodeURIComponent(
+          contentId
+        )}.html/${languageId}.html`
       }
     }
 

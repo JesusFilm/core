@@ -22,6 +22,7 @@ export const SUPPORTED_LANGUAGE_IDS = [
   '5541', // Serbian
   '6788', // Farsi, Western
   '3804', // Korean
+  '1370', // Nepali
   // supported by AI model:
   '139081', // Bengali
   '1964', // Bulgarian
@@ -38,6 +39,7 @@ export const SUPPORTED_LANGUAGE_IDS = [
   '1107', // Hungarian
   '7519', // Latvian
   '7698', // Lithuanian
+  '1254', // Myanmar (Burmese)
   '10393', // Norwegian
   '5546', // Romanian
   '5541', // Serbian

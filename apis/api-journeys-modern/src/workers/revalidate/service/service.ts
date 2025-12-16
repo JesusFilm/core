@@ -3,6 +3,8 @@ import FormData from 'form-data'
 import fetch from 'node-fetch'
 import { Logger } from 'pino'
 
+import { env } from '../../../env'
+
 import { ApiRevalidateJobs, RevalidateJob } from './types'
 
 async function sleep(ms: number | undefined): Promise<void> {
@@ -12,12 +14,8 @@ async function sleep(ms: number | undefined): Promise<void> {
 }
 
 export async function generateFacebookAppAccessToken(): Promise<string> {
-  const appId = process.env.FACEBOOK_APP_ID
-  const appSecret = process.env.FACEBOOK_APP_SECRET
-
-  if (!appId || !appSecret) {
-    throw new Error('Facebook App ID or App Secret not configured')
-  }
+  const appId = env.FACEBOOK_APP_ID
+  const appSecret = env.FACEBOOK_APP_SECRET
 
   const response = await fetch(
     `https://graph.facebook.com/oauth/access_token?client_id=${appId}&client_secret=${appSecret}&grant_type=client_credentials`
@@ -43,25 +41,15 @@ export async function service(
 }
 
 export async function revalidate(job: Job<RevalidateJob>, logger?: Logger) {
-  if (
-    process.env.JOURNEYS_URL == null ||
-    process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN == null
-  ) {
-    logger?.error(
-      'JOURNEYS_URL or JOURNEYS_REVALIDATE_ACCESS_TOKEN not configured'
-    )
-    return
-  }
-
   const { slug, hostname } = job.data
   const path = hostname != null ? `/${slug}` : `/home/${slug}`
   const journeyUrl =
     hostname != null
       ? `https://${hostname}${path}`
-      : `${process.env.JOURNEYS_URL}${path}`
+      : `${env.JOURNEYS_URL}${path}`
 
   const params: { accessToken: string; slug: string; hostname?: string } = {
-    accessToken: process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN,
+    accessToken: env.JOURNEYS_REVALIDATE_ACCESS_TOKEN,
     slug
   }
 
@@ -69,7 +57,7 @@ export async function revalidate(job: Job<RevalidateJob>, logger?: Logger) {
 
   try {
     await fetch(
-      `${process.env.JOURNEYS_URL}/api/revalidate?${new URLSearchParams(
+      `${env.JOURNEYS_URL}/api/revalidate?${new URLSearchParams(
         params
       ).toString()}`
     )
