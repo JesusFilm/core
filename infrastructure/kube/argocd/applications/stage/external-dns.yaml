@@ -8,7 +8,7 @@ source:
       - values-stage.yaml
 destination:
   server: https://kubernetes.default.svc
-  namespace: default
+  namespace: external-dns
 syncPolicy:
   automated:
     prune: true
