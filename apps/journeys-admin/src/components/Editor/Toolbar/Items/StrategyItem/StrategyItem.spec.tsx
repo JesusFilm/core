@@ -61,6 +61,7 @@ describe('StrategyItem', () => {
     const strategyItemButton = screen.getByRole('button')
     expect(strategyItemButton).toBeDisabled()
   })
+
   it('Should disable "Strategy" menu item when showAnalytics is true', () => {
     render(
       <EditorProvider initialState={{ showAnalytics: true }}>
