@@ -53,7 +53,7 @@ If you must add components manually:
 Import components from the shared library:
 
 ```typescript
-import { Button, Input, Dialog } from '@core/shared/ui-modern'
+import { Button } from '@core/shared/ui-modern/components/button'
 ```
 
 ## Running unit tests

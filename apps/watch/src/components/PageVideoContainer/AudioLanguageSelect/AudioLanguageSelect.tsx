@@ -5,7 +5,11 @@ import dynamic from 'next/dynamic'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useMemo, useState } from 'react'
 
-import { Select, SelectTrigger, SelectValue } from '@core/shared/ui-modern'
+import {
+  Select,
+  SelectTrigger,
+  SelectValue
+} from '@core/shared/ui-modern/components/select'
 
 import { useLanguages } from '../../../libs/useLanguages'
 import { useVideo } from '../../../libs/videoContext'
@@ -44,13 +48,13 @@ export function AudioLanguageSelect(): ReactElement {
       <SelectTrigger
         onMouseEnter={() => setOpen(false)}
         data-testid="AudioLanguageSelectTrigger"
-        className={`h-auto cursor-pointer border-none bg-transparent p-0 shadow-none hover:bg-transparent focus:border-0 focus:outline-none focus:ring-0 focus:ring-offset-0 focus-visible:border-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 [&>svg]:hidden`}
+        className={`h-auto cursor-pointer border-none bg-transparent p-0 shadow-none hover:bg-transparent focus:border-0 focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:border-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none [&>svg]:hidden`}
       >
         <div className="flex items-center gap-1">
           <LanguageOutlined fontSize="small" className="text-white" />
           <SelectValue>
             <span
-              className={`overflow-hidden truncate whitespace-nowrap font-sans text-base font-semibold leading-tight text-white`}
+              className={`truncate overflow-hidden font-sans text-base leading-tight font-semibold whitespace-nowrap text-white`}
             >
               {language?.displayName}
             </span>
@@ -58,7 +62,7 @@ export function AudioLanguageSelect(): ReactElement {
           <div className="hidden items-center gap-1 lg:flex">
             <AddOutlined fontSize="small" className="text-white" />
             <span
-              className={`whitespace-nowrap font-sans text-base font-semibold leading-tight text-white`}
+              className={`font-sans text-base leading-tight font-semibold whitespace-nowrap text-white`}
             >
               {t('{{ languageCount }} Languages', {
                 languageCount: videoAudioLanguageIds?.length ?? 0

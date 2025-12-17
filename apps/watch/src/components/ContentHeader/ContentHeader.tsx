@@ -3,7 +3,7 @@ import Image from 'next/image'
 import NextLink from 'next/link'
 import { ReactElement, useState } from 'react'
 
-import { Button } from '@core/shared/ui-modern/components'
+import { Button } from '@core/shared/ui-modern/components/button'
 
 import { usePlayer } from '../../libs/playerContext/PlayerContext'
 import { DialogLangSwitch } from '../DialogLangSwitch'
