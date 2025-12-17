@@ -267,7 +267,11 @@ export function JourneyCard({
             alignItems="center"
           >
             <TemplateAggregateAnalytics />
-            <Button startIcon={<BarGroup3Icon />} color="primary">
+            <Button
+              startIcon={<BarGroup3Icon />}
+              color="primary"
+              sx={{ alignSelf: 'flex-end' }}
+            >
               {`${t('Metrics')}`}
             </Button>
           </Stack>

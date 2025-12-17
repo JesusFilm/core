@@ -1,4 +1,4 @@
-import Stack from '@mui/material/Stack'
+import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 import { Item } from '../Editor/Toolbar/Items/Item'
 
@@ -18,7 +18,8 @@ export function TemplateAggregateAnalytics(): ReactElement {
 
   const buttonProps = {
     sx: {
-      p: 1.5,
+      px: 1.5,
+      py: 0,
       fontSize: '14px',
       '& > .MuiButton-startIcon > .MuiSvgIcon-root': {
         fontSize: '16px'
@@ -30,7 +31,14 @@ export function TemplateAggregateAnalytics(): ReactElement {
   }
 
   return (
-    <Stack direction="row" gap={1} alignItems="center">
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center'
+      }}
+    >
       <Item
         variant="icon-button"
         icon={<Data1Icon />}
@@ -52,6 +60,6 @@ export function TemplateAggregateAnalytics(): ReactElement {
         count={localizeAndRound(journeyResponseCount, locale)}
         ButtonProps={buttonProps}
       />
-    </Stack>
+    </Box>
   )
 }
