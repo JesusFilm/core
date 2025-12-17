@@ -9,7 +9,7 @@ import { TemplateActionButton } from '@core/journeys/ui/TemplateView/TemplateVie
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
-import Globe2Icon from '@core/shared/ui/icons/Globe2'
+import TranslateIcon from '@core/shared/ui/icons/Translate'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import UsersProfiles2Icon from '@core/shared/ui/icons/UsersProfiles2'
 
@@ -223,7 +223,7 @@ export function DefaultMenu({
           <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
           <MenuItem
             label={t('Translate')}
-            icon={<Globe2Icon color="secondary" />}
+            icon={<TranslateIcon color="secondary" />}
             onClick={() => {
               setOpenTranslateDialog()
               handleCloseMenu()

@@ -130,6 +130,57 @@ export const publishedJourney: Journey = {
   status: JourneyStatus.published
 }
 
+export const templateJourney: Journey = {
+  ...defaultJourney,
+  id: 'template-journey-id',
+  title: 'Template Journey Heading',
+  description: 'a template journey',
+  template: true
+}
+
+export const customizableTemplateJourney: Journey = {
+  ...templateJourney,
+  journeyCustomizationDescription: 'a customizable template journey',
+  journeyCustomizationFields: [
+    {
+      __typename: 'JourneyCustomizationField',
+      id: 'journey-customization-field-id',
+      journeyId: 'template-journey-id',
+      key: 'journey-customization-field-key',
+      value: 'journey-customization-field-value',
+      defaultValue: 'journey-customization-field-default-value'
+    }
+  ]
+}
+
+export const websiteJourney: Journey = {
+  ...defaultJourney,
+  id: 'website-journey-id',
+  title: 'Website Journey Heading',
+  description: 'a website journey',
+  website: true
+}
+
+export const customizableWebsiteTemplateJourney: Journey = {
+  ...defaultJourney,
+  id: 'customizable-website-template-journey-id',
+  title: 'Customizable Website Template Journey Heading',
+  description: 'a customizable website template journey',
+  website: true,
+  template: true,
+  journeyCustomizationDescription: 'a customizable website template journey',
+  journeyCustomizationFields: [
+    {
+      __typename: 'JourneyCustomizationField',
+      id: 'journey-customization-field-id',
+      journeyId: 'customizable-website-template-journey-id',
+      key: 'journey-customization-field-key',
+      value: 'journey-customization-field-value',
+      defaultValue: 'journey-customization-field-default-value'
+    }
+  ]
+}
+
 export const publishedGlobalTemplate: Journey = {
   ...publishedJourney,
   id: 'published-template-id',
