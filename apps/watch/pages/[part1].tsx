@@ -104,7 +104,7 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
     }
 
   const languages = await fetch(
-    `${process.env.NODE_ENV === 'development' ? 'http://localhost:4300' : 'https://www.jesusfilm.org'}/watch/api/languages`
+    `${process.env.NODE_ENV === 'development' ? 'http://localhost:4300/watch/api/languages' : 'https://www.jesusfilm.org/api/languages'}`
   )
   const languagesData = await languages.json()
   const transformedLanguages = transformData(languagesData, locale ?? 'en')
