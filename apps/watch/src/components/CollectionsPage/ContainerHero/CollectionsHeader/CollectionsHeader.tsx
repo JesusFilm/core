@@ -29,8 +29,8 @@ export function CollectionsHeader({
       >
         <NextLink href="https://www.jesusfilm.org/watch" locale={false}>
           <Image
-            src="/watch/assets/jesusfilm-sign.svg"
-            alt="JesusFilm Project"
+            src="/watch/images/jesusfilm-sign.svg"
+            alt="Jesus Film Project"
             width={70}
             height={70}
             className="max-w-[50px] lg:max-w-[70px]"
