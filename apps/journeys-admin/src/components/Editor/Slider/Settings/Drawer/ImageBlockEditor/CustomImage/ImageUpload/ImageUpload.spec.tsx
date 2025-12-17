@@ -180,9 +180,7 @@ describe('ImageUpload', () => {
         />
       </MockedProvider>
     )
-    waitFor(() =>
-      expect(screen.getAllByTestId('AlertTriangleIcon')).toHaveLength(2)
-    )
+    expect(screen.getAllByTestId('AlertTriangleIcon')).toHaveLength(2)
     expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
   })
 

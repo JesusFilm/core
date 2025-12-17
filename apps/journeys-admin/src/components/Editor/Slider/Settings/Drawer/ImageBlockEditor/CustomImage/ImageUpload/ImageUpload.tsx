@@ -38,12 +38,18 @@ export function ImageUpload({
 
   useEffect(() => {
     setErrorCode(undefined)
-  },[selectedBlock])
+  }, [selectedBlock])
 
   const onDrop = async (
     acceptedFiles: File[],
     rejectedFiles: FileRejection[]
   ): Promise<void> => {
+    if (rejectedFiles.length > 0) {
+      setErrorCode(rejectedFiles[0].errors[0].code as ErrorCode)
+      setUploading?.(false)
+      setSuccess(false)
+      return
+    }
     const { data } = await createCloudflareUploadByFile({})
     setUploading?.(true)
     setSuccess(undefined)
@@ -54,9 +60,10 @@ export function ImageUpload({
       const formData = new FormData()
       formData.append('file', file)
 
+      const uploadUrl = data.createCloudflareUploadByFile.uploadUrl
       try {
         const response = await (
-          await fetch(data?.createCloudflareUploadByFile?.uploadUrl, {
+          await fetch(uploadUrl, {
             method: 'POST',
             body: formData as unknown as FormDataType
           })
@@ -64,9 +71,10 @@ export function ImageUpload({
 
         response.success === true ? setSuccess(true) : setSuccess(false)
         if (response.errors.length !== 0) {
+          const cloudflareError = response.errors[0].code
           setSuccess(false)
           setUploading?.(false)
-          setErrorCode(rejectedFiles[0].errors[0].code as ErrorCode)
+          setErrorCode(cloudflareError as ErrorCode)
         }
 
         const src = `https://imagedelivery.net/${
@@ -89,9 +97,8 @@ export function ImageUpload({
       'image/png': [],
       'image/jpeg': [],
       'image/gif': [],
-      'image/svg': [],
+      'image/svg+xml': [],
       'image/heic': []
-
     }
   })
 
