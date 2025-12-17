@@ -156,7 +156,7 @@ describe('ImageUpload', () => {
         focalTop: 50
       })
     )
-    expect(screen.getByText('Upload successful!')).toBeInTheDocument()
+    expect(screen.getByText('Upload Successful!')).toBeInTheDocument()
   })
 
   it('should render loading state', () => {
@@ -180,7 +180,9 @@ describe('ImageUpload', () => {
         />
       </MockedProvider>
     )
-    expect(screen.getAllByTestId('AlertTriangleIcon')).toHaveLength(2)
+    waitFor(() =>
+      expect(screen.getAllByTestId('AlertTriangleIcon')).toHaveLength(2)
+    )
     expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
   })
 

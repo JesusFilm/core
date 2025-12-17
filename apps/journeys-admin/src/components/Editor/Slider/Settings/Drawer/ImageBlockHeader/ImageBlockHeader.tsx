@@ -19,7 +19,6 @@ interface ImageBlockHeaderProps {
   showTitle?: boolean
   onDelete?: () => void
   loading?: boolean
-  error?: boolean
   Icon?: typeof SvgIcon
 }
 
@@ -29,7 +28,6 @@ export function ImageBlockHeader({
   onDelete,
   loading = false,
   selectedBlock,
-  error,
   Icon
 }: ImageBlockHeaderProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -57,7 +55,6 @@ export function ImageBlockHeader({
           <ImageBlockThumbnail
             selectedBlock={selectedBlock != null ? selectedBlock : undefined}
             loading={loading}
-            error={error}
             Icon={Icon}
           />
         </Box>
@@ -70,9 +67,8 @@ export function ImageBlockHeader({
                   ? t('Selected Image')
                   : showAdd
                     ? t('Select Image')
-                    : error === true
-                      ? t('Upload failed')
-                      : t('No Image Selected')}
+                    : t('No Image Selected')}
+
             </Typography>
             <Typography
               variant="caption"
