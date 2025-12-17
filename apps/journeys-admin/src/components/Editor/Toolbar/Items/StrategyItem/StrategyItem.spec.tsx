@@ -51,4 +51,24 @@ describe('StrategyItem', () => {
     expect(screen.getByText('activeSlide: 1')).toBeInTheDocument()
     expect(mockCloseMenu).toHaveBeenCalled()
   })
+
+  it('Should disable "Strategy" button when showAnalytics is true', () => {
+    render(
+      <EditorProvider initialState={{ showAnalytics: true }}>
+        <StrategyItem variant="button" />
+      </EditorProvider>
+    )
+    const strategyItemButton = screen.getByRole('button')
+    expect(strategyItemButton).toBeDisabled()
+  })
+  it('Should disable "Strategy" menu item when showAnalytics is true', () => {
+    render(
+      <EditorProvider initialState={{ showAnalytics: true }}>
+        <StrategyItem variant="menu-item" />
+      </EditorProvider>
+    )
+
+    const strategyMenuItem = screen.getByRole('menuitem')
+    expect(strategyMenuItem).toHaveClass('Mui-disabled')
+  })
 })
