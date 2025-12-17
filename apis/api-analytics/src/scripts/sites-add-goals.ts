@@ -94,10 +94,6 @@ async function main(): Promise<void> {
     }
 
     console.log('Starting sites-add-goals script')
-    console.log(`Goals (${goals.length}): ${goals.join(', ')}`)
-    console.log(`Batch size: ${batchSize}`)
-
-    console.log('Step 1: Adding missing goals to sites')
     const { totalAdded, totalFailed } = await addGoalsToAllSites(
       prisma,
       goals,
@@ -107,7 +103,6 @@ async function main(): Promise<void> {
       }
     )
 
-    console.log('Step 2: Done')
     console.log(`Total added: ${totalAdded}`)
     console.log(`Total failed: ${totalFailed}`)
 
@@ -124,7 +119,6 @@ async function main(): Promise<void> {
 }
 
 if (require.main === module) {
-  // This script is being run directly
   main().catch((error) => {
     const typedError = error instanceof Error ? error : new Error(String(error))
     console.error('Unhandled error:', typedError)
