@@ -1433,6 +1433,7 @@ enum PlausibleEvent {
   videoProgress75
   videoComplete
   videoTrigger
+  multiSelectSubmit
   prayerRequestCapture
   christDecisionCapture
   gospelStartCapture
