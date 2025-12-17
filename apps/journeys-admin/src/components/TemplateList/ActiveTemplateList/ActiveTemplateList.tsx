@@ -45,7 +45,7 @@ export function ActiveTemplateList({
   const [archive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysArchive != null) {
-        enqueueSnackbar(t('Journeys Archived'), {
+        enqueueSnackbar(t('Templates Archived'), {
           variant: 'success'
         })
         void refetch()
@@ -55,7 +55,7 @@ export function ActiveTemplateList({
   const [trash] = useMutation(TRASH_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysTrash != null) {
-        enqueueSnackbar(t('Journeys Trashed'), {
+        enqueueSnackbar(t('Templates Trashed'), {
           variant: 'success'
         })
         void refetch()
