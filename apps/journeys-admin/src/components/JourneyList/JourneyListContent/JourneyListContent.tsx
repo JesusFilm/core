@@ -398,20 +398,21 @@ export function JourneyListContent({
     secondary: { title: string; submitLabel: string; message: string }
   } => {
     const isTemplate = contentType === 'templates'
-    const itemType = isTemplate ? 'Templates' : 'Journeys'
 
     switch (status) {
       case 'archived':
         return {
           primary: {
-            title: t(`Unarchive ${itemType}`),
+            title: isTemplate
+              ? t('Unarchive Templates')
+              : t('Unarchive Journeys'),
             submitLabel: t('Unarchive'),
             message: isTemplate
               ? t('This will unarchive all archived templates you own.')
               : t('This will unarchive all archived journeys you own.')
           },
           secondary: {
-            title: t(`Trash ${itemType}`),
+            title: isTemplate ? t('Trash Templates') : t('Trash Journeys'),
             submitLabel: t('Trash'),
             message: isTemplate
               ? t('This will trash all archived templates you own.')
@@ -421,14 +422,16 @@ export function JourneyListContent({
       case 'trashed':
         return {
           primary: {
-            title: t(`Restore ${itemType}`),
+            title: isTemplate ? t('Restore Templates') : t('Restore Journeys'),
             submitLabel: t('Restore'),
             message: isTemplate
               ? t('This will restore all trashed templates you own.')
               : t('This will restore all trashed journeys you own.')
           },
           secondary: {
-            title: t(`Delete ${itemType} Forever`),
+            title: isTemplate
+              ? t('Delete Templates Forever')
+              : t('Delete Journeys Forever'),
             submitLabel: t('Delete Forever'),
             message: isTemplate
               ? t('This will permanently delete all trashed templates you own.')
@@ -439,14 +442,14 @@ export function JourneyListContent({
       default:
         return {
           primary: {
-            title: t(`Archive ${itemType}`),
+            title: isTemplate ? t('Archive Templates') : t('Archive Journeys'),
             submitLabel: t('Archive'),
             message: isTemplate
               ? t('This will archive all active templates you own.')
               : t('This will archive all active journeys you own.')
           },
           secondary: {
-            title: t(`Trash ${itemType}`),
+            title: isTemplate ? t('Trash Templates') : t('Trash Journeys'),
             submitLabel: t('Trash'),
             message: isTemplate
               ? t('This will trash all active templates you own.')
