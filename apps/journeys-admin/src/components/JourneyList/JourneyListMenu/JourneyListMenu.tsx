@@ -44,6 +44,7 @@ export function JourneyListMenu({
           <IconButton
             edge="end"
             color="inherit"
+            aria-label={t('Journey list actions')}
             sx={{
               mx: { xs: 0, sm: 3 },
               borderRadius: '8px',
