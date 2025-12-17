@@ -403,6 +403,130 @@ describe('Toolbar Menu', () => {
       ).not.toBeInTheDocument()
     })
 
+    it('should render Copy Link for template when user is publisher', async () => {
+      const selectedBlock: TreeBlock<StepBlock> = {
+        __typename: 'StepBlock',
+        id: 'stepId',
+        parentBlockId: 'journeyId',
+        parentOrder: 0,
+        locked: true,
+        nextBlockId: null,
+        children: [],
+        slug: null
+      }
+      render(
+        <SnackbarProvider>
+          <MockedProvider
+            mocks={[
+              {
+                request: {
+                  query: GET_ROLE
+                },
+                result: {
+                  data: {
+                    getUserRole: {
+                      id: '1',
+                      userId: 'userId',
+                      roles: [Role.publisher]
+                    }
+                  }
+                }
+              }
+            ]}
+          >
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journeyId',
+                  title: 'Some title',
+                  description: 'Some description',
+                  slug: 'my-journey',
+                  template: true,
+                  tags: [],
+                  language,
+                  team: {
+                    id: 'jfp-team'
+                  }
+                } as unknown as Journey
+              }}
+            >
+              <EditorProvider initialState={{ selectedBlock }}>
+                <Menu />
+              </EditorProvider>
+            </JourneyProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+      fireEvent.click(screen.getByRole('button'))
+      await waitFor(() =>
+        expect(
+          screen.getByRole('menuitem', { name: 'Copy Link' })
+        ).toBeInTheDocument()
+      )
+    })
+
+    it('should not render Copy Link for template when user is not publisher', async () => {
+      const selectedBlock: TreeBlock<StepBlock> = {
+        __typename: 'StepBlock',
+        id: 'stepId',
+        parentBlockId: 'journeyId',
+        parentOrder: 0,
+        locked: true,
+        nextBlockId: null,
+        children: [],
+        slug: null
+      }
+      render(
+        <SnackbarProvider>
+          <MockedProvider
+            mocks={[
+              {
+                request: {
+                  query: GET_ROLE
+                },
+                result: {
+                  data: {
+                    getUserRole: {
+                      id: '1',
+                      userId: 'userId',
+                      roles: []
+                    }
+                  }
+                }
+              }
+            ]}
+          >
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journeyId',
+                  title: 'Some title',
+                  description: 'Some description',
+                  slug: 'my-journey',
+                  template: true,
+                  tags: [],
+                  language,
+                  team: {
+                    id: 'jfp-team'
+                  }
+                } as unknown as Journey
+              }}
+            >
+              <EditorProvider initialState={{ selectedBlock }}>
+                <Menu />
+              </EditorProvider>
+            </JourneyProvider>
+          </MockedProvider>
+        </SnackbarProvider>
+      )
+      fireEvent.click(screen.getByRole('button'))
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('menuitem', { name: 'Copy Link' })
+        ).not.toBeInTheDocument()
+      )
+    })
+
     it('should handle edit journey details', async () => {
       mockedUseRouter.mockReturnValue({
         query: { param: null },

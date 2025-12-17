@@ -117,7 +117,7 @@ export function Menu({ user }: MenuProps): ReactElement {
           </>
         )}
         {journey != null && mdUp && <Divider data-testid="menu-divider" />}
-        {journey != null && (!isTemplate || isPublisher != null) && (
+        {journey != null && (!isTemplate || isPublisher === true) && (
           <CopyLinkItem variant="menu-item" onClose={handleCloseMenu} />
         )}
         {!mdUp && (
