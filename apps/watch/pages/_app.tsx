@@ -25,7 +25,6 @@ import 'swiper/css'
 import 'swiper/css/a11y'
 import 'swiper/css/navigation'
 import '../styles/globals.css'
-import './fonts/fonts.css'
 
 // Polyfills
 import '../src/libs/polyfills/requestVideoFrameCallback'
@@ -38,9 +37,29 @@ const notoSerif = Noto_Serif({
 const apercuPro = localFont({
   src: [
     {
-      path: './fonts/Montserrat-VariableFont_wght.ttf',
-      weight: '100 900',
+      path: './fonts/Apercu-Pro-Regular.woff2',
+      weight: '400',
       style: 'normal'
+    },
+    {
+      path: './fonts/Apercu-Pro-Medium.woff2',
+      weight: '500',
+      style: 'normal'
+    },
+    {
+      path: './fonts/Apercu-Pro-MediumItalic.woff2',
+      weight: '500',
+      style: 'italic'
+    },
+    {
+      path: './fonts/Apercu-Pro-Bold.woff2',
+      weight: '700',
+      style: 'normal'
+    },
+    {
+      path: './fonts/Apercu-Pro-BoldItalic.woff2',
+      weight: '700',
+      style: 'italic'
     }
   ]
 })

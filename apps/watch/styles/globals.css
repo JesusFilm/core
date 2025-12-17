@@ -28,9 +28,8 @@
 }
 
 @theme {
-  --font-sans:
-    'Montserrat', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-sans: var(--font-apercu-pro), sans-serif;
+  --font-serif: var(--font-noto-serif), serif;
 
   /* Legacy color variables for existing components */
   --color-primary: #cb333b;
@@ -366,7 +365,7 @@
   }
 
   .overlay-texture {
-    background-image: url('../public/assets/overlay.svg');
+    background-image: url('../public/images/overlay.svg');
     background-repeat: repeat;
     background-size: auto;
     mix-blend-mode: multiply;
@@ -374,7 +373,7 @@
   }
 
   .overlay-texture-image {
-    background-image: url('../public/assets/overlay.svg');
+    background-image: url('../public/images/overlay.svg');
   }
 
   /* VideoCard specific utilities */

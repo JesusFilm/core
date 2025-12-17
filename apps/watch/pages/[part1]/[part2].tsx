@@ -10,21 +10,21 @@ import { graphql } from '@core/shared/gql'
 import type {
   GetVideoContent,
   GetVideoContentVariables
-} from '../../../__generated__/GetVideoContent'
-import type { VideoContentFields } from '../../../__generated__/VideoContentFields'
-import i18nConfig from '../../../next-i18next.config'
-import { createApolloClient } from '../../../src/libs/apolloClient'
-import { getCookie } from '../../../src/libs/cookieHandler'
-import { getFlags } from '../../../src/libs/getFlags'
-import { getLanguageIdFromLocale } from '../../../src/libs/getLanguageIdFromLocale'
-import { PlayerProvider } from '../../../src/libs/playerContext'
-import { slugMap } from '../../../src/libs/slugMap'
-import { VIDEO_CONTENT_FIELDS } from '../../../src/libs/videoContentFields'
-import { VideoProvider } from '../../../src/libs/videoContext'
+} from '../../__generated__/GetVideoContent'
+import type { VideoContentFields } from '../../__generated__/VideoContentFields'
+import i18nConfig from '../../next-i18next.config'
+import { createApolloClient } from '../../src/libs/apolloClient'
+import { getCookie } from '../../src/libs/cookieHandler'
+import { getFlags } from '../../src/libs/getFlags'
+import { getLanguageIdFromLocale } from '../../src/libs/getLanguageIdFromLocale'
+import { PlayerProvider } from '../../src/libs/playerContext/PlayerContext'
+import { slugMap } from '../../src/libs/slugMap'
+import { VIDEO_CONTENT_FIELDS } from '../../src/libs/videoContentFields'
+import { VideoProvider } from '../../src/libs/videoContext'
 import {
   WatchProvider,
   WatchState
-} from '../../../src/libs/watchContext/WatchContext'
+} from '../../src/libs/watchContext/WatchContext'
 
 export const GET_VIDEO_CONTENT = gql`
   ${VIDEO_CONTENT_FIELDS}
@@ -60,15 +60,15 @@ const DynamicPageCollection = dynamic(
   async () =>
     await import(
       /* webpackChunkName: "PageCollection" */
-      '../../../src/components/PageCollection'
+      '../../src/components/PageCollection'
     ).then((mod) => mod.PageCollection)
 )
 
-const DynamicNewContentPage = dynamic(
+const DynamicPageSingleVideo = dynamic(
   async () =>
     await import(
-      /* webpackChunkName: "NewContentPage" */
-      '../../../src/components/PageSingleVideo'
+      /* webpackChunkName: "PageSingleVideo" */
+      '../../src/components/PageSingleVideo'
     ).then((mod) => mod.PageSingleVideo)
 )
 
@@ -92,7 +92,7 @@ export default function Part2Page({
         <VideoProvider value={{ content }}>
           <PlayerProvider>
             {content.variant?.hls != null && content.variant?.hls != '' ? (
-              <DynamicNewContentPage />
+              <DynamicPageSingleVideo />
             ) : (
               <DynamicPageCollection />
             )}
@@ -117,7 +117,7 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
     return {
       redirect: {
         permanent: false,
-        destination: `/watch/${encodeURIComponent(contentId)}.html/${
+        destination: `/${encodeURIComponent(contentId)}.html/${
           slugMap[languageId]
         }.html`
       }
@@ -127,9 +127,7 @@ export const getStaticProps: GetStaticProps<Part2PageProps> = async (
     return {
       redirect: {
         permanent: false,
-        destination: `/watch/${encodeURIComponent(
-          contentId
-        )}.html/${languageId}.html`
+        destination: `/${encodeURIComponent(contentId)}.html/${languageId}.html`
       }
     }
 

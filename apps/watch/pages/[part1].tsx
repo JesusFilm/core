@@ -89,7 +89,7 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
     return {
       redirect: {
         permanent: false,
-        destination: `/watch/${slugMap[languageId]}.html`
+        destination: `/${slugMap[languageId]}.html`
       }
     }
 
@@ -97,14 +97,14 @@ export const getStaticProps: GetStaticProps<HomeLanguagePageProps> = async ({
     return {
       redirect: {
         permanent: false,
-        destination: `/watch/${encodeURIComponent(
+        destination: `/${encodeURIComponent(
           languageId
         )}.html/${languageId}.html`
       }
     }
 
   const languages = await fetch(
-    `${process.env.NODE_ENV === 'development' ? 'http://localhost:4300' : 'https://www.jesusfilm.org'}/api/languages`
+    `${process.env.NODE_ENV === 'development' ? 'http://localhost:4300/watch/api/languages' : 'https://www.jesusfilm.org/api/languages'}`
   )
   const languagesData = await languages.json()
   const transformedLanguages = transformData(languagesData, locale ?? 'en')
