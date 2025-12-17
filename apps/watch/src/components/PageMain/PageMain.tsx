@@ -1,8 +1,7 @@
 import { type ReactElement } from 'react'
 import { Index } from 'react-instantsearch'
 
-import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
-import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
+import { ThemeMode } from '@core/shared/ui/themes'
 
 import { useAlgoliaRouter } from '../../libs/algolia/useAlgoliaRouter'
 import { PlayerProvider } from '../../libs/playerContext'
@@ -10,12 +9,9 @@ import { WatchProvider } from '../../libs/watchContext'
 import { Header } from '../LegacyHeader'
 import { SearchComponent } from '../SearchComponent'
 
-import { AboutProjectSection } from './AboutProjectSection'
 import { CollectionsRail } from './CollectionsRail'
 import { ContainerWithMedia } from './ContainerWithMedia'
-import { SectionLanguageMap } from './SectionLanguageMap'
 import { SectionPromo } from './SectionPromo'
-import { SeeAllVideos } from './SeeAllVideos'
 import { useWatchHeroCarousel } from './useWatchHeroCarousel'
 
 import { Footer } from '../Footer/Footer'
@@ -66,7 +62,6 @@ function PageMainBody({ languageId }: PageMainProps): ReactElement {
         onSkipActiveVideo={handleSkipActiveVideo}
       >
         <CollectionsRail languageId={languageId} />
-        {/* <SectionLanguageMap /> */}
         <SectionPromo />
       </ContainerWithMedia>
       <Footer />
