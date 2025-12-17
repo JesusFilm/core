@@ -26,7 +26,7 @@ describe('ArchiveJourney', () => {
   describe("activeTab === 'active'", () => {
     beforeEach(() => {
       mockUseRouter.mockReturnValue({
-        query: { tab: 'active' }
+        query: { status: 'active' }
       })
     })
 
