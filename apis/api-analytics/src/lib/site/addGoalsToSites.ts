@@ -130,5 +130,3 @@ export async function addGoalsToAllSites(
 
   return { totalAdded, totalFailed }
 }
-
-
