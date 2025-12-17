@@ -93,9 +93,5 @@
   "Behind The Scenes": "Perde Arkası",
   "Trailer": "Fragman",
   "Available in {{count}} languages._one": "{{count}} dilinde mevcuttur.",
-  "Available in {{count}} languages._other": "{{count}} dillerinde mevcuttur.",
-  "Better search. Better language support. Better collections.": "Daha iyi arama. Daha iyi dil desteği. Daha iyi koleksiyonlar.",
-  "Better search, languages, and collections.": "Daha iyi arama, diller ve koleksiyonlar.",
-  "Try the new design.": "Yeni tasarımı deneyin.",
-  "New Design": "Yeni Tasarım"
+  "Available in {{count}} languages._other": "{{count}} dillerinde mevcuttur."
 }
