@@ -24,8 +24,8 @@ export function AudioLanguageSelectContent() {
       {filteredLanguages?.map((option: Language) => (
         <NextLink
           key={option.id}
-          href={`/watch${
-            variant?.slug != null ? `/${variant.slug.split('/')[0]}.html/` : '/'
+          href={`/${
+            variant?.slug != null ? `${variant.slug.split('/')[0]}.html/` : '/'
           }${option.slug}.html`}
           className={`block cursor-pointer rounded p-2 hover:bg-gray-100 focus:bg-gray-100 data-[highlighted]:bg-gray-100 data-[state=checked]:bg-blue-50 data-[state=checked]:text-blue-900`}
           role="option"

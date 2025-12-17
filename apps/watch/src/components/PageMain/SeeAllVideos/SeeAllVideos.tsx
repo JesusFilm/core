@@ -10,7 +10,7 @@ export function SeeAllVideos(): ReactElement {
     <Stack sx={{ pt: '54px', alignItems: 'center' }}>
       <Button
         component={NextLink}
-        href="/watch/videos"
+        href="/videos"
         locale={false}
         size="small"
         color="secondary"

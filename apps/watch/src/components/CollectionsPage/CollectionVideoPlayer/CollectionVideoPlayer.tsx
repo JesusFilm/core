@@ -20,7 +20,7 @@ import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { isIOS } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
-import { GET_VIDEO_CONTENT } from '../../../../pages/watch/[part1]/[part2]'
+import { GET_VIDEO_CONTENT } from '../../../../pages/[part1]/[part2]'
 
 import { useIsInViewport } from './utils/useIsInViewport'
 

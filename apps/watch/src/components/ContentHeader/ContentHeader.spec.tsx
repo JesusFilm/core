@@ -23,11 +23,11 @@ describe('ContentHeader', () => {
       </VideoProvider>
     )
 
-    const header = screen.getByRole('img', { name: 'JesusFilm Project' })
+    const header = screen.getByRole('img', { name: 'Jesus Film Project' })
     expect(header).toBeInTheDocument()
 
     const link = screen.getByRole('link')
-    expect(link).toHaveAttribute('href', '/watch')
+    expect(link).toHaveAttribute('href', '/')
   })
 
   it('should be visible when video is not playing', () => {
@@ -100,10 +100,7 @@ describe('ContentHeader', () => {
         <ContentHeader languageSlug="french" />
       </VideoProvider>
     )
-    expect(screen.getByRole('link')).toHaveAttribute(
-      'href',
-      '/watch/french.html'
-    )
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/french.html')
   })
 
   it('should not change the href when languageSlug is english', () => {
@@ -112,7 +109,7 @@ describe('ContentHeader', () => {
         <ContentHeader languageSlug="english" />
       </VideoProvider>
     )
-    expect(screen.getByRole('link')).toHaveAttribute('href', '/watch')
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/')
   })
 
   it('should apply drop-shadow-xs class to Globe icon', () => {

@@ -27,7 +27,7 @@ export interface Language {
 
 export function useLanguages(): { languages: Language[]; isLoading: boolean } {
   const { data, isLoading: isDataLoading } = useSWR<string[][]>(
-    '/api/languages',
+    '/watch/api/languages',
     fetcher
   )
   const { i18n } = useTranslation()

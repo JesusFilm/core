@@ -86,22 +86,19 @@ const nextConfig = {
 
     return config
   },
-
+  basePath: '/watch',
+  // eslint-disable-next-line @typescript-eslint/require-await
   async redirects() {
     return [
       {
         source: '/',
         destination: '/watch',
-        permanent: false
+        permanent: false,
+        basePath: false
       },
       {
-        source: '/bin/jf/watch.html/:videoId/:languageId',
-        destination: '/api/jf/watch.html/:videoId/:languageId',
-        permanent: false
-      },
-      {
-        source: '/watch/easter',
-        destination: '/watch/easter.html/english.html',
+        source: '/easter',
+        destination: '/easter.html/english.html',
         permanent: true
       }
     ]

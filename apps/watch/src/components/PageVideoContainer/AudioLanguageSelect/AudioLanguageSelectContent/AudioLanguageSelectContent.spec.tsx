@@ -125,21 +125,21 @@ describe('AudioLanguageSelectContent', () => {
 
     await waitFor(() => {
       const [english, french, spanish] = screen.getAllByRole('option')
-      expect(english).toHaveAttribute('href', '/watch/jesus.html/english.html')
+      expect(english).toHaveAttribute('href', '/jesus.html/english.html')
       expect(
         within(english).queryByTestId('AudioLanguageSelectNativeLanguageName')
       ).not.toBeInTheDocument()
       expect(
         within(english).getByTestId('AudioLanguageSelectDisplayLanguageName')
       ).toHaveTextContent('English')
-      expect(french).toHaveAttribute('href', '/watch/jesus.html/french.html')
+      expect(french).toHaveAttribute('href', '/jesus.html/french.html')
       expect(
         within(french).getByTestId('AudioLanguageSelectNativeLanguageName')
       ).toHaveTextContent('Français')
       expect(
         within(french).getByTestId('AudioLanguageSelectDisplayLanguageName')
       ).toHaveTextContent('French')
-      expect(spanish).toHaveAttribute('href', '/watch/jesus.html/spanish.html')
+      expect(spanish).toHaveAttribute('href', '/jesus.html/spanish.html')
       expect(
         within(spanish).getByTestId('AudioLanguageSelectNativeLanguageName')
       ).toHaveTextContent('Español')
