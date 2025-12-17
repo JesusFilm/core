@@ -2,8 +2,8 @@ import { Captions } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
 import { ReactElement, useId, useMemo } from 'react'
 
-import { Switch } from '@core/shared/uimodern/components'
-import { cn } from '@core/shared/uimodern/utils'
+import { Switch } from '@core/shared/ui-modern/components'
+import { cn } from '@core/shared/ui-modern/utils'
 
 import { SUBTITLE_LANGUAGE_IDS } from '../../../libs/localeMapping'
 import { Language, useLanguages } from '../../../libs/useLanguages'

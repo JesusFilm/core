@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
 
-import { Badge } from '@core/shared/uimodern/components/badge'
+import { Badge } from '@core/shared/ui-modern/components/badge'
 
 export interface QuickListProps {
   title: string
@@ -18,7 +18,7 @@ export function QuickList({
   if (isLoading) {
     return (
       <div>
-        <div className="mb-3 block text-sm font-semibold tracking-wider text-stone-600 uppercase">
+        <div className="mb-3 block text-sm font-semibold uppercase tracking-wider text-stone-600">
           {title}
         </div>
         <div className="flex flex-wrap gap-3">
@@ -40,7 +40,7 @@ export function QuickList({
 
   return (
     <div>
-      <div className="mb-3 block text-sm font-semibold tracking-wider text-stone-600 uppercase">
+      <div className="mb-3 block text-sm font-semibold uppercase tracking-wider text-stone-600">
         {title}
       </div>
       <div className="flex flex-wrap gap-3">

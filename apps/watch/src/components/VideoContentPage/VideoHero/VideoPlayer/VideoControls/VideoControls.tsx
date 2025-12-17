@@ -29,7 +29,7 @@ import Player from 'video.js/dist/types/player'
 
 import { isMobile } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
-import { Button, Skeleton } from '@core/shared/uimodern'
+import { Button, Skeleton } from '@core/shared/ui-modern'
 
 import { cn } from '../../../../../libs/cn'
 import { usePlayer } from '../../../../../libs/playerContext'
@@ -731,7 +731,7 @@ export function VideoControls({
   return (
     <div
       className={cn(
-        'absolute top-0 right-0 bottom-0 left-0 z-[2] flex flex-col justify-end',
+        'absolute bottom-0 left-0 right-0 top-0 z-[2] flex flex-col justify-end',
         visible ? 'cursor-default' : 'cursor-none'
       )}
       onClick={getClickHandler(handlePlay, () => {
@@ -804,7 +804,7 @@ export function VideoControls({
               }}
             />
           </div>
-          <div className="absolute top-0 right-0 bottom-0 left-0 z-0">
+          <div className="absolute bottom-0 left-0 right-0 top-0 z-0">
             <HeroOverlay />
           </div>
         </>
@@ -838,7 +838,7 @@ export function VideoControls({
                     durationSeconds > 0 ? (progress / 100) * durationSeconds : 0
                   ]}
                   onValueChange={handleSeekValueChange}
-                  className="flex h-[8.4px] md:hidden [&>button]:h-[13px] [&>button]:w-[13px] [&>span]:h-[8.4px] [&>span>span]:h-[8.4px]"
+                  className="flex h-[8.4px] md:hidden [&>button]:h-[13px] [&>button]:w-[13px] [&>span>span]:h-[8.4px] [&>span]:h-[8.4px]"
                 />
                 <div className="flex flex-row items-center justify-between gap-5 md:justify-start">
                   <Button
@@ -864,7 +864,7 @@ export function VideoControls({
                         : 0
                     ]}
                     onValueChange={handleSeekValueChange}
-                    className="hidden h-[8.4px] md:flex [&>button]:h-[13px] [&>button]:w-[13px] [&>span]:h-[8.4px] [&>span>span]:h-[8.4px]"
+                    className="hidden h-[8.4px] md:flex [&>button]:h-[13px] [&>button]:w-[13px] [&>span>span]:h-[8.4px] [&>span]:h-[8.4px]"
                   />
                   {player != null && (
                     <div className="text-secondary-foreground z-[2] flex gap-1 text-sm">
@@ -898,7 +898,7 @@ export function VideoControls({
                         max={100}
                         value={[mute ? 0 : volume]}
                         onValueChange={handleVolumeValueChange}
-                        className="w-0 opacity-0 transition-all duration-200 ease-out group-hover:w-[70px] group-hover:opacity-100 [&>button]:h-[10px] [&>button]:w-[10px] [&>span]:h-2 [&>span>span]:h-2"
+                        className="w-0 opacity-0 transition-all duration-200 ease-out group-hover:w-[70px] group-hover:opacity-100 [&>button]:h-[10px] [&>button]:w-[10px] [&>span>span]:h-2 [&>span]:h-2"
                       />
                       <Button onClick={handleMute} variant="ghost" size="icon">
                         {mute || volume === 0 ? (

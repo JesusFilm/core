@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogOverlay,
   DialogPortal
-} from '@core/shared/uimodern/components/dialog'
+} from '@core/shared/ui-modern/components/dialog'
 
 import { CategoryGrid } from './CategoryGrid'
 import { LanguageSelector } from './LanguageSelector'
@@ -56,10 +56,10 @@ export function SearchOverlay({
           onBlur={onBlur}
           onOpenAutoFocus={(event) => event.preventDefault()}
           onCloseAutoFocus={(event) => event.preventDefault()}
-          className="fixed inset-x-0 top-[100px] bottom-0 left-0 max-w-none translate-x-0 translate-y-0 overflow-y-auto overscroll-contain border-0 bg-stone-900/5 p-0 lg:top-[159px] [&>button]:right-12 [&>button]:scale-175 [&>button]:cursor-pointer"
+          className="[&>button]:scale-175 fixed inset-x-0 bottom-0 left-0 top-[100px] max-w-none translate-x-0 translate-y-0 overflow-y-auto overscroll-contain border-0 bg-stone-900/5 p-0 lg:top-[159px] [&>button]:right-12 [&>button]:cursor-pointer"
           data-testid="SearchOverlay"
         >
-          <div className="mx-auto w-full max-w-screen-2xl px-4 pt-8 pb-10 md:px-12 md:pt-12 md:pb-16">
+          <div className="mx-auto w-full max-w-screen-2xl px-4 pb-10 pt-8 md:px-12 md:pb-16 md:pt-12">
             {!hasQuery ? (
               <div className="flex flex-col gap-6 md:gap-8">
                 <div className="flex flex-col gap-4 md:flex-row md:gap-6">
@@ -71,8 +71,8 @@ export function SearchOverlay({
                       isLoading={isTrendingLoading}
                     />
                   </div>
-                  <div className="w-full flex-shrink-0 md:w-90">
-                    <div className="mb-3 block text-sm font-semibold tracking-wider text-stone-600 uppercase">
+                  <div className="md:w-90 w-full flex-shrink-0">
+                    <div className="mb-3 block text-sm font-semibold uppercase tracking-wider text-stone-600">
                       {t('Search Filters')}
                     </div>
                     <LanguageSelector />

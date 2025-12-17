@@ -4,13 +4,13 @@ import { ReactElement } from 'react'
 import HelpSquareContained from '@core/shared/ui/icons/HelpSquareContained'
 import Mail1 from '@core/shared/ui/icons/Mail1'
 import MessageCircle from '@core/shared/ui/icons/MessageCircle'
-import { ExtendedButton as Button } from '@core/shared/uimodern/components'
+import { ExtendedButton as Button } from '@core/shared/ui-modern/components'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger
-} from '@core/shared/uimodern/components/accordion'
+} from '@core/shared/ui-modern/components/accordion'
 
 import { VideoContentFields_studyQuestions as StudyQuestions } from '../../../../../__generated__/VideoContentFields'
 
@@ -30,13 +30,13 @@ export function Question({ questions }: QuestionProps): ReactElement {
               <HelpSquareContained
                 sx={{ opacity: 0.2, mr: 6, mt: 1, color: 'common.white' }}
               />
-              <h3 className="text-md leading-[1.6] font-semibold text-stone-100 sm:pr-4 md:text-lg md:text-balance">
+              <h3 className="text-md font-semibold leading-[1.6] text-stone-100 sm:pr-4 md:text-balance md:text-lg">
                 {q.value}
               </h3>
             </div>
           </AccordionTrigger>
           <AccordionContent className="transition-all duration-300">
-            <div className="pr-4 pl-[72px]">
+            <div className="pl-[72px] pr-4">
               <p className="text-stone-200/80">
                 {t(
                   'Have a private discussion with someone who is ready to listen.'
@@ -50,7 +50,7 @@ export function Question({ questions }: QuestionProps): ReactElement {
                       '_blank'
                     )
                   }
-                  className="mr-4 inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold tracking-wider text-gray-900 uppercase transition-colors duration-200 hover:bg-[#cb333b] hover:text-white"
+                  className="mr-4 inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-gray-900 transition-colors duration-200 hover:bg-[#cb333b] hover:text-white"
                 >
                   <MessageCircle className="h-4 w-4" />
                   {t('Chat with a person')}
@@ -62,7 +62,7 @@ export function Question({ questions }: QuestionProps): ReactElement {
                       '_blank'
                     )
                   }
-                  className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold tracking-wider text-gray-900 uppercase transition-colors duration-200 hover:bg-[#cb333b] hover:text-white"
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-gray-900 transition-colors duration-200 hover:bg-[#cb333b] hover:text-white"
                 >
                   <Mail1 className="h-4 w-4" />
                   {t('Ask a Bible question')}

@@ -17,5 +17,5 @@
     "lib": "src/lib",
     "ui": "src/components"
   },
-  "_comment": "For monorepo: Install dependencies manually at root first, then run: npx shadcn@latest add <component> --cwd libs/shared/uimodern --yes"
+  "_comment": "For monorepo: Install dependencies manually at root first, then run: npx shadcn@latest add <component> --cwd libs/shared/ui-modern --yes"
 }

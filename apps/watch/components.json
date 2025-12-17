@@ -11,10 +11,10 @@
   },
   "iconLibrary": "lucide",
   "aliases": {
-    "components": "@core/shared/uimodern/components",
-    "utils": "@core/shared/uimodern/utils",
-    "hooks": "@core/shared/uimodern/hooks",
-    "lib": "@core/shared/uimodern/lib",
-    "ui": "@core/shared/uimodern/components"
+    "components": "@core/shared/ui-modern/components",
+    "utils": "@core/shared/ui-modern/utils",
+    "hooks": "@core/shared/ui-modern/hooks",
+    "lib": "@core/shared/ui-modern/lib",
+    "ui": "@core/shared/ui-modern/components"
   }
 }

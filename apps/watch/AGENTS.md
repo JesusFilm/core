@@ -125,16 +125,16 @@ echo "✅ Page renders cleanly after $max_retries attempts"
 
 ## Shadcn & Monorepo
 
-1. **REQUIRED**: Use the automated script `libs/shared/uimodern/add-shadcn-component.sh` for adding new shadcn components:
+1. **REQUIRED**: Use the automated script `libs/shared/ui-modern/add-shadcn-component.sh` for adding new shadcn components:
 
    ```bash
-   cd libs/shared/uimodern
+   cd libs/shared/ui-modern
    ./add-shadcn-component.sh <component-name>
    ```
 
    This ensures dependencies are installed at the monorepo root level, not in individual library packages.
 
-2. Shadcn components live in `/core/libs/shared/uimodern/src/components/`. When adding new shadcn components, always add them to this shared library.
+2. Shadcn components live in `/core/libs/shared/ui-modern/src/components/`. When adding new shadcn components, always add them to this shared library.
 
 ### UI Component Hierarchy (order of preference)
 

@@ -2,7 +2,7 @@ import { ReactElement, useCallback } from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
-import { cn } from '@core/shared/uimodern/utils'
+import { cn } from '@core/shared/ui-modern/utils'
 
 import {
   CarouselVideoLike,
@@ -108,7 +108,7 @@ export function VideoCarousel({
               return (
                 <SwiperSlide
                   key={slide.id}
-                  className={`mr-2 flex !h-34 max-w-[140px] flex-col md:mr-3 md:max-w-[260px] ${index === 0 ? 'padded-l' : ''}`}
+                  className={`!h-34 mr-2 flex max-w-[140px] flex-col md:mr-3 md:max-w-[260px] ${index === 0 ? 'padded-l' : ''}`}
                   data-testid={`VideoCarouselSlide-${slide.id}`}
                 >
                   <div

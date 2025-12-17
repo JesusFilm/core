@@ -3,7 +3,7 @@ import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
-import { ExtendedButton as Button } from '@core/shared/uimodern/components'
+import { ExtendedButton as Button } from '@core/shared/ui-modern/components'
 
 interface BibleQuotesCarouselHeaderProps {
   bibleQuotesTitle: string
@@ -49,7 +49,7 @@ export function BibleQuotesCarouselHeader({
     <div className="padded">
       <div className="flex items-center justify-between pb-8">
         <div className="flex items-start gap-4">
-          <h3 className="text-sm font-semibold tracking-wider text-red-100/70 uppercase xl:text-base 2xl:text-lg">
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-red-100/70 xl:text-base 2xl:text-lg">
             {bibleQuotesTitle}
           </h3>
         </div>
@@ -62,7 +62,7 @@ export function BibleQuotesCarouselHeader({
               void handleShare()
             }
           }}
-          className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold tracking-wider text-black uppercase transition-colors duration-200 hover:bg-red-500 hover:text-white"
+          className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-black transition-colors duration-200 hover:bg-red-500 hover:text-white"
         >
           <Icon
             name="LinkExternal"

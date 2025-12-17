@@ -10,7 +10,7 @@ import {
 } from 'react'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
-import { cn } from '@core/shared/uimodern/utils'
+import { cn } from '@core/shared/ui-modern/utils'
 
 import { blurImage } from '../../libs/blurhash'
 
@@ -282,7 +282,7 @@ export function SectionVideoGrid({
       {/* Second Background Image Layer */}
       <div
         className={cn(
-          'sepia-off animate-background-pan-zoom absolute inset-0 z-0 bg-no-repeat mix-blend-overlay blur-xl brightness-[.5] saturate-2 filter',
+          'sepia-off animate-background-pan-zoom saturate-2 absolute inset-0 z-0 bg-no-repeat mix-blend-overlay blur-xl brightness-[.5] filter',
           isBackgroundVisible ? 'opacity-40' : 'opacity-0'
         )}
         style={
@@ -298,7 +298,7 @@ export function SectionVideoGrid({
       />
       <div
         className={
-          'absolute inset-0 z-0 bg-linear-to-tr from-purple-950/10 via-purple-950/10 to-stone-950/90 mix-blend-multiply'
+          'bg-linear-to-tr absolute inset-0 z-0 from-purple-950/10 via-purple-950/10 to-stone-950/90 mix-blend-multiply'
         }
       />
 
@@ -313,14 +313,14 @@ export function SectionVideoGrid({
         ctaHrefOverride,
         ctaLabelOverride
       ) && (
-        <div className="padded relative z-2 pb-6">
+        <div className="padded z-2 relative pb-6">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-col gap-1">
               {!isValueDisabled(subtitleOverride) &&
                 subtitle != null &&
                 subtitle !== '' && (
                   <h4
-                    className="text-sm font-semibold tracking-wider text-red-100/70 uppercase xl:text-base 2xl:text-lg"
+                    className="text-sm font-semibold uppercase tracking-wider text-red-100/70 xl:text-base 2xl:text-lg"
                     data-testid="SectionVideoGridSubtitle"
                   >
                     {subtitle}
@@ -346,7 +346,7 @@ export function SectionVideoGrid({
                 <NextLink href={ctaHref} data-analytics-tag={analyticsTag}>
                   <button
                     aria-label={ctaLabel}
-                    className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold tracking-wider text-black uppercase transition-colors duration-200 hover:bg-red-500 hover:text-white"
+                    className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-black transition-colors duration-200 hover:bg-red-500 hover:text-white"
                     data-testid="SectionVideoGridCTA"
                   >
                     <Icon
@@ -382,7 +382,7 @@ export function SectionVideoGrid({
       {!isValueDisabled(descriptionOverride) &&
         description != null &&
         description !== '' && (
-          <div className="padded relative z-1 space-y-6">
+          <div className="padded z-1 relative space-y-6">
             <p
               className="mt-8 text-lg leading-relaxed text-stone-200/80 xl:text-xl"
               data-testid="SectionVideoGridDescription"

@@ -16,7 +16,7 @@ cd "$ROOT_DIR"
 pnpm add "@radix-ui/$COMPONENT" 2>/dev/null || pnpm add "$COMPONENT" 2>/dev/null || echo "Could not auto-detect dependency, please install manually"
 
 echo "Adding $COMPONENT component..."
-cd "libs/shared/uimodern"
+cd "libs/shared/ui-modern"
 npx shadcn@latest add "$COMPONENT" --yes
 
-echo "Done! Component added to libs/shared/uimodern/src/components/$COMPONENT.tsx"
+echo "Done! Component added to libs/shared/ui-modern/src/components/$COMPONENT.tsx"

@@ -1,7 +1,7 @@
 import { Check, ChevronsUpDown, Globe } from 'lucide-react'
 import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 
-import { ExtendedButton as Button } from '@core/shared/uimodern/components'
+import { ExtendedButton as Button } from '@core/shared/ui-modern/components'
 import {
   Command,
   CommandEmpty,
@@ -9,8 +9,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList
-} from '@core/shared/uimodern/components/command'
-import { cn } from '@core/shared/uimodern/utils'
+} from '@core/shared/ui-modern/components/command'
+import { cn } from '@core/shared/ui-modern/utils'
 
 export interface LanguageFilterOption {
   value: string
@@ -115,7 +115,7 @@ export function LanguageFilterDropdown({
       </Button>
 
       {open && (
-        <div className="bg-popover border-border absolute top-full right-0 left-0 z-[200] mt-1 rounded-md border px-3 shadow-md">
+        <div className="bg-popover border-border absolute left-0 right-0 top-full z-[200] mt-1 rounded-md border px-3 shadow-md">
           <Command>
             <CommandInput
               ref={searchInputRef}

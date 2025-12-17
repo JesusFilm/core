@@ -1,5 +1,5 @@
 {
-  "name": "uimodern",
+  "name": "ui-modern",
   "version": "0.0.0",
   "type": "commonjs",
   "main": "./src/index.ts",

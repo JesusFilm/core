@@ -1,7 +1,7 @@
 import NextLink from 'next/link'
 import { useMemo } from 'react'
 
-import { SelectContent } from '@core/shared/uimodern'
+import { SelectContent } from '@core/shared/ui-modern'
 
 import { Language, useLanguages } from '../../../../libs/useLanguages'
 import { useVideo } from '../../../../libs/videoContext'

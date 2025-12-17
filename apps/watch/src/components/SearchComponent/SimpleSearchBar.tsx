@@ -5,7 +5,7 @@ import { type FocusEvent, type ReactElement, useState } from 'react'
 import Search1Icon from '@core/shared/ui/icons/Search1'
 import X1Icon from '@core/shared/ui/icons/X1'
 import { SubmitListener } from '@core/shared/ui/SubmitListener'
-import { Input } from '@core/shared/uimodern/components/input'
+import { Input } from '@core/shared/ui-modern/components/input'
 
 interface SimpleSearchBarProps {
   loading?: boolean
@@ -50,7 +50,7 @@ export function SimpleSearchBar({
         }) => (
           <>
             <div className="relative">
-              <div className="absolute top-1/2 left-4 z-10 flex -translate-y-1/2 items-center">
+              <div className="absolute left-4 top-1/2 z-10 flex -translate-y-1/2 items-center">
                 <Search1Icon
                   className={`h-5 w-5 ${isFocused ? 'text-black' : 'text-white'}`}
                 />
@@ -63,7 +63,7 @@ export function SimpleSearchBar({
                 type="text"
                 placeholder={t('Search videos by keyword...')}
                 autoComplete="off"
-                className={`w-full cursor-text rounded-[35px] border-none bg-white/10 py-3 pr-12 pl-12 text-lg text-white shadow-xl shadow-stone-800/10 outline-1 outline-white/20 backdrop-blur-[10px] transition-all duration-200 placeholder:text-white/70 hover:cursor-text focus:cursor-text focus:bg-white/80 focus:text-black focus:outline-none focus:placeholder:text-black/60 focus-visible:outline-none ${values.title.trim().length > 0 ? 'pr-12' : 'pr-4'} `}
+                className={`w-full cursor-text rounded-[35px] border-none bg-white/10 py-3 pl-12 pr-12 text-lg text-white shadow-xl shadow-stone-800/10 outline-1 outline-white/20 backdrop-blur-[10px] transition-all duration-200 placeholder:text-white/70 hover:cursor-text focus:cursor-text focus:bg-white/80 focus:text-black focus:outline-none focus:placeholder:text-black/60 focus-visible:outline-none ${values.title.trim().length > 0 ? 'pr-12' : 'pr-4'} `}
                 onChange={(event) => {
                   // Only update the form value, don't trigger search
                   handleChange(event)
@@ -87,7 +87,7 @@ export function SimpleSearchBar({
                 }}
               />
               {values.title.trim().length > 0 && (
-                <div className="absolute top-1/2 right-4 z-10 flex -translate-y-1/2 cursor-pointer items-center">
+                <div className="absolute right-4 top-1/2 z-10 flex -translate-y-1/2 cursor-pointer items-center">
                   {loading ? (
                     <div
                       className={`h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent ${isFocused ? 'text-black' : 'text-white'}`}

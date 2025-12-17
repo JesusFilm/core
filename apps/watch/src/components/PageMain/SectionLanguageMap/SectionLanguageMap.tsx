@@ -4,7 +4,7 @@ import { useTranslation } from 'next-i18next'
 import type { ReactElement } from 'react'
 import { useMemo } from 'react'
 
-import { cn } from '@core/shared/uimodern/utils'
+import { cn } from '@core/shared/ui-modern/utils'
 
 import { useLanguageMap } from '../../../libs/useLanguageMap'
 

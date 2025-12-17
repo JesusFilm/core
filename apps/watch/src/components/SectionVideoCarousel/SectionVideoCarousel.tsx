@@ -12,7 +12,7 @@ import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { Icon } from '@core/shared/ui/icons/Icon'
-import { cn } from '@core/shared/uimodern/utils'
+import { cn } from '@core/shared/ui-modern/utils'
 
 import { VideoCard } from '../VideoCard'
 
@@ -166,7 +166,7 @@ export function SectionVideoCarousel({
     <section
       id={id}
       className={cn(
-        'scroll-snap-start-always relative bg-linear-to-tr from-blue-950/10 via-purple-950/10 to-[#91214A]/90 py-16',
+        'scroll-snap-start-always bg-linear-to-tr relative from-blue-950/10 via-purple-950/10 to-[#91214A]/90 py-16',
         backgroundClassName
       )}
       data-testid="SectionVideoCarousel"
@@ -183,13 +183,13 @@ export function SectionVideoCarousel({
         }
         aria-hidden="true"
       />
-      <div className="absolute inset-0 z-1 bg-[url(/assets/overlay.svg)] bg-repeat mix-blend-multiply" />
-      <div className="padded relative z-2 pb-6">
+      <div className="z-1 absolute inset-0 bg-[url(/assets/overlay.svg)] bg-repeat mix-blend-multiply" />
+      <div className="padded z-2 relative pb-6">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-1">
             {subtitle != null && subtitle !== '' && (
               <h4
-                className="text-sm font-semibold tracking-wider text-red-100/70 uppercase xl:text-base 2xl:text-lg"
+                className="text-sm font-semibold uppercase tracking-wider text-red-100/70 xl:text-base 2xl:text-lg"
                 data-testid="SectionVideoCarouselSubtitle"
               >
                 {subtitle}
@@ -207,7 +207,7 @@ export function SectionVideoCarousel({
           <NextLink href={ctaHref} data-analytics-tag={analyticsTag}>
             <button
               aria-label={ctaLabel}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold tracking-wider text-black uppercase transition-colors duration-200 hover:bg-red-500 hover:text-white"
+              className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold uppercase tracking-wider text-black transition-colors duration-200 hover:bg-red-500 hover:text-white"
               data-testid="SectionVideoCarouselCTA"
             >
               <Icon
@@ -226,9 +226,9 @@ export function SectionVideoCarousel({
 
       <div className="relative">
         {hasNoResults ? (
-          <div className="padded relative z-2">
+          <div className="padded z-2 relative">
             <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-center text-stone-100 shadow-lg shadow-black/30">
-              <p className="text-sm font-semibold tracking-wide text-red-100/80 uppercase">
+              <p className="text-sm font-semibold uppercase tracking-wide text-red-100/80">
                 {t('No videos found')}
               </p>
               <p className="mt-2 text-lg text-stone-100/80">

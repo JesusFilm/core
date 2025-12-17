@@ -4,7 +4,7 @@ import { Share } from 'lucide-react'
 import { useTranslation } from 'next-i18next'
 import { ReactElement } from 'react'
 
-import { ExtendedButton } from '@core/shared/uimodern'
+import { ExtendedButton } from '@core/shared/ui-modern'
 
 import { TextFormatter } from '../../TextFormatter'
 

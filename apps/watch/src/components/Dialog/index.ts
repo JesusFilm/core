@@ -9,4 +9,4 @@ export {
   DialogPortal,
   DialogTitle,
   DialogTrigger
-} from '@core/shared/uimodern/components/dialog'
+} from '@core/shared/ui-modern/components/dialog'

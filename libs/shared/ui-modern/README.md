@@ -9,7 +9,7 @@ This library contains shared shadcn/ui components for the monorepo. Built with [
 ### Using the Automated Script
 
 ```bash
-cd libs/shared/uimodern
+cd libs/shared/ui-modern
 ./add-shadcn-component.sh <component-name>
 ```
 
@@ -53,9 +53,9 @@ If you must add components manually:
 Import components from the shared library:
 
 ```typescript
-import { Button, Input, Dialog } from '@core/shared/uimodern'
+import { Button, Input, Dialog } from '@core/shared/ui-modern'
 ```
 
 ## Running unit tests
 
-Run `nx test uimodern` to execute the unit tests via [Jest](https://jestjs.io).
+Run `nx test ui-modern` to execute the unit tests via [Jest](https://jestjs.io).

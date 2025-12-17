@@ -6,8 +6,8 @@ import { ReactElement, useEffect, useMemo, useState } from 'react'
 import useDownloader from 'react-use-downloader'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
-import { Button } from '@core/shared/uimodern/components/button'
-import { Checkbox } from '@core/shared/uimodern/components/checkbox'
+import { Button } from '@core/shared/ui-modern/components/button'
+import { Checkbox } from '@core/shared/ui-modern/components/checkbox'
 import {
   Dialog,
   DialogClose,
@@ -16,20 +16,20 @@ import {
   DialogOverlay,
   DialogPortal,
   DialogTitle
-} from '@core/shared/uimodern/components/dialog'
+} from '@core/shared/ui-modern/components/dialog'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from '@core/shared/uimodern/components/select'
+} from '@core/shared/ui-modern/components/select'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger
-} from '@core/shared/uimodern/components/tooltip'
+} from '@core/shared/ui-modern/components/tooltip'
 
 import { VideoVariantDownloadQuality } from '../../../__generated__/globalTypes'
 import { useVideo } from '../../libs/videoContext'
@@ -182,7 +182,7 @@ export function DialogDownload({
       return (
         <Button
           asChild
-          className="inline-flex max-h-10 cursor-pointer items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-bold tracking-wider text-gray-900 uppercase transition-colors duration-200 hover:bg-[#cb333b] hover:text-white"
+          className="inline-flex max-h-10 cursor-pointer items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-bold uppercase tracking-wider text-gray-900 transition-colors duration-200 hover:bg-[#cb333b] hover:text-white"
         >
           <a
             href={getDownloadUrl(selectedFile)}
@@ -201,7 +201,7 @@ export function DialogDownload({
         type="button"
         onClick={handleDownload}
         disabled={!canDownload}
-        className="inline-flex max-h-10 cursor-pointer items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-bold tracking-wider text-gray-900 uppercase transition-colors duration-200 hover:bg-[#cb333b] hover:text-white disabled:cursor-not-allowed disabled:bg-white/20 disabled:text-white/60"
+        className="inline-flex max-h-10 cursor-pointer items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-bold uppercase tracking-wider text-gray-900 transition-colors duration-200 hover:bg-[#cb333b] hover:text-white disabled:cursor-not-allowed disabled:bg-white/20 disabled:text-white/60"
       >
         {isInProgress ? (
           <svg
@@ -260,11 +260,11 @@ export function DialogDownload({
           <DialogContent
             showCloseButton={false}
             data-testid={testId}
-            className="fixed top-1/2 left-1/2 z-[101] w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-hidden border border-white/10 bg-gradient-to-b from-[#0f1117] to-[#0b0c10] text-white shadow-2xl outline-none [&>button]:focus-visible:outline-none"
+            className="fixed left-1/2 top-1/2 z-[101] w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-hidden border border-white/10 bg-gradient-to-b from-[#0f1117] to-[#0b0c10] text-white shadow-2xl outline-none [&>button]:focus-visible:outline-none"
           >
             <DialogClose
               data-testid="dialog-close-button"
-              className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-none"
+              className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-none"
             >
               <X className="h-4 w-4" />
               <span className="sr-only">{t('Close')}</span>
@@ -284,17 +284,17 @@ export function DialogDownload({
                       height={180}
                       className="h-full w-full object-cover"
                     />
-                    <div className="absolute right-3 bottom-3 flex items-center gap-2 rounded-full bg-black/70 px-3 py-1 text-xs font-semibold">
+                    <div className="absolute bottom-3 right-3 flex items-center gap-2 rounded-full bg-black/70 px-3 py-1 text-xs font-semibold">
                       <Play className="h-3 w-3" />
                       <span>{duration}</span>
                     </div>
                   </div>
                 )}
                 <div className="flex-1 space-y-3 text-left">
-                  <p className="text-sm font-semibold tracking-widest text-red-100/70 uppercase">
+                  <p className="text-sm font-semibold uppercase tracking-widest text-red-100/70">
                     {t('Download Video')}
                   </p>
-                  <h3 className="text-2xl leading-tight font-bold sm:text-3xl">
+                  <h3 className="text-2xl font-bold leading-tight sm:text-3xl">
                     {titleText}
                   </h3>
                   <div className="flex flex-wrap items-center gap-3 text-sm text-stone-200/80">
@@ -304,7 +304,7 @@ export function DialogDownload({
                         {language.name[0].value}
                       </span>
                     </div>
-                    <div className="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-xs font-semibold tracking-wider text-stone-200 uppercase">
+                    <div className="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-stone-200">
                       {t('Select a file size')}
                     </div>
                   </div>
