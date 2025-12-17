@@ -13,22 +13,19 @@ import {
 
 import { useInstantSearchClient } from '@core/journeys/ui/algolia/InstantSearchProvider'
 
-import i18nConfig from '../../next-i18next.config'
-import { PageMain as VideoHomePage } from '../../src/components/PageMain'
-import { createInstantSearchRouter } from '../../src/libs/algolia/instantSearchRouter/instantSearchRouter'
-import {
-  createApolloClient,
-  useApolloClient
-} from '../../src/libs/apolloClient'
-import { getCookie } from '../../src/libs/cookieHandler'
-import { getFlags } from '../../src/libs/getFlags'
-import { LANGUAGE_MAPPINGS } from '../../src/libs/localeMapping'
-import { slugMap } from '../../src/libs/slugMap'
-import { transformData } from '../../src/libs/useLanguages/util/transformData'
+import i18nConfig from '../next-i18next.config'
+import { PageMain as VideoHomePage } from '../src/components/PageMain'
+import { createInstantSearchRouter } from '../src/libs/algolia/instantSearchRouter/instantSearchRouter'
+import { createApolloClient, useApolloClient } from '../src/libs/apolloClient'
+import { getCookie } from '../src/libs/cookieHandler'
+import { getFlags } from '../src/libs/getFlags'
+import { LANGUAGE_MAPPINGS } from '../src/libs/localeMapping'
+import { slugMap } from '../src/libs/slugMap'
+import { transformData } from '../src/libs/useLanguages/util/transformData'
 import {
   WatchProvider,
   WatchState
-} from '../../src/libs/watchContext/WatchContext'
+} from '../src/libs/watchContext/WatchContext'
 
 interface HomeLanguagePageProps {
   initialApolloState?: NormalizedCacheObject

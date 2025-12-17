@@ -4,9 +4,9 @@ import { NextSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 
-import i18nConfig from '../../../../next-i18next.config'
-import { PageCollections } from '../../../../src/components/PageCollections/languages/es'
-import { getFlags } from '../../../../src/libs/getFlags'
+import i18nConfig from '../../../next-i18next.config'
+import { PageCollections } from '../../../src/components/PageCollections/languages/es'
+import { getFlags } from '../../../src/libs/getFlags'
 
 export default function EasterPage(): ReactElement {
   return (

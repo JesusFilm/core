@@ -4,31 +4,31 @@ import { NextSeo } from 'next-seo'
 import { SnackbarProvider } from 'notistack'
 import type { ReactElement } from 'react'
 
-import i18nConfig from '../../../../next-i18next.config'
-import { PageCollections } from '../../../../src/components/PageCollections/languages/en'
-import { getFlags } from '../../../../src/libs/getFlags'
+import i18nConfig from '../../../next-i18next.config'
+import { PageCollections } from '../../../src/components/PageCollections/languages/ru'
+import { getFlags } from '../../../src/libs/getFlags'
 
 export default function EasterPage(): ReactElement {
   return (
     <>
       <NextSeo
         titleTemplate="%s | Jesus Film Project"
-        defaultTitle="Easter 2025 videos & resources about Lent, Holy Week, Resurrection | Jesus Film Project"
-        description="Explore the other side of Easter — one filled with betrayal, hope, and a claim that changed the world."
+        defaultTitle="Пасха 2025: видео и материалы о Великом посте, Страстной неделе, Воскресении | Jesus Film Project"
+        description="Откройте для себя другую сторону Пасхи — историю, наполненную предательством, надеждой и утверждением, изменившим мир."
         openGraph={{
           title:
-            'What If Everything You Thought About Easter Is Only Half the Story?',
+            'Что если всё, что вы думали о Пасхе — это только половина истории?',
           description:
-            'Explore the other side of Easter — one filled with betrayal, hope, and a claim that changed the world.',
-          url: 'https://watch.jesusfilm.org/watch/easter/english',
+            'Откройте для себя другую сторону Пасхи — историю, наполненную предательством, надеждой и утверждением, изменившим мир.',
+          url: 'https://watch.jesusfilm.org/watch/easter/russian',
           type: 'website',
-          locale: 'en_US',
+          locale: 'ru_RU',
           images: [
             {
               url: 'https://images.unsplash.com/photo-1482424917728-d82d29662023?w=1400&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjN8fGNocmlzdHxlbnwwfHwwfHx8MA%3D%3D',
               width: 1400,
               height: 933,
-              alt: 'Easter - Jesus Film Project',
+              alt: 'Пасха - Jesus Film Project',
               type: 'image/jpeg'
             }
           ],
@@ -59,7 +59,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     props: {
       flags: await getFlags(),
       ...(await serverSideTranslations(
-        context.locale ?? 'en',
+        context.locale ?? 'ru',
         ['apps-watch'],
         i18nConfig
       ))
