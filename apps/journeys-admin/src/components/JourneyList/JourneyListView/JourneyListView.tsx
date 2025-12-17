@@ -101,7 +101,7 @@ export function JourneyListView({
         { shallow: true }
       )
     }
-  }, [isSharedWithMeMode, router])
+  }, [isSharedWithMeMode, router?.query?.type])
 
   // Sync state with router query params when they change externally
   useEffect(() => {
