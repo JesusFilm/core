@@ -10,17 +10,22 @@ import { localizeAndRound } from './localizeAndRound'
 
 export function TemplateAggregateAnalytics(): ReactElement {
   const { t, i18n } = useTranslation('apps-journeys-admin')
-  console.log('i18n?.language', i18n?.language)
+  const locale = i18n?.language ?? 'en'
 
-  const locale = 'en'
-  // const locale = i18n?.language ?? 'en'
-  const childJourneys = 152600
+  const childJourneys = 152610
   const journeyViewCount = 812310
-  const journeyResponseCount = 8792342
+  const journeyResponseCount = 8788898
 
   const buttonProps = {
     sx: {
-      p: 1.5
+      p: 1.5,
+      fontSize: '14px',
+      '& > .MuiButton-startIcon > .MuiSvgIcon-root': {
+        fontSize: '16px'
+      },
+      '& > .MuiButton-icon': {
+        marginRight: '6px'
+      }
     }
   }
 
