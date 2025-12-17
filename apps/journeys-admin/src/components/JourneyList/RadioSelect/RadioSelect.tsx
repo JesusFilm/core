@@ -139,6 +139,7 @@ export function RadioSelect<T extends string>({
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         role="button"
+        tabIndex={0}
         aria-label={ariaLabel}
         aria-haspopup="listbox"
         aria-expanded={showOptions}
