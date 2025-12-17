@@ -3,7 +3,7 @@ import NextLink from 'next/link'
 import { ReactElement } from 'react'
 
 import { usePlayer } from '../../../../libs/playerContext/PlayerContext'
-import { AudioLanguageButton } from '../../../VideoContentPage/AudioLanguageButton'
+import { AudioLanguageButton } from '../../AudioLanguageButton'
 
 interface ContentHeaderProps {
   languageSlug?: string
@@ -24,12 +24,16 @@ export function ContentHeader({
       } ${visible ? 'delay-0' : 'delay-[2000ms]'}`}
     >
       <NextLink
-        href={`/watch${languageSlug != null && languageSlug !== 'english' ? `/${languageSlug}.html` : ''}`}
+        href={
+          languageSlug != null && languageSlug !== 'english'
+            ? `/${languageSlug}.html`
+            : '/'
+        }
         locale={false}
       >
         <Image
-          src="/watch/assets/jesusfilm-sign.svg"
-          alt="JesusFilm Project"
+          src="/watch/images/jesusfilm-sign.svg"
+          alt="Jesus Film Project"
           width={70}
           height={70}
           className="max-w-[50px] lg:max-w-[70px]"
