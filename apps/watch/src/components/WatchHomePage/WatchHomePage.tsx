@@ -50,7 +50,11 @@ export function WatchHomePage({
             <Index indexName={indexName}>
               <Box sx={{ pb: 10 }}>
                 <SearchBarProvider>
-                  <SearchBar showDropdown showLanguageButton />
+                  <SearchBar
+                    showDropdown
+                    showLanguageButton
+                    basePath="/watch/"
+                  />
                 </SearchBarProvider>
               </Box>
               <AlgoliaVideoGrid variant="contained" languageId={languageId} />

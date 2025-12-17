@@ -26,7 +26,7 @@ describe('useLanguages', () => {
   describe('loading state', () => {
     it('should return loading state when API is loading', async () => {
       server.use(
-        http.get('/api/languages', async () => {
+        http.get('/watch/api/languages', async () => {
           await delay(50)
           return HttpResponse.json([])
         })
@@ -52,7 +52,7 @@ describe('useLanguages', () => {
       ]
 
       server.use(
-        http.get('/api/languages', () => {
+        http.get('/watch/api/languages', () => {
           return HttpResponse.json(mockData)
         })
       )
@@ -114,7 +114,7 @@ describe('useLanguages', () => {
       const mockData = [['496:french:Français']]
 
       server.use(
-        http.get('/api/languages', () => {
+        http.get('/watch/api/languages', () => {
           return HttpResponse.json(mockData)
         })
       )
@@ -151,7 +151,7 @@ describe('useLanguages', () => {
       ]
 
       server.use(
-        http.get('/api/languages', () => {
+        http.get('/watch/api/languages', () => {
           return HttpResponse.json(mockData)
         })
       )
@@ -174,7 +174,7 @@ describe('useLanguages', () => {
       const mockData = [['999:unknown']]
 
       server.use(
-        http.get('/api/languages', () => {
+        http.get('/watch/api/languages', () => {
           return HttpResponse.json(mockData)
         })
       )
@@ -202,7 +202,7 @@ describe('useLanguages', () => {
       ]
 
       server.use(
-        http.get('/api/languages', () => {
+        http.get('/watch/api/languages', () => {
           return HttpResponse.json(mockData)
         })
       )
@@ -235,7 +235,7 @@ describe('useLanguages', () => {
       const mockData = [['496:french:Français']]
 
       server.use(
-        http.get('/api/languages', () => {
+        http.get('/watch/api/languages', () => {
           return HttpResponse.json(mockData)
         })
       )
@@ -263,7 +263,7 @@ describe('useLanguages', () => {
       const mockData = [['496:french:Français', '529:French']]
 
       server.use(
-        http.get('/api/languages', () => {
+        http.get('/watch/api/languages', () => {
           return HttpResponse.json(mockData)
         })
       )
@@ -291,7 +291,7 @@ describe('useLanguages', () => {
       const mockData = [['496:french:Français', '529:French', '21028:Francés']]
 
       server.use(
-        http.get('/api/languages', () => {
+        http.get('/watch/api/languages', () => {
           return HttpResponse.json(mockData)
         })
       )
@@ -323,7 +323,7 @@ describe('useLanguages', () => {
   describe('edge cases', () => {
     it('should handle empty data array', async () => {
       server.use(
-        http.get('/api/languages', () => {
+        http.get('/watch/api/languages', () => {
           return HttpResponse.json([])
         })
       )
@@ -339,7 +339,7 @@ describe('useLanguages', () => {
 
     it('should handle API error', async () => {
       server.use(
-        http.get('/api/languages', () => {
+        http.get('/watch/api/languages', () => {
           return new HttpResponse('Internal Server Error', { status: 500 })
         })
       )
@@ -355,7 +355,7 @@ describe('useLanguages', () => {
 
     it('should handle network error', async () => {
       server.use(
-        http.get('/api/languages', () => {
+        http.get('/watch/api/languages', () => {
           return HttpResponse.error()
         })
       )
