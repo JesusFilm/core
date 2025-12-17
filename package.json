@@ -174,7 +174,7 @@
     "nanoid": "^3.3.7",
     "nestjs-ddtrace": "6.0.0",
     "nestjs-pino": "^4.0.0",
-    "next": "16.0.1",
+    "next": "16.0.7",
     "next-absolute-url": "^1.2.2",
     "next-firebase-auth": "^1.0.1",
     "next-firebase-auth-edge": "^1.7.0-canary.2",
@@ -196,7 +196,7 @@
     "prop-types": "^15.8.1",
     "qrcode.react": "^4.2.0",
     "qs": "^6.13.1",
-    "react": "19.2.0",
+    "react": "19.2.3",
     "react-colorful": "^5.5.1",
     "react-div-100vh": "^0.7.0",
     "react-dom": "19.2.0",
@@ -411,7 +411,7 @@
   },
   "overrides": {
     "next": "15.5.7",
-    "react-is": "^19.2.0",
+    "react-is": "^19.2.3",
     "html-tokenize": {
       "readable-stream": "^3.6.0"
     }
