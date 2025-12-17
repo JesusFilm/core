@@ -217,7 +217,7 @@ export function DefaultMenu({
         handleCloseMenu={handleCloseMenu}
         handleKeepMounted={handleKeepMounted}
       />
-      <Divider />
+      <Divider sx={{ my: 1 }} />
       {template !== true && activeTeam != null && (
         <>
           <DuplicateJourneyMenuItem id={id} handleCloseMenu={handleCloseMenu} />
