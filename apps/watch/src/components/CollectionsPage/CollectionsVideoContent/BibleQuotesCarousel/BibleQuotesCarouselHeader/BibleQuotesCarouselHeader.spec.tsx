@@ -38,7 +38,7 @@ describe('BibleQuotesCarouselHeader', () => {
       value: mockClipboard,
       configurable: true
     })
-    changeJSDOMURL('https://watch.jesusfilm.org/easter')
+    changeJSDOMURL('https://www.jesusfilm.org/easter')
   })
 
   afterEach(() => {
