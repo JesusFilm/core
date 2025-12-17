@@ -6,7 +6,7 @@ import type FormDataType from 'form-data'
 import { useTranslation } from 'next-i18next'
 import fetch from 'node-fetch'
 import { ReactElement, useEffect, useState } from 'react'
-import { FileRejection, useDropzone, ErrorCode } from 'react-dropzone'
+import { ErrorCode, FileRejection, useDropzone } from 'react-dropzone'
 
 import AlertTriangleIcon from '@core/shared/ui/icons/AlertTriangle'
 import CheckBrokenIcon from '@core/shared/ui/icons/CheckBroken'

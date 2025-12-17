@@ -68,7 +68,6 @@ export function ImageBlockHeader({
                   : showAdd
                     ? t('Select Image')
                     : t('No Image Selected')}
-
             </Typography>
             <Typography
               variant="caption"
