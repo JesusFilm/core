@@ -1,1 +1,0 @@
-export { TermsOfUseDialog } from './TermsOfUseDialog'

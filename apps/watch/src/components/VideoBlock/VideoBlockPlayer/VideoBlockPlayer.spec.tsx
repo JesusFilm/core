@@ -22,7 +22,7 @@ jest.mock('video.js', () => {
   return jest.fn(() => mockPlayer)
 })
 
-jest.mock('../../VideoContentPage/VideoHero/VideoPlayer/VideoControls', () => ({
+jest.mock('./VideoControls', () => ({
   VideoControls: () => <div data-testid="VideoControls">VideoControls</div>,
   MuxInsertLogoOverlay: () => null
 }))

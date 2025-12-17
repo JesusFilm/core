@@ -1,7 +1,11 @@
 import { Loader2 } from 'lucide-react'
 import { ReactElement } from 'react'
 
-import { Dialog, DialogContent, DialogOverlay } from '../../../../Dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogOverlay
+} from '@core/shared/ui-modern/components/dialog'
 
 interface QuizModalProps {
   open: boolean

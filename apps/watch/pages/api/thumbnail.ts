@@ -19,7 +19,7 @@ function getCacheVersion(filePath: string): string {
     // Convert public URL path to filesystem path using absolute path
     const fullPath = join(
       process.cwd(),
-      filePath.replace('/assets/thumbnails/', 'public/assets/thumbnails/')
+      filePath.replace('/images/thumbnails/', 'public/images/thumbnails/')
     )
     const stats = statSync(fullPath)
     return stats.mtime.getTime().toString()
@@ -40,7 +40,7 @@ function findLocalThumbnail(
   variantSlug?: string,
   languageId?: string
 ): string | null {
-  const publicDir = join(process.cwd(), 'public', 'assets', 'thumbnails')
+  const publicDir = join(process.cwd(), 'public', 'images', 'thumbnails')
 
   // Build filename patterns in priority order (most specific first)
   const filenamePatterns: string[] = []
@@ -69,7 +69,7 @@ function findLocalThumbnail(
     for (const ext of SUPPORTED_EXTENSIONS) {
       const filePath = join(publicDir, `${pattern}.${ext}`)
       if (existsSync(filePath)) {
-        return `/assets/thumbnails/${pattern}.${ext}`
+        return `/images/thumbnails/${pattern}.${ext}`
       }
     }
   }

@@ -3,24 +3,22 @@ import last from 'lodash/last'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import videojs from 'video.js'
 import Player from 'video.js/dist/types/player'
-import 'video.js/dist/video-js.css'
 
 import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { MuxMetadata } from '@core/shared/ui/muxMetadataType'
-
-import 'videojs-mux'
 
 import { usePlayer } from '../../../libs/playerContext'
 import { useVideo } from '../../../libs/videoContext'
 import { useWatch } from '../../../libs/watchContext'
 import { useSubtitleUpdate } from '../../../libs/watchContext/useSubtitleUpdate'
 import type { CarouselMuxSlide } from '../../../types/inserts'
-import {
-  MuxInsertLogoOverlay,
-  VideoControls
-} from '../../VideoContentPage/VideoHero/VideoPlayer/VideoControls'
 
+import { VideoControls } from './VideoControls'
+import { MuxInsertLogoOverlay } from './MuxInsertLogoOverlay'
 import { HeroSubtitleOverlay } from './HeroSubtitleOverlay'
+
+import 'video.js/dist/video-js.css'
+import 'videojs-mux'
 
 function playWithAbortProtection(player?: Player | null): void {
   if (player == null) return
