@@ -130,7 +130,7 @@ describe('JourneyListContent', () => {
       })
 
       await waitFor(() =>
-        expect(getByText('This feature is coming soon')).toBeInTheDocument()
+        expect(getByText('This feature is coming soon.')).toBeInTheDocument()
       )
     })
 
