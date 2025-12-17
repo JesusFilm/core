@@ -14,7 +14,7 @@ interface ItemProps {
   href?: string
   ButtonProps?: ComponentProps<typeof Button>
   onClick?: (event: MouseEvent<HTMLElement>) => void
-  count?: number
+  count?: number | string
   countLabel?: string
 }
 

@@ -23,6 +23,11 @@ import { JourneyCardInfo } from './JourneyCardInfo'
 import { JourneyCardMenu } from './JourneyCardMenu'
 import { JourneyCardText } from './JourneyCardText'
 import { JourneyCardVariant } from './journeyCardVariant'
+import { TemplateAggregateAnalytics } from '../../TemplateAggregateAnalytics'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+
+import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
 
 interface JourneyCardProps {
   journey: Journey
@@ -254,9 +259,21 @@ export function JourneyCard({
             zIndex: 3
           }}
         >
-          <JourneyCardInfo journey={journey} variant={variant} />
+          {/* <JourneyCardInfo journey={journey} variant={variant} /> */}
+          <Stack
+            direction="row"
+            gap={1}
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <TemplateAggregateAnalytics />
+            <Button startIcon={<BarGroup3Icon />} color="primary">
+              {`${t('Metrics')}`}
+            </Button>
+          </Stack>
         </Box>
       </>
     </Card>
   )
 }
+;('Authorization')
