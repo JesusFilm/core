@@ -26,14 +26,17 @@ export function Footer(): ReactElement {
   ]
 
   return (
-    <footer className="bg-white text-neutral-900 z-100 relative" data-testid="Footer">
+    <footer
+      className="relative z-100 bg-white text-neutral-900"
+      data-testid="Footer"
+    >
       <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-10 px-4 py-10 sm:px-6 lg:px-10">
         <div className="flex flex-col gap-6 border-b border-stone-200 pb-8 md:flex-row md:items-center md:justify-between">
           <div className="flex justify-center md:justify-start">
             <FooterLink
               url="/"
               label="Jesus Film logo"
-              src="/assets/footer/jesus-film-logo.png"
+              src="/images/footer/jesus-film-logo.png"
               width={60}
               height={60}
               className="rounded-md bg-white p-1 shadow-[0_4px_18px_rgba(0,0,0,0.08)]"
