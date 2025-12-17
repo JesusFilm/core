@@ -60,7 +60,7 @@ describe('BibleQuotesCarousel', () => {
     })
 
     // Mock window.location - Jest v30 compatible
-    changeJSDOMURL('https://watch.jesusfilm.org/easter')
+    changeJSDOMURL('https://www.jesusfilm.org/easter')
   })
 
   afterEach(() => {
