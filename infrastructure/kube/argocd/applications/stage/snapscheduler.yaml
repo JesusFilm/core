@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: snapscheduler
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/JesusFilm/core
+    path: infrastructure/kube/snapscheduler
+    targetRevision: stage
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: snapscheduler
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      enabled: true
+
+
