@@ -1,8 +1,10 @@
-import { prisma } from '@core/prisma/analytics/client'
+import { PrismaClient } from '.prisma/api-analytics-client'
 
 import { addGoalsToAllSites } from '../lib/site/addGoalsToSites'
 
 const DEFAULT_BATCH_SIZE = 100
+
+const prisma = new PrismaClient()
 
 function printUsage(): void {
   // eslint-disable-next-line no-console

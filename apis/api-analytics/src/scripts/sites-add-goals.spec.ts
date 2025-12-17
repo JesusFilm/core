@@ -1,14 +1,17 @@
-import { prisma } from '@core/prisma/analytics/client'
+import { PrismaClient } from '.prisma/api-analytics-client'
 
 import { addGoalsToAllSites } from '../lib/site/addGoalsToSites'
 
 import main from './sites-add-goals'
 
-jest.mock('@core/prisma/analytics/client', () => ({
+jest.mock('.prisma/api-analytics-client', () => ({
   __esModule: true,
-  prisma: {
-    $disconnect: jest.fn()
-  }
+  PrismaClient: (() => {
+    const prismaInstance = { $disconnect: jest.fn() }
+    const MockPrismaClient = jest.fn().mockImplementation(() => prismaInstance)
+    ;(MockPrismaClient as any).__instance = prismaInstance
+    return MockPrismaClient
+  })()
 }))
 
 jest.mock('../lib/site/addGoalsToSites', () => ({
@@ -45,13 +48,14 @@ describe('sites-add-goals script', () => {
 
     await main()
 
+    const prismaInstance = (PrismaClient as any).__instance
     expect(addGoalsToAllSites).toHaveBeenCalledWith(
-      prisma,
+      prismaInstance,
       ['goal1', 'goal2'],
       expect.objectContaining({ batchSize: 200, logger: console })
     )
     expect(process.exitCode).toBeUndefined()
-    expect(prisma.$disconnect).toHaveBeenCalledTimes(1)
+    expect(prismaInstance.$disconnect).toHaveBeenCalledTimes(1)
   })
 
   it('sets process.exitCode=1 when totalFailed > 0', async () => {
@@ -64,8 +68,9 @@ describe('sites-add-goals script', () => {
 
     await main()
 
+    const prismaInstance = (PrismaClient as any).__instance
     expect(process.exitCode).toBe(1)
-    expect(prisma.$disconnect).toHaveBeenCalledTimes(1)
+    expect(prismaInstance.$disconnect).toHaveBeenCalledTimes(1)
   })
 
   it('exits with code 1 when GOALS is missing and still disconnects', async () => {
@@ -79,7 +84,8 @@ describe('sites-add-goals script', () => {
 
     await expect(main()).rejects.toThrow('process.exit:1')
 
+    const prismaInstance = (PrismaClient as any).__instance
     expect(exitSpy).toHaveBeenCalledWith(1)
-    expect(prisma.$disconnect).toHaveBeenCalledTimes(1)
+    expect(prismaInstance.$disconnect).toHaveBeenCalledTimes(1)
   })
 })
