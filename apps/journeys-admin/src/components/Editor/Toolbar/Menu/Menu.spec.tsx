@@ -465,7 +465,7 @@ describe('Toolbar Menu', () => {
       )
     })
 
-    it('should not render Copy Link for template when user is not publisher', async () => {
+    it('should not render Copy Link for local template when user is not publisher', async () => {
       const selectedBlock: TreeBlock<StepBlock> = {
         __typename: 'StepBlock',
         id: 'stepId',
@@ -507,7 +507,7 @@ describe('Toolbar Menu', () => {
                   tags: [],
                   language,
                   team: {
-                    id: 'jfp-team'
+                    id: 'my-team-id'
                   }
                 } as unknown as Journey
               }}
