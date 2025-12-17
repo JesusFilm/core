@@ -240,7 +240,8 @@ function buildSlide(
   }
 
   // Determine if this is a collection based on having children
-  const isCollection = (node.childrenCount ?? 0) > 0 || (node.children?.length ?? 0) > 0
+  const isCollection =
+    (node.childrenCount ?? 0) > 0 || (node.children?.length ?? 0) > 0
   // Skip parent info extraction for collections - they should use their own metadata
   const containerSlug = isCollection ? undefined : getContainerSlug(node)
   const href = getWatchUrl(containerSlug, node.label, variantSlug)
@@ -280,7 +281,6 @@ function flattenCollection(
   const children = collection.children ?? []
   const slides: (SectionVideoCollectionCarouselSlide | null)[] = []
   const limit = options?.limit ?? children.length
-
 
   for (const child of children) {
     if (slides.length >= limit) break
@@ -332,7 +332,10 @@ export interface UseSectionVideoCollectionCarouselContentOptions {
 
 export function extractVideosAndContainerSlugMap(
   slides: SectionVideoCollectionCarouselSlide[]
-): { videos: VideoChildFields[]; containerSlugMap: Map<string, string | undefined> } {
+): {
+  videos: VideoChildFields[]
+  containerSlugMap: Map<string, string | undefined>
+} {
   const videos = slides.map((slide) => slide.video)
   const containerSlugMap = new Map(
     slides.map((slide) => [slide.video.id, slide.containerSlug])
@@ -407,9 +410,9 @@ export function useSectionVideoCollectionCarouselContent({
     // Debug logging for "Scripture, Spoken Exactly as Written" section
     const isLumoSection = sources.some((s) => s.id === 'LUMOCollection')
     // Debug logging for "Christmas Advent Countdown" section
-    const isChristmasAdventSection = sources.some((s) => s.id === '2_0-ConsideringChristmas')
-
-
+    const isChristmasAdventSection = sources.some(
+      (s) => s.id === '2_0-ConsideringChristmas'
+    )
 
     for (const source of sources) {
       const node = nodesById.get(source.id)
@@ -421,7 +424,8 @@ export function useSectionVideoCollectionCarouselContent({
       }
 
       // Determine if this is a collection based on having children
-      const isCollection = (node.childrenCount ?? 0) > 0 || (node.children?.length ?? 0) > 0
+      const isCollection =
+        (node.childrenCount ?? 0) > 0 || (node.children?.length ?? 0) > 0
 
       if (isCollection) {
         // Special case: limitChildren: 0 means render collection as single item
@@ -460,14 +464,18 @@ export function useSectionVideoCollectionCarouselContent({
         })
         if (slide == null) {
           if (isChristmasAdventSection) {
-            console.warn(`⚠️ [Christmas Advent Section] buildSlide returned null for ${source.id}`)
+            console.warn(
+              `⚠️ [Christmas Advent Section] buildSlide returned null for ${source.id}`
+            )
           }
           continue
         }
         const key = slide.href
         if (seen.has(key)) {
           if (isChristmasAdventSection) {
-            console.warn(`⚠️ [Christmas Advent Section] Duplicate slide skipped: ${source.id} (href: ${key})`)
+            console.warn(
+              `⚠️ [Christmas Advent Section] Duplicate slide skipped: ${source.id} (href: ${key})`
+            )
           }
           continue
         }
@@ -476,24 +484,17 @@ export function useSectionVideoCollectionCarouselContent({
       }
     }
 
-    
-
     return slideAccumulator
   }, [data, sources])
 
   const primaryCollection = useMemo(() => {
-    if (data?.videos == null || data.videos.length === 0)
-      return undefined
+    if (data?.videos == null || data.videos.length === 0) return undefined
     if (primaryCollectionId != null) {
-      return data.videos.find(
-        (video) => video.id === primaryCollectionId
-      )
+      return data.videos.find((video) => video.id === primaryCollectionId)
     }
     const firstSource = sources[0]
     if (firstSource != null) {
-      return data.videos.find(
-        (video) => video.id === firstSource.id
-      )
+      return data.videos.find((video) => video.id === firstSource.id)
     }
     return data.videos[0]
   }, [sources, data, primaryCollectionId])
@@ -512,7 +513,7 @@ export function useSectionVideoCollectionCarouselContent({
           primaryCollection.label,
           primaryCollection.variant.slug
         )
-      : '/watch')
+      : '/')
 
   const ctaLabel = ctaLabelOverride ?? defaultCtaLabel
 

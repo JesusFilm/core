@@ -36,7 +36,7 @@ export function Footer(): ReactElement {
             <FooterLink
               url="/"
               label="Jesus Film logo"
-              src="/images/footer/jesus-film-logo.png"
+              src="/watch/images/footer/jesus-film-logo.png"
               width={60}
               height={60}
               className="rounded-md bg-white p-1 shadow-[0_4px_18px_rgba(0,0,0,0.08)]"

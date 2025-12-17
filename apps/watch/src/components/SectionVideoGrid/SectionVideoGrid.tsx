@@ -1,3 +1,4 @@
+import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import {
   ReactElement,
@@ -96,23 +97,40 @@ export function SectionVideoGrid({
   const resolvedSources = useMemo((): SectionVideoGridSource[] => {
     if (sources != null) return sources
     if (primaryCollectionId != null) {
-      return [{ type: 'collection' as const, id: primaryCollectionId, limitChildren }]
+      return [
+        { type: 'collection' as const, id: primaryCollectionId, limitChildren }
+      ]
     }
     return []
   }, [sources, primaryCollectionId, limitChildren])
 
-  const { loading, slides, subtitle, title, description, ctaHref, ctaLabel, primaryCollection } =
-    useSectionVideoCollectionCarouselContent({
-      sources: resolvedSources,
-      primaryCollectionId,
-      subtitleOverride: subtitleOverride === false ? undefined : subtitleOverride || undefined,
-      titleOverride: titleOverride === false ? undefined : titleOverride || undefined,
-      descriptionOverride: descriptionOverride === false ? undefined : descriptionOverride || undefined,
-      ctaLabelOverride: ctaLabelOverride === false ? undefined : ctaLabelOverride || undefined,
-      ctaHrefOverride: ctaHrefOverride === false ? undefined : ctaHrefOverride || undefined,
-      defaultCtaLabel: t('Watch'),
-      languageId
-    })
+  const {
+    loading,
+    slides,
+    subtitle,
+    title,
+    description,
+    ctaHref,
+    ctaLabel,
+    primaryCollection
+  } = useSectionVideoCollectionCarouselContent({
+    sources: resolvedSources,
+    primaryCollectionId,
+    subtitleOverride:
+      subtitleOverride === false ? undefined : subtitleOverride || undefined,
+    titleOverride:
+      titleOverride === false ? undefined : titleOverride || undefined,
+    descriptionOverride:
+      descriptionOverride === false
+        ? undefined
+        : descriptionOverride || undefined,
+    ctaLabelOverride:
+      ctaLabelOverride === false ? undefined : ctaLabelOverride || undefined,
+    ctaHrefOverride:
+      ctaHrefOverride === false ? undefined : ctaHrefOverride || undefined,
+    defaultCtaLabel: t('Watch'),
+    languageId
+  })
 
   const { videos, containerSlugMap } = useMemo(
     () => extractVideosAndContainerSlugMap(slides),
@@ -325,7 +343,7 @@ export function SectionVideoGrid({
               ctaHref !== '' &&
               ctaLabel != null &&
               ctaLabel !== '' && (
-                <a href={ctaHref} data-analytics-tag={analyticsTag}>
+                <NextLink href={ctaHref} data-analytics-tag={analyticsTag}>
                   <button
                     aria-label={ctaLabel}
                     className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold tracking-wider text-black uppercase transition-colors duration-200 hover:bg-red-500 hover:text-white"
@@ -341,7 +359,7 @@ export function SectionVideoGrid({
                     />
                     <span>{ctaLabel}</span>
                   </button>
-                </a>
+                </NextLink>
               )}
           </div>
         </div>

@@ -147,7 +147,7 @@ export function MuxInsertLogoOverlay({
         }`}
       >
         <Image
-          src="/images/jesus-film-logo-full.svg"
+          src="/watch/images/jesus-film-logo-full.svg"
           alt="Jesus Film"
           width={278}
           height={72}

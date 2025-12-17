@@ -50,7 +50,7 @@ export function ContentHeader({
         className="flex-shrink-0"
       >
         <Image
-          src="/assets/jesusfilm-sign.svg"
+          src="/watch/images/jesusfilm-sign.svg"
           alt="JesusFilm Project"
           width={70}
           height={70}

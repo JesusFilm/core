@@ -16,7 +16,7 @@ export async function generateBlurhashFromUrl(
   }
 
   try {
-    const apiUrl = `/api/blurhash?imageUrl=${encodeURIComponent(imageUrl)}`
+    const apiUrl = `/watch/api/blurhash?imageUrl=${encodeURIComponent(imageUrl)}`
     const response = await fetch(apiUrl)
 
     if (!response.ok) {

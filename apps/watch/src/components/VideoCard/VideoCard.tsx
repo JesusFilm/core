@@ -1,6 +1,7 @@
 import last from 'lodash/last'
 import { Play } from 'lucide-react'
 import Image from 'next/image'
+import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
 import type { MouseEvent, ReactElement } from 'react'
 
@@ -67,7 +68,11 @@ export function VideoCard({
     video?.label as VideoLabel | undefined,
     video?.childrenCount ?? 0
   )
-  const href = getSlug(containerSlug, video?.label as VideoLabel | undefined, video?.variant?.slug)
+  const href = getSlug(
+    containerSlug,
+    video?.label as VideoLabel | undefined,
+    video?.variant?.slug
+  )
 
   // Compute safe image src and alt with proper guards
   const imageSrc = last(video?.images)?.mobileCinematicHigh
@@ -86,9 +91,10 @@ export function VideoCard({
   // Use thumbnailUrl if it's different from imageSrc (indicating local thumbnail)
   // Otherwise use original imageSrc for blurhash generation
   // Strip query parameters for local thumbnails since blurhash API reads from disk
-  const blurhashImageUrl = thumbnailUrl !== imageSrc
-    ? thumbnailUrl.split('?')[0]  // Remove cache-busting parameters for blurhash generation
-    : imageSrc
+  const blurhashImageUrl =
+    thumbnailUrl !== imageSrc
+      ? thumbnailUrl.split('?')[0] // Remove cache-busting parameters for blurhash generation
+      : imageSrc
   const { blurhash, dominantColor } = useBlurhash(blurhashImageUrl)
   const blurDataURL =
     blurhash != null
@@ -96,7 +102,7 @@ export function VideoCard({
       : undefined
 
   return (
-    <a
+    <NextLink
       href={href}
       className={`block text-inherit no-underline ${
         video != null
@@ -252,6 +258,6 @@ export function VideoCard({
           </div>
         </button>
       </div>
-    </a>
+    </NextLink>
   )
 }

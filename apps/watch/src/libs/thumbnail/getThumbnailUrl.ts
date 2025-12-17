@@ -45,7 +45,7 @@ export async function getThumbnailUrl(
       params.append('languageId', options.languageId)
     }
 
-    const apiUrl = `/api/thumbnail?${params.toString()}`
+    const apiUrl = `/watch/api/thumbnail?${params.toString()}`
     const response = await fetch(apiUrl)
 
     if (!response.ok) {
@@ -67,10 +67,7 @@ export async function getThumbnailUrl(
 
     return data.url
   } catch (error) {
-    console.error(
-      'getThumbnailUrl: Error fetching thumbnail URL:',
-      error
-    )
+    console.error('getThumbnailUrl: Error fetching thumbnail URL:', error)
     return originalUrl || ''
   }
 }

@@ -825,7 +825,7 @@ export function VideoControls({
               <div
                 data-testid="vjs-jfp-custom-controls"
                 className={cn(
-                  'padded z-[5] max-w-7xl pb-4',
+                  'padded z-[5] mx-auto w-full max-w-7xl pb-4',
                   visible ? 'delay-0' : 'delay-[500ms]'
                 )}
                 style={{ transitionDelay: visible ? undefined : '0.5s' }}

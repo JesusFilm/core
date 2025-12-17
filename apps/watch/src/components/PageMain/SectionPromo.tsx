@@ -1,4 +1,4 @@
-import { useTranslation } from 'next-i18next'
+import { Trans, useTranslation } from 'next-i18next'
 import { type ReactElement } from 'react'
 
 import GlobeIcon from '@core/shared/ui/icons/Globe'
@@ -11,70 +11,52 @@ export function SectionPromo(): ReactElement {
   const points = [
     {
       icon: GlobeIcon,
-      title: t('PromoPointMostTranslatedTitle', {
-        defaultValue: 'The most translated film library in the world'
-      }),
-      description: t('PromoPointMostTranslatedDescription', {
-        defaultValue:
-          'Decades of translation work, carried by trusted ministry partners, have built a library with thousands of language tracks so people can encounter the story of Jesus in the language that reaches them deepest.'
-      })
+      title: t('The most translated film library in the world'),
+      description: t(
+        'Decades of translation work, carried by trusted ministry partners, have built a library with thousands of language tracks so people can encounter the story of Jesus in the language that reaches them deepest.'
+      )
     },
     {
       icon: VideoOnIcon,
-      title: t('PromoPointAIVideoTitle', {
-        defaultValue: 'Carrying trusted voices into new formats'
-      }),
-      description: t('PromoPointAIVideoDescription', {
-        defaultValue:
-          'We are rebuilding how gospel stories are told visually, pairing trusted translations with modern formats so the message can move freely across platforms, cultures, and screen.'
-      })
+      title: t('Carrying trusted voices into new formats'),
+      description: t(
+        'We are rebuilding how gospel stories are told visually, pairing trusted translations with modern formats so the message can move freely across platforms, cultures, and screen.'
+      )
     },
     {
       icon: UsersProfiles2Icon,
-      title: t('PromoPointCreativeTeamTitle', {
-        defaultValue: 'More than a library. A mission-driven team.'
-      }),
-      description: t('PromoPointCreativeTeamDescription', {
-        defaultValue:
-          'Jesus Film Project is a global team of translators, media specialists, editors, and creators who have served missionaries for decades. We\'re turning that experience into tools that equip disciple-makers everywhere.'
-      })
+      title: t('More than a library. A mission-driven team.'),
+      description: t(
+        "Jesus Film Project is a global team of translators, media specialists, editors, and creators who have served missionaries for decades. We're turning that experience into tools that equip disciple-makers everywhere."
+      )
     }
   ]
 
   const highlights = [
     {
-      title: t('PromoHighlightNextStepsTitle', {
-        defaultValue: 'Next Steps Platform'
-      }),
-      description: t('PromoHighlightNextStepsDescription', {
-        defaultValue:
-          'Connect every viewer with tangible opportunities on their spiritual journey, helping them take a next step into community, Scripture, or mission.'
-      })
+      title: t('Next Steps Platform'),
+      description: t(
+        'Connect every viewer with tangible opportunities on their spiritual journey, helping them take a next step into community, Scripture, or mission.'
+      )
     },
     {
-      title: t('PromoHighlightMediaLibraryTitle', {
-        defaultValue: 'Evangelistic Media Library'
-      }),
-      description: t('PromoHighlightMediaLibraryDescription', {
-        defaultValue:
-          'We have an extensive Christian media library with thousands of videos, films, and resources available in multiple languages for ministry and evangelism worldwide.'
-      })
+      title: t('Evangelistic Media Library'),
+      description: t(
+        'We have an extensive Christian media library with thousands of videos, films, and resources available in multiple languages for ministry and evangelism worldwide.'
+      )
     },
     {
-      title: t('PromoHighlightToolsetTitle', {
-        defaultValue: 'Digital Tools for Ministries'
-      }),
-      description: t('PromoHighlightToolsetDescription', {
-        defaultValue:
-          'Comprehensive digital tools designed specifically for ministry needs, including video management, content distribution, audience engagement, and analytics to help ministries reach more people effectively.'
-      })
+      title: t('Digital Tools for Ministries'),
+      description: t(
+        'Comprehensive digital tools designed specifically for ministry needs, including video management, content distribution, audience engagement, and analytics to help ministries reach more people effectively.'
+      )
     }
   ]
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-red-950/60 via-purple-950/20 to-orange-600/10 py-18">
       <div className="">
-        <div className="responsive-container isolate ">
+        <div className="responsive-container isolate">
           <div
             aria-hidden
             className="pointer-events-none absolute top-[-10%] -left-24 h-56 w-56 rounded-full bg-red-600/30 blur-3xl"
@@ -86,21 +68,15 @@ export function SectionPromo(): ReactElement {
           <div className="relative flex flex-col gap-14">
             <div className="max-w-3xl space-y-4">
               <p className="text-xs font-semibold tracking-[0.3em] text-red-100/70 uppercase">
-                {t('PromoEyebrow', {
-                  defaultValue: 'Built for global missions'
-                })}
+                {t('Built for global missions')}
               </p>
               <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
-                {t('PromoHeading', {
-                  defaultValue:
-                    'The message doesn\'t change. The way people watch does.'
-                })}
+                {t("The message doesn't change. The way people watch does.")}
               </h2>
               <p className="text-lg text-white/80 lg:text-xl">
-                {t('PromoIntro', {
-                  defaultValue:
-                    'We are rebuilding our video library and tools from the ground up, committing decades of translation work to the platforms where people already gather, watch, and share.'
-                })}
+                {t(
+                  'We are rebuilding our video library and tools from the ground up, committing decades of translation work to the platforms where people already gather, watch, and share.'
+                )}
               </p>
             </div>
             <div className="grid gap-8 md:grid-cols-3">
@@ -132,9 +108,7 @@ export function SectionPromo(): ReactElement {
             <div className="space-y-6">
               <div>
                 <p className="text-lg text-white/80 lg:text-xl">
-                  {t('PromoHighlightsLabel', {
-                    defaultValue: 'What we are building next'
-                  })}
+                  {t('What we are building next')}
                 </p>
               </div>
               <div className="grid gap-6 md:grid-cols-3">
@@ -153,27 +127,31 @@ export function SectionPromo(): ReactElement {
                 ))}
               </div>
             </div>
-            <div className="mt-12 text-center mb-16">
-              <p className="text-xs font-semibold tracking-[0.3em] text-red-100/70 uppercase mb-4">
-                YOU'RE INVITED
+            <div className="mt-12 mb-16 text-center">
+              <p className="mb-4 text-xs font-semibold tracking-[0.3em] text-red-100/70 uppercase">
+                {t("You're invited")}
               </p>
-              <h3 className="text-3xl font-semibold text-white mb-4">
-                Help build{' '}
-                <span className="bg-gradient-to-r from-purple-400 via-blue-500 to-pink-500 bg-clip-text text-transparent">
-                  the next generation
-                </span>{' '}
-                of mission tools
+              <h3 className="mb-4 text-3xl font-semibold text-white">
+                <Trans t={t}>
+                  Help build{' '}
+                  <span className="bg-gradient-to-r from-purple-400 via-blue-500 to-pink-500 bg-clip-text text-transparent">
+                    the next generation
+                  </span>{' '}
+                  of mission tools
+                </Trans>
               </h3>
-              <p className="text-lg text-white/80 lg:text-xl max-w-2xl mx-auto mb-8">
-                We're inviting practitioners, creators, and partners into early access. Test new tools first, give feedback, and help shape products designed for real mission work.
+              <p className="mx-auto mb-8 max-w-2xl text-lg text-white/80 lg:text-xl">
+                {t(
+                  "We're inviting practitioners, creators, and partners into early access. Test new tools first, give feedback, and help shape products designed for real mission work."
+                )}
               </p>
               <a
                 href="https://mailchi.mp/jesusfilm/beta"
                 target="_blank"
                 rel="noopener noreferrer nofollow"
-                className="inline-flex items-center justify-center rounded-md text-base font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-white text-black hover:bg-gray-100 h-12 px-10 py-3"
+                className="ring-offset-background focus-visible:ring-ring inline-flex h-12 items-center justify-center rounded-md bg-white px-10 py-3 text-base font-medium text-black transition-colors hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
               >
-                Become a beta tester
+                {t('Become a beta tester')}
               </a>
             </div>
           </div>

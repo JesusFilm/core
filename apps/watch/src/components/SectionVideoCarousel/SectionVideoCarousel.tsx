@@ -1,5 +1,13 @@
+import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next'
-import { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 import { A11y, FreeMode, Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
@@ -48,18 +56,26 @@ export function SectionVideoCarousel({
 }: SectionVideoCarouselProps): ReactElement | null {
   const { t } = useTranslation('apps-watch')
 
-  const { loading, slides, subtitle, title, description, ctaHref, ctaLabel, primaryCollection } =
-    useSectionVideoCollectionCarouselContent({
-      sources: sources ?? [],
-      primaryCollectionId,
-      subtitleOverride,
-      titleOverride,
-      descriptionOverride,
-      ctaLabelOverride,
-      ctaHrefOverride,
-      defaultCtaLabel: t('Watch'),
-      languageId
-    })
+  const {
+    loading,
+    slides,
+    subtitle,
+    title,
+    description,
+    ctaHref,
+    ctaLabel,
+    primaryCollection
+  } = useSectionVideoCollectionCarouselContent({
+    sources: sources ?? [],
+    primaryCollectionId,
+    subtitleOverride,
+    titleOverride,
+    descriptionOverride,
+    ctaLabelOverride,
+    ctaHrefOverride,
+    defaultCtaLabel: t('Watch'),
+    languageId
+  })
 
   const defaultBackgroundImageUrl = useMemo(() => {
     // 1. Custom config image
@@ -109,7 +125,13 @@ export function SectionVideoCarousel({
   }, [])
 
   const handleCardHoverChange = useCallback(
-    (data?: { imageUrl: string; blurhash: string; dominantColor: string } | null) => {
+    (
+      data?: {
+        imageUrl: string
+        blurhash: string
+        dominantColor: string
+      } | null
+    ) => {
       clearTimers()
 
       if (data == null || data.imageUrl == null || data.imageUrl === '') {
@@ -182,7 +204,7 @@ export function SectionVideoCarousel({
               </h2>
             )}
           </div>
-          <a href={ctaHref} data-analytics-tag={analyticsTag}>
+          <NextLink href={ctaHref} data-analytics-tag={analyticsTag}>
             <button
               aria-label={ctaLabel}
               className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold tracking-wider text-black uppercase transition-colors duration-200 hover:bg-red-500 hover:text-white"
@@ -198,7 +220,7 @@ export function SectionVideoCarousel({
               />
               <span>{ctaLabel}</span>
             </button>
-          </a>
+          </NextLink>
         </div>
       </div>
 
@@ -206,7 +228,7 @@ export function SectionVideoCarousel({
         {hasNoResults ? (
           <div className="padded relative z-2">
             <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-center text-stone-100 shadow-lg shadow-black/30">
-              <p className="text-sm font-semibold uppercase tracking-wide text-red-100/80">
+              <p className="text-sm font-semibold tracking-wide text-red-100/80 uppercase">
                 {t('No videos found')}
               </p>
               <p className="mt-2 text-lg text-stone-100/80">

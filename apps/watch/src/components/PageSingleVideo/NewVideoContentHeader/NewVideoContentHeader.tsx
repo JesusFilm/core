@@ -28,6 +28,12 @@ export function NewVideoContentHeader({
 
   if (container == null) return null
 
+  let slug: string | null = null
+  if (container.variant?.slug != null) {
+    const [videoId, languageId] = container.variant.slug.split('/')
+    slug = `/${videoId}.html/${languageId}.html`
+  }
+
   return (
     <div
       data-testid="NewVideoContentHeader"
@@ -39,9 +45,9 @@ export function NewVideoContentHeader({
           data-testid="VideoHeading"
         >
           <div className="flex flex-row items-center space-x-4">
-            {container.variant?.slug != null ? (
+            {slug != null ? (
               <NextLink
-                href={`/watch/${container.variant.slug}`}
+                href={slug}
                 locale={false}
                 className="text-primary text-sm tracking-wider uppercase no-underline"
               >
@@ -72,9 +78,9 @@ export function NewVideoContentHeader({
               )}
             </div>
           </div>
-          {container.variant?.slug != null && (
+          {slug != null && (
             <NextLink
-              href={`/watch/${container.variant.slug}`}
+              href={slug}
               locale={false}
               className="hidden cursor-pointer rounded-md border border-[#bbbcbc] px-2 py-1 text-sm font-bold text-[#bbbcbc] xl:block"
             >
