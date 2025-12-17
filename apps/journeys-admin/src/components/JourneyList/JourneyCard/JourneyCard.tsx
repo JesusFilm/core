@@ -197,7 +197,7 @@ export function JourneyCard({
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
-                      backgroundColor: 'black',
+                      backgroundColor: '#000000cc',
                       borderRadius: 11,
                       padding: 1,
                       paddingRight: isCardHovered ? 3 : 1,
@@ -228,8 +228,7 @@ export function JourneyCard({
                         whiteSpace: 'nowrap',
                         transition: 'all 0.3s ease',
                         color: '#FFD700',
-                        typography: 'overline2',
-                        textTransform: 'Capitalize'
+                        typography: 'overline2'
                       }}
                     >
                       {t('Quick Start')}
@@ -242,7 +241,7 @@ export function JourneyCard({
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    backgroundColor: 'black',
+                    backgroundColor: '#000000cc',
                     borderRadius: 11,
                     padding: 1,
                     paddingRight: isCardHovered ? 3 : 1,
@@ -273,8 +272,7 @@ export function JourneyCard({
                       whiteSpace: 'nowrap',
                       transition: 'all 0.3s ease',
                       color: '#4DA3FF',
-                      typography: 'overline2',
-                      textTransform: 'Capitalize'
+                      typography: 'overline2'
                     }}
                   >
                     {t('Website')}
