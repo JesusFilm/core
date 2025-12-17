@@ -40,7 +40,7 @@ export function NewVideoContentHeader({
             <div className="flex flex-row items-center space-x-4">
               {container.variant?.slug != null ? (
                 <NextLink
-                  href={`/watch/${container.variant.slug}`}
+                  href={`/${container.variant.slug}`}
                   locale={false}
                   className="text-primary text-sm tracking-wider uppercase no-underline"
                 >
@@ -71,7 +71,7 @@ export function NewVideoContentHeader({
             </div>
             {container.variant?.slug != null ? (
               <NextLink
-                href={`/watch/${container.variant.slug}`}
+                href={`/${container.variant.slug}`}
                 locale={false}
                 passHref
               >
