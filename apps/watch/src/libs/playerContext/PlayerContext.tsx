@@ -1,4 +1,12 @@
-import { Dispatch, createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react'
+import {
+  Dispatch,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState
+} from 'react'
 
 /**
  * State interface for the video player
@@ -274,7 +282,10 @@ export function useThrottledPlayerProgress(throttleMs: number = 100): number {
     const now = Date.now()
     const timeSinceLastUpdate = now - throttledData.lastUpdate
 
-    if (timeSinceLastUpdate >= throttleMs || Math.abs(state.progress - throttledData.progress) > 5) {
+    if (
+      timeSinceLastUpdate >= throttleMs ||
+      Math.abs(state.progress - throttledData.progress) > 5
+    ) {
       setThrottledData({
         progress: state.progress,
         lastUpdate: now

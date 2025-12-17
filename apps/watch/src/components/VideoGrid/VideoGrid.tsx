@@ -77,7 +77,7 @@ export function VideoGrid({
 
   return (
     <div
-      className={`grid gap-4 ${orientation === 'vertical' ? 'grid-cols-2 md:grid-cols-4 xl:grid-cols-4' : 'grid-cols-1 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6'}`}
+      className={`grid gap-4 ${orientation === 'vertical' ? 'grid-cols-2 md:grid-cols-4 xl:grid-cols-4' : '3xl:grid-cols-6 grid-cols-1 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'}`}
       data-testid="VideoGrid"
     >
       {(videos?.length ?? 0) > 0 &&
@@ -102,25 +102,39 @@ export function VideoGrid({
       {loading && videos?.length === 0 && (
         <>
           <div className="w-full">
-            <div className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`} />
+            <div
+              className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`}
+            />
           </div>
           <div className="w-full">
-            <div className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`} />
+            <div
+              className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`}
+            />
           </div>
           <div className="hidden w-full md:block">
-            <div className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`} />
+            <div
+              className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`}
+            />
           </div>
-          <div className={`hidden w-full ${orientation === 'vertical' ? 'md:block' : 'xl:block'}`}>
-            <div className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`} />
+          <div
+            className={`hidden w-full ${orientation === 'vertical' ? 'md:block' : 'xl:block'}`}
+          >
+            <div
+              className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`}
+            />
           </div>
           {orientation === 'vertical' ? null : (
             <div className="hidden w-full 2xl:block">
-              <div className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`} />
+              <div
+                className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`}
+              />
             </div>
           )}
           {orientation === 'vertical' ? null : (
-            <div className="hidden w-full 3xl:block">
-              <div className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`} />
+            <div className="3xl:block hidden w-full">
+              <div
+                className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`}
+              />
             </div>
           )}
         </>
@@ -165,15 +179,21 @@ export function VideoGrid({
                 </div>
                 <div className={`grid gap-4 ${fallbackGridColumns}`}>
                   {(fallbackLoading
-                    ? Array.from({ length: fallbackSkeletonCount }, () => undefined)
+                    ? Array.from(
+                        { length: fallbackSkeletonCount },
+                        () => undefined
+                      )
                     : fallbackVideos
                   ).map((video, index) => {
                     const videoContainerSlug =
-                      (video && containerSlugMap?.get(video.id)) ?? containerSlug
+                      (video && containerSlugMap?.get(video.id)) ??
+                      containerSlug
                     return (
                       <div key={index} className="w-full">
                         {fallbackLoading ? (
-                          <div className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`} />
+                          <div
+                            className={`w-full ${orientation === 'vertical' ? 'aspect-[2/3]' : 'aspect-video'} animate-pulse rounded-lg bg-white/10`}
+                          />
                         ) : (
                           <VideoCard
                             video={video}

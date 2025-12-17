@@ -602,7 +602,13 @@ export function useCarouselVideos(locale?: string): UseCarouselVideosReturn {
       void loadNextVideo()
     }
     // loadNextVideo has stable identity via useStableCallback
-  }, [countsData, videos.length, currentIndex, loadingQueue.size, loadNextVideo])
+  }, [
+    countsData,
+    videos.length,
+    currentIndex,
+    loadingQueue.size,
+    loadNextVideo
+  ])
 
   const moveToNext = useCallback(() => {
     if (currentIndex < videos.length - 1) {

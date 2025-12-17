@@ -17,12 +17,18 @@ const SUPPORTED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif']
 function getCacheVersion(filePath: string): string {
   try {
     // Convert public URL path to filesystem path using absolute path
-    const fullPath = join(process.cwd(), filePath.replace('/assets/thumbnails/', 'public/assets/thumbnails/'))
+    const fullPath = join(
+      process.cwd(),
+      filePath.replace('/assets/thumbnails/', 'public/assets/thumbnails/')
+    )
     const stats = statSync(fullPath)
     return stats.mtime.getTime().toString()
   } catch (error) {
     // Fallback to timestamp if file access fails (new deployments, etc.)
-    console.warn(`Could not read file stats for cache versioning (${filePath}):`, error)
+    console.warn(
+      `Could not read file stats for cache versioning (${filePath}):`,
+      error
+    )
     return Date.now().toString()
   }
 }
@@ -40,10 +46,14 @@ function findLocalThumbnail(
   const filenamePatterns: string[] = []
 
   if (orientation && containerSlug && variantSlug && languageId) {
-    filenamePatterns.push(`${contentId}-${orientation}-${containerSlug}-${variantSlug}-${languageId}`)
+    filenamePatterns.push(
+      `${contentId}-${orientation}-${containerSlug}-${variantSlug}-${languageId}`
+    )
   }
   if (orientation && containerSlug && variantSlug) {
-    filenamePatterns.push(`${contentId}-${orientation}-${containerSlug}-${variantSlug}`)
+    filenamePatterns.push(
+      `${contentId}-${orientation}-${containerSlug}-${variantSlug}`
+    )
   }
   if (orientation && containerSlug) {
     filenamePatterns.push(`${contentId}-${orientation}-${containerSlug}`)
@@ -78,7 +88,14 @@ export default async function handler(
     return
   }
 
-  const { contentId, originalUrl, orientation, containerSlug, variantSlug, languageId } = req.query
+  const {
+    contentId,
+    originalUrl,
+    orientation,
+    containerSlug,
+    variantSlug,
+    languageId
+  } = req.query
 
   // Validate contentId parameter (required)
   if (!contentId || typeof contentId !== 'string') {
@@ -93,7 +110,10 @@ export default async function handler(
   }
 
   // Validate optional parameters (basic sanitization if provided)
-  const validateOptionalParam = (param: string | string[] | undefined, paramName: string): string | undefined => {
+  const validateOptionalParam = (
+    param: string | string[] | undefined,
+    paramName: string
+  ): string | undefined => {
     if (!param) return undefined
     const value = Array.isArray(param) ? param[0] : param
     if (typeof value !== 'string') return undefined
@@ -103,7 +123,10 @@ export default async function handler(
   }
 
   const validatedOrientation = validateOptionalParam(orientation, 'orientation')
-  const validatedContainerSlug = validateOptionalParam(containerSlug, 'containerSlug')
+  const validatedContainerSlug = validateOptionalParam(
+    containerSlug,
+    'containerSlug'
+  )
   const validatedVariantSlug = validateOptionalParam(variantSlug, 'variantSlug')
   const validatedLanguageId = validateOptionalParam(languageId, 'languageId')
 
@@ -136,7 +159,9 @@ export default async function handler(
     const fallbackUrl = typeof originalUrl === 'string' ? originalUrl : ''
 
     if (!fallbackUrl) {
-      res.status(400).json({ error: 'No local thumbnail found and no originalUrl provided' })
+      res
+        .status(400)
+        .json({ error: 'No local thumbnail found and no originalUrl provided' })
       return
     }
 

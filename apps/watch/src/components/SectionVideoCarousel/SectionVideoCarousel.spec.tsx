@@ -415,9 +415,7 @@ describe('SectionVideoCarousel', () => {
   it('returns null when no slides are available', async () => {
     render(
       <MockedProvider mocks={emptyMocks} addTypename>
-        <SectionVideoCarousel
-          sources={[{ id: 'collection-1' }]}
-        />
+        <SectionVideoCarousel sources={[{ id: 'collection-1' }]} />
       </MockedProvider>
     )
 

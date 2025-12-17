@@ -9,7 +9,6 @@ import {
   newBelieverCourse
 } from '../PageCollections/collectionShowcaseConfig'
 
-
 interface CollectionsRailProps {
   languageId?: string
 }

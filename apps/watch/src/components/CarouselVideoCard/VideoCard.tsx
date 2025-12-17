@@ -65,9 +65,10 @@ const CardContent = memo(function CardContent({
   // Use thumbnailUrl if it's different from imageSrc (indicating local thumbnail)
   // Otherwise use original imageSrc for blurhash generation
   // Strip query parameters for local thumbnails since blurhash API reads from disk
-  const blurhashImageUrl = thumbnailUrl !== imageSrc
-    ? thumbnailUrl.split('?')[0]  // Remove cache-busting parameters for blurhash generation
-    : imageSrc
+  const blurhashImageUrl =
+    thumbnailUrl !== imageSrc
+      ? thumbnailUrl.split('?')[0] // Remove cache-busting parameters for blurhash generation
+      : imageSrc
   const { blurhash, dominantColor } = useBlurhash(blurhashImageUrl)
   const blurDataURL = blurhash
     ? blurImage(blurhash, dominantColor ?? '#000000')
@@ -90,7 +91,7 @@ const CardContent = memo(function CardContent({
         className="beveled relative h-full w-full cursor-pointer rounded-lg border-none bg-transparent p-0 text-left disabled:cursor-default"
       >
         <ContentElement
-          className="relative flex h-full w-full cursor-pointer flex-col justify-end rounded-xl bg-black overflow-hidden"
+          className="relative flex h-full w-full cursor-pointer flex-col justify-end overflow-hidden rounded-xl bg-black"
           {...(interactive && {
             tabIndex: 0,
             role: 'button',

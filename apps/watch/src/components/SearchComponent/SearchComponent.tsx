@@ -39,8 +39,8 @@ export function SearchComponent({
     <SearchBarProvider>
       <div
         className={cn(
-          "fixed left-1/2 z-[100] w-[calc(100%-60px)] max-w-[800px] min-w-[300px] -translate-x-1/2 px-2 md:px-0",
-          isScrolled ? "top-[30px]" : "top-[78px] lg:top-[128px]"
+          'fixed left-1/2 z-[100] w-[calc(100%-60px)] max-w-[800px] min-w-[300px] -translate-x-1/2 px-2 md:px-0',
+          isScrolled ? 'top-[30px]' : 'top-[78px] lg:top-[128px]'
         )}
       >
         <div className="mx-auto w-full max-w-[70%] min-w-[60%]">

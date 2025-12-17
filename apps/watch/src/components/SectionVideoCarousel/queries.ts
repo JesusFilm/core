@@ -37,13 +37,8 @@ export const COLLECTION_SHOWCASE_VIDEO_FIELDS = gql`
 
 export const GET_COLLECTION_SHOWCASE_CONTENT = gql`
   ${COLLECTION_SHOWCASE_VIDEO_FIELDS}
-  query GetCollectionShowcaseContent(
-    $ids: [ID!]
-    $languageId: ID!
-  ) {
-    videos(
-      where: { ids: $ids }
-    ) {
+  query GetCollectionShowcaseContent($ids: [ID!], $languageId: ID!) {
+    videos(where: { ids: $ids }) {
       ...CollectionShowcaseVideoFields
       description(languageId: $languageId, primary: true) {
         value

@@ -66,6 +66,7 @@ The system automatically checks all supported extensions for each naming pattern
 ## Real-World Examples
 
 ### Scenario: English Jesus Film in vertical watch context
+
 ```
 1_jf-0-0-vertical-watch-jesus-film-english-529.jpg  ← Used first
 1_jf-0-0-vertical-watch-jesus-film-english.jpg      ← Fallback 1
@@ -76,6 +77,7 @@ The system automatically checks all supported extensions for each naming pattern
 ```
 
 ### Scenario: Same video in horizontal collections context
+
 ```
 1_jf-0-0-horizontal-collections-jesus-film-english-529.jpg  ← Used first
 1_jf-0-0-horizontal-collections-jesus-film-english.jpg      ← Fallback 1
@@ -88,21 +90,25 @@ The system automatically checks all supported extensions for each naming pattern
 ## Best Practices
 
 ### 1. Use Appropriate Specificity
+
 - **Most specific** for unique branding/marketing thumbnails
 - **Medium specificity** for general language/context combinations
 - **Least specific** for universal overrides
 
 ### 2. Image Optimization
+
 - Use WebP format for better compression when possible
 - Optimize image sizes for the target display context
 - Consider responsive images for different screen sizes
 
 ### 3. Naming Consistency
+
 - Follow the established slug patterns from the CMS
 - Use consistent casing (typically lowercase with hyphens)
 - Test your naming against actual video contexts
 
 ### 4. Organization
+
 - Group related thumbnails by contentId
 - Document special cases in comments
 - Keep the directory clean by removing unused files
@@ -110,11 +116,13 @@ The system automatically checks all supported extensions for each naming pattern
 ## Technical Implementation
 
 ### API Endpoint
+
 - **Route**: `/api/thumbnail`
 - **Parameters**: `contentId`, `originalUrl`, `orientation`, `containerSlug`, `variantSlug`, `languageId`
 - **Response**: `{ url: string }`
 
 ### Cache Busting
+
 The system includes intelligent cache busting to ensure users see updated thumbnails:
 
 - **Local thumbnails**: URLs include `?v={fileModificationTime}` based on file modification time
@@ -124,6 +132,7 @@ The system includes intelligent cache busting to ensure users see updated thumbn
 This ensures that when thumbnails are updated, users immediately see the new versions without cache issues.
 
 ### Blurhash Integration
+
 When local thumbnails are used, blurhash placeholders are automatically generated from the local thumbnail images rather than the original Cloudflare images:
 
 - **Smart Detection**: System detects when `thumbnailUrl !== imageSrc` to identify local thumbnails
@@ -135,6 +144,7 @@ When local thumbnails are used, blurhash placeholders are automatically generate
 - **Fallback**: If blurhash generation fails for local thumbnails, falls back to original image blurhash
 
 ### React Hook
+
 ```typescript
 const { thumbnailUrl } = useThumbnailUrl(videoId, originalUrl, {
   orientation: 'vertical',
@@ -145,6 +155,7 @@ const { thumbnailUrl } = useThumbnailUrl(videoId, originalUrl, {
 ```
 
 ### File Resolution Logic
+
 1. Build filename patterns from most specific to least specific
 2. Check each pattern with all supported extensions
 3. Return first matching file path or fallback to original URL
@@ -162,12 +173,14 @@ To test thumbnail overrides:
 ## Troubleshooting
 
 ### Thumbnail Not Appearing
+
 - Check naming convention matches exactly
 - Verify file extension is supported
 - Confirm parameters match the video context
 - Check browser cache (thumbnails are cached)
 
 ### Unexpected Fallback
+
 - Review the fallback hierarchy order
 - Ensure more specific files don't exist
 - Check parameter values in component usage

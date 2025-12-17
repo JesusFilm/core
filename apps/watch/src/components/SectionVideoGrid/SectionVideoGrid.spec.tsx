@@ -414,9 +414,7 @@ describe('SectionVideoGrid', () => {
   it('returns null when no slides are available', async () => {
     render(
       <MockedProvider mocks={emptyMocks} addTypename>
-        <SectionVideoGrid
-          sources={[{ id: 'collection-1' }]}
-        />
+        <SectionVideoGrid sources={[{ id: 'collection-1' }]} />
       </MockedProvider>
     )
 
@@ -428,9 +426,7 @@ describe('SectionVideoGrid', () => {
   it('shows skeleton loading state', async () => {
     render(
       <MockedProvider mocks={collectionOnlyMocks} addTypename>
-        <SectionVideoGrid
-          sources={[{ id: 'collection-1' }]}
-        />
+        <SectionVideoGrid sources={[{ id: 'collection-1' }]} />
       </MockedProvider>
     )
 

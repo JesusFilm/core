@@ -3,20 +3,19 @@ import { type SectionVideoCollectionCarouselSource } from '../SectionVideoCarous
 export const collectionShowcaseSources: SectionVideoCollectionCarouselSource[] =
   [
     { id: '1_jf-0-0', limitChildren: 0 },
-    { id: '2_GOJ-0-0', limitChildren: 0  },
-    { id: 'GOMattCollection', limitChildren: 0  },
+    { id: '2_GOJ-0-0', limitChildren: 0 },
+    { id: 'GOMattCollection', limitChildren: 0 },
     { id: 'GOMarkCollection', limitChildren: 0 },
     { id: 'GOLukeCollection', limitChildren: 0 },
     { id: 'GOJohnCollection', limitChildren: 0 }
   ]
 
-export const collectionLumo: SectionVideoCollectionCarouselSource[] =
-  [
-    { id: 'LUMOCollection', limitChildren: 1 },
-    { id: 'GOMarkCollection', limitChildren: 1 },
-    { id: 'GOLukeCollection', limitChildren: 1 },
-    { id: 'GOJohnCollection', limitChildren: 1 }
-  ]
+export const collectionLumo: SectionVideoCollectionCarouselSource[] = [
+  { id: 'LUMOCollection', limitChildren: 1 },
+  { id: 'GOMarkCollection', limitChildren: 1 },
+  { id: 'GOLukeCollection', limitChildren: 1 },
+  { id: 'GOJohnCollection', limitChildren: 1 }
+]
 
 export const christmasAdventShowcaseSources: SectionVideoCollectionCarouselSource[] =
   [

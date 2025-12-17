@@ -27,9 +27,7 @@ export function useThumbnailUrl(
     languageId?: string
   }
 ): UseThumbnailUrlReturn {
-  const [thumbnailUrl, setThumbnailUrl] = useState<string>(
-    originalUrl || ''
-  )
+  const [thumbnailUrl, setThumbnailUrl] = useState<string>(originalUrl || '')
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error | null>(null)
 
@@ -58,7 +56,14 @@ export function useThumbnailUrl(
         setThumbnailUrl(originalUrl || '')
         setIsLoading(false)
       })
-  }, [contentId, originalUrl, options?.orientation, options?.containerSlug, options?.variantSlug, options?.languageId])
+  }, [
+    contentId,
+    originalUrl,
+    options?.orientation,
+    options?.containerSlug,
+    options?.variantSlug,
+    options?.languageId
+  ])
 
   return {
     thumbnailUrl,

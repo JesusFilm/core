@@ -86,18 +86,17 @@ export function DialogDownload({
     () =>
       downloads.filter(({ quality }) =>
         Object.keys(qualityEnumToOrder).includes(quality)
-      ) as (typeof downloads)[number] & {
-        quality: keyof typeof qualityEnumToOrder
-      }[],
+      ) as (typeof downloads)[number] &
+        {
+          quality: keyof typeof qualityEnumToOrder
+        }[],
     [downloads]
   )
 
   const sortedDownloads = useMemo(
     () =>
       [...filteredDownloads].sort(
-        (a, b) =>
-          qualityEnumToOrder[a.quality] -
-          qualityEnumToOrder[b.quality]
+        (a, b) => qualityEnumToOrder[a.quality] - qualityEnumToOrder[b.quality]
       ),
     [filteredDownloads]
   )
@@ -116,7 +115,9 @@ export function DialogDownload({
     }
   }, [percentage, onClose])
 
-  const getQualityLabel = (quality: keyof typeof qualityEnumToOrder): string => {
+  const getQualityLabel = (
+    quality: keyof typeof qualityEnumToOrder
+  ): string => {
     switch (quality) {
       case VideoVariantDownloadQuality.highest:
         return t('Highest')
@@ -239,7 +240,7 @@ export function DialogDownload({
             </div>
           </TooltipTrigger>
           <TooltipContent
-            className="bg-stone-800 text-white border-white/20 z-[200]"
+            className="z-[200] border-white/20 bg-stone-800 text-white"
             side="top"
           >
             {getDisabledTooltipMessage()}
@@ -257,148 +258,148 @@ export function DialogDownload({
         <DialogPortal>
           <DialogOverlay className="blured-bg z-[100] bg-stone-900/40" />
           <DialogContent
-          showCloseButton={false}
-          data-testid={testId}
-          className="fixed left-1/2 top-1/2 z-[101] w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-hidden border border-white/10 bg-gradient-to-b from-[#0f1117] to-[#0b0c10] text-white shadow-2xl outline-none [&>button]:focus-visible:outline-none"
-        >
-          <DialogClose
-            data-testid="dialog-close-button"
-            className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-none"
+            showCloseButton={false}
+            data-testid={testId}
+            className="fixed top-1/2 left-1/2 z-[101] w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-hidden border border-white/10 bg-gradient-to-b from-[#0f1117] to-[#0b0c10] text-white shadow-2xl outline-none [&>button]:focus-visible:outline-none"
           >
-            <X className="h-4 w-4" />
-            <span className="sr-only">{t('Close')}</span>
-          </DialogClose>
-          <DialogTitle className="sr-only">{t('Download Video')}</DialogTitle>
-          <DialogDescription className="sr-only">
-            {t('Select a file size')}
-          </DialogDescription>
-          <div className="flex flex-col gap-6 p-6 sm:p-8">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-              {imageSrc != null && (
-                <div className="relative w-full overflow-hidden rounded-2xl border border-white/10 bg-black/40 sm:w-72">
-                  <Image
-                    src={imageSrc}
-                    alt={imageAltText}
-                    width={320}
-                    height={180}
-                    className="h-full w-full object-cover"
-                  />
-                  <div className="absolute bottom-3 right-3 flex items-center gap-2 rounded-full bg-black/70 px-3 py-1 text-xs font-semibold">
-                    <Play className="h-3 w-3" />
-                    <span>{duration}</span>
+            <DialogClose
+              data-testid="dialog-close-button"
+              className="absolute top-4 right-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-none"
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">{t('Close')}</span>
+            </DialogClose>
+            <DialogTitle className="sr-only">{t('Download Video')}</DialogTitle>
+            <DialogDescription className="sr-only">
+              {t('Select a file size')}
+            </DialogDescription>
+            <div className="flex flex-col gap-6 p-6 sm:p-8">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+                {imageSrc != null && (
+                  <div className="relative w-full overflow-hidden rounded-2xl border border-white/10 bg-black/40 sm:w-72">
+                    <Image
+                      src={imageSrc}
+                      alt={imageAltText}
+                      width={320}
+                      height={180}
+                      className="h-full w-full object-cover"
+                    />
+                    <div className="absolute right-3 bottom-3 flex items-center gap-2 rounded-full bg-black/70 px-3 py-1 text-xs font-semibold">
+                      <Play className="h-3 w-3" />
+                      <span>{duration}</span>
+                    </div>
                   </div>
-                </div>
-              )}
-              <div className="flex-1 space-y-3 text-left">
-                <p className="text-sm font-semibold tracking-widest text-red-100/70 uppercase">
-                  {t('Download Video')}
-                </p>
-                <h3 className="text-2xl font-bold leading-tight sm:text-3xl">
-                  {titleText}
-                </h3>
-                <div className="flex flex-wrap items-center gap-3 text-sm text-stone-200/80">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1">
-                    <Globe2 className="h-4 w-4" />
-                    <span className="font-semibold text-white">
-                      {language.name[0].value}
-                    </span>
-                  </div>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-stone-200">
-                    {t('Select a file size')}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <label className="text-sm font-semibold tracking-wide text-stone-200">
-                {t('Select a file size')}
-              </label>
-              <Select
-                value={selectedFile}
-                onValueChange={setSelectedFile}
-                disabled={sortedDownloads.length === 0 || isInProgress}
-              >
-                <SelectTrigger
-                  className="h-12 w-full rounded-xl border border-white/10 bg-white/5 text-base font-semibold text-white shadow-inner backdrop-blur-md disabled:cursor-not-allowed disabled:opacity-50"
-                  aria-label={t('Select a file size')}
-                >
-                  <SelectValue
-                    placeholder={
-                      sortedDownloads.length === 0
-                        ? t('No Downloads Available')
-                        : t('Select a file size')
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent
-                  className="!z-[102] border-white/10 bg-[#0f1117] text-white shadow-2xl"
-                  position="popper"
-                >
-                  {sortedDownloads.map((downloadOption) => (
-                    <SelectItem
-                      key={downloadOption.quality}
-                      value={downloadOption.url}
-                      className="flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white hover:bg-white/10"
-                    >
-                      <span>{getQualityLabel(downloadOption.quality)}</span>
-                      <span className="text-white/70">
-                        ({formatBytes(downloadOption.size)})
+                )}
+                <div className="flex-1 space-y-3 text-left">
+                  <p className="text-sm font-semibold tracking-widest text-red-100/70 uppercase">
+                    {t('Download Video')}
+                  </p>
+                  <h3 className="text-2xl leading-tight font-bold sm:text-3xl">
+                    {titleText}
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-stone-200/80">
+                    <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1">
+                      <Globe2 className="h-4 w-4" />
+                      <span className="font-semibold text-white">
+                        {language.name[0].value}
                       </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {sortedDownloads.length === 0 && (
-                <p className="text-sm font-semibold text-[#f87171]">
-                  {t('No Downloads Available')}
-                </p>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-start gap-3 text-sm text-stone-200">
-                <Checkbox
-                  id="terms"
-                  aria-label={t('I agree to the')}
-                  checked={agreedToTerms}
-                  disabled={sortedDownloads.length === 0}
-                  onCheckedChange={(checked) =>
-                    setAgreedToTerms(checked === true)
-                  }
-                  className="mt-1 border-white/50 data-[state=checked]:bg-white data-[state=checked]:text-gray-900"
-                />
-                <div>
-                  <div className="text-sm text-stone-200">
-                    {t('I agree to the')}{' '}
-                    <button
-                      type="button"
-                      onClick={() => setOpenTerms(true)}
-                      className="font-semibold text-[#cb333b] underline underline-offset-4 hover:text-white"
-                    >
-                      {t('Terms of Use')}
-                    </button>
+                    </div>
+                    <div className="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-xs font-semibold tracking-wider text-stone-200 uppercase">
+                      {t('Select a file size')}
+                    </div>
                   </div>
                 </div>
               </div>
-              {renderDownloadControl()}
-            </div>
-          </div>
-        </DialogContent>
-      </DialogPortal>
-    </Dialog>
 
-    <TermsOfUseDialog
-      open={openTerms}
-      onClose={() => {
-        setAgreedToTerms(false)
-        setOpenTerms(false)
-      }}
-      onSubmit={() => {
-        setAgreedToTerms(true)
-        setOpenTerms(false)
-      }}
-    />
+              <div className="space-y-4">
+                <label className="text-sm font-semibold tracking-wide text-stone-200">
+                  {t('Select a file size')}
+                </label>
+                <Select
+                  value={selectedFile}
+                  onValueChange={setSelectedFile}
+                  disabled={sortedDownloads.length === 0 || isInProgress}
+                >
+                  <SelectTrigger
+                    className="h-12 w-full rounded-xl border border-white/10 bg-white/5 text-base font-semibold text-white shadow-inner backdrop-blur-md disabled:cursor-not-allowed disabled:opacity-50"
+                    aria-label={t('Select a file size')}
+                  >
+                    <SelectValue
+                      placeholder={
+                        sortedDownloads.length === 0
+                          ? t('No Downloads Available')
+                          : t('Select a file size')
+                      }
+                    />
+                  </SelectTrigger>
+                  <SelectContent
+                    className="!z-[102] border-white/10 bg-[#0f1117] text-white shadow-2xl"
+                    position="popper"
+                  >
+                    {sortedDownloads.map((downloadOption) => (
+                      <SelectItem
+                        key={downloadOption.quality}
+                        value={downloadOption.url}
+                        className="flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-white hover:bg-white/10"
+                      >
+                        <span>{getQualityLabel(downloadOption.quality)}</span>
+                        <span className="text-white/70">
+                          ({formatBytes(downloadOption.size)})
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {sortedDownloads.length === 0 && (
+                  <p className="text-sm font-semibold text-[#f87171]">
+                    {t('No Downloads Available')}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-start gap-3 text-sm text-stone-200">
+                  <Checkbox
+                    id="terms"
+                    aria-label={t('I agree to the')}
+                    checked={agreedToTerms}
+                    disabled={sortedDownloads.length === 0}
+                    onCheckedChange={(checked) =>
+                      setAgreedToTerms(checked === true)
+                    }
+                    className="mt-1 border-white/50 data-[state=checked]:bg-white data-[state=checked]:text-gray-900"
+                  />
+                  <div>
+                    <div className="text-sm text-stone-200">
+                      {t('I agree to the')}{' '}
+                      <button
+                        type="button"
+                        onClick={() => setOpenTerms(true)}
+                        className="font-semibold text-[#cb333b] underline underline-offset-4 hover:text-white"
+                      >
+                        {t('Terms of Use')}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                {renderDownloadControl()}
+              </div>
+            </div>
+          </DialogContent>
+        </DialogPortal>
+      </Dialog>
+
+      <TermsOfUseDialog
+        open={openTerms}
+        onClose={() => {
+          setAgreedToTerms(false)
+          setOpenTerms(false)
+        }}
+        onSubmit={() => {
+          setAgreedToTerms(true)
+          setOpenTerms(false)
+        }}
+      />
     </TooltipProvider>
   )
 }

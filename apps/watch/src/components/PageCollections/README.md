@@ -12,9 +12,9 @@ Each source in the configuration arrays follows this TypeScript interface:
 
 ```typescript
 interface SectionVideoCollectionCarouselSource {
-  id: string                    // Database ID of the video or collection
+  id: string // Database ID of the video or collection
   idType?: 'databaseId' | 'slug' // Optional: how to query the ID (default: databaseId)
-  limitChildren?: number        // Optional: max children to extract from collections
+  limitChildren?: number // Optional: max children to extract from collections
 }
 ```
 
@@ -45,48 +45,52 @@ The system automatically determines how to render each source based on:
 ### Configuration Arrays
 
 #### `collectionShowcaseSources`
+
 Used on the main collections page and homepage rails.
 
 ```typescript
 export const collectionShowcaseSources: SectionVideoCollectionCarouselSource[] = [
-  { id: '1_jf-0-0' },                    // Single collection block
-  { id: '2_GOJ-0-0' },                   // Single collection block
-  { id: 'LUMOCollection' },              // Single collection block
-  { id: 'GOMarkCollection', limitChildren: 0 },  // Collection as single item
-  { id: 'GOLukeCollection', limitChildren: 1 },  // Flattened: 1 video from collection
-  { id: 'GOJohnCollection', limitChildren: 1 }   // Flattened: 1 video from collection
+  { id: '1_jf-0-0' }, // Single collection block
+  { id: '2_GOJ-0-0' }, // Single collection block
+  { id: 'LUMOCollection' }, // Single collection block
+  { id: 'GOMarkCollection', limitChildren: 0 }, // Collection as single item
+  { id: 'GOLukeCollection', limitChildren: 1 }, // Flattened: 1 video from collection
+  { id: 'GOJohnCollection', limitChildren: 1 } // Flattened: 1 video from collection
 ]
 ```
 
 #### `collectionLumo`
+
 Used for vertical grid layouts focusing on Gospel collections.
 
 ```typescript
 export const collectionLumo: SectionVideoCollectionCarouselSource[] = [
-  { id: 'LUMOCollection', limitChildren: 1 },    // Flattened: 1 video from collection
-  { id: 'GOMarkCollection', limitChildren: 1 },  // Flattened: 1 video from collection
-  { id: 'GOLukeCollection', limitChildren: 1 },  // Flattened: 1 video from collection
-  { id: 'GOJohnCollection', limitChildren: 1 }   // Flattened: 1 video from collection
+  { id: 'LUMOCollection', limitChildren: 1 }, // Flattened: 1 video from collection
+  { id: 'GOMarkCollection', limitChildren: 1 }, // Flattened: 1 video from collection
+  { id: 'GOLukeCollection', limitChildren: 1 }, // Flattened: 1 video from collection
+  { id: 'GOJohnCollection', limitChildren: 1 } // Flattened: 1 video from collection
 ]
 ```
 
 #### `christmasAdventShowcaseSources`
+
 Individual videos for Christmas Advent content.
 
 ```typescript
 export const christmasAdventShowcaseSources: SectionVideoCollectionCarouselSource[] = [
-  { id: '2_0-ConsideringChristmas' },    // Single video block
-  { id: '2_0-SupremeChristmas' },        // Single video block
+  { id: '2_0-ConsideringChristmas' }, // Single video block
+  { id: '2_0-SupremeChristmas' } // Single video block
   // ... more individual videos
 ]
 ```
 
 #### `nuaChristmasSources`
+
 Large Christmas collection with limited extraction.
 
 ```typescript
 export const nuaChristmasSources: SectionVideoCollectionCarouselSource[] = [
-  { id: '7_0-ncs', limitChildren: 12 }   // Flattened: up to 12 videos from collection
+  { id: '7_0-ncs', limitChildren: 12 } // Flattened: up to 12 videos from collection
 ]
 ```
 

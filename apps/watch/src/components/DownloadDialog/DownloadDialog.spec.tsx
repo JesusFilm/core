@@ -109,11 +109,15 @@ describe('DownloadDialog', () => {
     renderDialog()
     fireEvent.click(screen.getByText('Terms of Use'))
     fireEvent.click(screen.getByText('Accept'))
-    await waitFor(() => expect(screen.queryByText('Accept')).not.toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.queryByText('Accept')).not.toBeInTheDocument()
+    )
     expect(screen.getByLabelText('I agree to the')).toBeChecked()
     fireEvent.click(screen.getByText('Terms of Use'))
     fireEvent.click(screen.getByText('Cancel'))
-    await waitFor(() => expect(screen.queryByText('Cancel')).not.toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.queryByText('Cancel')).not.toBeInTheDocument()
+    )
     expect(screen.getByLabelText('I agree to the')).not.toBeChecked()
   })
 

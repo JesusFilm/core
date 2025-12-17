@@ -7,16 +7,18 @@
 ## Header & Navigation
 
 ### Search Textbox
+
 - **Element:** Text input field
 - **Label:** "Search videos by keyword..."
 - **Location:** Top of page, header area
-- **Behavior:** 
+- **Behavior:**
   - Focusable input field
   - Appears to be readonly initially
   - Placeholder text: "Search videos by keyword..."
 - **Issues:** None observed
 
 ### Go to Watch Home Link
+
 - **Element:** Link (`<a>`)
 - **Label:** "Go to Watch home"
 - **Location:** Header, left side
@@ -26,6 +28,7 @@
 - **Issues:** None observed
 
 ### Select Audio Language Button
+
 - **Element:** Button
 - **Label:** "select audio language"
 - **Location:** Header, right side
@@ -46,6 +49,7 @@
 ## Video Player Controls
 
 ### Play Video Button
+
 - **Element:** Button (large overlay)
 - **Label:** "Play Video"
 - **Location:** Center of video player area
@@ -55,6 +59,7 @@
 - **Issues:** None observed
 
 ### Pause Button
+
 - **Element:** Button
 - **Label:** "Pause" (or "Pau e" in accessibility tree)
 - **Location:** Video player controls bar
@@ -64,6 +69,7 @@
 - **Issues:** None observed
 
 ### Skip Backward Button
+
 - **Element:** Button
 - **Label:** "Skip Backward"
 - **Location:** Video player controls bar
@@ -72,6 +78,7 @@
 - **Issues:** None observed
 
 ### Skip Forward Button
+
 - **Element:** Button
 - **Label:** "Skip Forward"
 - **Location:** Video player controls bar
@@ -80,6 +87,7 @@
 - **Issues:** None observed
 
 ### Unmute/Mute Button
+
 - **Element:** Button
 - **Label:** "Unmute" (when muted) / "Mute" (when unmuted)
 - **Location:** Video player controls bar, appears twice (in controls and overlay)
@@ -89,6 +97,7 @@
 - **Issues:** None observed
 
 ### Volume Level Slider
+
 - **Element:** Slider (`<div>` with slider role)
 - **Label:** "Volume Level"
 - **Location:** Video player controls bar, next to mute button
@@ -98,6 +107,7 @@
 - **Issues:** None observed
 
 ### Progress Bar Slider
+
 - **Element:** Slider (`<div>` with slider role)
 - **Label:** "Progress Bar"
 - **Location:** Video player controls bar
@@ -107,6 +117,7 @@
 - **Issues:** None observed
 
 ### Seek to Live Button
+
 - **Element:** Button
 - **Label:** "Seek to live, currently behind live LIVE"
 - **Location:** Video player controls bar
@@ -116,6 +127,7 @@
 - **Issues:** None observed
 
 ### Playback Rate Button
+
 - **Element:** Button
 - **Label:** "Playback Rate"
 - **Location:** Video player controls bar
@@ -125,6 +137,7 @@
 - **Issues:** None observed
 
 ### Chapter Button
+
 - **Element:** Button
 - **Label:** "Chapter"
 - **Location:** Video player controls bar
@@ -134,6 +147,7 @@
 - **Issues:** None observed
 
 ### Description Button
+
 - **Element:** Button with dropdown menu
 - **Label:** "Description" (or "De cription" in accessibility tree)
 - **Location:** Video player controls bar
@@ -145,6 +159,7 @@
 - **Issues:** None observed
 
 ### Caption Button
+
 - **Element:** Button with dropdown menu
 - **Label:** "Caption"
 - **Location:** Video player controls bar
@@ -157,6 +172,7 @@
 - **Issues:** None observed
 
 ### Audio Track Button
+
 - **Element:** Button with dropdown menu
 - **Label:** "Audio Track"
 - **Location:** Video player controls bar
@@ -168,6 +184,7 @@
 - **Issues:** None observed
 
 ### Picture-in-Picture Button
+
 - **Element:** Button
 - **Label:** "Picture-in-Picture"
 - **Location:** Video player controls bar
@@ -176,6 +193,7 @@
 - **Issues:** None observed
 
 ### Fullscreen Button
+
 - **Element:** Button
 - **Label:** "Fullscreen" (or "Full creen" in accessibility tree)
 - **Location:** Video player controls bar
@@ -184,6 +202,7 @@
 - **Issues:** None observed
 
 ### Skip Video Button
+
 - **Element:** Button
 - **Label:** "Skip video"
 - **Location:** Overlay area above video player
@@ -194,6 +213,7 @@
 ## Carousel Sections
 
 ### Today's Video Picks Carousel
+
 - **Element:** Carousel with navigation
 - **Location:** Below video player
 - **Behavior:**
@@ -219,6 +239,7 @@
 - **Issues:** None observed
 
 ### Watch Section Carousels
+
 - **Element:** Multiple carousel sections
 - **Location:** Throughout page content
 - **Behavior:**
@@ -236,6 +257,7 @@
 ## Video Cards
 
 ### VideoCard Links
+
 - **Element:** Links (`<a>`)
 - **Location:** Throughout carousel sections
 - **Behavior:**
@@ -247,11 +269,12 @@
   - URLs follow pattern: `/watch/[collection].html/[video]/[language].html`
   - Some cards have disabled buttons
   - Some cards have undefined URLs: `/watch/.html/undefined.html`
-- **Issues:** 
+- **Issues:**
   - **CRITICAL:** Some VideoCard links have undefined URLs (`/watch/.html/undefined.html`)
   - Some VideoCard buttons are disabled
 
 ### Section Header "Watch" Links
+
 - **Element:** Links (`<a>`) containing buttons
 - **Label:** "Watch"
 - **Location:** Section headers throughout page
@@ -264,6 +287,7 @@
 ## Newsletter Subscription Form
 
 ### Name Input Field
+
 - **Element:** Text input (`<input>`)
 - **Label:** "Name"
 - **Location:** Newsletter subscription section (bottom of page)
@@ -274,6 +298,7 @@
 - **Issues:** None observed
 
 ### Email Address Input Field
+
 - **Element:** Text input (`<input>`)
 - **Label:** "Email address"
 - **Location:** Newsletter subscription section (bottom of page)
@@ -286,6 +311,7 @@
 ## Draggable Areas
 
 ### Carousel Navigation
+
 - **Element:** Carousel groups
 - **Location:** Multiple carousel sections
 - **Behavior:**
@@ -295,6 +321,7 @@
 - **Issues:** None observed
 
 ### Video Player Sliders
+
 - **Element:** Volume and Progress sliders
 - **Location:** Video player controls
 - **Behavior:**
@@ -316,4 +343,3 @@
 - Multiple carousel sections throughout the page with similar structure
 - Newsletter form appears at bottom of page
 - Page structure is responsive and contains multiple content sections
-
