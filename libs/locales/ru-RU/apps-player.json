@@ -1,6 +1,6 @@
 {
   "RootIndexPage": {
-    "pageTitle": "Игрок",
+    "pageTitle": "Плеер",
     "description": "Перейдите по адресу /pl/[playlistId], чтобы просмотреть плейлист"
   },
   "Metadata": {
@@ -26,7 +26,7 @@
     "lackOfBrowserSupport": "Для просмотра этого видео включи JavaScript и перейди на браузер с <link>поддержкой HTML5.</link>"
   },
   "SharedPlaylistBanner": {
-    "sharedWithYou": "Твоя подруга <strong>{name}</strong> поделился с тобой этими видео в качестве ободрения. Лучший способ посмотреть эти видео - скачать наше приложение.",
+    "sharedWithYou": "Твой друг <strong>{name}</strong> поделился с тобой этими видео в качестве ободрения. Лучший способ посмотреть эти видео - скачать наше приложение.",
     "downloadOnAppStore": "Загружай в App Store",
     "getItOnGooglePlay": "Получи его в Google Play"
   }
