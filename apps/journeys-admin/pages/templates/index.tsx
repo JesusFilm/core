@@ -140,7 +140,8 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
           template: true,
           orderByRecent: true,
           tagIds: undefined,
-          languageIds: ['529']
+          languageIds: ['529'],
+          teamId: 'jfp-team'
         }
       }
     })
